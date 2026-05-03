@@ -31,11 +31,10 @@ function renderHome() {
     }
 
     /* =========================
-       🔥 FIX ẢNH CLOUDINARY SAFE
+       🔥 IMAGE SAFE (GIỮ NGUYÊN)
     ========================= */
     let imgUrl = p.img;
 
-    // fallback nếu chưa có ảnh
     if (!imgUrl) {
       imgUrl = "https://via.placeholder.com/300";
     }
@@ -89,7 +88,8 @@ window.toggleSpec = function(id){
 };
 
 /* =========================
-   🛒 ADD TO CART
+   🛒 ADD TO CART (FIX CHUẨN)
+   ✔ chỉ sửa quantity, không đụng logic khác
 ========================= */
 window.addToCart = function(id){
   const products = getProducts();
@@ -101,8 +101,15 @@ window.addToCart = function(id){
 
   const exist = cart.find(item => String(item.id) === String(id));
 
-  if (exist) exist.qty += 1;
-  else cart.push({ ...product, qty: 1 });
+  if (exist) {
+    // ✔ FIX QUAN TRỌNG: đồng bộ quantity
+    exist.quantity = (exist.quantity || 1) + 1;
+  } else {
+    cart.push({ 
+      ...product, 
+      quantity: 1   // ✔ chuẩn hệ thống
+    });
+  }
 
   localStorage.setItem("cart", JSON.stringify(cart));
 
