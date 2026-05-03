@@ -27,20 +27,24 @@
 }
 
 /* =========================
-   🖼 IMAGE (ĐÃ FIX LAYOUT)
+   🖼 IMAGE (FIX GIỐNG CART)
 ========================= */
 .img-box{
   width:100%;
-  aspect-ratio:4/3;       /* giữ tỷ lệ cố định */
+  aspect-ratio:1/1;          /* ✅ đổi sang vuông giống cart */
   overflow:hidden;
   border-radius:12px;
-  margin-bottom:8px;       /* tạo khoảng cách với tên */
+  margin-bottom:8px;
+  background:#f9f9f9;        /* ✅ thêm nền nhẹ */
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 .img-box img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+  width:90%;                 /* ✅ không fill full để giống cart */
+  height:90%;
+  object-fit:contain;        /* ✅ hiển thị full ảnh */
   display:block;
   cursor:pointer;
 }
@@ -50,7 +54,7 @@
 ========================= */
 .item h4{
   font-size:15px;
-  margin:0;               /* margin trên đã để trong img-box */
+  margin:0;
   margin-bottom:8px;
   height:38px;
   overflow:hidden;
@@ -80,7 +84,7 @@
 }
 
 /* =========================
-   🔥 DISCOUNT BADGE (% GIẢM GIÁ)
+   🔥 DISCOUNT BADGE
 ========================= */
 .discount-badge{
   position:absolute;
@@ -111,7 +115,7 @@
 }
 
 /* =========================
-   ⚙️ XEM THÔNG SỐ (GIỮ MÀU CŨ)
+   ⚙️ XEM THÔNG SỐ
 ========================= */
 .spec-btn{
   background:#eee;
@@ -154,7 +158,7 @@
 ========================= */
 @media (max-width:480px){
   .img-box{
-    aspect-ratio:1/1; /* mobile cho vuông đẹp hơn */
+    aspect-ratio:1/1; /* giữ vuông */
   }
 
   .item h4{
