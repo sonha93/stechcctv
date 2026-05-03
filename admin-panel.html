@@ -95,7 +95,7 @@ button{
 <input id="oldPrice" placeholder="Giá cũ">
 <input id="desc" placeholder="Mô tả">
 
-<!-- ✅ THÊM URL ẢNH -->
+<!-- URL ảnh -->
 <input id="imgUrl" placeholder="Link ảnh (URL) - không bắt buộc">
 
 <select id="category">
@@ -166,7 +166,15 @@ document.getElementById("category").addEventListener("change", function(){
 });
 
 /* =========================
-   ADD PRODUCT (UPDATED URL IMAGE)
+   SAFE GET VALUE
+========================= */
+function getVal(id){
+  const el = document.getElementById(id);
+  return el ? el.value : "";
+}
+
+/* =========================
+   ADD PRODUCT (FIX FULL IMAGE)
 ========================= */
 document.getElementById("btnAdd").addEventListener("click", function () {
 
@@ -183,32 +191,45 @@ document.getElementById("btnAdd").addEventListener("click", function () {
   if (!price) return alert("Giá không hợp lệ");
   if (!file && !imgUrl) return alert("Chưa chọn ảnh hoặc link ảnh");
 
+  // ===== CASE URL IMAGE =====
+  if (imgUrl) {
+    addProduct(imgUrl);
+    return;
+  }
+
+  // ===== CASE FILE IMAGE =====
   const reader = new FileReader();
 
   reader.onload = function (e) {
+    addProduct(e.target.result);
+  };
+
+  reader.readAsDataURL(file);
+
+  function addProduct(img){
 
     let spec = {};
 
     if(category === "cam-in" || category === "cam-ngoai" || category === "home"){
       spec = {
-        doPhanGiai: "",
-        gocNhin: "",
-        ketNoi: ""
+        doPhanGiai: getVal("doPhanGiai"),
+        gocNhin: getVal("gocNhin"),
+        ketNoi: getVal("ketNoi")
       };
     }
 
     else if(category === "sd"){
       spec = {
-        dungLuong: "",
-        tocDo: "",
-        loai: "",
-        baoHanh: ""
+        dungLuong: getVal("dungLuong"),
+        tocDo: getVal("tocDo"),
+        loai: getVal("loai"),
+        baoHanh: getVal("baoHanh")
       };
     }
 
     else{
       spec = {
-        moTaCombo: ""
+        moTaCombo: getVal("moTaCombo")
       };
     }
 
@@ -219,16 +240,15 @@ document.getElementById("btnAdd").addEventListener("click", function () {
       oldPrice,
       desc,
       category,
-
-      // ✅ ƯU TIÊN URL, KHÔNG CÓ THÌ DÙNG FILE
-      img: imgUrl || e.target.result,
-
+      img,
       featured: document.getElementById("featured").checked,
       spec
     });
 
     save();
     render();
+
+    alert("✔ Thêm sản phẩm thành công");
 
     document.getElementById("name").value = "";
     document.getElementById("price").value = "";
@@ -237,11 +257,7 @@ document.getElementById("btnAdd").addEventListener("click", function () {
     document.getElementById("fileImg").value = "";
     document.getElementById("imgUrl").value = "";
     document.getElementById("featured").checked = false;
-
-    alert("✔ Thêm sản phẩm thành công");
-  };
-
-  reader.readAsDataURL(file || new Blob());
+  }
 });
 
 /* =========================
@@ -294,13 +310,13 @@ function render(){
 
     <div class="item">
 
-      <img src="${p.img}">
+      <img src="${p.img || ''}">
 
       <div style="flex:1">
 
         <b>${p.name}</b><br>
 
-        💰 ${Number(p.price).toLocaleString()}đ<br>
+        Giá bán: ${Number(p.price).toLocaleString()}đ<br>
 
         ${p.oldPrice ? `
           <del>${Number(p.oldPrice).toLocaleString()}đ</del><br>
