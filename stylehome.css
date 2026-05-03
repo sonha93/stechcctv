@@ -27,13 +27,21 @@
 }
 
 /* =========================
-   🖼 IMAGE (ĐÃ CHỈNH)
+   🖼 IMAGE (ĐÃ FIX LAYOUT)
 ========================= */
-.item img{
+.img-box{
   width:100%;
-  aspect-ratio:4/3;   /* 🔥 thay cho height */
-  object-fit:cover;
+  aspect-ratio:4/3;       /* giữ tỷ lệ cố định */
+  overflow:hidden;
   border-radius:12px;
+  margin-bottom:8px;       /* tạo khoảng cách với tên */
+}
+
+.img-box img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
   cursor:pointer;
 }
 
@@ -42,7 +50,8 @@
 ========================= */
 .item h4{
   font-size:15px;
-  margin:8px 0;
+  margin:0;               /* margin trên đã để trong img-box */
+  margin-bottom:8px;
   height:38px;
   overflow:hidden;
   line-height:1.2;
@@ -141,10 +150,10 @@
 }
 
 /* =========================
-   📱 RESPONSIVE (CHỈ SỬA ẢNH)
+   📱 RESPONSIVE
 ========================= */
 @media (max-width:480px){
-  .item img{
+  .img-box{
     aspect-ratio:1/1; /* mobile cho vuông đẹp hơn */
   }
 
