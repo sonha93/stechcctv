@@ -1,424 +1,272 @@
 /* =========================
-   🧱 GRID CHUNG (GIỮ ỔN ĐỊNH)
+   🎨 THEME MÀU ĐỒNG BỘ LOGO
 ========================= */
-#products{
-  display:grid;
-  grid-template-columns:repeat(2, 1fr);
+:root{
+  --primary:#1e88e5;
+  --secondary:#00acc1;
+  --accent:#43a047;
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --text:#222;
+}
+
+/* =========================
+   RESET
+========================= */
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial, sans-serif;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* =========================
+   HEADER
+========================= */
+header{
+  position:sticky;
+  top:0;
+  z-index:3000;
+  background:linear-gradient(90deg,var(--primary),var(--secondary),var(--accent));
+  display:flex;
   gap:10px;
   padding:10px;
 }
 
-/* PC */
-@media (min-width: 768px){
-  #products{
-    grid-template-columns:repeat(3, 1fr);
-  }
+header input{
+  flex:1;
+  padding:8px;
+  border:none;
+  border-radius:8px;
 }
 
-@media (min-width: 1024px){
-  #products{
-    grid-template-columns:repeat(4, 1fr);
-  }
+header div{
+  width:42px;
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  color:var(--secondary);
+  font-size:22px;
+  border-radius:12px;
+  cursor:pointer;
 }
 
 /* =========================
-   📦 CARD FIX + MÀU ĐỒNG BỘ
+   SIDEBAR
+========================= */
+.sidebar{
+  position:fixed;
+  left:-240px;
+  top:0;
+  width:220px;
+  height:100vh;
+  background:#fff;
+  padding:60px 10px;
+  transition:.3s;
+  z-index:2000;
+}
+
+.sidebar.active{left:0;}
+
+.sidebar h3{color:var(--secondary); margin-bottom:10px;}
+
+.sidebar a{
+  display:block;
+  padding:12px;
+  margin:5px 0;
+  border-radius:10px;
+  text-decoration:none;
+  color:#333;
+}
+
+.sidebar a:hover{
+  background:#e0f7fa;
+  color:#00796b;
+}
+
+/* =========================
+   OVERLAY
+========================= */
+#overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  display:none;
+}
+
+#overlay.active{display:block;}
+
+/* =========================
+   GRID SẢN PHẨM (2 CỘT MOBILE)
+========================= */
+#products{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  padding:10px;
+}
+
+@media (min-width:768px){
+  #products{grid-template-columns:repeat(3,1fr);}
+}
+
+@media (min-width:1024px){
+  #products{grid-template-columns:repeat(4,1fr);}
+}
+
+/* =========================
+   CARD SẢN PHẨM (FIX FULL)
 ========================= */
 .item{
+  background:var(--card);
+  border-radius:14px;
+  padding:10px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.08);
   display:flex;
   flex-direction:column;
   justify-content:space-between;
-
-  background:#fff;
-  border-radius:14px;
-  box-shadow:0 4px 15px rgba(0,0,0,0.08);
-  overflow:hidden;
-  transition:0.25s;
+  position:relative;
+  transition:.25s;
 }
 
-/* hover nhẹ */
 .item:hover{
   transform:translateY(-4px);
-  box-shadow:0 8px 25px rgba(0,0,0,0.12);
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
 }
 
 /* =========================
-   🖼 IMAGE FIX KHÔNG VỠ
+   ẢNH SẢN PHẨM
 ========================= */
 .item img{
   width:100%;
   height:140px;
   object-fit:contain;
-  background:#f8fbff;
-  display:block;
-  padding:8px;
+  background:#fff;
+  border-radius:10px;
 }
 
 /* =========================
-   📱 TITLE
+   TÊN
 ========================= */
 .item h4{
   font-size:14px;
-  text-align:center;
   margin:6px 0;
-  color:#1e88e5;
+  height:38px;
+  overflow:hidden;
+  text-align:center;
 }
 
 /* =========================
-   💰 PRICE (THEO MÀU LOGO)
+   GIÁ
 ========================= */
+.price-box{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+}
+
 .price{
-  color:#00acc1;
+  color:var(--secondary);
   font-weight:bold;
+  font-size:15px;
 }
 
 .old-price{
+  font-size:12px;
   color:#999;
   text-decoration:line-through;
-  font-size:12px;
 }
 
 /* =========================
-   🔘 BUTTONS (ĐỒNG BỘ LOGO)
+   GIẢM GIÁ
+========================= */
+.discount-text{
+  background:#ff3b30;
+  color:#fff;
+  font-size:11px;
+  padding:3px 6px;
+  border-radius:6px;
+  position:absolute;
+  top:8px;
+  left:8px;
+}
+
+/* =========================
+   BUTTON
 ========================= */
 .spec-btn,
 .cart-btn{
-  font-size:12px;
+  width:100%;
+  margin-top:6px;
   padding:7px;
   border:none;
   border-radius:8px;
   cursor:pointer;
-  transition:0.2s;
+  font-size:12px;
 }
 
-/* xem thông số */
+/* spec */
 .spec-btn{
-  background:linear-gradient(90deg,#1e88e5,#00acc1);
-  color:#fff;
+  background:#eee;
 }
 
-/* giỏ hàng */
+.spec-btn:hover{
+  background:#ddd;
+}
+
+/* cart */
 .cart-btn{
-  background:linear-gradient(90deg,#00acc1,#43a047);
+  background:linear-gradient(90deg,var(--primary),var(--secondary));
   color:#fff;
+  font-weight:bold;
 }
 
 /* =========================
-   📱 MOBILE GIỮ 2 CỘT (CHUẨN)
+   CART
 ========================= */
-@media (max-width: 768px){
-
-  #products{
-    grid-template-columns:repeat(2, 1fr) !important;
-  }
-
-  .item h4{
-    font-size:13px;
-    height:36px;
-    text-align:center;
-    overflow:hidden;
-  }
-
-  .price-box{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-  }
-
-  .spec-btn,
-  .cart-btn{
-    font-size:12px;
-    padding:6px;
-     /* =========================
-   🧱 GRID CHUNG (GIỮ ỔN ĐỊNH)
-========================= */
-#products {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  padding: 10px;
-  background-color: #f4f7fb; /* Nền sáng cho toàn bộ grid */
+.cart{
+  position:fixed;
+  right:-320px;
+  top:0;
+  width:300px;
+  height:100%;
+  background:#fff;
+  box-shadow:-3px 0 12px rgba(0,0,0,0.2);
+  padding:15px;
+  transition:.3s;
+  z-index:2500;
 }
 
-/* PC */
-@media (min-width: 768px) {
-  #products {
-    grid-template-columns: repeat(3, 1fr);
-  }
+.cart.active{right:0;}
+
+/* =========================
+   FOOTER
+========================= */
+.footer{
+  background:#0f172a;
+  color:#ccc;
+  text-align:center;
+  padding:20px;
+  margin-top:20px;
 }
 
-@media (min-width: 1024px) {
-  #products {
-    grid-template-columns: repeat(4, 1fr);
-  }
+.footer h3{
+  color:var(--secondary);
 }
 
 /* =========================
-   📦 CARD FIX CHUẨN THẲNG HÀNG
+   FIX MOBILE 2 CỘT CHUẨN
 ========================= */
-.item {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background-color: #ffffff; /* Nền trắng cho mỗi card */
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 12px;
-  transition: all 0.3s ease;
-}
-
-.item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-}
-
-/* =========================
-   🖼 IMAGE FIX KHÔNG VỠ
-========================= */
-.item img {
-  width: 100%;
-  height: 140px;
-  object-fit: contain; /* Giữ ảnh không bị cắt */
-  background: #fff;
-  display: block;
-  border-radius: 12px;
-  transition: transform 0.3s ease;
-}
-
-.item img:hover {
-  transform: scale(1.05); /* Phóng to ảnh khi hover */
-}
-
-/* =========================
-   📱 MOBILE GIỮ 2 CỘT (CHUẨN)
-========================= */
-@media (max-width: 768px) {
-  #products {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-
-  .item h4 {
-    font-size: 13px;
-    height: 36px;
-    text-align: center;
-    overflow: hidden;
-    color: #00acc1; /* Màu cho tên sản phẩm */
-  }
-
-  .price-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #00acc1; /* Màu giá trị */
-  }
-
-  .price {
-    font-weight: bold;
-    font-size: 16px;
-  }
-
-  .old-price {
-    font-size: 14px;
-    color: #888;
-    text-decoration: line-through;
-  }
-
-  .spec-btn,
-  .cart-btn {
-    font-size: 12px;
-    padding: 6px;
-    background-color: #00acc1; /* Nút màu chính */
-    color: white; /* Nút chữ màu trắng */
-    border-radius: 8px;
-    cursor: pointer;
-    border: none;
-  }
-
-  .spec-btn:hover, 
-  .cart-btn:hover {
-    background-color: #0097a7; /* Màu hover cho các nút */
-  }
-}
-
-/* =========================
-   📦 SPEC BOX
-========================= */
-.spec-box {
-  margin-top: 8px;
-  padding: 10px;
-  background: #f9f9f9;
-  border-radius: 10px;
-  font-size: 13px;
-  line-height: 1.5;
-  border: 1px solid #eee;
-}
-
-/* =========================
-   🔥 DISCOUNT BADGE (% GIẢM GIÁ)
-========================= */
-.discount-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: #ff3b30;
-  color: #fff;
-  font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 8px;
-  font-weight: bold;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-}
-
-/* =========================
-   📱 BOTTOM NAV (DƯỚI CÙNG)
-========================= */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: #fff;
-  display: flex;
-  justify-content: space-around;
-  padding: 10px 0;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.bottom-nav a {
-  text-decoration: none;
-  color: #333;
-  font-size: 12px;
-}
-
-.bottom-nav a span {
-  display: block;
-  font-size: 18px;
-}
-
-/* =========================
-   🧱 HEADER (LOGO, MENU)
-========================= */
-header {
-  position: sticky;
-  top: 0;
-  z-index: 3000;
-  background: linear-gradient(90deg, #1e88e5, #00acc1, #43a047);
-  display: flex;
-  gap: 10px;
-  padding: 10px;
-}
-
-header input {
-  flex: 1;
-  padding: 8px;
-  border: none;
-  border-radius: 8px;
-}
-
-/* MENU BUTTON */
-header div {
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  color: #00acc1;
-  font-size: 22px;
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-/* =========================
-   ⚙️ SIDEBAR
-========================= */
-.sidebar {
-  position: fixed;
-  left: -240px;
-  top: 0;
-  width: 220px;
-  height: 100vh;
-  background: #ffffff;
-  padding: 60px 10px;
-  transition: .3s;
-  z-index: 2000;
-}
-
-.sidebar.active {
-  left: 0;
-}
-
-.sidebar h3 {
-  color: #00acc1;
-  margin-bottom: 10px;
-}
-
-/* LINK */
-.sidebar a {
-  display: block;
-  padding: 12px;
-  margin: 5px 0;
-  border-radius: 10px;
-  color: #333;
-  text-decoration: none;
-  transition: .2s;
-}
-
-.sidebar a:hover {
-  background: #e0f7fa;
-  color: #00796b;
-}
-
-/* =========================
-   🔘 XEM THÔNG SỐ (GIỮ MÀU CŨ)
-========================= */
-.spec-btn {
-  background: #eee;
-  color: #000;
-  border: 1px solid #ddd;
-}
-
-.spec-btn:hover {
-  background: #e3e3e3;
-}
-
-/* =========================
-   🛒 MUA NGAY
-========================= */
-.cart-btn {
-  background: #00acc1;
-  color: #fff;
-  font-weight: bold;
-}
-
-.cart-btn:hover {
-  background: #0097a7;
-}
-
-/* =========================
-   📦 SPEC BOX
-========================= */
-.spec-box {
-  margin-top: 8px;
-  padding: 10px;
-  background: #f9f9f9;
-  border-radius: 10px;
-  font-size: 13px;
-  line-height: 1.5;
-  border: 1px solid #eee;
-}
-
-/* =========================
-   📱 RESPONSIVE
-========================= */
-@media (max-width: 480px) {
-  .item img {
-    height: 140px;
-  }
-
-  .item h4 {
-    font-size: 14px;
-  }
-}
-  }
+@media (max-width:768px){
+  .item h4{font-size:13px;}
+  .price{font-size:14px;}
+  .old-price{font-size:11px;}
 }
