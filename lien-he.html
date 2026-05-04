@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LIÊN HỆ STECH CAMERA</title>
+
+<link rel="stylesheet" href="stylelien-he.css">
+
+<style>
+
+/* RESET */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
+
+body{
+  background:#f4f7fb;
+}
+
+/* ===== HEADER ===== */
+.header{
+  background:linear-gradient(90deg,#1e88e5,#00acc1,#43a047);
+  padding:12px 15px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+/* HOME BUTTON */
+.home-btn{
+  text-decoration:none;
+  background:#fff;
+  color:#00acc1;
+  padding:8px 14px;
+  border-radius:10px;
+  font-weight:bold;
+  font-size:13px;
+  transition:.2s;
+}
+
+.home-btn:hover{
+  background:#e0f7fa;
+  transform:translateY(-2px);
+}
+
+/* TITLE HEADER */
+.header-title{
+  color:#fff;
+  font-weight:bold;
+  font-size:14px;
+}
+
+/* ===== CONTAINER ===== */
+.container{
+  max-width:900px;
+  margin:20px auto;
+  padding:15px;
+}
+
+.card{
+  background:#fff;
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.08);
+}
+
+.card h2{
+  color:#00acc1;
+  margin-bottom:15px;
+}
+
+/* INFO */
+.info-box .item{
+  padding:10px 0;
+  border-bottom:1px solid #eee;
+  font-size:14px;
+}
+
+.info-box .item a{
+  color:#00acc1;
+  text-decoration:none;
+}
+
+/* MAP */
+.map-section iframe{
+  width:100%;
+  height:300px;
+  border:0;
+  margin-top:15px;
+}
+
+/* FOOTER */
+.footer{
+  background:#0f172a;
+  color:#ccc;
+  text-align:center;
+  padding:15px;
+  margin-top:20px;
+}
+
+/* ===== FLOAT BUTTON (GỌN ICON) ===== */
+.call-btn,
+.zalo-btn{
+  position:fixed;
+  right:15px;
+  width:45px;
+  height:45px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+  color:#fff;
+  text-decoration:none;
+  font-size:20px;
+  z-index:999;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* CALL */
+.call-btn{
+  bottom:80px;
+  background:#43a047;
+}
+
+/* ZALO */
+.zalo-btn{
+  bottom:20px;
+  background:#00acc1;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header class="header">
+
+  <a href="index.html" class="home-btn">← Trang chủ</a>
+
+
+  </div>
+
+</header>
+
+<!-- CONTENT -->
+<div class="container">
+  <div class="card">
+
+    <h2>📞 Liên hệ STech Camera</h2>
+
+    <div class="info-box">
+      <div class="item">📞 <b>Hotline:</b> <a href="tel:0985678245">0985 678 245</a></div>
+      <div class="item">📍 <b>Địa chỉ:</b> Đông Thuận, Quảng Trị</div>
+      <div class="item">📧 <b>Email:</b> support@stechcamera.vn</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MAP -->
+<div class="map-section">
+  <iframe src="https://www.google.com/maps?q=phường%20Đông%20Thuận%20Quảng%20Trị&output=embed"></iframe>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  © 2026 STechCamera
+</footer>
+
+<!-- FLOAT BUTTONS -->
+<a href="tel:0985678245" class="call-btn">📞</a>
+<a href="https://zalo.me/0985678245" class="zalo-btn">💬</a>
+
+</body>
+</html>
