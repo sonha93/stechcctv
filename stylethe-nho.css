@@ -797,3 +797,58 @@ header div{
     padding:6px !important;
   }
 }
+/* =========================
+   📱 FIX MOBILE CHUẨN 2 CỘT (FINAL FIX)
+========================= */
+@media (max-width: 768px) {
+
+  #products{
+    display:grid !important;
+    grid-template-columns:repeat(2, 1fr) !important;
+    gap:10px !important;
+  }
+
+  .item{
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:space-between;
+    padding:10px !important;
+  }
+
+  .item img{
+    width:100% !important;
+    height:140px !important;
+    object-fit:contain !important;
+    background:#fff !important;
+    display:block;
+  }
+
+  .item h4{
+    font-size:13px !important;
+    text-align:center;
+    height:36px;
+    overflow:hidden;
+    margin:6px 0 !important;
+  }
+
+  .price-box{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    gap:2px;
+  }
+
+  .price{
+    font-size:14px !important;
+  }
+
+  .old-price{
+    font-size:12px !important;
+  }
+
+  .spec-btn,
+  .cart-btn{
+    font-size:12px !important;
+    padding:6px !important;
+  }
+}
