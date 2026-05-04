@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+
+<style>
+body{
+  font-family:Arial;
+  background:#f5f5f5;
+  padding:20px;
+}
+
+.box{
+  max-width:400px;
+  margin:auto;
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+input{
+  width:100%;
+  margin:5px 0;
+  padding:8px;
+}
+
+/* 🔵 CHUNG MÀU */
+button{
+  width:100%;
+  padding:10px;
+  background:#00acc1;
+  color:#fff;
+  border:none;
+  margin-top:5px;
+  cursor:pointer;
+  border-radius:6px;
+}
+
+button:hover{
+  opacity:0.9;
+}
+
+/* 🔙 NÚT QUAY LẠI (GIỐNG MÀU LOGIN) */
+.back-btn{
+  background:#00acc1;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+  <h2>🔐 Admin Login</h2>
+
+  <input id="pass" type="password" placeholder="Mật khẩu">
+
+  <button onclick="login()">Đăng nhập</button>
+
+  <!-- 🔙 NÚT QUAY LẠI -->
+  <button class="back-btn" onclick="goBack()">
+    ⬅ Quay lại
+  </button>
+
+</div>
+
+<script>
+function login(){
+  const pass = document.getElementById("pass").value;
+
+  if(pass === "1234"){
+    localStorage.setItem("admin", "ok");
+    window.location.href = "admin-panel.html";
+  } else {
+    alert("Sai mật khẩu");
+  }
+}
+
+/* 🔙 BACK */
+function goBack(){
+  window.location.href = "index.html";
+}
+</script>
+<script src="price-engine.js"></script>
+<script src="admin.js"></script>
+
+</body>
+</html>
