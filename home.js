@@ -3,6 +3,18 @@ function getProducts() {
 }
 
 /* =========================
+   ⏰ KIỂM TRA THỜI GIAN SALE
+========================= */
+function isSaleActive(p) {
+  if (!p.startTime) return false;
+
+  const now = new Date().getTime();
+  const start = new Date(p.startTime).getTime();
+
+  return now >= start;
+}
+
+/* =========================
    🖥 RENDER HOME (FEATURED)
 ========================= */
 function renderHome() {
@@ -23,21 +35,14 @@ function renderHome() {
 
     const id = String(p.id);
 
-    // ⭐ TÍNH % GIẢM GIÁ
+    // ⭐ % GIẢM GIÁ (chỉ hiển thị khi sale active)
     let discount = "";
-    if (p.oldPrice && p.oldPrice > p.price) {
+    if (isSaleActive(p) && p.oldPrice && p.oldPrice > p.price) {
       const percent = Math.round((1 - p.price / p.oldPrice) * 100);
       discount = `<div class="discount-badge">-${percent}%</div>`;
     }
 
-    /* =========================
-       🔥 IMAGE SAFE (GIỮ NGUYÊN)
-    ========================= */
-    let imgUrl = p.img;
-
-    if (!imgUrl) {
-      imgUrl = "https://via.placeholder.com/300";
-    }
+    let imgUrl = p.img || "https://via.placeholder.com/300";
 
     box.innerHTML += `
       <div class="item">
@@ -53,11 +58,19 @@ function renderHome() {
         <h4>${p.name}</h4>
 
         <div class="price-box">
-          <span class="price">${Number(p.price).toLocaleString()}đ</span>
           ${
-            p.oldPrice && p.oldPrice > p.price
-              ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>`
-              : ""
+            isSaleActive(p)
+              ? `
+                  <span class="price">${Number(p.price).toLocaleString()}đ</span>
+                  ${
+                    p.oldPrice && p.oldPrice > p.price
+                      ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>`
+                      : ""
+                  }
+                `
+              : `
+                  <span class="price">${Number(p.oldPrice || p.price).toLocaleString()}đ</span>
+                `
           }
         </div>
 
@@ -88,8 +101,7 @@ window.toggleSpec = function(id){
 };
 
 /* =========================
-   🛒 ADD TO CART (FIX CHUẨN)
-   ✔ chỉ sửa quantity, không đụng logic khác
+   🛒 ADD TO CART (GIỮ NGUYÊN)
 ========================= */
 window.addToCart = function(id){
   const products = getProducts();
@@ -102,12 +114,11 @@ window.addToCart = function(id){
   const exist = cart.find(item => String(item.id) === String(id));
 
   if (exist) {
-    // ✔ FIX QUAN TRỌNG: đồng bộ quantity
     exist.quantity = (exist.quantity || 1) + 1;
   } else {
-    cart.push({ 
-      ...product, 
-      quantity: 1   // ✔ chuẩn hệ thống
+    cart.push({
+      ...product,
+      quantity: 1
     });
   }
 
@@ -126,7 +137,7 @@ function renderSpec(p) {
    - Độ phân giải: ${s.doPhanGiai || "—"}<br>
    - Góc nhìn: ${s.gocNhin || "—"}<br>
    - Kết nối: ${s.ketNoi || "—"}<br>
-   - Bảo hành ${s.baoHanh || ""}<br>
+   - Bảo hành: ${s.baoHanh || ""}<br>
   `;
 }
 
