@@ -24,12 +24,14 @@ body{
   padding:20px;
   text-align:center;
   position:relative;
+
+  padding-bottom:45px; /* 🔥 thêm để tránh nút đè chữ */
 }
 
 .back-btn{
   position:absolute;
   left:15px;
-  top:15px;
+  top:55px; /* 🔥 hạ xuống dưới tiêu đề */
   background:#fff;
   color:#00acc1;
   padding:6px 12px;
@@ -110,7 +112,7 @@ body{
   font-size:20px !important;
   font-weight:bold !important;
   margin-top:15px !important;
-  color:#ff0000 !important; /* 🔥 ép đỏ tuyệt đối */
+  color:#ff0000 !important;
 }
 
 /* =========================
