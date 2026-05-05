@@ -3,7 +3,146 @@
 <head>
 <meta charset="UTF-8">
 <title>Thanh toán</title>
+<link rel="stylesheet" href="stylecheckout.css">
+<style>
+body{
+  font-family: Arial;
+  background:#f5f5f5;
+  margin:0;
+}
 
+/* ===== CONTAINER ===== */
+.container{
+  max-width:800px;
+  margin:auto;
+  padding:20px;
+}
+
+/* ===== BOX ===== */
+.box{
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+
+/* ===== TITLE ===== */
+.title-box{
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+  font-size:20px;
+  font-weight:bold;
+}
+
+/* ===== ITEM ===== */
+.item{
+  display:flex;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid #eee;
+  align-items:center;
+}
+
+.item img{
+  width:70px;
+  height:70px;
+  object-fit:cover;
+  border-radius:8px;
+}
+
+/* ===== TEXT ===== */
+.calc{
+  font-size:12px;
+  color:#666;
+  margin-top:5px;
+}
+
+/* ===== INPUT ===== */
+input, textarea, select{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  margin-bottom:10px;
+  border:1px solid #ddd;
+  border-radius:8px;
+}
+
+/* ===== BUTTON ===== */
+.btn{
+  width:100%;
+  padding:12px;
+  background:linear-gradient(90deg,#1e88e5,#00acc1,#43a047);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+/* ===== BACK ===== */
+.back-btn{
+  display:inline-block;
+  margin-bottom:15px;
+  background:#fff;
+  color:#00acc1;
+  padding:8px 12px;
+  border-radius:10px;
+  text-decoration:none;
+  font-size:13px;
+}
+
+/* ===== BANK ===== */
+#bankInfo{
+  display:none;
+  margin-top:10px;
+  padding:10px;
+  border:1px dashed #ccc;
+  border-radius:8px;
+}
+
+/* =========================
+   🔥 FIX PHẦN TỔNG TIỀN
+========================= */
+.total-box{
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid #eee;
+}
+
+/* từng dòng */
+.total-box .row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:6px 0;
+  font-size:15px;
+}
+
+/* chữ trái */
+.total-box .row span{
+  color:#555;
+}
+
+/* khuyến mãi */
+.total-box .discount b{
+  color:#e53935;
+}
+
+/* dòng cuối */
+.total-box .final{
+  border-top:1px solid #ddd;
+  margin-top:8px;
+  padding-top:10px;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.total-box .final b{
+  color:#e53935;
+}
+</style>
 <style>
 body{
   font-family: Arial;
@@ -99,7 +238,9 @@ input, textarea, select{
   border:1px dashed #ccc;
   border-radius:8px;
 }
+
 </style>
+
 </head>
 
 <body>
@@ -110,6 +251,7 @@ input, textarea, select{
 
 <div class="title-box">💳 Thanh toán đơn hàng</div>
 <script src="price-engine.js"></script>
+<script src="order.js"></script>
 <!-- GIỎ HÀNG -->
 <div class="box" id="cartBox"></div>
 
@@ -140,11 +282,7 @@ input, textarea, select{
 </div>
 
 <button class="btn" onclick="placeOrder()">🛒 Đặt hàng</button>
-
 </div>
-
-<script src="order.js"></script>
-
 <script>
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -178,10 +316,38 @@ function renderCart(){
     `;
   });
 
-  box.innerHTML += `
-    <div class="total">
-      Tổng tiền: ${total.toLocaleString()}đ
+  let discount = 0;
+
+/* 👉 tính tổng khuyến mãi từ oldPrice */
+cart.forEach(p=>{
+  if(p.oldPrice){
+    let qty = p.qty || 1;
+    discount += (p.oldPrice - p.price) * qty;
+  }
+});
+
+let final = total - discount;
+
+box.innerHTML += `
+  <div class="total-box">
+
+    <div class="row">
+      <span>Tổng tiền</span>
+      <b>${total.toLocaleString()}đ</b>
     </div>
+
+    <div class="row discount">
+      <span>Tổng khuyến mãi</span>
+      <b>-${discount.toLocaleString()}đ</b>
+    </div>
+
+    <div class="row final">
+      <span>Cần thanh toán</span>
+      <b>${final.toLocaleString()}đ</b>
+    </div>
+
+  </div>
+
   `;
 }
 
