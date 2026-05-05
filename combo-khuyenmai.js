@@ -1,0 +1,182 @@
+/* =========================
+   🔥 GET DATA
+========================= */
+function getProducts() {
+  return JSON.parse(localStorage.getItem("products")) || [];
+}
+
+/* =========================
+   📌 PAGE CATEGORY
+========================= */
+function getPageCategory() {
+  return "combo";
+}
+
+/* =========================
+   🎯 SPEC RENDER (GIỮ NGUYÊN)
+========================= */
+function renderSpec(p) {
+  if (p.category === "sd") {
+    return `
+      📦 Dung lượng: ${p.spec?.dungLuong || ""}<br>
+      ⚡ Tốc độ: ${p.spec?.tocDo || ""}<br>
+      💾 Loại: ${p.spec?.loai || ""}<br>
+      🛡 Bảo hành: ${p.spec?.baoHanh || ""}
+    `;
+  }
+  return "";
+}
+
+/* =========================
+   🧠 FIX DATA CŨ (XOÁ SALE HOÀN TOÀN)
+========================= */
+function fixData(list){
+  return list.map(p => ({
+    ...p,
+    price: Number(p.price) || 0,
+    oldPrice: Number(p.oldPrice) || 0
+  }));
+}
+
+/* =========================
+   🖥 RENDER PRODUCTS
+========================= */
+function render(list) {
+  const box = document.getElementById("products");
+  if (!box) return;
+
+  if (!list) list = getProducts();
+
+  // 🔥 FIX DATA NGAY KHI LOAD
+  list = fixData(list);
+
+  // 🔥 GIỮ NGUYÊN: lọc combo
+  list = list.filter(p => p.category === "combo");
+
+  box.innerHTML = "";
+
+  if (list.length === 0) {
+    box.innerHTML = "<p>Chưa có sản phẩm</p>";
+    return;
+  }
+
+  list.forEach(p => {
+    if (!p.id) return;
+
+    const id = String(p.id);
+
+    /* =========================
+       🔥 GIÁ CỐ ĐỊNH (KHÔNG TIME)
+    ========================= */
+    const priceToShow = p.price;
+
+    let percentText = "";
+
+    if (p.oldPrice && p.oldPrice > priceToShow) {
+      const percent = Math.round((1 - priceToShow / p.oldPrice) * 100);
+      percentText = `-${percent}%`;
+    }
+
+    box.innerHTML += `
+      <div class="item">
+
+        ${percentText ? `<div class="discount-text">${percentText}</div>` : ""}
+
+        <img src="${p.img}" />
+
+        <h4>${p.name}</h4>
+
+        <div class="price-box">
+          <span class="price">${priceToShow.toLocaleString()}đ</span>
+
+          ${
+            p.oldPrice && p.oldPrice > priceToShow
+              ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>`
+              : ""
+          }
+        </div>
+
+        <button class="spec-btn" onclick="toggleSpec('${id}')">
+          ⚙️ Xem thông số
+        </button>
+
+        <button class="cart-btn" onclick="addToCart('${id}')">
+          🛒 Thêm vào giỏ
+        </button>
+
+        <div class="spec-box" id="spec-${id}" style="display:none;">
+          ${renderSpec(p)}
+        </div>
+
+      </div>
+    `;
+  });
+}
+
+/* =========================
+   ⚙️ TOGGLE SPEC
+========================= */
+window.toggleSpec = function(id) {
+  const el = document.getElementById(`spec-${id}`);
+  if (!el) return;
+  el.style.display = (el.style.display === "block") ? "none" : "block";
+};
+
+/* =========================
+   🛒 ADD TO CART
+========================= */
+window.addToCart = function(id) {
+  const product = getProducts().find(p => String(p.id) === String(id));
+  if (!product) return;
+
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  const exist = cart.find(item => String(item.id) === String(id));
+
+  if (exist) {
+    exist.qty += 1;
+  } else {
+    cart.push({ ...product, qty: 1 });
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  alert("Đã thêm vào giỏ 🛒");
+};
+
+/* =========================
+   🔍 SEARCH
+========================= */
+const search = document.getElementById("search");
+
+if (search) {
+  search.addEventListener("input", e => {
+    const key = e.target.value.toLowerCase();
+
+    let data = getProducts().filter(p => p.category === "combo");
+
+    render(
+      data.filter(p => p.name.toLowerCase().includes(key))
+    );
+  });
+}
+
+/* =========================
+   INIT
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  render();
+});
+
+/* =========================
+   MENU
+========================= */
+window.toggleMenu = function() {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+
+  if (!sidebar || !overlay) return;
+
+  sidebar.classList.toggle("active");
+  overlay.classList.toggle("active");
+};

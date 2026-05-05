@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combo Khuyến Mãi</title>
+<link rel="stylesheet" href="stylecombo-khuyenmai.css">
+
+<style>
+.logo img{
+  height:38px;
+  width:auto;
+  border:0;
+  outline:0;
+  box-shadow:none;
+  display:block;
+  background:transparent;
+}
+</style>
+
+</head>
+
+<body>
+
+<div id="overlay" onclick="toggleMenu()"></div>
+
+<!-- MENU -->
+<div class="sidebar" id="sidebar">
+  <h3>Danh mục</h3>
+
+  <a href="index.html">Trang chủ</a>
+  <a href="cart.html">Giỏ hàng</a>
+  <a href="camera-trong-nha.html">Camera trong nhà</a>
+  <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
+  <a href="the-nho.html">Thẻ nhớ</a>
+  <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div onclick="toggleMenu()">☰</div>
+
+  <div class="logo">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
+  </div>
+
+  <input id="search" placeholder="Tìm kiếm thẻ nhớ..." onkeyup="renderProducts()">
+</header>
+
+<!-- CONTENT -->
+<div class="container">
+  <div class="products" id="products"></div>
+
+  <div class="cart">
+    <h3>🛒 Giỏ hàng</h3>
+    <div id="cart"></div>
+    <hr>
+    <p><b>Tổng tiền:</b> <span id="total">0</span>đ</p>
+    <button onclick="clearCart()">Xoá giỏ hàng</button>
+  </div>
+</div>
+
+<!-- ✅ GIỮ NGUYÊN ENGINE CHUẨN -->
+<script src="price-engine.js"></script>
+<script src="thenho.js"></script>
+
+
+<!-- ❌ ĐÃ XOÁ TOÀN BỘ LOGIC THỜI GIAN TRÙNG LẶP -->
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-container">
+
+    <h3>StechCamera</h3>
+
+    <p>📍 Website chuyên cung cấp camera an ninh chính hãng</p>
+    <p>📞 Hotline: 0985.678.245</p>
+    <p>📧 Email: support@stechcamera.vn</p>
+
+    <hr>
+
+    <p>© 2026 StechCamera. All rights reserved.</p>
+    <p>Designed & Developed by StechCamera Team</p>
+
+  </div>
+</footer>
+
+</body>
+</html>
