@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin sản phẩm</title>
 
 <style>
@@ -59,10 +59,14 @@ button{
   font-weight:bold;
 }
 
-/* 📱 MOBILE */
+/* =========================
+   📱 MOBILE 2 CỘT 50/50
+========================= */
 @media (max-width: 768px){
 
-  body{ padding:10px; }
+  body{
+    padding:10px;
+  }
 
   input, select, button{
     width:100%;
@@ -79,6 +83,17 @@ button{
     grid-column:1 / -1;
   }
 
+  /* 🔥 FIX SPEC BOX */
+  #specBox{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  #specBox input{
+    width:100%;
+  }
+
   .item{
     display:grid;
     grid-template-columns:80px 1fr;
@@ -88,30 +103,13 @@ button{
 
   .item img{
     width:100%;
+    height:auto;
   }
 
   .item button{
     grid-column:1 / -1;
   }
-}
-  /* 🔥 PAGINATION STYLE */
-#pagination{
-  text-align:center;
-  margin-top:10px;
-}
 
-#pagination button{
-  margin:4px;
-  padding:6px 12px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  background:#ddd;
-}
-
-#pagination button.active{
-  background:#e53935;
-  color:#fff;
 }
 </style>
 </head>
@@ -141,6 +139,7 @@ button{
   </select>
 
   <div id="showCat" class="full"></div>
+
   <div id="specBox" class="full"></div>
 
   <input type="file" id="fileImg" class="full">
@@ -157,19 +156,22 @@ button{
 
 <div id="list"></div>
 
-<!-- PAGINATION -->
+<!-- 🔥 PHÂN TRANG -->
 <div id="pagination" style="text-align:center;margin-top:10px;"></div>
 
 <script>
+
 let products = JSON.parse(localStorage.getItem("products")) || [];
 
+/* 🔥 PAGINATION */
 let currentPage = 1;
-const perPage = 6;
+const perPage = 5;
 
 function save(){
   localStorage.setItem("products", JSON.stringify(products));
 }
 
+/* ========================= MAP CATEGORY ========================= */
 const nameMap = {
   sd: "Thẻ nhớ",
   "cam-in": "Camera trong nhà",
@@ -178,6 +180,7 @@ const nameMap = {
   home: "Trang chủ"
 };
 
+/* ========================= SHOW CATEGORY ========================= */
 document.getElementById("category").addEventListener("change", function(){
 
   const type = this.value;
@@ -218,6 +221,7 @@ function getVal(id){
   return el ? el.value : "";
 }
 
+/* ========================= ADD PRODUCT ========================= */
 document.getElementById("btnAdd").addEventListener("click", function () {
 
   const name = document.getElementById("name").value.trim();
@@ -231,7 +235,7 @@ document.getElementById("btnAdd").addEventListener("click", function () {
 
   if (!name) return alert("Thiếu tên");
   if (!price) return alert("Giá không hợp lệ");
-  if (!file && !imgUrl) return alert("Chưa có ảnh");
+  if (!file && !imgUrl) return alert("Chưa chọn ảnh hoặc link ảnh");
 
   function addProduct(img){
 
@@ -244,14 +248,16 @@ document.getElementById("btnAdd").addEventListener("click", function () {
         ketNoi: getVal("ketNoi"),
         baoHanh: getVal("baoHanh"),
       };
-    } else if(category === "sd"){
+    }
+    else if(category === "sd"){
       spec = {
         dungLuong: getVal("dungLuong"),
         tocDo: getVal("tocDo"),
         loai: getVal("loai"),
         baoHanh: getVal("baoHanh")
       };
-    } else {
+    }
+    else{
       spec = {
         moTaCombo: getVal("moTaCombo")
       };
@@ -271,10 +277,10 @@ document.getElementById("btnAdd").addEventListener("click", function () {
     });
 
     save();
-    currentPage = 1; // 🔥 reset về trang 1
+    currentPage = 1;
     render();
 
-    alert("✔ Thêm thành công");
+    alert("✔ Thêm sản phẩm thành công");
   }
 
   if (imgUrl) return addProduct(imgUrl);
@@ -284,26 +290,30 @@ document.getElementById("btnAdd").addEventListener("click", function () {
   reader.readAsDataURL(file);
 });
 
+/* ========================= DELETE ========================= */
 function del(id){
   products = products.filter(p => p.id !== id);
   save();
   render();
 }
 
+/* ========================= UPDATE ========================= */
 function updateProduct(id){
   const newPrice = document.getElementById(`price-${id}`).value;
   const newOldPrice = document.getElementById(`oldPrice-${id}`).value;
 
-  products = products.map(p =>
-    p.id === id
-      ? {...p, price:Number(newPrice), oldPrice:Number(newOldPrice)}
-      : p
-  );
+  products = products.map(p => {
+    if(p.id === id){
+      return {...p, price: Number(newPrice), oldPrice: Number(newOldPrice)};
+    }
+    return p;
+  });
 
   save();
   render();
 }
 
+/* ========================= RENDER ========================= */
 function render(){
 
   const box = document.getElementById("list");
@@ -319,23 +329,36 @@ function render(){
 
   box.innerHTML = pageProducts.map(p => `
     <div class="item">
-      <img src="${p.img}">
+      <img src="${p.img || ''}">
       <div>
+
         <b>${p.name}</b><br>
-        📁 ${p.categoryName}<br>
-        Giá: ${p.price.toLocaleString()}đ<br>
-        ${p.oldPrice ? `<del>${p.oldPrice.toLocaleString()}đ</del><br>` : ""}
-        <input id="price-${p.id}" value="${p.price}">
-        <input id="oldPrice-${p.id}" value="${p.oldPrice || ''}">
+
+        <span style="color:#00acc1;font-size:12px">
+          📁 ${p.categoryName || p.category}
+        </span><br>
+        Giá: ${Number(p.price).toLocaleString()}đ<br>
+
+        ${p.oldPrice ? `<del>${Number(p.oldPrice).toLocaleString()}đ</del><br>` : ""}
+
+        <input id="price-${p.id}" value="${p.price}" placeholder="Giá bán">
+        <input id="oldPrice-${p.id}" value="${p.oldPrice || ''}" placeholder="Giá gốc">
+
         <button onclick="updateProduct(${p.id})">Cập nhật</button>
+
       </div>
-      <button onclick="del(${p.id})" style="background:red">Xoá</button>
+
+      <button onclick="del(${p.id})" style="background:red">
+        Xoá
+      </button>
+
     </div>
   `).join("");
 
   renderPagination();
 }
 
+/* 🔥 PAGINATION UI */
 function renderPagination(){
   const totalPage = Math.ceil(products.length / perPage);
   const pagi = document.getElementById("pagination");
@@ -365,6 +388,7 @@ function goPage(page){
 }
 
 render();
+
 </script>
 
 </body>
