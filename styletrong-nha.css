@@ -869,3 +869,30 @@ header div{
   font-weight:bold;
   color:#c4001d;
 }
+@media (max-width:768px){
+
+  .product-slider{
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    margin-bottom:15px;
+  }
+
+  .product-track{
+    display:grid;
+    grid-auto-flow:column;
+    grid-template-rows:repeat(2, auto);
+    gap:10px;
+  }
+
+  .item{
+    width:160px !important;
+  }
+
+  .extra-section{
+    background:#fff;
+    padding:15px;
+    border-radius:10px;
+  }
+
+}
