@@ -21,14 +21,14 @@ function getPageCategory() {
 ========================= */
 function renderSpec(p) {
   return `
-    📷 Độ phân giải: ${p.spec?.doPhanGiai || ""}<br>
-    👁 Góc nhìn: ${p.spec?.gocNhin || ""}<br>
-    📡 Kết nối: ${p.spec?.ketNoi || ""}
+    Độ phân giải: ${p.spec?.doPhanGiai || ""}<br>
+    Góc nhìn: ${p.spec?.gocNhin || ""}<br>
+    Kết nối: ${p.spec?.ketNoi || ""}
   `;
 }
 
 /* =========================
-   RENDER PRODUCTS (CHỈ DÙNG GIÁ GỐC)
+   RENDER PRODUCTS
 ========================= */
 function render(list) {
   const box = document.getElementById("products");
@@ -36,7 +36,6 @@ function render(list) {
 
   if (!list) list = getProducts();
 
-  // chỉ camera trong nhà
   list = list.filter(p => p.category === "cam-in");
 
   box.innerHTML = "";
@@ -50,8 +49,6 @@ function render(list) {
     if (!p.id) return;
 
     const id = String(p.id);
-
-    // 🔥 FIX: KHÔNG DÙNG ENGINE → dùng giá trực tiếp
     const priceToShow = Number(p.price) || 0;
 
     let percentText = "";
@@ -64,18 +61,23 @@ function render(list) {
     box.innerHTML += `
       <div class="item">
 
-        ${percentText ? `<div class="discount-text">${percentText}</div>` : ""}
-
         <img src="${p.img}" />
 
         <h4>${p.name}</h4>
 
+        <!-- ✅ CHỈ SỬA Ở ĐÂY -->
         <div class="price-box">
           <span class="price">${priceToShow.toLocaleString()}đ</span>
 
           ${
             p.oldPrice && p.oldPrice > priceToShow
               ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>`
+              : ""
+          }
+
+          ${
+            percentText
+              ? `<span class="discount-text">${percentText}</span>`
               : ""
           }
         </div>
@@ -145,7 +147,7 @@ if (search) {
 }
 
 /* =========================
-   INIT (❌ XOÁ AUTO REFRESH)
+   INIT
 ========================= */
 document.addEventListener("DOMContentLoaded", () => {
   render();
