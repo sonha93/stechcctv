@@ -18,7 +18,8 @@ body{
 }
 
 .title-box{
-  background:#fff;
+  background:#e53935;
+  color:#fff;
   padding:15px;
   border-radius:10px;
   margin-bottom:15px;
@@ -31,6 +32,15 @@ body{
   padding:15px;
   border-radius:10px;
   margin-bottom:15px;
+}
+
+.order-title{
+  background:#e53935;
+  color:#fff;
+  padding:8px 12px;
+  border-radius:8px;
+  display:inline-block;
+  margin-bottom:8px;
 }
 
 .item{
@@ -104,6 +114,21 @@ body{
   text-decoration:none;
   font-size:13px;
 }
+
+/* 🔥 PAGINATION */
+#pagination{
+  text-align:center;
+  margin-top:10px;
+}
+
+#pagination button{
+  margin:3px;
+  padding:6px 10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
 </style>
 </head>
 
@@ -117,21 +142,42 @@ body{
 
 <div id="orders"></div>
 
+<!-- 🔥 PHÂN TRANG -->
+<div id="pagination"></div>
+
 </div>
 
 <script>
+
+/* =========================
+   PAGINATION
+========================= */
+let currentPage = 1;
+const perPage = 5;
+
+/* =========================
+   RENDER ORDERS
+========================= */
 function renderOrders(){
   const box = document.getElementById("orders");
   let orders = JSON.parse(localStorage.getItem("orders")) || [];
 
   if(orders.length === 0){
     box.innerHTML = "Chưa có đơn hàng";
+    document.getElementById("pagination").innerHTML = "";
     return;
   }
 
   box.innerHTML = "";
 
-  orders.reverse().forEach(order => {
+  orders.reverse();
+
+  const start = (currentPage - 1) * perPage;
+  const end = start + perPage;
+
+  const pageOrders = orders.slice(start, end);
+
+  pageOrders.forEach(order => {
 
     let originalTotal = 0;
     let finalTotal = 0;
@@ -186,7 +232,9 @@ function renderOrders(){
     box.innerHTML += `
       <div class="order-box">
 
-        <h3>Đơn hàng #${order.id}</h3>
+        <!-- 🔴 KHUNG ĐỎ ĐƠN HÀNG -->
+        <div class="order-title">Đơn hàng #${order.id}</div>
+
         <p><b>Khách hàng: ${order.name}</b> - ${order.phone}</p>
         <p>Địa chỉ: ${order.address}</p>
         <p>Ngày đặt hàng: ${order.time}</p>
@@ -216,9 +264,41 @@ function renderOrders(){
       </div>
     `;
   });
+
+  /* =========================
+     RENDER PAGINATION
+  ========================= */
+  const totalPage = Math.ceil(orders.length / perPage);
+  const pagi = document.getElementById("pagination");
+
+  pagi.innerHTML = "";
+
+  for(let i = 1; i <= totalPage; i++){
+    pagi.innerHTML += `
+      <button onclick="goPage(${i})"
+        style="
+          background:${i === currentPage ? '#e53935' : '#ddd'};
+          color:${i === currentPage ? '#fff' : '#000'};
+        ">
+        ${i}
+      </button>
+    `;
+  }
 }
 
+/* =========================
+   GO PAGE
+========================= */
+function goPage(page){
+  currentPage = page;
+  renderOrders();
+}
+
+/* =========================
+   INIT
+========================= */
 renderOrders();
+
 </script>
 
 </body>
