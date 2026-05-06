@@ -271,3 +271,24 @@ function fixOldData() {
 }
 
 fixOldData();
+// ===== AUTO SLIDER MOBILE =====
+const slider = document.querySelector(".product-slider");
+
+let isTouching = false;
+
+if(slider){
+
+  slider.addEventListener("touchstart", ()=> isTouching = true);
+  slider.addEventListener("touchend", ()=> isTouching = false);
+
+  setInterval(()=>{
+    if(isTouching) return;
+
+    slider.scrollLeft += 0.5;
+
+    if(slider.scrollLeft >= slider.scrollWidth - slider.clientWidth){
+      slider.scrollLeft = 0;
+    }
+  }, 20);
+
+}
