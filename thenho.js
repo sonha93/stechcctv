@@ -18,10 +18,10 @@ function getPageCategory() {
 function renderSpec(p) {
   if (p.category === "sd") {
     return `
-      📦 Dung lượng: ${p.spec?.dungLuong || ""}<br>
-      ⚡ Tốc độ: ${p.spec?.tocDo || ""}<br>
-      💾 Loại: ${p.spec?.loai || ""}<br>
-      🛡 Bảo hành: ${p.spec?.baoHanh || ""}
+      Dung lượng: ${p.spec?.dungLuong || ""}<br>
+      Tốc độ: ${p.spec?.tocDo || ""}<br>
+      Loại: ${p.spec?.loai || ""}<br>
+      Bảo hành: ${p.spec?.baoHanh || ""}
     `;
   }
   return "";
@@ -37,7 +37,6 @@ function fixData(list){
       price: Number(p.price) || 0,
       oldPrice: Number(p.oldPrice) || 0,
 
-      // 🔥 xoá ảnh hưởng khuyến mãi cũ
       salePrice: 0,
       saleStart: "",
       saleEnd: ""
@@ -46,7 +45,7 @@ function fixData(list){
 }
 
 /* =========================
-   🖥 RENDER PRODUCTS (FIX GIÁ CỨNG)
+   🖥 RENDER PRODUCTS
 ========================= */
 function render(list) {
   const box = document.getElementById("products");
@@ -54,10 +53,7 @@ function render(list) {
 
   if (!list) list = getProducts();
 
-  // 🔥 FIX DATA NGAY KHI LOAD
   list = fixData(list);
-
-  // chỉ lấy thẻ nhớ
   list = list.filter(p => p.category === "sd");
 
   box.innerHTML = "";
@@ -71,10 +67,6 @@ function render(list) {
     if (!p.id) return;
 
     const id = String(p.id);
-
-    /* =========================
-       🔥 GIÁ KHÔNG PHỤ THUỘC ENGINE
-    ========================= */
     const priceToShow = p.price;
 
     let percentText = "";
@@ -87,18 +79,23 @@ function render(list) {
     box.innerHTML += `
       <div class="item">
 
-        ${percentText ? `<div class="discount-text">${percentText}</div>` : ""}
-
         <img src="${p.img}" />
 
         <h4>${p.name}</h4>
 
+        <!-- ✅ CHỈ SỬA Ở ĐÂY -->
         <div class="price-box">
           <span class="price">${Number(priceToShow).toLocaleString()}đ</span>
 
           ${
             p.oldPrice && p.oldPrice > priceToShow
               ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>`
+              : ""
+          }
+
+          ${
+            percentText
+              ? `<span class="discount-text">${percentText}</span>`
               : ""
           }
         </div>
