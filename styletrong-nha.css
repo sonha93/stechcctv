@@ -1823,3 +1823,7 @@ header div{
   padding: 2px 6px;
   border-radius: 4px;
 }
+.item{
+  max-width: 260px;
+  width: 100%;
+}
