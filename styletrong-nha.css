@@ -1,43 +1,45 @@
 /* ===== RESET ===== */
 *{
-  box-sizing:border-box;
   margin:0;
   padding:0;
+  box-sizing:border-box;
   font-family:Arial, sans-serif;
 }
 
 body{
   background:#f4f7fb;
+  font-size:14px;
 }
 
 /* ===== HEADER ===== */
 header{
   position:sticky;
   top:0;
-  z-index:3000;
+  z-index:1000;
   background:linear-gradient(90deg,#1e88e5,#00acc1,#43a047);
   display:flex;
   gap:8px;
-  padding:10px;
+  padding:8px;
 }
 
 header input{
   flex:1;
-  padding:10px;
+  padding:8px 10px;
   border:none;
   border-radius:10px;
+  font-size:13px;
 }
 
-header div{
-  width:42px;
-  height:42px;
+header .menu-btn{
+  width:38px;
+  height:38px;
+  background:#fff;
+  color:#00acc1;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:#fff;
-  color:#00acc1;
-  font-size:20px;
-  border-radius:12px;
+  border-radius:10px;
+  font-size:18px;
 }
 
 /* ===== SIDEBAR ===== */
@@ -50,16 +52,17 @@ header div{
   background:#fff;
   padding:60px 10px;
   transition:.3s;
-  z-index:2000;
+  z-index:999;
 }
 .sidebar.active{ left:0; }
 
 .sidebar a{
   display:block;
   padding:12px;
-  margin:5px 0;
+  margin:6px 0;
   border-radius:10px;
   color:#333;
+  text-decoration:none;
 }
 .sidebar a:hover{
   background:#e0f7fa;
@@ -76,41 +79,34 @@ header div{
 
 /* ===== CONTAINER ===== */
 .container{
-  max-width:1200px;
-  margin:auto;
-  padding:10px;
+  padding:8px;
 }
 
-/* ===== GRID MOBILE FIRST ===== */
+/* ===== GRID MOBILE ===== */
 #products{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:10px;
+  gap:8px;
 }
 
 /* ===== CARD ===== */
 .item{
   background:#fff;
-  border-radius:16px;
-  padding:10px;
+  border-radius:14px;
+  padding:8px;
   display:flex;
   flex-direction:column;
-  min-height:300px;
-  box-shadow:0 4px 15px rgba(0,0,0,0.08);
-  transition:.25s;
-}
-
-.item:hover{
-  transform:translateY(-3px);
+  min-height:270px;
+  box-shadow:0 3px 10px rgba(0,0,0,0.08);
 }
 
 /* ===== IMAGE ===== */
 .img-box{
   width:100%;
   aspect-ratio:1/1;
+  border-radius:10px;
   overflow:hidden;
-  border-radius:12px;
-  margin-bottom:8px;
+  margin-bottom:6px;
 }
 
 .img-box img{
@@ -121,8 +117,8 @@ header div{
 
 /* ===== TITLE ===== */
 .item h4{
-  font-size:14px;
-  height:36px;
+  font-size:13px;
+  height:34px;
   overflow:hidden;
   line-height:1.2;
 }
@@ -131,41 +127,39 @@ header div{
 .price-box{
   display:flex;
   align-items:center;
-  gap:5px;
-  margin-top:5px;
-  flex-wrap:nowrap;
+  gap:4px;
+  margin-top:4px;
 }
 
 .price{
   color:#c4001d;
   font-weight:bold;
-  font-size:15px;
+  font-size:14px;
 }
 
 .old-price{
-  font-size:12px;
-  color:#555;
+  font-size:11px;
+  color:#777;
   text-decoration:line-through;
 }
 
 .discount-text{
-  font-size:11px;
-  color:#fff;
+  font-size:10px;
   background:#c4001d;
-  padding:2px 5px;
+  color:#fff;
+  padding:2px 4px;
   border-radius:5px;
-  white-space:nowrap;
 }
 
 /* ===== BUTTON ===== */
 .spec-btn,
 .cart-btn{
   width:100%;
-  padding:8px;
   border:none;
-  border-radius:10px;
-  margin-top:6px;
-  font-size:13px;
+  border-radius:8px;
+  padding:7px;
+  font-size:12px;
+  margin-top:5px;
 }
 
 .spec-btn{
@@ -184,12 +178,13 @@ header div{
 /* ===== CART ===== */
 .cart{
   position:fixed;
-  right:-320px;
+  right:-100%;
   top:0;
-  width:300px;
+  width:85%;
   height:100%;
   background:#fff;
   transition:.3s;
+  z-index:1000;
 }
 .cart.active{ right:0; }
 
@@ -198,10 +193,11 @@ header div{
   background:#0f172a;
   color:#ccc;
   text-align:center;
-  padding:20px;
+  padding:15px;
+  font-size:13px;
 }
 
-/* ===== BOTTOM NAV ===== */
+/* ===== BOTTOM NAV (GIỐNG APP) ===== */
 .bottom-nav{
   position:fixed;
   bottom:0;
@@ -209,15 +205,27 @@ header div{
   background:#fff;
   display:flex;
   justify-content:space-around;
-  padding:10px 0;
+  padding:8px 0;
   box-shadow:0 -2px 10px rgba(0,0,0,0.1);
+}
+
+.bottom-nav a{
+  text-decoration:none;
+  color:#333;
+  font-size:11px;
+  text-align:center;
+}
+
+.bottom-nav span{
+  display:block;
+  font-size:16px;
 }
 
 /* ===== IMAGE ZOOM ===== */
 .img-modal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.8);
+  background:rgba(0,0,0,0.85);
   display:none;
   justify-content:center;
   align-items:center;
@@ -236,91 +244,14 @@ header div{
   }
 }
 
-/* ===== PC ===== */
+/* ===== DESKTOP ===== */
 @media (min-width:1024px){
   #products{
     grid-template-columns:repeat(4,1fr);
   }
-}
-/* ===== MOBILE REAL UI FIX ===== */
-@media (max-width:480px){
 
-  body{
-    font-size:14px;
+  .container{
+    max-width:1200px;
+    margin:auto;
   }
-
-  /* HEADER GỌN LẠI */
-  header{
-    padding:8px;
-    gap:6px;
-  }
-
-  header input{
-    padding:8px;
-    font-size:13px;
-  }
-
-  header div{
-    width:38px;
-    height:38px;
-    font-size:18px;
-  }
-
-  /* GRID GIỐNG APP SHOP */
-  #products{
-    grid-template-columns:repeat(2,1fr);
-    gap:8px;
-    padding:6px;
-  }
-
-  /* CARD GỌN */
-  .item{
-    padding:8px;
-    border-radius:12px;
-    min-height:280px;
-  }
-
-  /* ẢNH */
-  .img-box{
-    border-radius:10px;
-  }
-
-  /* TÊN */
-  .item h4{
-    font-size:13px;
-    height:34px;
-  }
-
-  /* GIÁ */
-  .price{
-    font-size:14px;
-  }
-
-  .old-price{
-    font-size:11px;
-  }
-
-  .discount-text{
-    font-size:10px;
-    padding:2px 4px;
-  }
-
-  /* NÚT */
-  .spec-btn,
-  .cart-btn{
-    font-size:12px;
-    padding:7px;
-    border-radius:8px;
-  }
-
-  /* NAV DƯỚI GIỐNG APP */
-  .bottom-nav{
-    padding:8px 0;
-    font-size:11px;
-  }
-
-  .bottom-nav span{
-    font-size:16px;
-  }
-
 }
