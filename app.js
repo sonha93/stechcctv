@@ -109,17 +109,20 @@ function render(list) {
     box.innerHTML += `
       <div class="item">
 
-        ${percent ? `<div class="discount-text">-${percent}%</div>` : ""}
-
         <img src="${p.img}" />
 
         <h4>${p.name}</h4>
 
+        <!-- ✅ FIX DUY NHẤT: % vào price-box -->
         <div class="price-box">
           <span class="price">${price.toLocaleString()}đ</span>
 
           ${hasDiscount ? `
             <span class="old-price">${oldPrice.toLocaleString()}đ</span>
+          ` : ""}
+
+          ${percent ? `
+            <span class="discount-text">-${percent}%</span>
           ` : ""}
         </div>
 
@@ -229,19 +232,26 @@ if (search) {
 document.addEventListener("DOMContentLoaded", () => {
   render();
 });
+
 /* =========================
-   🧹 AUTO FIX DATA CŨ
+   🧹 AUTO FIX DATA
 ========================= */
 function fixOldData() {
   let list = JSON.parse(localStorage.getItem("products")) || [];
-
   let changed = false;
 
   list = list.map(p => {
+
     let price = Number(p.price) || 0;
     let oldPrice = Number(p.oldPrice) || 0;
 
-    // 🔥 nếu bị đảo (giá bán > giá gốc) thì sửa lại
+    if (p.salePrice || p.saleStart || p.saleEnd) {
+      delete p.salePrice;
+      delete p.saleStart;
+      delete p.saleEnd;
+      changed = true;
+    }
+
     if (oldPrice && oldPrice < price) {
       [price, oldPrice] = [oldPrice, price];
       changed = true;
@@ -255,87 +265,9 @@ function fixOldData() {
   });
 
   if (changed) {
-    console.log("🛠 Đã fix dữ liệu giá bị lỗi");
+    console.log("🛠 Đã làm sạch data giá");
     localStorage.setItem("products", JSON.stringify(list));
   }
 }
 
-/* chạy 1 lần khi load */
 fixOldData();
-/* =========================
-   🧹 AUTO FIX DATA CŨ
-========================= */
-function fixOldData() {
-  let list = JSON.parse(localStorage.getItem("products")) || [];
-
-  let changed = false;
-
-  list = list.map(p => {
-
-    let price = Number(p.price) || 0;
-    let oldPrice = Number(p.oldPrice) || 0;
-
-    // 🔥 xoá sạch dữ liệu khuyến mãi cũ
-    if (p.salePrice || p.saleStart || p.saleEnd) {
-      delete p.salePrice;
-      delete p.saleStart;
-      delete p.saleEnd;
-      changed = true;
-    }
-
-    // 🔥 fix đảo giá
-    if (oldPrice && oldPrice < price) {
-      [price, oldPrice] = [oldPrice, price];
-      changed = true;
-    }
-
-    return {
-      ...p,
-      price,
-      oldPrice
-    };
-  });
-
-  if (changed) {
-    console.log("🛠 Đã làm sạch data giá");
-    localStorage.setItem("products", JSON.stringify(list));
-  }
-}/* =========================
-   🧹 AUTO FIX DATA CŨ
-========================= */
-function fixOldData() {
-  let list = JSON.parse(localStorage.getItem("products")) || [];
-
-  let changed = false;
-
-  list = list.map(p => {
-
-    let price = Number(p.price) || 0;
-    let oldPrice = Number(p.oldPrice) || 0;
-
-    // 🔥 xoá sạch dữ liệu khuyến mãi cũ
-    if (p.salePrice || p.saleStart || p.saleEnd) {
-      delete p.salePrice;
-      delete p.saleStart;
-      delete p.saleEnd;
-      changed = true;
-    }
-
-    // 🔥 fix đảo giá
-    if (oldPrice && oldPrice < price) {
-      [price, oldPrice] = [oldPrice, price];
-      changed = true;
-    }
-
-    return {
-      ...p,
-      price,
-      oldPrice
-    };
-  });
-
-  if (changed) {
-    console.log("🛠 Đã làm sạch data giá");
-    localStorage.setItem("products", JSON.stringify(list));
-  }
-}
