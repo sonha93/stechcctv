@@ -763,3 +763,109 @@ header div{
     grid-template-columns:repeat(4, 1fr);
   }
 }
+/* =========================
+   🔥 FIX % KHÔNG BỊ NỀN DÀI
+========================= */
+.discount-badge{
+  background:transparent !important;
+  color:#c4001d !important;
+  padding:0 !important;
+  box-shadow:none !important;
+  display:inline-block;
+}
+
+/* nếu có discount-text thì đè luôn */
+.discount-text{
+  background:transparent !important;
+  color:#c4001d !important;
+  padding:0 !important;
+}
+/* =========================
+   🔥 GIÁ BÁN (ĐỎ ĐẬM HƠN)
+========================= */
+.price{
+  color:#c4001d; /* đỏ đậm hơn */
+  font-weight:bold;
+  font-size:16px; /* giữ nguyên */
+}
+
+/* =========================
+   🏷 GIÁ GỐC (GIỮ SIZE - CHỈ CHỈNH MÀU)
+========================= */
+.old-price{
+  font-size:13px; /* giữ nguyên */
+  color:#555;     /* dịu hơn cho dễ nhìn */
+  text-decoration:line-through;
+}
+
+/* =========================
+   🔥 % GIẢM GIÁ (ĐỒNG BỘ MÀU GIÁ)
+========================= */
+.discount-badge{
+  background:#c4001d !important; /* cùng màu giá bán */
+  color:#fff;
+}
+
+.discount-text{
+  background:#c4001d; /* cùng màu */
+  color:#fff;
+}
+/* =========================
+   🔥 % NẰM NGANG VỚI GIÁ
+========================= */
+.price-box{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:nowrap; /* không cho xuống dòng */
+}
+
+/* ép % nằm cùng hàng */
+.discount-text{
+  margin:0 !important;
+  display:inline-block;
+  line-height:1;
+}
+
+/* nếu bạn dùng badge dạng absolute thì tắt nó đi */
+.discount-badge{
+  position:static !important;
+}
+/* ===== PRICE BOX (GIỮ NGUYÊN + FIX NHẸ) ===== */
+.price-box{
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+  margin-top:6px;
+  flex-wrap:nowrap; /* 👈 thêm dòng này để không xuống hàng */
+}
+
+/* % GIẢM (FIX NẰM NGANG) */
+.discount-text{
+  font-size:12px;
+  color:#c4001d;
+  font-weight:bold;
+  margin:0;
+
+  display:inline-block;  /* 👈 thêm */
+  line-height:1;         /* 👈 thêm */
+}
+.price-box{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:nowrap; /* không cho xuống dòng */
+}
+
+.price,
+.old-price,
+.discount-text{
+  white-space:nowrap; /* giữ tất cả trên 1 hàng */
+}
+
+.discount-text{
+  margin:0;
+  display:inline-block;
+  font-weight:bold;
+  color:#c4001d;
+}
