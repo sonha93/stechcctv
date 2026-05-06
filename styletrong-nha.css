@@ -1796,3 +1796,30 @@ header div{
   }
 
 }
+/* ===== FIX HIỂN THỊ GIÁ ===== */
+.price-box{
+  display: flex;
+  flex-wrap: wrap; /* cho phép xuống dòng */
+  gap: 6px;
+  align-items: center;
+}
+
+.price{
+  color: red;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.old-price{
+  text-decoration: line-through;
+  color: #888;
+  font-size: 14px;
+}
+
+.discount-text{
+  color: red;
+  font-size: 13px;
+  background: #ffecec;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
