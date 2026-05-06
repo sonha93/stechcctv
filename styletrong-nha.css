@@ -242,3 +242,85 @@ header div{
     grid-template-columns:repeat(4,1fr);
   }
 }
+/* ===== MOBILE REAL UI FIX ===== */
+@media (max-width:480px){
+
+  body{
+    font-size:14px;
+  }
+
+  /* HEADER GỌN LẠI */
+  header{
+    padding:8px;
+    gap:6px;
+  }
+
+  header input{
+    padding:8px;
+    font-size:13px;
+  }
+
+  header div{
+    width:38px;
+    height:38px;
+    font-size:18px;
+  }
+
+  /* GRID GIỐNG APP SHOP */
+  #products{
+    grid-template-columns:repeat(2,1fr);
+    gap:8px;
+    padding:6px;
+  }
+
+  /* CARD GỌN */
+  .item{
+    padding:8px;
+    border-radius:12px;
+    min-height:280px;
+  }
+
+  /* ẢNH */
+  .img-box{
+    border-radius:10px;
+  }
+
+  /* TÊN */
+  .item h4{
+    font-size:13px;
+    height:34px;
+  }
+
+  /* GIÁ */
+  .price{
+    font-size:14px;
+  }
+
+  .old-price{
+    font-size:11px;
+  }
+
+  .discount-text{
+    font-size:10px;
+    padding:2px 4px;
+  }
+
+  /* NÚT */
+  .spec-btn,
+  .cart-btn{
+    font-size:12px;
+    padding:7px;
+    border-radius:8px;
+  }
+
+  /* NAV DƯỚI GIỐNG APP */
+  .bottom-nav{
+    padding:8px 0;
+    font-size:11px;
+  }
+
+  .bottom-nav span{
+    font-size:16px;
+  }
+
+}
