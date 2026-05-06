@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Admin sản phẩm</title>
-<link rel="stylesheet" href="style-admin.css">
+<link rel="stylesheet" href="styletrong-nha.css">
 
 <style>
 :root{ --main-color:#00acc1; }
@@ -59,6 +59,57 @@ button{
   color:#00acc1;
   font-weight:bold;
 }
+/* =========================
+   📱 MOBILE 2 CỘT 50/50
+========================= */
+@media (max-width: 768px){
+
+  body{
+    padding:10px;
+  }
+
+  .container{
+    max-width:100%;
+    padding:0;
+  }
+
+  /* form nhập */
+  input, select, button{
+    width:100%;
+    box-sizing:border-box;
+  }
+
+  /* 🔥 GRID 2 CỘT */
+  .form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  /* input full hàng */
+  .full{
+    grid-column:1 / -1;
+  }
+
+  /* danh sách sản phẩm */
+  .item{
+    display:grid;
+    grid-template-columns:80px 1fr;
+    gap:10px;
+    align-items:center;
+  }
+
+  .item img{
+    width:100%;
+    height:auto;
+  }
+
+  /* nút xoá */
+  .item button{
+    grid-column:1 / -1;
+  }
+
+}
 </style>
 </head>
 
@@ -68,34 +119,38 @@ button{
 <h2>📦 Admin sản phẩm</h2>
 <a href="index.html" class="home-btn">← Trang chủ</a>
 
-<input id="name" placeholder="Tên sản phẩm">
-<input id="price" placeholder="Giá">
-<input id="oldPrice" placeholder="Giá cũ">
-<input id="desc" placeholder="Mô tả">
+<div class="form-grid">
 
-<input id="imgUrl" placeholder="Link ảnh (URL) - không bắt buộc">
+  <input id="name" placeholder="Tên sản phẩm" class="full">
 
+  <input id="price" placeholder="Giá">
+  <input id="oldPrice" placeholder="Giá cũ">
 
-<select id="category">
-  <option value="sd">Thẻ nhớ</option>
-  <option value="cam-in">Camera trong nhà</option>
-  <option value="cam-ngoai">Camera ngoài trời</option>
-  <option value="combo">Combo</option>
-  <option value="home">Trang chủ</option>
-</select>
+  <input id="desc" placeholder="Mô tả" class="full">
 
-<div id="showCat"></div>
+  <input id="imgUrl" placeholder="Link ảnh" class="full">
 
-<div id="specBox"></div>
+  <select id="category" class="full">
+    <option value="sd">Thẻ nhớ</option>
+    <option value="cam-in">Camera trong nhà</option>
+    <option value="cam-ngoai">Camera ngoài trời</option>
+    <option value="combo">Combo</option>
+    <option value="home">Trang chủ</option>
+  </select>
 
-<input type="file" id="fileImg" accept="image/*">
+  <div id="showCat" class="full"></div>
 
-<label>
-  <input type="checkbox" id="featured">
-  ⭐ Featured
-</label>
+  <div id="specBox" class="full"></div>
 
-<button id="btnAdd">➕ Thêm sản phẩm</button>
+  <input type="file" id="fileImg" class="full">
+
+  <label class="full">
+    <input type="checkbox" id="featured"> ⭐ Featured
+  </label>
+
+  <button id="btnAdd" class="full">➕ Thêm sản phẩm</button>
+
+</div>
 
 <hr>
 
