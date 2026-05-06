@@ -1,0 +1,28 @@
+/* ===== MOBILE SLIDER 2 HÀNG ===== */
+@media (max-width:768px){
+
+  .product-slider{
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    margin-bottom:15px;
+  }
+
+  .product-track{
+    display:grid !important;
+    grid-auto-flow:column;
+    grid-template-rows:repeat(2, auto);
+    gap:10px;
+  }
+
+  .item{
+    width:160px !important;
+    min-width:160px;
+  }
+
+  /* vuốt mượt */
+  .product-slider::-webkit-scrollbar{
+    display:none;
+  }
+
+}
