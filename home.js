@@ -23,18 +23,17 @@ function renderHome() {
 
     const id = String(p.id);
 
-    let discount = "";
+    // ✅ CHỈ ĐỔI: dùng text thay vì badge ngoài
+    let percentText = "";
     if (p.oldPrice && p.oldPrice > p.price) {
       const percent = Math.round((1 - p.price / p.oldPrice) * 100);
-      discount = `<div class="discount-badge">-${percent}%</div>`;
+      percentText = `-${percent}%`;
     }
 
     let imgUrl = p.img || "https://via.placeholder.com/300";
 
     box.innerHTML += `
       <div class="item">
-
-        ${discount}
 
         <img 
           src="${imgUrl}" 
@@ -44,12 +43,19 @@ function renderHome() {
 
         <h4>${p.name}</h4>
 
+        <!-- ✅ CHỈ SỬA ĐÚNG CHỖ NÀY -->
         <div class="price-box">
           <span class="price">${Number(p.price).toLocaleString()}đ</span>
 
           ${
             p.oldPrice && p.oldPrice > p.price
               ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>`
+              : ""
+          }
+
+          ${
+            percentText
+              ? `<span class="discount-text">${percentText}</span>`
               : ""
           }
         </div>
