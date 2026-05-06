@@ -270,8 +270,11 @@ function renderOrders(){
         <p><b>Khách hàng: ${order.name}</b> - ${order.phone}</p>
         <p>Địa chỉ: ${order.address}</p>
         <p>Ngày đặt hàng: ${order.time}</p>
-        <p>Hình thức thanh toán: ${order.payment}</p>
-
+       <p>Hình thức thanh toán: ${
+       order.payment === "bank"
+    ? "🏦 Chuyển khoản"
+    : "💵 COD"
+}</p>
         ${itemsHTML}
 
         <div class="total-box">
