@@ -1764,21 +1764,66 @@ header div{
   font-weight:bold;
   color:#c4001d;
 }
-/* ===== FIX KHUNG FULL RỘNG ===== */
-.container{
-  max-width:100% !important;
-  width:100%;
-  padding:10px 14px;
-}
-
-/* ===== GRID RỘNG HƠN ===== */
+/* ===== FIX GRID CHUẨN - RỘNG + ĐỀU ===== */
 #products{
-  display:grid;
+  display:grid !important;
   grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)) !important;
-  gap:16px;
+  gap:16px !important;
+  padding:10px;
 }
 
-/* ===== CARD TO HƠN ===== */
+/* ===== CARD ĐỀU NHAU ===== */
 .item{
-  min-height:340px;
+  display:flex !important;
+  flex-direction:column;
+  height:100%;
+  min-height:340px; /* cao hơn chút cho thoáng */
+}
+
+/* ===== ẢNH CHUẨN KHUNG ===== */
+.img-box{
+  width:100%;
+  aspect-ratio:1/1;
+  overflow:hidden;
+  border-radius:12px;
+}
+
+.img-box img,
+.item img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* ===== TÊN 2 DÒNG CỐ ĐỊNH ===== */
+.item h4{
+  height:40px;
+  line-height:1.2;
+  overflow:hidden;
+  margin:6px 0;
+}
+
+/* ===== GIÁ KHÔNG NHẢY ===== */
+.price-box{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:nowrap;
+  min-height:24px;
+}
+
+/* ===== GIỮ 1 HÀNG ===== */
+.price,
+.old-price,
+.discount-text{
+  white-space:nowrap;
+}
+
+/* ===== ĐẨY NÚT XUỐNG CUỐI ===== */
+.spec-btn{
+  margin-top:auto;
+}
+
+.cart-btn{
+  margin-top:6px;
 }
