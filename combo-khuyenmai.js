@@ -47,10 +47,8 @@ function render(list) {
 
   if (!list) list = getProducts();
 
-  // 🔥 FIX DATA NGAY KHI LOAD
   list = fixData(list);
 
-  // 🔥 GIỮ NGUYÊN: lọc combo
   list = list.filter(p => p.category === "combo");
 
   box.innerHTML = "";
@@ -64,10 +62,6 @@ function render(list) {
     if (!p.id) return;
 
     const id = String(p.id);
-
-    /* =========================
-       🔥 GIÁ CỐ ĐỊNH (KHÔNG TIME)
-    ========================= */
     const priceToShow = p.price;
 
     let percentText = "";
@@ -80,18 +74,23 @@ function render(list) {
     box.innerHTML += `
       <div class="item">
 
-        ${percentText ? `<div class="discount-text">${percentText}</div>` : ""}
-
         <img src="${p.img}" />
 
         <h4>${p.name}</h4>
 
+        <!-- ✅ FIX DUY NHẤT: % vào đây -->
         <div class="price-box">
           <span class="price">${priceToShow.toLocaleString()}đ</span>
 
           ${
             p.oldPrice && p.oldPrice > priceToShow
               ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>`
+              : ""
+          }
+
+          ${
+            percentText
+              ? `<span class="discount-text">${percentText}</span>`
               : ""
           }
         </div>
