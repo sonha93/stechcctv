@@ -1764,3 +1764,21 @@ header div{
   font-weight:bold;
   color:#c4001d;
 }
+/* ===== FIX KHUNG FULL RỘNG ===== */
+.container{
+  max-width:100% !important;
+  width:100%;
+  padding:10px 14px;
+}
+
+/* ===== GRID RỘNG HƠN ===== */
+#products{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)) !important;
+  gap:16px;
+}
+
+/* ===== CARD TO HƠN ===== */
+.item{
+  min-height:340px;
+}
