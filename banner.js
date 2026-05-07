@@ -513,15 +513,9 @@ document.addEventListener("DOMContentLoaded", function(){
         <a href="camera-trong-nha.html">
           Camera trong nhà
         </a>
-
-        •
-
         <a href="camera-ngoai-troi.html">
           Camera ngoài trời
         </a>
-
-        •
-
         <a href="bao-hanh.html">
           Chính sách bảo hành
         </a>
