@@ -3,15 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Thẻ nhớ</title>
-
+<title>Shop Camera Pro</title>
 <link rel="stylesheet" href="styletrong-nha.css">
 
-<script src="thenho.js" defer></script>
-
 <style>
-
 .logo img{
   height:38px;
   width:auto;
@@ -21,138 +16,69 @@
   display:block;
   background:transparent;
 }
-
 </style>
 
 </head>
 
 <body>
-
 <div id="notify-box"></div>
+<div id="overlay" onclick="toggleMenu()"></div>
 
-<!-- OVERLAY -->
-<div id="overlay"
-onclick="toggleMenu()"></div>
-
-<!-- SIDEBAR -->
-<div class="sidebar"
-id="sidebar">
-
+<!-- MENU -->
+<div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
 
-  <a href="index.html">
-    Trang chủ
-  </a>
-
-  <a href="cart.html">
-    Giỏ hàng
-  </a>
-
-  <a href="camera-trong-nha.html">
-    Camera trong nhà
-  </a>
-
-  <a href="camera-ngoai-troi.html">
-    Camera ngoài trời
-  </a>
-
-  <a href="the-nho.html">
-    Thẻ nhớ
-  </a>
-
-  <a href="combo-khuyenmai.html">
-    Combo khuyến mãi
-  </a>
-
+  <a href="index.html">Trang chủ</a>
+  <a href="cart.html">Giỏ hàng</a>
+  <a href="camera-trong-nha.html">Camera trong nhà</a>
+  <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
+  <a href="the-nho.html">Thẻ nhớ</a>
+  <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
 </div>
 
 <!-- HEADER -->
 <header>
-
-  <div class="menu-btn"
-    onclick="toggleMenu()">
-    ☰
-  </div>
+  <div onclick="toggleMenu()">☰</div>
 
   <div class="logo">
-    <img
-      src="https://i.ibb.co/Z1kv9nJj/logo.png"
-      alt="logo">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
 
-  <!-- ✅ XÓA onkeyup LỖI -->
-  <input
-    id="search"
-    placeholder="Tìm kiếm thẻ nhớ..."
-  >
-
+  <input id="search" placeholder="Tìm kiếm sản phẩm...">
 </header>
 
 <!-- CONTENT -->
-<div class="container">
+<div class="container"></div>
+  <div class="products" id="products"></div>
 
-  <!-- PRODUCTS -->
-  <div class="products"
-    id="products">
-  </div>
-
-  <!-- CART -->
   <div class="cart">
-
     <h3>🛒 Giỏ hàng</h3>
-
     <div id="cart"></div>
-
     <hr>
-
-    <p>
-      <b>Tổng tiền:</b>
-      <span id="total">0</span>đ
-    </p>
-
-    <button onclick="clearCart()">
-      Xoá giỏ hàng
-    </button>
-
+    <p><b>Tổng tiền:</b> <span id="total">0</span>đ</p>
+    <button onclick="clearCart()">Xoá giỏ hàng</button>
   </div>
-
 </div>
 
-<!-- ENGINE -->
-<script src="price-engine.js"></script>
+<script src="app.js"></script>
 <script src="notify.js"></script>
-
+<script src="camera-ngoai-troi.js"></script>
 <!-- FOOTER -->
 <footer class="footer">
-
   <div class="footer-container">
 
     <h3>StechCamera</h3>
 
-    <p>
-      📍 Website chuyên cung cấp camera an ninh chính hãng
-    </p>
-
-    <p>
-      📞 Hotline: 0985.678.245
-    </p>
-
-    <p>
-      📧 Email: support@stechcamera.vn
-    </p>
+    <p>📍 Website chuyên cung cấp camera an ninh chính hãng</p>
+    <p>📞 Hotline: 0985.678.245</p>
+    <p>📧 Email: support@stechcamera.vn</p>
 
     <hr>
 
-    <p>
-      © 2026 StechCamera. All rights reserved.
-    </p>
-
-    <p>
-      Designed & Developed by StechCamera Team
-    </p>
+    <p>© 2026 StechCamera. All rights reserved.</p>
+    <p>Designed & Developed by StechCamera Team</p>
 
   </div>
-
 </footer>
 
 </body>
