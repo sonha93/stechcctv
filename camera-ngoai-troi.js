@@ -138,7 +138,7 @@ if (search) {
   search.addEventListener("input", e => {
     const key = e.target.value.toLowerCase();
 
-    let data = getProducts().filter(p => p.category === "cam-in");
+    let data = getProducts().filter(p => p.category === "cam-ngoai");
 
     render(
       data.filter(p => p.name.toLowerCase().includes(key))
