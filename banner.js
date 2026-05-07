@@ -22,22 +22,10 @@
 
 
 // =========================
-// STECH ULTRA 3D BANNER MOBILE PRO
+// STECH ULTRA 3D BANNER
 // =========================
 
 document.addEventListener("DOMContentLoaded", function(){
-
-  // =========================
-  // MOBILE DETECT
-  // =========================
-  const isMobile =
-    /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i
-    .test(navigator.userAgent);
-
-  document.body.classList.add(
-    isMobile ? "is-mobile" : "is-desktop"
-  );
-
 
   // =========================
   // CSS
@@ -61,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     width:calc(100% - 20px);
 
-    margin:10px auto;
+    margin:12px auto;
 
     padding:28px;
 
@@ -288,15 +276,13 @@ document.addEventListener("DOMContentLoaded", function(){
 
     display:flex;
 
-    flex-wrap:wrap;
+    align-items:center;
 
     gap:10px;
 
-    align-items:center;
-
     font-size:14px;
 
-    margin-bottom:24px;
+    margin-bottom:20px;
   }
 
   .vip-links a{
@@ -308,13 +294,13 @@ document.addEventListener("DOMContentLoaded", function(){
     font-weight:600;
 
     transition:0.3s;
+
+    white-space:nowrap;
   }
 
   .vip-links a:hover{
 
     color:#d1fae5;
-
-    transform:translateY(-1px);
   }
 
 
@@ -468,124 +454,155 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
   /* =========================
-     MOBILE
+     MOBILE PRO
   ========================= */
   @media(max-width:768px){
 
     .vip-banner{
 
-      width:calc(100% - 16px);
+      width:calc(100% - 12px);
 
-      margin:8px auto;
+      margin:6px auto;
 
-      padding:18px;
+      padding:14px;
 
-      border-radius:24px;
+      border-radius:22px;
 
-      flex-direction:column;
+      flex-direction:row;
 
-      align-items:flex-start;
+      align-items:center;
 
-      gap:18px;
+      justify-content:space-between;
+
+      gap:10px;
     }
 
+    /* LEFT */
     .vip-left{
-      width:100%;
+
+      width:58%;
+
+      min-width:0;
     }
 
     .vip-tag{
 
-      font-size:11px;
+      font-size:9px;
 
-      padding:7px 14px;
+      padding:5px 10px;
 
-      margin-bottom:12px;
+      margin-bottom:8px;
     }
 
     .stech-3d{
 
-      font-size:38px;
+      font-size:28px;
 
-      letter-spacing:2px;
+      letter-spacing:1px;
 
-      margin-bottom:12px;
+      margin-bottom:6px;
 
       line-height:1;
     }
 
     .vip-left h2{
 
-      font-size:22px;
+      font-size:15px;
 
-      line-height:1.4;
+      line-height:1.3;
 
-      margin-bottom:14px;
+      margin-bottom:8px;
     }
 
+    /* KHÔNG NHẢY HÀNG */
     .vip-links{
 
-      gap:8px;
+      display:flex;
 
-      font-size:14px;
+      flex-wrap:nowrap;
 
-      line-height:1.7;
+      overflow-x:auto;
 
-      margin-bottom:18px;
+      white-space:nowrap;
+
+    gap:6px;
+
+      font-size:11px;
+
+      margin-bottom:10px;
+
+      scrollbar-width:none;
     }
 
+    .vip-links::-webkit-scrollbar{
+      display:none;
+    }
+
+    .vip-links a{
+
+      flex:none;
+    }
+
+    /* NÚT NHỎ */
     .vip-btn{
 
-      width:100%;
+      width:auto;
 
-      height:52px;
+      height:38px;
 
-      font-size:16px;
+      padding:0 16px;
 
-      border-radius:18px;
+      border-radius:12px;
+
+      font-size:12px;
+
+      font-weight:700;
     }
 
+    /* RIGHT */
     .vip-right{
 
-      width:100%;
+      width:42%;
 
-      justify-content:center;
+      justify-content:flex-end;
     }
 
     .camera-stage{
 
-      width:100%;
+      width:130px;
 
-      height:auto;
+      height:110px;
 
-      display:flex;
-
-      justify-content:center;
-
-      align-items:center;
-
-      gap:10px;
+      position:relative;
     }
 
     .cam-card{
 
-      position:relative !important;
+      width:52px !important;
 
-      left:auto !important;
+      height:52px !important;
 
-      right:auto !important;
-
-      top:auto !important;
-
-      width:78px;
-
-      height:78px;
-
-      border-radius:20px;
+      border-radius:14px !important;
     }
 
     .cam-card span{
 
-      font-size:34px;
+      font-size:24px !important;
+    }
+
+    .cam1{
+      left:0 !important;
+      top:38px !important;
+    }
+
+    .cam2{
+      left:38px !important;
+      top:0 !important;
+    }
+
+    .cam3{
+      right:0 !important;
+      top:42px !important;
     }
 
   }
@@ -631,12 +648,12 @@ document.addEventListener("DOMContentLoaded", function(){
         •
 
         <a href="bao-hanh.html">
-          Chính sách bảo hành
+          Bảo hành
         </a>
 
       </div>
 
-      <button 
+      <button
         class="vip-btn"
         onclick="window.location.href='camera-trong-nha.html'"
       >
@@ -685,87 +702,3 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
 });
-// =========================
-// FORCE MOBILE FIX
-// =========================
-if(window.innerWidth <= 768){
-
-  const mobileFix = document.createElement("style");
-
-  mobileFix.innerHTML = `
-
-  .vip-banner{
-    width:calc(100% - 12px) !important;
-    margin:6px auto !important;
-    padding:16px !important;
-    border-radius:22px !important;
-    flex-direction:column !important;
-    align-items:flex-start !important;
-    gap:16px !important;
-  }
-
-  .vip-left{
-    width:100% !important;
-  }
-
-  .vip-right{
-    width:100% !important;
-    justify-content:center !important;
-    margin-top:4px !important;
-  }
-
-  .stech-3d{
-    font-size:34px !important;
-    line-height:1 !important;
-    margin-bottom:10px !important;
-  }
-
-  .vip-left h2{
-    font-size:21px !important;
-    line-height:1.4 !important;
-    margin-bottom:12px !important;
-  }
-
-  .vip-links{
-    gap:6px !important;
-    font-size:13px !important;
-    line-height:1.7 !important;
-    margin-bottom:16px !important;
-  }
-
-  .vip-btn{
-    width:100% !important;
-    height:50px !important;
-    border-radius:16px !important;
-    font-size:15px !important;
-  }
-
-  .camera-stage{
-    width:100% !important;
-    height:auto !important;
-    display:flex !important;
-    justify-content:center !important;
-    gap:8px !important;
-  }
-
-  .cam-card{
-    position:relative !important;
-    left:auto !important;
-    right:auto !important;
-    top:auto !important;
-    transform:none !important;
-
-    width:74px !important;
-    height:74px !important;
-    border-radius:18px !important;
-  }
-
-  .cam-card span{
-    font-size:32px !important;
-  }
-
-  `;
-  
-  document.head.appendChild(mobileFix);
-
-}
