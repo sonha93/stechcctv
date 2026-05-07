@@ -6,7 +6,9 @@
 content="width=device-width, initial-scale=1.0">
 
 <title>Chi tiết sản phẩm</title>
+
 <link rel="stylesheet" href="logo.css">
+
 <style>
 
 *{
@@ -70,8 +72,6 @@ body{
   top:50%;
   transform:translateY(-50%);
 }
-
-/* ===== RIGHT ===== */
 
 .header-right{
   display:flex;
@@ -173,6 +173,7 @@ body{
 .right h2{
   margin-bottom:14px;
   color:#111;
+  line-height:1.5;
 }
 
 .price{
@@ -241,6 +242,10 @@ body{
   display:flex;
   gap:8px;
   padding:14px;
+  position:sticky;
+  top:0;
+  background:#fff;
+  z-index:5;
 }
 
 .tabs button{
@@ -272,6 +277,7 @@ body{
   border-radius:12px;
   margin-bottom:12px;
   line-height:1.7;
+  font-size:14px;
 }
 
 #overlay2{
@@ -292,11 +298,20 @@ body{
 
   .container{
     flex-direction:column;
+    padding:12px;
+  }
+
+  .right{
+    padding:16px;
   }
 
   #panel{
     width:100%;
     right:-100%;
+  }
+
+  .price{
+    font-size:26px;
   }
 
 }
@@ -510,16 +525,20 @@ let p =
 
 if(p){
 
+  /* IMAGE */
   document.getElementById("img").src =
     p.img || "";
 
+  /* NAME */
   document.getElementById("name").innerText =
     p.name || "Không tên";
 
+  /* PRICE */
   document.getElementById("price").innerText =
     Number(p.price || 0)
     .toLocaleString() + "đ";
 
+  /* OLD PRICE */
   document.getElementById("old").innerText =
     p.oldPrice
     ? Number(p.oldPrice)
@@ -528,170 +547,116 @@ if(p){
 
   /* ===== TAB 1 ===== */
 
-  let infoHTML = "";
+  let infoHTML = `
 
-  if(
-    p.category === "cam-in" ||
-    p.category === "cam-ngoai" ||
-    p.category === "home"
-  ){
+    <div class="spec-box">
+      <b>Danh mục:</b><br>
+      ${p.categoryName || p.category || "Đang cập nhật"}
+    </div>
 
-    infoHTML = `
+    <div class="spec-box">
+      <b>Model:</b><br>
+      ${p.model || "Đang cập nhật"}
+    </div>
 
-      <div class="spec-box">
-        <b>Danh mục:</b><br>
-        ${p.categoryName || ""}
-      </div>
+    <div class="spec-box">
+      <b>Xuất xứ:</b><br>
+      ${p.xuatXu || "Đang cập nhật"}
+    </div>
 
-      <div class="spec-box">
-        <b>Bảo hành:</b><br>
-        ${p.spec?.baoHanh || "Đang cập nhật"}
-      </div>
+    <div class="spec-box">
+      <b>Bảo hành:</b><br>
+      ${p.baoHanh || "Đang cập nhật"}
+    </div>
 
-      <div class="spec-box">
-        <b>Mô tả:</b><br>
-        ${p.desc || "Không có mô tả"}
-      </div>
+    <div class="spec-box">
+      <b>Mô tả:</b><br>
+      ${p.moTa || p.desc || "Không có mô tả"}
+    </div>
 
-    `;
-  }
-
-  else if(p.category === "sd"){
-
-    infoHTML = `
-
-      <div class="spec-box">
-        <b>Dung lượng:</b><br>
-        ${p.spec?.dungLuong || "Đang cập nhật"}
-      </div>
-
-      <div class="spec-box">
-        <b>Tốc độ:</b><br>
-        ${p.spec?.tocDo || "Đang cập nhật"}
-      </div>
-
-      <div class="spec-box">
-        <b>Bảo hành:</b><br>
-        ${p.spec?.baoHanh || "Đang cập nhật"}
-      </div>
-
-    `;
-  }
-
-  else if(p.category === "combo"){
-
-    infoHTML = `
-
-      <div class="spec-box">
-        <b>Combo:</b><br>
-        ${p.spec?.moTaCombo || "Đang cập nhật"}
-      </div>
-
-    `;
-  }
+  `;
 
   document.getElementById("t1").innerHTML =
     infoHTML;
 
   /* ===== TAB 2 ===== */
 
-  let designHTML = "";
+  let designHTML = `
 
-  if(
-    p.category === "cam-in" ||
-    p.category === "cam-ngoai" ||
-    p.category === "home"
-  ){
+    <div class="spec-box">
+      <b>Góc nhìn:</b><br>
+      ${p.gocNhin || "Đang cập nhật"}
+    </div>
 
-    designHTML = `
+    <div class="spec-box">
+      <b>Kết nối:</b><br>
+      ${p.ketNoi || "Đang cập nhật"}
+    </div>
 
-      <div class="spec-box">
-        <b>Góc nhìn:</b><br>
-        ${p.spec?.gocNhin || "Đang cập nhật"}
-      </div>
+    <div class="spec-box">
+      <b>Thiết kế:</b><br>
+      ${p.thietKe || "Đang cập nhật"}
+    </div>
 
-      <div class="spec-box">
-        <b>Kết nối:</b><br>
-        ${p.spec?.ketNoi || "Đang cập nhật"}
-      </div>
+    <div class="spec-box">
+      <b>Chất liệu:</b><br>
+      ${p.chatLieu || "Đang cập nhật"}
+    </div>
 
-    `;
-  }
-
-  else if(p.category === "sd"){
-
-    designHTML = `
-
-      <div class="spec-box">
-        <b>Loại thẻ:</b><br>
-        ${p.spec?.loai || "Đang cập nhật"}
-      </div>
-
-    `;
-  }
-
-  else{
-
-    designHTML = `
-
-      <div class="spec-box">
-        Không có dữ liệu
-      </div>
-
-    `;
-  }
+  `;
 
   document.getElementById("t2").innerHTML =
     designHTML;
 
   /* ===== TAB 3 ===== */
 
-  let configHTML = "";
+  let configHTML = `
 
-  if(
-    p.category === "cam-in" ||
-    p.category === "cam-ngoai" ||
-    p.category === "home"
-  ){
+    <div class="spec-box">
+      <b>Độ phân giải:</b><br>
+      ${p.doPhanGiai || "Đang cập nhật"}
+    </div>
 
-    configHTML = `
+    <div class="spec-box">
+      <b>Công suất:</b><br>
+      ${p.congSuat || "Đang cập nhật"}
+    </div>
 
-      <div class="spec-box">
-        <b>Độ phân giải:</b><br>
-        ${p.spec?.doPhanGiai || "Đang cập nhật"}
-      </div>
+    <div class="spec-box">
+      <b>Kết nối:</b><br>
+      ${p.ketNoi || "Đang cập nhật"}
+    </div>
 
-      <div class="spec-box">
-        <b>Kết nối:</b><br>
-        ${p.spec?.ketNoi || "Đang cập nhật"}
-      </div>
+  `;
 
-    `;
-  }
+  /* ===== SD ===== */
 
-  else if(p.category === "sd"){
+  if(p.category === "sd"){
 
-    configHTML = `
+    configHTML += `
 
       <div class="spec-box">
         <b>Dung lượng:</b><br>
-        ${p.spec?.dungLuong || "Đang cập nhật"}
+        ${p.dungLuong || "Đang cập nhật"}
       </div>
 
       <div class="spec-box">
         <b>Tốc độ:</b><br>
-        ${p.spec?.tocDo || "Đang cập nhật"}
+        ${p.tocDo || "Đang cập nhật"}
       </div>
 
     `;
   }
 
-  else{
+  /* ===== COMBO ===== */
 
-    configHTML = `
+  if(p.category === "combo"){
+
+    configHTML += `
 
       <div class="spec-box">
-        ${p.spec?.moTaCombo || "Đang cập nhật"}
+        <b>Thông tin combo:</b><br>
+        ${p.moTaCombo || "Đang cập nhật"}
       </div>
 
     `;
@@ -703,6 +668,7 @@ if(p){
 }else{
 
   document.body.innerHTML = `
+
     <h2 style="
       padding:40px;
       text-align:center;
@@ -710,6 +676,7 @@ if(p){
     ">
       Không tìm thấy sản phẩm
     </h2>
+
   `;
 }
 
