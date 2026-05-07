@@ -446,28 +446,6 @@ document
 
   function addProduct(img){
 
-    let spec = {
-
-      model:getVal("model"),
-      xuatXu:getVal("xuatXu"),
-      baoHanh:getVal("baoHanh"),
-
-      doPhanGiai:getVal("doPhanGiai"),
-      gocNhin:getVal("gocNhin"),
-      ketNoi:getVal("ketNoi"),
-
-      thietKe:getVal("thietKe"),
-      chatLieu:getVal("chatLieu"),
-      congSuat:getVal("congSuat"),
-
-      dungLuong:getVal("dungLuong"),
-      tocDo:getVal("tocDo"),
-      loai:getVal("loai"),
-
-      moTaCombo:getVal("moTaCombo")
-
-    };
-
     products.push({
 
       id:Date.now(),
@@ -487,7 +465,25 @@ document
         .getElementById("featured")
         .checked,
 
-      spec
+      /* ===== THÔNG SỐ ===== */
+
+      model:getVal("model"),
+      xuatXu:getVal("xuatXu"),
+      baoHanh:getVal("baoHanh"),
+
+      doPhanGiai:getVal("doPhanGiai"),
+      gocNhin:getVal("gocNhin"),
+      ketNoi:getVal("ketNoi"),
+
+      thietKe:getVal("thietKe"),
+      chatLieu:getVal("chatLieu"),
+      congSuat:getVal("congSuat"),
+
+      dungLuong:getVal("dungLuong"),
+      tocDo:getVal("tocDo"),
+      loai:getVal("loai"),
+
+      moTaCombo:getVal("moTaCombo")
 
     });
 
@@ -563,7 +559,6 @@ document
   reader.readAsDataURL(file);
 
 });
-
 /* =========================
    DELETE
 ========================= */
