@@ -1,5 +1,5 @@
 // =========================
-// STECH ULTRA 3D BANNER V2
+// STECH ULTRA 3D BANNER MOBILE PRO
 // =========================
 
 document.addEventListener("DOMContentLoaded", function(){
@@ -18,16 +18,16 @@ document.addEventListener("DOMContentLoaded", function(){
 
     margin:14px;
 
-    padding:30px;
+    padding:28px;
 
     border-radius:34px;
 
     background:
     linear-gradient(
       135deg,
-      #052e16,
-      #065f46,
-      #0f766e
+      #0b3b2e,
+      #106b4d,
+      #19a56f
     );
 
     display:flex;
@@ -45,12 +45,12 @@ document.addEventListener("DOMContentLoaded", function(){
     color:#fff;
 
     box-shadow:
-      0 25px 55px rgba(0,0,0,0.35),
-      inset 0 1px 0 rgba(255,255,255,0.08);
+      0 20px 50px rgba(0,0,0,0.35),
+      inset 0 1px 0 rgba(255,255,255,0.12);
   }
 
 
-  /* LIGHT */
+  /* LIGHT EFFECT */
   .vip-banner::before{
 
     content:"";
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function(){
     background:
     radial-gradient(
       circle,
-      rgba(255,255,255,0.15),
+      rgba(255,255,255,0.18),
       transparent 70%
     );
 
@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     display:inline-block;
 
-    font-size:60px;
+    font-size:58px;
 
     font-weight:900;
 
@@ -162,15 +162,15 @@ document.addEventListener("DOMContentLoaded", function(){
 
     transform:
       perspective(900px)
-      rotateX(14deg)
+      rotateX(12deg)
       rotateY(-10deg);
 
     text-shadow:
       0 1px 0 #ffffff,
-      0 2px 0 #bbf7d0,
-      0 3px 0 #86efac,
-      0 4px 0 #4ade80,
-      0 5px 16px rgba(0,0,0,0.35);
+      0 2px 0 #d1fae5,
+      0 3px 0 #a7f3d0,
+      0 4px 0 #6ee7b7,
+      0 5px 12px rgba(0,0,0,0.35);
 
     animation:logo3d 4s ease-in-out infinite;
   }
@@ -184,13 +184,13 @@ document.addEventListener("DOMContentLoaded", function(){
 
     inset:0;
 
-    color:rgba(255,255,255,0.15);
+    color:rgba(255,255,255,0.18);
 
     transform:
       translateZ(-20px)
       translateY(8px);
 
-    filter:blur(4px);
+    filter:blur(3px);
 
     z-index:-1;
   }
@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", function(){
     0%{
       transform:
         perspective(900px)
-        rotateX(14deg)
+        rotateX(12deg)
         rotateY(-10deg)
         translateY(0px);
     }
@@ -209,15 +209,15 @@ document.addEventListener("DOMContentLoaded", function(){
     50%{
       transform:
         perspective(900px)
-        rotateX(14deg)
+        rotateX(12deg)
         rotateY(-10deg)
-        translateY(-6px);
+        translateY(-5px);
     }
 
     100%{
       transform:
         perspective(900px)
-        rotateX(14deg)
+        rotateX(12deg)
         rotateY(-10deg)
         translateY(0px);
     }
@@ -234,7 +234,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     line-height:1.3;
 
-    margin-bottom:18px;
+    margin-bottom:12px;
   }
 
 
@@ -249,6 +249,8 @@ document.addEventListener("DOMContentLoaded", function(){
 
     align-items:center;
 
+    font-size:14px;
+
     margin-bottom:24px;
   }
 
@@ -260,16 +262,14 @@ document.addEventListener("DOMContentLoaded", function(){
 
     font-weight:600;
 
-    font-size:14px;
-
-    transition:.3s;
+    transition:0.3s;
   }
 
   .vip-links a:hover{
 
-    color:#bbf7d0;
+    color:#d1fae5;
 
-    transform:translateY(-2px);
+    transform:translateY(-1px);
   }
 
 
@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     border:none;
 
-    padding:14px 28px;
+    padding:14px 26px;
 
     border-radius:999px;
 
@@ -289,7 +289,7 @@ document.addEventListener("DOMContentLoaded", function(){
       #d1fae5
     );
 
-    color:#065f46;
+    color:#0f5132;
 
     font-size:15px;
 
@@ -342,26 +342,26 @@ document.addEventListener("DOMContentLoaded", function(){
 
     width:320px;
 
-    height:240px;
+    height:220px;
   }
 
 
-  /* CAMERA 3D */
-  .cam-3d{
+  /* CAMERA CARD */
+  .cam-card{
 
     position:absolute;
 
-    width:110px;
+    width:105px;
 
-    height:110px;
+    height:105px;
 
-    border-radius:30px;
+    border-radius:26px;
 
     background:
     linear-gradient(
-      145deg,
+      135deg,
       rgba(255,255,255,0.20),
-      rgba(255,255,255,0.05)
+      rgba(255,255,255,0.06)
     );
 
     backdrop-filter:blur(10px);
@@ -373,28 +373,27 @@ document.addEventListener("DOMContentLoaded", function(){
     justify-content:center;
 
     box-shadow:
-      0 20px 35px rgba(0,0,0,0.30),
+      0 15px 30px rgba(0,0,0,0.28),
       inset 0 1px 0 rgba(255,255,255,0.18);
 
     animation:camFloat 4s ease-in-out infinite;
   }
 
 
-  /* CAMERA ICON */
-  .cam-icon{
+  .cam-card span{
 
-    font-size:54px;
+    font-size:48px;
 
     filter:
       drop-shadow(
-        0 8px 18px rgba(0,0,0,0.35)
+        0 10px 20px rgba(0,0,0,0.35)
       );
   }
 
 
   .cam1{
     left:0;
-    top:50px;
+    top:40px;
     transform:rotate(-10deg);
   }
 
@@ -408,7 +407,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
   .cam3{
     right:0;
-    top:60px;
+    top:55px;
     transform:rotate(10deg);
     animation-delay:1.3s;
   }
@@ -417,67 +416,149 @@ document.addEventListener("DOMContentLoaded", function(){
   @keyframes camFloat{
 
     0%{
-      transform:translateY(0px);
+      transform:
+        translateY(0px);
     }
 
     50%{
-      transform:translateY(-12px);
+      transform:
+        translateY(-10px);
     }
 
     100%{
-      transform:translateY(0px);
+      transform:
+        translateY(0px);
     }
 
   }
 
 
-  /* MOBILE */
+  /* =========================
+     MOBILE
+  ========================= */
   @media(max-width:768px){
 
     .vip-banner{
 
-      flex-direction:column;
+      margin:10px;
 
-      padding:18px;
+      padding:20px 18px;
 
       border-radius:24px;
+
+      flex-direction:column;
+
+      align-items:flex-start;
+
+      gap:18px;
     }
 
-    .vip-left,
-    .vip-right{
+    .vip-left{
       width:100%;
     }
 
+    .vip-tag{
+
+      font-size:11px;
+
+      padding:7px 14px;
+
+      margin-bottom:12px;
+    }
+
     .stech-3d{
-      font-size:38px;
+
+      font-size:40px;
+
+      letter-spacing:2px;
+
+      margin-bottom:12px;
+
+      line-height:1;
     }
 
     .vip-left h2{
-      font-size:22px;
+
+      font-size:24px;
+
+      line-height:1.4;
+
+      margin-bottom:14px;
+    }
+
+    .vip-links{
+
+      gap:8px;
+
+      font-size:14px;
+
+      line-height:1.7;
+
+      margin-bottom:18px;
+
+      flex-wrap:wrap;
+    }
+
+    .vip-links a{
+
+      display:inline-block;
+    }
+
+    .vip-btn{
+
+      width:100%;
+
+      height:52px;
+
+      font-size:16px;
+
+      border-radius:18px;
+    }
+
+    .vip-right{
+
+      width:100%;
+
+      justify-content:center;
+
+      margin-top:5px;
     }
 
     .camera-stage{
 
-      width:240px;
+      width:100%;
 
-      height:170px;
+      height:auto;
 
-      margin:auto;
+      display:flex;
+
+      justify-content:center;
+
+      gap:12px;
     }
 
-    .cam-3d{
+    .cam-card{
 
-      width:78px;
+      position:relative !important;
 
-      height:78px;
+      left:auto !important;
+
+      right:auto !important;
+
+      top:auto !important;
+
+      transform:none !important;
+
+      width:84px;
+
+      height:84px;
+
+      border-radius:22px;
     }
 
-    .cam-icon{
+    .cam-card span{
+
       font-size:38px;
-    }
-
-    .cam2{
-      left:80px;
     }
 
   }
@@ -513,9 +594,15 @@ document.addEventListener("DOMContentLoaded", function(){
         <a href="camera-trong-nha.html">
           Camera trong nhà
         </a>
+
+        •
+
         <a href="camera-ngoai-troi.html">
           Camera ngoài trời
         </a>
+
+        •
+
         <a href="bao-hanh.html">
           Chính sách bảo hành
         </a>
@@ -535,16 +622,16 @@ document.addEventListener("DOMContentLoaded", function(){
 
       <div class="camera-stage">
 
-        <div class="cam-3d cam1">
-          <div class="cam-icon">📷</div>
+        <div class="cam-card cam1">
+          <span>📷</span>
         </div>
 
-        <div class="cam-3d cam2">
-          <div class="cam-icon">📹</div>
+        <div class="cam-card cam2">
+          <span>📹</span>
         </div>
 
-        <div class="cam-3d cam3">
-          <div class="cam-icon">🎥</div>
+        <div class="cam-card cam3">
+          <span>🎥</span>
         </div>
 
       </div>
@@ -571,53 +658,3 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
 });
-const mobileStyle = document.createElement("style");
-
-mobileStyle.innerHTML = `
-
-@media(max-width:768px){
-
-  .vip-links{
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:flex-start;
-
-    gap:8px;
-
-    margin-bottom:18px;
-  }
-
-  .vip-links a{
-
-    width:100%;
-
-    padding:10px 14px;
-
-    border-radius:14px;
-
-    background:
-    rgba(255,255,255,0.10);
-
-    backdrop-filter:blur(6px);
-
-    font-size:13px;
-
-    font-weight:700;
-  }
-
-  .vip-links a:hover{
-
-    background:
-    rgba(255,255,255,0.18);
-
-    transform:none;
-  }
-
-}
-
-`;
-
-document.head.appendChild(mobileStyle);
