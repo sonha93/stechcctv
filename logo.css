@@ -1,358 +1,410 @@
-/* =========================
-   📱 MOBILE LAYOUT PRO MAX
-========================= */
-@media(max-width:768px){
-
-  *{
-    box-sizing:border-box;
-  }
-
-  body{
-    background:#f3f3f3;
-    overflow-x:hidden;
-    font-family:Arial;
-  }
-
-  /* ===== HEADER ===== */
-
-  .header-pro{
-    padding:10px;
-    gap:8px;
-    position:sticky;
-    top:0;
-    z-index:99;
-  }
-
-  .logo{
-    width:40px;
-    height:40px;
-    border-radius:12px;
-    overflow:hidden;
-  }
-
-  .menu-btn{
-    padding:8px 12px;
-    border-radius:14px;
-    font-size:18px;
-  }
-
-  .search-box{
-    display:none;
-  }
-
-  .link-btn{
-    display:none;
-  }
-
-  .cart{
-    padding:8px 12px;
-    border-radius:14px;
-  }
-
-  /* ===== PRODUCT LAYOUT ===== */
-
-  .container{
-
-    display:grid;
-
-    grid-template-columns:
-      42% 58%;
-
-    gap:10px;
-
-    padding:10px;
-
-    align-items:start;
-
-    position:relative;
-
-    z-index:1;
-
-  }
-
-  /* ===== IMAGE ===== */
-
-  .left{
-    width:100%;
-  }
-
-  .left img{
-
-    width:100%;
-
-    max-height:220px;
-
-    object-fit:contain;
-
-    border-radius:18px;
-
-    background:#fff;
-
-    display:block;
-
-    padding:8px;
-
-    box-shadow:
-      0 3px 10px rgba(0,0,0,.1);
-
-  }
-
-  /* ===== RIGHT INFO ===== */
-
-  .right{
-
-    width:100%;
-
-    min-height:220px;
-
-    background:#fff;
-
-    border-radius:18px;
-
-    padding:14px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:flex-start;
-
-    box-shadow:
-      0 3px 10px rgba(0,0,0,.08);
-
-  }
-
-  /* ===== NAME ===== */
-
-  .right h2{
-
-    font-size:20px;
-
-    line-height:1.35;
-
-    font-weight:900;
-
-    color:#111;
-
-    margin-bottom:14px;
-
-    word-break:break-word;
-
-    text-transform:uppercase;
-
-  }
-
-  /* ===== PRICE WRAP ===== */
-
-  .price-wrap{
-    margin-bottom:10px;
-  }
-
-  /* ===== PRICE ===== */
-
-  .price{
-
-    display:inline-block;
-
-    color:#e53935;
-
-    font-size:26px;
-
-    font-weight:900;
-
-    line-height:1.2;
-
-  }
-
-  .old{
-
-    display:inline-block;
-
-    font-size:15px;
-
-    color:#888;
-
-    text-decoration:line-through;
-
-    margin-left:8px;
-
-    font-weight:bold;
-
-  }
-
-  /* ===== BUTTON ===== */
-
-  .btn{
-
-    width:100%;
-
-    margin-top:16px;
-
-    border:none;
-
-    background:#10aec6;
-
-    color:#fff;
-
-    border-radius:16px;
-
-    padding:14px;
-
-    font-size:15px;
-
-    font-weight:700;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:8px;
-
-    box-shadow:
-      0 5px 14px rgba(0,172,193,.25);
-
-    transition:.2s;
-
-  }
-
-  .btn:active{
-    transform:scale(.98);
-  }
-
-  /* ===== PANEL ===== */
-
-  #panel{
-
-    width:100%;
-
-    right:-100%;
-
-    border-radius:24px 24px 0 0;
-
-    overflow:hidden;
-
-    z-index:99999;
-
-  }
-
-  #panel.active{
-    right:0;
-  }
-
-  .panel-header{
-
-    padding:18px;
-
-    background:#00acc1;
-
-    position:sticky;
-
-    top:0;
-
-    z-index:5;
-
-  }
-
-  .panel-header h3{
-    font-size:20px;
-    font-weight:bold;
-  }
-
-  .close-btn{
-
-    width:36px;
-    height:36px;
-
-    font-size:18px;
-
-    border-radius:50%;
-  }
-
-  /* ===== TABS ===== */
-
-  .tabs{
-
-    display:flex;
-
-    gap:8px;
-
-    overflow-x:auto;
-
-    white-space:nowrap;
-
-    padding:14px;
-
-    background:#fff;
-
-    position:sticky;
-
-    top:70px;
-
-    z-index:4;
-
-  }
-
-  .tabs::-webkit-scrollbar{
-    display:none;
-  }
-
-  .tabs button{
-
-    flex:none;
-
-    border:none;
-
-    border-radius:14px;
-
-    padding:10px 14px;
-
-    background:#eee;
-
-    font-size:14px;
-
-    font-weight:bold;
-
-  }
-
-  .tabs button.active{
-    background:#00acc1;
-    color:#fff;
-  }
-
-  /* ===== TAB ===== */
-
-  .tab{
-    padding:0 14px 20px;
-  }
-
-  /* ===== SPEC BOX ===== */
-
-  .spec-box{
-
-    background:#f8f8f8;
-
-    border-radius:16px;
-
-    padding:15px;
-
-    margin-bottom:12px;
-
-    line-height:1.8;
-
-    font-size:15px;
-
-    color:#222;
-
-    box-shadow:
-      0 2px 8px rgba(0,0,0,.04);
-
-  }
-
-  .spec-box b{
-    color:#00acc1;
-    font-size:15px;
-  }
+/* =========================================
+   📱 MOBILE STYLE - TRANG SẢN PHẨM PRO MAX
+   Dành riêng điện thoại
+========================================= */
+
+@media screen and (max-width:768px){
+
+/* ===== RESET ===== */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html,body{
+  width:100%;
+  overflow-x:hidden;
+  background:#f5f5f5;
+  font-family:Arial,sans-serif;
+  color:#111;
+}
+
+/* ===== CONTAINER ===== */
+.container,
+.product-page,
+.product-detail{
+  width:100%;
+  max-width:100%;
+  padding:10px;
+}
+
+/* ===== HEADER ===== */
+.header,
+.header-pro,
+.top-header{
+  position:sticky;
+  top:0;
+  z-index:999;
+  background:#fff;
+  padding:10px;
+  border-bottom:1px solid #e5e5e5;
+
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* ===== LOGO ===== */
+.logo{
+  width:42px;
+  height:42px;
+  flex-shrink:0;
+  object-fit:contain;
+}
+
+/* ===== SEARCH ===== */
+.search-box{
+  flex:1;
+  position:relative;
+}
+
+.search-box input{
+  width:100%;
+  height:42px;
+  border:none;
+  outline:none;
+  border-radius:12px;
+  background:#f1f1f1;
+  padding:0 14px;
+  font-size:14px;
+}
+
+/* ===== ICON HEADER ===== */
+.header-icons{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.header-icons i,
+.header-icons button{
+  width:38px;
+  height:38px;
+  border:none;
+  background:#f3f3f3;
+  border-radius:10px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:16px;
+}
+
+/* ===================================
+   🖼️ ẢNH SẢN PHẨM
+=================================== */
+
+.product-image-wrap{
+  width:100%;
+  background:#fff;
+  border-radius:18px;
+  overflow:hidden;
+  padding:10px;
+  margin-top:10px;
+}
+
+/* ẢNH CHÍNH */
+.main-image{
+  width:100%;
+  aspect-ratio:1/1;
+  background:#fff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  overflow:hidden;
+  border-radius:16px;
+}
+
+.main-image img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+
+  border-radius:16px;
+}
+
+/* ===== THUMBNAIL ===== */
+.thumbnail-list{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  margin-top:12px;
+  padding-bottom:4px;
+}
+
+.thumbnail-list::-webkit-scrollbar{
+  display:none;
+}
+
+.thumbnail{
+  min-width:72px;
+  width:72px;
+  height:72px;
+
+  background:#fff;
+  border:2px solid #eee;
+  border-radius:12px;
+
+  overflow:hidden;
+  cursor:pointer;
+  flex-shrink:0;
+}
+
+.thumbnail.active{
+  border:2px solid #ff4d4f;
+}
+
+.thumbnail img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* ===================================
+   📦 THÔNG TIN SẢN PHẨM
+=================================== */
+
+.product-info{
+  margin-top:12px;
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+}
+
+/* TÊN */
+.product-title{
+  font-size:20px;
+  font-weight:700;
+  line-height:1.4;
+  margin-bottom:10px;
+}
+
+/* GIÁ */
+.price-box{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+.price{
+  color:#ff0000;
+  font-size:28px;
+  font-weight:700;
+}
+
+.old-price{
+  color:#999;
+  text-decoration:line-through;
+  font-size:16px;
+}
+
+.discount{
+  background:#ff0000;
+  color:#fff;
+  font-size:12px;
+  padding:4px 8px;
+  border-radius:8px;
+}
+
+/* ===== STATUS ===== */
+.stock-status{
+  display:inline-block;
+  margin-top:4px;
+  background:#e8fff1;
+  color:#00a651;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+}
+
+/* ===================================
+   ⚙️ THÔNG SỐ
+=================================== */
+
+.spec-box{
+  margin-top:14px;
+  background:#fff;
+  border-radius:18px;
+  overflow:hidden;
+}
+
+.spec-title{
+  padding:14px;
+  font-size:17px;
+  font-weight:700;
+  border-bottom:1px solid #eee;
+}
+
+.spec-table{
+  width:100%;
+}
+
+.spec-row{
+  display:flex;
+  border-bottom:1px solid #f1f1f1;
+}
+
+.spec-row:last-child{
+  border-bottom:none;
+}
+
+.spec-label{
+  width:40%;
+  background:#fafafa;
+  padding:12px;
+  font-size:14px;
+  color:#666;
+}
+
+.spec-value{
+  flex:1;
+  padding:12px;
+  font-size:14px;
+  font-weight:600;
+}
+
+/* ===================================
+   📝 MÔ TẢ
+=================================== */
+
+.description-box{
+  margin-top:14px;
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+}
+
+.description-box h3{
+  margin-bottom:12px;
+  font-size:18px;
+}
+
+.description-box p{
+  font-size:15px;
+  line-height:1.7;
+  color:#444;
+}
+
+/* ===================================
+   🛒 NÚT MUA
+=================================== */
+
+.buy-bar{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+
+  background:#fff;
+  border-top:1px solid #e5e5e5;
+
+  padding:10px;
+  z-index:999;
+
+  display:flex;
+  gap:10px;
+}
+
+/* CART */
+.cart-btn{
+  width:56px;
+  height:56px;
+
+  border:none;
+  border-radius:16px;
+
+  background:#f3f3f3;
+
+  font-size:22px;
+}
+
+/* BUY */
+.buy-btn{
+  flex:1;
+  height:56px;
+
+  border:none;
+  border-radius:16px;
+
+  background:linear-gradient(135deg,#ff3c3c,#ff6a00);
+  color:#fff;
+
+  font-size:17px;
+  font-weight:700;
+}
+
+/* ===== BUTTON EFFECT ===== */
+.buy-btn:active,
+.cart-btn:active{
+  transform:scale(.97);
+}
+
+/* ===================================
+   ⭐ REVIEW
+=================================== */
+
+.review-box{
+  margin-top:14px;
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+}
+
+.review-item{
+  padding:14px 0;
+  border-bottom:1px solid #f1f1f1;
+}
+
+.review-item:last-child{
+  border-bottom:none;
+}
+
+.review-name{
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.review-text{
+  font-size:14px;
+  color:#444;
+  line-height:1.6;
+}
+
+/* ===================================
+   📱 RESPONSIVE EXTRA
+=================================== */
+
+img{
+  max-width:100%;
+  display:block;
+}
+
+button{
+  cursor:pointer;
+}
+
+input,
+textarea,
+select{
+  font-size:16px;
+}
+
+/* tránh zoom iphone */
+input[type="text"],
+input[type="search"]{
+  font-size:16px;
+}
+
+/* khoảng trống tránh che nội dung */
+body{
+  padding-bottom:90px;
+}
 
 }
