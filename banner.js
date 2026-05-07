@@ -22,7 +22,7 @@
 
 
 // =========================
-// STECH MINI CLEAN BANNER
+// STECH ULTRA VIP AI BANNER
 // =========================
 
 document.addEventListener("DOMContentLoaded", function(){
@@ -37,28 +37,21 @@ document.addEventListener("DOMContentLoaded", function(){
 
   body{
     overflow-x:hidden;
+    background:#f5f5f5;
   }
 
   /* =========================
-     BANNER
+     VIP BANNER
   ========================= */
   .vip-banner{
 
     width:calc(100% - 12px);
 
-    margin:6px auto;
+    margin:8px auto;
 
-    padding:14px;
+    padding:18px;
 
-    border-radius:22px;
-
-    background:
-    linear-gradient(
-      135deg,
-      #0b3b2e,
-      #106b4d,
-      #19a56f
-    );
+    border-radius:30px;
 
     position:relative;
 
@@ -66,31 +59,89 @@ document.addEventListener("DOMContentLoaded", function(){
 
     color:#fff;
 
+    background:
+      linear-gradient(
+        rgba(0,0,0,0.30),
+        rgba(0,0,0,0.74)
+      ),
+
+      url("https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?q=80&w=1600&auto=format&fit=crop");
+
+    background-size:cover;
+
+    background-position:center;
+
     box-shadow:
-      0 10px 30px rgba(0,0,0,0.25);
+      0 20px 50px rgba(0,0,0,.35);
+
+    isolation:isolate;
   }
 
-  /* GLOW */
+
+  /* GLASS */
   .vip-banner::before{
 
     content:"";
 
     position:absolute;
 
-    width:220px;
-    height:220px;
+    inset:0;
+
+    background:
+      linear-gradient(
+        135deg,
+        rgba(255,255,255,.10),
+        rgba(255,255,255,.02)
+      );
+
+    backdrop-filter:blur(2px);
+
+    z-index:0;
+  }
+
+
+  /* LIGHT EFFECT */
+  .vip-banner::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:320px;
+    height:320px;
 
     border-radius:50%;
 
     background:
-    radial-gradient(
-      circle,
-      rgba(255,255,255,0.12),
-      transparent 70%
-    );
+      radial-gradient(
+        circle,
+        rgba(0,255,170,.16),
+        transparent 70%
+      );
 
-    top:-120px;
-    right:-90px;
+    top:-140px;
+    right:-100px;
+
+    animation:lightMove 6s ease-in-out infinite;
+  }
+
+  @keyframes lightMove{
+
+    0%{
+      transform:scale(1);
+      opacity:.7;
+    }
+
+    50%{
+      transform:scale(1.15);
+      opacity:1;
+    }
+
+    100%{
+      transform:scale(1);
+      opacity:.7;
+    }
+
   }
 
 
@@ -112,27 +163,30 @@ document.addEventListener("DOMContentLoaded", function(){
 
     align-items:center;
 
-    padding:4px 10px;
+    padding:5px 13px;
 
     border-radius:999px;
 
     background:
-    linear-gradient(
-      135deg,
-      #ff1744,
-      #ff4d6d
-    );
+      linear-gradient(
+        135deg,
+        #ff1744,
+        #ff4d6d
+      );
 
     font-size:9px;
 
-    font-weight:700;
+    font-weight:900;
 
-    margin-bottom:8px;
+    margin-bottom:12px;
+
+    box-shadow:
+      0 6px 16px rgba(255,0,80,.35);
   }
 
 
   /* =========================
-     LOGO 3D ĐỘNG
+     LOGO 3D
   ========================= */
   .stech-3d{
 
@@ -140,33 +194,32 @@ document.addEventListener("DOMContentLoaded", function(){
 
     display:inline-block;
 
-    font-size:28px;
+    font-size:42px;
 
     font-weight:900;
 
-    letter-spacing:2px;
-
-    margin-bottom:6px;
+    letter-spacing:3px;
 
     line-height:1;
 
-    text-transform:uppercase;
+    margin-bottom:10px;
 
     color:#fff;
 
-    transform-style:preserve-3d;
+    text-transform:uppercase;
 
-    animation:logo3dFloat 3.5s ease-in-out infinite;
+    animation:floatLogo 4s ease-in-out infinite;
 
     text-shadow:
       0 1px 0 #ffffff,
-      0 2px 0 #d1fae5,
-      0 3px 0 #86efac,
-      0 4px 12px rgba(0,0,0,0.35);
+      0 2px 0 #d1d5db,
+      0 3px 0 #9ca3af,
+      0 4px 0 #6b7280,
+      0 5px 20px rgba(0,0,0,.50);
   }
 
 
-  /* PHẢN CHIẾU */
+  /* REFLECTION */
   .stech-3d::before{
 
     content:"STECH";
@@ -175,48 +228,46 @@ document.addEventListener("DOMContentLoaded", function(){
 
     inset:0;
 
-    color:rgba(255,255,255,0.16);
+    color:rgba(255,255,255,.16);
 
     transform:
-      translateY(8px)
+      translateY(11px)
       scaleY(-1);
 
-    filter:blur(4px);
+    filter:blur(5px);
 
-    opacity:.5;
+    opacity:.35;
   }
 
 
-  /* GLOW */
+  /* OUTER GLOW */
   .stech-3d::after{
 
     content:"";
 
     position:absolute;
 
-    inset:-8px;
+    inset:-10px;
 
-    border-radius:12px;
+    border-radius:16px;
 
     background:
       radial-gradient(
         circle,
-        rgba(255,255,255,0.15),
+        rgba(255,255,255,.12),
         transparent 70%
       );
 
     z-index:-1;
 
-    animation:glowPulse 3s ease-in-out infinite;
+    animation:logoGlow 3s ease-in-out infinite;
   }
 
-
-  /* FLOAT */
-  @keyframes logo3dFloat{
+  @keyframes floatLogo{
 
     0%{
       transform:
-        perspective(700px)
+        perspective(900px)
         rotateX(8deg)
         rotateY(-8deg)
         translateY(0px);
@@ -224,15 +275,15 @@ document.addEventListener("DOMContentLoaded", function(){
 
     50%{
       transform:
-        perspective(700px)
+        perspective(900px)
         rotateX(8deg)
         rotateY(-8deg)
-        translateY(-4px);
+        translateY(-5px);
     }
 
     100%{
       transform:
-        perspective(700px)
+        perspective(900px)
         rotateX(8deg)
         rotateY(-8deg)
         translateY(0px);
@@ -240,9 +291,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
   }
 
-
-  /* GLOW */
-  @keyframes glowPulse{
+  @keyframes logoGlow{
 
     0%{
       opacity:.4;
@@ -250,7 +299,7 @@ document.addEventListener("DOMContentLoaded", function(){
     }
 
     50%{
-      opacity:.8;
+      opacity:.9;
       transform:scale(1.08);
     }
 
@@ -265,13 +314,16 @@ document.addEventListener("DOMContentLoaded", function(){
   /* TITLE */
   .vip-content h2{
 
-    font-size:15px;
+    font-size:18px;
 
-    line-height:1.4;
+    line-height:1.5;
 
-    margin-bottom:10px;
+    margin-bottom:14px;
 
-    font-weight:700;
+    font-weight:800;
+
+    text-shadow:
+      0 2px 10px rgba(0,0,0,.45);
   }
 
 
@@ -282,13 +334,13 @@ document.addEventListener("DOMContentLoaded", function(){
 
     align-items:center;
 
-    gap:6px;
+    gap:8px;
 
     overflow-x:auto;
 
     white-space:nowrap;
 
-    margin-bottom:12px;
+    margin-bottom:15px;
 
     scrollbar-width:none;
   }
@@ -305,50 +357,103 @@ document.addEventListener("DOMContentLoaded", function(){
 
     font-size:11px;
 
-    font-weight:600;
+    font-weight:700;
 
-    opacity:0.95;
+    opacity:.96;
 
     flex:none;
+
+    transition:.25s;
+  }
+
+  .vip-links a:hover{
+
+    color:#86efac;
   }
 
 
-  /* BUTTON */
+  /* =========================
+     VIP BUTTON
+  ========================= */
   .vip-btn{
 
     border:none;
 
-    height:36px;
+    height:32px;
 
     padding:0 16px;
 
-    border-radius:12px;
+    border-radius:999px;
 
     background:#fff;
 
-    color:#0f5132;
+    color:#111;
 
-    font-size:12px;
+    font-size:11px;
 
-    font-weight:800;
+    font-weight:900;
 
     cursor:pointer;
 
     box-shadow:
-      0 6px 14px rgba(0,0,0,0.18);
+      0 6px 14px rgba(0,0,0,.22);
 
-    transition:.2s;
-  }
-
-  .vip-btn:active{
-    transform:scale(0.97);
+    transition:.25s;
   }
 
   .vip-btn:hover{
 
-    background:#000;
+    transform:translateY(-2px);
+
+    background:#111;
 
     color:#fff;
+  }
+
+  .vip-btn:active{
+
+    transform:scale(.96);
+  }
+
+
+  /* =========================
+     MOBILE
+  ========================= */
+  @media(max-width:768px){
+
+    .vip-banner{
+
+      padding:16px;
+
+      border-radius:24px;
+    }
+
+    .stech-3d{
+
+      font-size:34px;
+
+      letter-spacing:2px;
+    }
+
+    .vip-content h2{
+
+      font-size:14px;
+    }
+
+    .vip-links a{
+
+      font-size:10px;
+    }
+
+    .vip-btn{
+
+      height:30px;
+
+      padding:0 14px;
+
+      font-size:10px;
+    }
+
   }
 
   `;
@@ -374,7 +479,7 @@ document.addEventListener("DOMContentLoaded", function(){
       </div>
 
       <h2>
-        Camera IMOU Chính Hãng
+        Camera AI Security IMOU Chính Hãng
       </h2>
 
       <div class="vip-links">
