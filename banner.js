@@ -22,7 +22,7 @@
 
 
 // =========================
-// STECH MINI MOBILE BANNER
+// STECH MINI CLEAN BANNER
 // =========================
 
 document.addEventListener("DOMContentLoaded", function(){
@@ -60,14 +60,6 @@ document.addEventListener("DOMContentLoaded", function(){
       #19a56f
     );
 
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    gap:10px;
-
     position:relative;
 
     overflow:hidden;
@@ -103,17 +95,17 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
   /* =========================
-     LEFT
+     CONTENT
   ========================= */
-  .vip-left{
-
-    width:60%;
+  .vip-content{
 
     position:relative;
 
     z-index:2;
   }
 
+
+  /* TAG */
   .vip-tag{
 
     display:inline-flex;
@@ -135,13 +127,14 @@ document.addEventListener("DOMContentLoaded", function(){
 
     font-weight:700;
 
-    margin-bottom:7px;
+    margin-bottom:8px;
   }
+
 
   /* LOGO */
   .stech-3d{
 
-    font-size:26px;
+    font-size:28px;
 
     font-weight:900;
 
@@ -155,24 +148,29 @@ document.addEventListener("DOMContentLoaded", function(){
 
     text-shadow:
       0 1px 0 #d1fae5,
-      0 2px 6px rgba(0,0,0,0.35);
+      0 2px 8px rgba(0,0,0,0.35);
   }
 
-  .vip-left h2{
 
-    font-size:14px;
+  /* TITLE */
+  .vip-content h2{
+
+    font-size:15px;
 
     line-height:1.4;
 
-    margin-bottom:8px;
+    margin-bottom:10px;
 
     font-weight:700;
   }
+
 
   /* LINKS */
   .vip-links{
 
     display:flex;
+
+    align-items:center;
 
     gap:6px;
 
@@ -180,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     white-space:nowrap;
 
-    margin-bottom:10px;
+    margin-bottom:12px;
 
     scrollbar-width:none;
   }
@@ -195,23 +193,24 @@ document.addEventListener("DOMContentLoaded", function(){
 
     text-decoration:none;
 
-    font-size:10px;
+    font-size:11px;
 
     font-weight:600;
 
-    opacity:0.92;
+    opacity:0.95;
 
     flex:none;
   }
+
 
   /* BUTTON */
   .vip-btn{
 
     border:none;
 
-    height:34px;
+    height:36px;
 
-    padding:0 14px;
+    padding:0 16px;
 
     border-radius:12px;
 
@@ -219,107 +218,18 @@ document.addEventListener("DOMContentLoaded", function(){
 
     color:#0f5132;
 
-    font-size:11px;
+    font-size:12px;
 
-    font-weight:700;
+    font-weight:800;
 
     cursor:pointer;
-  }
-
-
-  /* =========================
-     RIGHT
-  ========================= */
-  .vip-right{
-
-    width:40%;
-
-    display:flex;
-
-    justify-content:flex-end;
-
-    position:relative;
-
-    z-index:2;
-  }
-
-  .camera-stage{
-
-    width:115px;
-
-    height:90px;
-
-    position:relative;
-  }
-
-  .cam-card{
-
-    position:absolute;
-
-    width:46px;
-
-    height:46px;
-
-    border-radius:14px;
-
-    background:
-    linear-gradient(
-      135deg,
-      rgba(255,255,255,0.18),
-      rgba(255,255,255,0.06)
-    );
-
-    backdrop-filter:blur(8px);
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
 
     box-shadow:
-      0 10px 18px rgba(0,0,0,0.25);
-
-    animation:camFloat 4s ease-in-out infinite;
+      0 6px 14px rgba(0,0,0,0.18);
   }
 
-  .cam-card span{
-
-    font-size:22px;
-  }
-
-  .cam1{
-    left:0;
-    top:30px;
-  }
-
-  .cam2{
-    left:34px;
-    top:0;
-    z-index:2;
-    animation-delay:.7s;
-  }
-
-  .cam3{
-    right:0;
-    top:34px;
-    animation-delay:1.3s;
-  }
-
-  @keyframes camFloat{
-
-    0%{
-      transform:translateY(0px);
-    }
-
-    50%{
-      transform:translateY(-6px);
-    }
-
-    100%{
-      transform:translateY(0px);
-    }
-
+  .vip-btn:active{
+    transform:scale(0.97);
   }
 
   `;
@@ -334,10 +244,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
   <section class="vip-banner">
 
-    <div class="vip-left">
+    <div class="vip-content">
 
       <span class="vip-tag">
-        🔥 SALE
+        🔥 SALE 40%
       </span>
 
       <div class="stech-3d">
@@ -377,30 +287,14 @@ document.addEventListener("DOMContentLoaded", function(){
 
     </div>
 
-    <div class="vip-right">
-
-      <div class="camera-stage">
-
-        <div class="cam-card cam1">
-          <span>📷</span>
-        </div>
-
-        <div class="cam-card cam2">
-          <span>📹</span>
-        </div>
-
-        <div class="cam-card cam3">
-          <span>🎥</span>
-        </div>
-
-      </div>
-
-    </div>
-
   </section>
 
   `;
 
+
+  // =========================
+  // RENDER
+  // =========================
   const header = document.querySelector("header");
 
   if(header){
