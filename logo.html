@@ -5,7 +5,7 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>Shop Camera Pro</title>
+<title>Chi tiết sản phẩm</title>
 
 <link rel="stylesheet"
 href="styletrong-nha.css">
@@ -18,14 +18,9 @@ href="styletrong-nha.css">
   box-sizing:border-box;
 }
 
-.logo img{
-  height:38px;
-  width:auto;
-  border:0;
-  outline:0;
-  box-shadow:none;
-  display:block;
-  background:transparent;
+body{
+  background:#f5f5f5;
+  font-family:Arial;
 }
 
 /* HEADER */
@@ -41,381 +36,504 @@ header{
   box-shadow:0 2px 10px rgba(0,0,0,0.08);
 }
 
-header input{
-  flex:1;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #ddd;
-}
-
-/* MENU */
-.menu-btn{
+.back-btn{
   font-size:24px;
   cursor:pointer;
 }
 
-/* CART ICON */
-.cart-icon{
-  position:relative;
-  font-size:26px;
-  cursor:pointer;
-  margin-left:10px;
+.logo img{
+  height:38px;
+  width:auto;
+  border:0;
+  outline:0;
+  box-shadow:none;
+  display:block;
+  background:transparent;
 }
 
-#cart-count{
-  position:absolute;
-  top:-8px;
-  right:-10px;
-  background:red;
-  color:#fff;
-  font-size:11px;
-  min-width:18px;
-  height:18px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:bold;
-  padding:0 4px;
+/* DETAIL */
+.detail-wrap{
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
 }
 
-/* CONTAINER */
-.container{
-  display:flex;
-  gap:20px;
-  padding:15px;
-}
-
-/* PRODUCTS */
-.products{
-  flex:1;
-  display:grid;
-  grid-template-columns:
-  repeat(auto-fill,minmax(220px,1fr));
-  gap:15px;
-}
-
-/* CARD */
-.item{
+.detail-box{
   background:#fff;
-  border-radius:14px;
-  overflow:hidden;
-  box-shadow:0 2px 10px rgba(0,0,0,0.08);
-  padding:12px;
+  border-radius:18px;
+  padding:20px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:25px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.08);
 }
 
-.item img{
+.detail-img img{
   width:100%;
-  height:220px;
+  border-radius:14px;
   object-fit:cover;
-  border-radius:10px;
-  cursor:pointer;
 }
 
-.item h4{
-  margin-top:10px;
-  font-size:15px;
-  min-height:40px;
+.detail-info h1{
+  font-size:28px;
+  margin-bottom:15px;
 }
 
-/* PRICE */
 .price-box{
-  margin-top:8px;
   display:flex;
-  flex-wrap:wrap;
   align-items:center;
-  gap:8px;
+  gap:10px;
+  margin-bottom:15px;
+  flex-wrap:wrap;
 }
 
 .price{
   color:red;
-  font-size:18px;
+  font-size:30px;
   font-weight:bold;
 }
 
 .old-price{
   color:#888;
   text-decoration:line-through;
+  font-size:18px;
+}
+
+.discount{
+  background:red;
+  color:#fff;
+  padding:4px 8px;
+  border-radius:8px;
   font-size:13px;
 }
 
-.discount-text{
-  background:red;
-  color:#fff;
-  padding:3px 6px;
-  border-radius:6px;
-  font-size:12px;
+.desc{
+  margin-top:15px;
+  line-height:1.7;
+  color:#444;
 }
 
-/* BUTTON */
-.spec-btn,
-.cart-btn{
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  margin-top:10px;
-  cursor:pointer;
-  font-weight:bold;
+.spec-title{
+  margin-top:25px;
+  margin-bottom:15px;
+  font-size:22px;
 }
 
-.spec-btn{
-  background:#00acc1;
-  color:#fff;
+.spec-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
 }
 
-.cart-btn{
-  background:#111;
-  color:#fff;
-}
-
-/* SPEC */
-.spec-box{
-  display:none;
-  margin-top:10px;
-  padding:10px;
-  border-radius:10px;
+.spec-item{
   background:#f5f5f5;
-  font-size:14px;
-  line-height:1.6;
+  padding:12px;
+  border-radius:12px;
 }
 
-.spec-line{
-  margin-bottom:8px;
+.spec-item span{
+  display:block;
+  color:#666;
+  margin-bottom:6px;
+  font-size:13px;
 }
 
-/* CART */
-.cart{
-  width:300px;
-  background:#fff;
-  padding:15px;
-  border-radius:14px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.08);
+.spec-item b{
+  color:#111;
 }
 
-/* FOOTER */
-.footer{
-  margin-top:30px;
+.buy-btn{
+  margin-top:20px;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
   background:#111;
   color:#fff;
-  padding:30px 20px;
-}
-
-.footer-container{
-  max-width:1200px;
-  margin:auto;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
 }
 
 /* MOBILE */
 @media(max-width:768px){
 
-  .container{
-    flex-direction:column;
-    padding:10px;
+  .detail-box{
+    grid-template-columns:1fr;
   }
 
-  .products{
-    grid-template-columns:
-    repeat(2,1fr);
-    gap:10px;
+  .detail-info h1{
+    font-size:22px;
   }
 
-  .item img{
-    height:160px;
+  .price{
+    font-size:24px;
   }
 
-  .cart{
-    width:100%;
+  .spec-grid{
+    grid-template-columns:1fr;
   }
 
 }
 
 </style>
-
 </head>
 
 <body>
 
-<div id="notify-box"></div>
-
-<div id="overlay"
-onclick="toggleMenu()"></div>
-
-<!-- MENU -->
-<div class="sidebar"
-id="sidebar">
-
-  <h3>Danh mục</h3>
-
-  <a href="index.html">
-    Trang chủ
-  </a>
-
-  <a href="cart.html">
-    Giỏ hàng
-  </a>
-
-  <a href="camera-trong-nha.html">
-    Camera trong nhà
-  </a>
-
-  <a href="camera-ngoai-troi.html">
-    Camera ngoài trời
-  </a>
-
-  <a href="the-nho.html">
-    Thẻ nhớ
-  </a>
-
-  <a href="combo-khuyenmai.html">
-    Combo khuyến mãi
-  </a>
-
-</div>
-
 <!-- HEADER -->
 <header>
 
-  <div class="menu-btn"
-    onclick="toggleMenu()">
-    ☰
+  <div class="back-btn"
+    onclick="history.back()">
+
+    ←
+
   </div>
 
   <div class="logo">
+
     <img
       src="https://i.ibb.co/Z1kv9nJj/logo.png"
       alt="logo">
-  </div>
-
-  <input
-    id="search"
-    placeholder="Tìm kiếm sản phẩm...">
-
-  <!-- CART ICON -->
-  <div class="cart-icon"
-    onclick="window.location.href='cart.html'">
-
-    🛒
-
-    <span id="cart-count">
-      0
-    </span>
 
   </div>
 
 </header>
 
-<!-- CONTENT -->
-<div class="container">
+<!-- DETAIL -->
+<div class="detail-wrap">
 
-  <!-- PRODUCTS -->
-  <div class="products"
-    id="products">
-
-  </div>
-
-  <!-- CART -->
-  <div class="cart">
-
-    <h3>
-      🛒 Giỏ hàng
-    </h3>
-
-    <div id="cart"></div>
-
-    <hr style="margin:10px 0;">
-
-    <p>
-      <b>Tổng tiền:</b>
-      <span id="total">0</span>đ
-    </p>
-
-    <button
-      class="cart-btn"
-      onclick="clearCart()">
-
-      Xoá giỏ hàng
-
-    </button>
-
-  </div>
+  <div id="detail"></div>
 
 </div>
 
-<!-- SCRIPT -->
-<script src="app.js"></script>
-<script src="notify.js"></script>
-<script src="logo.js"></script>
-
 <script>
 
-function updateCartCount(){
+/* =========================
+   GET PRODUCT
+========================= */
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const id =
+  params.get("id");
+
+const products =
+  JSON.parse(
+    localStorage.getItem("products")
+  ) || [];
+
+const product =
+  products.find(
+    p => String(p.id) === String(id)
+  );
+
+/* =========================
+   RENDER DETAIL
+========================= */
+
+function renderDetail(){
+
+  const box =
+    document.getElementById("detail");
+
+  if(!product){
+
+    box.innerHTML =
+      "<h2>Không tìm thấy sản phẩm</h2>";
+
+    return;
+  }
+
+  const price =
+    Number(product.price) || 0;
+
+  const oldPrice =
+    Number(product.oldPrice) || 0;
+
+  const hasDiscount =
+    oldPrice > price;
+
+  const percent =
+    hasDiscount
+    ? Math.round(
+        (1 - price / oldPrice) * 100
+      )
+    : 0;
+
+  box.innerHTML = `
+
+    <div class="detail-box">
+
+      <!-- IMAGE -->
+      <div class="detail-img">
+
+        <img
+          src="${product.img || ''}"
+          alt="${product.name || ''}">
+
+      </div>
+
+      <!-- INFO -->
+      <div class="detail-info">
+
+        <h1>
+          ${product.name || ''}
+        </h1>
+
+        <!-- PRICE -->
+        <div class="price-box">
+
+          <span class="price">
+            ${price.toLocaleString()}đ
+          </span>
+
+          ${
+            hasDiscount
+            ? `
+              <span class="old-price">
+                ${oldPrice.toLocaleString()}đ
+              </span>
+
+              <span class="discount">
+                -${percent}%
+              </span>
+            `
+            : ""
+          }
+
+        </div>
+
+        <!-- DESC -->
+        <div class="desc">
+
+          ${product.desc || ''}
+
+        </div>
+
+        <!-- SPEC -->
+        <h3 class="spec-title">
+          ⚙️ Thông số sản phẩm
+        </h3>
+
+        <div class="spec-grid">
+
+          ${
+            product.model
+            ? `
+              <div class="spec-item">
+                <span>Model</span>
+                <b>${product.model}</b>
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            product.xuatXu
+            ? `
+              <div class="spec-item">
+                <span>Xuất xứ</span>
+                <b>${product.xuatXu}</b>
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            product.baoHanh
+            ? `
+              <div class="spec-item">
+                <span>Bảo hành</span>
+                <b>${product.baoHanh}</b>
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            product.doPhanGiai
+            ? `
+              <div class="spec-item">
+                <span>Độ phân giải</span>
+                <b>${product.doPhanGiai}</b>
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            product.gocNhin
+            ? `
+              <div class="spec-item">
+                <span>Góc nhìn</span>
+                <b>${product.gocNhin}</b>
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            product.ketNoi
+            ? `
+              <div class="spec-item">
+                <span>Kết nối</span>
+                <b>${product.ketNoi}</b>
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            product.thietKe
+            ? `
+              <div class="spec-item">
+                <span>Thiết kế</span>
+                <b>${product.thietKe}</b>
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            product.chatLieu
+            ? `
+              <div class="spec-item">
+                <span>Chất liệu</span>
+                <b>${product.chatLieu}</b>
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            product.congSuat
+            ? `
+              <div class="spec-item">
+                <span>Công suất</span>
+                <b>${product.congSuat}</b>
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            product.dungLuong
+            ? `
+              <div class="spec-item">
+                <span>Dung lượng</span>
+                <b>${product.dungLuong}</b>
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            product.tocDo
+            ? `
+              <div class="spec-item">
+                <span>Tốc độ</span>
+                <b>${product.tocDo}</b>
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            product.loai
+            ? `
+              <div class="spec-item">
+                <span>Loại thẻ</span>
+                <b>${product.loai}</b>
+              </div>
+            `
+            : ""
+          }
+
+          ${
+            product.moTaCombo
+            ? `
+              <div class="spec-item">
+                <span>Thông tin combo</span>
+                <b>${product.moTaCombo}</b>
+              </div>
+            `
+            : ""
+          }
+
+        </div>
+
+        <!-- BUTTON -->
+        <button
+          class="buy-btn"
+          onclick="addToCart()">
+
+          🛒 Thêm vào giỏ hàng
+
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+/* =========================
+   ADD TO CART
+========================= */
+
+function addToCart(){
 
   let cart =
     JSON.parse(
       localStorage.getItem("cart")
     ) || [];
 
-  let total = 0;
-
-  cart.forEach(item => {
-
-    total += item.qty || 1;
-
-  });
-
-  const count =
-    document.getElementById(
-      "cart-count"
+  const exist =
+    cart.find(
+      i =>
+        String(i.id) ===
+        String(product.id)
     );
 
-  if(count){
+  if(exist){
 
-    count.innerText = total;
+    exist.qty += 1;
+
+  }else{
+
+    cart.push({
+
+      ...product,
+
+      qty:1
+
+    });
 
   }
 
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
+
+  alert("Đã thêm vào giỏ 🛒");
+
 }
 
-updateCartCount();
+/* =========================
+   INIT
+========================= */
+
+renderDetail();
 
 </script>
-
-<!-- FOOTER -->
-<footer class="footer">
-
-  <div class="footer-container">
-
-    <h3>StechCamera</h3>
-
-    <p>
-      📍 Website chuyên cung cấp
-      camera an ninh chính hãng
-    </p>
-
-    <p>
-      📞 Hotline: 0985.678.245
-    </p>
-
-    <p>
-      📧 Email: support@stechcamera.vn
-    </p>
-
-    <hr style="margin:15px 0;">
-
-    <p>
-      © 2026 StechCamera.
-      All rights reserved.
-    </p>
-
-    <p>
-      Designed & Developed
-      by StechCamera Team
-    </p>
-
-  </div>
-
-</footer>
 
 </body>
 </html>
