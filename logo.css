@@ -1,5 +1,5 @@
 /* =========================
-   📱 MOBILE DETAIL LAYOUT
+   📱 MOBILE GIỐNG PC
 ========================= */
 @media(max-width:768px){
 
@@ -29,26 +29,23 @@
 
   .container{
 
-    display:flex;
+    display:grid;
 
-    flex-direction:row;
+    grid-template-columns:58% 42%;
 
-    align-items:flex-start;
+    gap:10px;
 
-    gap:12px;
+    padding:10px;
 
-    padding:12px;
+    align-items:start;
   }
 
   /* =========================
-     LEFT IMAGE
+     IMAGE
   ========================= */
 
   .left{
-
-    width:42%;
-
-    flex-shrink:0;
+    width:100%;
   }
 
   .left img{
@@ -59,29 +56,29 @@
 
     object-fit:cover;
 
-    border-radius:16px;
+    border-radius:18px;
 
     background:#fff;
 
-    padding:0;
-
     display:block;
+
+    padding:0;
 
     box-shadow:
       0 2px 8px rgba(0,0,0,.08);
   }
 
   /* =========================
-     RIGHT INFO
+     RIGHT BOX
   ========================= */
 
   .right{
 
-    width:58%;
+    width:100%;
 
     background:#fff;
 
-    border-radius:16px;
+    border-radius:18px;
 
     padding:14px;
 
@@ -95,13 +92,13 @@
 
     font-size:22px;
 
-    line-height:1.35;
+    line-height:1.3;
 
     font-weight:800;
 
     color:#111;
 
-    margin-bottom:14px;
+    margin-bottom:16px;
 
     word-break:break-word;
   }
@@ -111,8 +108,6 @@
   ========================= */
 
   .price{
-
-    display:inline-block;
 
     color:#e53935;
 
@@ -125,17 +120,13 @@
 
   .old{
 
-    display:inline-block;
-
     margin-left:8px;
 
-    font-size:17px;
+    font-size:16px;
 
     color:#777;
 
     text-decoration:line-through;
-
-    vertical-align:middle;
   }
 
   /* =========================
@@ -156,7 +147,7 @@
 
     border-radius:14px;
 
-    padding:14px 12px;
+    padding:14px 10px;
 
     font-size:17px;
 
@@ -169,13 +160,6 @@
     justify-content:center;
 
     gap:8px;
-
-    box-shadow:
-      0 4px 10px rgba(0,172,193,.25);
-  }
-
-  .btn:active{
-    transform:scale(.98);
   }
 
   /* =========================
@@ -191,41 +175,11 @@
     border-radius:22px 22px 0 0;
   }
 
-  .panel-header{
-    padding:16px;
-  }
-
   .tabs{
 
     overflow:auto;
 
     white-space:nowrap;
-
-    padding:12px;
-  }
-
-  .tabs button{
-
-    flex-shrink:0;
-
-    padding:10px 14px;
-
-    border-radius:12px;
-  }
-
-  .tab{
-    padding:0 12px 20px;
-  }
-
-  .spec-box{
-
-    background:#f7f7f7;
-
-    border-radius:14px;
-
-    padding:14px;
-
-    line-height:1.7;
   }
 
 }
