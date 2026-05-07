@@ -306,11 +306,9 @@ body{
 
 <body>
 
-<!-- OVERLAY -->
 <div id="overlay"
 onclick="toggleMenu()"></div>
 
-<!-- MENU -->
 <div class="sidebar"
 id="sidebar">
 
@@ -330,7 +328,6 @@ id="sidebar">
 
 </div>
 
-<!-- HEADER -->
 <header class="header-pro">
 
   <div class="logo">
@@ -363,7 +360,6 @@ id="sidebar">
 
 </header>
 
-<!-- PRODUCT -->
 <div class="container">
 
   <div class="left">
@@ -396,8 +392,6 @@ id="sidebar">
   </div>
 
 </div>
-
-<!-- PANEL -->
 
 <div id="panel">
 
@@ -516,84 +510,195 @@ let p =
 
 if(p){
 
-  document.getElementById("img")
-    .src = p.img;
+  document.getElementById("img").src =
+    p.img || "";
 
-  document.getElementById("name")
-    .innerText = p.name;
+  document.getElementById("name").innerText =
+    p.name || "Không tên";
 
-  document.getElementById("price")
-    .innerText =
-      Number(p.price)
-      .toLocaleString() + "đ";
+  document.getElementById("price").innerText =
+    Number(p.price || 0)
+    .toLocaleString() + "đ";
 
-  document.getElementById("old")
-    .innerText =
-      p.oldPrice
-      ? Number(p.oldPrice)
-        .toLocaleString() + "đ"
-      : "";
+  document.getElementById("old").innerText =
+    p.oldPrice
+    ? Number(p.oldPrice)
+      .toLocaleString() + "đ"
+    : "";
 
   /* ===== TAB 1 ===== */
 
-  document.getElementById("t1")
-    .innerHTML = `
+  let infoHTML = "";
+
+  if(
+    p.category === "cam-in" ||
+    p.category === "cam-ngoai" ||
+    p.category === "home"
+  ){
+
+    infoHTML = `
 
       <div class="spec-box">
-        <b>Model:</b>
-        ${p.spec?.model || "Đang cập nhật"}
+        <b>Danh mục:</b><br>
+        ${p.categoryName || ""}
       </div>
 
       <div class="spec-box">
-        <b>Xuất xứ:</b>
-        ${p.spec?.xuatXu || "Đang cập nhật"}
+        <b>Bảo hành:</b><br>
+        ${p.spec?.baoHanh || "Đang cập nhật"}
       </div>
 
       <div class="spec-box">
-        <b>Bảo hành:</b>
-        ${p.spec?.baoHanh || "24 tháng"}
+        <b>Mô tả:</b><br>
+        ${p.desc || "Không có mô tả"}
       </div>
 
     `;
+  }
+
+  else if(p.category === "sd"){
+
+    infoHTML = `
+
+      <div class="spec-box">
+        <b>Dung lượng:</b><br>
+        ${p.spec?.dungLuong || "Đang cập nhật"}
+      </div>
+
+      <div class="spec-box">
+        <b>Tốc độ:</b><br>
+        ${p.spec?.tocDo || "Đang cập nhật"}
+      </div>
+
+      <div class="spec-box">
+        <b>Bảo hành:</b><br>
+        ${p.spec?.baoHanh || "Đang cập nhật"}
+      </div>
+
+    `;
+  }
+
+  else if(p.category === "combo"){
+
+    infoHTML = `
+
+      <div class="spec-box">
+        <b>Combo:</b><br>
+        ${p.spec?.moTaCombo || "Đang cập nhật"}
+      </div>
+
+    `;
+  }
+
+  document.getElementById("t1").innerHTML =
+    infoHTML;
 
   /* ===== TAB 2 ===== */
 
-  document.getElementById("t2")
-    .innerHTML = `
+  let designHTML = "";
+
+  if(
+    p.category === "cam-in" ||
+    p.category === "cam-ngoai" ||
+    p.category === "home"
+  ){
+
+    designHTML = `
 
       <div class="spec-box">
-        <b>Thiết kế:</b>
-        ${p.spec?.thietKe || "Hiện đại"}
+        <b>Góc nhìn:</b><br>
+        ${p.spec?.gocNhin || "Đang cập nhật"}
       </div>
 
       <div class="spec-box">
-        <b>Chất liệu:</b>
-        ${p.spec?.chatLieu || "ABS cao cấp"}
+        <b>Kết nối:</b><br>
+        ${p.spec?.ketNoi || "Đang cập nhật"}
       </div>
 
     `;
+  }
+
+  else if(p.category === "sd"){
+
+    designHTML = `
+
+      <div class="spec-box">
+        <b>Loại thẻ:</b><br>
+        ${p.spec?.loai || "Đang cập nhật"}
+      </div>
+
+    `;
+  }
+
+  else{
+
+    designHTML = `
+
+      <div class="spec-box">
+        Không có dữ liệu
+      </div>
+
+    `;
+  }
+
+  document.getElementById("t2").innerHTML =
+    designHTML;
 
   /* ===== TAB 3 ===== */
 
-  document.getElementById("t3")
-    .innerHTML = `
+  let configHTML = "";
+
+  if(
+    p.category === "cam-in" ||
+    p.category === "cam-ngoai" ||
+    p.category === "home"
+  ){
+
+    configHTML = `
 
       <div class="spec-box">
-        <b>Độ phân giải:</b>
-        ${p.spec?.doPhanGiai || "Full HD"}
+        <b>Độ phân giải:</b><br>
+        ${p.spec?.doPhanGiai || "Đang cập nhật"}
       </div>
 
       <div class="spec-box">
-        <b>Kết nối:</b>
-        ${p.spec?.ketNoi || "Wifi"}
-      </div>
-
-      <div class="spec-box">
-        <b>Công suất:</b>
-        ${p.spec?.congSuat || "Đang cập nhật"}
+        <b>Kết nối:</b><br>
+        ${p.spec?.ketNoi || "Đang cập nhật"}
       </div>
 
     `;
+  }
+
+  else if(p.category === "sd"){
+
+    configHTML = `
+
+      <div class="spec-box">
+        <b>Dung lượng:</b><br>
+        ${p.spec?.dungLuong || "Đang cập nhật"}
+      </div>
+
+      <div class="spec-box">
+        <b>Tốc độ:</b><br>
+        ${p.spec?.tocDo || "Đang cập nhật"}
+      </div>
+
+    `;
+  }
+
+  else{
+
+    configHTML = `
+
+      <div class="spec-box">
+        ${p.spec?.moTaCombo || "Đang cập nhật"}
+      </div>
+
+    `;
+  }
+
+  document.getElementById("t3").innerHTML =
+    configHTML;
 
 }else{
 
