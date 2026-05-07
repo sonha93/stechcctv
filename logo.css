@@ -1,7 +1,97 @@
 /* =========================
-   📱 MOBILE DETAIL
+   📱 MOBILE CHUẨN
 ========================= */
 @media(max-width:768px){
+
+  body{
+    overflow-x:hidden;
+    background:#f5f5f5;
+  }
+
+  /* =========================
+     HEADER
+  ========================= */
+
+  .header-pro{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:10px;
+
+    background:#00acc1;
+  }
+
+  .logo{
+    width:40px;
+    height:40px;
+    flex-shrink:0;
+  }
+
+  .menu-btn{
+    flex-shrink:0;
+  }
+
+  /* ===== SEARCH GIỮ LẠI ===== */
+
+  .search-box{
+
+    flex:1;
+
+    display:block;
+
+    position:relative;
+  }
+
+  .search-box input{
+
+    width:100%;
+
+    padding:10px 38px 10px 14px;
+
+    border:none;
+
+    border-radius:30px;
+
+    font-size:14px;
+  }
+
+  .search-icon{
+
+    position:absolute;
+
+    right:12px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+  }
+
+  .header-right{
+
+    display:flex;
+
+    gap:6px;
+  }
+
+  .link-btn{
+
+    display:none;
+  }
+
+  .cart{
+
+    padding:8px 10px;
+
+    border-radius:50%;
+  }
+
+  /* =========================
+     PRODUCT LAYOUT
+  ========================= */
 
   .container{
 
@@ -16,7 +106,7 @@
     padding:12px;
   }
 
-  /* ===== ẢNH ===== */
+  /* ===== IMAGE ===== */
 
   .left{
 
@@ -29,48 +119,52 @@
 
     width:100%;
 
-    border-radius:14px;
+    aspect-ratio:1/1;
 
     object-fit:cover;
 
-    aspect-ratio:1/1;
+    border-radius:16px;
 
     background:#fff;
 
     display:block;
   }
 
-  /* ===== INFO ===== */
+  /* =========================
+     INFO
+  ========================= */
 
   .right{
 
     width:58%;
 
-    background:none;
-
     padding:0;
 
-    border-radius:0;
+    background:none;
+
+    border:none;
 
     box-shadow:none;
   }
 
-  /* ===== TÊN ===== */
+  /* ===== NAME ===== */
 
   .right h2{
 
-    font-size:24px;
+    font-size:23px;
 
-    line-height:1.3;
+    line-height:1.35;
 
     font-weight:800;
 
+    color:#111;
+
     margin-bottom:14px;
 
-    color:#111;
+    word-break:break-word;
   }
 
-  /* ===== GIÁ ===== */
+  /* ===== PRICE ===== */
 
   .price{
 
@@ -79,6 +173,8 @@
     font-size:30px;
 
     font-weight:900;
+
+    line-height:1;
   }
 
   .old{
@@ -87,32 +183,43 @@
 
     color:#777;
 
-    text-decoration:line-through;
+    font-size:17px;
 
-    font-size:18px;
+    text-decoration:line-through;
   }
 
   /* ===== BUTTON ===== */
 
   .btn{
 
+    width:100%;
+
     margin-top:18px;
 
     border:none;
 
-    background:#12abc0;
+    background:#11abc0;
 
     color:#fff;
 
-    padding:14px 18px;
-
     border-radius:14px;
 
-    font-size:18px;
+    padding:14px 10px;
+
+    font-size:17px;
 
     font-weight:700;
+  }
+
+  /* =========================
+     PANEL
+  ========================= */
+
+  #panel{
 
     width:100%;
+
+    right:-100%;
   }
 
 }
