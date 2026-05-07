@@ -6,181 +6,489 @@ function getProducts() {
 }
 
 /* =========================
-   📌 PAGE CATEGORY (THẺ NHỚ)
+   📌 PAGE CATEGORY
 ========================= */
 function getPageCategory() {
   return "sd";
 }
 
 /* =========================
-   🎯 SPEC RENDER (GIỮ NGUYÊN)
+   🧠 NORMALIZE
 ========================= */
-function renderSpec(p) {
-  if (p.category === "sd") {
-    return `
-      Dung lượng: ${p.spec?.dungLuong || ""}<br>
-      Tốc độ: ${p.spec?.tocDo || ""}<br>
-      Loại: ${p.spec?.loai || ""}<br>
-      Bảo hành: ${p.spec?.baoHanh || ""}
-    `;
-  }
-  return "";
+function normalizeProduct(p){
+
+  return {
+
+    ...p,
+
+    id: p.id || Date.now(),
+
+    name: p.name || "",
+
+    img: p.img || "",
+
+    category: p.category || "",
+
+    desc: p.desc || "",
+
+    price: Number(p.price) || 0,
+
+    oldPrice: Number(p.oldPrice) || 0,
+
+    featured: p.featured || false,
+
+    spec: {
+
+      model: p.spec?.model || "",
+
+      xuatXu: p.spec?.xuatXu || "",
+
+      baoHanh: p.spec?.baoHanh || "",
+
+      dungLuong: p.spec?.dungLuong || "",
+
+      tocDo: p.spec?.tocDo || "",
+
+      loai: p.spec?.loai || "",
+
+      chatLieu: p.spec?.chatLieu || ""
+
+    }
+
+  };
+
+}
+
+function normalizeList(list){
+  return list.map(normalizeProduct);
 }
 
 /* =========================
-   🧠 FIX DATA CŨ (CHỈ XỬ LÝ GIÁ)
+   ⚙️ SPEC HTML
 ========================= */
-function fixData(list){
-  return list.map(p => {
-    return {
-      ...p,
-      price: Number(p.price) || 0,
-      oldPrice: Number(p.oldPrice) || 0,
+function renderSpec(p){
 
-      salePrice: 0,
-      saleStart: "",
-      saleEnd: ""
-    };
-  });
+  return `
+
+    <div class="spec-grid">
+
+      ${
+        p.spec?.model
+        ? `
+          <div class="spec-item">
+            <span>Model</span>
+            <b>${p.spec.model}</b>
+          </div>
+        `
+        : ""
+      }
+
+      ${
+        p.spec?.xuatXu
+        ? `
+          <div class="spec-item">
+            <span>Xuất xứ</span>
+            <b>${p.spec.xuatXu}</b>
+          </div>
+        `
+        : ""
+      }
+
+      ${
+        p.spec?.dungLuong
+        ? `
+          <div class="spec-item">
+            <span>Dung lượng</span>
+            <b>${p.spec.dungLuong}</b>
+          </div>
+        `
+        : ""
+      }
+
+      ${
+        p.spec?.tocDo
+        ? `
+          <div class="spec-item">
+            <span>Tốc độ</span>
+            <b>${p.spec.tocDo}</b>
+          </div>
+        `
+        : ""
+      }
+
+      ${
+        p.spec?.loai
+        ? `
+          <div class="spec-item">
+            <span>Loại thẻ</span>
+            <b>${p.spec.loai}</b>
+          </div>
+        `
+        : ""
+      }
+
+      ${
+        p.spec?.chatLieu
+        ? `
+          <div class="spec-item">
+            <span>Chất liệu</span>
+            <b>${p.spec.chatLieu}</b>
+          </div>
+        `
+        : ""
+      }
+
+      ${
+        p.spec?.baoHanh
+        ? `
+          <div class="spec-item">
+            <span>Bảo hành</span>
+            <b>${p.spec.baoHanh}</b>
+          </div>
+        `
+        : ""
+      }
+
+    </div>
+
+  `;
+
 }
 
 /* =========================
    🖥 RENDER PRODUCTS
 ========================= */
-function render(list) {
-  const box = document.getElementById("products");
-  if (!box) return;
+function render(list){
 
-  if (!list) list = getProducts();
+  const box =
+    document.getElementById("products");
 
-  list = fixData(list);
-  list = list.filter(p => p.category === "sd");
+  if(!box) return;
+
+  if(!list){
+
+    list =
+      normalizeList(getProducts());
+
+  }
+
+  list =
+    list.filter(
+      p => p.category === "sd"
+    );
 
   box.innerHTML = "";
 
-  if (list.length === 0) {
-    box.innerHTML = "<p>Chưa có sản phẩm</p>";
+  if(list.length === 0){
+
+    box.innerHTML =
+      "<p>Chưa có sản phẩm</p>";
+
     return;
   }
 
   list.forEach(p => {
-    if (!p.id) return;
 
-    const id = String(p.id);
-    const priceToShow = p.price;
+    const id =
+      String(p.id);
 
-    let percentText = "";
+    const price =
+      Number(p.price);
 
-    if (p.oldPrice && p.oldPrice > priceToShow) {
-      const percent = Math.round((1 - priceToShow / p.oldPrice) * 100);
-      percentText = `-${percent}%`;
-    }
+    const oldPrice =
+      Number(p.oldPrice);
+
+    const hasDiscount =
+      oldPrice > price;
+
+    const percent =
+      hasDiscount
+      ? Math.round(
+          (1 - price / oldPrice) * 100
+        )
+      : 0;
 
     box.innerHTML += `
+
       <div class="item">
 
-        <img src="${p.img}" />
+        <!-- IMAGE -->
+        <img
+          src="${p.img}"
+          onclick="goDetail('${id}')"
+          style="cursor:pointer;"
+        >
 
-        <h4>${p.name}</h4>
+        <!-- NAME -->
+        <h4>
+          ${p.name}
+        </h4>
 
-        <!-- ✅ CHỈ SỬA Ở ĐÂY -->
+        <!-- PRICE -->
         <div class="price-box">
-          <span class="price">${Number(priceToShow).toLocaleString()}đ</span>
+
+          <span class="price">
+            ${price.toLocaleString()}đ
+          </span>
 
           ${
-            p.oldPrice && p.oldPrice > priceToShow
-              ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>`
-              : ""
+            hasDiscount
+            ? `
+              <span class="old-price">
+                ${oldPrice.toLocaleString()}đ
+              </span>
+            `
+            : ""
           }
 
           ${
-            percentText
-              ? `<span class="discount-text">${percentText}</span>`
-              : ""
+            percent
+            ? `
+              <span class="discount-text">
+                -${percent}%
+              </span>
+            `
+            : ""
           }
+
         </div>
 
-        <button class="spec-btn" onclick="toggleSpec('${id}')">
+        <!-- BUTTON -->
+        <button
+          class="spec-btn"
+          onclick="toggleSpec('${id}')"
+        >
           ⚙️ Xem thông số
         </button>
 
-        <button class="cart-btn" onclick="addToCart('${id}')">
+        <button
+          class="cart-btn"
+          onclick="addToCart('${id}')"
+        >
           🛒 Thêm vào giỏ
         </button>
 
-        <div class="spec-box" id="spec-${id}" style="display:none;">
+        <!-- SPEC -->
+        <div
+          class="spec-box"
+          id="spec-${id}"
+          style="display:none;"
+        >
+
           ${renderSpec(p)}
+
         </div>
 
       </div>
+
     `;
+
   });
+
 }
 
 /* =========================
    ⚙️ TOGGLE SPEC
 ========================= */
-window.toggleSpec = function(id) {
-  const el = document.getElementById(`spec-${id}`);
-  if (!el) return;
-  el.style.display = (el.style.display === "block") ? "none" : "block";
+window.toggleSpec = function(id){
+
+  const el =
+    document.getElementById(
+      `spec-${id}`
+    );
+
+  if(!el) return;
+
+  el.style.display =
+    el.style.display === "block"
+    ? "none"
+    : "block";
+
+};
+
+/* =========================
+   🔗 DETAIL
+========================= */
+window.goDetail = function(id){
+
+  window.location.href =
+    `logo.html?id=${id}`;
+
 };
 
 /* =========================
    🛒 ADD TO CART
 ========================= */
-window.addToCart = function(id) {
-  const product = getProducts().find(p => String(p.id) === String(id));
-  if (!product) return;
+window.addToCart = function(id){
 
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const product =
+    normalizeList(getProducts())
+    .find(
+      p => String(p.id) === String(id)
+    );
 
-  const exist = cart.find(item => String(item.id) === String(id));
+  if(!product) return;
 
-  if (exist) {
+  let cart =
+    JSON.parse(
+      localStorage.getItem("cart")
+    ) || [];
+
+  const exist =
+    cart.find(
+      item =>
+        String(item.id) === String(id)
+    );
+
+  if(exist){
+
     exist.qty += 1;
-  } else {
-    cart.push({ ...product, qty: 1 });
+
+  }else{
+
+    cart.push({
+
+      ...product,
+
+      qty:1
+
+    });
+
   }
 
-  localStorage.setItem("cart", JSON.stringify(cart));
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
 
   alert("Đã thêm vào giỏ 🛒");
+
 };
 
 /* =========================
    🔍 SEARCH
 ========================= */
-const search = document.getElementById("search");
+const search =
+  document.getElementById("search");
 
-if (search) {
-  search.addEventListener("input", e => {
-    const key = e.target.value.toLowerCase();
+if(search){
 
-    let data = getProducts().filter(p => p.category === "sd");
+  search.addEventListener(
+    "input",
+    e => {
 
-    render(
-      data.filter(p => p.name.toLowerCase().includes(key))
-    );
-  });
+      const key =
+        e.target.value.toLowerCase();
+
+      let data =
+        normalizeList(getProducts());
+
+      data =
+        data.filter(
+          p => p.category === "sd"
+        );
+
+      render(
+
+        data.filter(
+          p =>
+            p.name
+            .toLowerCase()
+            .includes(key)
+        )
+
+      );
+
+    }
+  );
+
 }
+
+/* =========================
+   📱 MENU
+========================= */
+window.toggleMenu = function(){
+
+  const sidebar =
+    document.getElementById("sidebar");
+
+  const overlay =
+    document.getElementById("overlay");
+
+  if(!sidebar || !overlay) return;
+
+  sidebar.classList.toggle("active");
+
+  overlay.classList.toggle("active");
+
+};
+
+/* =========================
+   🧹 FIX DATA
+========================= */
+function fixOldData(){
+
+  let list =
+    JSON.parse(
+      localStorage.getItem("products")
+    ) || [];
+
+  list = list.map(p => {
+
+    return {
+
+      ...p,
+
+      price:
+        Number(p.price) || 0,
+
+      oldPrice:
+        Number(p.oldPrice) || 0,
+
+      spec: {
+
+        model:
+          p.spec?.model || "",
+
+        xuatXu:
+          p.spec?.xuatXu || "",
+
+        baoHanh:
+          p.spec?.baoHanh || "",
+
+        dungLuong:
+          p.spec?.dungLuong || "",
+
+        tocDo:
+          p.spec?.tocDo || "",
+
+        loai:
+          p.spec?.loai || "",
+
+        chatLieu:
+          p.spec?.chatLieu || ""
+
+      }
+
+    };
+
+  });
+
+  localStorage.setItem(
+    "products",
+    JSON.stringify(list)
+  );
+
+}
+
+fixOldData();
 
 /* =========================
    INIT
 ========================= */
-document.addEventListener("DOMContentLoaded", () => {
-  render();
-});
-
-/* =========================
-   MENU
-========================= */
-window.toggleMenu = function() {
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
-
-  if (!sidebar || !overlay) return;
-
-  sidebar.classList.toggle("active");
-  overlay.classList.toggle("active");
-};
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+    render();
+  }
+);
