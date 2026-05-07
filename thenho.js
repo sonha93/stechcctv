@@ -261,9 +261,14 @@ function render(list){
           ⚙️ Xem thông số
         </button>
 
+        <!-- BUTTON -->
         <button
-          class="cart-btn"
-          onclick="addToCart('${id}')"
+          class="spec-btn"
+          onclick="toggleSpec('${id}')"
+        >
+          ⚙️ Xem thông số
+        </button>
+
         >
           🛒 Thêm vào giỏ
         </button>
