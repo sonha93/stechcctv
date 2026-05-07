@@ -54,6 +54,31 @@ header input{
   cursor:pointer;
 }
 
+/* CART ICON */
+.cart-icon{
+  position:relative;
+  font-size:26px;
+  cursor:pointer;
+  margin-left:10px;
+}
+
+#cart-count{
+  position:absolute;
+  top:-8px;
+  right:-10px;
+  background:red;
+  color:#fff;
+  font-size:11px;
+  min-width:18px;
+  height:18px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  padding:0 4px;
+}
+
 /* CONTAINER */
 .container{
   display:flex;
@@ -266,6 +291,18 @@ id="sidebar">
     id="search"
     placeholder="Tìm kiếm sản phẩm...">
 
+  <!-- CART ICON -->
+  <div class="cart-icon"
+    onclick="window.location.href='cart.html'">
+
+    🛒
+
+    <span id="cart-count">
+      0
+    </span>
+
+  </div>
+
 </header>
 
 <!-- CONTENT -->
@@ -309,6 +346,40 @@ id="sidebar">
 <script src="app.js"></script>
 <script src="notify.js"></script>
 <script src="logo.js"></script>
+
+<script>
+
+function updateCartCount(){
+
+  let cart =
+    JSON.parse(
+      localStorage.getItem("cart")
+    ) || [];
+
+  let total = 0;
+
+  cart.forEach(item => {
+
+    total += item.qty || 1;
+
+  });
+
+  const count =
+    document.getElementById(
+      "cart-count"
+    );
+
+  if(count){
+
+    count.innerText = total;
+
+  }
+
+}
+
+updateCartCount();
+
+</script>
 
 <!-- FOOTER -->
 <footer class="footer">
