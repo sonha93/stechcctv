@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Header Pro</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial;
+}
+
+/* ===== HEADER FULL WIDTH ===== */
+.header-pro{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 12px;
+  background:#00acc1;
+  color:#fff;
+  width:100%;
+}
+
+/* ===== LOGO BO 4 GÓC ===== */
+.logo{
+  min-width:42px;
+  width:42px;
+  height:42px;
+  border-radius:12px; /* 🔥 bo 4 góc */
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,0.15); /* cho nổi */
+}
+
+.logo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* ===== MENU BUTTON ===== */
+.menu-btn{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:rgba(255,255,255,0.2);
+  padding:7px 10px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+/* ===== SEARCH ===== */
+.search-box{
+  flex:1;
+  position:relative;
+}
+
+.search-box input{
+  width:100%;
+  padding:10px 40px 10px 15px;
+  border:none;
+  border-radius:30px;
+  outline:none;
+  font-size:14px;
+}
+
+.search-icon{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+/* ===== RIGHT ===== */
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* USER */
+.user{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+/* CART */
+.cart{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  background:rgba(0,0,0,0.25);
+  padding:7px 10px;
+  border-radius:20px;
+  cursor:pointer;
+  position:relative;
+  white-space:nowrap;
+}
+
+.cart-count{
+  position:absolute;
+  top:-5px;
+  left:14px;
+  background:orange;
+  color:#fff;
+  font-size:11px;
+  padding:2px 6px;
+  border-radius:50%;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  position:fixed;
+  left:-260px;
+  top:0;
+  width:260px;
+  height:100%;
+  background:#fff;
+  padding:15px;
+  transition:0.3s;
+  z-index:1001;
+}
+
+.sidebar.active{
+  left:0;
+}
+
+.sidebar h3{
+  margin-bottom:10px;
+}
+
+.sidebar a{
+  display:block;
+  padding:10px 0;
+  border-bottom:1px solid #eee;
+  text-decoration:none;
+  color:#333;
+}
+
+/* ===== OVERLAY ===== */
+#overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  display:none;
+  z-index:1000;
+}
+
+#overlay.active{
+  display:block;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+
+  .menu-btn span{
+    display:none;
+  }
+
+  .cart span{
+    display:none;
+  }
+
+  .user{
+    display:none;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- OVERLAY -->
+<div id="overlay" onclick="toggleMenu()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <h3>Danh mục</h3>
+  <a href="index.html">Trang chủ</a>
+  <a href="camera-trong-nha.html">Camera trong nhà</a>
+  <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
+  <a href="the-nho.html">Thẻ nhớ</a>
+  <a href="combo-khuyenmai.html">Combo</a>
+</div>
+
+<!-- HEADER -->
+<header class="header-pro">
+
+  <div class="logo">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png">
+  </div>
+
+  <div class="menu-btn" onclick="toggleMenu()">
+    ☰ <span>Danh mục</span>
+  </div>
+
+  <div class="search-box">
+    <input placeholder="Nhập tên sản phẩm...">
+    <span class="search-icon">🔍</span>
+  </div>
+
+  <div class="header-right">
+
+    <div class="admin.html">👤</div>
+
+    <div class="cart">
+      🛒
+      <span class="cart">1</span>
+      <span>Giỏ hàng</span>
+    </div>
+
+  </div>
+
+</header>
+
+<script>
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
+}
+</script>
+
+</body>
+</html>
