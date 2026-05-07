@@ -1,103 +1,25 @@
 /* =========================
-   🔥 CAMERA TRONG NHÀ JS FULL FIX
+   🔥 CAMERA NGOÀI TRỜI JS FIX FULL
 ========================= */
 
 /* =========================
    GET DATA
 ========================= */
 function getProducts() {
-  return JSON.parse(localStorage.getItem("products")) || [];
+  return JSON.parse(
+    localStorage.getItem("products")
+  ) || [];
 }
 
 /* =========================
    PAGE CATEGORY
 ========================= */
 function getPageCategory() {
-  return "cam-in";
+  return "cam-out";
 }
 
 /* =========================
-   🎯 RENDER SPEC CAMERA
-========================= */
-function renderSpec(p) {
-
-  return `
-
-    ${p.doPhanGiai ? `
-      <div class="spec-line">
-        🖥 <b>Độ phân giải:</b><br>
-        ${p.doPhanGiai}
-      </div>
-    ` : ""}
-
-    ${p.gocNhin ? `
-      <div class="spec-line">
-        👀 <b>Góc nhìn:</b><br>
-        ${p.gocNhin}
-      </div>
-    ` : ""}
-
-    ${p.ketNoi ? `
-      <div class="spec-line">
-        🔌 <b>Kết nối:</b><br>
-        ${p.ketNoi}
-      </div>
-    ` : ""}
-
-    ${p.thietKe ? `
-      <div class="spec-line">
-        🎨 <b>Thiết kế:</b><br>
-        ${p.thietKe}
-      </div>
-    ` : ""}
-
-    ${p.chatLieu ? `
-      <div class="spec-line">
-        🧱 <b>Chất liệu:</b><br>
-        ${p.chatLieu}
-      </div>
-    ` : ""}
-
-    ${p.congSuat ? `
-      <div class="spec-line">
-        ⚡ <b>Công suất:</b><br>
-        ${p.congSuat}
-      </div>
-    ` : ""}
-
-    ${p.baoHanh ? `
-      <div class="spec-line">
-        🛡 <b>Bảo hành:</b><br>
-        ${p.baoHanh}
-      </div>
-    ` : ""}
-
-    ${p.xuatXu ? `
-      <div class="spec-line">
-        🌍 <b>Xuất xứ:</b><br>
-        ${p.xuatXu}
-      </div>
-    ` : ""}
-
-    ${p.model ? `
-      <div class="spec-line">
-        🏷 <b>Model:</b><br>
-        ${p.model}
-      </div>
-    ` : ""}
-
-    ${p.moTa ? `
-      <div class="spec-line">
-        📝 <b>Mô tả:</b><br>
-        ${p.moTa}
-      </div>
-    ` : ""}
-
-  `;
-}
-
-/* =========================
-   🧠 FIX DATA
+   FIX DATA
 ========================= */
 function fixData(list){
 
@@ -110,30 +32,34 @@ function fixData(list){
     oldPrice: Number(p.oldPrice) || 0
 
   }));
+
 }
 
 /* =========================
-   🖥 RENDER PRODUCTS
+   RENDER PRODUCTS
 ========================= */
-function render(list) {
+function render(list){
 
   const box =
     document.getElementById("products");
 
-  if (!box) return;
+  if(!box) return;
 
-  if (!list)
+  if(!list){
+
     list = getProducts();
+
+  }
 
   list = fixData(list);
 
   list = list.filter(
-    p => p.category === "cam-in"
+    p => p.category === "cam-out"
   );
 
   box.innerHTML = "";
 
-  if (list.length === 0) {
+  if(list.length === 0){
 
     box.innerHTML =
       "<p>Chưa có sản phẩm</p>";
@@ -143,26 +69,26 @@ function render(list) {
 
   list.forEach(p => {
 
-    if (!p.id) return;
+    if(!p.id) return;
 
-    const id = String(p.id);
+    const id =
+      String(p.id);
 
-    const priceToShow =
+    const price =
       Number(p.price) || 0;
 
-    let percentText = "";
+    const oldPrice =
+      Number(p.oldPrice) || 0;
 
-    if (
-      p.oldPrice &&
-      p.oldPrice > priceToShow
-    ) {
+    const hasDiscount =
+      oldPrice > price;
 
-      const percent = Math.round(
-        (1 - priceToShow / p.oldPrice) * 100
-      );
-
-      percentText = `-${percent}%`;
-    }
+    const percent =
+      hasDiscount
+      ? Math.round(
+          (1 - price / oldPrice) * 100
+        )
+      : 0;
 
     box.innerHTML += `
 
@@ -171,8 +97,12 @@ function render(list) {
         <!-- IMAGE -->
         <div class="img-box">
 
-          <img src="${p.img || ''}"
-          alt="${p.name || ''}">
+          <img
+            src="${p.img || ''}"
+            alt="${p.name || ''}"
+            onclick="goDetail('${id}')"
+            style="cursor:pointer;"
+          >
 
         </div>
 
@@ -185,17 +115,16 @@ function render(list) {
         <div class="price-box">
 
           <span class="price">
-            ${priceToShow.toLocaleString()}đ
+            ${price.toLocaleString()}đ
           </span>
 
           ${
-            p.oldPrice &&
-            p.oldPrice > priceToShow
+            hasDiscount
 
             ? `
 
             <span class="old-price">
-              ${Number(p.oldPrice).toLocaleString()}đ
+              ${oldPrice.toLocaleString()}đ
             </span>
 
             `
@@ -207,12 +136,12 @@ function render(list) {
 
         <!-- DISCOUNT -->
         ${
-          percentText
+          percent
 
           ? `
 
           <div class="discount-text">
-            ${percentText}
+            -${percent}%
           </div>
 
           `
@@ -220,70 +149,55 @@ function render(list) {
           : ""
         }
 
-        <!-- BUTTON -->
-        <button class="spec-btn"
-          onclick="toggleSpec('${id}')">
+        <!-- BUTTON SPEC -->
+        <button
+          class="spec-btn"
+          onclick="goDetail('${id}')"
+        >
 
           ⚙️ Xem thông số
 
         </button>
 
-        <button class="cart-btn"
-          onclick="addToCart('${id}')">
+        <!-- BUTTON CART -->
+        <button
+          class="cart-btn"
+          onclick="addToCart('${id}')"
+        >
 
           🛒 Thêm vào giỏ
 
         </button>
 
-        <!-- SPEC -->
-        <div class="spec-box"
-          id="spec-${id}"
-          style="display:none;">
-
-          ${renderSpec(p)}
-
-        </div>
-
       </div>
 
     `;
+
   });
+
 }
 
 /* =========================
-   ⚙️ TOGGLE SPEC
+   DETAIL PAGE
 ========================= */
-window.toggleSpec = function(id) {
+window.goDetail = function(id){
 
-  const el =
-    document.getElementById(`spec-${id}`);
+  window.location.href =
+    `logo.html?id=${id}`;
 
-  if (!el) return;
-
-  if (
-    el.style.display === "none" ||
-    el.style.display === ""
-  ) {
-
-    el.style.display = "block";
-
-  } else {
-
-    el.style.display = "none";
-  }
 };
 
 /* =========================
-   🛒 ADD TO CART
+   ADD TO CART
 ========================= */
-window.addToCart = function(id) {
+window.addToCart = function(id){
 
   const product =
     getProducts().find(
       p => String(p.id) === String(id)
     );
 
-  if (!product) return;
+  if(!product) return;
 
   let cart =
     JSON.parse(
@@ -295,16 +209,20 @@ window.addToCart = function(id) {
       i => String(i.id) === String(id)
     );
 
-  if (exist) {
+  if(exist){
 
     exist.qty += 1;
 
-  } else {
+  }else{
 
     cart.push({
+
       ...product,
+
       qty:1
+
     });
+
   }
 
   localStorage.setItem(
@@ -313,37 +231,65 @@ window.addToCart = function(id) {
   );
 
   alert("Đã thêm vào giỏ 🛒");
+
 };
 
 /* =========================
-   🔍 SEARCH
+   SEARCH
 ========================= */
 const search =
   document.getElementById("search");
 
-if (search) {
+if(search){
 
-  search.addEventListener("input", e => {
+  search.addEventListener(
+    "input",
+    e => {
 
-    const key =
-      e.target.value.toLowerCase();
+      const key =
+        e.target.value.toLowerCase();
 
-    let data =
-      getProducts().filter(
-        p => p.category === "cam-in"
+      let data =
+        getProducts().filter(
+          p => p.category === "cam-out"
+        );
+
+      render(
+
+        data.filter(
+          p =>
+            p.name &&
+            p.name
+              .toLowerCase()
+              .includes(key)
+        )
+
       );
 
-    render(
+    }
+  );
 
-      data.filter(
-        p =>
-          p.name &&
-          p.name.toLowerCase().includes(key)
-      )
-
-    );
-  });
 }
+
+/* =========================
+   MENU
+========================= */
+window.toggleMenu = function(){
+
+  const sidebar =
+    document.getElementById("sidebar");
+
+  const overlay =
+    document.getElementById("overlay");
+
+  if(!sidebar || !overlay)
+    return;
+
+  sidebar.classList.toggle("active");
+
+  overlay.classList.toggle("active");
+
+};
 
 /* =========================
    INIT
@@ -354,22 +300,3 @@ document.addEventListener(
     render();
   }
 );
-
-/* =========================
-   MENU
-========================= */
-window.toggleMenu = function () {
-
-  const sidebar =
-    document.getElementById("sidebar");
-
-  const overlay =
-    document.getElementById("overlay");
-
-  if (!sidebar || !overlay)
-    return;
-
-  sidebar.classList.toggle("active");
-
-  overlay.classList.toggle("active");
-};
