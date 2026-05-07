@@ -253,36 +253,21 @@ function render(list){
 
         </div>
 
-        <!-- BUTTON -->
+        <!-- BUTTON SPEC -->
         <button
           class="spec-btn"
-          onclick="toggleSpec('${id}')"
+          onclick="goDetail('${id}')"
         >
           ⚙️ Xem thông số
         </button>
 
-        <!-- BUTTON -->
+        <!-- BUTTON CART -->
         <button
-          class="spec-btn"
-          onclick="toggleSpec('${id}')"
-        >
-          ⚙️ Xem thông số
-        </button>
-
+          class="cart-btn"
+          onclick="addToCart('${id}')"
         >
           🛒 Thêm vào giỏ
         </button>
-
-        <!-- SPEC -->
-        <div
-          class="spec-box"
-          id="spec-${id}"
-          style="display:none;"
-        >
-
-          ${renderSpec(p)}
-
-        </div>
 
       </div>
 
@@ -291,25 +276,6 @@ function render(list){
   });
 
 }
-
-/* =========================
-   ⚙️ TOGGLE SPEC
-========================= */
-window.toggleSpec = function(id){
-
-  const el =
-    document.getElementById(
-      `spec-${id}`
-    );
-
-  if(!el) return;
-
-  el.style.display =
-    el.style.display === "block"
-    ? "none"
-    : "block";
-
-};
 
 /* =========================
    🔗 DETAIL
