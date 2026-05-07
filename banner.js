@@ -1,8 +1,43 @@
 // =========================
+// FORCE MOBILE VIEWPORT
+// =========================
+(function(){
+
+  let meta = document.querySelector('meta[name="viewport"]');
+
+  if(!meta){
+
+    meta = document.createElement("meta");
+
+    meta.name = "viewport";
+
+    meta.content =
+    "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
+
+    document.head.appendChild(meta);
+
+  }
+
+})();
+
+
+// =========================
 // STECH ULTRA 3D BANNER MOBILE PRO
 // =========================
 
 document.addEventListener("DOMContentLoaded", function(){
+
+  // =========================
+  // MOBILE DETECT
+  // =========================
+  const isMobile =
+    /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i
+    .test(navigator.userAgent);
+
+  document.body.classList.add(
+    isMobile ? "is-mobile" : "is-desktop"
+  );
+
 
   // =========================
   // CSS
@@ -11,12 +46,22 @@ document.addEventListener("DOMContentLoaded", function(){
 
   style.innerHTML = `
 
+  *{
+    box-sizing:border-box;
+  }
+
+  body{
+    overflow-x:hidden;
+  }
+
   /* =========================
      MAIN BANNER
   ========================= */
   .vip-banner{
 
-    margin:14px;
+    width:calc(100% - 20px);
+
+    margin:10px auto;
 
     padding:28px;
 
@@ -383,32 +428,24 @@ document.addEventListener("DOMContentLoaded", function(){
   .cam-card span{
 
     font-size:48px;
-
-    filter:
-      drop-shadow(
-        0 10px 20px rgba(0,0,0,0.35)
-      );
   }
 
 
   .cam1{
     left:0;
     top:40px;
-    transform:rotate(-10deg);
   }
 
   .cam2{
     left:105px;
     top:0;
     z-index:2;
-    transform:scale(1.15);
     animation-delay:.7s;
   }
 
   .cam3{
     right:0;
     top:55px;
-    transform:rotate(10deg);
     animation-delay:1.3s;
   }
 
@@ -416,18 +453,15 @@ document.addEventListener("DOMContentLoaded", function(){
   @keyframes camFloat{
 
     0%{
-      transform:
-        translateY(0px);
+      transform:translateY(0px);
     }
 
     50%{
-      transform:
-        translateY(-10px);
+      transform:translateY(-10px);
     }
 
     100%{
-      transform:
-        translateY(0px);
+      transform:translateY(0px);
     }
 
   }
@@ -440,9 +474,11 @@ document.addEventListener("DOMContentLoaded", function(){
 
     .vip-banner{
 
-      margin:10px;
+      width:calc(100% - 16px);
 
-      padding:20px 18px;
+      margin:8px auto;
+
+      padding:18px;
 
       border-radius:24px;
 
@@ -468,7 +504,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     .stech-3d{
 
-      font-size:40px;
+      font-size:38px;
 
       letter-spacing:2px;
 
@@ -479,7 +515,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     .vip-left h2{
 
-      font-size:24px;
+      font-size:22px;
 
       line-height:1.4;
 
@@ -495,13 +531,6 @@ document.addEventListener("DOMContentLoaded", function(){
       line-height:1.7;
 
       margin-bottom:18px;
-
-      flex-wrap:wrap;
-    }
-
-    .vip-links a{
-
-      display:inline-block;
     }
 
     .vip-btn{
@@ -520,8 +549,6 @@ document.addEventListener("DOMContentLoaded", function(){
       width:100%;
 
       justify-content:center;
-
-      margin-top:5px;
     }
 
     .camera-stage{
@@ -534,7 +561,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
       justify-content:center;
 
-      gap:12px;
+      align-items:center;
+
+      gap:10px;
     }
 
     .cam-card{
@@ -547,18 +576,16 @@ document.addEventListener("DOMContentLoaded", function(){
 
       top:auto !important;
 
-      transform:none !important;
+      width:78px;
 
-      width:84px;
+      height:78px;
 
-      height:84px;
-
-      border-radius:22px;
+      border-radius:20px;
     }
 
     .cam-card span{
 
-      font-size:38px;
+      font-size:34px;
     }
 
   }
