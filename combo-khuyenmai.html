@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
@@ -13,6 +11,12 @@ content="width=device-width, initial-scale=1.0">
 href="styletrong-nha.css">
 
 <style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
 .logo img{
   height:38px;
@@ -24,8 +28,41 @@ href="styletrong-nha.css">
   background:transparent;
 }
 
-</style>
+.container{
+  display:flex;
+  gap:20px;
+  padding:15px;
+}
 
+.products{
+  flex:1;
+  display:grid;
+  grid-template-columns:
+  repeat(auto-fill,minmax(220px,1fr));
+  gap:15px;
+}
+
+.cart{
+  width:320px;
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+
+@media(max-width:768px){
+
+  .container{
+    flex-direction:column;
+  }
+
+  .cart{
+    width:100%;
+  }
+
+}
+
+</style>
 </head>
 
 <body>
@@ -36,7 +73,7 @@ href="styletrong-nha.css">
 <div id="overlay"
 onclick="toggleMenu()"></div>
 
-<!-- MENU -->
+<!-- SIDEBAR -->
 <div class="sidebar"
 id="sidebar">
 
@@ -77,18 +114,15 @@ id="sidebar">
   </div>
 
   <div class="logo">
-
     <img
       src="https://i.ibb.co/Z1kv9nJj/logo.png"
       alt="logo">
-
   </div>
 
-  <!-- SEARCH -->
+  <!-- ❌ XOÁ onkeyup renderProducts() -->
   <input
     id="search"
-    placeholder="Tìm kiếm combo..."
-  >
+    placeholder="Tìm kiếm combo...">
 
 </header>
 
@@ -122,9 +156,10 @@ id="sidebar">
 
 </div>
 
-<!-- JS -->
+<!-- SCRIPT -->
 <script src="price-engine.js"></script>
 
+<!-- ✅ CHỈ LOAD 1 FILE JS -->
 <script src="combo-khuyenmai.js"></script>
 
 <script src="notify.js"></script>
@@ -151,11 +186,13 @@ id="sidebar">
     <hr>
 
     <p>
-      © 2026 StechCamera. All rights reserved.
+      © 2026 StechCamera.
+      All rights reserved.
     </p>
 
     <p>
-      Designed & Developed by StechCamera Team
+      Designed & Developed
+      by StechCamera Team
     </p>
 
   </div>
