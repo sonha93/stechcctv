@@ -1,133 +1,111 @@
-/* =========================================
-   📱 MOBILE STYLE - TRANG SẢN PHẨM PRO MAX
-   Dành riêng điện thoại
-========================================= */
+/* =====================================
+   📱 MOBILE PRODUCT UI FIX
+   Ảnh nhỏ lại - gọn như Shopee/TGDĐ
+===================================== */
 
 @media screen and (max-width:768px){
 
-/* ===== RESET ===== */
-*{
+/* ===== BODY ===== */
+body{
   margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-html,body{
-  width:100%;
-  overflow-x:hidden;
   background:#f5f5f5;
   font-family:Arial,sans-serif;
-  color:#111;
-}
-
-/* ===== CONTAINER ===== */
-.container,
-.product-page,
-.product-detail{
-  width:100%;
-  max-width:100%;
-  padding:10px;
+  overflow-x:hidden;
+  padding-bottom:90px;
 }
 
 /* ===== HEADER ===== */
 .header,
-.header-pro,
 .top-header{
+  height:68px;
+  background:linear-gradient(90deg,#00bcd4,#00acc1);
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  gap:12px;
   position:sticky;
   top:0;
   z-index:999;
-  background:#fff;
-  padding:10px;
-  border-bottom:1px solid #e5e5e5;
-
-  display:flex;
-  align-items:center;
-  gap:10px;
 }
 
-/* ===== LOGO ===== */
 .logo{
-  width:42px;
-  height:42px;
-  flex-shrink:0;
-  object-fit:contain;
+  width:52px;
+  height:52px;
+  border-radius:14px;
+  object-fit:cover;
+  background:#fff;
 }
 
-/* ===== SEARCH ===== */
-.search-box{
-  flex:1;
-  position:relative;
-}
-
-.search-box input{
-  width:100%;
-  height:42px;
+/* ===== MENU + CART ===== */
+.menu-btn,
+.cart-btn-top{
+  width:48px;
+  height:48px;
   border:none;
-  outline:none;
-  border-radius:12px;
-  background:#f1f1f1;
-  padding:0 14px;
-  font-size:14px;
-}
-
-/* ===== ICON HEADER ===== */
-.header-icons{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.header-icons i,
-.header-icons button{
-  width:38px;
-  height:38px;
-  border:none;
-  background:#f3f3f3;
-  border-radius:10px;
+  border-radius:50%;
+  background:rgba(255,255,255,.15);
+  color:#fff;
+  font-size:22px;
 
   display:flex;
   align-items:center;
   justify-content:center;
-
-  font-size:16px;
 }
 
-/* ===================================
-   🖼️ ẢNH SẢN PHẨM
-=================================== */
+/* =====================================
+   📦 KHUNG SẢN PHẨM
+===================================== */
 
-.product-image-wrap{
-  width:100%;
+.product-card,
+.product-container{
+  width:96%;
+  margin:12px auto;
   background:#fff;
-  border-radius:18px;
-  overflow:hidden;
-  padding:10px;
-  margin-top:10px;
+  border-radius:22px;
+  padding:12px;
+
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
 }
 
-/* ẢNH CHÍNH */
+/* =====================================
+   🖼️ ẢNH CHÍNH FIX NHỎ LẠI
+===================================== */
+
+.product-image,
 .main-image{
   width:100%;
-  aspect-ratio:1/1;
+  height:320px; /* QUAN TRỌNG */
+  
   background:#fff;
+  border-radius:18px;
+
+  overflow:hidden;
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  overflow:hidden;
-  border-radius:16px;
+  border:1px solid #eee;
 }
 
+/* ===== ẢNH ===== */
+.product-image img,
 .main-image img{
-  width:100%;
-  height:100%;
+  max-width:100%;
+  max-height:100%;
+
+  width:auto;
+  height:auto;
+
   object-fit:contain;
 
-  border-radius:16px;
+  border-radius:12px;
 }
 
-/* ===== THUMBNAIL ===== */
+/* =====================================
+   📸 THUMBNAIL
+===================================== */
+
 .thumbnail-list{
   display:flex;
   gap:10px;
@@ -141,21 +119,19 @@ html,body{
 }
 
 .thumbnail{
-  min-width:72px;
-  width:72px;
-  height:72px;
+  width:65px;
+  height:65px;
 
-  background:#fff;
-  border:2px solid #eee;
   border-radius:12px;
-
   overflow:hidden;
-  cursor:pointer;
+
+  border:2px solid #eee;
   flex-shrink:0;
+  background:#fff;
 }
 
 .thumbnail.active{
-  border:2px solid #ff4d4f;
+  border:2px solid #00bcd4;
 }
 
 .thumbnail img{
@@ -164,32 +140,28 @@ html,body{
   object-fit:cover;
 }
 
-/* ===================================
-   📦 THÔNG TIN SẢN PHẨM
-=================================== */
+/* =====================================
+   📝 INFO
+===================================== */
 
 .product-info{
-  margin-top:12px;
-  background:#fff;
-  border-radius:18px;
-  padding:16px;
+  margin-top:14px;
 }
 
-/* TÊN */
 .product-title{
-  font-size:20px;
+  font-size:19px;
   font-weight:700;
-  line-height:1.4;
-  margin-bottom:10px;
+  line-height:1.5;
+  color:#111;
 }
 
-/* GIÁ */
+/* ===== PRICE ===== */
 .price-box{
+  margin-top:10px;
   display:flex;
   align-items:center;
   gap:10px;
   flex-wrap:wrap;
-  margin-bottom:12px;
 }
 
 .price{
@@ -201,66 +173,47 @@ html,body{
 .old-price{
   color:#999;
   text-decoration:line-through;
-  font-size:16px;
+  font-size:15px;
 }
 
-.discount{
+.sale-tag{
   background:#ff0000;
   color:#fff;
-  font-size:12px;
   padding:4px 8px;
   border-radius:8px;
+  font-size:12px;
 }
 
-/* ===== STATUS ===== */
-.stock-status{
-  display:inline-block;
-  margin-top:4px;
-  background:#e8fff1;
-  color:#00a651;
-  padding:6px 12px;
-  border-radius:999px;
-  font-size:13px;
-  font-weight:600;
-}
-
-/* ===================================
+/* =====================================
    ⚙️ THÔNG SỐ
-=================================== */
+===================================== */
 
 .spec-box{
-  margin-top:14px;
+  margin-top:16px;
   background:#fff;
   border-radius:18px;
   overflow:hidden;
+  border:1px solid #eee;
 }
 
 .spec-title{
   padding:14px;
   font-size:17px;
   font-weight:700;
-  border-bottom:1px solid #eee;
-}
-
-.spec-table{
-  width:100%;
+  background:#fafafa;
 }
 
 .spec-row{
   display:flex;
-  border-bottom:1px solid #f1f1f1;
-}
-
-.spec-row:last-child{
-  border-bottom:none;
+  border-top:1px solid #f1f1f1;
 }
 
 .spec-label{
   width:40%;
-  background:#fafafa;
   padding:12px;
-  font-size:14px;
+  background:#fafafa;
   color:#666;
+  font-size:14px;
 }
 
 .spec-value{
@@ -270,31 +223,9 @@ html,body{
   font-weight:600;
 }
 
-/* ===================================
-   📝 MÔ TẢ
-=================================== */
-
-.description-box{
-  margin-top:14px;
-  background:#fff;
-  border-radius:18px;
-  padding:16px;
-}
-
-.description-box h3{
-  margin-bottom:12px;
-  font-size:18px;
-}
-
-.description-box p{
-  font-size:15px;
-  line-height:1.7;
-  color:#444;
-}
-
-/* ===================================
-   🛒 NÚT MUA
-=================================== */
+/* =====================================
+   🛒 THANH MUA
+===================================== */
 
 .buy-bar{
   position:fixed;
@@ -303,108 +234,80 @@ html,body{
   width:100%;
 
   background:#fff;
-  border-top:1px solid #e5e5e5;
-
-  padding:10px;
-  z-index:999;
+  border-top:1px solid #eee;
 
   display:flex;
   gap:10px;
+
+  padding:10px;
+  z-index:999;
 }
 
-/* CART */
+/* ===== CART ===== */
 .cart-btn{
-  width:56px;
-  height:56px;
+  width:58px;
+  height:54px;
 
   border:none;
-  border-radius:16px;
+  border-radius:14px;
 
-  background:#f3f3f3;
-
+  background:#f1f1f1;
   font-size:22px;
 }
 
-/* BUY */
+/* ===== BUY ===== */
 .buy-btn{
   flex:1;
-  height:56px;
+  height:54px;
 
   border:none;
-  border-radius:16px;
+  border-radius:14px;
 
-  background:linear-gradient(135deg,#ff3c3c,#ff6a00);
+  background:linear-gradient(90deg,#ff512f,#ff0000);
   color:#fff;
 
   font-size:17px;
   font-weight:700;
 }
 
-/* ===== BUTTON EFFECT ===== */
+/* ===== EFFECT ===== */
 .buy-btn:active,
 .cart-btn:active{
-  transform:scale(.97);
+  transform:scale(.98);
 }
 
-/* ===================================
-   ⭐ REVIEW
-=================================== */
-
-.review-box{
-  margin-top:14px;
-  background:#fff;
-  border-radius:18px;
-  padding:16px;
-}
-
-.review-item{
-  padding:14px 0;
-  border-bottom:1px solid #f1f1f1;
-}
-
-.review-item:last-child{
-  border-bottom:none;
-}
-
-.review-name{
-  font-weight:700;
-  margin-bottom:6px;
-}
-
-.review-text{
-  font-size:14px;
-  color:#444;
-  line-height:1.6;
-}
-
-/* ===================================
-   📱 RESPONSIVE EXTRA
-=================================== */
+/* =====================================
+   📱 FIX ẢNH QUÁ TO
+===================================== */
 
 img{
   max-width:100%;
   display:block;
 }
 
-button{
-  cursor:pointer;
+/* nếu ảnh dọc quá dài */
+.product-image img.portrait{
+  max-height:300px;
+  width:auto;
 }
 
-input,
-textarea,
-select{
-  font-size:16px;
+/* nếu ảnh ngang */
+.product-image img.landscape{
+  width:100%;
+  height:auto;
 }
 
-/* tránh zoom iphone */
-input[type="text"],
-input[type="search"]{
-  font-size:16px;
+/* =====================================
+   🔥 FIX TRÀN
+===================================== */
+
+*{
+  box-sizing:border-box;
 }
 
-/* khoảng trống tránh che nội dung */
-body{
-  padding-bottom:90px;
+.container,
+.product-page{
+  overflow-x:hidden;
 }
 
 }
