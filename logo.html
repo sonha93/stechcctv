@@ -5,10 +5,14 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>Thông số sản phẩm</title>
+<title>Chi tiết sản phẩm</title>
+
+<link rel="stylesheet"
+href="styletrong-nha.css">
 
 <style>
 
+/* RESET */
 *{
   margin:0;
   padding:0;
@@ -18,85 +22,161 @@ content="width=device-width, initial-scale=1.0">
 
 body{
   background:#f5f5f5;
-}
-
-/* OVERLAY */
-.detail-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.45);
-  z-index:9998;
-}
-
-/* PANEL */
-.detail-panel{
-  position:fixed;
-  top:0;
-  right:-100%;
-  width:100%;
-  max-width:520px;
-  height:100vh;
-  background:#fff;
-  z-index:9999;
-  overflow-y:auto;
-  transition:.35s;
-}
-
-.detail-panel.active{
-  right:0;
+  overflow-x:hidden;
 }
 
 /* HEADER */
-.detail-header{
-  background:#00acc1;
-  color:#fff;
-  padding:22px;
+header{
+  position:sticky;
+  top:0;
+  z-index:1000;
+
   display:flex;
-  justify-content:space-between;
   align-items:center;
-}
+  gap:10px;
 
-.detail-header h2{
-  font-size:32px;
-  font-weight:bold;
-}
+  padding:12px 15px;
 
-.close-btn{
-  width:65px;
-  height:65px;
-  border-radius:50%;
   background:#fff;
-  color:#111;
-  border:none;
-  font-size:40px;
+
+  box-shadow:
+  0 2px 10px rgba(0,0,0,0.08);
+}
+
+.menu-btn{
+  font-size:24px;
   cursor:pointer;
 }
 
-/* IMAGE */
-.detail-img{
-  width:100%;
-  height:330px;
-  object-fit:cover;
-  background:#fff;
+.logo img{
+  height:38px;
+  width:auto;
+  display:block;
 }
 
-/* CONTENT */
-.detail-content{
+header input{
+  flex:1;
+  padding:11px 14px;
+
+  border-radius:12px;
+  border:1px solid #ddd;
+
+  outline:none;
+}
+
+/* SIDEBAR */
+.sidebar{
+  position:fixed;
+  top:0;
+  left:-260px;
+
+  width:250px;
+  height:100vh;
+
+  background:#fff;
+
+  z-index:2000;
+
+  padding:20px;
+
+  transition:.3s;
+}
+
+.sidebar.active{
+  left:0;
+}
+
+.sidebar h3{
+  margin-bottom:20px;
+}
+
+.sidebar a{
+  display:block;
+  padding:12px 0;
+
+  color:#111;
+  text-decoration:none;
+
+  border-bottom:1px solid #eee;
+}
+
+/* OVERLAY */
+#overlay{
+  position:fixed;
+  inset:0;
+
+  background:rgba(0,0,0,0.45);
+
+  z-index:1500;
+
+  display:none;
+}
+
+#overlay.active{
+  display:block;
+}
+
+/* MAIN */
+.detail-wrap{
+  max-width:1400px;
+  margin:auto;
+
+  display:grid;
+  grid-template-columns:
+  1.1fr 0.9fr;
+
+  gap:25px;
+
   padding:20px;
 }
 
+/* IMAGE */
+.left-box{
+  background:#fff;
+
+  border-radius:18px;
+
+  padding:20px;
+
+  box-shadow:
+  0 2px 10px rgba(0,0,0,0.08);
+}
+
+.left-box img{
+  width:100%;
+  border-radius:16px;
+}
+
+/* RIGHT */
+.right-box{
+  background:#fff;
+
+  border-radius:18px;
+
+  padding:25px;
+
+  box-shadow:
+  0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* TITLE */
 .product-name{
   font-size:30px;
   font-weight:bold;
-  margin-bottom:15px;
-  line-height:1.4;
+
+  line-height:1.5;
+
+  margin-bottom:18px;
 }
 
+/* PRICE */
 .price-wrap{
   display:flex;
   align-items:center;
-  gap:12px;
   flex-wrap:wrap;
+
+  gap:10px;
+
   margin-bottom:25px;
 }
 
@@ -108,33 +188,65 @@ body{
 
 .old-price{
   color:#888;
+  font-size:22px;
   text-decoration:line-through;
-  font-size:24px;
 }
 
 .sale{
   background:red;
   color:#fff;
+
   padding:6px 10px;
-  border-radius:8px;
-  font-size:18px;
+
+  border-radius:10px;
+
+  font-size:16px;
 }
 
-/* TABS */
+/* BUTTON */
+.buy-btn{
+  width:100%;
+
+  border:none;
+
+  background:#111;
+  color:#fff;
+
+  padding:16px;
+
+  border-radius:14px;
+
+  font-size:20px;
+  font-weight:bold;
+
+  cursor:pointer;
+
+  margin-bottom:25px;
+}
+
+/* TAB */
 .tabs{
   display:flex;
-  gap:12px;
+  gap:10px;
+
   margin-bottom:20px;
 }
 
 .tab-btn{
   flex:1;
+
   border:none;
-  padding:16px;
-  border-radius:14px;
+
   background:#eee;
-  font-size:22px;
+
+  padding:14px;
+
+  border-radius:12px;
+
   cursor:pointer;
+
+  font-size:16px;
+  font-weight:bold;
 }
 
 .tab-btn.active{
@@ -142,7 +254,7 @@ body{
   color:#fff;
 }
 
-/* TAB CONTENT */
+/* CONTENT */
 .tab-content{
   display:none;
 }
@@ -151,48 +263,35 @@ body{
   display:block;
 }
 
-/* INFO BOX */
+/* INFO */
 .info-box{
   background:#f7f7f7;
-  border-radius:20px;
-  padding:22px;
-  margin-bottom:18px;
-  line-height:1.8;
+
+  border-radius:16px;
+
+  padding:18px;
+
+  margin-bottom:15px;
 }
 
 .info-title{
-  font-size:22px;
+  font-size:15px;
   font-weight:bold;
-  margin-bottom:8px;
+
+  margin-bottom:6px;
 }
 
 .info-value{
-  font-size:20px;
-  color:#222;
+  color:#333;
+  line-height:1.7;
 }
 
-.buy-btn{
-  width:100%;
-  border:none;
-  padding:18px;
-  background:#111;
-  color:#fff;
-  font-size:24px;
-  border-radius:16px;
-  margin-top:20px;
-  cursor:pointer;
-}
-
+/* MOBILE */
 @media(max-width:768px){
 
-  .detail-header h2{
-    font-size:24px;
-  }
-
-  .close-btn{
-    width:50px;
-    height:50px;
-    font-size:28px;
+  .detail-wrap{
+    grid-template-columns:1fr;
+    padding:10px;
   }
 
   .product-name{
@@ -207,192 +306,262 @@ body{
     font-size:18px;
   }
 
+  .tabs{
+    flex-wrap:wrap;
+  }
+
   .tab-btn{
-    font-size:18px;
+    font-size:14px;
     padding:12px;
-  }
-
-  .info-title{
-    font-size:18px;
-  }
-
-  .info-value{
-    font-size:16px;
   }
 
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div class="detail-overlay"
-onclick="closeDetail()"></div>
+<div id="overlay"
+onclick="toggleMenu()"></div>
 
-<div class="detail-panel"
-id="detailPanel">
+<!-- MENU -->
+<div class="sidebar"
+id="sidebar">
 
-  <div class="detail-header">
+  <h3>Danh mục</h3>
 
-    <h2>Thông số sản phẩm</h2>
+  <a href="index.html">
+    Trang chủ
+  </a>
 
-    <button class="close-btn"
-    onclick="closeDetail()">
-      ×
-    </button>
+  <a href="cart.html">
+    Giỏ hàng
+  </a>
+
+  <a href="camera-trong-nha.html">
+    Camera trong nhà
+  </a>
+
+  <a href="camera-ngoai-troi.html">
+    Camera ngoài trời
+  </a>
+
+  <a href="the-nho.html">
+    Thẻ nhớ
+  </a>
+
+  <a href="combo-khuyenmai.html">
+    Combo khuyến mãi
+  </a>
+
+</div>
+
+<!-- HEADER -->
+<header>
+
+  <div class="menu-btn"
+    onclick="toggleMenu()">
+    ☰
+  </div>
+
+  <div class="logo">
+    <img
+      src="https://i.ibb.co/Z1kv9nJj/logo.png"
+      alt="logo">
+  </div>
+
+  <input
+    type="text"
+    placeholder="Tìm kiếm sản phẩm...">
+
+</header>
+
+<!-- DETAIL -->
+<div class="detail-wrap">
+
+  <!-- LEFT -->
+  <div class="left-box">
+
+    <img
+      id="detailImg"
+      src="">
 
   </div>
 
-  <img id="detailImg"
-  class="detail-img">
-
-  <div class="detail-content">
+  <!-- RIGHT -->
+  <div class="right-box">
 
     <div class="product-name"
-    id="detailName">
+      id="detailName">
     </div>
 
     <div class="price-wrap">
 
       <div class="price"
-      id="detailPrice">
+        id="detailPrice">
       </div>
 
       <div class="old-price"
-      id="detailOldPrice">
+        id="detailOldPrice">
       </div>
 
       <div class="sale"
-      id="detailSale">
+        id="detailSale">
       </div>
 
     </div>
 
+    <button class="buy-btn"
+      onclick="addToCart()">
+
+      🛒 Thêm vào giỏ hàng
+
+    </button>
+
     <!-- TABS -->
     <div class="tabs">
 
-      <button class="tab-btn active"
-      onclick="openTab('info')">
+      <button
+        class="tab-btn active"
+        onclick="openTab('info',this)">
+
         Thông tin
+
       </button>
 
-      <button class="tab-btn"
-      onclick="openTab('design')">
+      <button
+        class="tab-btn"
+        onclick="openTab('design',this)">
+
         Thiết kế
+
       </button>
 
-      <button class="tab-btn"
-      onclick="openTab('config')">
+      <button
+        class="tab-btn"
+        onclick="openTab('config',this)">
+
         Cấu hình
+
       </button>
 
     </div>
 
     <!-- INFO -->
     <div class="tab-content active"
-    id="info">
+      id="info">
 
       <div class="info-box">
+
         <div class="info-title">
-          Danh mục:
+          Danh mục
         </div>
 
         <div class="info-value"
-        id="detailCategory">
+          id="detailCategory">
         </div>
+
       </div>
 
       <div class="info-box">
+
         <div class="info-title">
-          Bảo hành:
+          Bảo hành
         </div>
 
         <div class="info-value"
-        id="detailBaoHanh">
+          id="detailBaoHanh">
         </div>
+
       </div>
 
       <div class="info-box">
+
         <div class="info-title">
-          Mô tả:
+          Mô tả
         </div>
 
         <div class="info-value"
-        id="detailDesc">
+          id="detailDesc">
         </div>
+
       </div>
 
     </div>
 
     <!-- DESIGN -->
     <div class="tab-content"
-    id="design">
+      id="design">
 
       <div class="info-box">
+
         <div class="info-title">
-          Thiết kế:
+          Thiết kế
         </div>
 
         <div class="info-value"
-        id="detailDesign">
+          id="detailDesign">
         </div>
+
       </div>
 
       <div class="info-box">
+
         <div class="info-title">
-          Chất liệu:
+          Chất liệu
         </div>
 
         <div class="info-value"
-        id="detailMaterial">
+          id="detailMaterial">
         </div>
+
       </div>
 
     </div>
 
     <!-- CONFIG -->
     <div class="tab-content"
-    id="config">
+      id="config">
 
       <div class="info-box">
+
         <div class="info-title">
-          Model:
+          Model
         </div>
 
         <div class="info-value"
-        id="detailModel">
+          id="detailModel">
         </div>
+
       </div>
 
       <div class="info-box">
+
         <div class="info-title">
-          Kết nối:
+          Độ phân giải
         </div>
 
         <div class="info-value"
-        id="detailConnect">
+          id="detailResolution">
         </div>
+
       </div>
 
       <div class="info-box">
+
         <div class="info-title">
-          Độ phân giải:
+          Kết nối
         </div>
 
         <div class="info-value"
-        id="detailResolution">
+          id="detailConnect">
         </div>
+
       </div>
 
     </div>
-
-    <button class="buy-btn"
-    onclick="addCurrentToCart()">
-
-      🛒 Thêm vào giỏ hàng
-
-    </button>
 
   </div>
 
@@ -400,158 +569,173 @@ id="detailPanel">
 
 <script>
 
-let currentProduct = null;
+/* =========================
+   MENU
+========================= */
+function toggleMenu(){
 
-/* OPEN DETAIL */
-function openDetail(id){
+  document
+  .getElementById("sidebar")
+  .classList.toggle("active");
 
-  const products =
-    JSON.parse(
-      localStorage.getItem("products")
-    ) || [];
+  document
+  .getElementById("overlay")
+  .classList.toggle("active");
 
-  const p =
-    products.find(
-      x => String(x.id) === String(id)
-    );
+}
 
-  if(!p) return;
+/* =========================
+   GET PRODUCT
+========================= */
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
 
-  currentProduct = p;
+const id = params.get("id");
+
+const products =
+  JSON.parse(
+    localStorage.getItem("products")
+  ) || [];
+
+const product =
+  products.find(
+    p => String(p.id) === String(id)
+  );
+
+/* =========================
+   SHOW DATA
+========================= */
+if(product){
 
   document
   .getElementById("detailImg")
-  .src = p.img || "";
+  .src = product.img || "";
 
   document
   .getElementById("detailName")
-  .innerText = p.name || "";
+  .innerText =
+    product.name || "";
 
   document
   .getElementById("detailPrice")
   .innerText =
-    Number(p.price || 0)
+    Number(product.price || 0)
     .toLocaleString() + "đ";
 
   document
   .getElementById("detailOldPrice")
   .innerText =
-    p.oldPrice
-    ? Number(p.oldPrice)
+    product.oldPrice
+    ? Number(product.oldPrice)
       .toLocaleString() + "đ"
     : "";
 
   /* SALE */
-  let sale = "";
-
   if(
-    p.oldPrice &&
-    p.oldPrice > p.price
+    product.oldPrice &&
+    product.oldPrice > product.price
   ){
 
-    const percent =
+    const sale =
       Math.round(
-        (1 - p.price / p.oldPrice) * 100
+        (
+          1 -
+          product.price /
+          product.oldPrice
+        ) * 100
       );
 
-    sale = "-" + percent + "%";
-  }
+    document
+    .getElementById("detailSale")
+    .innerText =
+      "-" + sale + "%";
 
-  document
-  .getElementById("detailSale")
-  .innerText = sale;
+  }
 
   document
   .getElementById("detailCategory")
   .innerText =
-    p.categoryName || p.category;
+    product.categoryName ||
+    product.category ||
+    "Không rõ";
 
   document
   .getElementById("detailBaoHanh")
   .innerText =
-    p.baoHanh || "Đang cập nhật";
+    product.baoHanh ||
+    "Đang cập nhật";
 
   document
   .getElementById("detailDesc")
   .innerText =
-    p.desc || "Không có mô tả";
+    product.desc ||
+    "Không có mô tả";
 
   document
   .getElementById("detailDesign")
   .innerText =
-    p.thietKe || "Đang cập nhật";
+    product.thietKe ||
+    "Đang cập nhật";
 
   document
   .getElementById("detailMaterial")
   .innerText =
-    p.chatLieu || "Đang cập nhật";
+    product.chatLieu ||
+    "Đang cập nhật";
 
   document
   .getElementById("detailModel")
   .innerText =
-    p.model || "Đang cập nhật";
-
-  document
-  .getElementById("detailConnect")
-  .innerText =
-    p.ketNoi || "Đang cập nhật";
+    product.model ||
+    "Đang cập nhật";
 
   document
   .getElementById("detailResolution")
   .innerText =
-    p.doPhanGiai || "Đang cập nhật";
-
-  setTimeout(()=>{
-
-    document
-    .getElementById("detailPanel")
-    .classList.add("active");
-
-  },50);
-
-}
-
-/* CLOSE */
-function closeDetail(){
+    product.doPhanGiai ||
+    "Đang cập nhật";
 
   document
-  .getElementById("detailPanel")
-  .classList.remove("active");
+  .getElementById("detailConnect")
+  .innerText =
+    product.ketNoi ||
+    "Đang cập nhật";
 
 }
 
-/* TAB */
-function openTab(id){
+/* =========================
+   TAB
+========================= */
+function openTab(id,btn){
 
   document
   .querySelectorAll(".tab-content")
   .forEach(tab=>{
-
     tab.classList.remove("active");
-
   });
 
   document
   .querySelectorAll(".tab-btn")
-  .forEach(btn=>{
-
-    btn.classList.remove("active");
-
+  .forEach(b=>{
+    b.classList.remove("active");
   });
 
   document
   .getElementById(id)
   .classList.add("active");
 
-  event.target
-  .classList.add("active");
+  btn.classList.add("active");
 
 }
 
-/* ADD CART */
-function addCurrentToCart(){
+/* =========================
+   ADD CART
+========================= */
+function addToCart(){
 
-  if(!currentProduct) return;
+  if(!product) return;
 
   let cart =
     JSON.parse(
@@ -562,7 +746,7 @@ function addCurrentToCart(){
     cart.find(
       x =>
       String(x.id) ===
-      String(currentProduct.id)
+      String(product.id)
     );
 
   if(exist){
@@ -572,11 +756,8 @@ function addCurrentToCart(){
   }else{
 
     cart.push({
-
-      ...currentProduct,
-
+      ...product,
       qty:1
-
     });
 
   }
