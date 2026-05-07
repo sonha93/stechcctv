@@ -54,7 +54,7 @@ function render(list){
   list = fixData(list);
 
   list = list.filter(
-    p => p.category === "cam-out"
+    p => p.category === "cam-in"
   );
 
   box.innerHTML = "";
