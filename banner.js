@@ -577,3 +577,53 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
 });
+const mobileStyle = document.createElement("style");
+
+mobileStyle.innerHTML = `
+
+@media(max-width:768px){
+
+  .vip-links{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    gap:8px;
+
+    margin-bottom:18px;
+  }
+
+  .vip-links a{
+
+    width:100%;
+
+    padding:10px 14px;
+
+    border-radius:14px;
+
+    background:
+    rgba(255,255,255,0.10);
+
+    backdrop-filter:blur(6px);
+
+    font-size:13px;
+
+    font-weight:700;
+  }
+
+  .vip-links a:hover{
+
+    background:
+    rgba(255,255,255,0.18);
+
+    transform:none;
+  }
+
+}
+
+`;
+
+document.head.appendChild(mobileStyle);
