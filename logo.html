@@ -8,11 +8,13 @@ content="width=device-width, initial-scale=1.0">
 <title>Chi tiết sản phẩm</title>
 
 <link rel="stylesheet"
-href="logo.css">
+href="styletrong-nha.css">
 
 <style>
 
-/* RESET */
+/* =========================
+   RESET
+========================= */
 *{
   margin:0;
   padding:0;
@@ -25,17 +27,19 @@ body{
   overflow-x:hidden;
 }
 
-/* HEADER */
-header{
+/* =========================
+   HEADER
+========================= */
+.mobile-header{
   position:sticky;
   top:0;
-  z-index:1000;
+  z-index:999;
 
   display:flex;
   align-items:center;
   gap:10px;
 
-  padding:12px 15px;
+  padding:12px;
 
   background:#fff;
 
@@ -43,28 +47,106 @@ header{
   0 2px 10px rgba(0,0,0,0.08);
 }
 
+/* MENU */
 .menu-btn{
-  font-size:24px;
+  font-size:26px;
   cursor:pointer;
+  user-select:none;
+}
+
+/* LOGO */
+.logo{
+  display:flex;
+  align-items:center;
 }
 
 .logo img{
   height:38px;
   width:auto;
+
+  border:0;
+  outline:0;
+  box-shadow:none;
+
   display:block;
+  background:transparent;
 }
 
-header input{
+/* SEARCH */
+.mobile-header input{
   flex:1;
-  padding:11px 14px;
 
-  border-radius:12px;
+  height:42px;
+
   border:1px solid #ddd;
+  border-radius:12px;
+
+  padding:0 14px;
 
   outline:none;
+
+  font-size:14px;
+
+  background:#f8f8f8;
 }
 
-/* SIDEBAR */
+/* RIGHT */
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* ICON */
+.cart-icon,
+.admin-icon{
+  position:relative;
+
+  width:42px;
+  height:42px;
+
+  border-radius:12px;
+
+  background:#f5f5f5;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  text-decoration:none;
+
+  font-size:20px;
+
+  color:#111;
+}
+
+/* COUNT */
+#cart-count{
+  position:absolute;
+  top:-6px;
+  right:-5px;
+
+  min-width:20px;
+  height:20px;
+
+  border-radius:50%;
+
+  background:red;
+  color:#fff;
+
+  font-size:11px;
+  font-weight:bold;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0 5px;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
 .sidebar{
   position:fixed;
   top:0;
@@ -116,39 +198,51 @@ header input{
   display:block;
 }
 
-/* MAIN */
+/* =========================
+   DETAIL WRAP
+========================= */
 .detail-wrap{
   max-width:1400px;
   margin:auto;
 
-  display:grid;
-  grid-template-columns:
-  1.1fr 0.9fr;
+  display:flex;
+  align-items:flex-start;
 
   gap:25px;
 
   padding:20px;
 }
 
-/* IMAGE */
+/* LEFT */
 .left-box{
+  width:42%;
+
   background:#fff;
 
   border-radius:18px;
 
-  padding:20px;
+  padding:18px;
 
   box-shadow:
   0 2px 10px rgba(0,0,0,0.08);
 }
 
+/* IMAGE */
 .left-box img{
   width:100%;
+  max-height:420px;
+
+  object-fit:contain;
+
   border-radius:16px;
+
+  background:#fff;
 }
 
 /* RIGHT */
 .right-box{
+  flex:1;
+
   background:#fff;
 
   border-radius:18px;
@@ -224,7 +318,7 @@ header input{
   margin-bottom:25px;
 }
 
-/* TAB */
+/* TABS */
 .tabs{
   display:flex;
   gap:10px;
@@ -286,12 +380,39 @@ header input{
   line-height:1.7;
 }
 
-/* MOBILE */
+/* =========================
+   FOOTER
+========================= */
+.footer{
+  margin-top:30px;
+
+  background:#111;
+  color:#fff;
+
+  padding:30px 20px;
+}
+
+.footer-container{
+  max-width:1200px;
+  margin:auto;
+}
+
+/* =========================
+   MOBILE
+========================= */
 @media(max-width:768px){
 
   .detail-wrap{
-    grid-template-columns:1fr;
+    flex-direction:column;
     padding:10px;
+  }
+
+  .left-box{
+    width:100%;
+  }
+
+  .left-box img{
+    max-height:280px;
   }
 
   .product-name{
@@ -313,6 +434,27 @@ header input{
   .tab-btn{
     font-size:14px;
     padding:12px;
+  }
+
+  .mobile-header{
+    gap:8px;
+    padding:10px;
+  }
+
+  .logo img{
+    height:34px;
+  }
+
+  .mobile-header input{
+    height:40px;
+    font-size:13px;
+  }
+
+  .cart-icon,
+  .admin-icon{
+    width:38px;
+    height:38px;
+    font-size:18px;
   }
 
 }
@@ -359,22 +501,49 @@ id="sidebar">
 </div>
 
 <!-- HEADER -->
-<header>
+<header class="mobile-header">
 
   <div class="menu-btn"
     onclick="toggleMenu()">
+
     ☰
+
   </div>
 
   <div class="logo">
+
     <img
       src="https://i.ibb.co/Z1kv9nJj/logo.png"
       alt="logo">
+
   </div>
 
   <input
+    id="search"
     type="text"
     placeholder="Tìm kiếm sản phẩm...">
+
+  <div class="header-right">
+
+    <a href="cart.html"
+      class="cart-icon">
+
+      🛒
+
+      <span id="cart-count">
+        0
+      </span>
+
+    </a>
+
+    <a href="admin.html"
+      class="admin-icon">
+
+      👤
+
+    </a>
+
+  </div>
 
 </header>
 
@@ -567,6 +736,37 @@ id="sidebar">
 
 </div>
 
+<!-- FOOTER -->
+<footer class="footer">
+
+  <div class="footer-container">
+
+    <h3>StechCamera</h3>
+
+    <p>
+      📍 Website chuyên cung cấp
+      camera an ninh chính hãng
+    </p>
+
+    <p>
+      📞 Hotline: 0985.678.245
+    </p>
+
+    <p>
+      📧 Email: support@stechcamera.vn
+    </p>
+
+    <hr style="margin:15px 0;">
+
+    <p>
+      © 2026 StechCamera.
+      All rights reserved.
+    </p>
+
+  </div>
+
+</footer>
+
 <script>
 
 /* =========================
@@ -583,6 +783,32 @@ function toggleMenu(){
   .classList.toggle("active");
 
 }
+
+/* =========================
+   CART COUNT
+========================= */
+function updateCartCount(){
+
+  let cart =
+    JSON.parse(
+      localStorage.getItem("cart")
+    ) || [];
+
+  let total = 0;
+
+  cart.forEach(item => {
+
+    total += item.qty || 1;
+
+  });
+
+  document
+  .getElementById("cart-count")
+  .innerText = total;
+
+}
+
+updateCartCount();
 
 /* =========================
    GET PRODUCT
@@ -632,7 +858,6 @@ if(product){
       .toLocaleString() + "đ"
     : "";
 
-  /* SALE */
   if(
     product.oldPrice &&
     product.oldPrice > product.price
@@ -766,6 +991,8 @@ function addToCart(){
     "cart",
     JSON.stringify(cart)
   );
+
+  updateCartCount();
 
   alert("Đã thêm vào giỏ 🛒");
 
