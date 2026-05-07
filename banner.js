@@ -685,3 +685,87 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
 });
+// =========================
+// FORCE MOBILE FIX
+// =========================
+if(window.innerWidth <= 768){
+
+  const mobileFix = document.createElement("style");
+
+  mobileFix.innerHTML = `
+
+  .vip-banner{
+    width:calc(100% - 12px) !important;
+    margin:6px auto !important;
+    padding:16px !important;
+    border-radius:22px !important;
+    flex-direction:column !important;
+    align-items:flex-start !important;
+    gap:16px !important;
+  }
+
+  .vip-left{
+    width:100% !important;
+  }
+
+  .vip-right{
+    width:100% !important;
+    justify-content:center !important;
+    margin-top:4px !important;
+  }
+
+  .stech-3d{
+    font-size:34px !important;
+    line-height:1 !important;
+    margin-bottom:10px !important;
+  }
+
+  .vip-left h2{
+    font-size:21px !important;
+    line-height:1.4 !important;
+    margin-bottom:12px !important;
+  }
+
+  .vip-links{
+    gap:6px !important;
+    font-size:13px !important;
+    line-height:1.7 !important;
+    margin-bottom:16px !important;
+  }
+
+  .vip-btn{
+    width:100% !important;
+    height:50px !important;
+    border-radius:16px !important;
+    font-size:15px !important;
+  }
+
+  .camera-stage{
+    width:100% !important;
+    height:auto !important;
+    display:flex !important;
+    justify-content:center !important;
+    gap:8px !important;
+  }
+
+  .cam-card{
+    position:relative !important;
+    left:auto !important;
+    right:auto !important;
+    top:auto !important;
+    transform:none !important;
+
+    width:74px !important;
+    height:74px !important;
+    border-radius:18px !important;
+  }
+
+  .cam-card span{
+    font-size:32px !important;
+  }
+
+  `;
+  
+  document.head.appendChild(mobileFix);
+
+}
