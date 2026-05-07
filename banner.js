@@ -131,24 +131,134 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
 
-  /* LOGO */
+  /* =========================
+     LOGO 3D ĐỘNG
+  ========================= */
   .stech-3d{
+
+    position:relative;
+
+    display:inline-block;
 
     font-size:28px;
 
     font-weight:900;
 
-    letter-spacing:1px;
+    letter-spacing:2px;
 
-    margin-bottom:5px;
+    margin-bottom:6px;
 
     line-height:1;
 
+    text-transform:uppercase;
+
     color:#fff;
 
+    transform-style:preserve-3d;
+
+    animation:logo3dFloat 3.5s ease-in-out infinite;
+
     text-shadow:
-      0 1px 0 #d1fae5,
-      0 2px 8px rgba(0,0,0,0.35);
+      0 1px 0 #ffffff,
+      0 2px 0 #d1fae5,
+      0 3px 0 #86efac,
+      0 4px 12px rgba(0,0,0,0.35);
+  }
+
+
+  /* PHẢN CHIẾU */
+  .stech-3d::before{
+
+    content:"STECH";
+
+    position:absolute;
+
+    inset:0;
+
+    color:rgba(255,255,255,0.16);
+
+    transform:
+      translateY(8px)
+      scaleY(-1);
+
+    filter:blur(4px);
+
+    opacity:.5;
+  }
+
+
+  /* GLOW */
+  .stech-3d::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:-8px;
+
+    border-radius:12px;
+
+    background:
+      radial-gradient(
+        circle,
+        rgba(255,255,255,0.15),
+        transparent 70%
+      );
+
+    z-index:-1;
+
+    animation:glowPulse 3s ease-in-out infinite;
+  }
+
+
+  /* FLOAT */
+  @keyframes logo3dFloat{
+
+    0%{
+      transform:
+        perspective(700px)
+        rotateX(8deg)
+        rotateY(-8deg)
+        translateY(0px);
+    }
+
+    50%{
+      transform:
+        perspective(700px)
+        rotateX(8deg)
+        rotateY(-8deg)
+        translateY(-4px);
+    }
+
+    100%{
+      transform:
+        perspective(700px)
+        rotateX(8deg)
+        rotateY(-8deg)
+        translateY(0px);
+    }
+
+  }
+
+
+  /* GLOW */
+  @keyframes glowPulse{
+
+    0%{
+      opacity:.4;
+      transform:scale(1);
+    }
+
+    50%{
+      opacity:.8;
+      transform:scale(1.08);
+    }
+
+    100%{
+      opacity:.4;
+      transform:scale(1);
+    }
+
   }
 
 
@@ -226,10 +336,19 @@ document.addEventListener("DOMContentLoaded", function(){
 
     box-shadow:
       0 6px 14px rgba(0,0,0,0.18);
+
+    transition:.2s;
   }
 
   .vip-btn:active{
     transform:scale(0.97);
+  }
+
+  .vip-btn:hover{
+
+    background:#000;
+
+    color:#fff;
   }
 
   `;
