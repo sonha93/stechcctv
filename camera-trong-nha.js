@@ -1,5 +1,5 @@
 /* =========================
-   🔥 CAMERA NGOÀI TRỜI JS FIX FULL
+   🔥 CAMERA TRONG NHA JS FIX FULL
 ========================= */
 
 /* =========================
@@ -15,7 +15,7 @@ function getProducts() {
    PAGE CATEGORY
 ========================= */
 function getPageCategory() {
-  return "cam-out";
+  return "cam-IN";
 }
 
 /* =========================
