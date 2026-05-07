@@ -1,313 +1,237 @@
-/* =====================================
-   📱 MOBILE PRODUCT UI FIX
-   Ảnh nhỏ lại - gọn như Shopee/TGDĐ
-===================================== */
+/* =========================================
+   📱 PRODUCT CARD FIX CHUẨN MOBILE
+   THỨ TỰ:
+   1. ẢNH
+   2. TÊN
+   3. GIÁ
+   4. GIÁ GỐC
+   5. XEM THÔNG SỐ
+========================================= */
 
-@media screen and (max-width:768px){
-
-/* ===== BODY ===== */
-body{
-  margin:0;
-  background:#f5f5f5;
-  font-family:Arial,sans-serif;
-  overflow-x:hidden;
-  padding-bottom:90px;
-}
-
-/* ===== HEADER ===== */
-.header,
-.top-header{
-  height:68px;
-  background:linear-gradient(90deg,#00bcd4,#00acc1);
-  display:flex;
-  align-items:center;
-  padding:0 12px;
+/* ===== GRID ===== */
+#products{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
   gap:12px;
-  position:sticky;
-  top:0;
-  z-index:999;
+  padding:10px;
 }
 
-.logo{
-  width:52px;
-  height:52px;
-  border-radius:14px;
-  object-fit:cover;
+@media(min-width:768px){
+  #products{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+
+@media(min-width:1024px){
+  #products{
+    grid-template-columns:repeat(4,1fr);
+  }
+}
+
+/* =========================================
+   📦 CARD
+========================================= */
+
+.item{
   background:#fff;
-}
+  border-radius:16px;
+  padding:10px;
 
-/* ===== MENU + CART ===== */
-.menu-btn,
-.cart-btn-top{
-  width:48px;
-  height:48px;
-  border:none;
-  border-radius:50%;
-  background:rgba(255,255,255,.15);
-  color:#fff;
-  font-size:22px;
+  box-shadow:0 4px 14px rgba(0,0,0,.08);
 
   display:flex;
-  align-items:center;
-  justify-content:center;
+  flex-direction:column;
+
+  position:relative;
+  overflow:hidden;
 }
 
-/* =====================================
-   📦 KHUNG SẢN PHẨM
-===================================== */
+/* =========================================
+   🖼️ KHUNG ẢNH
+========================================= */
 
-.product-card,
-.product-container{
-  width:96%;
-  margin:12px auto;
-  background:#fff;
-  border-radius:22px;
-  padding:12px;
-
-  box-shadow:0 4px 12px rgba(0,0,0,.08);
-}
-
-/* =====================================
-   🖼️ ẢNH CHÍNH FIX NHỎ LẠI
-===================================== */
-
-.product-image,
-.main-image{
+.img-box{
   width:100%;
-  height:320px; /* QUAN TRỌNG */
-  
-  background:#fff;
-  border-radius:18px;
+  height:160px;
 
+  border-radius:14px;
   overflow:hidden;
 
+  background:#f5f5f5;
+
   display:flex;
   align-items:center;
   justify-content:center;
 
-  border:1px solid #eee;
+  margin-bottom:10px;
 }
 
-/* ===== ẢNH ===== */
-.product-image img,
-.main-image img{
-  max-width:100%;
-  max-height:100%;
+/* ===== ẢNH NHỎ LẠI ===== */
 
+.img-box img{
   width:auto;
   height:auto;
+
+  max-width:88%;
+  max-height:88%;
 
   object-fit:contain;
 
-  border-radius:12px;
-}
-
-/* =====================================
-   📸 THUMBNAIL
-===================================== */
-
-.thumbnail-list{
-  display:flex;
-  gap:10px;
-  overflow-x:auto;
-  margin-top:12px;
-  padding-bottom:4px;
-}
-
-.thumbnail-list::-webkit-scrollbar{
-  display:none;
-}
-
-.thumbnail{
-  width:65px;
-  height:65px;
-
-  border-radius:12px;
-  overflow:hidden;
-
-  border:2px solid #eee;
-  flex-shrink:0;
-  background:#fff;
-}
-
-.thumbnail.active{
-  border:2px solid #00bcd4;
-}
-
-.thumbnail img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-/* =====================================
-   📝 INFO
-===================================== */
-
-.product-info{
-  margin-top:14px;
-}
-
-.product-title{
-  font-size:19px;
-  font-weight:700;
-  line-height:1.5;
-  color:#111;
-}
-
-/* ===== PRICE ===== */
-.price-box{
-  margin-top:10px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.price{
-  color:#ff0000;
-  font-size:28px;
-  font-weight:700;
-}
-
-.old-price{
-  color:#999;
-  text-decoration:line-through;
-  font-size:15px;
-}
-
-.sale-tag{
-  background:#ff0000;
-  color:#fff;
-  padding:4px 8px;
-  border-radius:8px;
-  font-size:12px;
-}
-
-/* =====================================
-   ⚙️ THÔNG SỐ
-===================================== */
-
-.spec-box{
-  margin-top:16px;
-  background:#fff;
-  border-radius:18px;
-  overflow:hidden;
-  border:1px solid #eee;
-}
-
-.spec-title{
-  padding:14px;
-  font-size:17px;
-  font-weight:700;
-  background:#fafafa;
-}
-
-.spec-row{
-  display:flex;
-  border-top:1px solid #f1f1f1;
-}
-
-.spec-label{
-  width:40%;
-  padding:12px;
-  background:#fafafa;
-  color:#666;
-  font-size:14px;
-}
-
-.spec-value{
-  flex:1;
-  padding:12px;
-  font-size:14px;
-  font-weight:600;
-}
-
-/* =====================================
-   🛒 THANH MUA
-===================================== */
-
-.buy-bar{
-  position:fixed;
-  bottom:0;
-  left:0;
-  width:100%;
-
-  background:#fff;
-  border-top:1px solid #eee;
-
-  display:flex;
-  gap:10px;
-
-  padding:10px;
-  z-index:999;
-}
-
-/* ===== CART ===== */
-.cart-btn{
-  width:58px;
-  height:54px;
-
-  border:none;
-  border-radius:14px;
-
-  background:#f1f1f1;
-  font-size:22px;
-}
-
-/* ===== BUY ===== */
-.buy-btn{
-  flex:1;
-  height:54px;
-
-  border:none;
-  border-radius:14px;
-
-  background:linear-gradient(90deg,#ff512f,#ff0000);
-  color:#fff;
-
-  font-size:17px;
-  font-weight:700;
-}
-
-/* ===== EFFECT ===== */
-.buy-btn:active,
-.cart-btn:active{
-  transform:scale(.98);
-}
-
-/* =====================================
-   📱 FIX ẢNH QUÁ TO
-===================================== */
-
-img{
-  max-width:100%;
   display:block;
 }
 
-/* nếu ảnh dọc quá dài */
-.product-image img.portrait{
-  max-height:300px;
-  width:auto;
+/* =========================================
+   🏷️ TÊN SẢN PHẨM
+========================================= */
+
+.item h4{
+  font-size:14px;
+  line-height:1.4;
+  color:#111;
+
+  margin-bottom:8px;
+
+  min-height:40px;
+
+  overflow:hidden;
 }
 
-/* nếu ảnh ngang */
-.product-image img.landscape{
+/* =========================================
+   💰 GIÁ
+========================================= */
+
+.price{
+  color:#c4001d;
+  font-size:18px;
+  font-weight:700;
+
+  margin-bottom:4px;
+}
+
+/* =========================================
+   🏷️ GIÁ GỐC
+========================================= */
+
+.old-price{
+  color:#666;
+  font-size:13px;
+  text-decoration:line-through;
+
+  margin-bottom:10px;
+}
+
+/* =========================================
+   🔥 % GIẢM
+========================================= */
+
+.discount-text{
+  display:inline-block;
+
+  background:#c4001d;
+  color:#fff;
+
+  font-size:11px;
+  font-weight:bold;
+
+  padding:4px 7px;
+  border-radius:6px;
+
+  margin-bottom:10px;
+}
+
+/* =========================================
+   ⚙️ NÚT XEM THÔNG SỐ
+========================================= */
+
+.spec-btn{
   width:100%;
-  height:auto;
+
+  padding:9px;
+
+  border:none;
+  border-radius:10px;
+
+  background:#f1f1f1;
+  color:#111;
+
+  font-size:13px;
+  font-weight:600;
+
+  margin-top:auto;
 }
 
-/* =====================================
-   🔥 FIX TRÀN
-===================================== */
+/* =========================================
+   🛒 NÚT MUA
+========================================= */
 
-*{
-  box-sizing:border-box;
+.cart-btn{
+  width:100%;
+
+  margin-top:7px;
+  padding:10px;
+
+  border:none;
+  border-radius:10px;
+
+  background:linear-gradient(90deg,#00acc1,#43a047);
+  color:#fff;
+
+  font-size:14px;
+  font-weight:bold;
 }
 
-.container,
-.product-page{
-  overflow-x:hidden;
+/* =========================================
+   🔥 BADGE
+========================================= */
+
+.discount-badge{
+  position:absolute;
+  top:10px;
+  left:10px;
+
+  background:#c4001d;
+  color:#fff;
+
+  font-size:11px;
+  font-weight:bold;
+
+  padding:4px 7px;
+  border-radius:7px;
+
+  z-index:5;
 }
 
+/* =========================================
+   📱 MOBILE FIX
+========================================= */
+
+@media(max-width:600px){
+
+  .img-box{
+    height:145px;
+  }
+
+  .img-box img{
+    max-width:84%;
+    max-height:84%;
+  }
+
+  .item h4{
+    font-size:13px;
+  }
+
+  .price{
+    font-size:17px;
+  }
+
+}
+
+/* =========================================
+   ✨ HOVER
+========================================= */
+
+.item:hover{
+  transform:translateY(-3px);
+  transition:.2s;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
 }
