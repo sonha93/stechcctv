@@ -1,66 +1,51 @@
-function renderCart() {
-  const box = document.getElementById("cartList");
+function renderCheckout() {
+  const box = document.getElementById("cart");
   const totalBox = document.getElementById("total");
+
+  if (!box || !totalBox) return;
+
+  const cart = getCart();
+  const products = JSON.parse(localStorage.getItem("products")) || [];
+
   box.innerHTML = "";
 
   if (cart.length === 0) {
-    box.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
-    totalBox.innerHTML = "";
-    renderCartAction();
+    box.innerHTML = "<p>Giỏ hàng trống</p>";
+    totalBox.innerText = "0";
     return;
   }
 
-  const products = getProducts(); // Lấy giá mới từ app.js
   let total = 0;
 
-  // Cập nhật cart với giá mới
-  cart = cart.map(item => {
+  cart.forEach(item => {
     const p = products.find(prod => String(prod.id) === String(item.id));
-    if (!p) return item;
-    return {
-      ...item,
-      price: Number(p.price),
-      oldPrice: Number(p.oldPrice) || 0,
-      name: p.name,
-      img: p.img
-    };
-  });
+    if (!p) return;
 
-  cart.forEach((item, index) => {
-    const price = item.price;
-    const oldPrice = item.oldPrice;
-    const qty = item.quantity || 1;
-    const itemTotal = price * qty;
-    total += itemTotal;
+    const price = Number(p.price) || 0;
+    const oldPrice = Number(p.oldPrice) || 0;
+    const qty = Number(item.quantity || item.qty || 1);
+    total += price * qty;
 
-    // Nếu oldPrice > price thì show giá cũ + sale
-    let priceHTML;
-    if (oldPrice && oldPrice > price) {
-      priceHTML = `<span class="old-price">${oldPrice.toLocaleString()}đ</span> 
-                   ${price.toLocaleString()}đ × ${qty} = 
-                   <b style="color:#e53935">${itemTotal.toLocaleString()}đ</b>
-                   <span class="sale">-${Math.round(((oldPrice-price)/oldPrice)*100)}%</span>`;
-    } else {
-      // Chỉ show giá hiện tại, không show oldPrice hay sale
-      priceHTML = `${price.toLocaleString()}đ × ${qty} = <b style="color:#e53935">${itemTotal.toLocaleString()}đ</b>`;
-    }
+    const hasDiscount = oldPrice > price;
 
     box.innerHTML += `
-      <div class="item">
-        <img src="${item.img}">
-        <div class="info">
-          <h4>${item.name}</h4>
-          <div class="price">${priceHTML}</div>
+      <div class="cart-item">
+        <img src="${p.img}" style="width:60px">
+        <div>
+          <h4>${p.name}</h4>
+          <div class="price-box">
+            ${hasDiscount 
+              ? `<span class="old-price">${formatPrice(oldPrice)}</span> <span class="price">${formatPrice(price)}</span>`
+              : `<span class="price">${formatPrice(price)}</span>`
+            }
+          </div>
+          <p>Số lượng: ${qty}</p>
+          <p>Thành tiền: ${formatPrice(price * qty)}</p>
         </div>
-        <button class="remove" onclick="removeItem(${index})">Xoá</button>
       </div>
+      <hr>
     `;
   });
 
-  // Cập nhật lại cart trong localStorage với giá mới
-  localStorage.setItem("cart", JSON.stringify(cart));
-
-  totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
-
-  renderCartAction();
+  totalBox.innerText = formatPrice(total);
 }
