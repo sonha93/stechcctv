@@ -1,27 +1,20 @@
+
 /* =========================
-   🛒 CART.JS FULL FIX
+   🛒 CART.JS CLEAN FIX
 ========================= */
 
 /* =========================
    GET CART
 ========================= */
 function getCart() {
-
-  return JSON.parse(
-    localStorage.getItem("cart")
-  ) || [];
-
+  return JSON.parse(localStorage.getItem("cart")) || [];
 }
 
 /* =========================
    GET PRODUCTS
 ========================= */
 function getProducts() {
-
-  return JSON.parse(
-    localStorage.getItem("products")
-  ) || [];
-
+  return JSON.parse(localStorage.getItem("products")) || [];
 }
 
 /* =========================
@@ -29,96 +22,58 @@ function getProducts() {
 ========================= */
 function renderCart() {
 
-  // luôn lấy cart mới nhất
   const cart = getCart();
 
-  const box =
-    document.getElementById("cartList");
-
-  const totalBox =
-    document.getElementById("total");
+  const box = document.getElementById("cartList");
+  const totalBox = document.getElementById("total");
 
   if (!box || !totalBox) return;
 
   box.innerHTML = "";
 
-  /* EMPTY */
   if (cart.length === 0) {
-
-    box.innerHTML = `
-      <div class="empty">
-        Giỏ hàng trống 🛒
-      </div>
-    `;
-
+    box.innerHTML = `<div class="empty">Giỏ hàng trống 🛒</div>`;
     totalBox.innerHTML = "";
-
     renderCartAction();
-
     return;
   }
 
   let total = 0;
 
-  // luôn lấy products mới nhất
   const products = getProducts();
 
   cart.forEach((item, index) => {
 
-    const p =
-      products.find(
-        x =>
-          String(x.id) === String(item.id)
-      );
+    const p = products.find(
+      x => String(x.id) === String(item.id)
+    );
 
-    // nếu sản phẩm đã xoá
     if (!p) return;
 
- const price = Number(p.price) || 0;
-const oldPrice = Number(p.oldPrice) || 0;
+    const price = Number(p.price) || 0;
+    const oldPrice = Number(p.oldPrice) || 0;
 
-// chỉ hiện sale khi hợp lệ + khác giá
-const hasDiscount =
-  oldPrice > price &&
-  oldPrice > 0 &&
-  price > 0;
-
-    /* SALE */
+    // ✅ FIX SALE LOGIC CHUẨN
     const hasDiscount =
-      oldPrice > price;
+      oldPrice > price &&
+      oldPrice > 0 &&
+      price > 0;
 
-    /* QTY */
-    const qty =
-      Number(
-        item.quantity ||
-        item.qty ||
-        1
-      );
+    const qty = Number(item.quantity || item.qty || 1);
 
-    /* ITEM TOTAL */
-    const itemTotal =
-      price * qty;
+    const itemTotal = price * qty;
 
     total += itemTotal;
 
     box.innerHTML += `
-
       <div class="item">
 
-        <!-- IMAGE -->
-        <img
-          src="${p.img || ''}"
-          alt=""
-        >
+        <img src="${p.img || ''}" alt="">
 
-        <!-- INFO -->
         <div class="info">
 
-          <h4>
-            ${p.name || 'Không tên'}
-          </h4>
+          <h4>${p.name || 'Không tên'}</h4>
 
-          <!-- PRICE -->
           <div class="price-box">
 
             <span class="price">
@@ -127,53 +82,37 @@ const hasDiscount =
 
             ${
               hasDiscount
-              ? `
-                <span class="old-price">
-                  ${oldPrice.toLocaleString()}đ
-                </span>
-              `
-              : ""
+                ? `<span class="old-price">
+                    ${oldPrice.toLocaleString()}đ
+                  </span>`
+                : ""
             }
 
           </div>
 
-          <!-- QTY -->
           <div class="qty-box">
-
             × ${qty}
-
             =
-
             <b style="color:#e53935">
               ${itemTotal.toLocaleString()}đ
             </b>
-
           </div>
 
         </div>
 
-        <!-- REMOVE -->
-        <button
-          class="remove"
-          onclick="removeItem(${index})"
-        >
+        <button class="remove" onclick="removeItem(${index})">
           Xoá
         </button>
 
       </div>
-
     `;
   });
 
-  /* TOTAL */
   totalBox.innerHTML = `
-
     Tổng tiền:
-
     <b style="color:#e53935">
       ${total.toLocaleString()}đ
     </b>
-
   `;
 
   renderCartAction();
@@ -183,16 +122,9 @@ const hasDiscount =
    REMOVE ITEM
 ========================= */
 function removeItem(index) {
-
   let cart = getCart();
-
   cart.splice(index, 1);
-
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
-
+  localStorage.setItem("cart", JSON.stringify(cart));
   renderCart();
 }
 
@@ -201,52 +133,26 @@ function removeItem(index) {
 ========================= */
 function renderCartAction() {
 
-  const actionBox =
-    document.getElementById(
-      "cartAction"
-    );
-
+  const actionBox = document.getElementById("cartAction");
   if (!actionBox) return;
 
   const cart = getCart();
 
-  /* HAS ITEM */
   if (cart.length > 0) {
-
     actionBox.innerHTML = `
-
       <a href="checkout.html">
-
-        <button class="checkout">
-          💳 Thanh toán
-        </button>
-
+        <button class="checkout">💳 Thanh toán</button>
       </a>
-
     `;
-
-  }
-
-  /* EMPTY */
-  else {
-
+  } else {
     actionBox.innerHTML = `
-
       <div class="empty-box">
-
         <a href="index.html">
-
-          <button
-            class="checkout"
-            style="background:#2196f3"
-          >
+          <button class="checkout" style="background:#2196f3">
             🛍️ Quay lại mua hàng
           </button>
-
         </a>
-
       </div>
-
     `;
   }
 }
@@ -254,42 +160,20 @@ function renderCartAction() {
 /* =========================
    AUTO UPDATE
 ========================= */
-window.addEventListener(
-  "storage",
-  () => {
-    renderCart();
-  }
-);
+window.addEventListener("storage", renderCart);
 
 /* =========================
-   FIX OLD CART DATA
+   FIX OLD CART DATA (SAFE)
 ========================= */
 function fixOldCartData() {
-
   let cart = getCart();
 
-  cart = cart.map(item => {
+  cart = cart.map(item => ({
+    id: item.id,
+    quantity: Number(item.quantity || item.qty || 1)
+  }));
 
-    return {
-
-      // CHỈ GIỮ ID + QUANTITY
-      id: item.id,
-
-      quantity:
-        Number(
-          item.quantity ||
-          item.qty ||
-          1
-        )
-
-    };
-
-  });
-
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
+  localStorage.setItem("cart", JSON.stringify(cart));
 }
 
 fixOldCartData();
@@ -297,9 +181,4 @@ fixOldCartData();
 /* =========================
    INIT
 ========================= */
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-    renderCart();
-  }
-);
+document.addEventListener("DOMContentLoaded", renderCart);
