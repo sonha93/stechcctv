@@ -74,13 +74,14 @@ function renderCart() {
     // nếu sản phẩm đã xoá
     if (!p) return;
 
-    /* PRICE */
-    const price =
-      Number(p.price) || 0;
+ const price = Number(p.price) || 0;
+const oldPrice = Number(p.oldPrice) || 0;
 
-    /* OLD PRICE */
-    const oldPrice =
-      Number(p.oldPrice) || 0;
+// chỉ hiện sale khi hợp lệ + khác giá
+const hasDiscount =
+  oldPrice > price &&
+  oldPrice > 0 &&
+  price > 0;
 
     /* SALE */
     const hasDiscount =
