@@ -18,6 +18,13 @@
   background:transparent;
 }
 
+/* Nút login / signup luôn nhấn được */
+#loginLink, #logoutLink {
+  position: relative;
+  z-index: 9999;
+  pointer-events: auto;
+}
+
 /* POPUP LOGIN/REGISTER */
 #authModal{
   position:fixed;
@@ -26,7 +33,7 @@
   background:rgba(0,0,0,0.6);
   align-items:center;
   justify-content:center;
-  z-index:9999;
+  z-index:10000; /* luôn trên sidebar */
 }
 #authModal .auth-content{
   background:#fff;
@@ -84,13 +91,13 @@
 /* SIDEBAR */
 .sidebar {
   position: fixed;
-  z-index: 1000; /* fix click bị overlay chặn */
+  z-index: 1000;
 }
 
 /* 2 CỘT SẢN PHẨM */
 #products{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:1fr 1fr; /* 2 cột */
   gap:20px;
 }
 .product-card{
@@ -166,11 +173,6 @@
   </div>
 </footer>
 
-<script src="app.js"></script>
-<div id="productContainer" class="product-grid"></div>
-<script src="notify.js"></script>
-<script src="banner.js"></script>
-<script>
 <!-- POPUP LOGIN / REGISTER -->
 <div id="authModal">
   <div class="auth-content">
@@ -187,10 +189,12 @@
 <!-- SCRIPTS -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="app.js"></script>
+<script src="notify.js"></script>
+<script src="banner.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function(){
-  // Firebase config
   const firebaseConfig = {
     apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
     authDomain:"stech-73b89.firebaseapp.com",
@@ -202,7 +206,6 @@ document.addEventListener("DOMContentLoaded", function(){
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
-  // ELEMENTS
   const loginLink = document.getElementById("loginLink");
   const logoutLink = document.getElementById("logoutLink");
   const authModal = document.getElementById("authModal");
@@ -211,19 +214,18 @@ document.addEventListener("DOMContentLoaded", function(){
   const authRegisterBtn = document.getElementById("authRegisterBtn");
   const authLoginBtn = document.getElementById("authLoginBtn");
   const closeAuth = document.getElementById("closeAuth");
-  const authMessage = document.getElementById("authMessage");
   const products = document.getElementById("products");
 
-  // USER INFO PREVIEW
   const userInfoPreview = document.getElementById("userInfoPreview");
   const userAvatarPreview = document.getElementById("sidebarUserAvatarPreview");
   const userNamePreview = document.getElementById("sidebarUserNamePreview");
 
-  // POPUP LOGIN
+  // Mở modal
   loginLink.addEventListener("click",(e)=>{ 
     e.preventDefault(); 
     authModal.style.display="flex"; 
   });
+  // Đóng modal
   closeAuth.addEventListener("click",()=>authModal.style.display="none");
 
   // REGISTER
@@ -256,47 +258,4 @@ document.addEventListener("DOMContentLoaded", function(){
         if(products) products.style.display="grid";
       })
       .catch(err=>{
-        authMessage.style.color="red"; 
-        authMessage.innerText=err.message;
-      });
-  });
-
-  // LOGOUT
-  logoutLink.addEventListener("click",()=>{
-    auth.signOut().then(()=>{
-      loginLink.style.display="block"; 
-      logoutLink.style.display="none";
-      if(products) products.style.display="none";
-      userInfoPreview.style.display="none";
-    });
-  });
-
-  // LOAD USER PREVIEW
-  auth.onAuthStateChanged(user=>{
-    if(user){
-      loginLink.style.display="none"; 
-      logoutLink.style.display="block";
-      if(products) products.style.display="grid";
-      userInfoPreview.style.display="block";
-      userAvatarPreview.src = user.photoURL || "https://via.placeholder.com/40";
-      userNamePreview.innerText = user.displayName || "Người dùng";
-    } else {
-      loginLink.style.display="block"; 
-      logoutLink.style.display="none";
-      userInfoPreview.style.display="none";
-      if(products) products.style.display="none";
-    }
-  });
-
-});
-</script>
-
-<script>
-function toggleMenu(){
-  document.getElementById("sidebar").classList.toggle("active"); 
-  document.getElementById("overlay").classList.toggle("active"); 
-}
-</script>
-
-</body>
-</html>
+        authMessage.style
