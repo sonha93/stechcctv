@@ -1,15 +1,27 @@
 /* =========================
+   🛒 CART.JS FULL FIX
+========================= */
+
+/* =========================
    GET CART
 ========================= */
 function getCart() {
-  return JSON.parse(localStorage.getItem("cart")) || [];
+
+  return JSON.parse(
+    localStorage.getItem("cart")
+  ) || [];
+
 }
 
 /* =========================
    GET PRODUCTS
 ========================= */
 function getProducts() {
-  return JSON.parse(localStorage.getItem("products")) || [];
+
+  return JSON.parse(
+    localStorage.getItem("products")
+  ) || [];
+
 }
 
 /* =========================
@@ -17,57 +29,115 @@ function getProducts() {
 ========================= */
 function renderCart() {
 
-  // luôn đọc cart mới nhất
-  let cart = getCart();
+  // luôn lấy cart mới nhất
+  const cart = getCart();
 
-  const box = document.getElementById("cartList");
-  const totalBox = document.getElementById("total");
+  const box =
+    document.getElementById("cartList");
+
+  const totalBox =
+    document.getElementById("total");
+
+  if (!box || !totalBox) return;
 
   box.innerHTML = "";
 
+  /* EMPTY */
   if (cart.length === 0) {
-    box.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
+
+    box.innerHTML = `
+      <div class="empty">
+        Giỏ hàng trống 🛒
+      </div>
+    `;
+
     totalBox.innerHTML = "";
+
     renderCartAction();
+
     return;
   }
 
   let total = 0;
 
-  // luôn đọc products mới nhất
+  // luôn lấy products mới nhất
   const products = getProducts();
 
   cart.forEach((item, index) => {
 
-    const p = products.find(x => String(x.id) === String(item.id));
+    const p =
+      products.find(
+        x =>
+          String(x.id) === String(item.id)
+      );
 
+    // nếu sản phẩm đã xoá
     if (!p) return;
 
-    // GIÁ THẬT
-    const price = Number(p.price) || 0;
+    /* PRICE */
+    const price =
+      Number(p.price) || 0;
 
-    // SỐ LƯỢNG
-    const qty = Number(item.quantity || 1);
+    /* OLD PRICE */
+    const oldPrice =
+      Number(p.oldPrice) || 0;
 
-    // THÀNH TIỀN
-    const itemTotal = price * qty;
+    /* SALE */
+    const hasDiscount =
+      oldPrice > price;
+
+    /* QTY */
+    const qty =
+      Number(
+        item.quantity ||
+        item.qty ||
+        1
+      );
+
+    /* ITEM TOTAL */
+    const itemTotal =
+      price * qty;
 
     total += itemTotal;
 
     box.innerHTML += `
+
       <div class="item">
 
-        <img src="${p.img || ''}" alt="">
+        <!-- IMAGE -->
+        <img
+          src="${p.img || ''}"
+          alt=""
+        >
 
+        <!-- INFO -->
         <div class="info">
 
-          <h4>${p.name || 'Không tên'}</h4>
+          <h4>
+            ${p.name || 'Không tên'}
+          </h4>
 
-          <div class="price">
+          <!-- PRICE -->
+          <div class="price-box">
 
-            <span class="new-price">
+            <span class="price">
               ${price.toLocaleString()}đ
             </span>
+
+            ${
+              hasDiscount
+              ? `
+                <span class="old-price">
+                  ${oldPrice.toLocaleString()}đ
+                </span>
+              `
+              : ""
+            }
+
+          </div>
+
+          <!-- QTY -->
+          <div class="qty-box">
 
             × ${qty}
 
@@ -81,19 +151,28 @@ function renderCart() {
 
         </div>
 
-        <button class="remove" onclick="removeItem(${index})">
+        <!-- REMOVE -->
+        <button
+          class="remove"
+          onclick="removeItem(${index})"
+        >
           Xoá
         </button>
 
       </div>
+
     `;
   });
 
+  /* TOTAL */
   totalBox.innerHTML = `
+
     Tổng tiền:
+
     <b style="color:#e53935">
       ${total.toLocaleString()}đ
     </b>
+
   `;
 
   renderCartAction();
@@ -108,7 +187,10 @@ function removeItem(index) {
 
   cart.splice(index, 1);
 
-  localStorage.setItem("cart", JSON.stringify(cart));
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
 
   renderCart();
 }
@@ -118,25 +200,37 @@ function removeItem(index) {
 ========================= */
 function renderCartAction() {
 
-  const actionBox = document.getElementById("cartAction");
+  const actionBox =
+    document.getElementById(
+      "cartAction"
+    );
 
   if (!actionBox) return;
 
   const cart = getCart();
 
+  /* HAS ITEM */
   if (cart.length > 0) {
 
     actionBox.innerHTML = `
+
       <a href="checkout.html">
+
         <button class="checkout">
           💳 Thanh toán
         </button>
+
       </a>
+
     `;
 
-  } else {
+  }
+
+  /* EMPTY */
+  else {
 
     actionBox.innerHTML = `
+
       <div class="empty-box">
 
         <a href="index.html">
@@ -151,46 +245,60 @@ function renderCartAction() {
         </a>
 
       </div>
+
     `;
   }
 }
 
 /* =========================
-   ADD TO CART
+   AUTO UPDATE
 ========================= */
-function addToCart(product) {
+window.addEventListener(
+  "storage",
+  () => {
+    renderCart();
+  }
+);
+
+/* =========================
+   FIX OLD CART DATA
+========================= */
+function fixOldCartData() {
 
   let cart = getCart();
 
-  let index = cart.findIndex(
-    item => String(item.id) === String(product.id)
+  cart = cart.map(item => {
+
+    return {
+
+      // CHỈ GIỮ ID + QUANTITY
+      id: item.id,
+
+      quantity:
+        Number(
+          item.quantity ||
+          item.qty ||
+          1
+        )
+
+    };
+
+  });
+
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
   );
-
-  if (index !== -1) {
-
-    cart[index].quantity += 1;
-
-  } else {
-
-    cart.push({
-      id: product.id,
-      quantity: 1
-    });
-  }
-
-  localStorage.setItem("cart", JSON.stringify(cart));
-
-  renderCart();
 }
 
-/* =========================
-   AUTO UPDATE KHI STORAGE ĐỔI
-========================= */
-window.addEventListener("storage", () => {
-  renderCart();
-});
+fixOldCartData();
 
 /* =========================
    INIT
 ========================= */
-renderCart();
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+    renderCart();
+  }
+);
