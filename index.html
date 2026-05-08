@@ -5,14 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shop Camera Pro</title>
 <link rel="stylesheet" href="styletrong-nha.css">
-
 <style>
 /* ===== HEADER ===== */
 header {
   display:flex;
   align-items:center;
   padding:10px;
-  background:#40C4C0; /* màu cyan đồng bộ */
+  background:#40C4C0; /* màu cyan */
   color:white;
 }
 header .logo img{
@@ -65,13 +64,25 @@ header input#search{
   width:90%;
 }
 #authModal h2{text-align:center;margin-bottom:10px;}
-#authModal input{width:100%;padding:8px;margin:6px 0;border-radius:4px;border:1px solid #aaa;}
-#authModal button{
-  width:100%; padding:10px; margin-top:10px; border:none;
-  background:#40C4C0; /* màu cyan đồng bộ */
-  color:white; font-weight:bold; cursor:pointer; border-radius:4px;
+#authModal input{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border-radius:4px;
+  border:1px solid #aaa;
 }
-#authModal #closeAuth{background:#f44336; margin-top:5px;}
+#authModal button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  background:#40C4C0; /* màu cyan */
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:4px;
+}
+#authModal #closeAuth{background:#f44336;margin-top:5px;}
 #authModal #authMessage{text-align:center;margin-top:8px;color:red;}
 
 /* ===== SIDEBAR ===== */
@@ -88,7 +99,11 @@ header input#search{
 .sidebar.active{left:0;}
 .sidebar h3{margin-bottom:10px;}
 .sidebar a{display:block;margin:6px 0;color:#111;text-decoration:none;}
-#overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);display:none;z-index:500;}
+#overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.4);
+  display:none;z-index:500;
+}
 #overlay.active{display:block;}
 
 /* ===== SIDEBAR USER INFO ===== */
@@ -108,7 +123,7 @@ header input#search{
   margin:0; font-size:14px; color:#40C4C0;
 }
 
-/* ===== PRODUCTS ===== */
+/* ===== 2 CỘT SẢN PHẨM ===== */
 #products{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -117,7 +132,7 @@ header input#search{
 }
 .product-card{
   background:#fff;
-  border:2px solid #40C4C0; /* màu cyan đồng bộ */
+  border:2px solid #40C4C0; /* màu cyan */
   border-radius:8px;
   overflow:hidden;
   text-align:center;
@@ -133,10 +148,14 @@ header input#search{
 .product-card .product-info{margin-top:8px;}
 
 /* ===== FOOTER ===== */
-footer{background:#f5f5f5; text-align:center; padding:10px; margin-top:20px;}
+footer{
+  background:#f5f5f5;
+  text-align:center;
+  padding:10px;
+  margin-top:20px;
+}
 </style>
 </head>
-
 <body>
 
 <!-- OVERLAY -->
@@ -167,9 +186,6 @@ footer{background:#f5f5f5; text-align:center; padding:10px; margin-top:20px;}
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
   <input id="search" placeholder="Tìm kiếm sản phẩm...">
-  <!-- Nút login/logout -->
-  <a href="#" id="loginLinkHeader">Đăng nhập / Đăng ký</a>
-  <a href="#" id="logoutLinkHeader" style="display:none;">Đăng xuất</a>
 </header>
 
 <!-- CONTENT -->
@@ -208,8 +224,8 @@ footer{background:#f5f5f5; text-align:center; padding:10px; margin-top:20px;}
 <script>
 // TOGGLE SIDEBAR
 function toggleMenu(){
-  document.getElementById("sidebar").classList.toggle("active"); 
-  document.getElementById("overlay").classList.toggle("active"); 
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
 }
 
 // LOGIN / REGISTER
