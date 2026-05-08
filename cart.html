@@ -199,7 +199,7 @@ header input{
   <a href="the-nho.html">Thẻ nhớ</a>
   <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
 </div>
-
+<link rel="stylesheet" href="stylecart.css">
 <header>
   <div class="menu-btn" onclick="toggleMenu()">☰</div>
   <div class="logo">
@@ -223,23 +223,14 @@ function toggleMenu(){
   document.getElementById("overlay").classList.toggle("active");
 }
 
-/* =========================
-   INIT CART
-========================= */
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+/* ===== RENDER ===== */
+function renderCart(list = null){
 
-function getProducts(){
-  return JSON.parse(localStorage.getItem("products")) || [];
-}
+  let cart = list || JSON.parse(localStorage.getItem("cart")) || [];
 
-/* =========================
-   RENDER CART
-========================= */
-function renderCart(){
   const box = document.getElementById("cartList");
   const totalBox = document.getElementById("total");
   const actionBox = document.getElementById("cartAction");
-  const products = getProducts();
 
   if(cart.length === 0){
     box.innerHTML = "<p class='empty'>Giỏ trống</p>";
@@ -249,166 +240,102 @@ function renderCart(){
   }
 
   let total = 0;
-  box.innerHTML = cart.map((item,index)=>{
-    const p = products.find(x => String(x.id) === String(item.id)) || item;
-    const qty = item.quantity || 1;
-    const checked = item.checked !== false;
+
+  box.innerHTML = cart.map((item,i)=>{
+
+    let qty = item.qty || 1;
+    let checked = item.checked !== false;
 
     if(checked){
-      total += (p.price||0)*qty;
+      total += item.price * qty;
     }
 
     return `
-      <div class="item">
-        <input type="checkbox" class="cart-checkbox" data-index="${index}" ${checked?"checked":""}>
-        <img src="${p.img||''}">
-        <div class="info">
-          <b>${p.name||'Không tên'}</b><br>
-          <div class="price-new">${(p.price||0).toLocaleString()}đ</div>
-          ${p.oldPrice ? `<div class="price-old">${p.oldPrice.toLocaleString()}đ</div>` : ""}
-          <div class="qty">
-            <button onclick="changeQty(${index},-1)">-</button>
-            <span>${qty}</span>
-            <button onclick="changeQty(${index},1)">+</button>
-          </div>
+    <div class="item">
+      <input type="checkbox" class="check" 
+        ${checked ? "checked":""}
+        onchange="toggleCheck(${i})">
+
+      <img src="${item.img}">
+
+      <div class="info">
+        <b>${item.name}</b><br>
+
+        <div class="price-new">
+          ${item.price.toLocaleString()}đ
         </div>
-        <button class="remove" onclick="removeItem(${index})">🗑</button>
+
+        ${item.oldPrice ? `
+          <div class="price-old">
+            ${item.oldPrice.toLocaleString()}đ
+          </div>
+        ` : ""}
+
+        <div class="qty">
+          <button onclick="changeQty(${i},-1)">-</button>
+          <span>${qty}</span>
+          <button onclick="changeQty(${i},1)">+</button>
+        </div>
       </div>
+
+      <button class="remove" onclick="removeItem(${item.id})">🗑</button>
+    </div>
     `;
   }).join("");
 
-  totalBox.innerHTML = "Tổng tiền: "+total.toLocaleString()+"đ";
+  totalBox.innerHTML = "Tổng: " + total.toLocaleString()+"đ";
 
-  actionBox.innerHTML = `<button class="checkout">💳 Đặt hàng</button>`;
-
-  // Gắn checkbox
-  document.querySelectorAll(".cart-checkbox").forEach(cb=>{
-    cb.addEventListener("change", function(){
-      const i = Number(this.dataset.index);
-      cart[i].checked = this.checked;
-      localStorage.setItem("cart",JSON.stringify(cart));
-      renderCart(); // render lại mới đúng tổng
-    });
-  });
-
-  // checkout
-  const checkoutBtn = actionBox.querySelector(".checkout");
-  if(checkoutBtn){
-    checkoutBtn.onclick = function(e){
-      e.preventDefault();
-      const selected = cart.filter(item => item.checked !== false);
-      if(selected.length === 0){ alert("Bạn chưa chọn sản phẩm nào!"); return; }
-
-      const totalAmount = selected.reduce((sum,item)=>{
-        const p = products.find(x=>String(x.id)===String(item.id)) || item;
-        return sum + (p.price||0)*(item.quantity||1);
-      },0);
-
-      const orderNumber = "DH"+Date.now();
-      const customerName = "Khách lẻ";
-
-      sendTelegramNotification(orderNumber, customerName, totalAmount.toLocaleString()+"đ");
-
-      localStorage.setItem("checkoutItems", JSON.stringify(selected));
-      window.location.href = "checkout.html";
-    }
-  }
+  actionBox.innerHTML = `
+    <button class="checkout" onclick="checkout()">Đặt hàng</button>
+  `;
 }
 
-/* =========================
-   CHANGE QTY
-========================= */
-function changeQty(i,delta){
-  cart[i].quantity = (cart[i].quantity || 1) + delta;
-  if(cart[i].quantity < 1) cart[i].quantity = 1;
-  localStorage.setItem("cart",JSON.stringify(cart));
-  renderCart();
-}
+/* ===== SEARCH FIX ===== */
+document.getElementById("searchInput").addEventListener("input", function(){
 
-/* =========================
-   REMOVE ITEM
-========================= */
-function removeItem(i){
-  cart.splice(i,1);
-  localStorage.setItem("cart",JSON.stringify(cart));
-  renderCart();
-}
-
-/* =========================
-   ADD TO CART
-========================= */
-function addToCart(product){
-  const index = cart.findIndex(item => item.id === product.id);
-  if(index!==-1){
-    cart[index].quantity = (cart[index].quantity||1)+1;
-  } else {
-    cart.push({id:product.id, quantity:1});
-  }
-  localStorage.setItem("cart",JSON.stringify(cart));
-  renderCart();
-}
-
-/* =========================
-   SEARCH
-========================= */
-document.getElementById("searchInput").addEventListener("input",function(){
   const keyword = this.value.toLowerCase();
-  const filtered = cart.filter(item=>{
-    const products = getProducts();
-    const p = products.find(x=>String(x.id)===String(item.id)) || item;
-    return (p.name||'').toLowerCase().includes(keyword);
-  });
-  renderCartFiltered(filtered);
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  const filtered = cart.filter(item =>
+    item.name.toLowerCase().includes(keyword)
+  );
+
+  renderCart(filtered);
 });
 
-function renderCartFiltered(filtered){
-  const box = document.getElementById("cartList");
-  const totalBox = document.getElementById("total");
-  if(filtered.length===0){
-    box.innerHTML = "<p class='empty'>Không tìm thấy sản phẩm</p>";
-    totalBox.innerHTML = "";
-    return;
-  }
-  // tạm render giống renderCart
-  const products = getProducts();
-  let total = 0;
-  box.innerHTML = filtered.map((item,index)=>{
-    const p = products.find(x => String(x.id) === String(item.id)) || item;
-    const qty = item.quantity || 1;
-    const checked = item.checked !== false;
-    if(checked) total += (p.price||0)*qty;
-    return `
-      <div class="item">
-        <input type="checkbox" class="cart-checkbox" data-index="${index}" ${checked?"checked":""}>
-        <img src="${p.img||''}">
-        <div class="info">
-          <b>${p.name||'Không tên'}</b><br>
-          <div class="price-new">${(p.price||0).toLocaleString()}đ</div>
-        </div>
-      </div>
-    `;
-  }).join("");
-  totalBox.innerHTML = "Tổng tiền: "+total.toLocaleString()+"đ";
+/* ===== CHECK ===== */
+function toggleCheck(i){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart[i].checked = !cart[i].checked;
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
 }
 
-/* =========================
-   TELEGRAM NOTIFY
-========================= */
-function sendTelegramNotification(orderNumber, customerName, total){
-  const botToken = "8752443026:AAEHrvCIDLqEDfE_inDeAAI9dzClm3WZyz4";
-  const chatId = "6087791909";
+/* ===== QTY ===== */
+function changeQty(i,delta){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart[i].qty = (cart[i].qty || 1) + delta;
 
-  const message = `📦 Đơn hàng mới!\nMã đơn: ${orderNumber}\nKhách hàng: ${customerName}\nTổng tiền: ${total}`;
+  if(cart[i].qty < 1) cart[i].qty = 1;
 
-  fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`)
-    .then(res=>res.json())
-    .then(data=>{ if(data.ok) console.log("✅ Đã gửi Telegram!"); else console.error("❌ Lỗi Telegram:",data); })
-    .catch(err=>console.error("❌ Lỗi fetch Telegram:",err));
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
 }
 
-/* =========================
-   LOAD
-========================= */
+/* ===== XOÁ ===== */
+function removeItem(id){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart = cart.filter(item => item.id !== id);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
+
+/* ===== CHECKOUT ===== */
+function checkout(){
+  window.location.href = "checkout.html";
+}
+
+/* LOAD */
 renderCart();
 
 </script>
