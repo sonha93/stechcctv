@@ -7,12 +7,12 @@
 <link rel="stylesheet" href="styletrong-nha.css">
 
 <style>
-/* ================= LOGO & HEADER ================= */
+/* ===== HEADER ===== */
 header {
   display:flex;
   align-items:center;
   padding:10px;
-  background:#4CAF50; /* màu xanh lá cho thanh header */
+  background:#40C4C0; /* màu cyan đồng bộ */
   color:white;
 }
 header .logo img{
@@ -26,10 +26,28 @@ header input#search{
   margin-left:10px;
   padding:6px;
   border-radius:4px;
-  border:1px solid #aaa;
+  border:none;
+  background:#40C4C0; /* cùng màu header */
+  color:white;
 }
 
-/* ================= POPUP LOGIN/REGISTER ================= */
+/* ===== NÚT LOGIN/REGISTER ===== */
+#loginLink, #logoutLink {
+  display:inline-block;
+  padding:6px 12px;
+  margin-left:10px;
+  border-radius:4px;
+  text-decoration:none;
+  background:#40C4C0;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+#loginLink:hover, #logoutLink:hover {
+  opacity:0.8;
+}
+
+/* ===== POPUP LOGIN/REGISTER ===== */
 #authModal{
   position:fixed;
   top:0; left:0; right:0; bottom:0;
@@ -37,7 +55,7 @@ header input#search{
   background:rgba(0,0,0,0.6);
   align-items:center;
   justify-content:center;
-  z-index:9999;
+  z-index:10000;
 }
 #authModal .auth-content{
   background:#fff;
@@ -50,13 +68,13 @@ header input#search{
 #authModal input{width:100%;padding:8px;margin:6px 0;border-radius:4px;border:1px solid #aaa;}
 #authModal button{
   width:100%; padding:10px; margin-top:10px; border:none;
-  background:#4CAF50; /* nút xanh lá */
+  background:#40C4C0; /* màu cyan đồng bộ */
   color:white; font-weight:bold; cursor:pointer; border-radius:4px;
 }
 #authModal #closeAuth{background:#f44336; margin-top:5px;}
 #authModal #authMessage{text-align:center;margin-top:8px;color:red;}
 
-/* ================= SIDEBAR ================= */
+/* ===== SIDEBAR ===== */
 .sidebar {
   position: fixed;
   top:0; left:-260px;
@@ -73,7 +91,7 @@ header input#search{
 #overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);display:none;z-index:500;}
 #overlay.active{display:block;}
 
-/* ================= SIDEBAR USER INFO ================= */
+/* ===== SIDEBAR USER INFO ===== */
 #userInfoPreview{
   display:none;
   margin-top:10px;
@@ -86,8 +104,11 @@ header input#search{
   object-fit:cover;
   margin-bottom:5px;
 }
+#userInfoPreview p{
+  margin:0; font-size:14px; color:#40C4C0;
+}
 
-/* ================= 2 CỘT SẢN PHẨM ================= */
+/* ===== PRODUCTS ===== */
 #products{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -96,7 +117,7 @@ header input#search{
 }
 .product-card{
   background:#fff;
-  border:2px solid #4CAF50; /* màu xanh lá */
+  border:2px solid #40C4C0; /* màu cyan đồng bộ */
   border-radius:8px;
   overflow:hidden;
   text-align:center;
@@ -105,16 +126,17 @@ header input#search{
 .product-card img{
   width:100%;
   height:auto;
-  border-bottom:1px solid #ccc;
   border-radius:4px;
   object-fit:cover;
+  margin-bottom:8px;
 }
 .product-card .product-info{margin-top:8px;}
 
-/* FOOTER */
+/* ===== FOOTER ===== */
 footer{background:#f5f5f5; text-align:center; padding:10px; margin-top:20px;}
 </style>
 </head>
+
 <body>
 
 <!-- OVERLAY -->
@@ -134,7 +156,7 @@ footer{background:#f5f5f5; text-align:center; padding:10px; margin-top:20px;}
   <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
   <div id="userInfoPreview">
     <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/40" alt="Avatar">
-    <p id="sidebarUserNamePreview" style="margin:0; font-size:14px; color:#4CAF50;">Người dùng</p>
+    <p id="sidebarUserNamePreview">Người dùng</p>
   </div>
 </div>
 
@@ -145,6 +167,9 @@ footer{background:#f5f5f5; text-align:center; padding:10px; margin-top:20px;}
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
   <input id="search" placeholder="Tìm kiếm sản phẩm...">
+  <!-- Nút login/logout -->
+  <a href="#" id="loginLinkHeader">Đăng nhập / Đăng ký</a>
+  <a href="#" id="logoutLinkHeader" style="display:none;">Đăng xuất</a>
 </header>
 
 <!-- CONTENT -->
@@ -162,7 +187,7 @@ footer{background:#f5f5f5; text-align:center; padding:10px; margin-top:20px;}
   <p>© 2026 StechCamera. All rights reserved.</p>
 </footer>
 
-<!-- POPUP LOGIN / REGISTER -->
+<!-- POPUP LOGIN/REGISTER -->
 <div id="authModal">
   <div class="auth-content">
     <h2>Đăng ký / Đăng nhập</h2>
@@ -181,6 +206,13 @@ footer{background:#f5f5f5; text-align:center; padding:10px; margin-top:20px;}
 <script src="app.js"></script>
 
 <script>
+// TOGGLE SIDEBAR
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active"); 
+  document.getElementById("overlay").classList.toggle("active"); 
+}
+
+// LOGIN / REGISTER
 document.addEventListener("DOMContentLoaded", function(){
   const firebaseConfig = {
     apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -193,7 +225,6 @@ document.addEventListener("DOMContentLoaded", function(){
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
-  // ELEMENTS
   const loginLink = document.getElementById("loginLink");
   const logoutLink = document.getElementById("logoutLink");
   const authModal = document.getElementById("authModal");
@@ -227,6 +258,7 @@ document.addEventListener("DOMContentLoaded", function(){
         authMessage.style.color="green"; authMessage.innerText="Đăng nhập thành công!";
         authModal.style.display="none"; loginLink.style.display="none"; logoutLink.style.display="block";
         if(products) products.style.display="grid";
+        userInfoPreview.style.display="block";
       })
       .catch(err=>{authMessage.style.color="red"; authMessage.innerText=err.message;});
   });
@@ -262,12 +294,6 @@ document.addEventListener("DOMContentLoaded", function(){
     }
   });
 });
-
-// TOGGLE SIDEBAR
-function toggleMenu(){
-  document.getElementById("sidebar").classList.toggle("active"); 
-  document.getElementById("overlay").classList.toggle("active"); 
-}
 </script>
 </body>
 </html>
