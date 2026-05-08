@@ -5,48 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shop Camera Pro</title>
 <link rel="stylesheet" href="styletrong-nha.css">
-
 <style>
 /* ===== HEADER ===== */
-header{
+header {
   display:flex;
   align-items:center;
   padding:10px;
-  background:#40C4C0;
+  background:#40C4C0; /* đổi màu cyan */
+  color:white;
 }
-
-/* MENU + LOGO */
-#menuToggle{
-  display:flex;
-  align-items:center;
-}
-
-/* ICON 3 GẠCH */
-.menu-icon{
-  font-size:34px;
-  color:#fff;
-  line-height:1;
-  margin-right:2px; /* sát logo */
-  cursor:pointer;
-}
-
-/* LOGO */
-.logo img{
-  height:52px; /* bằng icon */
+header .logo img{
+  height:38px;
   width:auto;
   display:block;
+  border:0;
 }
-
-/* Ô TÌM KIẾM */
-#search{
+header input#search{
   flex:1;
   margin-left:10px;
-  padding:10px;
-  border-radius:10px;
+  padding:6px;
+  border-radius:4px;
   border:none;
-  background:#fff;
+  background:#ffffff; /* chỉ đổi màu thành trắng */
   color:#111;
-  font-size:16px;
+}
+
+/* ===== NÚT LOGIN/REGISTER ===== */
+#loginLink, #logoutLink {
+  display:inline-block;
+  padding:6px 12px;
+  margin-left:10px;
+  border-radius:4px;
+  text-decoration:none;
+  background:#ffffff; /* đổi màu nền trắng */
+  color:#40C4C0; /* chữ cyan */
+  font-weight:bold;
+  cursor:pointer;
+}
+#loginLink:hover, #logoutLink:hover {
+  opacity:0.8;
 }
 
 /* ===== SIDEBAR ===== */
@@ -87,7 +84,7 @@ header{
   margin:0; font-size:14px; color:#40C4C0;
 }
 
-/* ===== PRODUCTS ===== */
+/* ===== 2 CỘT SẢN PHẨM ===== */
 #products{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -149,10 +146,8 @@ footer{
 </head>
 <body>
 
-<!-- OVERLAY -->
 <div id="overlay" onclick="toggleMenu()"></div>
 
-<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
   <a href="index.html">Trang chủ</a>
@@ -170,21 +165,16 @@ footer{
   </div>
 </div>
 
-<!-- HEADER -->
 <header>
-  <div id="menuToggle" onclick="toggleMenu()">
-    <div class="menu-icon">☰</div>
-    <div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo"></div>
-  </div>
+  <div onclick="toggleMenu()" style="cursor:pointer;margin-right:10px;">☰</div>
+  <div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo"></div>
   <input id="search" placeholder="Tìm kiếm sản phẩm...">
 </header>
 
-<!-- CONTENT -->
 <div class="product-slider">
   <div class="product-track" id="products"></div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <h3>StechCamera</h3>
   <p>Website chuyên cung cấp camera an ninh chính hãng</p>
@@ -194,7 +184,6 @@ footer{
   <p>© 2026 StechCamera. All rights reserved.</p>
 </footer>
 
-<!-- POPUP LOGIN/REGISTER -->
 <div id="authModal">
   <div class="auth-content">
     <h2>Đăng ký / Đăng nhập</h2>
@@ -207,14 +196,11 @@ footer{
   </div>
 </div>
 
-<!-- FIREBASE & JS -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="app.js"></script>
-<script src="user-profile.js"></script>
 
 <script>
-// TOGGLE SIDEBAR
 function toggleMenu(){
   document.getElementById("sidebar").classList.toggle("active");
   document.getElementById("overlay").classList.toggle("active");
