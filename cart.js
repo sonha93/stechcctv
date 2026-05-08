@@ -125,3 +125,47 @@ function addToCart(product){
    INIT
 ========================= */
 renderCart();
+function sendTelegramNotification(orderNumber, customerName, total) {
+  const botToken = "8752443026:AAEHrvCIDLqEDfE_inDeAAI9dzClm3WZyz4";
+  const chatId = "6087791909";
+
+  const message = `📦 Đơn hàng mới!\nMã đơn: ${orderNumber}\nKhách hàng: ${customerName}\nTổng tiền: ${total}`;
+
+  fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`)
+    .then(res => res.json())
+    .then(data => {
+      if(data.ok) console.log("✅ Đã gửi Telegram!");
+      else console.error("❌ Lỗi Telegram:", data);
+    })
+    .catch(err => console.error("❌ Lỗi fetch Telegram:", err));
+}
+document.addEventListener("DOMContentLoaded", function() {
+  const checkoutBtn = document.querySelector("#cartAction .checkout");
+  if(checkoutBtn){
+    checkoutBtn.addEventListener("click", function(e){
+      e.preventDefault(); // tạm ngăn redirect
+     
+      // Lấy thông tin đơn hàng
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      let total = 0;
+      const products = getProducts();
+
+      cart.forEach(item => {
+        const p = products.find(x => String(x.id) === String(item.id));
+        if(!p) return;
+        const price = Number(p.price) || 0;
+        const qty = item.quantity || 1;
+        total += price * qty;
+      });
+
+      const orderNumber = "DH" + Date.now(); // tạo mã đơn tạm
+      const customerName = "Khách lẻ"; // nếu có form nhập tên, thay vào đây
+
+      // Gửi Telegram
+      sendTelegramNotification(orderNumber, customerName, total.toLocaleString() + "đ");
+
+      // Sau khi gửi xong, redirect sang checkout.html
+      window.location.href = "checkout.html";
+    });
+  }
+});
