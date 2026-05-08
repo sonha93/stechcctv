@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shop Camera Pro</title>
-
 <link rel="stylesheet" href="styletrong-nha.css">
 
 <style>
@@ -18,15 +17,67 @@
   display:block;
   background:transparent;
 }
+
+/* POPUP LOGIN/REGISTER */
+#authModal{
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
+  display:none;
+  background:rgba(0,0,0,0.6);
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+#authModal .auth-content{
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  max-width:350px;
+  width:90%;
+}
+#authModal h2{
+  text-align:center;
+  margin-bottom:10px;
+}
+#authModal input{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border-radius:4px;
+  border:1px solid #aaa;
+}
+#authModal button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  background:#007BFF;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:4px;
+}
+#authModal #closeAuth{
+  background:#f44336;
+  margin-top:5px;
+}
+#authModal #authMessage{
+  text-align:center;
+  margin-top:8px;
+  color:red;
+}
+
+/* Ẩn sản phẩm lúc chưa login */
+#products{
+  display:none;
+}
 </style>
-
 </head>
-
 <body>
 
 <div id="overlay" onclick="toggleMenu()"></div>
 
-<!-- MENU (GIỮ NGUYÊN) -->
+<!-- MENU / SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
   <a href="admin.html">Admin</a>
@@ -36,34 +87,37 @@
   <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
   <a href="the-nho.html">Thẻ nhớ</a>
   <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
+  <hr>
+  <!-- LINK LOGIN/LOGOUT -->
+  <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
+  <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
+  <!-- USER INFO -->
+<div id="userInfo" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ccc; font-size:14px;">
+  <p id="sidebarUserName"></p>
+  <p id="sidebarUserEmail"></p>
+</div>
 </div>
 
 <!-- HEADER -->
 <header>
   <div onclick="toggleMenu()">☰</div>
-
-  <!-- LOGO -->
   <div class="logo">
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
-
   <input id="search" placeholder="Tìm kiếm sản phẩm...">
 </header>
 
 <!-- CONTENT -->
-
-  <div class="product-slider">
+<div class="product-slider">
   <div class="product-track" id="products"></div>
 </div>
+<div class="extra-section"></div>
 
-
-<div class="extra-section">
-</div>
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-container">
     <h3>StechCamera</h3>
-    <p></p> Website chuyên cung cấp camera an ninh chính hãng</p>
+    <p>Website chuyên cung cấp camera an ninh chính hãng</p>
     <p>Hotline: 0985.678.245</p>
     <p>Email: support@stechcamera.vn</p>
     <hr>
@@ -71,89 +125,113 @@
   </div>
 </footer>
 
-<!-- CHỈ GIỮ 1 SCRIPT CHÍNH -->
+<!-- POPUP LOGIN / REGISTER -->
+<div id="authModal">
+  <div class="auth-content">
+    <h2>Đăng ký / Đăng nhập</h2>
+    <input type="email" id="authEmail" placeholder="Email">
+    <input type="password" id="authPassword" placeholder="Mật khẩu">
+    <button id="authRegisterBtn">Đăng ký</button>
+    <button id="authLoginBtn">Đăng nhập</button>
+    <button id="closeAuth">Đóng</button>
+    <p id="authMessage"></p>
+  </div>
+</div>
 
+<!-- SCRIPTS -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
-<script src="app.js"></script>
-<div id="productContainer" class="product-grid"></div>
-<script src="notify.js"></script>
-<script src="banner.js"></script>
+<script>
+// FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain: "stech-73b89.firebaseapp.com",
+  projectId: "stech-73b89",
+  storageBucket: "stech-73b89.appspot.com",
+  messagingSenderId: "873739162979",
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56",
+  measurementId: "G-98Q3927PHZ"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// ELEMENTS
+const loginLink = document.getElementById("loginLink");
+const logoutLink = document.getElementById("logoutLink");
+const authModal = document.getElementById("authModal");
+const authEmail = document.getElementById("authEmail");
+const authPassword = document.getElementById("authPassword");
+const authRegisterBtn = document.getElementById("authRegisterBtn");
+const authLoginBtn = document.getElementById("authLoginBtn");
+const closeAuth = document.getElementById("closeAuth");
+const authMessage = document.getElementById("authMessage");
+const products = document.getElementById("products");
+
+// POPUP LOGIN
+loginLink.addEventListener("click",(e)=>{
+  e.preventDefault();
+  authModal.style.display = "flex";
+});
+closeAuth.addEventListener("click", ()=> authModal.style.display="none");
+
+// REGISTER
+authRegisterBtn.addEventListener("click", ()=>{
+  const email = authEmail.value;
+  const pass = authPassword.value;
+  auth.createUserWithEmailAndPassword(email, pass)
+    .then(()=> { authMessage.style.color="green"; authMessage.innerText="Đăng ký thành công!"; authEmail.value=""; authPassword.value=""; })
+    .catch(err=> { authMessage.style.color="red"; authMessage.innerText=err.message; });
+});
+
+// LOGIN
+authLoginBtn.addEventListener("click", ()=>{
+  const email = authEmail.value;
+  const pass = authPassword.value;
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(()=>{
+      authMessage.style.color="green";
+      authMessage.innerText="Đăng nhập thành công!";
+      authModal.style.display="none";
+      loginLink.style.display="none";
+      logoutLink.style.display="block";
+      if(products) products.style.display="block";
+    })
+    .catch(err=>{ authMessage.style.color="red"; authMessage.innerText=err.message; });
+});
+
+// LOGOUT
+logoutLink.addEventListener("click", ()=>{
+  auth.signOut().then(()=>{
+    loginLink.style.display="block";
+    logoutLink.style.display="none";
+    if(products) products.style.display="none";
+  });
+});
+
+// CHECK AUTH STATE
+auth.onAuthStateChanged(user=>{
+  if(user){
+    loginLink.style.display="none";
+    logoutLink.style.display="block";
+    if(products) products.style.display="block";
+  } else {
+    loginLink.style.display="block";
+    logoutLink.style.display="none";
+    if(products) products.style.display="none";
+  }
+});
+</script>
+
 <script>
 /* =========================
-   MENU FIX (100% WORK)
+   MENU FIX
 ========================= */
 function toggleMenu(){
   document.getElementById("sidebar").classList.toggle("active");
   document.getElementById("overlay").classList.toggle("active");
 }
-
-/* =========================
-   SAFE INIT (KHÔNG CRASH)
-========================= */
-document.addEventListener("DOMContentLoaded", function(){
-
-  // render sản phẩm (app.js phải có render())
-  if(typeof render === "function"){
-    render();
-  }
-
-});
 </script>
-<div id="notify-box"></div>
-  <img id="zoomImg">
+
 </body>
-
-<!-- ZOOM (GIỮ 1 BẢN DUY NHẤT) -->
-<div id="imgZoom" onclick="closeZoom()">
-
-</div>
-
-<style>
-#imgZoom{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.8);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-
-#imgZoom img{
-  max-width:90%;
-  max-height:90%;
-  transform:scale(1);
-  transition:0.2s;
-  cursor:zoom-in;
-}
-</style>
-
-<script>
-let zoomLevel = 1;
-
-function openZoom(src){
-  const box = document.getElementById("imgZoom");
-  const img = document.getElementById("zoomImg");
-
-  img.src = src;
-  box.style.display = "flex";
-
-  zoomLevel = 1;
-  img.style.transform = "scale(1)";
-}
-
-function closeZoom(){
-  document.getElementById("imgZoom").style.display = "none";
-}
-
-document.getElementById("zoomImg").addEventListener("click", function(e){
-  e.stopPropagation();
-
-  zoomLevel += 0.3;
-  if(zoomLevel > 2.5) zoomLevel = 1;
-
-  this.style.transform = `scale(${zoomLevel})`;
-});
-</script>
-
 </html>
