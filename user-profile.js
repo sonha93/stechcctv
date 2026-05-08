@@ -1,19 +1,22 @@
-// Firebase config
+// user-profile.js
+
+// ---------------------- Firebase config ----------------------
 const firebaseConfig = {
-  apiKey:"YOUR_API_KEY",
-  authDomain:"YOUR_PROJECT.firebaseapp.com",
-  projectId:"YOUR_PROJECT",
-  storageBucket:"YOUR_PROJECT.appspot.com",
-  messagingSenderId:"YOUR_SENDER_ID",
-  appId:"YOUR_APP_ID"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
+
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-// ELEMENTS
+// ---------------------- ELEMENTS ----------------------
 const avatarPreview = document.getElementById("avatarPreview");
 const avatarInput = document.getElementById("avatarInput");
 const nameInput = document.getElementById("nameInput");
@@ -25,10 +28,13 @@ const saveBtn = document.getElementById("saveProfileBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const saveStatus = document.getElementById("saveStatus");
 
-// LOAD user data
+// ---------------------- LOAD USER DATA ----------------------
 auth.onAuthStateChanged(user => {
   if(user){
+    // Email luôn lấy từ Firebase Auth
     emailInput.value = user.email;
+
+    // Lấy thêm dữ liệu từ Firestore
     const docRef = db.collection("users").doc(user.uid);
     docRef.get().then(doc=>{
       if(doc.exists){
@@ -46,10 +52,29 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// SAVE user data
-saveBtn.addEventListener("click", ()=>{
+// ---------------------- AVATAR PREVIEW ----------------------
+avatarInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      avatarPreview.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// ---------------------- SAVE USER DATA ----------------------
+const saveData = () => {
   const user = auth.currentUser;
   if(!user) return;
+
+  // Xác thực cơ bản
+  if(nameInput.value.trim() === "" || phoneInput.value.trim() === ""){
+    saveStatus.style.color = "red";
+    saveStatus.innerText = "Vui lòng nhập đầy đủ Họ và tên và Số điện thoại!";
+    return;
+  }
 
   const userData = {
     name: nameInput.value,
@@ -58,24 +83,50 @@ saveBtn.addEventListener("click", ()=>{
     dob: dobInput.value
   };
 
-  // upload avatar nếu có chọn
-  if(avatarInput.files[0]){
-    const file = avatarInput.files[0];
-    const storageRef = storage.ref().child(`avatars/${user.uid}`);
-    storageRef.put(file).then(()=>{
-      storageRef.getDownloadURL().then(url=>{
+  // Upload avatar nếu có chọn
+  const uploadAvatar = avatarInput.files[0] 
+    ? storage.ref(`avatars/${user.uid}`).put(avatarInput.files[0]) 
+    : Promise.resolve();
+
+  uploadAvatar.then(() => {
+    if(avatarInput.files[0]){
+      storage.ref(`avatars/${user.uid}`).getDownloadURL().then(url => {
         userData.avatar = url;
         db.collection("users").doc(user.uid).set(userData, {merge:true})
-          .then(()=> saveStatus.innerText="Đã lưu thành công!");
+          .then(() => {
+            saveStatus.style.color = "green";
+            saveStatus.innerText = "Đã lưu thành công!";
+          })
+          .catch(err => {
+            saveStatus.style.color = "red";
+            saveStatus.innerText = "Lưu thất bại: " + err.message;
+          });
+      }).catch(err=>{
+        saveStatus.style.color="red";
+        saveStatus.innerText="Lấy avatar thất bại: "+err.message;
       });
-    });
-  } else {
-    db.collection("users").doc(user.uid).set(userData, {merge:true})
-      .then(()=> saveStatus.innerText="Đã lưu thành công!");
-  }
-});
+    } else {
+      db.collection("users").doc(user.uid).set(userData, {merge:true})
+        .then(() => {
+          saveStatus.style.color = "green";
+          saveStatus.innerText = "Đã lưu thành công!";
+        })
+        .catch(err => {
+          saveStatus.style.color = "red";
+          saveStatus.innerText = "Lưu thất bại: " + err.message;
+        });
+    }
+  }).catch(err=>{
+    saveStatus.style.color="red";
+    saveStatus.innerText = "Upload avatar thất bại: " + err.message;
+  });
+};
 
-// LOGOUT
+saveBtn.addEventListener("click", saveData);
+
+// ---------------------- LOGOUT ----------------------
 logoutBtn.addEventListener("click", ()=>{
-  auth.signOut().then(()=> window.location.href="index.html");
+  auth.signOut().then(()=>{
+    window.location.href="index.html";
+  });
 });
