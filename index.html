@@ -4,29 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shop Camera Pro</title>
-
 <link rel="stylesheet" href="styletrong-nha.css">
-
 <style>
-/* LOGO KHÔNG VIỀN */
-.logo img{
-  height:38px;
-  width:auto;
-  border:0;
-  outline:0;
-  box-shadow:none;
-  display:block;
-  background:transparent;
+.logo img { height:38px; width:auto; display:block; }
+#header-login-btn {
+  display:inline-block; margin-left:10px;
+  background:#007bff; color:white; padding:5px 10px; border-radius:5px; text-decoration:none;
 }
+#header-login-btn:hover { background:#0056b3; }
 </style>
-
 </head>
-
 <body>
 
-<div id="overlay" onclick="toggleMenu()"></div>
-
-<!-- MENU (GIỮ NGUYÊN) -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
   <a href="admin.html">Admin</a>
@@ -36,34 +25,25 @@
   <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
   <a href="the-nho.html">Thẻ nhớ</a>
   <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
+  <a href="login.html">Đăng nhập / Đăng ký</a>
 </div>
 
-<!-- HEADER -->
 <header>
-  <div onclick="toggleMenu()">☰</div>
-
-  <!-- LOGO -->
   <div class="logo">
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
-
   <input id="search" placeholder="Tìm kiếm sản phẩm...">
+  <a href="login.html" id="header-login-btn">Đăng nhập / Đăng ký</a>
 </header>
 
-<!-- CONTENT -->
-
-  <div class="product-slider">
+<div class="product-slider">
   <div class="product-track" id="products"></div>
 </div>
 
-
-<div class="extra-section">
-</div>
-<!-- FOOTER -->
-<footer class="footer">
+<footer>
   <div class="footer-container">
     <h3>StechCamera</h3>
-    <p></p> Website chuyên cung cấp camera an ninh chính hãng</p>
+    <p>Website chuyên cung cấp camera an ninh chính hãng</p>
     <p>Hotline: 0985.678.245</p>
     <p>Email: support@stechcamera.vn</p>
     <hr>
@@ -71,89 +51,9 @@
   </div>
 </footer>
 
-<!-- CHỈ GIỮ 1 SCRIPT CHÍNH -->
-
-
 <script src="app.js"></script>
-<div id="productContainer" class="product-grid"></div>
 <script src="notify.js"></script>
 <script src="banner.js"></script>
-<script>
-/* =========================
-   MENU FIX (100% WORK)
-========================= */
-function toggleMenu(){
-  document.getElementById("sidebar").classList.toggle("active");
-  document.getElementById("overlay").classList.toggle("active");
-}
 
-/* =========================
-   SAFE INIT (KHÔNG CRASH)
-========================= */
-document.addEventListener("DOMContentLoaded", function(){
-
-  // render sản phẩm (app.js phải có render())
-  if(typeof render === "function"){
-    render();
-  }
-
-});
-</script>
-<div id="notify-box"></div>
-  <img id="zoomImg">
 </body>
-
-<!-- ZOOM (GIỮ 1 BẢN DUY NHẤT) -->
-<div id="imgZoom" onclick="closeZoom()">
-
-</div>
-
-<style>
-#imgZoom{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.8);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-
-#imgZoom img{
-  max-width:90%;
-  max-height:90%;
-  transform:scale(1);
-  transition:0.2s;
-  cursor:zoom-in;
-}
-</style>
-
-<script>
-let zoomLevel = 1;
-
-function openZoom(src){
-  const box = document.getElementById("imgZoom");
-  const img = document.getElementById("zoomImg");
-
-  img.src = src;
-  box.style.display = "flex";
-
-  zoomLevel = 1;
-  img.style.transform = "scale(1)";
-}
-
-function closeZoom(){
-  document.getElementById("imgZoom").style.display = "none";
-}
-
-document.getElementById("zoomImg").addEventListener("click", function(e){
-  e.stopPropagation();
-
-  zoomLevel += 0.3;
-  if(zoomLevel > 2.5) zoomLevel = 1;
-
-  this.style.transform = `scale(${zoomLevel})`;
-});
-</script>
-
 </html>
