@@ -67,38 +67,43 @@
   color:red;
 }
 
-/* SẢN PHẨM 2 CỘT */
+/* SIDEBAR USER INFO */
+#userInfoPreview{
+  display:none;
+  margin-top:10px;
+  text-align:center;
+  cursor:pointer;
+}
+#userInfoPreview img{
+  width:40px; height:40px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:5px;
+}
+
+/* 2 CỘT SẢN PHẨM */
 #products{
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 2 cột */
-  gap: 20px;
-  margin:20px 10px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
 }
-
-.product-card {
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  overflow: hidden;
-  text-align: center;
-  padding: 10px;
+.product-card{
+  background:#fff;
+  border:1px solid #ccc;
+  border-radius:8px;
+  overflow:hidden;
+  text-align:center;
+  padding:10px;
 }
-
-.product-card img {
-  width: 100%;
-  height: auto;
-  border-bottom: 1px solid #ccc;
-  border-radius: 4px;
-  object-fit: cover;
+.product-card img{
+  width:100%;
+  height:auto;
+  border-bottom:1px solid #ccc;
+  border-radius:4px;
+  object-fit:cover;
 }
-
-.product-card .product-info {
-  margin-top: 8px;
-}
-
-/* Ẩn sản phẩm nếu chưa login */
-#products {
-  display: none;
+.product-card .product-info{
+  margin-top:8px;
 }
 </style>
 </head>
@@ -109,21 +114,21 @@
 <!-- MENU / SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
-  <a href="admin.html">Admin</a>
-  <a href="cart.html">Giỏ hàng</a>
   <a href="index.html">Trang chủ</a>
+  <a href="cart.html">Giỏ hàng</a>
   <a href="camera-trong-nha.html">Camera trong nhà</a>
   <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
   <a href="the-nho.html">Thẻ nhớ</a>
   <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
   <hr>
-  <!-- LINK LOGIN/LOGOUT -->
+  <!-- LOGIN / LOGOUT -->
   <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
   <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
-  <!-- USER INFO -->
-  <div id="userInfo" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ccc; font-size:14px;">
-    <p id="sidebarUserName"></p>
-    <p id="sidebarUserEmail"></p>
+
+  <!-- USER INFO PREVIEW -->
+  <div id="userInfoPreview">
+    <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/40" alt="Avatar">
+    <p id="sidebarUserNamePreview" style="margin:0; font-size:14px; color:#007BFF;">Người dùng</p>
   </div>
 </div>
 
@@ -140,6 +145,8 @@
 <div class="product-slider">
   <div class="product-track" id="products"></div>
 </div>
+
+<div class="extra-section"></div>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -169,17 +176,19 @@
 <!-- SCRIPTS -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-
+<script src="app.js"></script>
+<div id="productContainer" class="product-grid"></div>
+<script src="notify.js"></script>
+<script src="banner.js"></script>
 <script>
-// FIREBASE CONFIG
+// Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
-  projectId: "stech-73b89",
-  storageBucket: "stech-73b89.appspot.com",
-  messagingSenderId: "873739162979",
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56",
-  measurementId: "G-98Q3927PHZ"
+  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain:"stech-73b89.firebaseapp.com",
+  projectId:"stech-73b89",
+  storageBucket:"stech-73b89.appspot.com",
+  messagingSenderId:"873739162979",
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -196,97 +205,61 @@ const closeAuth = document.getElementById("closeAuth");
 const authMessage = document.getElementById("authMessage");
 const products = document.getElementById("products");
 
+// USER INFO PREVIEW
+const userInfoPreview = document.getElementById("userInfoPreview");
+const userAvatarPreview = document.getElementById("sidebarUserAvatarPreview");
+const userNamePreview = document.getElementById("sidebarUserNamePreview");
+
 // POPUP LOGIN
-loginLink.addEventListener("click",(e)=>{
-  e.preventDefault();
-  authModal.style.display = "flex";
-});
-closeAuth.addEventListener("click", ()=> authModal.style.display="none");
+loginLink.addEventListener("click",(e)=>{ e.preventDefault(); authModal.style.display="flex"; });
+closeAuth.addEventListener("click",()=>authModal.style.display="none");
 
 // REGISTER
-authRegisterBtn.addEventListener("click", ()=>{
-  const email = authEmail.value;
-  const pass = authPassword.value;
+authRegisterBtn.addEventListener("click",()=>{
+  const email = authEmail.value; const pass = authPassword.value;
   auth.createUserWithEmailAndPassword(email, pass)
-    .then(()=>{
-      authMessage.style.color="green"; 
-      authMessage.innerText="Đăng ký thành công!";
-      authEmail.value=""; authPassword.value="";
-    })
-    .catch(err=>{
-      authMessage.style.color="red"; 
-      authMessage.innerText=err.message;
-    });
+    .then(()=>{ authMessage.style.color="green"; authMessage.innerText="Đăng ký thành công!"; authEmail.value=""; authPassword.value=""; })
+    .catch(err=>{ authMessage.style.color="red"; authMessage.innerText=err.message; });
 });
 
 // LOGIN
-authLoginBtn.addEventListener("click", ()=>{
-  const email = authEmail.value;
-  const pass = authPassword.value;
+authLoginBtn.addEventListener("click",()=>{
+  const email = authEmail.value; const pass = authPassword.value;
   auth.signInWithEmailAndPassword(email, pass)
     .then(()=>{
-      authMessage.style.color="green";
-      authMessage.innerText="Đăng nhập thành công!";
-      authModal.style.display="none";
-      loginLink.style.display="none";
-      logoutLink.style.display="block";
+      authMessage.style.color="green"; authMessage.innerText="Đăng nhập thành công!";
+      authModal.style.display="none"; loginLink.style.display="none"; logoutLink.style.display="block";
       if(products) products.style.display="grid";
-      // Hiển thị tên/email user ở sidebar
-      firebase.auth().currentUser && displayUserInfo(firebase.auth().currentUser);
     })
-    .catch(err=>{
-      authMessage.style.color="red";
-      authMessage.innerText=err.message;
-    });
+    .catch(err=>{ authMessage.style.color="red"; authMessage.innerText=err.message; });
 });
 
 // LOGOUT
-logoutLink.addEventListener("click", ()=>{
-  auth.signOut().then(()=>{
-    loginLink.style.display="block";
-    logoutLink.style.display="none";
-    if(products) products.style.display="none";
-    document.getElementById("userInfo").style.display="none";
-  });
+logoutLink.addEventListener("click",()=>{
+  auth.signOut().then(()=>{ loginLink.style.display="block"; logoutLink.style.display="none"; if(products) products.style.display="none"; });
 });
 
-// CHECK AUTH STATE
-auth.onAuthStateChanged(user=>{
+// LOAD USER PREVIEW
+firebase.auth().onAuthStateChanged(user=>{
   if(user){
-    loginLink.style.display="none";
-    logoutLink.style.display="block";
+    loginLink.style.display="none"; logoutLink.style.display="block";
     if(products) products.style.display="grid";
-    displayUserInfo(user);
+    userInfoPreview.style.display="block";
+    userAvatarPreview.src = user.photoURL || "https://via.placeholder.com/40";
+    userNamePreview.innerText = user.displayName || "Người dùng";
   } else {
-    loginLink.style.display="block";
-    logoutLink.style.display="none";
+    userInfoPreview.style.display="none"; loginLink.style.display="block"; logoutLink.style.display="none";
     if(products) products.style.display="none";
-    document.getElementById("userInfo").style.display="none";
   }
 });
 
-// HIỂN THỊ THÔNG TIN USER
-function displayUserInfo(user){
-  const infoBox = document.getElementById("userInfo");
-  document.getElementById("sidebarUserName").innerText = user.displayName || "Người dùng";
-  document.getElementById("sidebarUserEmail").innerText = user.email;
-  infoBox.style.display = "block";
-}
-</script>
-<script src="app.js"></script>
-<div id="productContainer" class="product-grid"></div>
-<script src="notify.js"></script>
-<script src="banner.js"></script>
-  <script src="user-info.js"></script>
-<script>
-<script>
-/* =========================
-   MENU FIX
-========================= */
-function toggleMenu(){
-  document.getElementById("sidebar").classList.toggle("active");
-  document.getElementById("overlay").classList.toggle("active");
-}
+// CLICK CHUYỂN SANG PROFILE
+userInfoPreview.addEventListener("click",()=>{
+  window.location.href = "user-profile.html";
+});
+
+// MENU FIX
+function toggleMenu(){ document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("active"); }
 </script>
 
 </body>
