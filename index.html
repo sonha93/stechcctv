@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="styletrong-nha.css">
 
 <style>
-/* LOGO KHÔNG VIỀN */
-.logo img{
+/* ================= LOGO KHÔNG VIỀN ================= */
+.logo img {
   height:38px;
   width:auto;
   border:0;
@@ -18,42 +18,37 @@
   background:transparent;
 }
 
-/* Nút login / signup luôn nhấn được */
-#loginLink, #logoutLink {
-  position: relative;
-  z-index: 9999;
-  pointer-events: auto;
-}
-
-/* POPUP LOGIN/REGISTER */
-#authModal{
-  position:fixed;
-  top:0; left:0; right:0; bottom:0;
+/* ================= POPUP LOGIN/REGISTER ================= */
+#authModal {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
   display:none;
-  background:rgba(0,0,0,0.6);
   align-items:center;
   justify-content:center;
-  z-index:10000; /* luôn trên sidebar */
+  background: rgba(0,0,0,0.6);
+  z-index: 10000; /* luôn trên overlay */
 }
-#authModal .auth-content{
+
+#authModal .auth-content {
   background:#fff;
   padding:20px;
   border-radius:8px;
   max-width:350px;
   width:90%;
 }
-#authModal h2{
+#authModal h2 {
   text-align:center;
   margin-bottom:10px;
 }
-#authModal input{
+#authModal input {
   width:100%;
   padding:8px;
   margin:6px 0;
   border-radius:4px;
   border:1px solid #aaa;
 }
-#authModal button{
+#authModal button {
   width:100%;
   padding:10px;
   margin-top:10px;
@@ -64,43 +59,76 @@
   cursor:pointer;
   border-radius:4px;
 }
-#authModal #closeAuth{
+#authModal #closeAuth {
   background:#f44336;
   margin-top:5px;
 }
-#authModal #authMessage{
+#authModal #authMessage {
   text-align:center;
   margin-top:8px;
   color:red;
 }
 
-/* SIDEBAR USER INFO */
-#userInfoPreview{
+/* ================= SIDEBAR ================= */
+.sidebar {
+  position: fixed;
+  z-index: 1000; /* dưới modal */
+  background:#fff;
+  width:250px;
+  top:0; left:-260px;
+  height:100%;
+  padding:10px;
+  overflow-y:auto;
+  transition: left 0.3s;
+}
+.sidebar.active {
+  left:0;
+}
+.sidebar h3 {
+  margin-bottom:10px;
+}
+.sidebar a {
+  display:block;
+  margin:6px 0;
+  color:#111;
+  text-decoration:none;
+}
+
+/* ================= SIDEBAR USER INFO ================= */
+#userInfoPreview {
   display:none;
   margin-top:10px;
   text-align:center;
   cursor:pointer;
 }
-#userInfoPreview img{
+#userInfoPreview img {
   width:40px; height:40px;
   border-radius:50%;
   object-fit:cover;
   margin-bottom:5px;
 }
 
-/* SIDEBAR */
-.sidebar {
+/* ================= OVERLAY ================= */
+#overlay {
   position: fixed;
-  z-index: 1000;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  z-index: 500; /* dưới modal */
+}
+#overlay.active {
+  display:block;
 }
 
-/* 2 CỘT SẢN PHẨM */
-#products{
+/* ================= 2 CỘT SẢN PHẨM ================= */
+#products {
   display:grid;
-  grid-template-columns:1fr 1fr; /* 2 cột */
+  grid-template-columns:1fr 1fr;
   gap:20px;
+  padding:10px;
 }
-.product-card{
+.product-card {
   background:#fff;
   border:1px solid #ccc;
   border-radius:8px;
@@ -108,23 +136,41 @@
   text-align:center;
   padding:10px;
 }
-.product-card img{
+.product-card img {
   width:100%;
   height:auto;
   border-bottom:1px solid #ccc;
   border-radius:4px;
   object-fit:cover;
 }
-.product-card .product-info{
+.product-card .product-info {
   margin-top:8px;
+}
+
+/* ================= HEADER ================= */
+header {
+  display:flex;
+  align-items:center;
+  padding:10px;
+  background:#f5f5f5;
+}
+header .logo {
+  flex:1;
+}
+header input#search {
+  padding:6px;
+  border-radius:4px;
+  border:1px solid #aaa;
+  flex:2;
 }
 </style>
 </head>
 <body>
 
+<!-- OVERLAY -->
 <div id="overlay" onclick="toggleMenu()"></div>
 
-<!-- MENU / SIDEBAR -->
+<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
   <a href="index.html">Trang chủ</a>
@@ -134,11 +180,9 @@
   <a href="the-nho.html">Thẻ nhớ</a>
   <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
   <hr>
-  <!-- LOGIN / LOGOUT -->
   <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
   <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
 
-  <!-- USER INFO PREVIEW -->
   <div id="userInfoPreview">
     <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/40" alt="Avatar">
     <p id="sidebarUserNamePreview" style="margin:0; font-size:14px; color:#007BFF;">Người dùng</p>
@@ -147,7 +191,7 @@
 
 <!-- HEADER -->
 <header>
-  <div onclick="toggleMenu()">☰</div>
+  <div onclick="toggleMenu()" style="cursor:pointer; margin-right:10px;">☰</div>
   <div class="logo">
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
@@ -158,8 +202,6 @@
 <div class="product-slider">
   <div class="product-track" id="products"></div>
 </div>
-
-<div class="extra-section"></div>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -194,7 +236,30 @@
 <script src="banner.js"></script>
 
 <script>
+// ===================== TOGGLE SIDEBAR =====================
+function toggleMenu() {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  sidebar.classList.toggle("active");
+  overlay.classList.toggle("active");
+}
+
+// ===================== LOGIN MODAL =====================
 document.addEventListener("DOMContentLoaded", function(){
+  const loginLink = document.getElementById("loginLink");
+  const logoutLink = document.getElementById("logoutLink");
+  const authModal = document.getElementById("authModal");
+  const authEmail = document.getElementById("authEmail");
+  const authPassword = document.getElementById("authPassword");
+  const authRegisterBtn = document.getElementById("authRegisterBtn");
+  const authLoginBtn = document.getElementById("authLoginBtn");
+  const closeAuth = document.getElementById("closeAuth");
+  const authMessage = document.getElementById("authMessage");
+  const userInfoPreview = document.getElementById("userInfoPreview");
+  const userAvatarPreview = document.getElementById("sidebarUserAvatarPreview");
+  const userNamePreview = document.getElementById("sidebarUserNamePreview");
+
+  // Firebase config
   const firebaseConfig = {
     apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
     authDomain:"stech-73b89.firebaseapp.com",
@@ -204,58 +269,4 @@ document.addEventListener("DOMContentLoaded", function(){
     appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
   };
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-
-  const loginLink = document.getElementById("loginLink");
-  const logoutLink = document.getElementById("logoutLink");
-  const authModal = document.getElementById("authModal");
-  const authEmail = document.getElementById("authEmail");
-  const authPassword = document.getElementById("authPassword");
-  const authRegisterBtn = document.getElementById("authRegisterBtn");
-  const authLoginBtn = document.getElementById("authLoginBtn");
-  const closeAuth = document.getElementById("closeAuth");
-  const products = document.getElementById("products");
-
-  const userInfoPreview = document.getElementById("userInfoPreview");
-  const userAvatarPreview = document.getElementById("sidebarUserAvatarPreview");
-  const userNamePreview = document.getElementById("sidebarUserNamePreview");
-
-  // Mở modal
-  loginLink.addEventListener("click",(e)=>{ 
-    e.preventDefault(); 
-    authModal.style.display="flex"; 
-  });
-  // Đóng modal
-  closeAuth.addEventListener("click",()=>authModal.style.display="none");
-
-  // REGISTER
-  authRegisterBtn.addEventListener("click",()=>{
-    const email = authEmail.value; 
-    const pass = authPassword.value;
-    auth.createUserWithEmailAndPassword(email, pass)
-      .then(()=>{
-        authMessage.style.color="green"; 
-        authMessage.innerText="Đăng ký thành công!";
-        authEmail.value=""; authPassword.value="";
-      })
-      .catch(err=>{
-        authMessage.style.color="red"; 
-        authMessage.innerText=err.message;
-      });
-  });
-
-  // LOGIN
-  authLoginBtn.addEventListener("click",()=>{
-    const email = authEmail.value; 
-    const pass = authPassword.value;
-    auth.signInWithEmailAndPassword(email, pass)
-      .then(()=>{
-        authMessage.style.color="green"; 
-        authMessage.innerText="Đăng nhập thành công!";
-        authModal.style.display="none"; 
-        loginLink.style.display="none"; 
-        logoutLink.style.display="block";
-        if(products) products.style.display="grid";
-      })
-      .catch(err=>{
-        authMessage.style
+  const auth
