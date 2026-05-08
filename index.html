@@ -71,6 +71,32 @@
 #products{
   display:none;
 }
+  #products {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 cột */
+  gap: 20px; /* khoảng cách giữa 2 sản phẩm */
+}
+
+.product-card {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  text-align: center;
+  padding: 10px;
+}
+
+.product-card img {
+  width: 100%;
+  height: auto;
+  border-bottom: 1px solid #ccc;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.product-card .product-info {
+  margin-top: 8px;
+}
 </style>
 </head>
 <body>
