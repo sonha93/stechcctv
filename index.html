@@ -67,14 +67,12 @@
   color:red;
 }
 
-/* Ẩn sản phẩm lúc chưa login */
+/* SẢN PHẨM 2 CỘT */
 #products{
-  display:none;
-}
-  #products {
   display: grid;
   grid-template-columns: 1fr 1fr; /* 2 cột */
-  gap: 20px; /* khoảng cách giữa 2 sản phẩm */
+  gap: 20px;
+  margin:20px 10px;
 }
 
 .product-card {
@@ -97,6 +95,11 @@
 .product-card .product-info {
   margin-top: 8px;
 }
+
+/* Ẩn sản phẩm nếu chưa login */
+#products {
+  display: none;
+}
 </style>
 </head>
 <body>
@@ -118,10 +121,10 @@
   <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
   <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
   <!-- USER INFO -->
-<div id="userInfo" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ccc; font-size:14px;">
-  <p id="sidebarUserName"></p>
-  <p id="sidebarUserEmail"></p>
-</div>
+  <div id="userInfo" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid #ccc; font-size:14px;">
+    <p id="sidebarUserName"></p>
+    <p id="sidebarUserEmail"></p>
+  </div>
 </div>
 
 <!-- HEADER -->
@@ -137,7 +140,6 @@
 <div class="product-slider">
   <div class="product-track" id="products"></div>
 </div>
-<div class="extra-section"></div>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -167,10 +169,7 @@
 <!-- SCRIPTS -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="app.js"></script>
-<div id="productContainer" class="product-grid"></div>
-<script src="notify.js"></script>
-<script src="banner.js"></script>
+
 <script>
 // FIREBASE CONFIG
 const firebaseConfig = {
@@ -209,8 +208,15 @@ authRegisterBtn.addEventListener("click", ()=>{
   const email = authEmail.value;
   const pass = authPassword.value;
   auth.createUserWithEmailAndPassword(email, pass)
-    .then(()=> { authMessage.style.color="green"; authMessage.innerText="Đăng ký thành công!"; authEmail.value=""; authPassword.value=""; })
-    .catch(err=> { authMessage.style.color="red"; authMessage.innerText=err.message; });
+    .then(()=>{
+      authMessage.style.color="green"; 
+      authMessage.innerText="Đăng ký thành công!";
+      authEmail.value=""; authPassword.value="";
+    })
+    .catch(err=>{
+      authMessage.style.color="red"; 
+      authMessage.innerText=err.message;
+    });
 });
 
 // LOGIN
@@ -224,9 +230,14 @@ authLoginBtn.addEventListener("click", ()=>{
       authModal.style.display="none";
       loginLink.style.display="none";
       logoutLink.style.display="block";
-      if(products) products.style.display="block";
+      if(products) products.style.display="grid";
+      // Hiển thị tên/email user ở sidebar
+      firebase.auth().currentUser && displayUserInfo(firebase.auth().currentUser);
     })
-    .catch(err=>{ authMessage.style.color="red"; authMessage.innerText=err.message; });
+    .catch(err=>{
+      authMessage.style.color="red";
+      authMessage.innerText=err.message;
+    });
 });
 
 // LOGOUT
@@ -235,6 +246,7 @@ logoutLink.addEventListener("click", ()=>{
     loginLink.style.display="block";
     logoutLink.style.display="none";
     if(products) products.style.display="none";
+    document.getElementById("userInfo").style.display="none";
   });
 });
 
@@ -243,13 +255,23 @@ auth.onAuthStateChanged(user=>{
   if(user){
     loginLink.style.display="none";
     logoutLink.style.display="block";
-    if(products) products.style.display="block";
+    if(products) products.style.display="grid";
+    displayUserInfo(user);
   } else {
     loginLink.style.display="block";
     logoutLink.style.display="none";
     if(products) products.style.display="none";
+    document.getElementById("userInfo").style.display="none";
   }
 });
+
+// HIỂN THỊ THÔNG TIN USER
+function displayUserInfo(user){
+  const infoBox = document.getElementById("userInfo");
+  document.getElementById("sidebarUserName").innerText = user.displayName || "Người dùng";
+  document.getElementById("sidebarUserEmail").innerText = user.email;
+  infoBox.style.display = "block";
+}
 </script>
 
 <script>
