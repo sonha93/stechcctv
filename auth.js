@@ -1,67 +1,103 @@
-// auth.js
+// auth.js – chuẩn popup sidebar
 
-const registerForm = document.getElementById("registerForm");
-const loginForm = document.getElementById("loginForm");
-const message = document.getElementById("message");
-const products = document.getElementById("products"); // div chứa sản phẩm
+document.addEventListener("DOMContentLoaded", () => {
+  // ELEMENTS
+  const loginLink = document.getElementById("loginLink");
+  const logoutLink = document.getElementById("logoutLink");
+  const authModal = document.getElementById("authModal");
+  const authEmail = document.getElementById("authEmail");
+  const authPassword = document.getElementById("authPassword");
+  const authRegisterBtn = document.getElementById("authRegisterBtn");
+  const authLoginBtn = document.getElementById("authLoginBtn");
+  const closeAuth = document.getElementById("closeAuth");
+  const authMessage = document.getElementById("authMessage");
+  const products = document.getElementById("products");
 
-// Ẩn sản phẩm khi chưa đăng nhập
-if(products) products.style.display = "none";
+  // HIỆN POPUP LOGIN
+  loginLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    authModal.style.display = "flex";
+    authMessage.innerText = "";
+  });
 
-// Đăng ký
-registerForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const email = document.getElementById("registerEmail").value;
-  const password = document.getElementById("registerPassword").value;
+  // ĐÓNG POPUP
+  closeAuth.addEventListener("click", () => {
+    authModal.style.display = "none";
+  });
 
-  auth.createUserWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      message.style.color = "green";
-      message.innerText = "Đăng ký thành công! 🎉";
-      registerForm.reset();
-    })
-    .catch((error) => {
-      message.style.color = "red";
-      if(error.code === "auth/email-already-in-use"){
-        message.innerText = "Email đã tồn tại! Hãy đăng nhập.";
-      } else {
-        message.innerText = error.message;
-      }
+  // ĐĂNG KÝ
+  authRegisterBtn.addEventListener("click", () => {
+    const email = authEmail.value.trim();
+    const pass = authPassword.value.trim();
+    if (!email || !pass) {
+      authMessage.style.color = "red";
+      authMessage.innerText = "Vui lòng nhập email và mật khẩu!";
+      return;
+    }
+
+    auth.createUserWithEmailAndPassword(email, pass)
+      .then(() => {
+        authMessage.style.color = "green";
+        authMessage.innerText = "Đăng ký thành công! 🎉";
+        authEmail.value = "";
+        authPassword.value = "";
+      })
+      .catch(err => {
+        authMessage.style.color = "red";
+        if (err.code === "auth/email-already-in-use") {
+          authMessage.innerText = "Email đã tồn tại! Hãy đăng nhập.";
+        } else {
+          authMessage.innerText = err.message;
+        }
+      });
+  });
+
+  // ĐĂNG NHẬP
+  authLoginBtn.addEventListener("click", () => {
+    const email = authEmail.value.trim();
+    const pass = authPassword.value.trim();
+    if (!email || !pass) {
+      authMessage.style.color = "red";
+      authMessage.innerText = "Vui lòng nhập email và mật khẩu!";
+      return;
+    }
+
+    auth.signInWithEmailAndPassword(email, pass)
+      .then(() => {
+        authMessage.style.color = "green";
+        authMessage.innerText = "Đăng nhập thành công! 🎉";
+        authModal.style.display = "none";
+        loginLink.style.display = "none";
+        logoutLink.style.display = "block";
+        if (products) products.style.display = "grid";
+        authEmail.value = "";
+        authPassword.value = "";
+      })
+      .catch(err => {
+        authMessage.style.color = "red";
+        authMessage.innerText = err.message;
+      });
+  });
+
+  // ĐĂNG XUẤT
+  logoutLink.addEventListener("click", () => {
+    auth.signOut().then(() => {
+      loginLink.style.display = "block";
+      logoutLink.style.display = "none";
+      if (products) products.style.display = "none";
     });
-});
+  });
 
-// Đăng nhập
-loginForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-
-  auth.signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      message.style.color = "green";
-      message.innerText = "Đăng nhập thành công! 🎉";
-      loginForm.reset();
-      registerForm.style.display = "none"; // ẩn form đăng ký
-      loginForm.style.display = "none";    // ẩn form đăng nhập
-      if(products) products.style.display = "block"; // hiện sản phẩm
-    })
-    .catch((error) => {
-      message.style.color = "red";
-      message.innerText = error.message;
-    });
-});
-
-// Kiểm tra trạng thái đăng nhập
-auth.onAuthStateChanged((user) => {
-  if(user){
-    registerForm.style.display = "none";
-    loginForm.style.display = "none";
-    if(products) products.style.display = "block";
-    console.log("User hiện tại:", user.email);
-  } else {
-    registerForm.style.display = "block";
-    loginForm.style.display = "block";
-    if(products) products.style.display = "none";
-    console.log("Chưa đăng nhập");
-  }
+  // KIỂM TRA AUTH STATE
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      loginLink.style.display = "none";
+      logoutLink.style.display = "block";
+      if (products) products.style.display = "grid";
+    } else {
+      loginLink.style.display = "block";
+      logoutLink.style.display = "none";
+      if (products) products.style.display = "none";
+    }
+  });
 });
