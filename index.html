@@ -10,23 +10,31 @@
 header {
   display:flex;
   align-items:center;
-  padding:10px;
+  padding:10px 15px; /* thêm padding 2 bên */
   background:#40C4C0; /* màu cyan */
   color:white;
 }
+header .menu-icon {
+  cursor:pointer;
+  margin-right:10px;
+  font-size:20px;
+}
+header .logo {
+  margin-right:15px; /* khoảng cách logo với menu icon */
+}
 header .logo img{
   height:38px;
-  width:38px; /* logo vuông */
+  width:38px;
 }
 header input#search{
   flex:1;
-  margin-left:10px;
   padding:6px 10px;
   border-radius:4px;
   border:none;
   background:#ffffff; /* nền trắng */
   color:#333;
   font-size:14px;
+  margin-left:0; /* đẩy sát logo hơn */
 }
 
 /* ===== SIDEBAR ===== */
@@ -35,31 +43,40 @@ header input#search{
   top:0; left:-260px;
   width:250px; height:100%;
   background:#fff;
-  padding:10px;
+  padding:20px 10px 10px 10px; 
   overflow-y:auto;
   transition: left 0.3s;
   z-index:1000;
+  box-sizing:border-box;
 }
 .sidebar.active{left:0;}
-.sidebar h3{margin-bottom:10px;}
-.sidebar a{display:block;margin:6px 0;color:#111;text-decoration:none;}
-#overlay{
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.4);
-  display:none;z-index:500;
+.sidebar h3{
+  margin-bottom:10px;
+  font-size:18px;
+  font-weight:bold;
 }
-#overlay.active{display:block;}
-
-/* ===== NÚT LOGIN/REGISTER (SIDEBAR) ===== */
-#loginLink, #logoutLink {
-  display:block; /* block trong sidebar */
-  padding:6px 12px;
+.sidebar a{
+  display:block;
   margin:6px 0;
+  padding:6px 10px;
+  color:#111;
+  text-decoration:none;
+  border-radius:4px;
+  box-sizing:border-box;
+}
+.sidebar a:hover{ background:#f0f0f0; }
+
+/* ===== SIDEBAR LOGIN/REGISTER ===== */
+#loginLink, #logoutLink {
+  display:block;
+  padding:6px 10px;
+  margin:10px 0;
   border-radius:4px;
   text-decoration:none;
-  background:#ffffff;
-  color:#40C4C0;
+  background:#40C4C0;
+  color:white;
   font-weight:bold;
+  text-align:center;
   cursor:pointer;
 }
 #loginLink:hover, #logoutLink:hover { opacity:0.8; }
@@ -79,6 +96,7 @@ header input#search{
 }
 #userInfoPreview p{
   margin:0; font-size:14px; color:#40C4C0;
+  word-break:break-word;
 }
 
 /* ===== 2 CỘT SẢN PHẨM ===== */
@@ -126,11 +144,19 @@ header input#search{
 #authModal input{width:100%;padding:8px;margin:6px 0;border-radius:4px;border:1px solid #aaa;}
 #authModal button{
   width:100%; padding:10px; margin-top:10px; border:none;
-  background:#40C4C0; 
+  background:#40C4C0;
   color:white; font-weight:bold; cursor:pointer; border-radius:4px;
 }
 #authModal #closeAuth{background:#f44336;margin-top:5px;}
 #authModal #authMessage{text-align:center;margin-top:8px;color:red;}
+
+/* ===== OVERLAY ===== */
+#overlay{
+  position:fixed; top:0; left:0;width:100%; height:100%;
+  background:rgba(0,0,0,0.4);
+  display:none; z-index:500;
+}
+#overlay.active{display:block;}
 
 /* ===== FOOTER ===== */
 footer{
@@ -149,17 +175,15 @@ footer{
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
-  <a href="index.html">Trang chủ</a>
-  <a href="cart.html">Giỏ hàng</a>
-  <a href="camera-trong-nha.html">Camera trong nhà</a>
-  <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
-  <a href="the-nho.html">Thẻ nhớ</a>
-  <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
+  <a href="index.html">Trang Chủ</a>
+  <a href="cart.html">Giỏ Hàng</a>
+  <a href="camera-trong-nha.html">Camera Trong Nhà</a>
+  <a href="camera-ngoai-troi.html">Camera Ngoài Trời</a>
+  <a href="the-nho.html">Thẻ Nhớ</a>
+  <a href="combo-khuyenmai.html">Combo Khuyến Mãi</a>
   <hr>
-  <!-- NÚT LOGIN/REGISTER -->
-  <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
-  <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
-  <!-- USER INFO -->
+  <a href="#" id="loginLink">Đăng Nhập / Đăng Ký</a>
+  <a href="#" id="logoutLink" style="display:none;">Đăng Xuất</a>
   <div id="userInfoPreview">
     <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/40" alt="Avatar">
     <p id="sidebarUserNamePreview">Người dùng</p>
@@ -168,7 +192,7 @@ footer{
 
 <!-- HEADER -->
 <header>
-  <div onclick="toggleMenu()" style="cursor:pointer;margin-right:10px;">☰</div>
+  <div class="menu-icon" onclick="toggleMenu()">☰</div>
   <div class="logo">
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
@@ -196,24 +220,23 @@ footer{
     <h2>Đăng ký / Đăng nhập</h2>
     <input type="email" id="authEmail" placeholder="Email">
     <input type="password" id="authPassword" placeholder="Mật khẩu">
-    <button id="authRegisterBtn">Đăng ký</button>
-    <button id="authLoginBtn">Đăng nhập</button>
+    <button id="authRegisterBtn">Đăng Ký</button>
+    <button id="authLoginBtn">Đăng Nhập</button>
     <button id="closeAuth">Đóng</button>
     <p id="authMessage"></p>
   </div>
 </div>
 
-<!-- FIREBASE & JS -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="app.js"></script>
 
 <script>
-// TOGGLE SIDEBAR
 function toggleMenu(){
   document.getElementById("sidebar").classList.toggle("active");
   document.getElementById("overlay").classList.toggle("active");
 }
 </script>
+
 </body>
 </html>
