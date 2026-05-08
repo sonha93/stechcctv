@@ -18,6 +18,52 @@
   display:block;
   background:transparent;
 }
+
+/* FORM ĐĂNG KÝ / ĐĂNG NHẬP */
+.auth-section{
+  max-width:400px;
+  margin:20px auto;
+  padding:20px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  background:#f9f9f9;
+}
+
+.auth-section h2{
+  text-align:center;
+  margin-bottom:10px;
+}
+
+.auth-section input{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border-radius:4px;
+  border:1px solid #aaa;
+}
+
+.auth-section button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  background:#007BFF;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:4px;
+}
+
+#message{
+  text-align:center;
+  color:red;
+  margin-top:10px;
+}
+
+/* Ẩn products lúc chưa login */
+#products{
+  display:none;
+}
 </style>
 
 </head>
@@ -26,7 +72,7 @@
 
 <div id="overlay" onclick="toggleMenu()"></div>
 
-<!-- MENU (GIỮ NGUYÊN) -->
+<!-- MENU -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
   <a href="admin.html">Admin</a>
@@ -41,29 +87,43 @@
 <!-- HEADER -->
 <header>
   <div onclick="toggleMenu()">☰</div>
-
-  <!-- LOGO -->
   <div class="logo">
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
-
   <input id="search" placeholder="Tìm kiếm sản phẩm...">
 </header>
 
-<!-- CONTENT -->
+<!-- FORM ĐĂNG KÝ / ĐĂNG NHẬP -->
+<div class="auth-section">
+  <h2>Đăng ký</h2>
+  <form id="registerForm">
+    <input type="email" id="registerEmail" placeholder="Email" required>
+    <input type="password" id="registerPassword" placeholder="Mật khẩu" required>
+    <button type="submit">Đăng ký</button>
+  </form>
 
-  <div class="product-slider">
+  <h2>Đăng nhập</h2>
+  <form id="loginForm">
+    <input type="email" id="loginEmail" placeholder="Email" required>
+    <input type="password" id="loginPassword" placeholder="Mật khẩu" required>
+    <button type="submit">Đăng nhập</button>
+  </form>
+
+  <p id="message"></p>
+</div>
+
+<!-- SẢN PHẨM -->
+<div class="product-slider">
   <div class="product-track" id="products"></div>
 </div>
 
+<div class="extra-section"></div>
 
-<div class="extra-section">
-</div>
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-container">
     <h3>StechCamera</h3>
-    <p></p> Website chuyên cung cấp camera an ninh chính hãng</p>
+    <p>Website chuyên cung cấp camera an ninh chính hãng</p>
     <p>Hotline: 0985.678.245</p>
     <p>Email: support@stechcamera.vn</p>
     <hr>
@@ -71,16 +131,20 @@
   </div>
 </footer>
 
-<!-- CHỈ GIỮ 1 SCRIPT CHÍNH -->
-
-
+<!-- SCRIPTS -->
 <script src="app.js"></script>
-<div id="productContainer" class="product-grid"></div>
 <script src="notify.js"></script>
 <script src="banner.js"></script>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
+
 <script>
 /* =========================
-   MENU FIX (100% WORK)
+   MENU FIX
 ========================= */
 function toggleMenu(){
   document.getElementById("sidebar").classList.toggle("active");
@@ -88,28 +152,20 @@ function toggleMenu(){
 }
 
 /* =========================
-   SAFE INIT (KHÔNG CRASH)
+   SAFE INIT
 ========================= */
 document.addEventListener("DOMContentLoaded", function(){
-
-  // render sản phẩm (app.js phải có render())
   if(typeof render === "function"){
     render();
   }
-
 });
 </script>
+
 <div id="notify-box"></div>
-  <img id="zoomImg">
-  <script src="firebase-config.js"></script>
-<script src="auth.js"></script>
-</body>
+<img id="zoomImg">
 
-<!-- ZOOM (GIỮ 1 BẢN DUY NHẤT) -->
-<div id="imgZoom" onclick="closeZoom()">
-
-</div>
-
+<!-- ZOOM -->
+<div id="imgZoom" onclick="closeZoom()"></div>
 <style>
 #imgZoom{
   position:fixed;
@@ -120,7 +176,6 @@ document.addEventListener("DOMContentLoaded", function(){
   justify-content:center;
   z-index:9999;
 }
-
 #imgZoom img{
   max-width:90%;
   max-height:90%;
@@ -132,30 +187,24 @@ document.addEventListener("DOMContentLoaded", function(){
 
 <script>
 let zoomLevel = 1;
-
 function openZoom(src){
   const box = document.getElementById("imgZoom");
   const img = document.getElementById("zoomImg");
-
   img.src = src;
   box.style.display = "flex";
-
   zoomLevel = 1;
   img.style.transform = "scale(1)";
 }
-
 function closeZoom(){
   document.getElementById("imgZoom").style.display = "none";
 }
-
 document.getElementById("zoomImg").addEventListener("click", function(e){
   e.stopPropagation();
-
   zoomLevel += 0.3;
   if(zoomLevel > 2.5) zoomLevel = 1;
-
   this.style.transform = `scale(${zoomLevel})`;
 });
 </script>
 
+</body>
 </html>
