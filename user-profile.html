@@ -3,41 +3,148 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thông tin người dùng</title>
+<title>Thông tin người dùng - Shop Camera Pro</title>
 <link rel="stylesheet" href="styletrong-nha.css">
 <style>
-#userProfile {
-  max-width:400px; margin:50px auto; padding:20px;
-  border:1px solid #ccc; border-radius:8px; background:#f9f9f9;
+/* ===== HEADER ===== */
+header {
+  display:flex;
+  align-items:center;
+  padding:10px;
+  background:#40C4C0; /* màu cyan đồng bộ */
+  color:white;
 }
-#userProfile img { width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:10px; }
-#userProfile input, #userProfile button { width:100%; padding:8px; margin:6px 0; border-radius:4px; border:1px solid #aaa; }
-#userProfile button { background:#007BFF; color:#fff; border:none; font-weight:bold; cursor:pointer; }
-#authMessage { text-align:center; color:red; margin-top:8px; }
+header .logo img{
+  height:38px;
+  width:auto;
+  display:block;
+  border:0;
+}
+header input#search{
+  flex:1;
+  margin-left:10px;
+  padding:6px;
+  border-radius:4px;
+  border:none;
+  background:#40C4C0; /* cùng màu header */
+  color:white;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  position: fixed;
+  top:0; left:-260px;
+  width:250px; height:100%;
+  background:#fff;
+  padding:10px;
+  overflow-y:auto;
+  transition: left 0.3s;
+  z-index:1000;
+}
+.sidebar.active{left:0;}
+.sidebar h3{margin-bottom:10px;}
+.sidebar a{display:block;margin:6px 0;color:#111;text-decoration:none;}
+#overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);display:none;z-index:500;}
+#overlay.active{display:block;}
+
+/* ===== USER PROFILE ===== */
+.profile-container {
+  max-width:400px;
+  margin:50px auto;
+  padding:20px;
+  border:2px solid #40C4C0;
+  border-radius:8px;
+  background:#f9f9f9;
+  text-align:center;
+}
+.profile-container input, .profile-container button {
+  width:100%; padding:8px; margin:6px 0; border-radius:4px; border:1px solid #aaa;
+}
+.profile-container button {
+  background:#40C4C0;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  border:none;
+}
+#avatarPreview {
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  object-fit:cover;
+  display:block;
+  margin:10px auto;
+  border:1px solid #ccc;
+}
+#saveStatus {
+  margin-top:8px;
+  font-weight:bold;
+  text-align:center;
+}
 </style>
 </head>
+
 <body>
 
-<div id="userProfile">
-  <h2>Thông tin người dùng</h2>
-  <img id="profileAvatar" src="https://via.placeholder.com/100" alt="Avatar">
-  <input type="text" id="profileName" placeholder="Tên">
-  <input type="email" id="profileEmail" placeholder="Email" disabled>
-  <input type="text" id="profilePhone" placeholder="Số điện thoại">
-  <input type="text" id="profileAddress" placeholder="Địa chỉ">
-  <input type="date" id="profileDOB" placeholder="Ngày sinh">
-  <input type="file" id="profileAvatarFile" accept="image/*">
-  <button id="saveProfile">Lưu thông tin</button>
-  <button id="logoutBtn">Đăng xuất</button>
-  <p id="authMessage"></p>
+<!-- OVERLAY -->
+<div id="overlay" onclick="toggleMenu()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <h3>Danh mục</h3>
+  <a href="index.html">Trang chủ</a>
+  <a href="cart.html">Giỏ hàng</a>
+  <a href="camera-trong-nha.html">Camera trong nhà</a>
+  <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
+  <a href="the-nho.html">Thẻ nhớ</a>
+  <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
+  <hr>
+  <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
+  <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
+  <div id="userInfoPreview">
+    <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/40" alt="Avatar">
+    <p id="sidebarUserNamePreview">Người dùng</p>
+  </div>
 </div>
 
+<!-- HEADER -->
+<header>
+  <div onclick="toggleMenu()" style="cursor:pointer;margin-right:10px;">☰</div>
+  <div class="logo">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
+  </div>
+  <input id="search" placeholder="Tìm kiếm sản phẩm...">
+</header>
+
+<!-- USER PROFILE FORM -->
+<div class="profile-container">
+  <h2>Thông tin người dùng</h2>
+  <img id="avatarPreview" src="images/logo-default.png" alt="Avatar">
+  <input type="file" id="avatarInput">
+  <input type="text" id="nameInput" placeholder="Họ và tên">
+  <input type="email" id="emailInput" placeholder="Email" disabled>
+  <input type="text" id="phoneInput" placeholder="Số điện thoại">
+  <input type="text" id="addressInput" placeholder="Địa chỉ">
+  <input type="date" id="dobInput" placeholder="Ngày sinh">
+  <button id="saveProfileBtn">Lưu thông tin</button>
+  <button id="logoutBtn">Đăng xuất</button>
+  <p id="saveStatus"></p>
+</div>
+
+<!-- FIREBASE & JS -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="user-profile.js"></script>
 
-<script src="user-info.js"></script>
+<script>
+// TOGGLE SIDEBAR
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active"); 
+  document.getElementById("overlay").classList.toggle("active"); 
+}
+</script>
 
 </body>
 </html>
