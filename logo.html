@@ -6,7 +6,7 @@
 <title>Chi tiết sản phẩm</title>
 <style>
 /* RESET */
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:#f5f5f5;color:#111;overflow-x:hidden;}
 
 /* HEADER */
@@ -16,38 +16,48 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
 .logo img{width:100%;height:100%;object-fit:cover;}
 .search-box{flex:1;position:relative;}
 .search-box input{width:100%;height:46px;border:none;border-radius:14px;background:#f1f1f1;padding:0 14px;font-size:14px;outline:none;}
+.search-results{position:absolute;background:#fff;width:100%;max-height:300px;overflow-y:auto;border:1px solid #ddd;border-radius:12px;margin-top:4px;z-index:1000;}
+.search-result-item{display:flex;align-items:center;gap:8px;padding:8px;cursor:pointer;}
+.search-result-item img{width:40px;height:40px;object-fit:cover;border-radius:6px;}
+.search-result-item:hover{background:#f1f1f1;}
+
+/* ICON */
 .header-icons{display:flex;gap:10px;}
-.icon-btn{width:46px;height:46px;border-radius:14px;background:#00acc1;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;text-decoration:none;}
+.icon-btn{width:46px;height:46px;border-radius:14px;background:#00acc1;color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:22px;position:relative;}
+.admin-btn{background:#6a5acd;}
 .cart-count{position:absolute;top:-5px;right:-5px;min-width:20px;height:20px;border-radius:50%;background:red;color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;}
+
+/* MENU */
 .sidebar{position:fixed;top:0;left:-280px;width:260px;height:100vh;background:#fff;z-index:9999;transition:.3s;padding:20px;box-shadow:0 0 20px rgba(0,0,0,.15);}
 .sidebar.active{left:0;}
 .sidebar h3{margin-bottom:20px;color:#00acc1;}
 .sidebar a{display:block;padding:14px;margin-bottom:10px;border-radius:12px;background:#f5f5f5;text-decoration:none;color:#111;font-weight:bold;}
+
+/* OVERLAY */
 #overlay,#panelOverlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;opacity:0;visibility:hidden;transition:.3s;}
 #overlay.active,#panelOverlay.active{opacity:1;visibility:visible;}
 
-/* CONTAINER + PRODUCT CARD */
-.container{max-width:800px;margin:auto;padding:18px;}
-.product-card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.05);display:flex;gap:16px;align-items:flex-start;}
-.product-card img{width:180px;height:180px;object-fit:cover;border-radius:16px;}
-.product-info{flex:1;display:flex;flex-direction:column;gap:8px;}
-.product-name{font-size:24px;font-weight:800;line-height:1.3;}
-.price-row{display:flex;align-items:center;gap:10px;}
-.price{color:#d70018;font-size:22px;font-weight:bold;}
-.old-price{color:#888;text-decoration:line-through;font-size:16px;}
-.sale{background:red;color:#fff;padding:4px 8px;border-radius:9px;font-size:13px;font-weight:bold;}
-.action-wrap{display:flex;gap:10px;}
-.buy-btn,.spec-open-btn{flex:1;height:42px;border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:bold;cursor:pointer;}
+/* PRODUCT CARD */
+.product-card{display:flex;flex-direction:column;background:#fff;border-radius:20px;padding:12px;box-shadow:0 2px 10px rgba(0,0,0,.05);max-width:500px;margin:auto;}
+.product-card img{width:100%;height:auto;border-radius:16px;object-fit:contain;margin-bottom:12px;}
+.product-card .product-name{font-size:22px;font-weight:800;margin-bottom:8px;}
+.product-card .price-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.product-card .price{color:#d70018;font-size:24px;font-weight:bold;}
+.product-card .old-price{color:#888;text-decoration:line-through;font-size:16px;}
+.product-card .sale{background:red;color:#fff;padding:4px 8px;border-radius:9px;font-size:13px;font-weight:bold;}
+.action-wrap{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;width:100%;}
+.buy-btn,.spec-open-btn{width:100%;height:42px;border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:bold;cursor:pointer;transition:.2s;}
 .buy-btn{background:#111;}
 .spec-open-btn{background:#00acc1;}
-.desc{background:#f7f7f7;border-radius:16px;padding:12px;line-height:1.5;font-size:14px;margin-top:8px;}
+.buy-btn:hover,.spec-open-btn:hover{transform:translateY(-2px);}
+.desc{background:#f7f7f7;border-radius:16px;padding:16px;line-height:1.7;font-size:14px;}
 
-/* PANEL THÔNG SỐ GIỮ NGUYÊN STYLE */
+/* PANEL */
 #specPanel{position:fixed;top:0;right:-100%;width:620px;max-width:100%;height:100vh;background:#fff;z-index:9999;transition:.35s;overflow-y:auto;box-shadow:-5px 0 20px rgba(0,0,0,.15);}
 #specPanel.active{right:0;}
 .panel-top{position:sticky;top:0;background:#fff;z-index:20;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eee;}
 .panel-product{display:flex;align-items:center;gap:10px;}
-.panel-product img{width:50px;height:50px;object-fit:cover;border-radius:10px;}
+.panel-product img{width:50px;height:50px;object-fit:contain;border-radius:10px;background:#f5f5f5;}
 .panel-product-info h3{font-size:17px;line-height:1.4;}
 .close-panel{width:40px;height:40px;border:none;border-radius:10px;background:#f5f5f5;font-size:22px;cursor:pointer;}
 .spec-tabs{position:sticky;top:74px;background:#fff;z-index:19;display:flex;overflow-x:auto;border-bottom:1px solid #eee;}
@@ -63,22 +73,33 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
 
 /* MOBILE */
 @media(max-width:768px){
-  .product-card{flex-direction:column;align-items:center;}
-  .product-card img{width:100%;height:auto;max-height:250px;}
-  .action-wrap{flex-direction:column;}
-  .action-wrap button{width:100%;}
-  .product-name{font-size:20px;}
+  header{padding:10px;gap:8px;}
+  .menu-btn,.logo,.icon-btn{width:42px;height:42px;}
+  .search-box input{height:42px;font-size:13px;}
+  .product-card{max-width:100%;padding:10px;}
+  .product-card .product-name{font-size:20px;}
   .price{font-size:20px;}
+  .old-price{font-size:14px;}
+  .sale{font-size:12px;padding:3px 6px;}
+  .action-wrap{width:100%;}
+  #specPanel{width:100%;}
   .spec-row{flex-direction:column;gap:4px;}
   .spec-label{width:100%;}
 }
+
+/* SEARCH */
+.search-result-item{display:flex;align-items:center;gap:8px;padding:8px;cursor:pointer;border-bottom:1px solid #eee;}
+.search-result-item img{width:40px;height:40px;object-fit:cover;border-radius:6px;}
+.search-result-item strong{font-size:14px;color:#111;}
+.search-result-item span{font-size:13px;color:#d70018;font-weight:bold;}
+.search-result-item:hover{background:#f7f7f7;}
 </style>
 </head>
 <body>
 
 <div id="overlay" onclick="toggleMenu()"></div>
 
-<!-- SIDEBAR -->
+<!-- MENU -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
   <a href="index.html">Trang chủ</a>
@@ -101,29 +122,25 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
   </div>
 </header>
 
-<!-- PRODUCT CARD -->
-<div class="container">
-  <div class="product-card">
-    <img id="detailImg" src="">
-    <div class="product-info">
-      <div class="product-name" id="detailName"></div>
-      <div class="price-row">
-        <div class="price" id="detailPrice"></div>
-        <div class="old-price" id="detailOldPrice"></div>
-        <div class="sale" id="detailSale"></div>
-      </div>
-      <div class="action-wrap">
-        <button class="spec-open-btn" onclick="openPanel()">⚙️ Xem thông số</button>
-        <button class="buy-btn" onclick="addToCart()">🛒 Thêm giỏ hàng</button>
-      </div>
-      <div class="desc" id="detailDesc"></div>
-    </div>
+<!-- CONTENT -->
+<div class="product-card" id="productCard">
+  <img id="detailImg" src="">
+  <div class="product-name" id="detailName"></div>
+  <div class="price-row">
+    <div class="price" id="detailPrice"></div>
+    <div class="old-price" id="detailOldPrice"></div>
+    <div class="sale" id="detailSale"></div>
   </div>
+  <div class="action-wrap">
+    <button class="spec-open-btn" onclick="openPanel()">⚙️ Xem thông số</button>
+    <button class="buy-btn" onclick="addToCart()">🛒 Thêm giỏ hàng</button>
+  </div>
+  <div class="desc" id="detailDesc"></div>
 </div>
 
 <div id="panelOverlay" onclick="closePanel()"></div>
 
-<!-- PANEL THÔNG SỐ -->
+<!-- PANEL -->
 <div id="specPanel">
   <div class="panel-top">
     <div class="panel-product">
@@ -132,11 +149,13 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
     </div>
     <button class="close-panel" onclick="closePanel()">✕</button>
   </div>
+
   <div class="spec-tabs">
     <button class="spec-tab active" onclick="showTab('infoTab',this)">Thông tin</button>
     <button class="spec-tab" onclick="showTab('designTab',this)">Thiết kế</button>
     <button class="spec-tab" onclick="showTab('basicTab',this)">Cấu hình</button>
   </div>
+
   <div class="panel-body">
     <div class="spec-content active" id="infoTab">
       <div class="spec-group-title">Thông tin hàng hóa</div>
@@ -163,8 +182,9 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
 function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
 function openPanel(){document.getElementById("specPanel").classList.add("active");document.getElementById("panelOverlay").classList.add("active");}
 function closePanel(){document.getElementById("specPanel").classList.remove("active");document.getElementById("panelOverlay").classList.remove("active");}
-function showTab(tabId,btn){document.querySelectorAll(".spec-content").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".spec-tab").forEach(t=>t.classList.remove("active"));document.getElementById(tabId).classList.add("active");btn.classList.add("active");}
+function showTab(tabId,btn){document.querySelectorAll(".spec-content").forEach(tab=>{tab.classList.remove("active");});document.querySelectorAll(".spec-tab").forEach(tab=>{tab.classList.remove("active");});document.getElementById(tabId).classList.add("active");btn.classList.add("active");}
 
+/* GET PRODUCT */
 const params=new URLSearchParams(window.location.search);
 const id=params.get("id");
 const products=JSON.parse(localStorage.getItem("products"))||[];
@@ -208,6 +228,7 @@ function updateCartCount(){
   cart.forEach(item=>{total+=item.qty||1;});
   document.getElementById("cartCount").innerText=total;
 }
+updateCartCount();
 
 /* SEARCH */
 function searchProduct(){
@@ -219,13 +240,11 @@ function searchProduct(){
   filtered.forEach(p=>{
     const div=document.createElement("div");
     div.className="search-result-item";
-    div.innerHTML=`<img src="${p.img}"><div><strong>${p.name}</strong><br>${Number(p.price).toLocaleString()}đ</div>`;
+    div.innerHTML=`<img src="${p.img}" alt="${p.name}"><div><strong>${p.name}</strong><span>${Number(p.price).toLocaleString()}đ</span></div>`;
     div.onclick=()=>{window.location.href=`detail.html?id=${p.id}`;};
     results.appendChild(div);
   });
 }
-updateCartCount();
 </script>
-
 </body>
 </html>
