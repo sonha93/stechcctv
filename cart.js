@@ -38,25 +38,26 @@ function renderCart() {
     const itemTotal = price * qty;
     total += itemTotal;
 
-    box.innerHTML += `
-      <div class="item">
-        <img src="${p.img || ''}">
+ box.innerHTML += `
+  <div class="item">
+    <input type="checkbox" class="cart-checkbox" data-index="${index}" checked>
+    <img src="${p.img || ''}">
 
-        <div class="info">
-          <h4>${p.name || 'Không tên'}</h4>
+    <div class="info">
+      <h4>${p.name || 'Không tên'}</h4>
 
-          <div class="price">
-            ${price.toLocaleString()}đ × ${qty} = 
-            <b style="color:#e53935">
-              ${itemTotal.toLocaleString()}đ
-            </b>
-          </div>
-        </div>
-
-        <button class="remove" onclick="removeItem(${index})">
-          Xoá
-        </button>
+      <div class="price">
+        ${price.toLocaleString()}đ × ${qty} = 
+        <b style="color:#e53935">
+          ${itemTotal.toLocaleString()}đ
+        </b>
       </div>
+    </div>
+
+    <button class="remove" onclick="removeItem(${index})">
+      Xoá
+    </button>
+  </div>
     `;
   });
 
