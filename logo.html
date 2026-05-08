@@ -195,127 +195,281 @@ header{
   visibility:visible;
 }
 
-<!-- CONTENT -->
-<div class="container">
-  <div class="product-card">
-    <div class="product-image">
-      <img id="detailImg" src="" alt="Sản phẩm">
-    </div>
-    <div class="product-info">
-      <div class="product-name" id="detailName"></div>
-      <div class="price-row">
-        <div class="price" id="detailPrice"></div>
-        <div class="old-price" id="detailOldPrice"></div>
-        <div class="sale" id="detailSale"></div>
-      </div>
-      <div class="action-wrap">
-        <button class="spec-open-btn" onclick="openPanel()">⚙️ Xem thông số</button>
-        <button class="buy-btn" onclick="addToCart()">🛒 Thêm giỏ hàng</button>
-      </div>
-      <div class="desc" id="detailDesc"></div>
-    </div>
-  </div>
-</div>
-
-<style>
-/* ======= CARD PRODUCT ======= */
-.product-card{
+/* CONTAINER */
+.container{
+  max-width:1180px;
+  margin:auto;
+  padding:18px;
   display:flex;
-  flex-direction:column;
+  gap:18px;
+  align-items:flex-start;
+}
+
+/* LEFT */
+.left{
+  width:33%;
   background:#fff;
   border-radius:20px;
-  box-shadow:0 2px 10px rgba(0,0,0,.05);
-  overflow:hidden;
-  margin-bottom:20px;
   padding:12px;
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
 }
-.product-card .product-image img{
+.left img{
   width:100%;
-  height:auto;
-  max-height:250px;
+  height:300px;
   object-fit:contain;
   border-radius:16px;
 }
-.product-card .product-info{
-  padding:12px 0 0 0;
+
+/* RIGHT */
+.right{
+  width:67%;
+  background:#fff;
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
 }
-.product-card .price-row{
+
+/* TITLE */
+.product-name{
+  font-size:28px;
+  font-weight:800;
+  line-height:1.5;
+  margin-bottom:10px;
+}
+
+/* PRICE */
+.price-row{
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:10px;
   flex-wrap:wrap;
-  margin:8px 0;
+  margin-bottom:18px;
 }
-.product-card .price{
-  font-size:22px;
-  font-weight:bold;
+.price{
   color:#d70018;
+  font-size:32px;
+  font-weight:bold;
 }
-.product-card .old-price{
-  font-size:16px;
-  text-decoration:line-through;
+.old-price{
   color:#888;
+  text-decoration:line-through;
+  font-size:17px;
 }
-.product-card .sale{
+.sale{
+  background:red;
+  color:#fff;
+  padding:5px 9px;
+  border-radius:9px;
   font-size:13px;
   font-weight:bold;
-  color:#fff;
-  background:red;
-  padding:4px 8px;
-  border-radius:8px;
 }
 
-/* ACTION BUTTONS */
-.product-card .action-wrap{
+/* ACTION */
+.action-wrap{
   display:flex;
   flex-direction:column;
-  gap:10px;
-  margin:10px 0;
+  gap:8px;
+  margin-bottom:16px;
+  width:260px;
 }
-.product-card .buy-btn,
-.product-card .spec-open-btn{
+.buy-btn,
+.spec-open-btn{
   width:100%;
-  height:44px;
-  font-size:16px;
-  border-radius:12px;
+  height:42px;
   border:none;
+  border-radius:12px;
+  color:#fff;
+  font-size:14px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.2s;
+}
+.buy-btn{
+  background:#111;
+}
+.spec-open-btn{
+  background:#00acc1;
+}
+.buy-btn:hover,
+.spec-open-btn:hover{
+  transform:translateY(-2px);
+}
+
+/* DESC */
+.desc{
+  background:#f7f7f7;
+  border-radius:16px;
+  padding:16px;
+  line-height:1.7;
+  font-size:14px;
+}
+
+/* PANEL */
+#specPanel{
+  position:fixed;
+  top:0;
+  right:-100%;
+  width:620px;
+  max-width:100%;
+  height:100vh;
+  background:#fff;
+  z-index:9999;
+  transition:.35s;
+  overflow-y:auto;
+  box-shadow:-5px 0 20px rgba(0,0,0,.15);
+}
+#specPanel.active{
+  right:0;
+}
+
+/* PANEL TOP */
+.panel-top{
+  position:sticky;
+  top:0;
+  background:#fff;
+  z-index:20;
+  padding:12px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid #eee;
+}
+.panel-product{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.panel-product img{
+  width:50px;
+  height:50px;
+  object-fit:contain;
+  border-radius:10px;
+  background:#f5f5f5;
+}
+.panel-product-info h3{
+  font-size:17px;
+  line-height:1.4;
+}
+.close-panel{
+  width:40px;
+  height:40px;
+  border:none;
+  border-radius:10px;
+  background:#f5f5f5;
+  font-size:22px;
   cursor:pointer;
 }
-.product-card .buy-btn{background:#111; color:#fff;}
-.product-card .spec-open-btn{background:#00acc1; color:#fff;}
 
-/* DESCRIPTION */
-.product-card .desc{
+/* TAB */
+.spec-tabs{
+  position:sticky;
+  top:74px;
+  background:#fff;
+  z-index:19;
+  display:flex;
+  overflow-x:auto;
+  border-bottom:1px solid #eee;
+}
+.spec-tab{
+  flex-shrink:0;
+  border:none;
+  background:none;
+  padding:12px 16px;
   font-size:14px;
-  line-height:1.6;
-  background:#f7f7f7;
-  border-radius:12px;
-  padding:12px;
-  margin-top:8px;
+  font-weight:bold;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  white-space:nowrap;
+}
+.spec-tab.active{
+  color:#d70018;
+  border-color:#d70018;
 }
 
-/* ===== MOBILE ADJUST ===== */
+/* PANEL BODY */
+.panel-body{
+  padding:14px 16px;
+}
+.spec-content{
+  display:none;
+}
+.spec-content.active{
+  display:block;
+}
+.spec-group-title{
+  font-size:20px;
+  font-weight:800;
+  margin-bottom:12px;
+}
+/* ROW */
+.spec-row{
+  display:flex;
+  border-bottom:1px solid #f0f0f0;
+  padding:10px 0;
+  gap:10px;
+}
+.spec-label{
+  width:180px;
+  color:#666;
+  font-size:14px;
+  line-height:1.5;
+}
+.spec-value{
+  flex:1;
+  color:#111;
+  font-size:14px;
+  line-height:1.5;
+  font-weight:500;
+}
+
+/* MOBILE */
 @media(max-width:768px){
-  .product-card{
+  header{
     padding:10px;
+    gap:8px;
   }
-  .product-card .price{
-    font-size:20px;
-  }
-  .product-card .old-price{
-    font-size:14px;
-  }
-  .product-card .sale{
-    font-size:12px;
-    padding:3px 6px;
-  }
-  .product-card .buy-btn,
-  .product-card .spec-open-btn{
-    font-size:15px;
+  .menu-btn,
+  .logo,
+  .icon-btn{
+    width:42px;
     height:42px;
   }
-  .product-card .desc{
+  .search-box input{
+    height:42px;
     font-size:13px;
+  }
+  .container{
+    flex-direction:column;
+    padding:10px;
+  }
+  .left,
+  .right{
+    width:100%;
+  }
+  .left img{
+    height:220px;
+  }
+  .right{
+    padding:14px;
+  }
+  .product-name{
+    font-size:20px;
+  }
+  .price{
+    font-size:27px;
+  }
+  .action-wrap{
+    width:100%;
+  }
+  #specPanel{
+    width:100%;
+  }
+  .spec-row{
+    flex-direction:column;
+    gap:4px;
+  }
+  .spec-label{
+    width:100%;
   }
 }
 </style>
