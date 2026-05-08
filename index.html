@@ -231,7 +231,7 @@ header input#search {
 <!-- SCRIPTS -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-
+<script src="app.js"></script>
 <script src="notify.js"></script>
 <script src="banner.js"></script>
 
@@ -269,4 +269,83 @@ document.addEventListener("DOMContentLoaded", function(){
     appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
   };
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const auth
+  const auth = firebase.auth();
+
+  // SHOW MODAL
+  loginLink.addEventListener("click", e => {
+    e.preventDefault();
+    authModal.style.display = "flex";
+  });
+  closeAuth.addEventListener("click", ()=> authModal.style.display="none");
+
+  // REGISTER
+  authRegisterBtn.addEventListener("click", () => {
+    const email = authEmail.value;
+    const pass = authPassword.value;
+    auth.createUserWithEmailAndPassword(email, pass)
+      .then(() => {
+        authMessage.style.color = "green";
+        authMessage.innerText = "Đăng ký thành công!";
+        authEmail.value=""; authPassword.value="";
+      })
+      .catch(err => {
+        authMessage.style.color = "red";
+        authMessage.innerText = err.message;
+      });
+  });
+
+  // LOGIN
+  authLoginBtn.addEventListener("click", () => {
+    const email = authEmail.value;
+    const pass = authPassword.value;
+    auth.signInWithEmailAndPassword(email, pass)
+      .then(() => {
+        authMessage.style.color="green";
+        authMessage.innerText="Đăng nhập thành công!";
+        authModal.style.display="none";
+        loginLink.style.display="none";
+        logoutLink.style.display="block";
+        if(document.getElementById("products")) 
+            document.getElementById("products").style.display="grid";
+      })
+      .catch(err => {
+        authMessage.style.color="red";
+        authMessage.innerText=err.message;
+      });
+  });
+
+  // LOGOUT
+  logoutLink.addEventListener("click", ()=> {
+    auth.signOut().then(()=>{
+      loginLink.style.display="block";
+      logoutLink.style.display="none";
+      if(document.getElementById("products")) 
+          document.getElementById("products").style.display="none";
+      userInfoPreview.style.display="none";
+    });
+  });
+
+  // LOAD USER PREVIEW
+  auth.onAuthStateChanged(user => {
+    if(user){
+      loginLink.style.display="none";
+      logoutLink.style.display="block";
+      userInfoPreview.style.display="block";
+      userAvatarPreview.src = user.photoURL || "https://via.placeholder.com/40";
+      userNamePreview.innerText = user.displayName || "Người dùng";
+      if(document.getElementById("products"))
+          document.getElementById("products").style.display="grid";
+    } else {
+      loginLink.style.display="block";
+      logoutLink.style.display="none";
+      userInfoPreview.style.display="none";
+      if(document.getElementById("products"))
+          document.getElementById("products").style.display="none";
+    }
+  });
+
+});
+</script>
+
+</body>
+</html>
