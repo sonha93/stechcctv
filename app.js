@@ -198,49 +198,24 @@ function render(list){
 /* =========================
    🛒 ADD TO CART
 ========================= */
-window.addToCart = function(id){
+window.addToCart = function(id) {
 
-  const product =
-    normalizeList(getProducts())
-    .find(
-      p => String(p.id) === String(id)
-    );
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  if(!product) return;
+  const exist = cart.find(
+    item => String(item.id) === String(id)
+  );
 
-  let cart =
-    JSON.parse(
-      localStorage.getItem("cart")
-    ) || [];
-
-  const exist =
-    cart.find(
-      item => String(item.id) === String(id)
-    );
-
-  if(exist){
-
-    exist.qty += 1;
-
-  }else{
-
+  if (exist) {
+    exist.quantity = (exist.quantity || 1) + 1;
+  } else {
     cart.push({
-
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      oldPrice: product.oldPrice,
-      img: product.img,
-      qty: 1
-
+      id: id,        // chỉ lưu ID
+      quantity: 1    // và số lượng
     });
-
   }
 
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
+  localStorage.setItem("cart", JSON.stringify(cart));
 
   alert("Đã thêm vào giỏ 🛒");
 
