@@ -1,79 +1,66 @@
-// Firebase config
-const firebaseConfig = {
-  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain:"stech-73b89.firebaseapp.com",
-  projectId:"stech-73b89",
-  storageBucket:"stech-73b89.appspot.com",
-  messagingSenderId:"873739162979",
-  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
-};
-firebase.initializeApp(firebaseConfig);
+// user-info.js
+
+// Firebase đã được init sẵn trong index.html
 const auth = firebase.auth();
 const db = firebase.firestore();
-const storage = firebase.storage();
 
-// Elements
-const avatarInput = document.getElementById("avatarInput");
-const avatarPreview = document.getElementById("avatarPreview");
-const nameInput = document.getElementById("nameInput");
-const emailInput = document.getElementById("emailInput");
-const phoneInput = document.getElementById("phoneInput");
-const addressInput = document.getElementById("addressInput");
-const dobInput = document.getElementById("dobInput");
-const saveProfileBtn = document.getElementById("saveProfileBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const saveStatus = document.getElementById("saveStatus");
+// Sidebar elements
+const userInfoPreview = document.getElementById("userInfoPreview");
+const userAvatarPreview = document.getElementById("sidebarUserAvatarPreview");
+const userNamePreview = document.getElementById("sidebarUserNamePreview");
 
-// Load user data
-auth.onAuthStateChanged(user=>{
-  if(!user) { window.location.href="index.html"; return; }
-  emailInput.value = user.email;
-  db.collection("users").doc(user.uid).get().then(doc=>{
-    if(doc.exists){
-      const data = doc.data();
-      nameInput.value = data.name || "";
-      phoneInput.value = data.phone || "";
-      addressInput.value = data.address || "";
-      dobInput.value = data.dob || "";
-      avatarPreview.src = data.avatar || "images/logo-default.png";
-    }
+// Sidebar login/logout links
+const loginLink = document.getElementById("loginLink");
+const logoutLink = document.getElementById("logoutLink");
+
+// Product grid
+const products = document.getElementById("products");
+
+// Khi auth state thay đổi
+auth.onAuthStateChanged(user => {
+  if(user){
+    // User logged in
+    loginLink.style.display = "none";
+    logoutLink.style.display = "block";
+    if(products) products.style.display = "grid";
+
+    // Lấy dữ liệu người dùng từ Firestore
+    db.collection("users").doc(user.uid).get()
+      .then(doc => {
+        if(doc.exists){
+          const data = doc.data();
+          userAvatarPreview.src = data.avatar || "images/logo-default.png";
+          userNamePreview.innerText = data.name || "Người dùng";
+        } else {
+          // Nếu chưa có data, dùng email + avatar mặc định
+          userAvatarPreview.src = "images/logo-default.png";
+          userNamePreview.innerText = user.email || "Người dùng";
+        }
+        userInfoPreview.style.display = "block";
+      })
+      .catch(err => {
+        console.error("Lỗi load user info:", err);
+        userInfoPreview.style.display = "block";
+        userAvatarPreview.src = "images/logo-default.png";
+        userNamePreview.innerText = user.email || "Người dùng";
+      });
+  } else {
+    // User logged out
+    loginLink.style.display = "block";
+    logoutLink.style.display = "none";
+    userInfoPreview.style.display = "none";
+    if(products) products.style.display = "none";
+  }
+});
+
+// Click avatar sidebar -> chuyển sang profile
+userInfoPreview.addEventListener("click", () => {
+  window.location.href = "user-profile.html";
+});
+
+// Logout click
+if(logoutLink){
+  logoutLink.addEventListener("click", () => {
+    auth.signOut();
   });
-});
-
-// Preview avatar
-avatarInput.addEventListener("change", e=>{
-  if(e.target.files[0]){
-    avatarPreview.src = URL.createObjectURL(e.target.files[0]);
-  }
-});
-
-// Save profile
-saveProfileBtn.addEventListener("click", async ()=>{
-  saveStatus.innerText = "Đang lưu...";
-  const user = auth.currentUser;
-  if(!user) return;
-  let avatarURL = avatarPreview.src;
-  // Upload avatar nếu có file mới
-  if(avatarInput.files[0]){
-    const file = avatarInput.files[0];
-    const storageRef = storage.ref().child(`avatars/${user.uid}`);
-    await storageRef.put(file);
-    avatarURL = await storageRef.getDownloadURL();
-  }
-
-  // Lưu Firestore
-  await db.collection("users").doc(user.uid).set({
-    name: nameInput.value,
-    phone: phoneInput.value,
-    address: addressInput.value,
-    dob: dobInput.value,
-    avatar: avatarURL,
-    email: user.email
-  }, {merge:true});
-
-  saveStatus.style.color="green";
-  saveStatus.innerText="Lưu thành công!";
-});
-
-// Logout
-logoutBtn.addEventListener("click", ()=>auth.signOut().then(()=>window.location.href="index.html"));
+}
