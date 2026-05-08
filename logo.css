@@ -419,7 +419,39 @@ body{
 
   z-index:1000;
 }
+.product-actions{
+  display:flex;
+  flex-direction: column; /* xếp dọc */
+  gap: 10px; /* khoảng cách giữa các phần */
+  margin-top: 10px;
+}
 
+.product-actions .price-box{
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.product-actions .btn{
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.product-actions .info-btn{
+  background: #00acc1;
+  color: #fff;
+}
+
+.product-actions .add-cart-btn{
+  background: #000;
+  color: #fff;
+}
 #overlay.active{
 
   opacity:1;
