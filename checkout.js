@@ -111,9 +111,10 @@ function placeOrder() {
   localStorage.setItem("orders", JSON.stringify(orders));
 
   // Gọi Telegram (nếu sendTelegram.js load trước)
-  if (typeof sendTelegramNotification === "function") {
-    sendTelegramNotification(order.id, order.name, total);
-  }
+ // Gửi Telegram đầy đủ thông tin
+if (typeof sendTelegramNotification === "function") {
+    sendTelegramNotification(order.id, order.name, order.phone, order.address, order.cart);
+}
 
   // Xoá cart
   localStorage.removeItem("cart");
