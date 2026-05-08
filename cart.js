@@ -1,10 +1,44 @@
+// cart.js
+
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 /* =========================
    GET PRODUCTS (an toàn)
 ========================= */
-function getProducts(){
+function getProducts() {
   return JSON.parse(localStorage.getItem("products")) || [];
+}
+
+/* =========================
+   ADD TO CART
+========================= */
+function addToCart(productId) {
+  const products = getProducts();
+  const product = products.find(p => String(p.id) === String(productId));
+  if (!product) return;
+
+  let index = cart.findIndex(item => String(item.id) === String(productId));
+
+  if (index !== -1) {
+    cart[index].quantity = (cart[index].quantity || 1) + 1;
+  } else {
+    cart.push({
+      id: product.id,
+      quantity: 1
+    });
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
+
+/* =========================
+   REMOVE ITEM
+========================= */
+function removeItem(index) {
+  cart.splice(index, 1);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
 }
 
 /* =========================
@@ -26,55 +60,52 @@ function renderCart() {
   let total = 0;
   const products = getProducts();
 
-  cart.forEach((item, index) => {
-
+  // Đồng bộ thông tin sản phẩm và giá
+  cart = cart.map(item => {
     const p = products.find(x => String(x.id) === String(item.id));
-    if (!p) return;
+    if(!p) return item;
+    return {
+      ...item,
+      price: p.price,
+      oldPrice: p.oldPrice || null,
+      name: p.name,
+      img: p.img
+    };
+  });
 
-    const price = Number(p.price) || 0;
-    const qty = item.quantity || item.qty || 1;
+  cart.forEach((item, index) => {
+    const price = Number(item.price) || 0;
+    const qty = item.quantity || 1;
+    const oldPrice = Number(item.oldPrice) || 0;
 
     const itemTotal = price * qty;
     total += itemTotal;
 
     box.innerHTML += `
       <div class="item">
-        <img src="${p.img || ''}">
-
+        <img src="${item.img || ''}">
         <div class="info">
-          <h4>${p.name || 'Không tên'}</h4>
-
+          <h4>${item.name || 'Không tên'}</h4>
           <div class="price">
+            ${oldPrice > price ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span> ` : ''}
             ${price.toLocaleString()}đ × ${qty} = 
-            <b style="color:#e53935">
-              ${itemTotal.toLocaleString()}đ
-            </b>
+            <b style="color:#e53935">${itemTotal.toLocaleString()}đ</b>
+            ${oldPrice > price ? `<span class="sale">-${Math.round(((oldPrice-price)/oldPrice)*100)}%</span>` : ''}
           </div>
         </div>
-
-        <button class="remove" onclick="removeItem(${index})">
-          Xoá
-        </button>
+        <button class="remove" onclick="removeItem(${index})">Xoá</button>
       </div>
     `;
   });
 
   totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
+  localStorage.setItem("cart", JSON.stringify(cart));
 
   renderCartAction();
 }
 
 /* =========================
-   REMOVE ITEM
-========================= */
-function removeItem(index) {
-  cart.splice(index, 1);
-  localStorage.setItem("cart", JSON.stringify(cart));
-  renderCart();
-}
-
-/* =========================
-   CART ACTION
+   RENDER CART ACTION (checkout/back)
 ========================= */
 function renderCartAction() {
   const actionBox = document.getElementById("cartAction");
@@ -90,34 +121,11 @@ function renderCartAction() {
     actionBox.innerHTML = `
       <div class="empty-box">
         <a href="index.html">
-          <button class="checkout" style="background:#2196f3">
-            🛍️ Quay lại mua hàng
-          </button>
+          <button class="checkout" style="background:#2196f3">🛍️ Quay lại mua hàng</button>
         </a>
       </div>
     `;
   }
-}
-
-/* =========================
-   ADD TO CART (FIX CHUẨN)
-========================= */
-function addToCart(product){
-
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  let index = cart.findIndex(item => item.id === product.id);
-
-  if(index !== -1){
-    cart[index].quantity = (cart[index].quantity || 1) + 1;
-  } else {
-    cart.push({
-      id: product.id,
-      quantity: 1
-    });
-  }
-
-  localStorage.setItem("cart", JSON.stringify(cart));
 }
 
 /* =========================
