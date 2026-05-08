@@ -13,7 +13,13 @@ if (productContainer && products.length > 0) {
     card.innerHTML = `
       <img src="${product.img}" alt="${product.name}" onclick="goDetail(${product.id})">
       <h3>${product.name}</h3>
-      <p class="price">${Number(product.price).toLocaleString()}đ</p>
+     <p class="price">
+  ${product.oldPrice && Number(product.oldPrice) > Number(product.price) ? 
+    `<span class="old-price">${Number(product.oldPrice).toLocaleString()}đ</span> ` : ""}
+  <span class="current-price">${Number(product.price).toLocaleString()}đ</span>
+  ${product.oldPrice && Number(product.oldPrice) > Number(product.price) ? 
+    `<span class="sale">-${Math.round(((Number(product.oldPrice)-Number(product.price))/Number(product.oldPrice))*100)}%</span>` : ""}
+</p>
     `;
     productContainer.appendChild(card);
   });
