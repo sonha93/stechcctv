@@ -1,15 +1,3 @@
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-/* =========================
-   GET PRODUCTS (an toàn)
-========================= */
-function getProducts() {
-  return JSON.parse(localStorage.getItem("products")) || [];
-}
-
-/* =========================
-   RENDER CART
-========================= */
 function renderCart() {
   const box = document.getElementById("cartList");
   const totalBox = document.getElementById("total");
@@ -22,10 +10,10 @@ function renderCart() {
     return;
   }
 
-  const products = getProducts();
+  const products = getProducts(); // Lấy giá mới từ app.js
   let total = 0;
 
-  // Cập nhật giá mới từ products cho mỗi item
+  // Cập nhật cart với giá mới
   cart = cart.map(item => {
     const p = products.find(prod => String(prod.id) === String(item.id));
     if (!p) return item;
@@ -45,13 +33,15 @@ function renderCart() {
     const itemTotal = price * qty;
     total += itemTotal;
 
-    let priceHTML = '';
-    if (oldPrice > price) {
+    // Nếu oldPrice > price thì show giá cũ + sale
+    let priceHTML;
+    if (oldPrice && oldPrice > price) {
       priceHTML = `<span class="old-price">${oldPrice.toLocaleString()}đ</span> 
                    ${price.toLocaleString()}đ × ${qty} = 
                    <b style="color:#e53935">${itemTotal.toLocaleString()}đ</b>
                    <span class="sale">-${Math.round(((oldPrice-price)/oldPrice)*100)}%</span>`;
     } else {
+      // Chỉ show giá hiện tại, không show oldPrice hay sale
       priceHTML = `${price.toLocaleString()}đ × ${qty} = <b style="color:#e53935">${itemTotal.toLocaleString()}đ</b>`;
     }
 
@@ -67,58 +57,10 @@ function renderCart() {
     `;
   });
 
-  totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
-
-  // Lưu lại cart đã cập nhật giá mới
+  // Cập nhật lại cart trong localStorage với giá mới
   localStorage.setItem("cart", JSON.stringify(cart));
+
+  totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
 
   renderCartAction();
 }
-
-/* =========================
-   REMOVE ITEM
-========================= */
-function removeItem(index) {
-  cart.splice(index, 1);
-  localStorage.setItem("cart", JSON.stringify(cart));
-  renderCart();
-}
-
-/* =========================
-   CART ACTION
-========================= */
-function renderCartAction() {
-  const actionBox = document.getElementById("cartAction");
-  if (!actionBox) return;
-
-  if (cart.length > 0) {
-    actionBox.innerHTML = `<a href="checkout.html">
-      <button class="checkout">💳 Thanh toán</button>
-    </a>`;
-  } else {
-    actionBox.innerHTML = `<div class="empty-box">
-      <a href="index.html">
-        <button class="checkout" style="background:#2196f3">🛍️ Quay lại mua hàng</button>
-      </a>
-    </div>`;
-  }
-}
-
-/* =========================
-   ADD TO CART
-========================= */
-function addToCart(product) {
-  let index = cart.findIndex(item => item.id === product.id);
-  if (index !== -1) {
-    cart[index].quantity = (cart[index].quantity || 1) + 1;
-  } else {
-    cart.push({ id: product.id, quantity: 1 });
-  }
-  localStorage.setItem("cart", JSON.stringify(cart));
-  renderCart();
-}
-
-/* =========================
-   INIT
-========================= */
-renderCart();
