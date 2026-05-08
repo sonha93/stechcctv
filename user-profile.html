@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thông tin người dùng</title>
+<link rel="stylesheet" href="styletrong-nha.css">
+<style>
+#userProfile {
+  max-width:400px; margin:50px auto; padding:20px;
+  border:1px solid #ccc; border-radius:8px; background:#f9f9f9;
+}
+#userProfile img { width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:10px; }
+#userProfile input, #userProfile button { width:100%; padding:8px; margin:6px 0; border-radius:4px; border:1px solid #aaa; }
+#userProfile button { background:#007BFF; color:#fff; border:none; font-weight:bold; cursor:pointer; }
+#authMessage { text-align:center; color:red; margin-top:8px; }
+</style>
+</head>
+<body>
+
+<div id="userProfile">
+  <h2>Thông tin người dùng</h2>
+  <img id="profileAvatar" src="https://via.placeholder.com/100" alt="Avatar">
+  <input type="text" id="profileName" placeholder="Tên">
+  <input type="email" id="profileEmail" placeholder="Email" disabled>
+  <input type="text" id="profilePhone" placeholder="Số điện thoại">
+  <input type="text" id="profileAddress" placeholder="Địa chỉ">
+  <input type="date" id="profileDOB" placeholder="Ngày sinh">
+  <input type="file" id="profileAvatarFile" accept="image/*">
+  <button id="saveProfile">Lưu thông tin</button>
+  <button id="logoutBtn">Đăng xuất</button>
+  <p id="authMessage"></p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script src="user-info.js"></script>
+
+</body>
+</html>
