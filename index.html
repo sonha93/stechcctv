@@ -10,31 +10,40 @@
 header {
   display:flex;
   align-items:center;
-  padding:10px 15px; /* thêm padding 2 bên */
-  background:#40C4C0; /* màu cyan */
+  padding:10px 15px;
+  background:#40C4C0;
   color:white;
+  position:relative;
+  z-index:900;
 }
 header .menu-icon {
+  width:38px;          /* bằng với logo */
+  height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   cursor:pointer;
-  margin-right:10px;
   font-size:20px;
+  margin-right:10px;
 }
 header .logo {
-  margin-right:15px; /* khoảng cách logo với menu icon */
-}
-header .logo img{
-  height:38px;
   width:38px;
+  height:38px;
+  margin-right:10px;
 }
-header input#search{
+header .logo img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+header input#search {
   flex:1;
   padding:6px 10px;
   border-radius:4px;
   border:none;
-  background:#ffffff; /* nền trắng */
+  background:#ffffff;
   color:#333;
   font-size:14px;
-  margin-left:0; /* đẩy sát logo hơn */
 }
 
 /* ===== SIDEBAR ===== */
@@ -43,28 +52,28 @@ header input#search{
   top:0; left:-260px;
   width:250px; height:100%;
   background:#fff;
-  padding:20px 10px 10px 10px; 
+  padding:20px 10px 10px 10px;
   overflow-y:auto;
   transition: left 0.3s;
   z-index:1000;
   box-sizing:border-box;
 }
-.sidebar.active{left:0;}
-.sidebar h3{
-  margin-bottom:10px;
+.sidebar.active { left:0; }
+.sidebar h3 {
+  margin-bottom:15px;
   font-size:18px;
   font-weight:bold;
+  padding-left:10px;  /* thụt xuống cho đẹp */
 }
-.sidebar a{
+.sidebar a {
   display:block;
   margin:6px 0;
   padding:6px 10px;
   color:#111;
   text-decoration:none;
   border-radius:4px;
-  box-sizing:border-box;
 }
-.sidebar a:hover{ background:#f0f0f0; }
+.sidebar a:hover { background:#f0f0f0; }
 
 /* ===== SIDEBAR LOGIN/REGISTER ===== */
 #loginLink, #logoutLink {
@@ -82,31 +91,34 @@ header input#search{
 #loginLink:hover, #logoutLink:hover { opacity:0.8; }
 
 /* ===== SIDEBAR USER INFO ===== */
-#userInfoPreview{
+#userInfoPreview {
   display:none;
   margin-top:10px;
   text-align:center;
   cursor:pointer;
 }
-#userInfoPreview img{
-  width:40px; height:40px;
+#userInfoPreview img {
+  width:40px;
+  height:40px;
   border-radius:50%;
   object-fit:cover;
   margin-bottom:5px;
 }
-#userInfoPreview p{
-  margin:0; font-size:14px; color:#40C4C0;
+#userInfoPreview p {
+  margin:0;
+  font-size:14px;
+  color:#40C4C0;
   word-break:break-word;
 }
 
 /* ===== 2 CỘT SẢN PHẨM ===== */
-#products{
+#products {
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:20px;
   padding:10px;
 }
-.product-card{
+.product-card {
   background:#fff;
   border:2px solid #40C4C0;
   border-radius:8px;
@@ -114,17 +126,17 @@ header input#search{
   text-align:center;
   padding:10px;
 }
-.product-card img{
+.product-card img {
   width:100%;
   height:auto;
   border-radius:4px;
   object-fit:cover;
   margin-bottom:8px;
 }
-.product-card .product-info{margin-top:8px;}
+.product-card .product-info { margin-top:8px; }
 
 /* ===== POPUP LOGIN/REGISTER ===== */
-#authModal{
+#authModal {
   position:fixed;
   top:0; left:0; right:0; bottom:0;
   display:none;
@@ -133,33 +145,33 @@ header input#search{
   justify-content:center;
   z-index:10000;
 }
-#authModal .auth-content{
+#authModal .auth-content {
   background:#fff;
   padding:20px;
   border-radius:8px;
   max-width:350px;
   width:90%;
 }
-#authModal h2{text-align:center;margin-bottom:10px;}
-#authModal input{width:100%;padding:8px;margin:6px 0;border-radius:4px;border:1px solid #aaa;}
-#authModal button{
+#authModal h2 { text-align:center;margin-bottom:10px; }
+#authModal input { width:100%;padding:8px;margin:6px 0;border-radius:4px;border:1px solid #aaa; }
+#authModal button {
   width:100%; padding:10px; margin-top:10px; border:none;
-  background:#40C4C0;
+  background:#40C4C0; 
   color:white; font-weight:bold; cursor:pointer; border-radius:4px;
 }
-#authModal #closeAuth{background:#f44336;margin-top:5px;}
-#authModal #authMessage{text-align:center;margin-top:8px;color:red;}
+#authModal #closeAuth { background:#f44336;margin-top:5px; }
+#authModal #authMessage { text-align:center;margin-top:8px;color:red; }
 
 /* ===== OVERLAY ===== */
-#overlay{
-  position:fixed; top:0; left:0;width:100%; height:100%;
+#overlay {
+  position:fixed; top:0; left:0; width:100%; height:100%;
   background:rgba(0,0,0,0.4);
   display:none; z-index:500;
 }
-#overlay.active{display:block;}
+#overlay.active { display:block; }
 
 /* ===== FOOTER ===== */
-footer{
+footer {
   background:#f5f5f5;
   text-align:center;
   padding:10px;
@@ -232,11 +244,10 @@ footer{
 <script src="app.js"></script>
 
 <script>
-function toggleMenu(){
+function toggleMenu() {
   document.getElementById("sidebar").classList.toggle("active");
   document.getElementById("overlay").classList.toggle("active");
 }
 </script>
-
 </body>
 </html>
