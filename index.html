@@ -10,26 +10,26 @@
 header {
   display:flex;
   align-items:center;
-  padding:8px 12px; /* padding nhỏ hơn để gọn */
+  padding:8px 12px;
   background:#40C4C0;
   color:white;
   position:relative;
   z-index:900;
 }
 header .menu-icon {
-  width:38px; /* bằng logo */
+  width:38px;
   height:38px;
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
   font-size:20px;
-  margin-right:5px; /* sát logo */
+  margin-right:5px;
 }
 header .logo {
   width:38px;
   height:38px;
-  margin-right:5px; /* sát ô tìm kiếm */
+  margin-right:5px;
 }
 header .logo img {
   width:100%;
@@ -45,6 +45,18 @@ header input#search {
   color:#333;
   font-size:14px;
   margin-left:0;
+}
+/* Biểu tượng giỏ hàng và login/header icons */
+header .header-icons {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-left:10px;
+}
+.header-icons img {
+  width:32px;
+  height:32px;
+  cursor:pointer;
 }
 
 /* ===== SIDEBAR ===== */
@@ -64,7 +76,7 @@ header input#search {
   margin-bottom:15px;
   font-size:18px;
   font-weight:bold;
-  padding-left:10px;  
+  padding-left:10px;
 }
 .sidebar a {
   display:block;
@@ -75,8 +87,6 @@ header input#search {
   border-radius:4px;
 }
 .sidebar a:hover { background:#f0f0f0; }
-
-/* ===== SIDEBAR LOGIN/REGISTER ===== */
 #loginLink, #logoutLink {
   display:block;
   padding:6px 10px;
@@ -91,7 +101,7 @@ header input#search {
 }
 #loginLink:hover, #logoutLink:hover { opacity:0.8; }
 
-/* ===== SIDEBAR USER INFO ===== */
+/* SIDEBAR USER INFO */
 #userInfoPreview {
   display:none;
   margin-top:10px;
@@ -109,10 +119,9 @@ header input#search {
   margin:0;
   font-size:14px;
   color:#40C4C0;
-  word-break:break-word;
 }
 
-/* ===== 2 CỘT SẢN PHẨM ===== */
+/* 2 CỘT SẢN PHẨM */
 #products {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -136,7 +145,7 @@ header input#search {
 }
 .product-card .product-info { margin-top:8px; }
 
-/* ===== POPUP LOGIN/REGISTER ===== */
+/* POPUP LOGIN/REGISTER */
 #authModal {
   position:fixed;
   top:0; left:0; right:0; bottom:0;
@@ -163,7 +172,7 @@ header input#search {
 #authModal #closeAuth { background:#f44336;margin-top:5px; }
 #authModal #authMessage { text-align:center;margin-top:8px;color:red; }
 
-/* ===== OVERLAY ===== */
+/* OVERLAY */
 #overlay {
   position:fixed; top:0; left:0; width:100%; height:100%;
   background:rgba(0,0,0,0.4);
@@ -171,7 +180,7 @@ header input#search {
 }
 #overlay.active { display:block; }
 
-/* ===== FOOTER ===== */
+/* FOOTER */
 footer {
   background:#f5f5f5;
   text-align:center;
@@ -210,6 +219,10 @@ footer {
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
   <input id="search" placeholder="Tìm kiếm sản phẩm...">
+  <div class="header-icons">
+    <img src="https://i.ibb.co/7y9y7gD/cart-icon.png" alt="Giỏ Hàng" title="Giỏ Hàng">
+    <img src="https://i.ibb.co/3mQ9HqB/login-icon.png" alt="Đăng Nhập" title="Đăng Nhập" onclick="document.getElementById('authModal').style.display='flex'">
+  </div>
 </header>
 
 <!-- CONTENT -->
