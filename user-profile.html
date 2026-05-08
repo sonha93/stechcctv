@@ -6,10 +6,87 @@
 <title>Thông tin người dùng</title>
 <link rel="stylesheet" href="styletrong-nha.css">
 <style>
-#userProfile { max-width:400px; margin:50px auto; padding:20px; border:1px solid #ccc; border-radius:8px; text-align:center; }
-#userProfile img { width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:10px; }
-#userProfile p { margin:6px 0; font-size:16px; }
-#userProfile button { padding:10px 15px; background:#007BFF; color:#fff; border:none; border-radius:5px; cursor:pointer; margin-top:10px; }
+/* Container profile */
+#userProfile {
+  max-width:400px;
+  margin:50px auto;
+  padding:20px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  text-align:center;
+  background:#f9f9f9;
+}
+
+/* Avatar */
+#userProfile img {
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:10px;
+}
+
+/* User info text */
+#userProfile p {
+  margin:6px 0;
+  font-size:16px;
+}
+
+/* Buttons */
+#userProfile button {
+  padding:10px 15px;
+  background:#007BFF;
+  color:#fff;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+/* POPUP LOGIN */
+#authModal{
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
+  display:none;
+  background:rgba(0,0,0,0.6);
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+#authModal .auth-content{
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  max-width:350px;
+  width:90%;
+}
+#authModal input{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border-radius:4px;
+  border:1px solid #aaa;
+}
+#authModal button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  background:#007BFF;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:4px;
+}
+#authModal #closeAuth{
+  background:#f44336;
+  margin-top:5px;
+}
+#authMessage{
+  text-align:center;
+  margin-top:8px;
+  color:red;
+}
 </style>
 </head>
 <body>
@@ -21,34 +98,83 @@
   <p id="profilePhone"></p>
   <p id="profileAddress"></p>
   <p id="profileDOB"></p>
-  <button onclick="logout()">Đăng xuất</button>
+  <button id="logoutBtn">Đăng xuất</button>
+</div>
+
+<!-- POPUP LOGIN -->
+<div id="authModal">
+  <div class="auth-content">
+    <h2>Đăng nhập</h2>
+    <input type="email" id="authEmail" placeholder="Email">
+    <input type="password" id="authPassword" placeholder="Mật khẩu">
+    <button id="authLoginBtn">Đăng nhập</button>
+    <button id="closeAuth">Đóng</button>
+    <p id="authMessage"></p>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
-// Firebase config
-const firebaseConfig = { apiKey:"...", authDomain:"...", projectId:"...", storageBucket:"...", messagingSenderId:"...", appId:"..." };
+// Firebase config (thay bằng của bạn)
+const firebaseConfig = {
+  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain:"stech-73b89.firebaseapp.com",
+  projectId:"stech-73b89",
+  storageBucket:"stech-73b89.appspot.com",
+  messagingSenderId:"873739162979",
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
+};
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// Load thông tin user
-firebase.auth().onAuthStateChanged(user=>{
+// ELEMENTS
+const profileAvatar = document.getElementById("profileAvatar");
+const profileName = document.getElementById("profileName");
+const profileEmail = document.getElementById("profileEmail");
+const profilePhone = document.getElementById("profilePhone");
+const profileAddress = document.getElementById("profileAddress");
+const profileDOB = document.getElementById("profileDOB");
+const logoutBtn = document.getElementById("logoutBtn");
+
+const authModal = document.getElementById("authModal");
+const authEmail = document.getElementById("authEmail");
+const authPassword = document.getElementById("authPassword");
+const authLoginBtn = document.getElementById("authLoginBtn");
+const closeAuth = document.getElementById("closeAuth");
+const authMessage = document.getElementById("authMessage");
+
+// CHECK AUTH STATE
+firebase.auth().onAuthStateChanged(user => {
   if(user){
-    document.getElementById("profileAvatar").src = user.photoURL || "https://via.placeholder.com/100";
-    document.getElementById("profileName").innerText = user.displayName || "Người dùng";
-    document.getElementById("profileEmail").innerText = user.email;
-    document.getElementById("profilePhone").innerText = "+84 985 678 245"; 
-    document.getElementById("profileAddress").innerText = "Hà Nội, Việt Nam";
-    document.getElementById("profileDOB").innerText = "01/01/2000";
+    // Load profile
+    profileAvatar.src = user.photoURL || "https://via.placeholder.com/100";
+    profileName.innerText = user.displayName || "Người dùng";
+    profileEmail.innerText = user.email;
+    profilePhone.innerText = "+84 985 678 245";   // demo
+    profileAddress.innerText = "Hà Nội, Việt Nam"; // demo
+    profileDOB.innerText = "01/01/2000";          // demo
   } else {
-    window.location.href = "index.html"; // chưa login → quay về trang chủ
+    // Chưa login → show popup login
+    authModal.style.display = "flex";
   }
 });
 
-// Logout
-function logout(){ auth.signOut().then(()=>{ window.location.href="index.html"; }); }
+// LOGIN POPUP
+authLoginBtn.addEventListener("click", ()=>{
+  const email = authEmail.value;
+  const pass = authPassword.value;
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(()=> { authModal.style.display="none"; authMessage.innerText=""; })
+    .catch(err=>{ authMessage.style.color="red"; authMessage.innerText = err.message; });
+});
+closeAuth.addEventListener("click", ()=> authModal.style.display="none");
+
+// LOGOUT
+logoutBtn.addEventListener("click", ()=>{
+  auth.signOut().then(()=>{ window.location.href="index.html"; });
+});
 </script>
 
 </body>
