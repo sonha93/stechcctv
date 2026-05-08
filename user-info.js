@@ -9,17 +9,14 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const storage = firebase.storage();
 const db = firebase.firestore();
 
-// Elements
-const profileAvatar = document.getElementById("profileAvatar");
+// Profile page elements
 const profileName = document.getElementById("profileName");
 const profileEmail = document.getElementById("profileEmail");
 const profilePhone = document.getElementById("profilePhone");
 const profileAddress = document.getElementById("profileAddress");
 const profileDOB = document.getElementById("profileDOB");
-const profileAvatarFile = document.getElementById("profileAvatarFile");
 const saveProfile = document.getElementById("saveProfile");
 const logoutBtn = document.getElementById("logoutBtn");
 const authMessage = document.getElementById("authMessage");
@@ -36,44 +33,28 @@ auth.onAuthStateChanged(user=>{
         profilePhone.value = data.phone || "";
         profileAddress.value = data.address || "";
         profileDOB.value = data.dob || "";
-        profileAvatar.src = data.avatarURL || "https://via.placeholder.com/100";
       }
     });
   } else {
-    // chưa login → quay về index
-    window.location.href = "index.html";
+    window.location.href="index.html";
   }
 });
 
 // Save profile info
-saveProfile.addEventListener("click", async ()=>{
+saveProfile.addEventListener("click", ()=>{
   const user = auth.currentUser;
   if(!user) return;
   authMessage.innerText = "Đang lưu...";
-  
-  let avatarURL = profileAvatar.src;
-
-  // Nếu có file mới → upload
-  if(profileAvatarFile.files.length > 0){
-    const file = profileAvatarFile.files[0];
-    const storageRef = storage.ref().child(`avatars/${user.uid}`);
-    await storageRef.put(file);
-    avatarURL = await storageRef.getDownloadURL();
-  }
-
-  // Lưu vào Firestore
   db.collection("users").doc(user.uid).set({
     name: profileName.value,
     phone: profilePhone.value,
     address: profileAddress.value,
-    dob: profileDOB.value,
-    avatarURL: avatarURL
+    dob: profileDOB.value
   }, {merge:true})
   .then(()=>{
     authMessage.style.color="green";
     authMessage.innerText="Lưu thành công!";
-    profileAvatar.src = avatarURL;
-    user.updateProfile({ photoURL: avatarURL, displayName: profileName.value });
+    user.updateProfile({ displayName: profileName.value });
   })
   .catch(err=>{
     authMessage.style.color="red";
