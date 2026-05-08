@@ -24,17 +24,22 @@ function renderCart() {
     const itemTotal = price * qty;
     total += itemTotal;
 
+    // Hiển thị giá cẩn thận: chỉ khi oldPrice > price mới show giá cũ + sale
+    let priceHTML = '';
+    if (oldPrice > price) {
+      priceHTML = `<span class="old-price">${oldPrice.toLocaleString()}đ</span> ${price.toLocaleString()}đ × ${qty} = 
+        <b style="color:#e53935">${itemTotal.toLocaleString()}đ</b>
+        <span class="sale">-${Math.round(((oldPrice-price)/oldPrice)*100)}%</span>`;
+    } else {
+      priceHTML = `${price.toLocaleString()}đ × ${qty} = <b style="color:#e53935">${itemTotal.toLocaleString()}đ</b>`;
+    }
+
     box.innerHTML += `
       <div class="item">
         <img src="${p.img}">
         <div class="info">
           <h4>${p.name}</h4>
-          <div class="price">
-            ${oldPrice > price ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span> ` : ''}
-            ${price.toLocaleString()}đ × ${qty} = 
-            <b style="color:#e53935">${itemTotal.toLocaleString()}đ</b>
-            ${oldPrice > price ? `<span class="sale">-${Math.round(((oldPrice-price)/oldPrice)*100)}%</span>` : ''}
-          </div>
+          <div class="price">${priceHTML}</div>
         </div>
         <button class="remove" onclick="removeItem(${index})">Xoá</button>
       </div>
