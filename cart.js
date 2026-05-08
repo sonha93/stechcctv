@@ -1,115 +1,196 @@
-// =========================
-// 📦 LẤY DATA CART VÀ PRODUCTS
-// =========================
+/* =========================
+   GET CART
+========================= */
 function getCart() {
   return JSON.parse(localStorage.getItem("cart")) || [];
 }
 
+/* =========================
+   GET PRODUCTS
+========================= */
 function getProducts() {
   return JSON.parse(localStorage.getItem("products")) || [];
 }
 
-function formatPrice(n) {
-  return Number(n).toLocaleString("vi-VN") + "đ";
-}
+/* =========================
+   RENDER CART
+========================= */
+function renderCart() {
 
-// =========================
-// 🖥 RENDER CART/ CHECKOUT
-// =========================
-function renderCartOrCheckout(containerId, totalId) {
-  const box = document.getElementById(containerId);
-  const totalBox = document.getElementById(totalId);
-  if (!box || !totalBox) return;
-
+  // luôn đọc cart mới nhất
   let cart = getCart();
-  const products = getProducts();
 
-  // cập nhật giá mới từ products
-  cart = cart.map(item => {
-    const p = products.find(x => String(x.id) === String(item.id));
-    if (!p) return item;
-    return {
-      ...item,
-      price: Number(p.price),
-      oldPrice: Number(p.oldPrice) || 0,
-      name: p.name,
-      img: p.img
-    };
-  });
+  const box = document.getElementById("cartList");
+  const totalBox = document.getElementById("total");
 
   box.innerHTML = "";
+
   if (cart.length === 0) {
-    box.innerHTML = "<p>Giỏ hàng trống</p>";
-    totalBox.innerText = "0";
+    box.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
+    totalBox.innerHTML = "";
+    renderCartAction();
     return;
   }
 
   let total = 0;
 
-  cart.forEach((item, index) => {
-    const price = item.price || 0;
-    const oldPrice = item.oldPrice || 0;
-    const qty = Number(item.quantity || item.qty || 1);
-    total += price * qty;
+  // luôn đọc products mới nhất
+  const products = getProducts();
 
-    const hasDiscount = oldPrice > price;
+  cart.forEach((item, index) => {
+
+    const p = products.find(x => String(x.id) === String(item.id));
+
+    if (!p) return;
+
+    // GIÁ THẬT
+    const price = Number(p.price) || 0;
+
+    // SỐ LƯỢNG
+    const qty = Number(item.quantity || 1);
+
+    // THÀNH TIỀN
+    const itemTotal = price * qty;
+
+    total += itemTotal;
 
     box.innerHTML += `
-      <div class="cart-item">
-        <img src="${item.img}" style="width:60px">
-        <div>
-          <h4>${item.name}</h4>
-          <div class="price-box">
-            ${hasDiscount
-              ? `<span class="old-price">${formatPrice(oldPrice)}</span> <span class="price">${formatPrice(price)}</span>`
-              : `<span class="price">${formatPrice(price)}</span>`
-            }
+      <div class="item">
+
+        <img src="${p.img || ''}" alt="">
+
+        <div class="info">
+
+          <h4>${p.name || 'Không tên'}</h4>
+
+          <div class="price">
+
+            <span class="new-price">
+              ${price.toLocaleString()}đ
+            </span>
+
+            × ${qty}
+
+            =
+
+            <b style="color:#e53935">
+              ${itemTotal.toLocaleString()}đ
+            </b>
+
           </div>
-          <p>Số lượng: ${qty}</p>
-          <p>Thành tiền: ${formatPrice(price * qty)}</p>
+
         </div>
-        ${containerId === "cartList" ? `<button onclick="removeItem(${index})">Xoá</button>` : ""}
+
+        <button class="remove" onclick="removeItem(${index})">
+          Xoá
+        </button>
+
       </div>
-      <hr>
     `;
   });
 
-  totalBox.innerText = formatPrice(total);
+  totalBox.innerHTML = `
+    Tổng tiền:
+    <b style="color:#e53935">
+      ${total.toLocaleString()}đ
+    </b>
+  `;
 
-  // lưu cart đã cập nhật giá mới
-  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCartAction();
 }
 
-// =========================
-// 🧹 XOÁ ITEM
-// =========================
+/* =========================
+   REMOVE ITEM
+========================= */
 function removeItem(index) {
+
   let cart = getCart();
+
   cart.splice(index, 1);
+
   localStorage.setItem("cart", JSON.stringify(cart));
-  renderCartOrCheckout("cartList", "total");
+
+  renderCart();
 }
 
-// =========================
-// 🛒 ADD TO CART
-// =========================
-function addToCart(product) {
-  let cart = getCart();
-  const index = cart.findIndex(item => item.id === product.id);
-  if (index !== -1) {
-    cart[index].quantity = (cart[index].quantity || 1) + 1;
+/* =========================
+   CART ACTION
+========================= */
+function renderCartAction() {
+
+  const actionBox = document.getElementById("cartAction");
+
+  if (!actionBox) return;
+
+  const cart = getCart();
+
+  if (cart.length > 0) {
+
+    actionBox.innerHTML = `
+      <a href="checkout.html">
+        <button class="checkout">
+          💳 Thanh toán
+        </button>
+      </a>
+    `;
+
   } else {
-    cart.push({ id: product.id, quantity: 1 });
+
+    actionBox.innerHTML = `
+      <div class="empty-box">
+
+        <a href="index.html">
+
+          <button
+            class="checkout"
+            style="background:#2196f3"
+          >
+            🛍️ Quay lại mua hàng
+          </button>
+
+        </a>
+
+      </div>
+    `;
   }
-  localStorage.setItem("cart", JSON.stringify(cart));
-  renderCartOrCheckout("cartList", "total");
 }
 
-// =========================
-// 🚀 INIT
-// =========================
-document.addEventListener("DOMContentLoaded", () => {
-  // dùng chung cho cart.html hoặc checkout.html
-  if (document.getElementById("cartList")) renderCartOrCheckout("cartList", "total");
-  if (document.getElementById("cart")) renderCartOrCheckout("cart", "total");
+/* =========================
+   ADD TO CART
+========================= */
+function addToCart(product) {
+
+  let cart = getCart();
+
+  let index = cart.findIndex(
+    item => String(item.id) === String(product.id)
+  );
+
+  if (index !== -1) {
+
+    cart[index].quantity += 1;
+
+  } else {
+
+    cart.push({
+      id: product.id,
+      quantity: 1
+    });
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  renderCart();
+}
+
+/* =========================
+   AUTO UPDATE KHI STORAGE ĐỔI
+========================= */
+window.addEventListener("storage", () => {
+  renderCart();
 });
+
+/* =========================
+   INIT
+========================= */
+renderCart();
