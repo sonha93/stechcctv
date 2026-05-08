@@ -1,4 +1,3 @@
-
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 /* =========================
@@ -24,46 +23,76 @@ function renderCart() {
     return;
   }
 
-  let total = 0;
   const products = getProducts();
+  let total = 0;
 
   cart.forEach((item, index) => {
-
     const p = products.find(x => String(x.id) === String(item.id));
     if (!p) return;
 
     const price = Number(p.price) || 0;
     const qty = item.quantity || item.qty || 1;
-
     const itemTotal = price * qty;
-    total += itemTotal;
 
- box.innerHTML += `
-  <div class="item">
-    <input type="checkbox" class="cart-checkbox" data-index="${index}" checked>
-    <img src="${p.img || ''}">
+    total += itemTotal; // tạm thời, tổng ban đầu
 
-    <div class="info">
-      <h4>${p.name || 'Không tên'}</h4>
-
-      <div class="price">
-        ${price.toLocaleString()}đ × ${qty} = 
-        <b style="color:#e53935">
-          ${itemTotal.toLocaleString()}đ
-        </b>
+    box.innerHTML += `
+      <div class="item">
+        <input type="checkbox" class="cart-checkbox" data-index="${index}" checked>
+        <img src="${p.img || ''}">
+        <div class="info">
+          <h4>${p.name || 'Không tên'}</h4>
+          <div class="price">
+            ${price.toLocaleString()}đ × ${qty} = 
+            <b style="color:#e53935">
+              ${itemTotal.toLocaleString()}đ
+            </b>
+          </div>
+        </div>
+        <button class="remove" onclick="removeItem(${index})">Xoá</button>
       </div>
-    </div>
-
-    <button class="remove" onclick="removeItem(${index})">
-      Xoá
-    </button>
-  </div>
     `;
   });
 
   totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
 
   renderCartAction();
+
+  // Gắn sự kiện checkbox ngay sau khi render xong
+  document.querySelectorAll(".cart-checkbox").forEach(cb => {
+    cb.addEventListener("change", updateCartTotal);
+  });
+}
+
+/* =========================
+   UPDATE TOTAL THEO CHECKBOX
+========================= */
+function updateCartTotal() {
+  const totalBox = document.getElementById("total");
+  const products = getProducts();
+  let total = 0;
+
+  document.querySelectorAll(".item").forEach(itemEl => {
+    const index = Number(itemEl.querySelector(".cart-checkbox").dataset.index);
+    const checkbox = itemEl.querySelector(".cart-checkbox");
+    const cartItem = cart[index];
+    const product = products.find(p => String(p.id) === String(cartItem.id));
+    if (!product) return;
+
+    const price = Number(product.price) || 0;
+    const qty = cartItem.quantity || 1;
+    const rowTotalEl = itemEl.querySelector("b");
+
+    let rowTotal = 0;
+    if (checkbox.checked) {
+      rowTotal = price * qty;
+      total += rowTotal;
+    }
+
+    rowTotalEl.textContent = rowTotal.toLocaleString() + "đ";
+  });
+
+  totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
 }
 
 /* =========================
@@ -105,9 +134,7 @@ function renderCartAction() {
    ADD TO CART (FIX CHUẨN)
 ========================= */
 function addToCart(product){
-
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
   let index = cart.findIndex(item => item.id === product.id);
 
   if(index !== -1){
@@ -126,6 +153,7 @@ function addToCart(product){
    INIT
 ========================= */
 renderCart();
+
 function sendTelegramNotification(orderNumber, customerName, total) {
   const botToken = "8752443026:AAEHrvCIDLqEDfE_inDeAAI9dzClm3WZyz4";
   const chatId = "6087791909";
@@ -140,6 +168,7 @@ function sendTelegramNotification(orderNumber, customerName, total) {
     })
     .catch(err => console.error("❌ Lỗi fetch Telegram:", err));
 }
+
 document.addEventListener("DOMContentLoaded", function() {
   const checkoutBtn = document.querySelector("#cartAction .checkout");
   if(checkoutBtn){
@@ -151,7 +180,10 @@ document.addEventListener("DOMContentLoaded", function() {
       let total = 0;
       const products = getProducts();
 
-      cart.forEach(item => {
+      cart.forEach((item, index) => {
+        const checkbox = document.querySelector(`.cart-checkbox[data-index="${index}"]`);
+        if(!checkbox || !checkbox.checked) return;
+
         const p = products.find(x => String(x.id) === String(item.id));
         if(!p) return;
         const price = Number(p.price) || 0;
