@@ -6,187 +6,27 @@
 <title>Shop Camera Pro</title>
 <link rel="stylesheet" href="styletrong-nha.css">
 <style>
-/* ===== HEADER ===== */
-header {
-  display:flex;
-  align-items:center;
-  padding:8px 12px;
-  background:#40C4C0;
-  color:white;
-  position:relative;
-  z-index:900;
+/* HEADER */
+header{
+  position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10px;padding:12px;background:#33A0AB;box-shadow:0 2px 10px rgba(0,0,0,.08);
 }
-header .menu-icon {
-  width:38px;
-  height:38px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  font-size:20px;
-  margin-right:5px;
-}
-header .logo {
-  width:38px;
-  height:38px;
-  margin-right:5px;
-}
-header .logo img {
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-header input#search {
-  flex:1;
-  padding:6px 10px;
-  border-radius:4px;
-  border:none;
-  background:#ffffff;
-  color:#333;
-  font-size:14px;
-  margin-left:0;
-}
-/* Biểu tượng giỏ hàng và login/header icons */
-header .header-icons {
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-left:10px;
-}
-.header-icons img {
-  width:32px;
-  height:32px;
-  cursor:pointer;
-}
-
-/* ===== SIDEBAR ===== */
-.sidebar {
-  position: fixed;
-  top:0; left:-260px;
-  width:250px; height:100%;
-  background:#fff;
-  padding:20px 10px 10px 10px;
-  overflow-y:auto;
-  transition: left 0.3s;
-  z-index:1000;
-  box-sizing:border-box;
-}
-.sidebar.active { left:0; }
-.sidebar h3 {
-  margin-bottom:15px;
-  font-size:18px;
-  font-weight:bold;
-  padding-left:10px;
-}
-.sidebar a {
-  display:block;
-  margin:6px 0;
-  padding:6px 10px;
-  color:#111;
-  text-decoration:none;
-  border-radius:4px;
-}
-.sidebar a:hover { background:#f0f0f0; }
-#loginLink, #logoutLink {
-  display:block;
-  padding:6px 10px;
-  margin:10px 0;
-  border-radius:4px;
-  text-decoration:none;
-  background:#40C4C0;
-  color:white;
-  font-weight:bold;
-  text-align:center;
-  cursor:pointer;
-}
-#loginLink:hover, #logoutLink:hover { opacity:0.8; }
-
-/* SIDEBAR USER INFO */
-#userInfoPreview {
-  display:none;
-  margin-top:10px;
-  text-align:center;
-  cursor:pointer;
-}
-#userInfoPreview img {
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  object-fit:cover;
-  margin-bottom:5px;
-}
-#userInfoPreview p {
-  margin:0;
-  font-size:14px;
-  color:#40C4C0;
-}
-
-/* 2 CỘT SẢN PHẨM */
-#products {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:20px;
-  padding:10px;
-}
-.product-card {
-  background:#fff;
-  border:2px solid #40C4C0;
-  border-radius:8px;
-  overflow:hidden;
-  text-align:center;
-  padding:10px;
-}
-.product-card img {
-  width:100%;
-  height:auto;
-  border-radius:4px;
-  object-fit:cover;
-  margin-bottom:8px;
-}
-.product-card .product-info { margin-top:8px; }
-
-/* POPUP LOGIN/REGISTER */
-#authModal {
-  position:fixed;
-  top:0; left:0; right:0; bottom:0;
-  display:none;
-  background:rgba(0,0,0,0.6);
-  align-items:center;
-  justify-content:center;
-  z-index:10000;
-}
-#authModal .auth-content {
-  background:#fff;
-  padding:20px;
-  border-radius:8px;
-  max-width:350px;
-  width:90%;
-}
-#authModal h2 { text-align:center;margin-bottom:10px; }
-#authModal input { width:100%;padding:8px;margin:6px 0;border-radius:4px;border:1px solid #aaa; }
-#authModal button {
-  width:100%; padding:10px; margin-top:10px; border:none;
-  background:#40C4C0; 
-  color:white; font-weight:bold; cursor:pointer; border-radius:4px;
-}
-#authModal #closeAuth { background:#f44336;margin-top:5px; }
-#authModal #authMessage { text-align:center;margin-top:8px;color:red; }
-
+.menu-btn, .logo, .icon-btn{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.menu-btn{background:#00acc1;color:#fff;font-size:24px;cursor:pointer;}
+.logo{background:#fff;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.08);}
+.logo img{width:100%;height:100%;object-fit:cover;}
+.search-box{flex:1;position:relative;}
+.search-box input{width:100%;height:46px;border:none;border-radius:14px;background:#fff;padding:0 14px;font-size:14px;outline:none;}
+.header-icons{display:flex;gap:10px;}
+.icon-btn{background:#00acc1;color:#fff;font-size:22px;text-decoration:none;position:relative;cursor:pointer;}
+.cart-count{position:absolute;top:-5px;right:-5px;min-width:20px;height:20px;border-radius:50%;background:red;color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;}
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:-280px;width:260px;height:100vh;background:#fff;z-index:9999;transition:.3s;padding:20px;box-shadow:0 0 20px rgba(0,0,0,.15);}
+.sidebar.active{left:0;}
+.sidebar h3{margin-bottom:20px;color:#00acc1;}
+.sidebar a{display:block;padding:14px;margin-bottom:10px;border-radius:12px;background:#f5f5f5;text-decoration:none;color:#111;font-weight:bold;}
 /* OVERLAY */
-#overlay {
-  position:fixed; top:0; left:0; width:100%; height:100%;
-  background:rgba(0,0,0,0.4);
-  display:none; z-index:500;
-}
-#overlay.active { display:block; }
-
-/* FOOTER */
-footer {
-  background:#f5f5f5;
-  text-align:center;
-  padding:10px;
-  margin-top:20px;
-}
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;opacity:0;visibility:hidden;transition:.3s;}
+#overlay.active{opacity:1;visibility:visible;}
 </style>
 </head>
 <body>
@@ -197,38 +37,29 @@ footer {
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
-  <a href="index.html">Trang Chủ</a>
+  <a href="index.html">Trang chủ</a>
   <a href="cart.html">Giỏ Hàng</a>
   <a href="camera-trong-nha.html">Camera Trong Nhà</a>
   <a href="camera-ngoai-troi.html">Camera Ngoài Trời</a>
   <a href="the-nho.html">Thẻ Nhớ</a>
   <a href="combo-khuyenmai.html">Combo Khuyến Mãi</a>
-  <hr>
-  <a href="#" id="loginLink">Đăng Nhập / Đăng Ký</a>
-  <a href="#" id="logoutLink" style="display:none;">Đăng Xuất</a>
-  <div id="userInfoPreview">
-    <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/40" alt="Avatar">
-    <p id="sidebarUserNamePreview">Người dùng</p>
-  </div>
 </div>
 
 <!-- HEADER -->
 <header>
-  <div class="menu-icon" onclick="toggleMenu()">☰</div>
-  <div class="logo">
-    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  <div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo"></div>
+  <div class="search-box">
+    <input type="text" placeholder="Tìm kiếm sản phẩm..." id="searchInput">
   </div>
-  <input id="search" placeholder="Tìm kiếm sản phẩm...">
   <div class="header-icons">
-    <img src="https://i.ibb.co/7y9y7gD/cart-icon.png" alt="Giỏ Hàng" title="Giỏ Hàng">
-    <img src="https://i.ibb.co/3mQ9HqB/login-icon.png" alt="Đăng Nhập" title="Đăng Nhập" onclick="document.getElementById('authModal').style.display='flex'">
+    <a href="cart.html" class="icon-btn">🛒<span class="cart-count" id="cartCount">0</span></a>
+    <a href="#" class="icon-btn" onclick="openLoginModal()">🔐</a>
   </div>
 </header>
 
 <!-- CONTENT -->
-<div class="product-slider">
-  <div class="product-track" id="products"></div>
-</div>
+<div id="products"></div>
 
 <!-- FOOTER -->
 <footer>
@@ -236,32 +67,31 @@ footer {
   <p>Website chuyên cung cấp camera an ninh chính hãng</p>
   <p>Hotline: 0985.678.245</p>
   <p>Email: support@stechcamera.vn</p>
-  <hr>
-  <p>© 2026 StechCamera. All rights reserved.</p>
 </footer>
 
-<!-- POPUP LOGIN/REGISTER -->
-<div id="authModal">
-  <div class="auth-content">
+<!-- POPUP LOGIN -->
+<div id="authModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:10000;">
+  <div style="background:#fff;padding:20px;border-radius:8px;max-width:350px;width:90%;">
     <h2>Đăng ký / Đăng nhập</h2>
-    <input type="email" id="authEmail" placeholder="Email">
-    <input type="password" id="authPassword" placeholder="Mật khẩu">
-    <button id="authRegisterBtn">Đăng Ký</button>
-    <button id="authLoginBtn">Đăng Nhập</button>
-    <button id="closeAuth">Đóng</button>
-    <p id="authMessage"></p>
+    <input type="email" id="authEmail" placeholder="Email" style="width:100%;padding:8px;margin:6px 0;border-radius:4px;border:1px solid #aaa;">
+    <input type="password" id="authPassword" placeholder="Mật khẩu" style="width:100%;padding:8px;margin:6px 0;border-radius:4px;border:1px solid #aaa;">
+    <button id="authRegisterBtn" style="width:100%;padding:10px;margin-top:10px;background:#33A0AB;color:white;border:none;border-radius:4px;cursor:pointer;">Đăng Ký</button>
+    <button id="authLoginBtn" style="width:100%;padding:10px;margin-top:10px;background:#33A0AB;color:white;border:none;border-radius:4px;cursor:pointer;">Đăng Nhập</button>
+    <button id="closeAuth" style="width:100%;padding:10px;margin-top:10px;background:#f44336;color:white;border:none;border-radius:4px;cursor:pointer;" onclick="closeLoginModal()">Đóng</button>
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<!-- JS -->
 <script src="app.js"></script>
-
+<script src="user-profile.js"></script>
 <script>
-function toggleMenu() {
+// TOGGLE SIDEBAR
+function toggleMenu(){
   document.getElementById("sidebar").classList.toggle("active");
   document.getElementById("overlay").classList.toggle("active");
 }
+function openLoginModal(){document.getElementById("authModal").style.display="flex";}
+function closeLoginModal(){document.getElementById("authModal").style.display="none";}
 </script>
 </body>
 </html>
