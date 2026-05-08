@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thông tin người dùng</title>
+<link rel="stylesheet" href="styletrong-nha.css">
+<style>
+#userProfile { max-width:400px; margin:50px auto; padding:20px; border:1px solid #ccc; border-radius:8px; text-align:center; }
+#userProfile img { width:100px; height:100px; border-radius:50%; object-fit:cover; margin-bottom:10px; }
+#userProfile p { margin:6px 0; font-size:16px; }
+#userProfile button { padding:10px 15px; background:#007BFF; color:#fff; border:none; border-radius:5px; cursor:pointer; margin-top:10px; }
+</style>
+</head>
+<body>
+
+<div id="userProfile">
+  <img id="profileAvatar" src="https://via.placeholder.com/100" alt="Avatar">
+  <p id="profileName"></p>
+  <p id="profileEmail"></p>
+  <p id="profilePhone"></p>
+  <p id="profileAddress"></p>
+  <p id="profileDOB"></p>
+  <button onclick="logout()">Đăng xuất</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<script>
+// Firebase config
+const firebaseConfig = { apiKey:"...", authDomain:"...", projectId:"...", storageBucket:"...", messagingSenderId:"...", appId:"..." };
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// Load thông tin user
+firebase.auth().onAuthStateChanged(user=>{
+  if(user){
+    document.getElementById("profileAvatar").src = user.photoURL || "https://via.placeholder.com/100";
+    document.getElementById("profileName").innerText = user.displayName || "Người dùng";
+    document.getElementById("profileEmail").innerText = user.email;
+    document.getElementById("profilePhone").innerText = "+84 985 678 245"; 
+    document.getElementById("profileAddress").innerText = "Hà Nội, Việt Nam";
+    document.getElementById("profileDOB").innerText = "01/01/2000";
+  } else {
+    window.location.href = "index.html"; // chưa login → quay về trang chủ
+  }
+});
+
+// Logout
+function logout(){ auth.signOut().then(()=>{ window.location.href="index.html"; }); }
+</script>
+
+</body>
+</html>
