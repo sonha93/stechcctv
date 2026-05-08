@@ -1,4 +1,3 @@
-<script>
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 // Chỉ cho nhập số ở SĐT
@@ -77,9 +76,7 @@ function updateBank(){
   if(payment === "bank"){
     bank.style.display = "block";
     document.getElementById("qr").src =
-      "https://img.vietqr.io/image/ICB-101005245058-compact2.png?amount="
-      + total +
-      "&addInfo=Thanh%20toan";
+      "https://img.vietqr.io/image/ICB-101005245058-compact2.png?amount=" + total + "&addInfo=Thanh%20toan";
   } else {
     bank.style.display = "none";
   }
@@ -105,76 +102,4 @@ ${productList ? "\nSản phẩm:\n" + productList : ""}
 `;
 
   fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: message
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if(data.ok) console.log("Đã gửi Telegram!");
-    else console.error("Lỗi Telegram:", data);
-  })
-  .catch(err => console.error("Lỗi fetch Telegram:", err));
-}
-
-// 🔹 Xử lý đặt hàng
-function placeOrder(){
-
-  if(cart.length === 0){
-    alert("🛒 Giỏ hàng trống!");
-    return;
-  }
-
-  let name = document.getElementById("name").value.trim();
-  let phone = document.getElementById("phone").value.trim();
-  let address = document.getElementById("address").value.trim();
-
-  if(!name || !phone || !address){
-    alert("⚠️ Nhập đầy đủ thông tin!");
-    return;
-  }
-
-  const phoneRegex = /^(03|05|07|08|09)\d{8}$/;
-  if(!phoneRegex.test(phone)){
-    alert("⚠️ SĐT không hợp lệ!");
-    return;
-  }
-
-  let total = cart.reduce((sum,p)=> sum + p.price*(p.qty||1), 0);
-
-  let order = {
-    id: Date.now(),
-    name,
-    phone,
-    address,
-    cart,
-    time: new Date().toLocaleString()
-  };
-
-  // Lưu vào localStorage
-  let orders = JSON.parse(localStorage.getItem("orders")) || [];
-  orders.push(order);
-  localStorage.setItem("orders", JSON.stringify(orders));
-
-  // Gửi Telegram
-  sendTelegramNotification(order, total);
-
-  // Xoá giỏ hàng
-  localStorage.removeItem("cart");
-
-  // Hiển thị loading
-  document.getElementById("loading").style.display = "flex";
-  document.querySelector(".btn").disabled = true;
-
-  setTimeout(() => {
-    window.location.href = "success.html";
-  }, 1000);
-}
-
-// 🔹 Khởi tạo
-renderCart();
-updateBank();
-</script>
+    method: "
