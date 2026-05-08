@@ -49,11 +49,10 @@ function renderCart() {
     `;
   });
 
-  updateCartTotal(); // cập nhật tổng ngay sau khi render
-
+  updateCartTotal(); // cập nhật tổng tiền ngay
   renderCartAction();
 
-  // Gắn sự kiện checkbox
+  // Gắn event listener cho checkbox
   document.querySelectorAll(".cart-checkbox").forEach(cb => {
     cb.addEventListener("change", updateCartTotal);
   });
@@ -120,18 +119,17 @@ function renderCartAction() {
     `;
   }
 
-  // Gắn event checkout
+  // Gắn event listener checkout
   const checkoutBtn = actionBox.querySelector(".checkout");
-  if (checkoutBtn) {
+  if (checkoutBtn && cart.length > 0) {
     checkoutBtn.addEventListener("click", function (e) {
       e.preventDefault();
 
-      const cartData = JSON.parse(localStorage.getItem("cart")) || [];
       const products = getProducts();
       let total = 0;
       let hasChecked = false;
 
-      cartData.forEach((item, index) => {
+      cart.forEach((item, index) => {
         const checkbox = document.querySelector(`.cart-checkbox[data-index="${index}"]`);
         if (!checkbox || !checkbox.checked) return;
 
