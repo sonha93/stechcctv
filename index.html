@@ -79,6 +79,36 @@ header div{width:42px;height:42px;display:flex;align-items:center;justify-conten
 #userInfoPreview{display:none;margin-top:10px;text-align:center;cursor:pointer;}
 #userInfoPreview img{width:40px;height:40px;border-radius:50%;object-fit:cover;margin-bottom:5px;}
 #userInfoPreview p{margin:0;font-size:14px;color:#007BFF;}
+  /* Header responsive */
+header {
+  padding: 5px 10px;
+  display: flex;
+  align-items: center; /* canh giữa theo trục dọc */
+  gap: 8px;
+}
+
+header .logo img {
+  height:32px; /* giảm cao trên mobile */
+  max-width: 60%;
+}
+
+@media(max-width:480px){
+  header .logo img {
+    height:28px;
+    max-width:50%;
+  }
+
+  header input {
+    font-size:12px;
+    padding:6px;
+  }
+
+  header div { 
+    width:36px; 
+    height:36px;
+    font-size:18px;
+  }
+}
 </style>
 </head>
 
