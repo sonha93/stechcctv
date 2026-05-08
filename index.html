@@ -4,154 +4,49 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shop Camera Pro</title>
+<link rel="stylesheet" href="styletrong-nha.css">
+
 <style>
-/* ================= RESET ================= */
-* {
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial, sans-serif;
-}
-
-/* ================= HEADER & LOGO ================= */
-header {
-  display:flex;
-  align-items:center;
-  padding:10px 15px;
-  background:#4CAF50; /* thanh trên cùng màu xanh lá */
-  border-bottom:2px solid #388E3C;
-  position:sticky;
-  top:0;
-  z-index:999;
-}
-
-header div:first-child { /* nút ☰ */
-  color:white;
-  font-size:20px;
-  margin-right:10px;
-  cursor:pointer;
-}
-
-header .logo {
-  flex:1;
-  padding:5px;
-  border:2px solid #ffffff; /* khung xung quanh logo */
-  border-radius:6px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#ffffff;
-}
-
-header .logo img {
+/* LOGO KHÔNG VIỀN */
+.logo img{
   height:38px;
   width:auto;
+  border:0;
+  outline:0;
+  box-shadow:none;
+  display:block;
+  background:transparent;
 }
 
-header input#search {
-  flex:2;
-  padding:6px 10px;
-  border-radius:4px;
-  border:1px solid #aaa;
-}
-
-/* ================= SIDEBAR ================= */
-.sidebar {
-  position: fixed;
-  z-index: 1000;
-  background:#fff;
-  width:250px;
-  top:0; left:-260px;
-  height:100%;
-  padding:10px;
-  overflow-y:auto;
-  transition: left 0.3s;
-}
-.sidebar.active { left:0; }
-.sidebar h3 { margin-bottom:10px; }
-.sidebar a { display:block; margin:6px 0; color:#111; text-decoration:none; }
-
-/* ================= SIDEBAR USER INFO ================= */
-#userInfoPreview {
+/* POPUP LOGIN/REGISTER */
+#authModal{
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
   display:none;
-  margin-top:10px;
-  text-align:center;
-  cursor:pointer;
-}
-#userInfoPreview img {
-  width:40px; height:40px;
-  border-radius:50%;
-  object-fit:cover;
-  margin-bottom:5px;
-}
-
-/* ================= OVERLAY ================= */
-#overlay {
-  position: fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background: rgba(0,0,0,0.4);
-  display: none;
-  z-index: 500;
-}
-#overlay.active { display:block; }
-
-/* ================= 2 CỘT SẢN PHẨM ================= */
-#products {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:20px;
-  padding:10px;
-}
-.product-card {
-  background:#fff;
-  border:2px solid #4CAF50; /* màu xanh lá */
-  border-radius:8px;
-  overflow:hidden;
-  text-align:center;
-  padding:10px;
-}
-.product-card img {
-  width:100%;
-  height:auto;
-  border-bottom:1px solid #ccc;
-  border-radius:4px;
-  object-fit:cover;
-}
-.product-card .product-info {
-  margin-top:8px;
-}
-
-/* ================= POPUP LOGIN/REGISTER ================= */
-#authModal {
-  position: fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  display:none;
+  background:rgba(0,0,0,0.6);
   align-items:center;
   justify-content:center;
-  background: rgba(0,0,0,0.6);
-  z-index: 10000;
+  z-index:9999;
 }
-#authModal .auth-content {
+#authModal .auth-content{
   background:#fff;
   padding:20px;
   border-radius:8px;
   max-width:350px;
   width:90%;
 }
-#authModal h2 {
+#authModal h2{
   text-align:center;
   margin-bottom:10px;
 }
-#authModal input {
+#authModal input{
   width:100%;
   padding:8px;
   margin:6px 0;
   border-radius:4px;
   border:1px solid #aaa;
 }
-#authModal button {
+#authModal button{
   width:100%;
   padding:10px;
   margin-top:10px;
@@ -162,26 +57,67 @@ header input#search {
   cursor:pointer;
   border-radius:4px;
 }
-#authModal #closeAuth { background:#f44336; margin-top:5px; }
-#authModal #authMessage { text-align:center; margin-top:8px; color:red; }
-
-/* ================= FOOTER ================= */
-footer.footer {
-  background:#f5f5f5;
-  padding:15px;
-  text-align:center;
-  margin-top:20px;
+#authModal #closeAuth{
+  background:#f44336;
+  margin-top:5px;
 }
-footer.footer hr { margin:10px 0; }
+#authModal #authMessage{
+  text-align:center;
+  margin-top:8px;
+  color:red;
+}
 
+/* SIDEBAR USER INFO */
+#userInfoPreview{
+  display:none;
+  margin-top:10px;
+  text-align:center;
+  cursor:pointer;
+}
+#userInfoPreview img{
+  width:40px; height:40px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:5px;
+}
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  z-index: 1000; /* fix click bị overlay chặn */
+}
+
+/* 2 CỘT SẢN PHẨM */
+#products{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+.product-card{
+  background:#fff;
+  border:1px solid #ccc;
+  border-radius:8px;
+  overflow:hidden;
+  text-align:center;
+  padding:10px;
+}
+.product-card img{
+  width:100%;
+  height:auto;
+  border-bottom:1px solid #ccc;
+  border-radius:4px;
+  object-fit:cover;
+}
+.product-card .product-info{
+  margin-top:8px;
+}
 </style>
 </head>
 <body>
 
-<!-- OVERLAY -->
 <div id="overlay" onclick="toggleMenu()"></div>
 
-<!-- SIDEBAR -->
+<!-- MENU / SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
   <a href="index.html">Trang chủ</a>
@@ -191,8 +127,11 @@ footer.footer hr { margin:10px 0; }
   <a href="the-nho.html">Thẻ nhớ</a>
   <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
   <hr>
+  <!-- LOGIN / LOGOUT -->
   <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
   <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
+
+  <!-- USER INFO PREVIEW -->
   <div id="userInfoPreview">
     <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/40" alt="Avatar">
     <p id="sidebarUserNamePreview" style="margin:0; font-size:14px; color:#007BFF;">Người dùng</p>
@@ -209,9 +148,11 @@ footer.footer hr { margin:10px 0; }
 </header>
 
 <!-- CONTENT -->
-<div id="products">
-  <!-- Product cards sẽ được render bằng app.js -->
+<div class="product-slider">
+  <div class="product-track" id="products"></div>
 </div>
+
+<div class="extra-section"></div>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -225,6 +166,11 @@ footer.footer hr { margin:10px 0; }
   </div>
 </footer>
 
+<script src="app.js"></script>
+<div id="productContainer" class="product-grid"></div>
+<script src="notify.js"></script>
+<script src="banner.js"></script>
+<script>
 <!-- POPUP LOGIN / REGISTER -->
 <div id="authModal">
   <div class="auth-content">
@@ -241,32 +187,10 @@ footer.footer hr { margin:10px 0; }
 <!-- SCRIPTS -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="app.js"></script>
 
 <script>
-// ===================== TOGGLE SIDEBAR =====================
-function toggleMenu() {
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
-  sidebar.classList.toggle("active");
-  overlay.classList.toggle("active");
-}
-
-// ===================== LOGIN MODAL =====================
 document.addEventListener("DOMContentLoaded", function(){
-  const loginLink = document.getElementById("loginLink");
-  const logoutLink = document.getElementById("logoutLink");
-  const authModal = document.getElementById("authModal");
-  const authEmail = document.getElementById("authEmail");
-  const authPassword = document.getElementById("authPassword");
-  const authRegisterBtn = document.getElementById("authRegisterBtn");
-  const authLoginBtn = document.getElementById("authLoginBtn");
-  const closeAuth = document.getElementById("closeAuth");
-  const authMessage = document.getElementById("authMessage");
-  const userInfoPreview = document.getElementById("userInfoPreview");
-  const userAvatarPreview = document.getElementById("sidebarUserAvatarPreview");
-  const userNamePreview = document.getElementById("sidebarUserNamePreview");
-
+  // Firebase config
   const firebaseConfig = {
     apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
     authDomain:"stech-73b89.firebaseapp.com",
@@ -278,74 +202,100 @@ document.addEventListener("DOMContentLoaded", function(){
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
-  loginLink.addEventListener("click", e => {
-    e.preventDefault();
-    authModal.style.display = "flex";
-  });
-  closeAuth.addEventListener("click", ()=> authModal.style.display="none");
+  // ELEMENTS
+  const loginLink = document.getElementById("loginLink");
+  const logoutLink = document.getElementById("logoutLink");
+  const authModal = document.getElementById("authModal");
+  const authEmail = document.getElementById("authEmail");
+  const authPassword = document.getElementById("authPassword");
+  const authRegisterBtn = document.getElementById("authRegisterBtn");
+  const authLoginBtn = document.getElementById("authLoginBtn");
+  const closeAuth = document.getElementById("closeAuth");
+  const authMessage = document.getElementById("authMessage");
+  const products = document.getElementById("products");
 
-  authRegisterBtn.addEventListener("click", () => {
-    const email = authEmail.value;
+  // USER INFO PREVIEW
+  const userInfoPreview = document.getElementById("userInfoPreview");
+  const userAvatarPreview = document.getElementById("sidebarUserAvatarPreview");
+  const userNamePreview = document.getElementById("sidebarUserNamePreview");
+
+  // POPUP LOGIN
+  loginLink.addEventListener("click",(e)=>{ 
+    e.preventDefault(); 
+    authModal.style.display="flex"; 
+  });
+  closeAuth.addEventListener("click",()=>authModal.style.display="none");
+
+  // REGISTER
+  authRegisterBtn.addEventListener("click",()=>{
+    const email = authEmail.value; 
     const pass = authPassword.value;
     auth.createUserWithEmailAndPassword(email, pass)
-      .then(() => {
-        authMessage.style.color = "green";
-        authMessage.innerText = "Đăng ký thành công!";
+      .then(()=>{
+        authMessage.style.color="green"; 
+        authMessage.innerText="Đăng ký thành công!";
         authEmail.value=""; authPassword.value="";
       })
-      .catch(err => {
-        authMessage.style.color = "red";
-        authMessage.innerText = err.message;
-      });
-  });
-
-  authLoginBtn.addEventListener("click", () => {
-    const email = authEmail.value;
-    const pass = authPassword.value;
-    auth.signInWithEmailAndPassword(email, pass)
-      .then(() => {
-        authMessage.style.color="green";
-        authMessage.innerText="Đăng nhập thành công!";
-        authModal.style.display="none";
-        loginLink.style.display="none";
-        logoutLink.style.display="block";
-        if(document.getElementById("products")) 
-            document.getElementById("products").style.display="grid";
-      })
-      .catch(err => {
-        authMessage.style.color="red";
+      .catch(err=>{
+        authMessage.style.color="red"; 
         authMessage.innerText=err.message;
       });
   });
 
-  logoutLink.addEventListener("click", ()=> {
+  // LOGIN
+  authLoginBtn.addEventListener("click",()=>{
+    const email = authEmail.value; 
+    const pass = authPassword.value;
+    auth.signInWithEmailAndPassword(email, pass)
+      .then(()=>{
+        authMessage.style.color="green"; 
+        authMessage.innerText="Đăng nhập thành công!";
+        authModal.style.display="none"; 
+        loginLink.style.display="none"; 
+        logoutLink.style.display="block";
+        if(products) products.style.display="grid";
+      })
+      .catch(err=>{
+        authMessage.style.color="red"; 
+        authMessage.innerText=err.message;
+      });
+  });
+
+  // LOGOUT
+  logoutLink.addEventListener("click",()=>{
     auth.signOut().then(()=>{
-      loginLink.style.display="block";
+      loginLink.style.display="block"; 
       logoutLink.style.display="none";
-      if(document.getElementById("products")) 
-          document.getElementById("products").style.display="none";
+      if(products) products.style.display="none";
       userInfoPreview.style.display="none";
     });
   });
 
-  auth.onAuthStateChanged(user => {
+  // LOAD USER PREVIEW
+  auth.onAuthStateChanged(user=>{
     if(user){
-      loginLink.style.display="none";
+      loginLink.style.display="none"; 
       logoutLink.style.display="block";
+      if(products) products.style.display="grid";
       userInfoPreview.style.display="block";
       userAvatarPreview.src = user.photoURL || "https://via.placeholder.com/40";
       userNamePreview.innerText = user.displayName || "Người dùng";
-      if(document.getElementById("products"))
-          document.getElementById("products").style.display="grid";
     } else {
-      loginLink.style.display="block";
+      loginLink.style.display="block"; 
       logoutLink.style.display="none";
       userInfoPreview.style.display="none";
-      if(document.getElementById("products"))
-          document.getElementById("products").style.display="none";
+      if(products) products.style.display="none";
     }
   });
+
 });
+</script>
+
+<script>
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active"); 
+  document.getElementById("overlay").classList.toggle("active"); 
+}
 </script>
 
 </body>
