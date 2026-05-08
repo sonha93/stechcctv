@@ -1,88 +1,180 @@
-/* =========================
-   📦 GET DATA
-========================= */
-function getCart() {
-  return JSON.parse(localStorage.getItem("cart")) || [];
-}
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-/* =========================
-   💰 FORMAT TIỀN
-========================= */
-function formatPrice(n) {
-  return Number(n).toLocaleString("vi-VN") + "đ";
-}
+// Chỉ cho nhập số ở SĐT
+document.getElementById("phone").addEventListener("input", function(){
+  this.value = this.value.replace(/\D/g, "");
+});
 
-/* =========================
-   🖥 RENDER CHECKOUT
-========================= */
-function renderCheckout() {
-  const box = document.getElementById("cart");
-  const totalBox = document.getElementById("total");
-
-  if (!box || !totalBox) return;
-
-  const cart = getCart();
-
+// Hiển thị giỏ hàng
+function renderCart(){
+  const box = document.getElementById("cartBox");
   box.innerHTML = "";
 
-  if (cart.length === 0) {
-    box.innerHTML = "<p>Giỏ hàng trống</p>";
-    totalBox.innerText = "0";
+  if(cart.length === 0){
+    box.innerHTML = "🛒 Giỏ hàng trống";
     return;
   }
 
-  let total = 0;
+  let originalTotal = 0;
+  let finalTotal = 0;
 
-  cart.forEach(item => {
-    const price = Number(item.price) || 0;
-    const oldPrice = Number(item.oldPrice) || 0;
-    const qty = Number(item.qty) || 1;
+  cart.forEach(p=>{
+    let qty = p.qty || 1;
+    let price = Number(p.price) || 0;
+    let old = Number(p.oldPrice) || price;
 
-    const hasDiscount = oldPrice > price;
+    let subFinal = qty * price;
+    let subOld = qty * old;
 
-    total += price * qty;
+    finalTotal += subFinal;
+    originalTotal += subOld;
 
     box.innerHTML += `
-      <div class="cart-item">
-
-        <img src="${item.img}" style="width:60px">
-
+      <div class="item">
+        <img src="${p.img}">
         <div>
-          <h4>${item.name}</h4>
-
-          <div class="price-box">
-            <span class="price">${formatPrice(price)}</span>
-
-            ${
-              hasDiscount
-                ? `<span class="old-price">${formatPrice(oldPrice)}</span>`
-                : ""
-            }
+          <b>${p.name}</b>
+          <div class="calc">
+            <div class="sale-price">${price.toLocaleString()}đ</div>
+            ${old > price ? `<div class="old-price">${old.toLocaleString()}đ</div>` : ""}
+            <div>${qty} × ${price.toLocaleString()}đ = ${subFinal.toLocaleString()}đ</div>
           </div>
-
-          <p>Số lượng: ${qty}</p>
-          <p>Thành tiền: ${formatPrice(price * qty)}</p>
         </div>
-
       </div>
-      <hr>
     `;
   });
 
-  totalBox.innerText = formatPrice(total);
+  let discount = originalTotal - finalTotal;
+
+  box.innerHTML += `
+    <div class="total-box">
+      <div class="row">
+        <span>Tổng giá gốc</span>
+        <b>${originalTotal.toLocaleString()}đ</b>
+      </div>
+      <div class="row discount">
+        <span>Tiết kiệm</span>
+        <b>-${discount.toLocaleString()}đ</b>
+      </div>
+      <div class="row final">
+        <span>Cần thanh toán</span>
+        <b>${finalTotal.toLocaleString()}đ</b>
+      </div>
+    </div>
+  `;
 }
 
-/* =========================
-   🧹 XOÁ GIỎ HÀNG
-========================= */
-function clearCart() {
+// Hiển thị/ẩn thông tin ngân hàng
+document.getElementById("payment").addEventListener("change", updateBank);
+
+function updateBank(){
+  let payment = document.getElementById("payment").value;
+  let bank = document.getElementById("bankInfo");
+
+  let total = cart.reduce((sum,p)=> sum + p.price*(p.qty||1), 0);
+
+  if(payment === "bank"){
+    bank.style.display = "block";
+    document.getElementById("qr").src =
+      "https://img.vietqr.io/image/ICB-101005245058-compact2.png?amount="
+      + total +
+      "&addInfo=Thanh%20toan";
+  } else {
+    bank.style.display = "none";
+  }
+}
+
+// 🔹 Gửi Telegram
+function sendTelegramNotification(order, total) {
+  if(!order || !total) return;
+
+  const botToken = "8752443026:AAEHrvCIDLqEDfE_inDeAAI9dzClm3WZyz4";
+  const chatId = "6087791909";
+
+  const productList = order.cart.map(p => `- ${p.name} x${p.qty} (${p.price.toLocaleString()}đ)`).join("\n");
+
+  const message = `
+📦 Đơn hàng mới!
+Mã đơn: ${order.id}
+Khách hàng: ${order.name}
+SĐT: ${order.phone}
+Địa chỉ: ${order.address}
+Tổng tiền: ${total.toLocaleString()}đ
+${productList ? "\nSản phẩm:\n" + productList : ""}
+`;
+
+  fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: message
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(data.ok) console.log("Đã gửi Telegram!");
+    else console.error("Lỗi Telegram:", data);
+  })
+  .catch(err => console.error("Lỗi fetch Telegram:", err));
+}
+
+// 🔹 Xử lý đặt hàng
+function placeOrder(){
+
+  if(cart.length === 0){
+    alert("🛒 Giỏ hàng trống!");
+    return;
+  }
+
+  let name = document.getElementById("name").value.trim();
+  let phone = document.getElementById("phone").value.trim();
+  let address = document.getElementById("address").value.trim();
+
+  if(!name || !phone || !address){
+    alert("⚠️ Nhập đầy đủ thông tin!");
+    return;
+  }
+
+  const phoneRegex = /^(03|05|07|08|09)\d{8}$/;
+  if(!phoneRegex.test(phone)){
+    alert("⚠️ SĐT không hợp lệ!");
+    return;
+  }
+
+  let total = cart.reduce((sum,p)=> sum + p.price*(p.qty||1), 0);
+
+  let order = {
+    id: Date.now(),
+    name,
+    phone,
+    address,
+    cart,
+    time: new Date().toLocaleString()
+  };
+
+  // Lưu vào localStorage
+  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+  orders.push(order);
+  localStorage.setItem("orders", JSON.stringify(orders));
+
+  // Gửi Telegram
+  sendTelegramNotification(order, total);
+
+  // Xoá giỏ hàng
   localStorage.removeItem("cart");
-  renderCheckout();
+
+  // Hiển thị loading
+  document.getElementById("loading").style.display = "flex";
+  document.querySelector(".btn").disabled = true;
+
+  setTimeout(() => {
+    window.location.href = "success.html";
+  }, 1000);
 }
 
-/* =========================
-   🚀 INIT
-========================= */
-document.addEventListener("DOMContentLoaded", () => {
-  renderCheckout();
-});
+// 🔹 Khởi tạo
+renderCart();
+updateBank();
+</script>
