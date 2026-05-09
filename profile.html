@@ -5,46 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thông tin cá nhân</title>
 <style>
-/* RESET & BODY */
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 20px; }
 
-/* CONTAINER */
 .container {
   background: #fff;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 0 15px rgba(0,0,0,0.1);
   width: 95%;
-  max-width: 450px; /* mobile friendly */
+  max-width: 450px;
 }
 
-/* HEADER */
 h2 { text-align: center; margin-bottom: 20px; font-size: 1.5rem; color: #333; }
 
-/* PROFILE */
 .profile { display: flex; flex-direction: column; align-items: center; gap: 15px; }
 .avatar-container { position: relative; width: 120px; height: 120px; cursor: pointer; }
 .avatar-container img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border:2px solid #007BFF; }
 
-/* INFO FIELDS */
 .info-fields { width: 100%; }
 .info-fields p { margin: 8px 0 4px; font-size: 0.9rem; color: #555; }
 .info-fields input { width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.95rem; }
 
-/* BUTTONS */
 button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #007BFF; color: white; font-size: 1rem; cursor: pointer; margin-top: 8px; }
 button:hover { background: #0056b3; }
 
-/* UPDATED INFO BOX */
 .updated-info { margin-top: 20px; background: #e7f3ff; padding: 12px; border-radius: 8px; }
 .updated-info p { margin: 4px 0; font-size: 0.9rem; }
 
-/* MESSAGE & ERROR */
 #message { color: green; margin-top: 10px; text-align: center; font-size: 0.9rem; }
 #error { color: red; margin-top: 10px; text-align: center; font-size: 0.9rem; }
 
-/* ACTION BUTTONS */
 .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
 @media (min-width:450px){ 
   .profile{ flex-direction: row; align-items:flex-start; } 
@@ -60,7 +51,7 @@ button:hover { background: #0056b3; }
   <h2>Thông tin cá nhân</h2>
   <div class="profile">
     <div class="avatar-container">
-      <img id="avatarImg" src="https://sf-static.upanhlaylink.com/img/image_2026050971756c76fa2be615eebe690664a5f510.jpg" alt="">
+      <img id="avatarImg" src="https://sf-static.upanhlaylink.com/img/image_2026050971756c76fa2be615eebe690664a5f510.jpg" alt="Avatar">
       <input type="file" id="avatarInput" accept="image/*" style="display:none">
     </div>
     <div class="info-fields">
@@ -80,7 +71,6 @@ button:hover { background: #0056b3; }
     <p>Số điện thoại: <span id="currentPhone"></span></p>
     <p>Địa chỉ: <span id="currentAddress"></span></p>
     <p>Ngày sinh: <span id="currentBirthday"></span></p>
-    <p>Ngày tạo tài khoản: <span id="currentCreatedAt"></span></p>
   </div>
 
   <h2>Đổi mật khẩu</h2>
@@ -121,7 +111,6 @@ const avatarImg = document.getElementById("avatarImg");
 const avatarInput = document.getElementById("avatarInput");
 const userEmail = document.getElementById("userEmail");
 const userCreatedAt = document.getElementById("userCreatedAt");
-const currentCreatedAt = document.getElementById("currentCreatedAt");
 const nameInput = document.getElementById("name");
 const phoneInput = document.getElementById("phone");
 const addressInput = document.getElementById("address");
@@ -148,7 +137,6 @@ auth.onAuthStateChanged(user => {
   userEmail.innerText = user.email;
 
   db.ref('users/'+user.uid).once('value').then(snapshot=>{
-    let createdDate;
     if(snapshot.exists()){
       const data = snapshot.val();
       nameInput.value = data.name || "";
@@ -157,14 +145,9 @@ auth.onAuthStateChanged(user => {
       birthdayInput.value = data.birthday || "";
       avatarImg.src = data.avatar || "https://sf-static.upanhlaylink.com/img/image_2026050971756c76fa2be615eebe690664a5f510.jpg";
 
-      if(!data.createdAt){
-        createdDate = new Date(currentUser.metadata.creationTime).toISOString();
-        db.ref('users/'+currentUser.uid).update({ createdAt: createdDate });
-      } else createdDate = data.createdAt;
-      createdDate = new Date(createdDate).toLocaleDateString();
-
+      const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : new Date(currentUser.metadata.creationTime).toLocaleDateString();
       userCreatedAt.innerText = createdDate;
-      currentCreatedAt.innerText = createdDate;
+
       currentName.innerText = data.name || "";
       currentPhone.innerText = data.phone || "";
       currentAddress.innerText = data.address || "";
@@ -177,20 +160,25 @@ auth.onAuthStateChanged(user => {
 avatarImg.addEventListener('click', () => avatarInput.click());
 
 // UPLOAD AVATAR
-avatarInput.addEventListener('change', (event)=>{
+avatarInput.addEventListener('change', async (event)=>{
   const file = event.target.files[0];
-  if(!file) return;
-  const avatarRef = storage.ref('avatars/' + currentUser.uid + '.jpg');
-  avatarRef.put(file).then(()=>avatarRef.getDownloadURL()).then(url=>{
-    db.ref('users/'+currentUser.uid).update({ avatar: url });
+  if(!file || !currentUser) return;
+
+  try{
+    const avatarRef = storage.ref('avatars/' + currentUser.uid + '.jpg');
+    await avatarRef.put(file);
+    const url = await avatarRef.getDownloadURL();
+    await db.ref('users/'+currentUser.uid).update({ avatar: url });
     avatarImg.src = url;
     messageEl.innerText = "Cập nhật ảnh đại diện thành công!";
-  }).catch(err=>{ errorEl.innerText = "Lỗi upload ảnh: "+err.message; });
+  }catch(err){
+    errorEl.innerText = "Lỗi upload ảnh: "+err.message;
+  }
 });
 
 // UPDATE INFO
-updateInfoBtn.addEventListener('click', ()=>{
-  messageEl.innerText = ""; errorEl.innerText = "";
+updateInfoBtn.addEventListener('click', async ()=>{
+  messageEl.innerText=""; errorEl.innerText="";
   if(!currentUser){ errorEl.innerText="User chưa load xong!"; return; }
   const name = nameInput.value.trim();
   const phone = phoneInput.value.trim();
@@ -198,42 +186,42 @@ updateInfoBtn.addEventListener('click', ()=>{
   const birthday = birthdayInput.value;
   if(!name || !phone){ errorEl.innerText="Vui lòng nhập đầy đủ thông tin!"; return; }
 
-  db.ref('users/'+currentUser.uid).update({name, phone, address, birthday})
-    .then(()=>{
-      messageEl.innerText="Cập nhật thành công!";
-      currentName.innerText = name;
-      currentPhone.innerText = phone;
-      currentAddress.innerText = address;
-      currentBirthday.innerText = birthday;
-    })
-    .catch(err=>{ errorEl.innerText="Lỗi khi cập nhật: "+err.message; });
+  try{
+    await db.ref('users/'+currentUser.uid).update({name, phone, address, birthday});
+    messageEl.innerText="Cập nhật thành công!";
+    currentName.innerText = name;
+    currentPhone.innerText = phone;
+    currentAddress.innerText = address;
+    currentBirthday.innerText = birthday;
+  }catch(err){ errorEl.innerText="Lỗi khi cập nhật: "+err.message; }
 });
 
 // CHANGE PASSWORD
-changePasswordBtn.addEventListener('click', ()=>{
+changePasswordBtn.addEventListener('click', async ()=>{
   messageEl.innerText=""; errorEl.innerText="";
-  const newPass=newPasswordInput.value.trim();
-  if(newPass.length<6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
+  const newPass = newPasswordInput.value.trim();
+  if(newPass.length < 6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
 
-  currentUser.updatePassword(newPass).then(()=>{
-    messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value="";
-  }).catch(err=>{
+  try{
+    await currentUser.updatePassword(newPass);
+    messageEl.innerText="Đổi mật khẩu thành công!"; 
+    newPasswordInput.value="";
+  }catch(err){
     if(err.code==="auth/requires-recent-login"){
-      const pwd=prompt("Nhập lại mật khẩu cũ:");
+      const pwd = prompt("Nhập lại mật khẩu cũ:");
       if(!pwd) return;
-      const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
+      const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, pwd);
       currentUser.reauthenticateWithCredential(credential)
-        .then(()=>currentUser.updatePassword(newPass).then(()=>{
-          messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value="";
-        }).catch(e=>errorEl.innerText=e.message))
-        .catch(e=>errorEl.innerText=e.message);
-    } else { errorEl.innerText=err.message; }
-  });
+        .then(()=> currentUser.updatePassword(newPass))
+        .then(()=> { messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; })
+        .catch(e=> errorEl.innerText=e.message);
+    }else errorEl.innerText = err.message;
+  }
 });
 
 // LOGOUT & HOME
-logoutBtn.addEventListener('click', ()=>auth.signOut().then(()=>window.location.href="index.html"));
-homeBtn.addEventListener('click', ()=>window.location.href="index.html");
+logoutBtn.addEventListener('click', ()=> auth.signOut().then(()=> window.location.href="index.html"));
+homeBtn.addEventListener('click', ()=> window.location.href="index.html");
 </script>
 </body>
 </html>
