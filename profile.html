@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thông tin cá nhân - Stech</title>
 <style>
+/* RESET & BODY */
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
 body{background:#f5f5f5;color:#111;overflow-x:hidden;}
 /* HEADER */
@@ -40,9 +41,12 @@ button{width:100%;padding:12px;border:none;border-radius:8px;background:#007BFF;
 button:hover{background:#0056b3;}
 button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;position:absolute;right:10px;top:50%;transform:translateY(-50%);}
 @keyframes spin{0%{transform:translateY(-50%) rotate(0deg);}100%{transform:translateY(-50%) rotate(360deg);}}
-.updated-info{margin-top:20px;background:#e7f3ff;padding:15px;border-radius:12px;display:flex;flex-direction:column;gap:8px;font-size:0.95rem;}
-.updated-info h3{text-align:center;margin-bottom:10px;font-size:1.1rem;color:#222;}
-.updated-info p{margin:0;padding:6px 0;}
+.updated-info{margin-top:20px;background:#e7f3ff;padding:15px;border-radius:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:0.95rem;}
+.updated-info h3{grid-column:1/-1;text-align:center;margin-bottom:10px;font-size:1.1rem;color:#222;}
+.info-card{background:#f0f8ff;padding:12px;border-radius:10px;border:1px solid #b3e5fc;display:flex;flex-direction:column;gap:4px;font-size:0.95rem;}
+.info-card .label{font-weight:bold;color:#333;}
+.info-card .value{color:#111;}
+@media(max-width:450px){.updated-info{grid-template-columns:1fr;}}
 .password-section{margin-top:20px;text-align:center;}
 .password-section h2{margin-bottom:10px;}
 .password-section input{width:80%;max-width:300px;padding:10px;border-radius:8px;border:1px solid #b3e5fc;margin-bottom:10px;transition:0.3s;}
@@ -94,10 +98,10 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
 
   <div class="updated-info">
     <h3>Thông tin hiện tại:</h3>
-    <p>Họ và tên: <span id="currentName"></span></p>
-    <p>Địa chỉ: <span id="currentAddress"></span></p>
-    <p>Ngày sinh: <span id="currentBirthday"></span></p>
-    <p>Số điện thoại: <span id="currentPhone"></span></p>
+    <div class="info-card"><span class="label">Họ và tên:</span> <span class="value" id="currentName"></span></div>
+    <div class="info-card"><span class="label">Địa chỉ:</span> <span class="value" id="currentAddress"></span></div>
+    <div class="info-card"><span class="label">Ngày sinh:</span> <span class="value" id="currentBirthday"></span></div>
+    <div class="info-card"><span class="label">Số điện thoại:</span> <span class="value" id="currentPhone"></span></div>
   </div>
 
   <div class="password-section">
@@ -146,7 +150,8 @@ function toggleMenu(){document.getElementById("sidebar").classList.toggle("activ
 
 // Load user + cart count
 auth.onAuthStateChanged(user=>{
-  if(!user){window.location.href="index.html"; return;} currentUser=user; updateInfoBtn.disabled=false; userEmail.innerText=user.email;
+  if(!user){window.location.href="index.html"; return;} 
+  currentUser=user; updateInfoBtn.disabled=false; userEmail.innerText=user.email;
 
   db.ref('users/'+user.uid).once('value').then(snapshot=>{
     if(snapshot.exists()){
@@ -160,9 +165,7 @@ auth.onAuthStateChanged(user=>{
     }
   }).catch(err=>{errorEl.innerText="Không thể load dữ liệu: "+err.message;});
 
-  db.ref('carts/'+user.uid).on('value', snapshot=>{
-    let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); cartCountEl.innerText=count;
-  });
+  db.ref('carts/'+user.uid).on('value', snapshot=>{let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); cartCountEl.innerText=count;});
 });
 
 // Orders
@@ -222,7 +225,6 @@ changePasswordBtn.addEventListener('click',()=>{
 
 // Logout
 logoutArrow.addEventListener('click',()=>auth.signOut().then(()=>window.location.href="index.html"));
-
 </script>
 </body>
 </html>
