@@ -22,13 +22,13 @@ img{display:block;margin:10px auto;width:100px;height:100px;border-radius:50%;ob
   <img id="avatarImg" src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="Avatar">
   <input type="text" id="name" placeholder="Họ và tên">
   <input type="text" id="phone" placeholder="Số điện thoại">
-  <button onclick="updateProfileInfo()">Cập nhật thông tin</button>
+  <button id="updateBtn">Cập nhật thông tin</button>
 
   <h2>Đổi mật khẩu</h2>
   <input type="password" id="newPassword" placeholder="Mật khẩu mới">
-  <button onclick="changePassword()">Đổi mật khẩu</button>
+  <button id="changePassBtn">Đổi mật khẩu</button>
 
-  <button onclick="logout()">Đăng xuất</button>
+  <button id="logoutBtn">Đăng xuất</button>
 
   <div id="message"></div>
   <div id="error"></div>
@@ -43,6 +43,7 @@ import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasej
 const firebaseConfig = {
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain:"stech-73b89.firebaseapp.com",
+  databaseURL:"https://stech-73b89-default-rtdb.firebaseio.com", // <-- fix database URL
   projectId:"stech-73b89",
   storageBucket:"stech-73b89.appspot.com",
   messagingSenderId:"873739162979",
@@ -70,13 +71,12 @@ onAuthStateChanged(auth,user=>{
       }
     });
   } else {
-    // chưa login → redirect về index.html
     window.location.href = "index.html";
   }
 });
 
 // UPDATE INFO
-function updateProfileInfo(){
+document.getElementById("updateBtn").addEventListener("click", ()=>{
   const name=document.getElementById("name").value.trim();
   const phone=document.getElementById("phone").value.trim();
   const messageEl=document.getElementById("message");
@@ -91,10 +91,10 @@ function updateProfileInfo(){
   update(ref(db,'users/'+currentUser.uid),{name,phone})
     .then(()=>{messageEl.innerText="Cập nhật thành công!";})
     .catch(err=>{errorEl.innerText=err.message;});
-}
+});
 
 // CHANGE PASSWORD
-function changePassword(){
+document.getElementById("changePassBtn").addEventListener("click", ()=>{
   const newPass=document.getElementById("newPassword").value.trim();
   const messageEl=document.getElementById("message");
   const errorEl=document.getElementById("error");
@@ -119,12 +119,12 @@ function changePassword(){
         errorEl.innerText=err.message;
       }
     });
-}
+});
 
 // LOGOUT
-function logout(){
+document.getElementById("logoutBtn").addEventListener("click", ()=>{
   signOut(auth).then(()=>{window.location.href="index.html";});
-}
+});
 </script>
 </body>
 </html>
