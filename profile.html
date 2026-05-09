@@ -53,11 +53,21 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
 .avatar-container img:hover { transform: scale(1.05); }
 
 .info-fields { width: 100%; margin-top: 10px; }
-.info-fields label { font-weight: bold; margin-top: 10px; display: block; color: #333; }
+.info-fields label { 
+  font-weight: bold; 
+  margin-top: 10px; 
+  display: block; 
+  color: #333;
+}
 .info-fields input { 
-  width: 100%; padding: 10px; margin-top: 4px; 
-  border-radius: 8px; border: 1px solid #b3e5fc;
-  font-size: 0.95rem; transition: 0.3s;
+  width: 100%; 
+  padding: 10px; 
+  margin-top: 4px; 
+  margin-bottom: 8px;
+  border-radius: 8px; 
+  border: 1px solid #b3e5fc;
+  font-size: 0.95rem; 
+  transition: 0.3s;
 }
 .info-fields input:focus { border-color: #4FC3F7; outline: none; }
 
@@ -135,14 +145,19 @@ button:hover { background: #0056b3; }
     <div class="info-fields">
       <p>Email: <b id="userEmail"></b></p>
       <p>Ngày đăng ký: <span id="userCreatedAt"></span></p>
+
       <label for="name">Họ và tên:</label>
       <input type="text" id="name">
+
       <label for="address">Địa chỉ:</label>
       <input type="text" id="address">
+
       <label for="birthday">Ngày sinh:</label>
       <input type="date" id="birthday">
+
       <label for="phone">Số điện thoại:</label>
       <input type="text" id="phone" placeholder="VD: 0912345678">
+
       <button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
     </div>
   </div>
