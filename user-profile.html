@@ -90,7 +90,7 @@ button:hover { background: #0056b3; }
   <h2>Thông tin cá nhân</h2>
   <div class="profile">
     <div class="avatar-container">
-      <img id="avatarImg" src="https://via.placeholder.com/130" alt="Avatar">
+      <img id="avatarImg" src="https://via.placeholder.com/130" alt="">
       <div class="overlay"><i class="fa-solid fa-camera"></i></div>
       <input type="file" id="avatarInput" accept="image/*" style="display:none">
     </div>
@@ -147,7 +147,6 @@ const auth = firebase.auth();
 const db = firebase.database();
 const storage = firebase.storage();
 
-// DOM
 const avatarImg = document.getElementById("avatarImg");
 const avatarInput = document.getElementById("avatarInput");
 const userEmail = document.getElementById("userEmail");
@@ -172,61 +171,57 @@ const homeBtn = document.getElementById("homeBtn");
 let currentUser = null;
 
 // LOAD USER
-auth.onAuthStateChanged(user => {
+auth.onAuthStateChanged(user=>{
   if(!user){ window.location.href="index.html"; return; }
-  currentUser = user;
-  updateInfoBtn.disabled = false;
-  userEmail.innerText = user.email;
+  currentUser=user;
+  updateInfoBtn.disabled=false;
+  userEmail.innerText=user.email;
 
   db.ref('users/'+user.uid).once('value').then(snapshot=>{
     if(snapshot.exists()){
       const data = snapshot.val();
-      nameInput.value = data.name || "";
-      phoneInput.value = data.phone || "";
-      addressInput.value = data.address || "";
-      birthdayInput.value = data.birthday || "";
-      avatarImg.src = data.avatar || "https://via.placeholder.com/130";
+      nameInput.value=data.name||"";
+      phoneInput.value=data.phone||"";
+      addressInput.value=data.address||"";
+      birthdayInput.value=data.birthday||"";
+      avatarImg.src=data.avatar || "https://via.placeholder.com/130";
 
-      const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() 
-                                          : new Date(currentUser.metadata.creationTime).toLocaleDateString();
-      userCreatedAt.innerText = createdDate;
-      currentCreatedAt.innerText = createdDate;
-      currentName.innerText = data.name || "";
-      currentPhone.innerText = data.phone || "";
-      currentAddress.innerText = data.address || "";
-      currentBirthday.innerText = data.birthday || "";
+      const createdDate = data.createdAt?new Date(data.createdAt).toLocaleDateString()
+                                       : new Date(currentUser.metadata.creationTime).toLocaleDateString();
+      userCreatedAt.innerText=createdDate;
+      currentCreatedAt.innerText=createdDate;
+      currentName.innerText=data.name||"";
+      currentPhone.innerText=data.phone||"";
+      currentAddress.innerText=data.address||"";
+      currentBirthday.innerText=data.birthday||"";
     }
   }).catch(err=>{ errorEl.innerText="Không thể load dữ liệu: "+err.message; });
 });
 
-// AVATAR UPLOAD
-avatarImg.addEventListener('click', ()=> avatarInput.click());
-avatarInput.addEventListener('change', async (e)=>{
-  const file = e.target.files[0];
+// UPLOAD AVATAR
+avatarImg.addEventListener('click', ()=>avatarInput.click());
+avatarInput.addEventListener('change', async(e)=>{
+  const file=e.target.files[0];
   if(!file || !currentUser) return;
-
-  try {
-    const storageRef = storage.ref('avatars/' + currentUser.uid + '.jpg');
+  try{
+    const storageRef = storage.ref('avatars/'+currentUser.uid+'.jpg');
     await storageRef.put(file);
-    const url = await storageRef.getDownloadURL();
-    await db.ref('users/' + currentUser.uid).update({ avatar: url });
+    const url=await storageRef.getDownloadURL();
+    await db.ref('users/'+currentUser.uid).update({ avatar: url });
     avatarImg.src = url + '?t=' + new Date().getTime();
-    messageEl.innerText = "Cập nhật ảnh đại diện thành công!";
-  } catch(err){
-    errorEl.innerText = "Lỗi upload avatar: " + err.message;
-  }
+    messageEl.innerText="Cập nhật ảnh đại diện thành công!";
+  }catch(err){ errorEl.innerText="Lỗi upload avatar: "+err.message; }
 });
 
 // UPDATE INFO
 updateInfoBtn.addEventListener('click', ()=>{
   messageEl.innerText=""; errorEl.innerText="";
-  const name = nameInput.value.trim();
-  const phone = phoneInput.value.trim();
-  const address = addressInput.value.trim();
-  const birthday = birthdayInput.value;
-  if(!name || !phone){ errorEl.innerText="Vui lòng nhập đầy đủ thông tin!"; return; }
-
-  db.ref('users/'+currentUser.uid).update({ name, phone, address, birthday })
+  const name=nameInput.value.trim();
+  const phone=phoneInput.value.trim();
+  const address=addressInput.value.trim();
+  const birthday=birthdayInput.value;
+  if(!name||!phone){ errorEl.innerText="Vui lòng nhập đầy đủ thông tin!"; return; }
+  db.ref('users/'+currentUser.uid).update({name,phone,address,birthday})
     .then(()=> {
       messageEl.innerText="Cập nhật thành công!";
       currentName.innerText=name;
@@ -241,9 +236,9 @@ changePasswordBtn.addEventListener('click', ()=>{
   messageEl.innerText=""; errorEl.innerText="";
   const newPass=newPasswordInput.value.trim();
   if(newPass.length<6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
-
-  currentUser.updatePassword(newPass).then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; })
-  .catch(err=>{
+  currentUser.updatePassword(newPass).then(()=>{
+    messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value="";
+  }).catch(err=>{
     if(err.code==="auth/requires-recent-login"){
       const pwd=prompt("Nhập lại mật khẩu cũ:");
       if(!pwd) return;
