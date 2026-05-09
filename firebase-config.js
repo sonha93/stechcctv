@@ -1,7 +1,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain: "stech-73b89.firebaseapp.com",
-  databaseURL: "https://stech-73b89-default-rtdb.firebaseio.com", // ← thêm dòng này
+  databaseURL: "https://stech-73b89-default-rtdb.firebaseio.com", 
   projectId: "stech-73b89",
   storageBucket: "stech-73b89.appspot.com",
   messagingSenderId: "873739162979",
@@ -12,4 +12,4 @@ const firebaseConfig = {
 // Khởi tạo Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const database = firebase.database(); // nếu cần dùng DB
+const database = firebase.database();
