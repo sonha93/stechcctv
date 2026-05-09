@@ -16,10 +16,37 @@
   display:block;
   background:transparent;
 }
+.header-icons{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  position:absolute;
+  right:10px;
+  top:10px;
+}
+.icon-btn{
+  position:relative;
+  cursor:pointer;
+  font-size:20px;
+  color:#fff;
+}
+.cart-count{
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  min-width:18px;
+  height:18px;
+  border-radius:50%;
+  background:red;
+  color:white;
+  font-size:11px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 </style>
 
 </head>
-
 <body>
 <div id="notify-box"></div>
 <div id="overlay" onclick="toggleMenu()"></div>
@@ -27,7 +54,6 @@
 <!-- MENU -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
-
   <a href="index.html">Trang chủ</a>
   <a href="cart.html">Giỏ hàng</a>
   <a href="camera-trong-nha.html">Camera trong nhà</a>
@@ -45,10 +71,16 @@
   </div>
 
   <input id="search" placeholder="Tìm kiếm sản phẩm...">
+
+  <div class="header-icons">
+    <div class="icon-btn" id="cartIcon">🛒
+      <span class="cart-count" id="cartCount">0</span>
+    </div>
+  </div>
 </header>
 
 <!-- CONTENT -->
-<div class="container"></div>
+<div class="container">
   <div class="products" id="products"></div>
 
   <div class="cart">
@@ -60,26 +92,137 @@
   </div>
 </div>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain: "stech-73b89.firebaseapp.com",
+  databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "stech-73b89",
+  storageBucket: "stech-73b89.appspot.com",
+  messagingSenderId: "873739162979",
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+
+// DOM
+const cartEl = document.getElementById("cart");
+const totalEl = document.getElementById("total");
+const cartCountEl = document.getElementById("cartCount");
+
+let currentUser = null;
+let cartRef = null;
+
+// Menu toggle
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
+}
+
+// Load user & cart badge
+auth.onAuthStateChanged(user=>{
+  if(!user) return; // không đăng nhập thì không load
+  currentUser = user;
+  cartRef = db.ref("carts/"+currentUser.uid);
+
+  // Badge & realtime
+  cartRef.on("value", snapshot=>{
+    const cart = snapshot.val() || [];
+    renderCart(cart);
+    updateBadge(cart);
+  });
+});
+
+// Thêm sản phẩm vào giỏ hàng
+function addToCart(product){
+  if(!currentUser) return alert("Bạn cần đăng nhập để thêm sản phẩm!");
+  cartRef.once("value").then(snapshot=>{
+    let cart = snapshot.val() || [];
+    const index = cart.findIndex(item=>item.id===product.id);
+    if(index!==-1) cart[index].quantity = (cart[index].quantity||1)+1;
+    else cart.push({...product, quantity:1});
+    cartRef.set(cart);
+  });
+}
+
+// Render cart
+function renderCart(cart){
+  cartEl.innerHTML="";
+  if(!cart || cart.length===0){
+    cartEl.innerHTML="<p class='empty'>Giỏ hàng trống 🛒</p>";
+    totalEl.innerText="0";
+    return;
+  }
+  let total=0;
+  cart.forEach(item=>{
+    const qty = item.quantity||1;
+    total += item.price*qty;
+    const div = document.createElement("div");
+    div.className="item";
+    div.innerHTML=`
+      <img src="${item.img||''}">
+      <div class="info">
+        <b>${item.name}</b><br>
+        <div>${item.price.toLocaleString()}đ × ${qty} = <b style="color:#e53935">${(item.price*qty).toLocaleString()}đ</b></div>
+        <div class="qty">
+          <button onclick="changeQty('${item.id}',-1)">-</button>
+          <span>${qty}</span>
+          <button onclick="changeQty('${item.id}',1)">+</button>
+        </div>
+      </div>
+      <button class="remove" onclick="removeItem('${item.id}')">🗑</button>
+    `;
+    cartEl.appendChild(div);
+  });
+  totalEl.innerText = total.toLocaleString();
+}
+
+// Xoá sản phẩm
+function removeItem(id){
+  if(!currentUser) return;
+  cartRef.once("value").then(snapshot=>{
+    let cart = snapshot.val() || [];
+    cart = cart.filter(item=>item.id!==id);
+    cartRef.set(cart);
+  });
+}
+
+// Thay đổi số lượng
+function changeQty(id,delta){
+  if(!currentUser) return;
+  cartRef.once("value").then(snapshot=>{
+    let cart = snapshot.val() || [];
+    const index = cart.findIndex(item=>item.id===id);
+    if(index===-1) return;
+    cart[index].quantity = (cart[index].quantity||1)+delta;
+    if(cart[index].quantity<1) cart[index].quantity=1;
+    cartRef.set(cart);
+  });
+}
+
+// Clear cart
+function clearCart(){
+  if(!currentUser) return;
+  cartRef.remove();
+}
+
+// Update badge
+function updateBadge(cart){
+  if(!cartCountEl) return;
+  let count = cart.reduce((sum,item)=>sum+(item.quantity||1),0);
+  cartCountEl.innerText = count;
+}
+</script>
+
 <script src="app.js"></script>
 <script src="notify.js"></script>
 <script src="camera-ngoai-troi.js"></script>
-<!-- FOOTER -->
-<footer class="footer">
-  <div class="footer-container">
-
-    <h3>StechCamera</h3>
-
-    <p>📍 Website chuyên cung cấp camera an ninh chính hãng</p>
-    <p>📞 Hotline: 0985.678.245</p>
-    <p>📧 Email: support@stechcamera.vn</p>
-
-    <hr>
-
-    <p>© 2026 StechCamera. All rights reserved.</p>
-    <p>Designed & Developed by StechCamera Team</p>
-
-  </div>
-</footer>
 
 </body>
 </html>
