@@ -1,9 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thông tin cá nhân</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  padding: 50px 0;
+}
+.container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  width: 650px;
+}
+h2 { text-align: center; margin-bottom: 20px; }
+.profile { display: flex; gap: 20px; align-items: flex-start; }
+.profile img { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; }
+.info-fields { flex: 1; }
+.info-fields p, .info-fields input { margin: 6px 0; }
+.info-fields p span { font-weight: bold; }
+input[type="text"], input[type="date"], input[type="password"] { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
+button { padding: 10px; margin-top: 10px; border: none; border-radius: 5px; background: #007BFF; color: white; cursor: pointer; }
+button:hover { background: #0056b3; }
+#message { color: green; margin-top: 10px; text-align: center; }
+#error { color: red; margin-top: 10px; text-align: center; }
+.updated-info { margin-top: 20px; background: #e7f3ff; padding: 10px; border-radius: 5px; }
+.updated-info p { margin: 3px 0; font-size: 14px; }
+.actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+.actions button { flex: 1; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Thông tin cá nhân</h2>
+  <div class="profile">
+    <img id="avatarImg" src="https://via.placeholder.com/130" alt="Avatar">
+    <div class="info-fields">
+      <p>Email: <span id="userEmail"></span></p>
+      <p>Ngày tạo: <span id="userCreatedAt"></span></p>
+      <input type="text" id="name" placeholder="Họ và tên">
+      <input type="text" id="phone" placeholder="Số điện thoại">
+      <input type="text" id="address" placeholder="Địa chỉ">
+      <input type="date" id="birthday" placeholder="Ngày sinh">
+      <button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
+    </div>
+  </div>
+
+  <div class="updated-info">
+    <h3>Thông tin hiện tại:</h3>
+    <p>Họ và tên: <span id="currentName"></span></p>
+    <p>Số điện thoại: <span id="currentPhone"></span></p>
+    <p>Địa chỉ: <span id="currentAddress"></span></p>
+    <p>Ngày sinh: <span id="currentBirthday"></span></p>
+    <p>Ngày tạo tài khoản: <span id="currentCreatedAt"></span></p>
+  </div>
+
+  <h2>Đổi mật khẩu</h2>
+  <input type="password" id="newPassword" placeholder="Mật khẩu mới">
+  <div class="actions">
+    <button id="changePasswordBtn">Đổi mật khẩu</button>
+    <button id="logoutBtn">Đăng xuất</button>
+    <button id="homeBtn">Trang chủ</button>
+  </div>
+
+  <div id="message"></div>
+  <div id="error"></div>
+</div>
+
 <script type="module">
+// ---------- IMPORT FIREBASE MODULES ----------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// Firebase config
+// ---------- CONFIG FIREBASE ----------
 const firebaseConfig = {
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain:"stech-73b89.firebaseapp.com",
@@ -15,12 +92,12 @@ const firebaseConfig = {
   measurementId:"G-98Q3927PHZ"
 };
 
-// INIT FIREBASE
+// ---------- INIT FIREBASE ----------
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// DOM
+// ---------- DOM ELEMENTS ----------
 const avatarImg = document.getElementById("avatarImg");
 const userEmail = document.getElementById("userEmail");
 const userCreatedAt = document.getElementById("userCreatedAt");
@@ -43,7 +120,7 @@ const homeBtn = document.getElementById("homeBtn");
 
 let currentUser = null;
 
-// Load user
+// ---------- LOAD USER ----------
 onAuthStateChanged(auth, user => {
   if (!user) { window.location.href = "index.html"; return; }
   currentUser = user;
@@ -70,7 +147,7 @@ onAuthStateChanged(auth, user => {
   }).catch(err => { errorEl.innerText = "Không thể load dữ liệu: " + err.message; });
 });
 
-// Update info
+// ---------- UPDATE INFO ----------
 updateInfoBtn.addEventListener("click", () => {
   messageEl.innerText = ""; errorEl.innerText = "";
   if (!currentUser) { errorEl.innerText = "User chưa load xong!"; return; }
@@ -90,7 +167,7 @@ updateInfoBtn.addEventListener("click", () => {
     }).catch(err => { errorEl.innerText = "Lỗi khi cập nhật: " + err.message; });
 });
 
-// Change password
+// ---------- CHANGE PASSWORD ----------
 changePasswordBtn.addEventListener("click", () => {
   messageEl.innerText = ""; errorEl.innerText = "";
   const newPass = newPasswordInput.value.trim();
@@ -110,9 +187,12 @@ changePasswordBtn.addEventListener("click", () => {
   });
 });
 
-// Logout
+// ---------- LOGOUT ----------
 logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.href = "index.html"));
 
-// Home
+// ---------- HOME ----------
 homeBtn.addEventListener("click", () => window.location.href = "index.html");
+
 </script>
+</body>
+</html>
