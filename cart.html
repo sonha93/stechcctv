@@ -59,11 +59,11 @@ header{display:flex;align-items:center;padding:8px 10px;background:#33A0AB;gap:8
   <a href="the-nho.html">Thẻ nhớ</a>
 </div>
 
-<!-- HEADER -->
+<!-- HEADER ĐỒNG BỘ USER-PROFILE -->
 <header>
   <div class="menu-btn" onclick="toggleMenu()">☰</div>
   <div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo"></div>
-  <div class="search-box"><input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..."></div>
+  <div class="search-box"><input id="searchInput" placeholder="Tìm kiếm sản phẩm..."></div>
   <div class="header-icons">
     <div class="icon-btn">🔑</div>
     <div class="icon-btn">🛒<span class="cart-count" id="cartCount">0</span></div>
@@ -83,66 +83,67 @@ header{display:flex;align-items:center;padding:8px 10px;background:#33A0AB;gap:8
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
+<!-- CART.JS Firebase -->
 <script>
-// Firebase
+// Firebase config
 const firebaseConfig = {
-  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain:"stech-73b89.firebaseapp.com",
-  databaseURL:"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId:"stech-73b89",
-  storageBucket:"stech-73b89.appspot.com",
-  messagingSenderId:"873739162979",
-  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain: "stech-73b89.firebaseapp.com",
+  databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "stech-73b89",
+  storageBucket: "stech-73b89.appspot.com",
+  messagingSenderId: "873739162979",
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth();
-const db=firebase.database();
+const auth = firebase.auth();
+const db = firebase.database();
 
 // DOM
-const cartList=document.getElementById("cartList");
-const totalBox=document.getElementById("total");
-const cartAction=document.getElementById("cartAction");
-const cartCountEl=document.getElementById("cartCount");
+const cartList = document.getElementById("cartList");
+const totalBox = document.getElementById("total");
+const cartAction = document.getElementById("cartAction");
+const cartCountEl = document.getElementById("cartCount");
 
-let currentUser=null;
-let cartRef=null;
+let currentUser = null;
+let cartRef = null;
 
-// MENU
+// ================== MENU ==================
 function toggleMenu(){
   document.getElementById("sidebar").classList.toggle("active");
   document.getElementById("overlay").classList.toggle("active");
 }
 
-// AUTH + LOAD CART
-auth.onAuthStateChanged(user=>{
-  if(!user){window.location.href="index.html"; return;}
-  currentUser=user;
-  cartRef=db.ref("carts/"+currentUser.uid);
+// ================== AUTH ==================
+auth.onAuthStateChanged(user => {
+  if(!user){ window.location.href="index.html"; return; }
+  currentUser = user;
+  cartRef = db.ref("carts/"+currentUser.uid);
 
-  cartRef.on("value",snapshot=>{
-    const cart=snapshot.val()||[];
+  cartRef.on("value", snapshot => {
+    const cart = snapshot.val() || [];
     renderCart(cart);
     updateBadge(cart);
   });
 });
 
-// ADD TO CART (Ví dụ từ trang sản phẩm)
+// ================== ADD ==================
 function addToCart(product){
   if(!currentUser) return alert("Bạn cần đăng nhập!");
   cartRef.once("value").then(snapshot=>{
-    let cart=snapshot.val()||[];
-    const index=cart.findIndex(item=>item.id===product.id);
-    if(index!==-1) cart[index].quantity=(cart[index].quantity||1)+1;
+    let cart = snapshot.val() || [];
+    const index = cart.findIndex(item=>item.id===product.id);
+    if(index!==-1) cart[index].quantity = (cart[index].quantity||1)+1;
     else cart.push({id:product.id,name:product.name,price:product.price,img:product.img,quantity:1});
     cartRef.set(cart);
   });
 }
 
-// RENDER CART
+// ================== RENDER ==================
 function renderCart(cart){
-  cartList.innerHTML="";
-  if(!cart||cart.length===0){
-    cartList.innerHTML="<p class='empty'>Giỏ hàng trống 🛒</p>";
+  cartList.innerHTML = "";
+  if(!cart || cart.length===0){
+    cartList.innerHTML = "<p class='empty'>Giỏ hàng trống 🛒</p>";
     totalBox.innerHTML=""; cartAction.innerHTML=""; return;
   }
   let total=0;
@@ -170,20 +171,22 @@ function renderCart(cart){
   cartAction.innerHTML=`<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
 }
 
-// REMOVE ITEM
+// ================== REMOVE ==================
 function removeItem(id){
+  if(!currentUser) return;
   cartRef.once("value").then(snapshot=>{
-    let cart=snapshot.val()||[];
-    cart=cart.filter(item=>item.id!==id);
+    let cart = snapshot.val()||[];
+    cart = cart.filter(item=>item.id!==id);
     cartRef.set(cart);
   });
 }
 
-// CHANGE QTY
+// ================== QTY ==================
 function changeQty(id,delta){
+  if(!currentUser) return;
   cartRef.once("value").then(snapshot=>{
-    let cart=snapshot.val()||[];
-    const index=cart.findIndex(item=>item.id===id);
+    let cart = snapshot.val()||[];
+    const index = cart.findIndex(item=>item.id===id);
     if(index===-1) return;
     cart[index].quantity=(cart[index].quantity||1)+delta;
     if(cart[index].quantity<1) cart[index].quantity=1;
@@ -191,26 +194,29 @@ function changeQty(id,delta){
   });
 }
 
-// CHECKOUT
+// ================== CHECKOUT ==================
 function checkout(){
+  if(!currentUser) return alert("Bạn cần đăng nhập!");
   cartRef.once("value").then(snapshot=>{
-    const cart=snapshot.val()||[];
+    const cart = snapshot.val()||[];
     if(cart.length===0) return alert("Giỏ hàng trống!");
-    const ordersRef=db.ref("orders/"+currentUser.uid);
-    const orderKey=ordersRef.push().key;
+    const ordersRef = db.ref("orders/"+currentUser.uid);
+    const orderKey = ordersRef.push().key;
     ordersRef.child(orderKey).set({
-      items:cart,
-      status:"Đang xử lý",
-      createdAt:new Date().toISOString()
-    }).then(()=>{cartRef.remove(); alert("Đặt hàng thành công!");});
+      items: cart,
+      status: "Đang xử lý",
+      createdAt: new Date().toISOString()
+    }).then(()=>{ cartRef.remove(); alert("Đặt hàng thành công!"); });
   });
 }
 
-// UPDATE BADGE
+// ================== BADGE ==================
 function updateBadge(cart){
-  let count=cart.reduce((sum,item)=>sum+(item.quantity||1),0);
-  cartCountEl.innerText=count;
+  if(!cartCountEl) return;
+  let count = cart.reduce((sum,item)=>sum+(item.quantity||1),0);
+  cartCountEl.innerText = count;
 }
 </script>
+
 </body>
 </html>
