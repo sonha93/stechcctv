@@ -21,7 +21,7 @@ button:hover{background:#0056b3;}
 <input type="email" id="email" placeholder="Email">
 <input type="password" id="password" placeholder="Mật khẩu">
 <input type="text" id="phone" placeholder="Số điện thoại">
-<button onclick="register()">Đăng ký</button>
+<button id="registerBtn">Đăng ký</button>
 <div id="message"></div>
 <div id="error"></div>
 </div>
@@ -31,12 +31,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// Firebase config stech-73b89
+// Firebase config chuẩn
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain: "stech-73b89.firebaseapp.com",
+  databaseURL: "https://stech-73b89-default-rtdb.firebaseio.com",
   projectId: "stech-73b89",
-  storageBucket: "stech-73b89.firebasestorage.app",
+  storageBucket: "stech-73b89.appspot.com",
   messagingSenderId: "873739162979",
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56",
   measurementId: "G-98Q3927PHZ"
@@ -46,53 +47,61 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-window.register = function(){
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const messageEl = document.getElementById("message");
-  const errorEl = document.getElementById("error");
+const nameInput = document.getElementById("name");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const phoneInput = document.getElementById("phone");
+const messageEl = document.getElementById("message");
+const errorEl = document.getElementById("error");
+const registerBtn = document.getElementById("registerBtn");
+
+registerBtn.addEventListener("click", async () => {
   messageEl.innerText=""; errorEl.innerText="";
+
+  const name = nameInput.value.trim();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+  const phone = phoneInput.value.trim();
 
   if(!name || !email || !password || !phone){
     errorEl.innerText="Vui lòng nhập đầy đủ thông tin!";
     return;
   }
 
-  createUserWithEmailAndPassword(auth,email,password)
-    .then(userCredential=>{
-      const user = userCredential.user;
-      // Update displayName
-      return updateProfile(user,{displayName:name});
-    })
-    .then(()=>{
-      const user = auth.currentUser;
-      // Lưu info vào Realtime Database
-      return set(ref(db,'users/'+user.uid),{
-        name: name,
-        email: email,
-        phone: phone,
-        avatar: "https://i.ibb.co/Z1kv9nJj/logo.png", // avatar mặc định từ server mình
-        createdAt: Date.now()
-      });
-    })
-    .then(()=>{
-      messageEl.innerText="Đăng ký thành công!";
-      document.getElementById("name").value="";
-      document.getElementById("email").value="";
-      document.getElementById("password").value="";
-      document.getElementById("phone").value="";
-      setTimeout(()=>window.location.href="profile.html",1000);
-    })
-    .catch(err=>{
-      if(err.code==="auth/email-already-in-use"){
-        errorEl.innerText="Email đã tồn tại, vui lòng đăng nhập!";
-      }else{
-        errorEl.innerText=err.message;
-      }
+  try{
+    // Tạo user
+    const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+    const user = userCredential.user;
+
+    // Cập nhật displayName
+    await updateProfile(user,{displayName:name, photoURL:"https://i.ibb.co/Z1kv9nJj/logo.png"});
+
+    // Lưu info vào Realtime Database
+    await set(ref(db,'users/'+user.uid),{
+      name: name,
+      email: email,
+      phone: phone,
+      avatar: "https://i.ibb.co/Z1kv9nJj/logo.png",
+      createdAt: Date.now()
     });
-};
+
+    messageEl.style.color="green";
+    messageEl.innerText="Đăng ký thành công! Chuyển tới profile...";
+    
+    // Reset form
+    nameInput.value=""; emailInput.value=""; passwordInput.value=""; phoneInput.value="";
+
+    // Chuyển sang profile.html sau 1s
+    setTimeout(()=>window.location.href="profile.html",1000);
+
+  }catch(err){
+    if(err.code==="auth/email-already-in-use"){
+      errorEl.innerText="Email đã tồn tại, vui lòng đăng nhập!";
+    } else {
+      errorEl.innerText=err.message;
+    }
+  }
+});
 </script>
 </body>
 </html>
