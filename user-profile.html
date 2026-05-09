@@ -82,6 +82,21 @@ button:hover { background: #0056b3; }
 
 .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
 
+.password-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.password-section h2 { margin-bottom: 10px; }
+.password-section input {
+  width: 80%;
+  max-width: 300px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
 @media(min-width:450px){
   .profile{ flex-direction: row; align-items:flex-start; }
   .avatar-container{ margin-right: 15px; }
@@ -105,7 +120,7 @@ button:hover { background: #0056b3; }
       <input type="text" id="name" placeholder="Họ và tên">
       <input type="text" id="phone" placeholder="Số điện thoại">
       <input type="text" id="address" placeholder="Địa chỉ">
-      <input type="date" id="birthday" placeholder="Ngày sinh">
+      <input type="date" id="birthday">
       <button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
     </div>
   </div>
@@ -119,12 +134,14 @@ button:hover { background: #0056b3; }
     <p>Ngày tạo tài khoản: <span id="currentCreatedAt"></span></p>
   </div>
 
-  <h2>Đổi mật khẩu</h2>
-  <input type="password" id="newPassword" placeholder="Mật khẩu mới">
-  <div class="actions">
-    <button id="changePasswordBtn">Đổi mật khẩu</button>
-    <button id="logoutBtn">Đăng xuất</button>
-    <button id="homeBtn">Trang chủ</button>
+  <div class="password-section">
+    <h2>Đổi mật khẩu</h2>
+    <input type="password" id="newPassword" placeholder="Mật khẩu mới">
+    <div class="actions">
+      <button id="changePasswordBtn">Đổi mật khẩu</button>
+      <button id="logoutBtn">Đăng xuất</button>
+      <button id="homeBtn">Trang chủ</button>
+    </div>
   </div>
 
   <div id="message"></div>
@@ -176,6 +193,7 @@ const homeBtn = document.getElementById("homeBtn");
 
 let currentUser = null;
 
+// Load user data
 auth.onAuthStateChanged(user => {
   if(!user){ window.location.href="index.html"; return; }
   currentUser = user;
@@ -189,7 +207,7 @@ auth.onAuthStateChanged(user => {
       phoneInput.value = data.phone || "";
       addressInput.value = data.address || "";
       birthdayInput.value = data.birthday || "";
-      avatarImg.src = data.avatar || "https://sf-static.upanhlaylink.com/img/image_20260509a7d8481abffe51016824fa5c6c433dd5.jpg";
+      avatarImg.src = data.avatar || avatarImg.src;
 
       const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() 
                                           : new Date(currentUser.metadata.creationTime).toLocaleDateString();
