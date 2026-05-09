@@ -17,7 +17,7 @@ body {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 15px rgba(0,0,0,0.1);
-  width: 600px;
+  width: 650px;
 }
 h2 {
   margin-bottom: 20px;
@@ -29,8 +29,8 @@ h2 {
   align-items: flex-start;
 }
 .profile img {
-  width: 120px;
-  height: 120px;
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -38,7 +38,10 @@ h2 {
   flex: 1;
 }
 .info-fields p, .info-fields input {
-  margin: 5px 0;
+  margin: 6px 0;
+}
+.info-fields p span {
+  font-weight: bold;
 }
 input[type="text"], input[type="date"], input[type="password"] {
   width: 100%;
@@ -80,7 +83,7 @@ button:hover {
 <div class="container">
   <h2>Thông tin cá nhân</h2>
   <div class="profile">
-    <img id="avatarImg" src="https://via.placeholder.com/120" alt="Avatar">
+    <img id="avatarImg" src="https://via.placeholder.com/130" alt="Avatar">
     <div class="info-fields">
       <p>Email: <span id="userEmail"></span></p>
       <p>Ngày tạo: <span id="userCreatedAt"></span></p>
@@ -99,6 +102,7 @@ button:hover {
     <p>Số điện thoại: <span id="currentPhone"></span></p>
     <p>Địa chỉ: <span id="currentAddress"></span></p>
     <p>Ngày sinh: <span id="currentBirthday"></span></p>
+    <p>Ngày tạo tài khoản: <span id="currentCreatedAt"></span></p>
   </div>
 
   <h2>Đổi mật khẩu</h2>
@@ -139,6 +143,7 @@ let currentUser = null;
 const avatarImg = document.getElementById("avatarImg");
 const userEmail = document.getElementById("userEmail");
 const userCreatedAt = document.getElementById("userCreatedAt");
+const currentCreatedAt = document.getElementById("currentCreatedAt");
 const nameInput = document.getElementById("name");
 const phoneInput = document.getElementById("phone");
 const addressInput = document.getElementById("address");
@@ -169,8 +174,11 @@ onAuthStateChanged(auth, user => {
         phoneInput.value = data.phone || "";
         addressInput.value = data.address || "";
         birthdayInput.value = data.birthday || "";
-        avatarImg.src = data.avatar || "https://via.placeholder.com/120";
-        userCreatedAt.innerText = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "";
+        avatarImg.src = data.avatar || "https://via.placeholder.com/130";
+
+        const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "";
+        userCreatedAt.innerText = createdDate;
+        currentCreatedAt.innerText = createdDate;
 
         currentName.innerText = data.name || "";
         currentPhone.innerText = data.phone || "";
