@@ -113,3 +113,57 @@ document.addEventListener("DOMContentLoaded", function(){
   });
 
 });
+// ELEMENTS cho profile
+const userProfile = document.getElementById("userProfile");
+const profileName = document.getElementById("profileName");
+const profileAvatar = document.getElementById("profileAvatar");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
+const profileMessage = document.getElementById("profileMessage");
+
+// Load thông tin user vào form
+function loadUserProfile(user){
+  if(user){
+    userProfile.style.display="block";
+    profileName.value = user.displayName || "";
+    profileAvatar.value = user.photoURL || "";
+  } else {
+    userProfile.style.display="none";
+  }
+}
+
+// Lưu profile
+saveProfileBtn.addEventListener("click", ()=>{
+  const user = auth.currentUser;
+  if(!user) return;
+
+  const newName = profileName.value.trim();
+  const newAvatar = profileAvatar.value.trim() || "https://via.placeholder.com/40";
+
+  if(!newName){
+    profileMessage.style.color = "red";
+    profileMessage.innerText = "Tên hiển thị không được để trống!";
+    return;
+  }
+
+  user.updateProfile({
+    displayName: newName,
+    photoURL: newAvatar
+  })
+  .then(()=>{
+    profileMessage.style.color = "green";
+    profileMessage.innerText = "Cập nhật thành công!";
+    // Cập nhật sidebar
+    userAvatarPreview.src = newAvatar;
+    userNamePreview.innerText = newName;
+  })
+  .catch(err=>{
+    profileMessage.style.color = "red";
+    profileMessage.innerText = err.message;
+  });
+});
+
+// Cập nhật profile khi load auth state
+auth.onAuthStateChanged(user=>{
+  updateUserUI(user);
+  loadUserProfile(user);
+});
