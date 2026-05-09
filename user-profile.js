@@ -1,132 +1,104 @@
-// user-profile.js
+// user.js - quản lý thông tin người dùng
+document.addEventListener("DOMContentLoaded", function(){
 
-// ---------------------- Firebase config ----------------------
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+  const auth = firebase.auth();
 
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  // ELEMENTS
+  const userInfoPreview = document.getElementById("userInfoPreview");
+  const userAvatarPreview = document.getElementById("sidebarUserAvatarPreview");
+  const userNamePreview = document.getElementById("sidebarUserNamePreview");
 
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+  const authEmail = document.getElementById("authEmail");
+  const authPassword = document.getElementById("authPassword");
+  const authMessage = document.getElementById("authMessage");
+  const authRegisterBtn = document.getElementById("authRegisterBtn");
+  const authLoginBtn = document.getElementById("authLoginBtn");
+  const authModal = document.getElementById("authModal");
 
-// ---------------------- ELEMENTS ----------------------
-const avatarPreview = document.getElementById("avatarPreview");
-const avatarInput = document.getElementById("avatarInput");
-const nameInput = document.getElementById("nameInput");
-const emailInput = document.getElementById("emailInput");
-const phoneInput = document.getElementById("phoneInput");
-const addressInput = document.getElementById("addressInput");
-const dobInput = document.getElementById("dobInput");
-const saveBtn = document.getElementById("saveProfileBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const saveStatus = document.getElementById("saveStatus");
+  const loginLink = document.getElementById("loginLink");
+  const logoutLink = document.getElementById("logoutLink");
+  const products = document.getElementById("products");
 
-// ---------------------- LOAD USER DATA ----------------------
-auth.onAuthStateChanged(user => {
-  if(user){
-    // Email luôn lấy từ Firebase Auth
-    emailInput.value = user.email;
-
-    // Lấy thêm dữ liệu từ Firestore
-    const docRef = db.collection("users").doc(user.uid);
-    docRef.get().then(doc=>{
-      if(doc.exists){
-        const data = doc.data();
-        nameInput.value = data.name || "";
-        phoneInput.value = data.phone || "";
-        addressInput.value = data.address || "";
-        dobInput.value = data.dob || "";
-        avatarPreview.src = data.avatar || "images/logo-default.png";
-      }
-    });
-  } else {
-    // Nếu chưa login, redirect về trang login
-    window.location.href = "index.html";
-  }
-});
-
-// ---------------------- AVATAR PREVIEW ----------------------
-avatarInput.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if(file){
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      avatarPreview.src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-// ---------------------- SAVE USER DATA ----------------------
-const saveData = () => {
-  const user = auth.currentUser;
-  if(!user) return;
-
-  // Xác thực cơ bản
-  if(nameInput.value.trim() === "" || phoneInput.value.trim() === ""){
-    saveStatus.style.color = "red";
-    saveStatus.innerText = "Vui lòng nhập đầy đủ Họ và tên và Số điện thoại!";
-    return;
-  }
-
-  const userData = {
-    name: nameInput.value,
-    phone: phoneInput.value,
-    address: addressInput.value,
-    dob: dobInput.value
-  };
-
-  // Upload avatar nếu có chọn
-  const uploadAvatar = avatarInput.files[0] 
-    ? storage.ref(`avatars/${user.uid}`).put(avatarInput.files[0]) 
-    : Promise.resolve();
-
-  uploadAvatar.then(() => {
-    if(avatarInput.files[0]){
-      storage.ref(`avatars/${user.uid}`).getDownloadURL().then(url => {
-        userData.avatar = url;
-        db.collection("users").doc(user.uid).set(userData, {merge:true})
-          .then(() => {
-            saveStatus.style.color = "green";
-            saveStatus.innerText = "Đã lưu thành công!";
-          })
-          .catch(err => {
-            saveStatus.style.color = "red";
-            saveStatus.innerText = "Lưu thất bại: " + err.message;
-          });
-      }).catch(err=>{
-        saveStatus.style.color="red";
-        saveStatus.innerText="Lấy avatar thất bại: "+err.message;
-      });
+  // Hàm cập nhật sidebar user info
+  function updateUserUI(user){
+    if(user){
+      loginLink.style.display="none";
+      logoutLink.style.display="block";
+      userInfoPreview.style.display="block";
+      userAvatarPreview.src = user.photoURL || "https://via.placeholder.com/40";
+      userNamePreview.innerText = user.displayName || user.email || "Người dùng";
+      if(products) products.style.display="grid";
     } else {
-      db.collection("users").doc(user.uid).set(userData, {merge:true})
-        .then(() => {
-          saveStatus.style.color = "green";
-          saveStatus.innerText = "Đã lưu thành công!";
-        })
-        .catch(err => {
-          saveStatus.style.color = "red";
-          saveStatus.innerText = "Lưu thất bại: " + err.message;
-        });
+      loginLink.style.display="block";
+      logoutLink.style.display="none";
+      userInfoPreview.style.display="none";
+      if(products) products.style.display="none";
     }
-  }).catch(err=>{
-    saveStatus.style.color="red";
-    saveStatus.innerText = "Upload avatar thất bại: " + err.message;
-  });
-};
+  }
 
-saveBtn.addEventListener("click", saveData);
+  // REGISTER với nhập tên + avatar tùy chỉnh
+  authRegisterBtn.addEventListener("click", ()=>{
+    const email = authEmail.value.trim();
+    const pass = authPassword.value.trim();
 
-// ---------------------- LOGOUT ----------------------
-logoutBtn.addEventListener("click", ()=>{
-  auth.signOut().then(()=>{
-    window.location.href="index.html";
+    if(!email || !pass){
+      authMessage.style.color="red";
+      authMessage.innerText="Vui lòng nhập email và mật khẩu!";
+      return;
+    }
+
+    // Prompt user nhập tên + avatar
+    let displayName = prompt("Nhập tên hiển thị của bạn:", email.split("@")[0]);
+    if(!displayName) displayName = email.split("@")[0];
+    let photoURL = prompt("Nhập URL avatar (để trống nếu muốn mặc định):", "https://via.placeholder.com/40");
+    if(!photoURL) photoURL = "https://via.placeholder.com/40";
+
+    auth.createUserWithEmailAndPassword(email, pass)
+      .then(userCredential=>{
+        const user = userCredential.user;
+        return user.updateProfile({ displayName, photoURL });
+      })
+      .then(()=>{
+        authMessage.style.color="green";
+        authMessage.innerText="Đăng ký thành công!";
+        authEmail.value=""; authPassword.value="";
+        authModal.style.display="none";
+      })
+      .catch(err=>{
+        authMessage.style.color="red";
+        authMessage.innerText=err.message;
+      });
   });
+
+  // LOGIN
+  authLoginBtn.addEventListener("click", ()=>{
+    const email = authEmail.value.trim();
+    const pass = authPassword.value.trim();
+    if(!email || !pass){
+      authMessage.style.color="red";
+      authMessage.innerText="Vui lòng nhập email và mật khẩu!";
+      return;
+    }
+    auth.signInWithEmailAndPassword(email, pass)
+      .then(()=>{ 
+        authMessage.style.color="green";
+        authMessage.innerText="Đăng nhập thành công!";
+        authModal.style.display="none";
+      })
+      .catch(err=>{
+        authMessage.style.color="red";
+        authMessage.innerText=err.message;
+      });
+  });
+
+  // LOGOUT
+  logoutLink.addEventListener("click", ()=>{
+    auth.signOut();
+  });
+
+  // AUTH STATE CHANGE
+  auth.onAuthStateChanged(user=>{
+    updateUserUI(user);
+  });
+
 });
