@@ -40,32 +40,34 @@ h2{text-align:center;margin-bottom:20px;font-size:1.6rem;color:#222;}
 .info-fields label{font-weight:bold;margin-top:10px;display:block;color:#333;}
 .info-fields input{width:100%;padding:10px;margin-top:4px;margin-bottom:8px;border-radius:8px;border:1px solid #b3e5fc;font-size:0.95rem;transition:0.3s;}
 .info-fields input:focus{border-color:#4FC3F7;outline:none;}
+
 button{width:100%;padding:12px;border:none;border-radius:8px;background:#007BFF;color:white;font-size:1rem;cursor:pointer;margin-top:8px;transition:0.3s;position:relative;}
 button:hover{background:#0056b3;}
 button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;position:absolute;right:10px;top:50%;transform:translateY(-50%);}
 @keyframes spin{0%{transform:translateY(-50%) rotate(0deg);}100%{transform:translateY(-50%) rotate(360deg);}}
+
 .updated-info{margin-top:20px;background:#e7f3ff;padding:15px;border-radius:12px;display:flex;flex-direction:column;gap:8px;font-size:0.95rem;}
 .updated-info h3{text-align:center;margin-bottom:10px;font-size:1.1rem;color:#222;}
 .updated-info p{margin:0;padding:6px 0;}
+
 .password-section{margin-top:20px;text-align:center;}
 .password-section h2{margin-bottom:10px;}
 .password-section input{width:80%;max-width:300px;padding:10px;border-radius:8px;border:1px solid #b3e5fc;margin-bottom:10px;transition:0.3s;}
 .password-section input:focus{border-color:#4FC3F7;outline:none;}
 .actions{display:flex;flex-direction:column;gap:10px;margin-top:15px;}
-@media(min-width:450px){.profile{flex-direction:row;align-items:flex-start;}.avatar-container{margin-right:15px;}.actions{flex-direction:row;}.actions button{flex:1;}}
 
-/* Orders */
+/* ORDERS */
 .orders{margin-top:20px;background:#fff;padding:15px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
 .order-item{border-bottom:1px solid #eee;padding:8px 0;}
 .order-item:last-child{border-bottom:none;}
 
-/* fade messages */
-.fade{opacity:0;transition:opacity 0.5s;}
-.fade.show{opacity:1;}
+/* THÔNG BÁO TOÀN MÀN HÌNH */
+#globalMsg{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#f44336;color:white;padding:15px 20px;border-radius:8px;font-weight:bold;font-size:1rem;display:none;z-index:10000;box-shadow:0 4px 15px rgba(0,0,0,0.3);text-align:center;opacity:0;transition:0.3s;}
 </style>
 </head>
 <body>
 
+<!-- Overlay & Sidebar -->
 <div id="overlay" onclick="toggleMenu()"></div>
 <div class="sidebar" id="sidebar">
   <h3>Menu</h3>
@@ -73,6 +75,7 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
   <a href="#" id="orderHistoryBtn">Lịch sử đơn hàng</a>
 </div>
 
+<!-- Header -->
 <header>
   <div class="menu-btn" onclick="toggleMenu()">☰</div>
   <div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo"></div>
@@ -83,6 +86,7 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
   </div>
 </header>
 
+<!-- Container -->
 <div class="container">
   <h2>Thông tin cá nhân</h2>
   <div class="profile">
@@ -122,9 +126,11 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
     <div id="ordersList"></div>
   </div>
 
-  <div id="message" class="fade"></div>
-  <div id="error" class="fade"></div>
+  <div id="message"></div>
+  <div id="error"></div>
 </div>
+
+<div id="globalMsg"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -147,23 +153,29 @@ const errorEl=document.getElementById("error"); const updateInfoBtn=document.get
 const changePasswordBtn=document.getElementById("changePasswordBtn"); const logoutArrow=document.getElementById("logoutArrow");
 const cartCountEl=document.getElementById("cartCount"); const ordersContainer=document.getElementById("ordersContainer");
 const ordersList=document.getElementById("ordersList"); const orderHistoryBtn=document.getElementById("orderHistoryBtn");
+const globalMsg=document.getElementById("globalMsg");
 
 let currentUser=null;
 
 // Menu toggle
-function toggleMenu(){document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("active");}
+function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
 
-// Show messages
-function showMsg(el, text, color){
-  el.innerText=text; el.style.color=color; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),3000);
+// Hiển thị thông báo giữa màn hình
+function showGlobalMsg(text){
+  globalMsg.innerText=text;
+  globalMsg.style.display="block";
+  globalMsg.style.opacity="0";
+  let op=0;
+  const fadeIn=setInterval(()=>{ if(op>=1){clearInterval(fadeIn);} op+=0.1; globalMsg.style.opacity=op; },30);
+  setTimeout(()=>{
+    let op2=1; const fadeOut=setInterval(()=>{op2-=0.1; globalMsg.style.opacity=op2;if(op2<=0){globalMsg.style.display="none";clearInterval(fadeOut);}},30);
+  },3000);
 }
 
 // Load user + cart
 auth.onAuthStateChanged(user=>{
-  if(!user){window.location.href="index.html"; return;} 
-  currentUser=user; updateInfoBtn.disabled=false; userEmail.innerText=user.email;
-
+  if(!user){window.location.href="index.html"; return;} currentUser=user; updateInfoBtn.disabled=false; userEmail.innerText=user.email;
+  
   db.ref('users/'+user.uid).once('value').then(snapshot=>{
     if(snapshot.exists()){
       const data=snapshot.val();
@@ -174,74 +186,66 @@ auth.onAuthStateChanged(user=>{
       userCreatedAt.innerText=createdDate; currentName.innerText=data.name||""; currentPhone.innerText=data.phone||"";
       currentAddress.innerText=data.address||""; currentBirthday.innerText=data.birthday||"";
     }
-  }).catch(err=>showMsg(errorEl,"Không thể load dữ liệu: "+err.message,"red"));
+  }).catch(err=>{errorEl.innerText="Không thể load dữ liệu: "+err.message;});
 
-  db.ref('carts/'+user.uid).on('value', snapshot=>{
-    let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); cartCountEl.innerText=count;
-  });
+  db.ref('carts/'+user.uid).on('value', snapshot=>{ let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); cartCountEl.innerText=count; });
 });
 
 // Orders
 orderHistoryBtn.addEventListener('click',()=>{
   ordersContainer.style.display='block'; ordersList.innerHTML='Đang tải...';
   db.ref('orders/'+currentUser.uid).once('value').then(snapshot=>{
-    ordersList.innerHTML='';
-    if(!snapshot.exists()){ ordersList.innerHTML='<p>Chưa có đơn hàng nào.</p>'; return;}
-    snapshot.forEach(order=>{
-      const data=order.val();
-      const div=document.createElement('div'); div.className='order-item';
-      div.innerHTML=`<strong>Mã đơn: ${order.key}</strong><br>Trạng thái: ${data.status}<br>Sản phẩm: ${data.items.map(i=>i.name).join(', ')}`;
-      ordersList.appendChild(div);
+    ordersList.innerHTML=''; if(!snapshot.exists()){ordersList.innerHTML='<p>Chưa có đơn hàng nào.</p>'; return;}
+    snapshot.forEach(order=>{const data=order.val(); const div=document.createElement('div'); div.className='order-item';
+      div.innerHTML=`<strong>Mã đơn: ${order.key}</strong><br>Trạng thái: ${data.status}<br>Sản phẩm: ${data.items.map(i=>i.name).join(', ')}`; ordersList.appendChild(div);
     });
   }).catch(e=>ordersList.innerHTML='Lỗi tải đơn hàng.');
 });
 
 // Avatar
 avatarImg.addEventListener('click',()=>avatarInput.click());
-avatarInput.addEventListener('change', async e=>{
-  const file=e.target.files[0]; if(!file||!currentUser) return;
-  try{
-    const storageRef=storage.ref('avatars/'+currentUser.uid+'.jpg'); await storageRef.put(file);
-    const url=await storageRef.getDownloadURL(); await db.ref('users/'+currentUser.uid).update({avatar:url});
-    avatarImg.src=url+'?t='+new Date().getTime(); showMsg(messageEl,"Cập nhật ảnh đại diện thành công!","green");
-  }catch(err){showMsg(errorEl,"Lỗi upload avatar: "+err.message,"red");}
+avatarInput.addEventListener('change', async e=>{ const file=e.target.files[0]; if(!file||!currentUser) return;
+  try{ const storageRef=storage.ref('avatars/'+currentUser.uid+'.jpg'); await storageRef.put(file);
+        const url=await storageRef.getDownloadURL(); await db.ref('users/'+currentUser.uid).update({avatar:url});
+        avatarImg.src=url+'?t='+new Date().getTime(); messageEl.innerText="Cập nhật ảnh đại diện thành công!"; 
+      } catch(err){errorEl.innerText="Lỗi upload avatar: "+err.message;}
 });
 
-// Update info (unique phone)
-updateInfoBtn.addEventListener('click', async ()=>{
-  messageEl.classList.remove('show'); errorEl.classList.remove('show');
-  const name=nameInput.value.trim(), phone=phoneInput.value.trim(), address=addressInput.value.trim(), birthday=birthdayInput.value;
-  if(!name||!phone||!address||!birthday){showMsg(errorEl,"Vui lòng nhập đầy đủ thông tin!","red"); return;}
-  if(!/^(03|05|07|08|09)[0-9]{8}$/.test(phone)){showMsg(errorEl,"Số điện thoại không hợp lệ!","red"); return;}
+// Update info
+updateInfoBtn.addEventListener('click',()=>{
+  messageEl.innerText=""; errorEl.innerText="";
+  const name=nameInput.value.trim(); const phone=phoneInput.value.trim(); const address=addressInput.value.trim(); const birthday=birthdayInput.value;
+  if(!name||!phone||!address||!birthday){errorEl.innerText="Vui lòng nhập đầy đủ thông tin!"; return;}
+  if(!/^(03|05|07|08|09)[0-9]{8}$/.test(phone)){errorEl.innerText="Số điện thoại không hợp lệ!"; return;}
+
   const spinner=document.createElement('span'); spinner.className='spinner'; updateInfoBtn.appendChild(spinner);
 
-  try{
-    const snapshot=await db.ref('users').once('value'); let phoneExists=false;
-    snapshot.forEach(userSnap=>{ if(userSnap.key!==currentUser.uid && userSnap.val().phone===phone) phoneExists=true; });
-    if(phoneExists){showMsg(errorEl,"Số điện thoại này đã được sử dụng!","red"); spinner.remove(); return;}
-
-    await db.ref('users/'+currentUser.uid).update({name,phone,address,birthday});
-    currentName.innerText=name; currentPhone.innerText=phone; currentAddress.innerText=address; currentBirthday.innerText=birthday;
-    showMsg(messageEl,"Cập nhật thành công!","green"); spinner.remove();
-  }catch(err){showMsg(errorEl,"Lỗi khi cập nhật: "+err.message,"red"); spinner.remove();}
+  // Kiểm tra số điện thoại trùng
+  db.ref('users').orderByChild('phone').equalTo(phone).once('value').then(snapshot=>{
+    if(snapshot.exists() && !snapshot.hasChild(currentUser.uid)){
+      showGlobalMsg("Số điện thoại của bạn hiện đã liên kết với 1 tài khoản khác");
+      spinner.remove(); return;
+    } else {
+      db.ref('users/'+currentUser.uid).update({name,phone,address,birthday}).then(()=>{
+        messageEl.innerText="Cập nhật thành công!"; currentName.innerText=name; currentPhone.innerText=phone;
+        currentAddress.innerText=address; currentBirthday.innerText=birthday; spinner.remove();
+      }).catch(err=>{errorEl.innerText="Lỗi khi cập nhật: "+err.message; spinner.remove();});
+    }
+  });
 });
 
 // Change password
-changePasswordBtn.addEventListener('click', ()=>{
-  messageEl.classList.remove('show'); errorEl.classList.remove('show');
-  const newPass=newPasswordInput.value.trim(); if(newPass.length<6){showMsg(errorEl,"Mật khẩu ≥6 ký tự","red"); return;}
+changePasswordBtn.addEventListener('click',()=>{
+  messageEl.innerText=""; errorEl.innerText="";
+  const newPass=newPasswordInput.value.trim(); if(newPass.length<6){errorEl.innerText="Mật khẩu ≥6 ký tự"; return;}
   const spinner=document.createElement('span'); spinner.className='spinner'; changePasswordBtn.appendChild(spinner);
-
-  currentUser.updatePassword(newPass).then(()=>{
-    showMsg(messageEl,"Đổi mật khẩu thành công!","green"); newPasswordInput.value=""; spinner.remove();
-  }).catch(err=>{
-    if(err.code==="auth/requires-recent-login"){
-      const pwd=prompt("Nhập lại mật khẩu cũ:"); if(!pwd){spinner.remove(); return;}
+  currentUser.updatePassword(newPass).then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; spinner.remove();})
+  .catch(err=>{ if(err.code==="auth/requires-recent-login"){ const pwd=prompt("Nhập lại mật khẩu cũ:"); if(!pwd)return;
       const credential=firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
       currentUser.reauthenticateWithCredential(credential)
-        .then(()=>currentUser.updatePassword(newPass).then(()=>{showMsg(messageEl,"Đổi mật khẩu thành công!","green"); newPasswordInput.value=""; spinner.remove();}))
-        .catch(e=>{showMsg(errorEl,e.message,"red"); spinner.remove();});
-    }else{showMsg(errorEl,err.message,"red"); spinner.remove();}
+        .then(()=>currentUser.updatePassword(newPass).then(()=>{messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; spinner.remove();}))
+        .catch(e=>{errorEl.innerText=e.message; spinner.remove();});
+    } else {errorEl.innerText=err.message; spinner.remove();}
   });
 });
 
