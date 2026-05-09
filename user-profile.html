@@ -238,31 +238,6 @@ updateInfoBtn.addEventListener('click', ()=>{
     }).catch(err=>{ errorEl.innerText="Lỗi khi cập nhật: "+err.message; });
 });
 
-// Change password
-changePasswordBtn.addEventListener('click', ()=>{
-  messageEl.innerText=""; errorEl.innerText="";
-  const newPass=newPasswordInput.value.trim();
-  if(newPass.length<6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
-
-  currentUser.updatePassword(newPass).then(()=>{
-    messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value="";
-  }).catch(err=>{
-    if(err.code==="auth/requires-recent-login"){
-      const pwd=prompt("Nhập lại mật khẩu cũ:");
-      if(!pwd) return;
-      const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
-      currentUser.reauthenticateWithCredential(credential)
-        .then(()=>currentUser.updatePassword(newPass)
-        .then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; }))
-        .catch(e=>errorEl.innerText=e.message)
-        .catch(e=>errorEl.innerText=e.message);
-    } else { errorEl.innerText=err.message; }
-  });
-});
-
-// Logout & Home
-logoutBtn.addEventListener('click', ()=>auth.signOut().then(()=>window.location.href="index.html"));
-homeBtn.addEventListener('click', ()=>window.location.href="index.html");
 </script>
 
 </body>
