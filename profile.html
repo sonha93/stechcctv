@@ -7,7 +7,6 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
 body{background:#f5f5f5;color:#111;overflow-x:hidden;}
-
 /* HEADER */
 header{display:flex;align-items:center;padding:8px 10px;background:#33A0AB;gap:8px;position:sticky;top:0;z-index:999;}
 .menu-btn{width:40px;height:40px;border-radius:12px;background:#00acc1;color:white;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;flex-shrink:0;}
@@ -59,8 +58,7 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
 @media(min-width:450px){.profile{flex-direction:row;align-items:flex-start;}.avatar-container{margin-right:15px;}.actions{flex-direction:row;}.actions button{flex:1;}}
 
 /* Orders */
-.orders{margin-top:20px;background:#fff;padding:15px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1);opacity:0;transform:translateY(-10px);transition:opacity 0.4s,transform 0.4s;}
-.orders.show{opacity:1;transform:translateY(0);}
+.orders{margin-top:20px;background:#fff;padding:15px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
 .order-item{border-bottom:1px solid #eee;padding:8px 0;}
 .order-item:last-child{border-bottom:none;}
 
@@ -125,7 +123,7 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
     </div>
   </div>
 
-  <div class="orders" id="ordersContainer">
+  <div class="orders" id="ordersContainer" style="display:none;">
     <h3>Lịch sử đơn hàng</h3>
     <div id="ordersList"></div>
   </div>
@@ -142,7 +140,7 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
 <script>
-// Firebase setup
+// Firebase
 const firebaseConfig={apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",authDomain:"stech-73b89.firebaseapp.com",databaseURL:"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"stech-73b89",storageBucket:"stech-73b89.appspot.com",messagingSenderId:"873739162979",appId:"1:873739162979:web:978f1a4043f025b1cdaf56"};
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(); const db=firebase.database(); const storage=firebase.storage();
@@ -161,9 +159,103 @@ const errorPhone=document.getElementById("errorPhone");
 
 let currentUser=null;
 
-// Menu toggle
+// Toggle menu
 function toggleMenu(){document.getElementById("sidebar").classList.toggle("active"); document.getElementById("overlay").classList.toggle("active");}
 
 // Show messages
 function showMsg(el,text,color){el.innerText=text; el.style.color=color; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000);}
 function showPhoneError(msg){errorPhone.style.display='block'; errorPhone.innerText=msg; setTimeout(()=>{errorPhone.style.display='none';},3000);}
+
+// Load user + cart
+auth.onAuthStateChanged(user=>{
+  if(!user){window.location.href="index.html"; return;} 
+  currentUser=user; updateInfoBtn.disabled=false; userEmail.innerText=user.email;
+
+  // Load user data
+  db.ref('users/'+user.uid).once('value').then(snapshot=>{
+    if(snapshot.exists()){
+      const data=snapshot.val();
+      nameInput.value=data.name||""; phoneInput.value=data.phone||"";
+      addressInput.value=data.address||""; birthdayInput.value=data.birthday||"";
+      avatarImg.src=data.avatar||avatarImg.src;
+      const createdDate=data.createdAt?new Date(data.createdAt).toLocaleDateString():new Date(currentUser.metadata.creationTime).toLocaleDateString();
+      userCreatedAt.innerText=createdDate; currentName.innerText=data.name||""; currentPhone.innerText=data.phone||"";
+      currentAddress.innerText=data.address||""; currentBirthday.innerText=data.birthday||"";
+    }
+  }).catch(err=>showMsg(errorEl,"Không thể load dữ liệu: "+err.message,"red"));
+
+  // Cart count per user
+  db.ref('carts/'+user.uid).on('value', snapshot=>{
+    let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); cartCountEl.innerText=count;
+  });
+});
+
+// Orders
+orderHistoryBtn.addEventListener('click',()=>{
+  ordersContainer.style.display='block'; ordersList.innerHTML='Đang tải...';
+  db.ref('orders/'+currentUser.uid).once('value').then(snapshot=>{
+    ordersList.innerHTML='';
+    if(!snapshot.exists()){ordersList.innerHTML='<p>Chưa có đơn hàng nào.</p>'; return;}
+    snapshot.forEach(order=>{
+      const data=order.val();
+      const div=document.createElement('div'); div.className='order-item';
+      div.innerHTML=`<strong>Mã đơn: ${order.key}</strong><br>Trạng thái: ${data.status}<br>Sản phẩm: ${data.items.map(i=>i.name).join(', ')}`;
+      ordersList.appendChild(div);
+    });
+  }).catch(e=>ordersList.innerHTML='Lỗi tải đơn hàng.');
+});
+
+// Avatar upload
+avatarImg.addEventListener('click',()=>avatarInput.click());
+avatarInput.addEventListener('change', async e=>{
+  const file=e.target.files[0]; if(!file||!currentUser) return;
+  try{
+    const storageRef=storage.ref('avatars/'+currentUser.uid+'.jpg'); await storageRef.put(file);
+    const url=await storageRef.getDownloadURL(); await db.ref('users/'+currentUser.uid).update({avatar:url});
+    avatarImg.src=url+'?t='+new Date().getTime(); showMsg(messageEl,"Cập nhật ảnh đại diện thành công!","green");
+  }catch(err){showMsg(errorEl,"Lỗi upload avatar: "+err.message,"red");}
+});
+
+// Update info
+updateInfoBtn.addEventListener('click', async ()=>{
+  messageEl.classList.remove('show'); errorEl.classList.remove('show');
+  const name=nameInput.value.trim(), phone=phoneInput.value.trim(), address=addressInput.value.trim(), birthday=birthdayInput.value;
+  if(!name||!phone||!address||!birthday){showMsg(errorEl,"Vui lòng nhập đầy đủ thông tin!","red"); return;}
+  if(!/^(03|05|07|08|09)[0-9]{8}$/.test(phone)){showMsg(errorEl,"Số điện thoại không hợp lệ!","red"); return;}
+  const spinner=document.createElement('span'); spinner.className='spinner'; updateInfoBtn.appendChild(spinner);
+
+  try{
+    const snapshot=await db.ref('users').once('value'); let phoneExists=false;
+    snapshot.forEach(userSnap=>{ if(userSnap.key!==currentUser.uid && userSnap.val().phone===phone) phoneExists=true; });
+    if(phoneExists){showPhoneError("Số điện thoại này đã được sử dụng!"); spinner.remove(); return;}
+
+    await db.ref('users/'+currentUser.uid).update({name,phone,address,birthday});
+    currentName.innerText=name; currentPhone.innerText=phone; currentAddress.innerText=address; currentBirthday.innerText=birthday;
+    showMsg(messageEl,"Cập nhật thành công!","green"); spinner.remove();
+  }catch(err){showMsg(errorEl,"Lỗi khi cập nhật: "+err.message,"red"); spinner.remove();}
+});
+
+// Change password
+changePasswordBtn.addEventListener('click', ()=>{
+  messageEl.classList.remove('show'); errorEl.classList.remove('show');
+  const newPass=newPasswordInput.value.trim(); if(newPass.length<6){showMsg(errorEl,"Mật khẩu ≥6 ký tự","red"); return;}
+  const spinner=document.createElement('span'); spinner.className='spinner'; changePasswordBtn.appendChild(spinner);
+
+  currentUser.updatePassword(newPass).then(()=>{
+    showMsg(messageEl,"Đổi mật khẩu thành công!","green"); newPasswordInput.value=""; spinner.remove();
+  }).catch(err=>{
+    if(err.code==="auth/requires-recent-login"){
+      const pwd=prompt("Nhập lại mật khẩu cũ:"); if(!pwd){spinner.remove(); return;}
+      const credential=firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
+      currentUser.reauthenticateWithCredential(credential)
+        .then(()=>currentUser.updatePassword(newPass).then(()=>{showMsg(messageEl,"Đổi mật khẩu thành công!","green"); newPasswordInput.value=""; spinner.remove();}))
+        .catch(e=>{showMsg(errorEl,e.message,"red"); spinner.remove();});
+    }else{showMsg(errorEl,err.message,"red"); spinner.remove();}
+  });
+});
+
+// Logout
+logoutArrow.addEventListener('click',()=>auth.signOut().then(()=>window.location.href="index.html"));
+</script>
+</body>
+</html>
