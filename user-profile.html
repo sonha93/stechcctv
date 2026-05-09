@@ -5,59 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thông tin cá nhân - Stech</title>
 <style>
+/* RESET & BODY */
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 20px; }
 
+/* CONTAINER */
 .container {
   background: #fff;
   padding: 25px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   width: 95%;
-  max-width: 450px;
+  max-width: 500px;
 }
 
+/* HEADER */
 h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
 
-.profile { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-
-/* AVATAR */
-.avatar-container {
-  position: relative; 
-  width: 130px; 
-  height: 130px; 
-  cursor: pointer; 
-}
+/* PROFILE */
+.profile { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.logo-avatar { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.logo-avatar img.logo { width: 80px; height: auto; }
+.avatar-container { position: relative; width: 120px; height: 120px; cursor: pointer; }
 .avatar-container img { 
-  width: 130px; 
-  height: 130px; 
-  border-radius: 50%; 
-  object-fit: cover; 
-  border: 3px solid #007BFF; 
-  transition: 0.3s; 
+  width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #007BFF; 
+  transition: 0.3s;
 }
-.avatar-container:hover img { transform: scale(1.05); }
-
-/* Camera overlay */
-.avatar-container .overlay {
-  position: absolute;
-  top:0; left:0; right:0; bottom:0;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.35);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity:0;
-  transition: opacity 0.3s;
-}
-.avatar-container:hover .overlay { opacity:1; }
-.avatar-container .overlay i {
-  color: white;
-  font-size: 28px;
-}
+.avatar-container img:hover { transform: scale(1.05); }
 
 /* INFO FIELDS */
-.info-fields { width: 100%; margin-top: 10px; }
+.info-fields { flex:1; min-width: 200px; }
 .info-fields p { margin: 6px 0; font-size: 0.95rem; color: #555; }
 .info-fields input { width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.95rem; }
 
@@ -76,23 +53,22 @@ button:hover { background: #0056b3; }
 /* ACTION BUTTONS */
 .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
 @media (min-width:450px){ 
-  .profile{ flex-direction: row; align-items:flex-start; } 
-  .avatar-container img{ width:140px; height:140px; }
   .actions{ flex-direction: row; }
   .actions button{ flex:1; }
 }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
 <body>
 
 <div class="container">
   <h2>Thông tin cá nhân</h2>
   <div class="profile">
-    <div class="avatar-container">
-      <img id="avatarImg" src="https://via.placeholder.com/130" alt="">
-      <div class="overlay"><i class="fa-solid fa-camera"></i></div>
-      <input type="file" id="avatarInput" accept="image/*" style="display:none">
+    <div class="logo-avatar">
+      <img class="logo" src="https://i.imgur.com/1Xl0fWv.png" alt="Stech Logo">
+      <div class="avatar-container">
+        <img id="avatarImg" src="https://via.placeholder.com/120" alt="Avatar">
+        <input type="file" id="avatarInput" accept="image/*" style="display:none">
+      </div>
     </div>
     <div class="info-fields">
       <p>Email: <b id="userEmail"></b></p>
@@ -147,6 +123,7 @@ const auth = firebase.auth();
 const db = firebase.database();
 const storage = firebase.storage();
 
+// DOM
 const avatarImg = document.getElementById("avatarImg");
 const avatarInput = document.getElementById("avatarInput");
 const userEmail = document.getElementById("userEmail");
@@ -171,57 +148,61 @@ const homeBtn = document.getElementById("homeBtn");
 let currentUser = null;
 
 // LOAD USER
-auth.onAuthStateChanged(user=>{
+auth.onAuthStateChanged(user => {
   if(!user){ window.location.href="index.html"; return; }
-  currentUser=user;
-  updateInfoBtn.disabled=false;
-  userEmail.innerText=user.email;
+  currentUser = user;
+  updateInfoBtn.disabled = false;
+  userEmail.innerText = user.email;
 
   db.ref('users/'+user.uid).once('value').then(snapshot=>{
     if(snapshot.exists()){
       const data = snapshot.val();
-      nameInput.value=data.name||"";
-      phoneInput.value=data.phone||"";
-      addressInput.value=data.address||"";
-      birthdayInput.value=data.birthday||"";
-      avatarImg.src=data.avatar || "https://via.placeholder.com/130";
+      nameInput.value = data.name || "";
+      phoneInput.value = data.phone || "";
+      addressInput.value = data.address || "";
+      birthdayInput.value = data.birthday || "";
+      avatarImg.src = data.avatar || "https://via.placeholder.com/120";
 
-      const createdDate = data.createdAt?new Date(data.createdAt).toLocaleDateString()
-                                       : new Date(currentUser.metadata.creationTime).toLocaleDateString();
-      userCreatedAt.innerText=createdDate;
-      currentCreatedAt.innerText=createdDate;
-      currentName.innerText=data.name||"";
-      currentPhone.innerText=data.phone||"";
-      currentAddress.innerText=data.address||"";
-      currentBirthday.innerText=data.birthday||"";
+      const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() 
+                                          : new Date(currentUser.metadata.creationTime).toLocaleDateString();
+      userCreatedAt.innerText = createdDate;
+      currentCreatedAt.innerText = createdDate;
+      currentName.innerText = data.name || "";
+      currentPhone.innerText = data.phone || "";
+      currentAddress.innerText = data.address || "";
+      currentBirthday.innerText = data.birthday || "";
     }
   }).catch(err=>{ errorEl.innerText="Không thể load dữ liệu: "+err.message; });
 });
 
-// UPLOAD AVATAR
-avatarImg.addEventListener('click', ()=>avatarInput.click());
-avatarInput.addEventListener('change', async(e)=>{
-  const file=e.target.files[0];
+// AVATAR UPLOAD
+avatarImg.addEventListener('click', ()=> avatarInput.click());
+avatarInput.addEventListener('change', async (e)=>{
+  const file = e.target.files[0];
   if(!file || !currentUser) return;
-  try{
-    const storageRef = storage.ref('avatars/'+currentUser.uid+'.jpg');
+
+  try {
+    const storageRef = storage.ref('avatars/' + currentUser.uid + '.jpg');
     await storageRef.put(file);
-    const url=await storageRef.getDownloadURL();
-    await db.ref('users/'+currentUser.uid).update({ avatar: url });
+    const url = await storageRef.getDownloadURL();
+    await db.ref('users/' + currentUser.uid).update({ avatar: url });
     avatarImg.src = url + '?t=' + new Date().getTime();
-    messageEl.innerText="Cập nhật ảnh đại diện thành công!";
-  }catch(err){ errorEl.innerText="Lỗi upload avatar: "+err.message; }
+    messageEl.innerText = "Cập nhật ảnh đại diện thành công!";
+  } catch(err){
+    errorEl.innerText = "Lỗi upload avatar: " + err.message;
+  }
 });
 
 // UPDATE INFO
 updateInfoBtn.addEventListener('click', ()=>{
   messageEl.innerText=""; errorEl.innerText="";
-  const name=nameInput.value.trim();
-  const phone=phoneInput.value.trim();
-  const address=addressInput.value.trim();
-  const birthday=birthdayInput.value;
-  if(!name||!phone){ errorEl.innerText="Vui lòng nhập đầy đủ thông tin!"; return; }
-  db.ref('users/'+currentUser.uid).update({name,phone,address,birthday})
+  const name = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
+  const address = addressInput.value.trim();
+  const birthday = birthdayInput.value;
+  if(!name || !phone){ errorEl.innerText="Vui lòng nhập đầy đủ thông tin!"; return; }
+
+  db.ref('users/'+currentUser.uid).update({ name, phone, address, birthday })
     .then(()=> {
       messageEl.innerText="Cập nhật thành công!";
       currentName.innerText=name;
@@ -236,6 +217,7 @@ changePasswordBtn.addEventListener('click', ()=>{
   messageEl.innerText=""; errorEl.innerText="";
   const newPass=newPasswordInput.value.trim();
   if(newPass.length<6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
+
   currentUser.updatePassword(newPass).then(()=>{
     messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value="";
   }).catch(err=>{
@@ -244,8 +226,8 @@ changePasswordBtn.addEventListener('click', ()=>{
       if(!pwd) return;
       const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
       currentUser.reauthenticateWithCredential(credential)
-        .then(()=>currentUser.updatePassword(newPass).then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; }))
-        .catch(e=>errorEl.innerText=e.message)
+        .then(()=>currentUser.updatePassword(newPass)
+        .then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; }))
         .catch(e=>errorEl.innerText=e.message);
     } else { errorEl.innerText=err.message; }
   });
@@ -255,5 +237,6 @@ changePasswordBtn.addEventListener('click', ()=>{
 logoutBtn.addEventListener('click', ()=>auth.signOut().then(()=>window.location.href="index.html"));
 homeBtn.addEventListener('click', ()=>window.location.href="index.html");
 </script>
+
 </body>
 </html>
