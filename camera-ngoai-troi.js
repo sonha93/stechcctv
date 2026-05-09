@@ -282,9 +282,17 @@ window.goDetail = function(id){
 };
 
 /* =========================
-   🛒 ADD TO CART
+   🛒 ADD TO CART FIREBASE
 ========================= */
 window.addToCart = function(id){
+
+  // check login
+  const user = firebase.auth().currentUser;
+
+  if(!user){
+    alert("Bạn cần đăng nhập!");
+    return;
+  }
 
   const product =
     normalizeList(getProducts())
@@ -292,53 +300,94 @@ window.addToCart = function(id){
       p => String(p.id) === String(id)
     );
 
-  if(!product) return;
+  if(!product){
+    alert("Không tìm thấy sản phẩm");
+    return;
+  }
 
-  let cart =
-    JSON.parse(
-      localStorage.getItem("cart")
-    ) || [];
+  const uid = user.uid;
 
-  const exist =
-    cart.find(
-      item =>
-        String(item.id) === String(id)
+  const cartRef =
+    firebase.database().ref(
+      "carts/" + uid
     );
 
-  if(exist){
+  cartRef.once("value")
+  .then(snapshot => {
 
-    exist.qty += 1;
+    let cart =
+      snapshot.val() || [];
 
-  }else{
+    const exist =
+      cart.find(
+        item =>
+          String(item.id) === String(id)
+      );
 
-    cart.push({
+    // đã tồn tại
+    if(exist){
 
-      ...product,
+      exist.quantity =
+        (exist.quantity || 1) + 1;
 
-      qty:1
+    }
+
+    // chưa tồn tại
+    else{
+
+      cart.push({
+
+        id: product.id,
+        name: product.name,
+        img: product.img,
+        price: Number(product.price) || 0,
+        oldPrice: Number(product.oldPrice) || 0,
+        quantity: 1
+
+      });
+
+    }
+
+    // save firebase
+    cartRef.set(cart)
+    .then(() => {
+
+      alert("Đã thêm vào giỏ 🛒");
+
+      // update badge
+      const cartCount =
+        document.getElementById("cartCount");
+
+      if(cartCount){
+
+        let total = 0;
+
+        cart.forEach(item => {
+
+          total +=
+            item.quantity || 1;
+
+        });
+
+        cartCount.innerText = total;
+
+      }
 
     });
 
-  }
-
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
-
-  alert("Đã thêm vào giỏ 🛒");
+  });
 
 };
 
 /* =========================
    🔍 SEARCH
 ========================= */
-const search =
+const searchInput =
   document.getElementById("search");
 
-if(search){
+if(searchInput){
 
-  search.addEventListener(
+  searchInput.addEventListener(
     "input",
     e => {
 
