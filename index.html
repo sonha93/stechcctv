@@ -4,44 +4,172 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shop Camera Pro</title>
+<link rel="stylesheet" href="styletrong-nha.css">
+
 <style>
-body{font-family:Arial;margin:0;padding:0;background:#f5f5f5;}
-header{display:flex;align-items:center;padding:10px;background:#007BFF;color:#fff;}
-header .logo img{height:38px;}
-header input{flex:1;margin-left:10px;padding:5px;border-radius:4px;border:none;}
-.sidebar{position:fixed;top:0;left:0;width:220px;height:100%;background:#fff;box-shadow:2px 0 5px rgba(0,0,0,0.1);padding:10px;z-index:1000;}
-.sidebar a{display:block;color:#007BFF;text-decoration:none;margin:8px 0;}
-#userInfoPreview{display:none;text-align:center;margin-top:20px;}
-#userInfoPreview img{width:50px;height:50px;border-radius:50%;object-fit:cover;}
-#authModal{position:fixed;top:0;left:0;width:100%;height:100%;display:none;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:9999;}
-#authModal .auth-content{background:#fff;padding:20px;border-radius:8px;max-width:350px;width:90%;}
-#authModal input{width:100%;padding:8px;margin:6px 0;border-radius:4px;border:1px solid #aaa;}
-#authModal button{width:100%;padding:10px;margin-top:10px;border:none;background:#007BFF;color:white;font-weight:bold;cursor:pointer;border-radius:4px;}
-#authModal #closeAuth{background:#f44336;margin-top:5px;}
-#authMessage{color:red;text-align:center;margin-top:8px;}
+/* LOGO KHÔNG VIỀN */
+.logo img{
+  height:38px;
+  width:auto;
+  border:0;
+  outline:0;
+  box-shadow:none;
+  display:block;
+  background:transparent;
+}
+
+/* POPUP LOGIN/REGISTER */
+#authModal{
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
+  display:none;
+  background:rgba(0,0,0,0.6);
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+#authModal .auth-content{
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  max-width:350px;
+  width:90%;
+}
+#authModal h2{
+  text-align:center;
+  margin-bottom:10px;
+}
+#authModal input{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border-radius:4px;
+  border:1px solid #aaa;
+}
+#authModal button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  background:#007BFF;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:4px;
+}
+#authModal #closeAuth{
+  background:#f44336;
+  margin-top:5px;
+}
+#authModal #authMessage{
+  text-align:center;
+  margin-top:8px;
+  color:red;
+}
+
+/* SIDEBAR USER INFO */
+#userInfoPreview{
+  display:none;
+  margin-top:10px;
+  text-align:center;
+  cursor:pointer;
+}
+#userInfoPreview img{
+  width:40px; height:40px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:5px;
+}
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  z-index: 1000; /* fix click bị overlay chặn */
+}
+
+/* 2 CỘT SẢN PHẨM */
+#products{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+.product-card{
+  background:#fff;
+  border:1px solid #ccc;
+  border-radius:8px;
+  overflow:hidden;
+  text-align:center;
+  padding:10px;
+}
+.product-card img{
+  width:100%;
+  height:auto;
+  border-bottom:1px solid #ccc;
+  border-radius:4px;
+  object-fit:cover;
+}
+.product-card .product-info{
+  margin-top:8px;
+}
 </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <h3>Menu</h3>
+<div id="overlay" onclick="toggleMenu()"></div>
+
+<!-- MENU / SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <h3>Danh mục</h3>
   <a href="index.html">Trang chủ</a>
-  <a href="profile.html">Thông tin</a>
+  <a href="user-profile.html">Thông Tin</a>
+  <a href="cart.html">Giỏ hàng</a>
+  <a href="camera-trong-nha.html">Camera trong nhà</a>
+  <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
+  <a href="the-nho.html">Thẻ nhớ</a>
+  <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
   <hr>
+  <!-- LOGIN / LOGOUT -->
   <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
   <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
+
+  <!-- USER INFO PREVIEW -->
   <div id="userInfoPreview">
-    <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/50">
-    <p id="sidebarUserNamePreview">Người dùng</p>
+    <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/40" alt="Avatar">
+    <p id="sidebarUserNamePreview" style="margin:0; font-size:14px; color:#007BFF;">Người dùng</p>
   </div>
 </div>
 
+<!-- HEADER -->
 <header>
-  <div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo"></div>
-  <input placeholder="Tìm kiếm sản phẩm...">
+  <div onclick="toggleMenu()">☰</div>
+  <div class="logo">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
+  </div>
+  <input id="search" placeholder="Tìm kiếm sản phẩm...">
 </header>
 
-<!-- POPUP LOGIN/REGISTER -->
+<!-- CONTENT -->
+<div class="product-slider">
+  <div class="product-track" id="products"></div>
+</div>
+
+<div class="extra-section"></div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-container">
+    <h3>StechCamera</h3>
+    <p>Website chuyên cung cấp camera an ninh chính hãng</p>
+    <p>Hotline: 0985.678.245</p>
+    <p>Email: support@stechcamera.vn</p>
+    <hr>
+    <p>© 2026 StechCamera. All rights reserved.</p>
+  </div>
+</footer>
+
+<div id="productContainer" class="product-grid"></div>
+
+<!-- POPUP LOGIN / REGISTER -->
 <div id="authModal">
   <div class="auth-content">
     <h2>Đăng ký / Đăng nhập</h2>
@@ -54,7 +182,10 @@ header input{flex:1;margin-left:10px;padding:5px;border-radius:4px;border:none;}
   </div>
 </div>
 
-<!-- Firebase SDK -->
+<!-- SCRIPTS -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -172,6 +303,17 @@ onAuthStateChanged(auth,user=>{
     userInfoPreview.style.display="none";
   }
 });
+</script>
+<script src="user.js"></script>
+<script src="app.js"></script>
+<script src="notify.js"></script>
+<script src="banner.js"></script>
+
+<script>
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active"); 
+  document.getElementById("overlay").classList.toggle("active"); 
+}
 </script>
 
 </body>
