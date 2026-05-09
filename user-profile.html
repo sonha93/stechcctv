@@ -19,8 +19,15 @@ body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justi
 
 h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
 
-.profile { display: flex; flex-direction: column; align-items: center; gap: 15px; position: relative; }
-.avatar-container { position: relative; width: 130px; height: 130px; cursor: pointer; }
+.profile { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+
+/* AVATAR */
+.avatar-container {
+  position: relative; 
+  width: 130px; 
+  height: 130px; 
+  cursor: pointer; 
+}
 .avatar-container img { 
   width: 130px; 
   height: 130px; 
@@ -75,7 +82,6 @@ button:hover { background: #0056b3; }
   .actions button{ flex:1; }
 }
 </style>
-<!-- Font Awesome for camera icon -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
 <body>
@@ -236,16 +242,14 @@ changePasswordBtn.addEventListener('click', ()=>{
   const newPass=newPasswordInput.value.trim();
   if(newPass.length<6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
 
-  currentUser.updatePassword(newPass).then(()=>{
-    messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value="";
-  }).catch(err=>{
+  currentUser.updatePassword(newPass).then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; })
+  .catch(err=>{
     if(err.code==="auth/requires-recent-login"){
       const pwd=prompt("Nhập lại mật khẩu cũ:");
       if(!pwd) return;
       const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
       currentUser.reauthenticateWithCredential(credential)
-        .then(()=>currentUser.updatePassword(newPass)
-        .then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; }))
+        .then(()=>currentUser.updatePassword(newPass).then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; }))
         .catch(e=>errorEl.innerText=e.message)
         .catch(e=>errorEl.innerText=e.message);
     } else { errorEl.innerText=err.message; }
