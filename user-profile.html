@@ -30,9 +30,12 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
   width: 130px;
   height: 130px;
   cursor: pointer;
-  border: 3px solid #4CAF50; /* viền xanh lá */
+  border: 3px solid #4CAF50;
   border-radius: 50%;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .avatar-container img {
@@ -127,7 +130,6 @@ button:hover { background: #0056b3; }
   <div id="error"></div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -172,7 +174,6 @@ const homeBtn = document.getElementById("homeBtn");
 
 let currentUser = null;
 
-// LOAD USER
 auth.onAuthStateChanged(user => {
   if(!user){ window.location.href="index.html"; return; }
   currentUser = user;
@@ -200,7 +201,7 @@ auth.onAuthStateChanged(user => {
   }).catch(err=>{ errorEl.innerText="Không thể load dữ liệu: "+err.message; });
 });
 
-// AVATAR UPLOAD
+// Upload avatar
 avatarImg.addEventListener('click', ()=> avatarInput.click());
 avatarInput.addEventListener('change', async (e)=>{
   const file = e.target.files[0];
@@ -218,7 +219,7 @@ avatarInput.addEventListener('change', async (e)=>{
   }
 });
 
-// UPDATE INFO
+// Update info
 updateInfoBtn.addEventListener('click', ()=>{
   messageEl.innerText=""; errorEl.innerText="";
   const name = nameInput.value.trim();
@@ -237,7 +238,7 @@ updateInfoBtn.addEventListener('click', ()=>{
     }).catch(err=>{ errorEl.innerText="Lỗi khi cập nhật: "+err.message; });
 });
 
-// CHANGE PASSWORD
+// Change password
 changePasswordBtn.addEventListener('click', ()=>{
   messageEl.innerText=""; errorEl.innerText="";
   const newPass=newPasswordInput.value.trim();
@@ -259,9 +260,10 @@ changePasswordBtn.addEventListener('click', ()=>{
   });
 });
 
-// LOGOUT & HOME
+// Logout & Home
 logoutBtn.addEventListener('click', ()=>auth.signOut().then(()=>window.location.href="index.html"));
 homeBtn.addEventListener('click', ()=>window.location.href="index.html");
 </script>
+
 </body>
 </html>
