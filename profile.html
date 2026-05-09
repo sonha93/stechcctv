@@ -30,10 +30,12 @@ button:hover { background: #0056b3; }
 <div class="container">
   <h2>Thông tin cá nhân</h2>
   <div class="profile">
+    <!-- Chỉ còn avatar và input file ẩn -->
     <div class="avatar-container">
       <img id="avatarImg" src="https://via.placeholder.com/150" alt="Avatar">
       <input type="file" id="avatarInput" accept="image/*" style="display:none">
     </div>
+
     <div class="info-fields">
       <p>Email: <span id="userEmail"></span></p>
       <p>Ngày tạo: <span id="userCreatedAt"></span></p>
@@ -81,8 +83,7 @@ const firebaseConfig = {
   projectId:"stech-73b89",
   storageBucket:"stech-73b89.appspot.com",
   messagingSenderId:"873739162979",
-  appId:"1:873739162979:web:978f1a4043f025b1cdaf56",
-  measurementId:"G-98Q3927PHZ"
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
