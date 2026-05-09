@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback cá nhân - Stech</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 20px; }
+
+.container {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  width: 95%;
+  max-width: 600px;
+}
+
+h2 { text-align: center; margin-bottom: 20px; color: #222; }
+
+.feedback-list { display: flex; flex-direction: column; gap: 15px; }
+
+.feedback-item {
+  display: flex; 
+  align-items: flex-start; 
+  gap: 10px; 
+  background: #e7f3ff; 
+  padding: 12px; 
+  border-radius: 8px;
+}
+
+.avatar-container {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #4CAF50;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.avatar-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.verified-icon {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  background-color: #4CAF50;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border: 2px solid #fff;
+}
+
+.feedback-content { flex:1; display:flex; flex-direction: column; gap:4px; }
+
+.feedback-name { font-weight: bold; display:flex; align-items: center; gap:5px; }
+.feedback-text { font-size: 0.95rem; color: #333; }
+.feedback-time { font-size: 0.8rem; color: #555; }
+
+/* Input box */
+.feedback-input {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap:10px;
+}
+
+.feedback-input textarea {
+  width: 100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #b3e5fc;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.feedback-input textarea:focus { border-color:#4FC3F7; outline:none; }
+
+.feedback-input button {
+  align-self: flex-end;
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  background:#007BFF;
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.feedback-input button:hover { background:#0056b3; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Phản hồi cá nhân</h2>
+  
+  <div class="feedback-list" id="feedbackList">
+    <!-- Comment items sẽ load ở đây -->
+  </div>
+
+  <div class="feedback-input">
+    <textarea id="feedbackText" placeholder="Viết phản hồi..."></textarea>
+    <button id="submitFeedback">Gửi phản hồi</button>
+  </div>
+
+  <div id="message" style="color:green; margin-top:10px;"></div>
+  <div id="error" style="color:red; margin-top:10px;"></div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain:"stech-73b89.firebaseapp.com",
+  databaseURL:"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"stech-73b89",
+  storageBucket:"stech-73b89.appspot.com",
+  messagingSenderId:"873739162979",
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+const storage = firebase.storage();
+
+const feedbackList = document.getElementById("feedbackList");
+const feedbackText = document.getElementById("feedbackText");
+const submitBtn = document.getElementById("submitFeedback");
+const messageEl = document.getElementById("message");
+const errorEl = document.getElementById("error");
+
+let currentUser = null;
+
+// Login tạm thời bằng email/password (chỉ test riêng)
+auth.signInWithEmailAndPassword("stechcctv@gmail.com","12345678").then(({user})=>{
+  currentUser = user;
+  loadFeedback();
+}).catch(err=>{ errorEl.innerText = err.message; });
+
+// Load feedback của user
+function loadFeedback(){
+  db.ref('feedbacks').orderByChild('userEmail').equalTo("stechcctv@gmail.com")
+    .on('value', snapshot=>{
+      feedbackList.innerHTML = '';
+      snapshot.forEach(child=>{
+        const data = child.val();
+        const item = document.createElement('div');
+        item.classList.add('feedback-item');
+
+        item.innerHTML = `
+          <div class="avatar-container">
+            <img src="${data.avatar || 'https://via.placeholder.com/50'}">
+            <div class="verified-icon">✓</div>
+          </div>
+          <div class="feedback-content">
+            <div class="feedback-name">${data.name || 'Stech'}</div>
+            <div class="feedback-text">${data.text}</div>
+            <div class="feedback-time">${new Date(data.time).toLocaleString()}</div>
+          </div>
+        `;
+        feedbackList.appendChild(item);
+      });
+    });
+}
+
+// Gửi phản hồi
+submitBtn.addEventListener('click', async ()=>{
+  messageEl.innerText=''; errorEl.innerText='';
+  const text = feedbackText.value.trim();
+  if(!text) { errorEl.innerText='Vui lòng nhập phản hồi'; return; }
+  try{
+    const avatarUrl = currentUser.photoURL || 'https://via.placeholder.com/50';
+    await db.ref('feedbacks').push({
+      userEmail: currentUser.email,
+      name: "Stech",
+      avatar: avatarUrl,
+      text: text,
+      time: new Date().getTime()
+    });
+    feedbackText.value='';
+    messageEl.innerText='Đã gửi phản hồi';
+  } catch(err){ errorEl.innerText = err.message; }
+});
+</script>
+</body>
+</html>
