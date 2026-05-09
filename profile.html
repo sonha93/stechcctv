@@ -5,24 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thông tin cá nhân</title>
 <style>
-body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 50px 0; }
-.container { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); width: 700px; }
-h2 { text-align: center; margin-bottom: 20px; }
-.profile { display: flex; gap: 20px; align-items: flex-start; }
-.avatar-container { position: relative; width: 150px; height: 150px; cursor: pointer; }
-.avatar-container img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; }
-.info-fields { flex: 1; }
-.info-fields p, .info-fields input { margin: 6px 0; }
-.info-fields p span { font-weight: bold; }
-input[type="text"], input[type="date"], input[type="password"] { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
-button { padding: 10px; margin-top: 10px; border: none; border-radius: 5px; background: #007BFF; color: white; cursor: pointer; }
+/* RESET & BODY */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 20px; }
+
+/* CONTAINER */
+.container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  width: 95%;
+  max-width: 450px; /* mobile friendly */
+}
+
+/* HEADER */
+h2 { text-align: center; margin-bottom: 20px; font-size: 1.5rem; color: #333; }
+
+/* PROFILE */
+.profile { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.avatar-container { position: relative; width: 120px; height: 120px; cursor: pointer; }
+.avatar-container img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border:2px solid #007BFF; }
+
+/* INFO FIELDS */
+.info-fields { width: 100%; }
+.info-fields p { margin: 8px 0 4px; font-size: 0.9rem; color: #555; }
+.info-fields input { width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.95rem; }
+
+/* BUTTONS */
+button { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #007BFF; color: white; font-size: 1rem; cursor: pointer; margin-top: 8px; }
 button:hover { background: #0056b3; }
-.updated-info { margin-top: 20px; background: #e7f3ff; padding: 10px; border-radius: 5px; }
-.updated-info p { margin: 3px 0; font-size: 14px; }
-.actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-.actions button { flex: 1; }
-#message { color: green; margin-top: 10px; text-align: center; }
-#error { color: red; margin-top: 10px; text-align: center; }
+
+/* UPDATED INFO BOX */
+.updated-info { margin-top: 20px; background: #e7f3ff; padding: 12px; border-radius: 8px; }
+.updated-info p { margin: 4px 0; font-size: 0.9rem; }
+
+/* MESSAGE & ERROR */
+#message { color: green; margin-top: 10px; text-align: center; font-size: 0.9rem; }
+#error { color: red; margin-top: 10px; text-align: center; font-size: 0.9rem; }
+
+/* ACTION BUTTONS */
+.actions { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+@media (min-width:450px){ 
+  .profile{ flex-direction: row; align-items:flex-start; } 
+  .avatar-container img{ width:140px; height:140px; }
+  .actions{ flex-direction: row; }
+  .actions button{ flex:1; }
+}
 </style>
 </head>
 <body>
@@ -31,7 +60,7 @@ button:hover { background: #0056b3; }
   <h2>Thông tin cá nhân</h2>
   <div class="profile">
     <div class="avatar-container">
-    <img src="https://sf-static.upanhlaylink.com/img/image_2026050971756c76fa2be615eebe690664a5f510.jpg" alt="Screenshot 2026-04-29 172528.png">
+      <img id="avatarImg" src="https://sf-static.upanhlaylink.com/img/image_2026050971756c76fa2be615eebe690664a5f510.jpg" alt="">
       <input type="file" id="avatarInput" accept="image/*" style="display:none">
     </div>
     <div class="info-fields">
@@ -73,7 +102,6 @@ button:hover { background: #0056b3; }
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
 <script>
-// ---------- INIT FIREBASE ----------
 const firebaseConfig = {
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain:"stech-73b89.firebaseapp.com",
@@ -88,7 +116,7 @@ const auth = firebase.auth();
 const db = firebase.database();
 const storage = firebase.storage();
 
-// ---------- DOM ----------
+// DOM
 const avatarImg = document.getElementById("avatarImg");
 const avatarInput = document.getElementById("avatarInput");
 const userEmail = document.getElementById("userEmail");
@@ -112,7 +140,7 @@ const homeBtn = document.getElementById("homeBtn");
 
 let currentUser = null;
 
-// ---------- LOAD USER ----------
+// LOAD USER
 auth.onAuthStateChanged(user => {
   if(!user){ window.location.href="index.html"; return; }
   currentUser = user;
@@ -127,15 +155,12 @@ auth.onAuthStateChanged(user => {
       phoneInput.value = data.phone || "";
       addressInput.value = data.address || "";
       birthdayInput.value = data.birthday || "";
-      avatarImg.src = data.avatar || "https://via.placeholder.com/150";
+      avatarImg.src = data.avatar || "https://sf-static.upanhlaylink.com/img/image_2026050971756c76fa2be615eebe690664a5f510.jpg";
 
-      // Nếu createdAt chưa có trong database, lấy từ Auth và lưu
       if(!data.createdAt){
         createdDate = new Date(currentUser.metadata.creationTime).toISOString();
         db.ref('users/'+currentUser.uid).update({ createdAt: createdDate });
-      } else {
-        createdDate = data.createdAt;
-      }
+      } else createdDate = data.createdAt;
       createdDate = new Date(createdDate).toLocaleDateString();
 
       userCreatedAt.innerText = createdDate;
@@ -148,24 +173,22 @@ auth.onAuthStateChanged(user => {
   }).catch(err=>{ errorEl.innerText="Không thể load dữ liệu: "+err.message; });
 });
 
-// ---------- CLICK AVATAR TO SELECT FILE ----------
+// CLICK AVATAR
 avatarImg.addEventListener('click', () => avatarInput.click());
 
-// ---------- UPLOAD AVATAR ----------
+// UPLOAD AVATAR
 avatarInput.addEventListener('change', (event)=>{
   const file = event.target.files[0];
   if(!file) return;
   const avatarRef = storage.ref('avatars/' + currentUser.uid + '.jpg');
-  avatarRef.put(file).then(snapshot=>{
-    return avatarRef.getDownloadURL();
-  }).then(url=>{
+  avatarRef.put(file).then(()=>avatarRef.getDownloadURL()).then(url=>{
     db.ref('users/'+currentUser.uid).update({ avatar: url });
     avatarImg.src = url;
     messageEl.innerText = "Cập nhật ảnh đại diện thành công!";
   }).catch(err=>{ errorEl.innerText = "Lỗi upload ảnh: "+err.message; });
 });
 
-// ---------- UPDATE INFO ----------
+// UPDATE INFO
 updateInfoBtn.addEventListener('click', ()=>{
   messageEl.innerText = ""; errorEl.innerText = "";
   if(!currentUser){ errorEl.innerText="User chưa load xong!"; return; }
@@ -186,7 +209,7 @@ updateInfoBtn.addEventListener('click', ()=>{
     .catch(err=>{ errorEl.innerText="Lỗi khi cập nhật: "+err.message; });
 });
 
-// ---------- CHANGE PASSWORD ----------
+// CHANGE PASSWORD
 changePasswordBtn.addEventListener('click', ()=>{
   messageEl.innerText=""; errorEl.innerText="";
   const newPass=newPasswordInput.value.trim();
@@ -208,12 +231,9 @@ changePasswordBtn.addEventListener('click', ()=>{
   });
 });
 
-// ---------- LOGOUT ----------
+// LOGOUT & HOME
 logoutBtn.addEventListener('click', ()=>auth.signOut().then(()=>window.location.href="index.html"));
-
-// ---------- HOME ----------
 homeBtn.addEventListener('click', ()=>window.location.href="index.html");
 </script>
-
 </body>
 </html>
