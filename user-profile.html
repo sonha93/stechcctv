@@ -79,7 +79,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, onAuthStateChanged, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// Cấu hình Firebase
+// Firebase config
 const firebaseConfig = {
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain:"stech-73b89.firebaseapp.com",
@@ -97,7 +97,7 @@ const db = getDatabase(app);
 
 let currentUser = null;
 
-// DOM elements
+// DOM
 const avatarImg = document.getElementById("avatarImg");
 const userEmail = document.getElementById("userEmail");
 const userCreatedAt = document.getElementById("userCreatedAt");
@@ -118,63 +118,48 @@ const changePasswordBtn = document.getElementById("changePasswordBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 
-// Load user và hiển thị dữ liệu
+// Load user
 onAuthStateChanged(auth, user => {
-  if(user){
-    currentUser = user;
-    updateInfoBtn.disabled = false; // enable nút
-    userEmail.innerText = user.email;
+  if(!user) { window.location.href="index.html"; return; }
+  currentUser = user;
+  updateInfoBtn.disabled = false;
+  userEmail.innerText = user.email;
 
-    const userRef = ref(db,'users/'+user.uid);
-    get(userRef).then(snapshot=>{
-      if(snapshot.exists()){
-        const data = snapshot.val();
+  const userRef = ref(db,'users/'+user.uid);
+  get(userRef).then(snapshot=>{
+    if(snapshot.exists()){
+      const data = snapshot.val();
+      nameInput.value = data.name || "";
+      phoneInput.value = data.phone || "";
+      addressInput.value = data.address || "";
+      birthdayInput.value = data.birthday || "";
+      avatarImg.src = data.avatar || "https://via.placeholder.com/130";
 
-        // Fill input
-        nameInput.value = data.name || "";
-        phoneInput.value = data.phone || "";
-        addressInput.value = data.address || "";
-        birthdayInput.value = data.birthday || "";
-        avatarImg.src = data.avatar || "https://via.placeholder.com/130";
-
-        // Fill phần “Thông tin hiện tại”
-        currentName.innerText = data.name || "";
-        currentPhone.innerText = data.phone || "";
-        currentAddress.innerText = data.address || "";
-        currentBirthday.innerText = data.birthday || "";
-        const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "";
-        userCreatedAt.innerText = createdDate;
-        currentCreatedAt.innerText = createdDate;
-
-      } else {
-        currentName.innerText = "";
-        currentPhone.innerText = "";
-        currentAddress.innerText = "";
-        currentBirthday.innerText = "";
-        currentCreatedAt.innerText = "";
-      }
-    }).catch(err=>{
-      errorEl.innerText = "Không thể load dữ liệu: " + err.message;
-    });
-
-  } else {
-    window.location.href="index.html";
-  }
+      // Hiển thị luôn phần "Thông tin hiện tại"
+      currentName.innerText = data.name || "";
+      currentPhone.innerText = data.phone || "";
+      currentAddress.innerText = data.address || "";
+      currentBirthday.innerText = data.birthday || "";
+      const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "";
+      userCreatedAt.innerText = createdDate;
+      currentCreatedAt.innerText = createdDate;
+    }
+  }).catch(err=>{
+    errorEl.innerText = "Không load dữ liệu: " + err.message;
+  });
 });
 
-// Cập nhật thông tin
+// Update thông tin
 updateInfoBtn.addEventListener("click", ()=>{
   messageEl.innerText=""; errorEl.innerText="";
   if(!currentUser){ errorEl.innerText="User chưa load xong!"; return; }
-
   const name = nameInput.value.trim();
   const phone = phoneInput.value.trim();
   const address = addressInput.value.trim();
   const birthday = birthdayInput.value;
-
   if(!name || !phone){ errorEl.innerText="Vui lòng nhập đầy đủ thông tin!"; return; }
 
-  update(ref(db,'users/'+currentUser.uid),{name,phone,address,birthday})
+  update(ref(db,'users/'+currentUser.uid), {name, phone, address, birthday})
     .then(()=>{
       messageEl.innerText = "Cập nhật thành công!";
       currentName.innerText = name;
@@ -182,16 +167,14 @@ updateInfoBtn.addEventListener("click", ()=>{
       currentAddress.innerText = address;
       currentBirthday.innerText = birthday;
     })
-    .catch(err=>{
-      errorEl.innerText = "Lỗi khi cập nhật: " + err.message;
-    });
+    .catch(err=>errorEl.innerText = "Lỗi khi cập nhật: " + err.message);
 });
 
-// Đổi mật khẩu
+// Change password
 changePasswordBtn.addEventListener("click", ()=>{
   messageEl.innerText=""; errorEl.innerText="";
   const newPass = newPasswordInput.value.trim();
-  if(newPass.length<6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
+  if(newPass.length < 6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
 
   updatePassword(currentUser,newPass).then(()=>{
     messageEl.innerText="Đổi mật khẩu thành công!"; 
@@ -211,10 +194,8 @@ changePasswordBtn.addEventListener("click", ()=>{
   });
 });
 
-// Logout
+// Logout & Home
 logoutBtn.addEventListener("click", ()=>signOut(auth).then(()=>window.location.href="index.html"));
-
-// Home
 homeBtn.addEventListener("click", ()=>window.location.href="index.html");
 
 </script>
