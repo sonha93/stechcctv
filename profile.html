@@ -3,17 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trang cá nhân</title>
+<title>Thông tin cá nhân</title>
 <style>
 body{font-family:Arial,sans-serif;background:#f5f5f5;display:flex;justify-content:center;padding:50px 0;}
-.container{background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.1);width:360px;}
-h2{margin:10px 0;text-align:center;}
-input{width:100%;padding:10px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
-button{width:100%;padding:10px;margin:5px 0;border:none;border-radius:5px;background:#007BFF;color:white;cursor:pointer;}
+.container{background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.1);width:350px;}
+h2{margin-top:15px;text-align:center;}
+input, button{width:100%;padding:10px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
+button{border:none;background:#007BFF;color:#fff;cursor:pointer;}
 button:hover{background:#0056b3;}
-img#avatar{display:block;margin:10px auto;width:100px;height:100px;border-radius:50%;object-fit:cover;}
-.info-box{background:#f1f1f1;padding:10px;border-radius:5px;margin-bottom:10px;}
-.info-box p{margin:3px 0;font-size:14px;}
+img{display:block;margin:10px auto;width:100px;height:100px;border-radius:50%;object-fit:cover;}
 #message{color:green;text-align:center;margin-top:5px;}
 #error{color:red;text-align:center;margin-top:5px;}
 </style>
@@ -21,24 +19,17 @@ img#avatar{display:block;margin:10px auto;width:100px;height:100px;border-radius
 <body>
 <div class="container">
   <h2>Thông tin cá nhân</h2>
-  <img id="avatar" src="https://via.placeholder.com/100" alt="Avatar">
-
-  <div class="info-box">
-    <p>Email: <span id="emailText"></span></p>
-    <p>Ngày tạo: <span id="createdText"></span></p>
-  </div>
-
+  <img id="avatarImg" src="https://via.placeholder.com/100" alt="Avatar">
   <input type="text" id="name" placeholder="Họ và tên">
   <input type="text" id="phone" placeholder="Số điện thoại">
-  <input type="date" id="dob" placeholder="Ngày sinh">
-  <input type="text" id="address" placeholder="Địa chỉ">
-  <input type="file" id="avatarFile" accept="image/*">
+  <input type="date" id="birthday" placeholder="Ngày sinh">
+  <input type="file" id="avatarFile">
   <button onclick="updateProfileInfo()">Cập nhật thông tin</button>
-
+  
   <h2>Đổi mật khẩu</h2>
   <input type="password" id="newPassword" placeholder="Mật khẩu mới">
   <button onclick="changePassword()">Đổi mật khẩu</button>
-
+  
   <button onclick="logout()">Đăng xuất</button>
   <button onclick="goHome()">Quay về trang chủ</button>
 
@@ -48,7 +39,7 @@ img#avatar{display:block;margin:10px auto;width:100px;height:100px;border-radius
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, get, update, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
@@ -60,7 +51,8 @@ const firebaseConfig = {
   projectId:"stech-73b89",
   storageBucket:"stech-73b89.appspot.com",
   messagingSenderId:"873739162979",
-  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56",
+  measurementId:"G-98Q3927PHZ"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -70,7 +62,7 @@ const storage = getStorage(app);
 
 let currentUser = null;
 
-// LOAD USER INFO
+// Load thông tin khi login
 onAuthStateChanged(auth, user=>{
   if(user){
     currentUser = user;
@@ -80,75 +72,76 @@ onAuthStateChanged(auth, user=>{
         const data = snapshot.val();
         document.getElementById("name").value = data.name || "";
         document.getElementById("phone").value = data.phone || "";
-        document.getElementById("dob").value = data.dob || "";
-        document.getElementById("address").value = data.address || "";
-        document.getElementById("avatar").src = data.avatar || "https://via.placeholder.com/100";
-        document.getElementById("emailText").innerText = data.email || user.email;
-        const createdDate = new Date(data.createdAt || Date.now());
-        document.getElementById("createdText").innerText = createdDate.toLocaleDateString();
+        document.getElementById("birthday").value = data.birthday || "";
+        document.getElementById("avatarImg").src = data.avatar || "https://via.placeholder.com/100";
       }
     });
   } else {
-    window.location.href = "index.html";
+    window.location.href="index.html";
   }
 });
 
-// UPDATE PROFILE
-async function updateProfileInfo(){
+// Cập nhật thông tin
+function updateProfileInfo(){
   const name = document.getElementById("name").value.trim();
   const phone = document.getElementById("phone").value.trim();
-  const dob = document.getElementById("dob").value;
-  const address = document.getElementById("address").value.trim();
-  const avatarFile = document.getElementById("avatarFile").files[0];
+  const birthday = document.getElementById("birthday").value;
+  const file = document.getElementById("avatarFile").files[0];
   const messageEl = document.getElementById("message");
   const errorEl = document.getElementById("error");
   messageEl.innerText=""; errorEl.innerText="";
 
-  if(!name || !phone) {errorEl.innerText="Họ tên và số điện thoại bắt buộc"; return;}
+  if(!name || !phone){ errorEl.innerText="Vui lòng nhập đầy đủ thông tin"; return; }
 
-  let avatarUrl = document.getElementById("avatar").src;
-  if(avatarFile){
-    const storageRef = sRef(storage, 'avatars/'+currentUser.uid+'/'+avatarFile.name);
-    await uploadBytes(storageRef, avatarFile);
-    avatarUrl = await getDownloadURL(storageRef);
-    updateProfile(currentUser,{photoURL: avatarUrl});
+  if(file){
+    const storageRef = sRef(storage, 'avatars/'+currentUser.uid+'/'+file.name);
+    uploadBytes(storageRef,file)
+      .then(snapshot=>getDownloadURL(snapshot.ref))
+      .then(url=>{
+        document.getElementById("avatarImg").src=url;
+        return update(ref(db,'users/'+currentUser.uid), {name, phone, birthday, avatar:url});
+      })
+      .then(()=>messageEl.innerText="Cập nhật thành công!");
+  } else {
+    update(ref(db,'users/'+currentUser.uid), {name, phone, birthday})
+      .then(()=>messageEl.innerText="Cập nhật thành công!")
+      .catch(err=>errorEl.innerText=err.message);
   }
-
-  update(ref(db,'users/'+currentUser.uid), {name, phone, dob, address, avatar: avatarUrl})
-    .then(()=>{messageEl.innerText="Cập nhật thành công!";})
-    .catch(err=>{errorEl.innerText=err.message;});
 }
 
-// CHANGE PASSWORD
+// Đổi mật khẩu
 function changePassword(){
   const newPass = document.getElementById("newPassword").value.trim();
-  const messageEl = document.getElementById("message");
-  const errorEl = document.getElementById("error");
+  const messageEl=document.getElementById("message");
+  const errorEl=document.getElementById("error");
   messageEl.innerText=""; errorEl.innerText="";
 
-  if(newPass.length<6){errorEl.innerText="Mật khẩu ≥6 ký tự"; return;}
+  if(newPass.length<6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
 
   updatePassword(currentUser,newPass)
-    .then(()=>{messageEl.innerText="Đổi mật khẩu thành công!"; document.getElementById("newPassword").value="";})
+    .then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; document.getElementById("newPassword").value=""; })
     .catch(err=>{
       if(err.code==="auth/requires-recent-login"){
-        const pwd = prompt("Nhập lại mật khẩu cũ để đổi mật khẩu:");
+        const email=currentUser.email;
+        const pwd=prompt("Nhập lại mật khẩu cũ:");
         if(!pwd) return;
-        const credential = EmailAuthProvider.credential(currentUser.email, pwd);
+        const credential = EmailAuthProvider.credential(email,pwd);
         reauthenticateWithCredential(currentUser,credential)
           .then(()=>updatePassword(currentUser,newPass)
-            .then(()=>{messageEl.innerText="Đổi mật khẩu thành công!"; document.getElementById("newPassword").value="";})
-            .catch(err=>errorEl.innerText=err.message)
-          ).catch(err=>errorEl.innerText=err.message);
-      } else {errorEl.innerText=err.message;}
+            .then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; document.getElementById("newPassword").value=""; })
+            .catch(e=>errorEl.innerText=e.message)
+          )
+          .catch(e=>errorEl.innerText=e.message);
+      } else errorEl.innerText=err.message;
     });
 }
 
-// LOGOUT
-function logout(){signOut(auth).then(()=>window.location.href="index.html");}
+// Logout
+function logout(){ signOut(auth).then(()=>window.location.href="index.html"); }
 
-// GO HOME
-function goHome(){window.location.href="index.html";}
+// Quay về trang chủ
+function goHome(){ window.location.href="index.html"; }
+
 </script>
 </body>
 </html>
