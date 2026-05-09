@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profile</title>
+<title>Thông tin cá nhân</title>
 <style>
-body{font-family:Arial, sans-serif;background:#f5f5f5;display:flex;justify-content:center;padding-top:50px;}
-.container{background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1);width:350px;}
+body{font-family:Arial,sans-serif;background:#f5f5f5;display:flex;justify-content:center;padding:50px 0;}
+.container{background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.1);width:350px;}
+h2{margin-top:15px;}
 input{width:100%;padding:10px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
 button{width:100%;padding:10px;margin:5px 0;border:none;border-radius:5px;background:#007BFF;color:white;cursor:pointer;}
 button:hover{background:#0056b3;}
 img{display:block;margin:10px auto;width:100px;height:100px;border-radius:50%;object-fit:cover;}
 #message{color:green;text-align:center;margin-top:5px;}
 #error{color:red;text-align:center;margin-top:5px;}
-h2{margin-top:15px;}
 </style>
 </head>
 <body>
@@ -56,6 +56,7 @@ const db = getDatabase(app);
 
 let currentUser=null;
 
+// AUTO LOAD USER INFO
 onAuthStateChanged(auth,user=>{
   if(user){
     currentUser=user;
@@ -63,16 +64,18 @@ onAuthStateChanged(auth,user=>{
     get(userRef).then(snapshot=>{
       if(snapshot.exists()){
         const data = snapshot.val();
-        document.getElementById("name").value=data.name||"";
-        document.getElementById("phone").value=data.phone||"";
-        document.getElementById("avatarImg").src=data.avatar||"https://i.ibb.co/Z1kv9nJj/logo.png";
+        document.getElementById("name").value = data.name || "";
+        document.getElementById("phone").value = data.phone || "";
+        document.getElementById("avatarImg").src = data.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
       }
     });
-  }else{
-    window.location.href="register.html"; // chưa login → chuyển sang đăng ký/login
+  } else {
+    // chưa login → redirect về index.html
+    window.location.href = "index.html";
   }
 });
 
+// UPDATE INFO
 function updateProfileInfo(){
   const name=document.getElementById("name").value.trim();
   const phone=document.getElementById("phone").value.trim();
@@ -80,11 +83,17 @@ function updateProfileInfo(){
   const errorEl=document.getElementById("error");
   messageEl.innerText=""; errorEl.innerText="";
 
+  if(!name || !phone){
+    errorEl.innerText="Vui lòng nhập đầy đủ thông tin!";
+    return;
+  }
+
   update(ref(db,'users/'+currentUser.uid),{name,phone})
     .then(()=>{messageEl.innerText="Cập nhật thành công!";})
     .catch(err=>{errorEl.innerText=err.message;});
 }
 
+// CHANGE PASSWORD
 function changePassword(){
   const newPass=document.getElementById("newPassword").value.trim();
   const messageEl=document.getElementById("message");
@@ -93,31 +102,28 @@ function changePassword(){
 
   if(newPass.length<6){errorEl.innerText="Mật khẩu ≥6 ký tự"; return;}
 
-  // Nếu Firebase yêu cầu login lại
-  updatePassword(currentUser,newPass).then(()=>{
-    messageEl.innerText="Đổi mật khẩu thành công!";
-    document.getElementById("newPassword").value="";
-  }).catch(err=>{
-    if(err.code==="auth/requires-recent-login"){
-      // yêu cầu login lại
-      const email = currentUser.email;
-      const pwd = prompt("Vui lòng nhập lại mật khẩu cũ để đổi mật khẩu:");
-      if(!pwd) return;
-      const credential = EmailAuthProvider.credential(email,pwd);
-      reauthenticateWithCredential(currentUser,credential).then(()=>{
-        updatePassword(currentUser,newPass).then(()=>{
-          messageEl.innerText="Đổi mật khẩu thành công!";
-          document.getElementById("newPassword").value="";
-        }).catch(err=>errorEl.innerText=err.message);
-      }).catch(err=>errorEl.innerText=err.message);
-    }else{
-      errorEl.innerText=err.message;
-    }
-  });
+  updatePassword(currentUser,newPass)
+    .then(()=>{messageEl.innerText="Đổi mật khẩu thành công!"; document.getElementById("newPassword").value="";})
+    .catch(err=>{
+      if(err.code==="auth/requires-recent-login"){
+        const email = currentUser.email;
+        const pwd = prompt("Vui lòng nhập lại mật khẩu cũ để đổi mật khẩu:");
+        if(!pwd) return;
+        const credential = EmailAuthProvider.credential(email,pwd);
+        reauthenticateWithCredential(currentUser,credential)
+          .then(()=>updatePassword(currentUser,newPass)
+            .then(()=>{messageEl.innerText="Đổi mật khẩu thành công!"; document.getElementById("newPassword").value="";})
+            .catch(err=>errorEl.innerText=err.message)
+          ).catch(err=>errorEl.innerText=err.message);
+      }else{
+        errorEl.innerText=err.message;
+      }
+    });
 }
 
+// LOGOUT
 function logout(){
-  signOut(auth).then(()=>{window.location.href="register.html";});
+  signOut(auth).then(()=>{window.location.href="index.html";});
 }
 </script>
 </body>
