@@ -1,169 +1,102 @@
-// user.js - quản lý thông tin người dùng
+// user-profile.js
 document.addEventListener("DOMContentLoaded", function(){
 
+  // Firebase config
+  const firebaseConfig = {
+    apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+    authDomain:"stech-73b89.firebaseapp.com",
+    projectId:"stech-73b89",
+    storageBucket:"stech-73b89.appspot.com",
+    messagingSenderId:"873739162979",
+    appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
+  };
+  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
   const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
 
   // ELEMENTS
-  const userInfoPreview = document.getElementById("userInfoPreview");
-  const userAvatarPreview = document.getElementById("sidebarUserAvatarPreview");
-  const userNamePreview = document.getElementById("sidebarUserNamePreview");
+  const avatarPreview = document.getElementById("avatarPreview");
+  const avatarInput = document.getElementById("avatarInput");
+  const nameInput = document.getElementById("nameInput");
+  const emailInput = document.getElementById("emailInput");
+  const phoneInput = document.getElementById("phoneInput");
+  const addressInput = document.getElementById("addressInput");
+  const dobInput = document.getElementById("dobInput");
+  const saveBtn = document.getElementById("saveProfileBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const saveStatus = document.getElementById("saveStatus");
 
-  const authEmail = document.getElementById("authEmail");
-  const authPassword = document.getElementById("authPassword");
-  const authMessage = document.getElementById("authMessage");
-  const authRegisterBtn = document.getElementById("authRegisterBtn");
-  const authLoginBtn = document.getElementById("authLoginBtn");
-  const authModal = document.getElementById("authModal");
-
-  const loginLink = document.getElementById("loginLink");
-  const logoutLink = document.getElementById("logoutLink");
-  const products = document.getElementById("products");
-
-  // Hàm cập nhật sidebar user info
-  function updateUserUI(user){
+  // LOAD USER INFO
+  auth.onAuthStateChanged(async user => {
     if(user){
-      loginLink.style.display = "none";
-      logoutLink.style.display = "block";
-      userInfoPreview.style.display = "block";
-      userAvatarPreview.src = user.photoURL || "https://via.placeholder.com/40";
-      userNamePreview.innerText = user.displayName || user.email || "Người dùng";
-      if(products) products.style.display = "grid";
+      emailInput.value = user.email || "";
+      nameInput.value = user.displayName || "";
+      avatarPreview.src = user.photoURL || "https://via.placeholder.com/100";
+
+      // Load additional info from Firestore
+      const doc = await db.collection("users").doc(user.uid).get();
+      if(doc.exists){
+        const data = doc.data();
+        phoneInput.value = data.phone || "";
+        addressInput.value = data.address || "";
+        dobInput.value = data.dob || "";
+      }
     } else {
-      loginLink.style.display = "block";
-      logoutLink.style.display = "none";
-      userInfoPreview.style.display = "none";
-      if(products) products.style.display = "none";
-    }
-  }
-
-  // REGISTER với nhập tên + avatar tùy chỉnh
-  authRegisterBtn.addEventListener("click", async () => {
-    const email = authEmail.value.trim();
-    const pass = authPassword.value.trim();
-
-    if(!email || !pass){
-      authMessage.style.color = "red";
-      authMessage.innerText = "Vui lòng nhập email và mật khẩu!";
-      return;
-    }
-
-    // Prompt user nhập tên + avatar
-    let displayName = prompt("Nhập tên hiển thị của bạn:", email.split("@")[0]);
-    if(!displayName) displayName = email.split("@")[0];
-    let photoURL = prompt("Nhập URL avatar (để trống nếu muốn mặc định):", "https://via.placeholder.com/40");
-    if(!photoURL) photoURL = "https://via.placeholder.com/40";
-
-    try {
-      const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
-      const user = userCredential.user;
-      await user.updateProfile({ displayName, photoURL });
-
-      authMessage.style.color = "green";
-      authMessage.innerText = "Đăng ký thành công!";
-      authEmail.value = ""; 
-      authPassword.value = "";
-      authModal.style.display = "none";
-
-      updateUserUI(user); // cập nhật sidebar ngay lập tức
-    } catch(err) {
-      authMessage.style.color = "red";
-      authMessage.innerText = err.message;
+      // Redirect to login page if needed
+      window.location.href = "index.html";
     }
   });
 
-  // LOGIN
-  authLoginBtn.addEventListener("click", async () => {
-    const email = authEmail.value.trim();
-    const pass = authPassword.value.trim();
+  // UPLOAD AVATAR PREVIEW
+  avatarInput.addEventListener("change", function(e){
+    const file = e.target.files[0];
+    if(file){
+      avatarPreview.src = URL.createObjectURL(file);
+    }
+  });
 
-    if(!email || !pass){
-      authMessage.style.color = "red";
-      authMessage.innerText = "Vui lòng nhập email và mật khẩu!";
-      return;
+  // SAVE PROFILE
+  saveBtn.addEventListener("click", async ()=>{
+    const user = auth.currentUser;
+    if(!user) return;
+
+    saveStatus.innerText = "Đang lưu...";
+    saveStatus.style.color = "black";
+
+    let avatarURL = user.photoURL || "https://via.placeholder.com/100";
+
+    // Upload new avatar nếu có
+    if(avatarInput.files[0]){
+      const file = avatarInput.files[0];
+      const storageRef = storage.ref().child(`avatars/${user.uid}/${file.name}`);
+      await storageRef.put(file);
+      avatarURL = await storageRef.getDownloadURL();
+
+      // Update Firebase auth profile
+      await user.updateProfile({ displayName: nameInput.value.trim(), photoURL: avatarURL });
+    } else {
+      await user.updateProfile({ displayName: nameInput.value.trim() });
     }
 
-    try {
-      const userCredential = await auth.signInWithEmailAndPassword(email, pass);
-      const user = userCredential.user;
+    // Save additional info to Firestore
+    await db.collection("users").doc(user.uid).set({
+      phone: phoneInput.value.trim(),
+      address: addressInput.value.trim(),
+      dob: dobInput.value
+    }, { merge:true });
 
-      authMessage.style.color = "green";
-      authMessage.innerText = "Đăng nhập thành công!";
-      authModal.style.display = "none";
-
-      updateUserUI(user); // cập nhật sidebar ngay lập tức
-    } catch(err) {
-      authMessage.style.color = "red";
-      authMessage.innerText = err.message;
-    }
+    saveStatus.style.color = "green";
+    saveStatus.innerText = "Lưu thông tin thành công!";
+    avatarPreview.src = avatarURL;
   });
 
   // LOGOUT
-  logoutLink.addEventListener("click", async () => {
-    try {
-      await auth.signOut();
-      updateUserUI(null);
-    } catch(err) {
-      console.error("Logout error:", err);
-    }
+  logoutBtn.addEventListener("click", ()=>{
+    auth.signOut().then(()=>{
+      window.location.href = "index.html";
+    });
   });
 
-  // AUTH STATE CHANGE
-  auth.onAuthStateChanged(user => {
-    updateUserUI(user);
-  });
-
-});
-// ELEMENTS cho profile
-const userProfile = document.getElementById("userProfile");
-const profileName = document.getElementById("profileName");
-const profileAvatar = document.getElementById("profileAvatar");
-const saveProfileBtn = document.getElementById("saveProfileBtn");
-const profileMessage = document.getElementById("profileMessage");
-
-// Load thông tin user vào form
-function loadUserProfile(user){
-  if(user){
-    userProfile.style.display="block";
-    profileName.value = user.displayName || "";
-    profileAvatar.value = user.photoURL || "";
-  } else {
-    userProfile.style.display="none";
-  }
-}
-
-// Lưu profile
-saveProfileBtn.addEventListener("click", ()=>{
-  const user = auth.currentUser;
-  if(!user) return;
-
-  const newName = profileName.value.trim();
-  const newAvatar = profileAvatar.value.trim() || "https://via.placeholder.com/40";
-
-  if(!newName){
-    profileMessage.style.color = "red";
-    profileMessage.innerText = "Tên hiển thị không được để trống!";
-    return;
-  }
-
-  user.updateProfile({
-    displayName: newName,
-    photoURL: newAvatar
-  })
-  .then(()=>{
-    profileMessage.style.color = "green";
-    profileMessage.innerText = "Cập nhật thành công!";
-    // Cập nhật sidebar
-    userAvatarPreview.src = newAvatar;
-    userNamePreview.innerText = newName;
-  })
-  .catch(err=>{
-    profileMessage.style.color = "red";
-    profileMessage.innerText = err.message;
-  });
-});
-
-// Cập nhật profile khi load auth state
-auth.onAuthStateChanged(user=>{
-  updateUserUI(user);
-  loadUserProfile(user);
 });
