@@ -5,35 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thông tin cá nhân</title>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  display: flex;
-  justify-content: center;
-  padding: 50px 0;
-}
-.container {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.1);
-  width: 650px;
-}
-h2 { text-align: center; margin-bottom: 20px; }
-.profile { display: flex; gap: 20px; align-items: flex-start; }
-.profile img { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; }
-.info-fields { flex: 1; }
-.info-fields p, .info-fields input { margin: 6px 0; }
-.info-fields p span { font-weight: bold; }
-input[type="text"], input[type="date"], input[type="password"] { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
-button { padding: 10px; margin-top: 10px; border: none; border-radius: 5px; background: #007BFF; color: white; cursor: pointer; }
-button:hover { background: #0056b3; }
-#message { color: green; margin-top: 10px; text-align: center; }
-#error { color: red; margin-top: 10px; text-align: center; }
-.updated-info { margin-top: 20px; background: #e7f3ff; padding: 10px; border-radius: 5px; }
-.updated-info p { margin: 3px 0; font-size: 14px; }
-.actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-.actions button { flex: 1; }
+body { font-family: Arial, sans-serif; background:#f5f5f5; display:flex; justify-content:center; padding:50px 0; }
+.container { background:#fff; padding:20px; border-radius:10px; box-shadow:0 0 15px rgba(0,0,0,0.1); width:650px; }
+h2 { text-align:center; margin-bottom:20px; }
+.profile { display:flex; gap:20px; align-items:flex-start; }
+.profile img { width:130px; height:130px; border-radius:50%; object-fit:cover; }
+.info-fields { flex:1; }
+.info-fields p, .info-fields input { margin:6px 0; }
+.info-fields p span { font-weight:bold; }
+input[type="text"], input[type="date"], input[type="password"] { width:100%; padding:8px; border-radius:5px; border:1px solid #ccc; }
+button { padding:10px; margin-top:10px; border:none; border-radius:5px; background:#007BFF; color:white; cursor:pointer; }
+button:hover { background:#0056b3; }
+#message { color:green; margin-top:10px; text-align:center; }
+#error { color:red; margin-top:10px; text-align:center; }
+.updated-info { margin-top:20px; background:#e7f3ff; padding:10px; border-radius:5px; }
+.updated-info p { margin:3px 0; font-size:14px; }
+.actions { display:flex; gap:10px; margin-top:15px; flex-wrap:wrap; }
+.actions button { flex:1; }
 </style>
 </head>
 <body>
@@ -44,7 +32,6 @@ button:hover { background: #0056b3; }
     <div class="info-fields">
       <p>Email: <span id="userEmail"></span></p>
       <p>Ngày tạo: <span id="userCreatedAt"></span></p>
-
       <input type="text" id="name" placeholder="Họ và tên">
       <input type="text" id="phone" placeholder="Số điện thoại">
       <input type="text" id="address" placeholder="Địa chỉ">
@@ -118,7 +105,7 @@ const changePasswordBtn = document.getElementById("changePasswordBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 
-// Load user
+// Load user data
 onAuthStateChanged(auth, user => {
   if(!user) { window.location.href="index.html"; return; }
   currentUser = user;
@@ -135,7 +122,7 @@ onAuthStateChanged(auth, user => {
       birthdayInput.value = data.birthday || "";
       avatarImg.src = data.avatar || "https://via.placeholder.com/130";
 
-      // Hiển thị luôn phần "Thông tin hiện tại"
+      // Fill “Thông tin hiện tại”
       currentName.innerText = data.name || "";
       currentPhone.innerText = data.phone || "";
       currentAddress.innerText = data.address || "";
@@ -149,10 +136,11 @@ onAuthStateChanged(auth, user => {
   });
 });
 
-// Update thông tin
+// Update info
 updateInfoBtn.addEventListener("click", ()=>{
   messageEl.innerText=""; errorEl.innerText="";
   if(!currentUser){ errorEl.innerText="User chưa load xong!"; return; }
+
   const name = nameInput.value.trim();
   const phone = phoneInput.value.trim();
   const address = addressInput.value.trim();
