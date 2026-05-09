@@ -25,7 +25,7 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
   width: 130px;
   height: 130px;
   cursor: pointer;
-  border: 3px solid #4CAF50; /* viền xanh lá */
+  border: 3px solid #4CAF50;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
@@ -47,7 +47,7 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
 .info-fields label { font-weight: bold; margin-top: 10px; display: block; color: #333; }
 .info-fields input { 
   width: 100%; padding: 10px; margin-top: 4px; 
-  border-radius: 8px; border: 1px solid #b3e5fc; /* viền xanh nhạt */
+  border-radius: 8px; border: 1px solid #b3e5fc;
   font-size: 0.95rem; 
   transition: 0.3s; 
 }
@@ -90,7 +90,7 @@ button:hover { background: #0056b3; }
   max-width: 300px;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #b3e5fc; /* viền xanh nhạt */
+  border: 1px solid #b3e5fc;
   margin-bottom: 10px;
   transition: 0.3s;
 }
@@ -115,7 +115,7 @@ button:hover { background: #0056b3; }
     </div>
     <div class="info-fields">
       <p>Email: <b id="userEmail"></b></p>
-      <p>Ngày tạo tài khoản: <span id="userCreatedAt"></span></p>
+      <p>Ngày đăng ký: <span id="userCreatedAt"></span></p>
       <label for="name">Họ và tên:</label>
       <input type="text" id="name">
       <label for="address">Địa chỉ:</label>
@@ -171,6 +171,7 @@ const auth = firebase.auth();
 const db = firebase.database();
 const storage = firebase.storage();
 
+// DOM
 const avatarImg = document.getElementById("avatarImg");
 const avatarInput = document.getElementById("avatarInput");
 const userEmail = document.getElementById("userEmail");
@@ -207,9 +208,17 @@ auth.onAuthStateChanged(user=>{
       addressInput.value=data.address||"";
       birthdayInput.value=data.birthday||"";
       avatarImg.src=data.avatar || avatarImg.src;
-      const createdDate=data.createdAt ? new Date(data.createdAt).toLocaleDateString() 
-                                       : new Date(currentUser.metadata.creationTime).toLocaleDateString();
-      userCreatedAt.innerText=createdDate;
+
+      // load ngày đăng ký thực
+      let createdDate;
+      if(data.createdAt){ 
+          createdDate = new Date(data.createdAt).toLocaleDateString();
+      } else {
+          createdDate = new Date(currentUser.metadata.creationTime).toLocaleDateString();
+          db.ref('users/' + currentUser.uid).update({ createdAt: currentUser.metadata.creationTime });
+      }
+      userCreatedAt.innerText = createdDate;
+
       currentName.innerText=data.name||"";
       currentPhone.innerText=data.phone||"";
       currentAddress.innerText=data.address||"";
@@ -259,7 +268,7 @@ updateInfoBtn.addEventListener('click',()=>{
 });
 
 // Change password
-changePasswordBtn.addEventListener('click', ()=>{
+changePasswordBtn.addEventListener('click',()=>{
   messageEl.innerText=""; errorEl.innerText="";
   const newPass=newPasswordInput.value.trim();
   if(newPass.length<6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
