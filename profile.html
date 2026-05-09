@@ -41,13 +41,17 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
   transition: transform 0.3s;
 }
 
-.avatar-container img:hover {
-  transform: scale(1.05);
-}
+.avatar-container img:hover { transform: scale(1.05); }
 
 .info-fields { width: 100%; margin-top: 10px; }
-.info-fields p { margin: 6px 0; font-size: 0.95rem; color: #555; }
-.info-fields input { width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.95rem; }
+.info-fields label { font-weight: bold; margin-top: 10px; display: block; color: #333; }
+.info-fields input { 
+  width: 100%; padding: 10px; margin-top: 4px; 
+  border-radius: 8px; border: 1px solid #b3e5fc; /* viền xanh nhạt */
+  font-size: 0.95rem; 
+  transition: 0.3s; 
+}
+.info-fields input:focus { border-color: #4FC3F7; outline: none; }
 
 button {
   width: 100%;
@@ -59,6 +63,7 @@ button {
   font-size: 1rem;
   cursor: pointer;
   margin-top: 8px;
+  transition: 0.3s;
 }
 button:hover { background: #0056b3; }
 
@@ -85,9 +90,11 @@ button:hover { background: #0056b3; }
   max-width: 300px;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #b3e5fc; /* viền xanh nhạt */
   margin-bottom: 10px;
+  transition: 0.3s;
 }
+.password-section input:focus { border-color: #4FC3F7; outline: none; }
 
 @media(min-width:450px){
   .profile{ flex-direction: row; align-items:flex-start; }
@@ -109,10 +116,14 @@ button:hover { background: #0056b3; }
     <div class="info-fields">
       <p>Email: <b id="userEmail"></b></p>
       <p>Ngày tạo: <span id="userCreatedAt"></span></p>
-      <input type="text" id="name" placeholder="Họ và tên">
-      <input type="text" id="phone" placeholder="Số điện thoại (10 số, đầu số VN)">
-      <input type="text" id="address" placeholder="Địa chỉ">
-      <input type="date" id="birthday" placeholder="Ngày sinh">
+      <label for="name">Họ và tên:</label>
+      <input type="text" id="name">
+      <label for="address">Địa chỉ:</label>
+      <input type="text" id="address">
+      <label for="birthday">Ngày sinh:</label>
+      <input type="date" id="birthday">
+      <label for="phone">Số điện thoại:</label>
+      <input type="text" id="phone">
       <button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
     </div>
   </div>
@@ -182,7 +193,6 @@ const homeBtn = document.getElementById("homeBtn");
 
 let currentUser = null;
 
-// Load user
 auth.onAuthStateChanged(user=>{
   if(!user){ window.location.href="index.html"; return; }
   currentUser=user;
@@ -197,7 +207,6 @@ auth.onAuthStateChanged(user=>{
       addressInput.value=data.address||"";
       birthdayInput.value=data.birthday||"";
       avatarImg.src=data.avatar || avatarImg.src;
-
       const createdDate=data.createdAt ? new Date(data.createdAt).toLocaleDateString() 
                                        : new Date(currentUser.metadata.creationTime).toLocaleDateString();
       userCreatedAt.innerText=createdDate;
@@ -235,13 +244,10 @@ updateInfoBtn.addEventListener('click',()=>{
     errorEl.innerText="Vui lòng nhập đầy đủ thông tin!";
     return;
   }
-
-  // Validate VN phone number 10 digits, start with 03|05|07|08|09
   if(!/^(03|05|07|08|09)[0-9]{8}$/.test(phone)){
-    errorEl.innerText="Số điện thoại không hợp lệ! 10 số, bắt đầu đầu số VN.";
+    errorEl.innerText="Số điện thoại không hợp lệ! 10 số, đầu số VN.";
     return;
   }
-
   db.ref('users/'+currentUser.uid).update({name,phone,address,birthday})
     .then(()=>{
       messageEl.innerText="Cập nhật thành công!";
@@ -277,6 +283,5 @@ changePasswordBtn.addEventListener('click', ()=>{
 logoutBtn.addEventListener('click',()=>auth.signOut().then(()=>window.location.href="index.html"));
 homeBtn.addEventListener('click',()=>window.location.href="index.html");
 </script>
-
 </body>
 </html>
