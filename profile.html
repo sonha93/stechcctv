@@ -3,46 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thông tin cá nhân</title>
+<title>Trang cá nhân</title>
 <style>
 body{font-family:Arial,sans-serif;background:#f5f5f5;display:flex;justify-content:center;padding:50px 0;}
 .container{background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.1);width:360px;}
-h2{text-align:center;margin-bottom:15px;}
-input, select{width:100%;padding:10px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
-button{width:100%;padding:10px;margin:5px 0;border:none;border-radius:5px;color:white;cursor:pointer;}
-#updateBtn,#changePassBtn,#logoutBtn{background:#007BFF;}
-#backHomeBtn{background:#28a745;}
-button:hover{opacity:0.9;}
+h2{margin:10px 0;text-align:center;}
+input{width:100%;padding:10px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
+button{width:100%;padding:10px;margin:5px 0;border:none;border-radius:5px;background:#007BFF;color:white;cursor:pointer;}
+button:hover{background:#0056b3;}
+img#avatar{display:block;margin:10px auto;width:100px;height:100px;border-radius:50%;object-fit:cover;}
+.info-box{background:#f1f1f1;padding:10px;border-radius:5px;margin-bottom:10px;}
+.info-box p{margin:3px 0;font-size:14px;}
 #message{color:green;text-align:center;margin-top:5px;}
 #error{color:red;text-align:center;margin-top:5px;}
-img{display:block;margin:10px auto;width:100px;height:100px;border-radius:50%;object-fit:cover;}
-.info-box{padding:10px;border:1px solid #eee;border-radius:5px;background:#fafafa;margin-bottom:10px;}
 </style>
 </head>
 <body>
 <div class="container">
   <h2>Thông tin cá nhân</h2>
+  <img id="avatar" src="https://via.placeholder.com/100" alt="Avatar">
 
   <div class="info-box">
-    <p>Email: <span id="emailDisplay"></span></p>
-    <p>Ngày tạo: <span id="createdAtDisplay"></span></p>
+    <p>Email: <span id="emailText"></span></p>
+    <p>Ngày tạo: <span id="createdText"></span></p>
   </div>
-
-  <img id="avatarImg" src="https://via.placeholder.com/100" alt="Avatar">
-  <input type="file" id="avatarUpload" accept="image/*">
 
   <input type="text" id="name" placeholder="Họ và tên">
   <input type="text" id="phone" placeholder="Số điện thoại">
-  <input type="date" id="birthday" placeholder="Ngày sinh">
+  <input type="date" id="dob" placeholder="Ngày sinh">
   <input type="text" id="address" placeholder="Địa chỉ">
+  <input type="file" id="avatarFile" accept="image/*">
+  <button onclick="updateProfileInfo()">Cập nhật thông tin</button>
 
-  <button id="updateBtn">Cập nhật thông tin</button>
   <h2>Đổi mật khẩu</h2>
   <input type="password" id="newPassword" placeholder="Mật khẩu mới">
-  <button id="changePassBtn">Đổi mật khẩu</button>
+  <button onclick="changePassword()">Đổi mật khẩu</button>
 
-  <button id="backHomeBtn">Quay lại trang chủ</button>
-  <button id="logoutBtn">Đăng xuất</button>
+  <button onclick="logout()">Đăng xuất</button>
+  <button onclick="goHome()">Quay về trang chủ</button>
 
   <div id="message"></div>
   <div id="error"></div>
@@ -50,8 +48,8 @@ img{display:block;margin:10px auto;width:100px;height:100px;border-radius:50%;ob
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAuth, onAuthStateChanged, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, get, update, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 // Firebase config
@@ -62,31 +60,32 @@ const firebaseConfig = {
   projectId:"stech-73b89",
   storageBucket:"stech-73b89.appspot.com",
   messagingSenderId:"873739162979",
-  appId:"1:873739162979:web:978f1a4043f025b1cdaf56",
-  measurementId:"G-98Q3927PHZ"
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 const storage = getStorage(app);
-let currentUser=null;
+
+let currentUser = null;
 
 // LOAD USER INFO
-onAuthStateChanged(auth,user=>{
+onAuthStateChanged(auth, user=>{
   if(user){
-    currentUser=user;
+    currentUser = user;
     const userRef = ref(db,'users/'+user.uid);
     get(userRef).then(snapshot=>{
       if(snapshot.exists()){
         const data = snapshot.val();
         document.getElementById("name").value = data.name || "";
         document.getElementById("phone").value = data.phone || "";
-        document.getElementById("birthday").value = data.birthday || "";
+        document.getElementById("dob").value = data.dob || "";
         document.getElementById("address").value = data.address || "";
-        document.getElementById("emailDisplay").innerText = data.email || user.email;
-        document.getElementById("createdAtDisplay").innerText = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "N/A";
-        document.getElementById("avatarImg").src = data.avatar || "https://via.placeholder.com/100";
+        document.getElementById("avatar").src = data.avatar || "https://via.placeholder.com/100";
+        document.getElementById("emailText").innerText = data.email || user.email;
+        const createdDate = new Date(data.createdAt || Date.now());
+        document.getElementById("createdText").innerText = createdDate.toLocaleDateString();
       }
     });
   } else {
@@ -94,40 +93,37 @@ onAuthStateChanged(auth,user=>{
   }
 });
 
-// AVATAR UPLOAD
-document.getElementById("avatarUpload").addEventListener("change", async e=>{
-  const file = e.target.files[0];
-  if(file && currentUser){
-    const avatarRef = sRef(storage,'avatars/'+currentUser.uid);
-    await uploadBytes(avatarRef,file);
-    const url = await getDownloadURL(avatarRef);
-    document.getElementById("avatarImg").src = url;
-    update(ref(db,'users/'+currentUser.uid),{avatar:url});
-  }
-});
-
-// UPDATE INFO
-document.getElementById("updateBtn").addEventListener("click", ()=>{
-  const name=document.getElementById("name").value.trim();
-  const phone=document.getElementById("phone").value.trim();
-  const birthday=document.getElementById("birthday").value;
-  const address=document.getElementById("address").value.trim();
-  const messageEl=document.getElementById("message");
-  const errorEl=document.getElementById("error");
+// UPDATE PROFILE
+async function updateProfileInfo(){
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const dob = document.getElementById("dob").value;
+  const address = document.getElementById("address").value.trim();
+  const avatarFile = document.getElementById("avatarFile").files[0];
+  const messageEl = document.getElementById("message");
+  const errorEl = document.getElementById("error");
   messageEl.innerText=""; errorEl.innerText="";
 
-  if(!name || !phone){errorEl.innerText="Họ tên và SĐT bắt buộc!"; return;}
+  if(!name || !phone) {errorEl.innerText="Họ tên và số điện thoại bắt buộc"; return;}
 
-  update(ref(db,'users/'+currentUser.uid),{name,phone,birthday,address})
+  let avatarUrl = document.getElementById("avatar").src;
+  if(avatarFile){
+    const storageRef = sRef(storage, 'avatars/'+currentUser.uid+'/'+avatarFile.name);
+    await uploadBytes(storageRef, avatarFile);
+    avatarUrl = await getDownloadURL(storageRef);
+    updateProfile(currentUser,{photoURL: avatarUrl});
+  }
+
+  update(ref(db,'users/'+currentUser.uid), {name, phone, dob, address, avatar: avatarUrl})
     .then(()=>{messageEl.innerText="Cập nhật thành công!";})
     .catch(err=>{errorEl.innerText=err.message;});
-});
+}
 
 // CHANGE PASSWORD
-document.getElementById("changePassBtn").addEventListener("click", ()=>{
-  const newPass=document.getElementById("newPassword").value.trim();
-  const messageEl=document.getElementById("message");
-  const errorEl=document.getElementById("error");
+function changePassword(){
+  const newPass = document.getElementById("newPassword").value.trim();
+  const messageEl = document.getElementById("message");
+  const errorEl = document.getElementById("error");
   messageEl.innerText=""; errorEl.innerText="";
 
   if(newPass.length<6){errorEl.innerText="Mật khẩu ≥6 ký tự"; return;}
@@ -136,30 +132,23 @@ document.getElementById("changePassBtn").addEventListener("click", ()=>{
     .then(()=>{messageEl.innerText="Đổi mật khẩu thành công!"; document.getElementById("newPassword").value="";})
     .catch(err=>{
       if(err.code==="auth/requires-recent-login"){
-        const email = currentUser.email;
-        const pwd = prompt("Nhập lại mật khẩu cũ:");
+        const pwd = prompt("Nhập lại mật khẩu cũ để đổi mật khẩu:");
         if(!pwd) return;
-        const credential = EmailAuthProvider.credential(email,pwd);
+        const credential = EmailAuthProvider.credential(currentUser.email, pwd);
         reauthenticateWithCredential(currentUser,credential)
           .then(()=>updatePassword(currentUser,newPass)
             .then(()=>{messageEl.innerText="Đổi mật khẩu thành công!"; document.getElementById("newPassword").value="";})
             .catch(err=>errorEl.innerText=err.message)
           ).catch(err=>errorEl.innerText=err.message);
-      }else{
-        errorEl.innerText=err.message;
-      }
+      } else {errorEl.innerText=err.message;}
     });
-});
-
-// BACK TO HOME
-document.getElementById("backHomeBtn").addEventListener("click", ()=>{
-  window.location.href="index.html";
-});
+}
 
 // LOGOUT
-document.getElementById("logoutBtn").addEventListener("click", ()=>{
-  signOut(auth).then(()=>{window.location.href="index.html";});
-});
+function logout(){signOut(auth).then(()=>window.location.href="index.html");}
+
+// GO HOME
+function goHome(){window.location.href="index.html";}
 </script>
 </body>
 </html>
