@@ -3,25 +3,91 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thông tin cá nhân</title>
+<title>Thông tin cá nhân - Stech</title>
 <style>
-body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 50px 0; }
-.container { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); width: 650px; }
-h2 { text-align: center; margin-bottom: 20px; }
-.profile { display: flex; gap: 20px; align-items: flex-start; }
-.profile img { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; }
-.info-fields { flex: 1; }
-.info-fields p, .info-fields input { margin: 6px 0; }
-.info-fields p span { font-weight: bold; }
-input[type="text"], input[type="date"], input[type="password"] { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
-button { padding: 10px; margin-top: 10px; border: none; border-radius: 5px; background: #007BFF; color: white; cursor: pointer; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 20px; }
+
+.container {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  width: 95%;
+  max-width: 500px;
+}
+
+h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.avatar-container {
+  width: 130px;
+  height: 130px;
+  cursor: pointer;
+  border: 3px solid #4CAF50; /* viền xanh lá */
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-container img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.avatar-container img:hover {
+  transform: scale(1.05);
+}
+
+.info-fields { width: 100%; margin-top: 10px; }
+.info-fields p { margin: 6px 0; font-size: 0.95rem; color: #555; }
+.info-fields input { width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.95rem; }
+
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #007BFF;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
 button:hover { background: #0056b3; }
-#message { color: green; margin-top: 10px; text-align: center; }
-#error { color: red; margin-top: 10px; text-align: center; }
-.updated-info { margin-top: 20px; background: #e7f3ff; padding: 10px; border-radius: 5px; }
-.updated-info p { margin: 3px 0; font-size: 14px; }
-.actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-.actions button { flex: 1; }
+
+.updated-info {
+  margin-top: 20px;
+  background: #e7f3ff;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.updated-info p { margin: 4px 0; font-size: 0.9rem; }
+
+#message { color: green; margin-top: 10px; text-align: center; font-size: 0.9rem; }
+#error { color: red; margin-top: 10px; text-align: center; font-size: 0.9rem; }
+
+.actions { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+
+@media(min-width:450px){
+  .profile{ flex-direction: row; align-items:flex-start; }
+  .avatar-container{ margin-right: 15px; }
+  .actions{ flex-direction: row; }
+  .actions button{ flex:1; }
+}
 </style>
 </head>
 <body>
@@ -29,9 +95,12 @@ button:hover { background: #0056b3; }
 <div class="container">
   <h2>Thông tin cá nhân</h2>
   <div class="profile">
-    <img id="avatarImg" src="https://via.placeholder.com/130" alt="Avatar">
+    <div class="avatar-container">
+      <img id="avatarImg" src="https://sf-static.upanhlaylink.com/img/image_20260509a7d8481abffe51016824fa5c6c433dd5.jpg" alt="Avatar">
+      <input type="file" id="avatarInput" accept="image/*" style="display:none">
+    </div>
     <div class="info-fields">
-      <p>Email: <span id="userEmail"></span></p>
+      <p>Email: <b id="userEmail"></b></p>
       <p>Ngày tạo: <span id="userCreatedAt"></span></p>
       <input type="text" id="name" placeholder="Họ và tên">
       <input type="text" id="phone" placeholder="Số điện thoại">
@@ -62,13 +131,13 @@ button:hover { background: #0056b3; }
   <div id="error"></div>
 </div>
 
-<!-- Firebase compat CDN -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
 <script>
-// ---------- INIT FIREBASE ----------
 const firebaseConfig = {
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain:"stech-73b89.firebaseapp.com",
@@ -76,16 +145,16 @@ const firebaseConfig = {
   projectId:"stech-73b89",
   storageBucket:"stech-73b89.appspot.com",
   messagingSenderId:"873739162979",
-  appId:"1:873739162979:web:978f1a4043f025b1cdaf56",
-  measurementId:"G-98Q3927PHZ"
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
+const storage = firebase.storage();
 
-// ---------- DOM ----------
+// DOM
 const avatarImg = document.getElementById("avatarImg");
+const avatarInput = document.getElementById("avatarInput");
 const userEmail = document.getElementById("userEmail");
 const userCreatedAt = document.getElementById("userCreatedAt");
 const currentCreatedAt = document.getElementById("currentCreatedAt");
@@ -107,7 +176,6 @@ const homeBtn = document.getElementById("homeBtn");
 
 let currentUser = null;
 
-// ---------- LOAD USER ----------
 auth.onAuthStateChanged(user => {
   if(!user){ window.location.href="index.html"; return; }
   currentUser = user;
@@ -121,8 +189,10 @@ auth.onAuthStateChanged(user => {
       phoneInput.value = data.phone || "";
       addressInput.value = data.address || "";
       birthdayInput.value = data.birthday || "";
-      avatarImg.src = data.avatar || "https://via.placeholder.com/130";
-      const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "";
+      avatarImg.src = data.avatar || "https://sf-static.upanhlaylink.com/img/image_20260509a7d8481abffe51016824fa5c6c433dd5.jpg";
+
+      const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() 
+                                          : new Date(currentUser.metadata.creationTime).toLocaleDateString();
       userCreatedAt.innerText = createdDate;
       currentCreatedAt.innerText = createdDate;
       currentName.innerText = data.name || "";
@@ -133,28 +203,44 @@ auth.onAuthStateChanged(user => {
   }).catch(err=>{ errorEl.innerText="Không thể load dữ liệu: "+err.message; });
 });
 
-// ---------- UPDATE INFO ----------
+// Avatar upload
+avatarImg.addEventListener('click', ()=> avatarInput.click());
+avatarInput.addEventListener('change', async (e)=>{
+  const file = e.target.files[0];
+  if(!file || !currentUser) return;
+
+  try {
+    const storageRef = storage.ref('avatars/' + currentUser.uid + '.jpg');
+    await storageRef.put(file);
+    const url = await storageRef.getDownloadURL();
+    await db.ref('users/' + currentUser.uid).update({ avatar: url });
+    avatarImg.src = url + '?t=' + new Date().getTime();
+    messageEl.innerText = "Cập nhật ảnh đại diện thành công!";
+  } catch(err){
+    errorEl.innerText = "Lỗi upload avatar: " + err.message;
+  }
+});
+
+// Update info
 updateInfoBtn.addEventListener('click', ()=>{
-  messageEl.innerText = ""; errorEl.innerText = "";
-  if(!currentUser){ errorEl.innerText="User chưa load xong!"; return; }
+  messageEl.innerText=""; errorEl.innerText="";
   const name = nameInput.value.trim();
   const phone = phoneInput.value.trim();
   const address = addressInput.value.trim();
   const birthday = birthdayInput.value;
   if(!name || !phone){ errorEl.innerText="Vui lòng nhập đầy đủ thông tin!"; return; }
 
-  db.ref('users/'+currentUser.uid).update({name, phone, address, birthday})
-    .then(()=>{
+  db.ref('users/'+currentUser.uid).update({ name, phone, address, birthday })
+    .then(()=> {
       messageEl.innerText="Cập nhật thành công!";
-      currentName.innerText = name;
-      currentPhone.innerText = phone;
-      currentAddress.innerText = address;
-      currentBirthday.innerText = birthday;
-    })
-    .catch(err=>{ errorEl.innerText="Lỗi khi cập nhật: "+err.message; });
+      currentName.innerText=name;
+      currentPhone.innerText=phone;
+      currentAddress.innerText=address;
+      currentBirthday.innerText=birthday;
+    }).catch(err=>{ errorEl.innerText="Lỗi khi cập nhật: "+err.message; });
 });
 
-// ---------- CHANGE PASSWORD ----------
+// Change password
 changePasswordBtn.addEventListener('click', ()=>{
   messageEl.innerText=""; errorEl.innerText="";
   const newPass=newPasswordInput.value.trim();
@@ -168,18 +254,16 @@ changePasswordBtn.addEventListener('click', ()=>{
       if(!pwd) return;
       const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
       currentUser.reauthenticateWithCredential(credential)
-        .then(()=>currentUser.updatePassword(newPass).then(()=>{
-          messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value="";
-        }).catch(e=>errorEl.innerText=e.message))
+        .then(()=>currentUser.updatePassword(newPass)
+        .then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; }))
+        .catch(e=>errorEl.innerText=e.message)
         .catch(e=>errorEl.innerText=e.message);
     } else { errorEl.innerText=err.message; }
   });
 });
 
-// ---------- LOGOUT ----------
+// Logout & home
 logoutBtn.addEventListener('click', ()=>auth.signOut().then(()=>window.location.href="index.html"));
-
-// ---------- HOME ----------
 homeBtn.addEventListener('click', ()=>window.location.href="index.html");
 </script>
 
