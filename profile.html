@@ -15,6 +15,7 @@ img{display:block;margin:10px auto;width:100px;height:100px;border-radius:50%;ob
 #message{color:green;text-align:center;margin-top:5px;}
 #error{color:red;text-align:center;margin-top:5px;}
 .info-box{background:#f0f0f0;padding:10px;border-radius:5px;margin-bottom:10px;}
+.updated-info{background:#e7f3ff;padding:10px;margin-top:10px;border-radius:5px;}
 </style>
 </head>
 <body>
@@ -30,6 +31,13 @@ img{display:block;margin:10px auto;width:100px;height:100px;border-radius:50%;ob
   <input type="text" id="name" placeholder="Họ và tên">
   <input type="text" id="phone" placeholder="Số điện thoại">
   <button id="updateInfoBtn">Cập nhật thông tin</button>
+
+  <!-- Khung hiển thị thông tin sau khi chỉnh sửa -->
+  <div class="updated-info">
+    <h3>Thông tin hiện tại:</h3>
+    <p>Họ và tên: <span id="currentName"></span></p>
+    <p>Số điện thoại: <span id="currentPhone"></span></p>
+  </div>
 
   <h2>Đổi mật khẩu</h2>
   <input type="password" id="newPassword" placeholder="Mật khẩu mới">
@@ -70,6 +78,8 @@ const userEmail = document.getElementById("userEmail");
 const userCreatedAt = document.getElementById("userCreatedAt");
 const nameInput = document.getElementById("name");
 const phoneInput = document.getElementById("phone");
+const currentName = document.getElementById("currentName");
+const currentPhone = document.getElementById("currentPhone");
 const newPasswordInput = document.getElementById("newPassword");
 const messageEl = document.getElementById("message");
 const errorEl = document.getElementById("error");
@@ -92,6 +102,10 @@ onAuthStateChanged(auth, user => {
         phoneInput.value = data.phone || "";
         avatarImg.src = data.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
         userCreatedAt.innerText = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "";
+
+        // Hiển thị thông tin hiện tại
+        currentName.innerText = data.name || "";
+        currentPhone.innerText = data.phone || "";
       }
     });
   } else {
@@ -105,8 +119,13 @@ window.updateProfileInfo = () => {
   const name = nameInput.value.trim();
   const phone = phoneInput.value.trim();
   if(!name || !phone){ errorEl.innerText = "Vui lòng nhập đầy đủ thông tin!"; return; }
+
   update(ref(db,'users/'+currentUser.uid),{name,phone})
-    .then(()=>{ messageEl.innerText="Cập nhật thành công!"; })
+    .then(()=>{
+      messageEl.innerText="Cập nhật thành công!";
+      currentName.innerText = name;
+      currentPhone.innerText = phone;
+    })
     .catch(err=>{ errorEl.innerText = err.message; });
 };
 updateInfoBtn.addEventListener("click", window.updateProfileInfo);
