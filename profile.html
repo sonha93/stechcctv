@@ -90,13 +90,12 @@ button:hover { background: #0056b3; }
   background: #e7f3ff;
   padding: 15px;
   border-radius: 12px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  display: flex;
+  flex-direction: column; /* mỗi mục xuống hàng */
+  gap: 8px;
   font-size: 0.95rem;
 }
 .updated-info h3 {
-  grid-column: 1 / -1;
   text-align: center;
   margin-bottom: 10px;
   font-size: 1.1rem;
@@ -165,9 +164,9 @@ button:hover { background: #0056b3; }
   <div class="updated-info">
     <h3>Thông tin hiện tại:</h3>
     <p>Họ và tên: <span id="currentName"></span></p>
-    <p>Số điện thoại: <span id="currentPhone"></span></p>
     <p>Địa chỉ: <span id="currentAddress"></span></p>
     <p>Ngày sinh: <span id="currentBirthday"></span></p>
+    <p>Số điện thoại: <span id="currentPhone"></span></p>
   </div>
 
   <div class="password-section">
@@ -226,7 +225,7 @@ const homeBtn = document.getElementById("homeBtn");
 
 let currentUser = null;
 
-// Load user data
+// Load user
 auth.onAuthStateChanged(user=>{
   if(!user){ window.location.href="index.html"; return; }
   currentUser=user;
