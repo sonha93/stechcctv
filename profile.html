@@ -1,140 +1,80 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trang cá nhân - StechCamera</title>
-<style>
-body{font-family:Arial,sans-serif;background:#f5f5f5;display:flex;justify-content:center;padding:50px 0;}
-.container{background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.1);width:400px;}
-h2{margin-top:15px;text-align:center;}
-input{width:100%;padding:10px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
-button{width:100%;padding:10px;margin:5px 0;border:none;border-radius:5px;background:#007BFF;color:white;cursor:pointer;}
-button:hover{background:#0056b3;}
-img{display:block;margin:10px auto;width:120px;height:120px;border-radius:50%;object-fit:cover;}
-#message{color:green;text-align:center;margin-top:5px;}
-#error{color:red;text-align:center;margin-top:5px;}
-.user-info{margin-top:10px;padding:10px;border:1px solid #eee;border-radius:8px;background:#fafafa;}
-.user-info p{margin:5px 0;}
-</style>
-</head>
-<body>
-<div class="container">
-  <h2>Thông tin cá nhân</h2>
-  <img id="avatarImg" src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="Avatar">
-  
-  <div class="user-info">
-    <p><strong>Email:</strong> <span id="emailDisplay"></span></p>
-    <p><strong>Ngày tạo:</strong> <span id="createdAtDisplay"></span></p>
-  </div>
-  
-  <input type="text" id="name" placeholder="Họ và tên">
-  <input type="text" id="phone" placeholder="Số điện thoại">
-  <button id="updateBtn">Cập nhật thông tin</button>
+// auth.js
+document.addEventListener("DOMContentLoaded", ()=>{
+  const loginLink = document.getElementById("loginLink");
+  const logoutLink = document.getElementById("logoutLink");
+  const authModal = document.getElementById("authModal");
+  const authEmail = document.getElementById("authEmail");
+  const authPassword = document.getElementById("authPassword");
+  const authRegisterBtn = document.getElementById("authRegisterBtn");
+  const authLoginBtn = document.getElementById("authLoginBtn");
+  const closeAuth = document.getElementById("closeAuth");
+  const authMessage = document.getElementById("authMessage");
+  const products = document.getElementById("products");
 
-  <h2>Đổi mật khẩu</h2>
-  <input type="password" id="newPassword" placeholder="Mật khẩu mới">
-  <button id="changePassBtn">Đổi mật khẩu</button>
+  loginLink.addEventListener("click", e=>{
+    e.preventDefault();
+    authModal.style.display="flex";
+    authMessage.innerText="";
+  });
 
-  <button id="logoutBtn">Đăng xuất</button>
+  closeAuth.addEventListener("click", ()=> authModal.style.display="none");
 
-  <div id="message"></div>
-  <div id="error"></div>
-</div>
+  authRegisterBtn.addEventListener("click", ()=>{
+    const email = authEmail.value.trim();
+    const pass = authPassword.value.trim();
+    if(!email || !pass){
+      authMessage.style.color="red";
+      authMessage.innerText="Vui lòng nhập email và mật khẩu!";
+      return;
+    }
+    auth.createUserWithEmailAndPassword(email, pass)
+      .then(userCredential=>{
+        authMessage.style.color="green";
+        authMessage.innerText="Đăng ký thành công!";
+        authEmail.value=""; authPassword.value="";
+        authModal.style.display="none";
+      })
+      .catch(err=>{
+        authMessage.style.color="red";
+        authMessage.innerText = err.message;
+      });
+  });
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  authLoginBtn.addEventListener("click", ()=>{
+    const email = authEmail.value.trim();
+    const pass = authPassword.value.trim();
+    if(!email || !pass){
+      authMessage.style.color="red";
+      authMessage.innerText="Vui lòng nhập email và mật khẩu!";
+      return;
+    }
+    auth.signInWithEmailAndPassword(email, pass)
+      .then(()=>{
+        authMessage.style.color="green";
+        authMessage.innerText="Đăng nhập thành công!";
+        authModal.style.display="none";
+        loginLink.style.display="none";
+        logoutLink.style.display="block";
+        if(products) products.style.display="grid";
+        authEmail.value=""; authPassword.value="";
+      })
+      .catch(err=>{
+        authMessage.style.color="red";
+        authMessage.innerText = err.message;
+      });
+  });
 
-// Firebase config
-const firebaseConfig = {
-  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain:"stech-73b89.firebaseapp.com",
-  databaseURL:"https://stech-73b89-default-rtdb.firebaseio.com",
-  projectId:"stech-73b89",
-  storageBucket:"stech-73b89.appspot.com",
-  messagingSenderId:"873739162979",
-  appId:"1:873739162979:web:978f1a4043f025b1cdaf56",
-  measurementId:"G-98Q3927PHZ"
-};
+  logoutLink.addEventListener("click", ()=> auth.signOut());
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
-
-let currentUser=null;
-
-// AUTO LOAD USER INFO
-onAuthStateChanged(auth,user=>{
-  if(user){
-    currentUser=user;
-    const userRef = ref(db,'users/'+user.uid);
-    get(userRef).then(snapshot=>{
-      if(snapshot.exists()){
-        const data = snapshot.val();
-        document.getElementById("name").value = data.name || "";
-        document.getElementById("phone").value = data.phone || "";
-        document.getElementById("avatarImg").src = data.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
-        document.getElementById("emailDisplay").innerText = data.email || user.email;
-        document.getElementById("createdAtDisplay").innerText = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "N/A";
-      }
-    });
-  } else {
-    window.location.href = "index.html";
-  }
+  auth.onAuthStateChanged(user=>{
+    if(user){
+      loginLink.style.display="none";
+      logoutLink.style.display="block";
+      if(products) products.style.display="grid";
+    } else {
+      loginLink.style.display="block";
+      logoutLink.style.display="none";
+      if(products) products.style.display="none";
+    }
+  });
 });
-
-// UPDATE INFO
-document.getElementById("updateBtn").addEventListener("click", ()=>{
-  const name=document.getElementById("name").value.trim();
-  const phone=document.getElementById("phone").value.trim();
-  const messageEl=document.getElementById("message");
-  const errorEl=document.getElementById("error");
-  messageEl.innerText=""; errorEl.innerText="";
-
-  if(!name || !phone){
-    errorEl.innerText="Vui lòng nhập đầy đủ thông tin!";
-    return;
-  }
-
-  update(ref(db,'users/'+currentUser.uid),{name,phone})
-    .then(()=>{messageEl.innerText="Cập nhật thành công!";})
-    .catch(err=>{errorEl.innerText=err.message;});
-});
-
-// CHANGE PASSWORD
-document.getElementById("changePassBtn").addEventListener("click", ()=>{
-  const newPass=document.getElementById("newPassword").value.trim();
-  const messageEl=document.getElementById("message");
-  const errorEl=document.getElementById("error");
-  messageEl.innerText=""; errorEl.innerText="";
-
-  if(newPass.length<6){errorEl.innerText="Mật khẩu ≥6 ký tự"; return;}
-
-  updatePassword(currentUser,newPass)
-    .then(()=>{messageEl.innerText="Đổi mật khẩu thành công!"; document.getElementById("newPassword").value="";})
-    .catch(err=>{
-      if(err.code==="auth/requires-recent-login"){
-        const email = currentUser.email;
-        const pwd = prompt("Vui lòng nhập lại mật khẩu cũ để đổi mật khẩu:");
-        if(!pwd) return;
-        const credential = EmailAuthProvider.credential(email,pwd);
-        reauthenticateWithCredential(currentUser,credential)
-          .then(()=>updatePassword(currentUser,newPass)
-            .then(()=>{messageEl.innerText="Đổi mật khẩu thành công!"; document.getElementById("newPassword").value="";})
-            .catch(err=>errorEl.innerText=err.message)
-          ).catch(err=>errorEl.innerText=err.message);
-      }else{
-        errorEl.innerText=err.message;
-      }
-    });
-});
-
-// LOGOUT
-document.getElementById("logoutBtn").addEventListener("click", ()=>{
-  signOut(auth).then(()=>{window.location.href="index.html";});
-});
-</script>
-</body>
-</html>
