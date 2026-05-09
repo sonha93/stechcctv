@@ -76,48 +76,5 @@
 <script src="notify.js"></script>
 <script src="camera-khuyenmai.js"></script>
 
-<!-- Firebase + Thêm vào giỏ -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
-  databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "stech-73b89",
-  storageBucket: "stech-73b89.appspot.com",
-  messagingSenderId: "873739162979",
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
-let currentUser = null;
-let cartRef = null;
-
-// Lắng nghe trạng thái login
-auth.onAuthStateChanged(user => {
-  if(!user) return;
-  currentUser = user;
-  cartRef = db.ref("carts/"+currentUser.uid);
-});
-
-// Thêm sản phẩm vào giỏ
-window.addToCartFirebase = function(product){
-  if(!currentUser) return alert("Bạn cần đăng nhập!");
-  cartRef.once("value").then(snapshot=>{
-    let cart = snapshot.val()||[];
-    const index = cart.findIndex(item=>item.id===product.id);
-    if(index!==-1){
-      cart[index].quantity = (cart[index].quantity||1)+1;
-    } else {
-      cart.push({id:product.id,name:product.name,price:product.price,img:product.img,quantity:1});
-    }
-    cartRef.set(cart).then(()=> alert("Đã thêm vào giỏ 🛒"));
-  });
-};
-</script>
-
 </body>
 </html>
