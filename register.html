@@ -73,7 +73,7 @@ window.register = function(){
         name: name,
         email: email,
         phone: phone,
-        avatar: "https://via.placeholder.com/50",
+        avatar: "https://i.ibb.co/Z1kv9nJj/logo.png", // avatar mặc định từ server mình
         createdAt: Date.now()
       });
     })
@@ -86,7 +86,11 @@ window.register = function(){
       setTimeout(()=>window.location.href="profile.html",1000);
     })
     .catch(err=>{
-      errorEl.innerText=err.message;
+      if(err.code==="auth/email-already-in-use"){
+        errorEl.innerText="Email đã tồn tại, vui lòng đăng nhập!";
+      }else{
+        errorEl.innerText=err.message;
+      }
     });
 };
 </script>
