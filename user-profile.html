@@ -6,21 +6,15 @@
 <title>Thông tin cá nhân - Stech</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  display: flex;
-  justify-content: center;
-  padding: 10px;
-}
+body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 20px; }
 
 .container {
   background: #fff;
   padding: 25px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  width: 100%;
-  max-width: 600px;
+  width: 95%;
+  max-width: 500px;
 }
 
 h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
@@ -36,13 +30,14 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
   width: 130px;
   height: 130px;
   cursor: pointer;
-  border: 3px solid #4CAF50;
+  border: 3px solid #4CAF50; /* viền xanh lá */
   border-radius: 50%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .avatar-container img {
   width: 100%;
   height: 100%;
@@ -53,21 +48,11 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
 .avatar-container img:hover { transform: scale(1.05); }
 
 .info-fields { width: 100%; margin-top: 10px; }
-.info-fields label { 
-  font-weight: bold; 
-  margin-top: 10px; 
-  display: block; 
-  color: #333;
-}
+.info-fields label { font-weight: bold; margin-top: 10px; display: block; color: #333; }
 .info-fields input { 
-  width: 100%; 
-  padding: 10px; 
-  margin-top: 4px; 
-  margin-bottom: 8px;
-  border-radius: 8px; 
-  border: 1px solid #b3e5fc;
-  font-size: 0.95rem; 
-  transition: 0.3s;
+  width: 100%; padding: 10px; margin-top: 4px; 
+  border-radius: 8px; border: 1px solid #b3e5fc;
+  font-size: 0.95rem; transition: 0.3s; 
 }
 .info-fields input:focus { border-color: #4FC3F7; outline: none; }
 
@@ -88,20 +73,10 @@ button:hover { background: #0056b3; }
 .updated-info {
   margin-top: 20px;
   background: #e7f3ff;
-  padding: 15px;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column; /* mỗi mục xuống hàng */
-  gap: 8px;
-  font-size: 0.95rem;
+  padding: 12px;
+  border-radius: 8px;
 }
-.updated-info h3 {
-  text-align: center;
-  margin-bottom: 10px;
-  font-size: 1.1rem;
-  color: #222;
-}
-.updated-info p { margin: 0; padding: 6px 0; }
+.updated-info p { margin: 4px 0; font-size: 0.9rem; }
 
 #message { color: green; margin-top: 10px; text-align: center; font-size: 0.9rem; }
 #error { color: red; margin-top: 10px; text-align: center; font-size: 0.9rem; }
@@ -124,6 +99,15 @@ button:hover { background: #0056b3; }
 }
 .password-section input:focus { border-color: #4FC3F7; outline: none; }
 
+.verified-badge {
+  display: inline-block;
+  width: 16px; height: 16px;
+  background: #4CAF50;
+  border-radius: 50%;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
 @media(min-width:450px){
   .profile{ flex-direction: row; align-items:flex-start; }
   .avatar-container{ margin-right: 15px; }
@@ -142,21 +126,16 @@ button:hover { background: #0056b3; }
       <input type="file" id="avatarInput" accept="image/*" style="display:none">
     </div>
     <div class="info-fields">
-      <p>Email: <b id="userEmail"></b></p>
-      <p>Ngày đăng ký: <span id="userCreatedAt"></span></p>
-
+      <p>Email: <b id="userEmail"></b><span id="verifiedBadge" class="verified-badge" style="display:none;"></span></p>
+      <p>Ngày đăng kí: <span id="userCreatedAt"></span></p>
       <label for="name">Họ và tên:</label>
       <input type="text" id="name">
-
       <label for="address">Địa chỉ:</label>
       <input type="text" id="address">
-
       <label for="birthday">Ngày sinh:</label>
       <input type="date" id="birthday">
-
       <label for="phone">Số điện thoại:</label>
-      <input type="text" id="phone" placeholder="VD: 0912345678">
-
+      <input type="text" id="phone">
       <button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
     </div>
   </div>
@@ -203,9 +182,11 @@ const auth = firebase.auth();
 const db = firebase.database();
 const storage = firebase.storage();
 
+// DOM
 const avatarImg = document.getElementById("avatarImg");
 const avatarInput = document.getElementById("avatarInput");
 const userEmail = document.getElementById("userEmail");
+const verifiedBadge = document.getElementById("verifiedBadge");
 const userCreatedAt = document.getElementById("userCreatedAt");
 const nameInput = document.getElementById("name");
 const phoneInput = document.getElementById("phone");
@@ -223,37 +204,42 @@ const changePasswordBtn = document.getElementById("changePasswordBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const homeBtn = document.getElementById("homeBtn");
 
+const verifiedEmails = ["stechcctv@gmail.com"]; // danh sách email tích xanh
+
 let currentUser = null;
 
-// Load user
 auth.onAuthStateChanged(user=>{
   if(!user){ window.location.href="index.html"; return; }
-  currentUser=user;
-  updateInfoBtn.disabled=false;
-  userEmail.innerText=user.email;
+  currentUser = user;
+  updateInfoBtn.disabled = false;
+  userEmail.innerText = user.email;
+
+  // Hiển thị tích xanh nếu email trong danh sách
+  if(verifiedEmails.includes(user.email)) verifiedBadge.style.display="inline-block";
 
   db.ref('users/'+user.uid).once('value').then(snapshot=>{
     if(snapshot.exists()){
-      const data=snapshot.val();
-      nameInput.value=data.name||"";
-      phoneInput.value=data.phone||"";
-      addressInput.value=data.address||"";
-      birthdayInput.value=data.birthday||"";
-      avatarImg.src=data.avatar || avatarImg.src;
-      const createdDate=data.createdAt ? new Date(data.createdAt).toLocaleDateString()
-                                       : new Date(currentUser.metadata.creationTime).toLocaleDateString();
-      userCreatedAt.innerText=createdDate;
-      currentName.innerText=data.name||"";
-      currentPhone.innerText=data.phone||"";
-      currentAddress.innerText=data.address||"";
-      currentBirthday.innerText=data.birthday||"";
+      const data = snapshot.val();
+      nameInput.value = data.name||"";
+      phoneInput.value = data.phone||"";
+      addressInput.value = data.address||"";
+      birthdayInput.value = data.birthday||"";
+      avatarImg.src = data.avatar || avatarImg.src;
+
+      const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() 
+                                          : new Date(currentUser.metadata.creationTime).toLocaleDateString();
+      userCreatedAt.innerText = createdDate;
+      currentName.innerText = data.name||"";
+      currentPhone.innerText = data.phone||"";
+      currentAddress.innerText = data.address||"";
+      currentBirthday.innerText = data.birthday||"";
     }
   }).catch(err=>{ errorEl.innerText="Không thể load dữ liệu: "+err.message; });
 });
 
 // Avatar upload
 avatarImg.addEventListener('click',()=>avatarInput.click());
-avatarInput.addEventListener('change', async e=>{
+avatarInput.addEventListener('change', async (e)=>{
   const file=e.target.files[0];
   if(!file || !currentUser) return;
   try{
@@ -274,12 +260,10 @@ updateInfoBtn.addEventListener('click',()=>{
   const address=addressInput.value.trim();
   const birthday=birthdayInput.value;
   if(!name || !phone || !address || !birthday){
-    errorEl.innerText="Vui lòng nhập đầy đủ thông tin!";
-    return;
+    errorEl.innerText="Vui lòng nhập đầy đủ thông tin!"; return;
   }
   if(!/^(03|05|07|08|09)[0-9]{8}$/.test(phone)){
-    errorEl.innerText="Số điện thoại không hợp lệ! 10 số, đầu số VN.";
-    return;
+    errorEl.innerText="Số điện thoại không hợp lệ! 10 số, đầu số VN."; return;
   }
   db.ref('users/'+currentUser.uid).update({name,phone,address,birthday})
     .then(()=>{
@@ -292,11 +276,10 @@ updateInfoBtn.addEventListener('click',()=>{
 });
 
 // Change password
-changePasswordBtn.addEventListener('click', ()=>{
+changePasswordBtn.addEventListener('click',()=>{
   messageEl.innerText=""; errorEl.innerText="";
   const newPass=newPasswordInput.value.trim();
   if(newPass.length<6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
-
   currentUser.updatePassword(newPass).then(()=>{
     messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value="";
   }).catch(err=>{
@@ -305,10 +288,9 @@ changePasswordBtn.addEventListener('click', ()=>{
       if(!pwd) return;
       const credential=firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
       currentUser.reauthenticateWithCredential(credential)
-        .then(()=>currentUser.updatePassword(newPass).then(()=>{
-          messageEl.innerText="Đổi mật khẩu thành công!";
-          newPasswordInput.value="";
-        })).catch(e=>errorEl.innerText=e.message)
+        .then(()=>currentUser.updatePassword(newPass)
+        .then(()=>{messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value="";}))
+        .catch(e=>errorEl.innerText=e.message)
         .catch(e=>errorEl.innerText=e.message);
     } else { errorEl.innerText=err.message; }
   });
