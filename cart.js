@@ -1,160 +1,116 @@
-// Firebase cần load trước trong cart.html
-// <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-// <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-// <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+// Firebase config
+const firebaseConfig={
+  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain:"stech-73b89.firebaseapp.com",
+  databaseURL:"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"stech-73b89",
+  storageBucket:"stech-73b89.appspot.com",
+  messagingSenderId:"873739162979",
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
+};
+
+firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const db = firebase.database();
 
-// HTML elements
-const cartList = document.getElementById("cartList");
-const totalBox = document.getElementById("total");
-const cartAction = document.getElementById("cartAction");
-const cartCountEl = document.querySelector("#cartCount"); // nếu có badge ở header
-
 let currentUser = null;
 let cart = [];
 
-// Menu toggle
-function toggleMenu() {
-  document.getElementById("sidebar").classList.toggle("active");
-  document.getElementById("overlay").classList.toggle("active");
-}
+// Badge giỏ hàng nếu có header khác
+const cartCountEl = document.querySelector(".header-icons .cart-count");
 
-// Load giỏ hàng theo uid
-auth.onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = "index.html";
-    return;
-  }
+// ================== LOAD USER + CART ==================
+auth.onAuthStateChanged(user=>{
+  if(!user) return window.location.href="index.html";
   currentUser = user;
   loadCart();
 });
 
-// Load cart từ Firebase
-function loadCart() {
-  if (!currentUser) return;
-  db.ref("carts/" + currentUser.uid).on("value", snapshot => {
-    cart = snapshot.val() || [];
+function loadCart(){
+  if(!currentUser) return;
+  db.ref("carts/"+currentUser.uid).on("value", snap=>{
+    cart = snap.val() || [];
     renderCart();
+    updateBadge();
   });
 }
 
-// Save cart to Firebase
-function saveCart() {
-  if (!currentUser) return;
-  db.ref("carts/" + currentUser.uid).set(cart);
-  updateBadge();
-}
+// ================== RENDER CART ==================
+function renderCart(){
+  const box = document.getElementById("cartList");
+  const totalBox = document.getElementById("total");
+  const actionBox = document.getElementById("cartAction");
 
-// Update badge số lượng
-function updateBadge() {
-  if (!cartCountEl) return;
-  let count = 0;
-  cart.forEach(item => {
-    count += item.qty || 1;
-  });
-  cartCountEl.innerText = count;
-}
-
-// Render cart
-function renderCart(filteredList = null) {
-  const list = filteredList || cart;
-  cartList.innerHTML = "";
-  cartAction.innerHTML = "";
-  totalBox.innerHTML = "";
-
-  if (!list.length) {
-    cartList.innerHTML = "<p class='empty'>Giỏ hàng trống 🛒</p>";
+  if(cart.length === 0){
+    box.innerHTML = "<p class='empty'>Giỏ hàng trống 🛒</p>";
+    totalBox.innerHTML = "";
+    actionBox.innerHTML = "";
     return;
   }
 
   let total = 0;
+  box.innerHTML = cart.map((item,i)=>{
+    const qty = item.qty || 1;
+    total += (item.price || 0) * qty;
 
-  list.forEach((item, i) => {
-    let qty = item.qty || 1;
-    const checked = item.checked !== false;
-
-    if (checked) total += item.price * qty;
-
-    cartList.innerHTML += `
-    <div class="item">
-      <input type="checkbox" class="check" 
-        ${checked ? "checked":""}
-        onchange="toggleCheck(${i})">
-      <img src="${item.img}">
-      <div class="info">
-        <b>${item.name}</b><br>
-        <div class="price-new">${item.price.toLocaleString()}đ</div>
-        ${item.oldPrice ? `<div class="price-old">${item.oldPrice.toLocaleString()}đ</div>` : ""}
-        <div class="qty">
-          <button onclick="changeQty(${i},-1)">-</button>
-          <span>${qty}</span>
-          <button onclick="changeQty(${i},1)">+</button>
+    return `
+      <div class="item">
+        <img src="${item.img || ''}">
+        <div class="info">
+          <b>${item.name}</b><br>
+          <div class="price-new">${item.price.toLocaleString()}đ</div>
+          ${item.oldPrice ? `<div class="price-old">${item.oldPrice.toLocaleString()}đ</div>`: ''}
+          <div class="qty">
+            <button onclick="changeQty(${i},-1)">-</button>
+            <span>${qty}</span>
+            <button onclick="changeQty(${i},1)">+</button>
+          </div>
         </div>
+        <button class="remove" onclick="removeItem(${i})">🗑</button>
       </div>
-      <button class="remove" onclick="removeItem(${i})">🗑</button>
-    </div>
     `;
-  });
+  }).join("");
 
-  totalBox.innerHTML = "Tổng: " + total.toLocaleString() + "đ";
-  cartAction.innerHTML = `<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
-
-  updateBadge();
+  totalBox.innerHTML = "Tổng: "+total.toLocaleString()+"đ";
+  actionBox.innerHTML = `<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
 }
 
-// Check/uncheck item
-function toggleCheck(i) {
-  if (!cart[i]) return;
-  cart[i].checked = !cart[i].checked;
-  saveCart();
-}
-
-// Change qty
-function changeQty(i, delta) {
-  if (!cart[i]) return;
-  cart[i].qty = (cart[i].qty || 1) + delta;
-  if (cart[i].qty < 1) cart[i].qty = 1;
-  saveCart();
-}
-
-// Remove item
-function removeItem(i) {
-  if (!cart[i]) return;
-  cart.splice(i, 1);
-  saveCart();
-}
-
-// Checkout
-function checkout() {
-  window.location.href = "checkout.html";
-}
-
-// Add to cart
-function addToCart(product) {
-  let index = cart.findIndex(item => item.id === product.id);
-  if (index !== -1) {
-    cart[index].qty = (cart[index].qty || 1) + 1;
-  } else {
-    cart.push({
-      ...product,
-      qty: 1,
-      checked: true
-    });
+// ================== UPDATE BADGE ==================
+function updateBadge(){
+  if(cartCountEl){
+    let count = 0;
+    cart.forEach(i=>count += i.qty || 1);
+    cartCountEl.innerText = count;
   }
+}
+
+// ================== CHANGE QTY ==================
+function changeQty(i, delta){
+  cart[i].qty = (cart[i].qty || 1) + delta;
+  if(cart[i].qty < 1) cart[i].qty = 1;
   saveCart();
 }
 
-// Search filter
-const searchInput = document.getElementById("searchInput");
-if (searchInput) {
-  searchInput.addEventListener("input", function(){
-    const keyword = this.value.toLowerCase();
-    const filtered = cart.filter(item => item.name.toLowerCase().includes(keyword));
-    renderCart(filtered);
-  });
+// ================== REMOVE ITEM ==================
+function removeItem(i){
+  cart.splice(i,1);
+  saveCart();
 }
 
-// INIT
-renderCart();
+// ================== SAVE CART ==================
+function saveCart(){
+  if(!currentUser) return;
+  db.ref("carts/"+currentUser.uid).set(cart);
+}
+
+// ================== CHECKOUT ==================
+function checkout(){
+  if(!currentUser) return;
+  db.ref("carts/"+currentUser.uid).remove().then(()=>{
+    cart = [];
+    renderCart();
+    updateBadge();
+    window.location.href = "checkout.html";
+  });
+}
