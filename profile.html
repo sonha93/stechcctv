@@ -3,23 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thông tin cá nhân</title>
+<title>Trang cá nhân - StechCamera</title>
 <style>
 body{font-family:Arial,sans-serif;background:#f5f5f5;display:flex;justify-content:center;padding:50px 0;}
-.container{background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.1);width:350px;}
-h2{margin-top:15px;}
+.container{background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.1);width:400px;}
+h2{margin-top:15px;text-align:center;}
 input{width:100%;padding:10px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
 button{width:100%;padding:10px;margin:5px 0;border:none;border-radius:5px;background:#007BFF;color:white;cursor:pointer;}
 button:hover{background:#0056b3;}
-img{display:block;margin:10px auto;width:100px;height:100px;border-radius:50%;object-fit:cover;}
+img{display:block;margin:10px auto;width:120px;height:120px;border-radius:50%;object-fit:cover;}
 #message{color:green;text-align:center;margin-top:5px;}
 #error{color:red;text-align:center;margin-top:5px;}
+.user-info{margin-top:10px;padding:10px;border:1px solid #eee;border-radius:8px;background:#fafafa;}
+.user-info p{margin:5px 0;}
 </style>
 </head>
 <body>
 <div class="container">
   <h2>Thông tin cá nhân</h2>
   <img id="avatarImg" src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="Avatar">
+  
+  <div class="user-info">
+    <p><strong>Email:</strong> <span id="emailDisplay"></span></p>
+    <p><strong>Ngày tạo:</strong> <span id="createdAtDisplay"></span></p>
+  </div>
+  
   <input type="text" id="name" placeholder="Họ và tên">
   <input type="text" id="phone" placeholder="Số điện thoại">
   <button id="updateBtn">Cập nhật thông tin</button>
@@ -43,7 +51,7 @@ import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasej
 const firebaseConfig = {
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain:"stech-73b89.firebaseapp.com",
-  databaseURL:"https://stech-73b89-default-rtdb.firebaseio.com", // <-- fix database URL
+  databaseURL:"https://stech-73b89-default-rtdb.firebaseio.com",
   projectId:"stech-73b89",
   storageBucket:"stech-73b89.appspot.com",
   messagingSenderId:"873739162979",
@@ -68,6 +76,8 @@ onAuthStateChanged(auth,user=>{
         document.getElementById("name").value = data.name || "";
         document.getElementById("phone").value = data.phone || "";
         document.getElementById("avatarImg").src = data.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
+        document.getElementById("emailDisplay").innerText = data.email || user.email;
+        document.getElementById("createdAtDisplay").innerText = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "N/A";
       }
     });
   } else {
