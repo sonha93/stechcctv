@@ -3,56 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thông tin cá nhân</title>
+<title>Profile</title>
 <style>
-body{font-family:Arial;background:#f5f5f5;display:flex;justify-content:center;align-items:flex-start;padding-top:50px;}
-.container{background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1);width:320px;}
+body{font-family:Arial, sans-serif;background:#f5f5f5;display:flex;justify-content:center;padding-top:50px;}
+.container{background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.1);width:350px;}
 input{width:100%;padding:10px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
-button{width:100%;padding:10px;margin-top:10px;border:none;border-radius:5px;background:#007BFF;color:#fff;cursor:pointer;}
+button{width:100%;padding:10px;margin:5px 0;border:none;border-radius:5px;background:#007BFF;color:white;cursor:pointer;}
 button:hover{background:#0056b3;}
 img{display:block;margin:10px auto;width:100px;height:100px;border-radius:50%;object-fit:cover;}
-#message{color:green;margin-top:10px;text-align:center;}
-#error{color:red;margin-top:10px;text-align:center;}
+#message{color:green;text-align:center;margin-top:5px;}
+#error{color:red;text-align:center;margin-top:5px;}
+h2{margin-top:15px;}
 </style>
 </head>
 <body>
 <div class="container">
-<h2>Thông tin cá nhân</h2>
-<img id="avatarImg" src="https://via.placeholder.com/50" alt="Avatar">
-<input type="text" id="name" placeholder="Họ và tên">
-<input type="text" id="phone" placeholder="Số điện thoại">
-<button onclick="updateProfile()">Cập nhật thông tin</button>
+  <h2>Thông tin cá nhân</h2>
+  <img id="avatarImg" src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="Avatar">
+  <input type="text" id="name" placeholder="Họ và tên">
+  <input type="text" id="phone" placeholder="Số điện thoại">
+  <button onclick="updateProfileInfo()">Cập nhật thông tin</button>
 
-<h2>Đổi mật khẩu</h2>
-<input type="password" id="newPassword" placeholder="Mật khẩu mới">
-<button onclick="changePassword()">Đổi mật khẩu</button>
+  <h2>Đổi mật khẩu</h2>
+  <input type="password" id="newPassword" placeholder="Mật khẩu mới">
+  <button onclick="changePassword()">Đổi mật khẩu</button>
 
-<button onclick="logout()">Đăng xuất</button>
+  <button onclick="logout()">Đăng xuất</button>
 
-<div id="message"></div>
-<div id="error"></div>
+  <div id="message"></div>
+  <div id="error"></div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
+// Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
-  projectId: "stech-73b89",
-  storageBucket: "stech-73b89.firebasestorage.app",
-  messagingSenderId: "873739162979",
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56",
-  measurementId: "G-98Q3927PHZ"
+  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain:"stech-73b89.firebaseapp.com",
+  projectId:"stech-73b89",
+  storageBucket:"stech-73b89.appspot.com",
+  messagingSenderId:"873739162979",
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56",
+  measurementId:"G-98Q3927PHZ"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-let currentUser = null;
+let currentUser=null;
 
 onAuthStateChanged(auth,user=>{
   if(user){
@@ -61,39 +63,62 @@ onAuthStateChanged(auth,user=>{
     get(userRef).then(snapshot=>{
       if(snapshot.exists()){
         const data = snapshot.val();
-        document.getElementById("name").value = data.name || "";
-        document.getElementById("phone").value = data.phone || "";
-        document.getElementById("avatarImg").src = data.avatar || "https://via.placeholder.com/50";
+        document.getElementById("name").value=data.name||"";
+        document.getElementById("phone").value=data.phone||"";
+        document.getElementById("avatarImg").src=data.avatar||"https://i.ibb.co/Z1kv9nJj/logo.png";
       }
     });
-  } else {
-    window.location.href="register.html";
+  }else{
+    window.location.href="register.html"; // chưa login → chuyển sang đăng ký/login
   }
 });
 
-window.updateProfile = function(){
+function updateProfileInfo(){
   const name=document.getElementById("name").value.trim();
   const phone=document.getElementById("phone").value.trim();
   const messageEl=document.getElementById("message");
   const errorEl=document.getElementById("error");
   messageEl.innerText=""; errorEl.innerText="";
+
   update(ref(db,'users/'+currentUser.uid),{name,phone})
     .then(()=>{messageEl.innerText="Cập nhật thành công!";})
     .catch(err=>{errorEl.innerText=err.message;});
-};
+}
 
-window.changePassword = function(){
+function changePassword(){
   const newPass=document.getElementById("newPassword").value.trim();
   const messageEl=document.getElementById("message");
   const errorEl=document.getElementById("error");
   messageEl.innerText=""; errorEl.innerText="";
-  if(newPass.length<6){errorEl.innerText="Mật khẩu ≥6 ký tự"; return;}
-  updatePassword(currentUser,newPass)
-    .then(()=>{messageEl.innerText="Đổi mật khẩu thành công!";document.getElementById("newPassword").value="";})
-    .catch(err=>{errorEl.innerText=err.message;});
-};
 
-window.logout=function(){signOut(auth).then(()=>{window.location.href="register.html";});};
+  if(newPass.length<6){errorEl.innerText="Mật khẩu ≥6 ký tự"; return;}
+
+  // Nếu Firebase yêu cầu login lại
+  updatePassword(currentUser,newPass).then(()=>{
+    messageEl.innerText="Đổi mật khẩu thành công!";
+    document.getElementById("newPassword").value="";
+  }).catch(err=>{
+    if(err.code==="auth/requires-recent-login"){
+      // yêu cầu login lại
+      const email = currentUser.email;
+      const pwd = prompt("Vui lòng nhập lại mật khẩu cũ để đổi mật khẩu:");
+      if(!pwd) return;
+      const credential = EmailAuthProvider.credential(email,pwd);
+      reauthenticateWithCredential(currentUser,credential).then(()=>{
+        updatePassword(currentUser,newPass).then(()=>{
+          messageEl.innerText="Đổi mật khẩu thành công!";
+          document.getElementById("newPassword").value="";
+        }).catch(err=>errorEl.innerText=err.message);
+      }).catch(err=>errorEl.innerText=err.message);
+    }else{
+      errorEl.innerText=err.message;
+    }
+  });
+}
+
+function logout(){
+  signOut(auth).then(()=>{window.location.href="register.html";});
+}
 </script>
 </body>
 </html>
