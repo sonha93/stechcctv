@@ -30,7 +30,7 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
   width: 130px;
   height: 130px;
   cursor: pointer;
-  border: 3px solid #4CAF50; /* viền xanh lá */
+  border: 3px solid #4CAF50;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
@@ -131,7 +131,7 @@ button:hover { background: #0056b3; }
     <p>Số điện thoại: <span id="currentPhone"></span></p>
     <p>Địa chỉ: <span id="currentAddress"></span></p>
     <p>Ngày sinh: <span id="currentBirthday"></span></p>
-    <p>Ngày tạo tài khoản: <span id="currentCreatedAt"></span></p>
+    <!-- Đã xóa dòng ngày tạo tài khoản ở đây -->
   </div>
 
   <div class="password-section">
@@ -169,12 +169,10 @@ const auth = firebase.auth();
 const db = firebase.database();
 const storage = firebase.storage();
 
-// DOM
 const avatarImg = document.getElementById("avatarImg");
 const avatarInput = document.getElementById("avatarInput");
 const userEmail = document.getElementById("userEmail");
 const userCreatedAt = document.getElementById("userCreatedAt");
-const currentCreatedAt = document.getElementById("currentCreatedAt");
 const nameInput = document.getElementById("name");
 const phoneInput = document.getElementById("phone");
 const addressInput = document.getElementById("address");
@@ -194,31 +192,37 @@ const homeBtn = document.getElementById("homeBtn");
 let currentUser = null;
 
 // Load user data
-auth.onAuthStateChanged(user => {
+auth.onAuthStateChanged(async user => {
   if(!user){ window.location.href="index.html"; return; }
   currentUser = user;
   updateInfoBtn.disabled = false;
   userEmail.innerText = user.email;
 
-  db.ref('users/'+user.uid).once('value').then(snapshot=>{
-    if(snapshot.exists()){
-      const data = snapshot.val();
-      nameInput.value = data.name || "";
-      phoneInput.value = data.phone || "";
-      addressInput.value = data.address || "";
-      birthdayInput.value = data.birthday || "";
-      avatarImg.src = data.avatar || avatarImg.src;
-
-      const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() 
-                                          : new Date(currentUser.metadata.creationTime).toLocaleDateString();
-      userCreatedAt.innerText = createdDate;
-      currentCreatedAt.innerText = createdDate;
-      currentName.innerText = data.name || "";
-      currentPhone.innerText = data.phone || "";
-      currentAddress.innerText = data.address || "";
-      currentBirthday.innerText = data.birthday || "";
+  try{
+    const snapshot = await db.ref('users/'+user.uid).once('value');
+    let data = snapshot.exists() ? snapshot.val() : {};
+    
+    if(!data.createdAt){
+      data.createdAt = new Date(user.metadata.creationTime).toISOString();
+      await db.ref('users/'+user.uid).update({ createdAt: data.createdAt });
     }
-  }).catch(err=>{ errorEl.innerText="Không thể load dữ liệu: "+err.message; });
+
+    userCreatedAt.innerText = new Date(data.createdAt).toLocaleDateString();
+
+    nameInput.value = data.name || "";
+    phoneInput.value = data.phone || "";
+    addressInput.value = data.address || "";
+    birthdayInput.value = data.birthday || "";
+    avatarImg.src = data.avatar || avatarImg.src;
+
+    currentName.innerText = data.name || "";
+    currentPhone.innerText = data.phone || "";
+    currentAddress.innerText = data.address || "";
+    currentBirthday.innerText = data.birthday || "";
+
+  } catch(err){
+    errorEl.innerText = "Không thể load dữ liệu: "+err.message;
+  }
 });
 
 // Avatar upload
@@ -226,8 +230,7 @@ avatarImg.addEventListener('click', ()=> avatarInput.click());
 avatarInput.addEventListener('change', async (e)=>{
   const file = e.target.files[0];
   if(!file || !currentUser) return;
-
-  try {
+  try{
     const storageRef = storage.ref('avatars/' + currentUser.uid + '.jpg');
     await storageRef.put(file);
     const url = await storageRef.getDownloadURL();
@@ -272,8 +275,7 @@ changePasswordBtn.addEventListener('click', ()=>{
       if(!pwd) return;
       const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
       currentUser.reauthenticateWithCredential(credential)
-        .then(()=>currentUser.updatePassword(newPass)
-        .then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; }))
+        .then(()=>currentUser.updatePassword(newPass).then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; }))
         .catch(e=>errorEl.innerText=e.message)
         .catch(e=>errorEl.innerText=e.message);
     } else { errorEl.innerText=err.message; }
@@ -283,7 +285,7 @@ changePasswordBtn.addEventListener('click', ()=>{
 // Logout & home
 logoutBtn.addEventListener('click', ()=>auth.signOut().then(()=>window.location.href="index.html"));
 homeBtn.addEventListener('click', ()=>window.location.href="index.html");
-</script>
 
+</script>
 </body>
 </html>
