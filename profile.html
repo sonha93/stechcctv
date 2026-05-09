@@ -1,1 +1,130 @@
-<!DOCTYPE html> <html lang="vi"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Thông tin cá nhân</title> <style> body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 50px 0; } .container { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); width: 650px; } h2 { text-align: center; margin-bottom: 20px; } .profile { display: flex; gap: 20px; align-items: flex-start; } .profile img { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; } .info-fields { flex: 1; } .info-fields p, .info-fields input { margin: 6px 0; } .info-fields p span { font-weight: bold; } input[type="text"], input[type="date"], input[type="password"] { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; } button { padding: 10px; margin-top: 10px; border: none; border-radius: 5px; background: #007BFF; color: white; cursor: pointer; } button:hover { background: #0056b3; } #message { color: green; margin-top: 10px; text-align: center; } #error { color: red; margin-top: 10px; text-align: center; } .updated-info { margin-top: 20px; background: #e7f3ff; padding: 10px; border-radius: 5px; } .updated-info p { margin: 3px 0; font-size: 14px; } .actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; } .actions button { flex: 1; } </style> </head> <body> <div class="container"> <h2>Thông tin cá nhân</h2> <div class="profile"> <img id="avatarImg" src="https://via.placeholder.com/130" alt="Avatar"> <div class="info-fields"> <p>Email: <span id="userEmail"></span></p> <p>Ngày tạo: <span id="userCreatedAt"></span></p> <input type="text" id="name" placeholder="Họ và tên"> <input type="text" id="phone" placeholder="Số điện thoại"> <input type="text" id="address" placeholder="Địa chỉ"> <input type="date" id="birthday" placeholder="Ngày sinh"> <button id="updateInfoBtn" disabled>Cập nhật thông tin</button> </div> </div> <div class="updated-info"> <h3>Thông tin hiện tại:</h3> <p>Họ và tên: <span id="currentName"></span></p> <p>Số điện thoại: <span id="currentPhone"></span></p> <p>Địa chỉ: <span id="currentAddress"></span></p> <p>Ngày sinh: <span id="currentBirthday"></span></p> <p>Ngày tạo tài khoản: <span id="currentCreatedAt"></span></p> </div> <h2>Đổi mật khẩu</h2> <input type="password" id="newPassword" placeholder="Mật khẩu mới"> <div class="actions"> <button id="changePasswordBtn">Đổi mật khẩu</button> <button id="logoutBtn">Đăng xuất</button> <button id="homeBtn">Trang chủ</button> </div> <div id="message"></div> <div id="error"></div> </div> <!-- Firebase compat CDN --> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script> <script> // ---------- INIT FIREBASE ---------- const firebaseConfig = { apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4", authDomain:"stech-73b89.firebaseapp.com", databaseURL:"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app", projectId:"stech-73b89", storageBucket:"stech-73b89.appspot.com", messagingSenderId:"873739162979", appId:"1:873739162979:web:978f1a4043f025b1cdaf56", measurementId:"G-98Q3927PHZ" }; firebase.initializeApp(firebaseConfig); const auth = firebase.auth(); const db = firebase.database(); // ---------- DOM ---------- const avatarImg = document.getElementById("avatarImg"); const userEmail = document.getElementById("userEmail"); const userCreatedAt = document.getElementById("userCreatedAt"); const currentCreatedAt = document.getElementById("currentCreatedAt"); const nameInput = document.getElementById("name"); const phoneInput = document.getElementById("phone"); const addressInput = document.getElementById("address"); const birthdayInput = document.getElementById("birthday"); const currentName = document.getElementById("currentName"); const currentPhone = document.getElementById("currentPhone"); const currentAddress = document.getElementById("currentAddress"); const currentBirthday = document.getElementById("currentBirthday"); const newPasswordInput = document.getElementById("newPassword"); const messageEl = document.getElementById("message"); const errorEl = document.getElementById("error"); const updateInfoBtn = document.getElementById("updateInfoBtn"); const changePasswordBtn = document.getElementById("changePasswordBtn"); const logoutBtn = document.getElementById("logoutBtn"); const homeBtn = document.getElementById("homeBtn"); let currentUser = null; // ---------- LOAD USER ---------- auth.onAuthStateChanged(user => { if(!user){ window.location.href="index.html"; return; } currentUser = user; updateInfoBtn.disabled = false; userEmail.innerText = user.email; db.ref('users/'+user.uid).once('value').then(snapshot=>{ if(snapshot.exists()){ const data = snapshot.val(); nameInput.value = data.name || ""; phoneInput.value = data.phone || ""; addressInput.value = data.address || ""; birthdayInput.value = data.birthday || ""; avatarImg.src = data.avatar || "https://via.placeholder.com/130"; const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : ""; userCreatedAt.innerText = createdDate; currentCreatedAt.innerText = createdDate; currentName.innerText = data.name || ""; currentPhone.innerText = data.phone || ""; currentAddress.innerText = data.address || ""; currentBirthday.innerText = data.birthday || ""; } }).catch(err=>{ errorEl.innerText="Không thể load dữ liệu: "+err.message; }); }); // ---------- UPDATE INFO ---------- updateInfoBtn.addEventListener('click', ()=>{ messageEl.innerText = ""; errorEl.innerText = ""; if(!currentUser){ errorEl.innerText="User chưa load xong!"; return; } const name = nameInput.value.trim(); const phone = phoneInput.value.trim(); const address = addressInput.value.trim(); const birthday = birthdayInput.value; if(!name || !phone){ errorEl.innerText="Vui lòng nhập đầy đủ thông tin!"; return; } db.ref('users/'+currentUser.uid).update({name, phone, address, birthday}) .then(()=>{ messageEl.innerText="Cập nhật thành công!"; currentName.innerText = name; currentPhone.innerText = phone; currentAddress.innerText = address; currentBirthday.innerText = birthday; }) .catch(err=>{ errorEl.innerText="Lỗi khi cập nhật: "+err.message; }); }); // ---------- CHANGE PASSWORD ---------- changePasswordBtn.addEventListener('click', ()=>{ messageEl.innerText=""; errorEl.innerText=""; const newPass=newPasswordInput.value.trim(); if(newPass.length<6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; } currentUser.updatePassword(newPass).then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; }).catch(err=>{ if(err.code==="auth/requires-recent-login"){ const pwd=prompt("Nhập lại mật khẩu cũ:"); if(!pwd) return; const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd); currentUser.reauthenticateWithCredential(credential) .then(()=>currentUser.updatePassword(newPass).then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; }).catch(e=>errorEl.innerText=e.message)) .catch(e=>errorEl.innerText=e.message); } else { errorEl.innerText=err.message; } }); }); // ---------- LOGOUT ---------- logoutBtn.addEventListener('click', ()=>auth.signOut().then(()=>window.location.href="index.html")); // ---------- HOME ---------- homeBtn.addEventListener('click', ()=>window.location.href="index.html"); </script> </body> </html>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thông tin cá nhân</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f5f5f5;display:flex;justify-content:center;padding:50px 0;}
+.container{background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.1);width:350px;}
+h2{margin-top:15px;}
+input{width:100%;padding:10px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
+button{width:100%;padding:10px;margin:5px 0;border:none;border-radius:5px;background:#007BFF;color:white;cursor:pointer;}
+button:hover{background:#0056b3;}
+img{display:block;margin:10px auto;width:100px;height:100px;border-radius:50%;object-fit:cover;}
+#message{color:green;text-align:center;margin-top:5px;}
+#error{color:red;text-align:center;margin-top:5px;}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Thông tin cá nhân</h2>
+  <img id="avatarImg" src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="Avatar">
+  <input type="text" id="name" placeholder="Họ và tên">
+  <input type="text" id="phone" placeholder="Số điện thoại">
+  <button onclick="updateProfileInfo()">Cập nhật thông tin</button>
+
+  <h2>Đổi mật khẩu</h2>
+  <input type="password" id="newPassword" placeholder="Mật khẩu mới">
+  <button onclick="changePassword()">Đổi mật khẩu</button>
+
+  <button onclick="logout()">Đăng xuất</button>
+
+  <div id="message"></div>
+  <div id="error"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain:"stech-73b89.firebaseapp.com",
+  projectId:"stech-73b89",
+  storageBucket:"stech-73b89.appspot.com",
+  messagingSenderId:"873739162979",
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56",
+  measurementId:"G-98Q3927PHZ"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+let currentUser=null;
+
+// AUTO LOAD USER INFO
+onAuthStateChanged(auth,user=>{
+  if(user){
+    currentUser=user;
+    const userRef = ref(db,'users/'+user.uid);
+    get(userRef).then(snapshot=>{
+      if(snapshot.exists()){
+        const data = snapshot.val();
+        document.getElementById("name").value = data.name || "";
+        document.getElementById("phone").value = data.phone || "";
+        document.getElementById("avatarImg").src = data.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
+      }
+    });
+  } else {
+    // chưa login → redirect về index.html
+    window.location.href = "index.html";
+  }
+});
+
+// UPDATE INFO
+function updateProfileInfo(){
+  const name=document.getElementById("name").value.trim();
+  const phone=document.getElementById("phone").value.trim();
+  const messageEl=document.getElementById("message");
+  const errorEl=document.getElementById("error");
+  messageEl.innerText=""; errorEl.innerText="";
+
+  if(!name || !phone){
+    errorEl.innerText="Vui lòng nhập đầy đủ thông tin!";
+    return;
+  }
+
+  update(ref(db,'users/'+currentUser.uid),{name,phone})
+    .then(()=>{messageEl.innerText="Cập nhật thành công!";})
+    .catch(err=>{errorEl.innerText=err.message;});
+}
+
+// CHANGE PASSWORD
+function changePassword(){
+  const newPass=document.getElementById("newPassword").value.trim();
+  const messageEl=document.getElementById("message");
+  const errorEl=document.getElementById("error");
+  messageEl.innerText=""; errorEl.innerText="";
+
+  if(newPass.length<6){errorEl.innerText="Mật khẩu ≥6 ký tự"; return;}
+
+  updatePassword(currentUser,newPass)
+    .then(()=>{messageEl.innerText="Đổi mật khẩu thành công!"; document.getElementById("newPassword").value="";})
+    .catch(err=>{
+      if(err.code==="auth/requires-recent-login"){
+        const email = currentUser.email;
+        const pwd = prompt("Vui lòng nhập lại mật khẩu cũ để đổi mật khẩu:");
+        if(!pwd) return;
+        const credential = EmailAuthProvider.credential(email,pwd);
+        reauthenticateWithCredential(currentUser,credential)
+          .then(()=>updatePassword(currentUser,newPass)
+            .then(()=>{messageEl.innerText="Đổi mật khẩu thành công!"; document.getElementById("newPassword").value="";})
+            .catch(err=>errorEl.innerText=err.message)
+          ).catch(err=>errorEl.innerText=err.message);
+      }else{
+        errorEl.innerText=err.message;
+      }
+    });
+}
+
+// LOGOUT
+function logout(){
+  signOut(auth).then(()=>{window.location.href="index.html";});
+}
+</script>
+</body>
+</html>
