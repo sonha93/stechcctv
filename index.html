@@ -166,11 +166,8 @@
   </div>
 </footer>
 
-<script src="app.js"></script>
 <div id="productContainer" class="product-grid"></div>
-<script src="notify.js"></script>
-<script src="banner.js"></script>
-<script>
+
 <!-- POPUP LOGIN / REGISTER -->
 <div id="authModal">
   <div class="auth-content">
@@ -214,74 +211,70 @@ document.addEventListener("DOMContentLoaded", function(){
   const authMessage = document.getElementById("authMessage");
   const products = document.getElementById("products");
 
-  // USER INFO PREVIEW
   const userInfoPreview = document.getElementById("userInfoPreview");
   const userAvatarPreview = document.getElementById("sidebarUserAvatarPreview");
   const userNamePreview = document.getElementById("sidebarUserNamePreview");
 
-  // POPUP LOGIN
-  loginLink.addEventListener("click",(e)=>{ 
-    e.preventDefault(); 
-    authModal.style.display="flex"; 
+  // SHOW / HIDE POPUP
+  loginLink.addEventListener("click", e => {
+    e.preventDefault();
+    authModal.style.display="flex";
   });
-  closeAuth.addEventListener("click",()=>authModal.style.display="none");
+  closeAuth.addEventListener("click", ()=> authModal.style.display="none");
 
   // REGISTER
-  authRegisterBtn.addEventListener("click",()=>{
-    const email = authEmail.value; 
+  authRegisterBtn.addEventListener("click", ()=>{
+    const email = authEmail.value;
     const pass = authPassword.value;
     auth.createUserWithEmailAndPassword(email, pass)
-      .then(()=>{
-        authMessage.style.color="green"; 
+      .then(() => {
+        authMessage.style.color="green";
         authMessage.innerText="Đăng ký thành công!";
         authEmail.value=""; authPassword.value="";
       })
-      .catch(err=>{
-        authMessage.style.color="red"; 
+      .catch(err => {
+        authMessage.style.color="red";
         authMessage.innerText=err.message;
       });
   });
 
   // LOGIN
-  authLoginBtn.addEventListener("click",()=>{
-    const email = authEmail.value; 
+  authLoginBtn.addEventListener("click", ()=>{
+    const email = authEmail.value;
     const pass = authPassword.value;
     auth.signInWithEmailAndPassword(email, pass)
-      .then(()=>{
-        authMessage.style.color="green"; 
+      .then(() => {
+        authMessage.style.color="green";
         authMessage.innerText="Đăng nhập thành công!";
-        authModal.style.display="none"; 
-        loginLink.style.display="none"; 
-        logoutLink.style.display="block";
-        if(products) products.style.display="grid";
+        authModal.style.display="none";
       })
-      .catch(err=>{
-        authMessage.style.color="red"; 
+      .catch(err => {
+        authMessage.style.color="red";
         authMessage.innerText=err.message;
       });
   });
 
   // LOGOUT
-  logoutLink.addEventListener("click",()=>{
+  logoutLink.addEventListener("click", ()=>{
     auth.signOut().then(()=>{
-      loginLink.style.display="block"; 
+      loginLink.style.display="block";
       logoutLink.style.display="none";
-      if(products) products.style.display="none";
       userInfoPreview.style.display="none";
+      if(products) products.style.display="none";
     });
   });
 
-  // LOAD USER PREVIEW
-  auth.onAuthStateChanged(user=>{
+  // AUTH STATE CHANGE
+  auth.onAuthStateChanged(user => {
     if(user){
-      loginLink.style.display="none"; 
+      loginLink.style.display="none";
       logoutLink.style.display="block";
-      if(products) products.style.display="grid";
       userInfoPreview.style.display="block";
+      if(products) products.style.display="grid";
       userAvatarPreview.src = user.photoURL || "https://via.placeholder.com/40";
-      userNamePreview.innerText = user.displayName || "Người dùng";
+      userNamePreview.innerText = user.displayName || user.email || "Người dùng";
     } else {
-      loginLink.style.display="block"; 
+      loginLink.style.display="block";
       logoutLink.style.display="none";
       userInfoPreview.style.display="none";
       if(products) products.style.display="none";
@@ -290,6 +283,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
 });
 </script>
+
+<script src="app.js"></script>
+<script src="notify.js"></script>
+<script src="banner.js"></script>
 
 <script>
 function toggleMenu(){
