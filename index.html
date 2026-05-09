@@ -187,7 +187,6 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function(){
-  // Firebase config
   const firebaseConfig = {
     apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
     authDomain:"stech-73b89.firebaseapp.com",
@@ -222,33 +221,55 @@ document.addEventListener("DOMContentLoaded", function(){
   });
   closeAuth.addEventListener("click", ()=> authModal.style.display="none");
 
-  // REGISTER
+  // REGISTER + LƯU THÔNG TIN USER NGAY
   authRegisterBtn.addEventListener("click", ()=>{
-    const email = authEmail.value;
-    const pass = authPassword.value;
+    const email = authEmail.value.trim();
+    const pass = authPassword.value.trim();
+    if(!email || !pass){
+      authMessage.style.color="red";
+      authMessage.innerText = "Vui lòng nhập email và mật khẩu!";
+      return;
+    }
+    const defaultAvatar = "https://via.placeholder.com/40";
+    const defaultName = email.split("@")[0];
+
     auth.createUserWithEmailAndPassword(email, pass)
-      .then(() => {
-        authMessage.style.color="green";
-        authMessage.innerText="Đăng ký thành công!";
-        authEmail.value=""; authPassword.value="";
+      .then(userCredential => {
+        const user = userCredential.user;
+        // Cập nhật displayName và photoURL
+        return user.updateProfile({
+          displayName: defaultName,
+          photoURL: defaultAvatar
+        });
       })
-      .catch(err => {
+      .then(()=>{
+        authMessage.style.color="green";
+        authMessage.innerText = "Đăng ký thành công!";
+        authEmail.value=""; authPassword.value="";
+        authModal.style.display="none"; // ẩn popup
+      })
+      .catch(err=>{
         authMessage.style.color="red";
-        authMessage.innerText=err.message;
+        authMessage.innerText = err.message;
       });
   });
 
   // LOGIN
   authLoginBtn.addEventListener("click", ()=>{
-    const email = authEmail.value;
-    const pass = authPassword.value;
+    const email = authEmail.value.trim();
+    const pass = authPassword.value.trim();
+    if(!email || !pass){
+      authMessage.style.color="red";
+      authMessage.innerText = "Vui lòng nhập email và mật khẩu!";
+      return;
+    }
     auth.signInWithEmailAndPassword(email, pass)
-      .then(() => {
+      .then(()=>{
         authMessage.style.color="green";
         authMessage.innerText="Đăng nhập thành công!";
         authModal.style.display="none";
       })
-      .catch(err => {
+      .catch(err=>{
         authMessage.style.color="red";
         authMessage.innerText=err.message;
       });
@@ -265,14 +286,14 @@ document.addEventListener("DOMContentLoaded", function(){
   });
 
   // AUTH STATE CHANGE
-  auth.onAuthStateChanged(user => {
+  auth.onAuthStateChanged(user=>{
     if(user){
       loginLink.style.display="none";
       logoutLink.style.display="block";
       userInfoPreview.style.display="block";
-      if(products) products.style.display="grid";
       userAvatarPreview.src = user.photoURL || "https://via.placeholder.com/40";
       userNamePreview.innerText = user.displayName || user.email || "Người dùng";
+      if(products) products.style.display="grid";
     } else {
       loginLink.style.display="block";
       logoutLink.style.display="none";
