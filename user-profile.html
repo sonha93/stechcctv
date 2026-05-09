@@ -30,7 +30,7 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
   width: 130px;
   height: 130px;
   cursor: pointer;
-  border: 3px solid #4CAF50;
+  border: 3px solid #4CAF50; /* viền xanh lá */
   border-radius: 50%;
   overflow: hidden;
   display: flex;
@@ -81,6 +81,7 @@ button:hover { background: #0056b3; }
 #error { color: red; margin-top: 10px; text-align: center; font-size: 0.9rem; }
 
 .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+
 @media(min-width:450px){
   .profile{ flex-direction: row; align-items:flex-start; }
   .avatar-container{ margin-right: 15px; }
@@ -130,6 +131,7 @@ button:hover { background: #0056b3; }
   <div id="error"></div>
 </div>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -201,7 +203,7 @@ auth.onAuthStateChanged(user => {
   }).catch(err=>{ errorEl.innerText="Không thể load dữ liệu: "+err.message; });
 });
 
-// Upload avatar
+// Avatar upload
 avatarImg.addEventListener('click', ()=> avatarInput.click());
 avatarInput.addEventListener('change', async (e)=>{
   const file = e.target.files[0];
@@ -238,6 +240,31 @@ updateInfoBtn.addEventListener('click', ()=>{
     }).catch(err=>{ errorEl.innerText="Lỗi khi cập nhật: "+err.message; });
 });
 
+// Change password
+changePasswordBtn.addEventListener('click', ()=>{
+  messageEl.innerText=""; errorEl.innerText="";
+  const newPass=newPasswordInput.value.trim();
+  if(newPass.length<6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
+
+  currentUser.updatePassword(newPass).then(()=>{
+    messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value="";
+  }).catch(err=>{
+    if(err.code==="auth/requires-recent-login"){
+      const pwd=prompt("Nhập lại mật khẩu cũ:");
+      if(!pwd) return;
+      const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
+      currentUser.reauthenticateWithCredential(credential)
+        .then(()=>currentUser.updatePassword(newPass)
+        .then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; }))
+        .catch(e=>errorEl.innerText=e.message)
+        .catch(e=>errorEl.innerText=e.message);
+    } else { errorEl.innerText=err.message; }
+  });
+});
+
+// Logout & home
+logoutBtn.addEventListener('click', ()=>auth.signOut().then(()=>window.location.href="index.html"));
+homeBtn.addEventListener('click', ()=>window.location.href="index.html");
 </script>
 
 </body>
