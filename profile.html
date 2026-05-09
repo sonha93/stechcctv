@@ -92,6 +92,42 @@ button:hover { background: #0056b3; }
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
 <script>
+  <script>
+// CLICK AVATAR để mở file picker
+avatarImg.addEventListener('click', () => avatarInput.click());
+
+// UPLOAD AVATAR
+avatarInput.addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;  // Không có file
+  if (!currentUser) {
+    errorEl.innerText = "User chưa load xong!";
+    return;
+  }
+
+  try {
+    // Tạo reference trong Firebase Storage
+    const avatarRef = storage.ref('avatars/' + currentUser.uid + '.jpg');
+
+    // Upload file
+    await avatarRef.put(file);
+
+    // Lấy URL ảnh
+    const url = await avatarRef.getDownloadURL();
+
+    // Cập nhật vào Realtime Database
+    await db.ref('users/' + currentUser.uid).update({ avatar: url });
+
+    // Hiển thị ngay trên avatar
+    avatarImg.src = url + '?t=' + new Date().getTime(); // tránh cache
+    messageEl.innerText = "Cập nhật ảnh đại diện thành công!";
+    errorEl.innerText = "";
+  } catch (err) {
+    console.error(err);
+    errorEl.innerText = "Lỗi upload avatar: " + err.message;
+  }
+});
+</script>
 const firebaseConfig = {
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain:"stech-73b89.firebaseapp.com",
