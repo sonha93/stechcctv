@@ -30,12 +30,10 @@ button:hover { background: #0056b3; }
 <div class="container">
   <h2>Thông tin cá nhân</h2>
   <div class="profile">
-    <!-- Chỉ còn avatar và input file ẩn -->
     <div class="avatar-container">
-  
+      <img id="avatarImg" src="https://via.placeholder.com/150" alt="Avatar">
       <input type="file" id="avatarInput" accept="image/*" style="display:none">
     </div>
-
     <div class="info-fields">
       <p>Email: <span id="userEmail"></span></p>
       <p>Ngày tạo: <span id="userCreatedAt"></span></p>
@@ -122,6 +120,7 @@ auth.onAuthStateChanged(user => {
   userEmail.innerText = user.email;
 
   db.ref('users/'+user.uid).once('value').then(snapshot=>{
+    let createdDate;
     if(snapshot.exists()){
       const data = snapshot.val();
       nameInput.value = data.name || "";
@@ -129,7 +128,16 @@ auth.onAuthStateChanged(user => {
       addressInput.value = data.address || "";
       birthdayInput.value = data.birthday || "";
       avatarImg.src = data.avatar || "https://via.placeholder.com/150";
-      const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "";
+
+      // Nếu createdAt chưa có trong database, lấy từ Auth và lưu
+      if(!data.createdAt){
+        createdDate = new Date(currentUser.metadata.creationTime).toISOString();
+        db.ref('users/'+currentUser.uid).update({ createdAt: createdDate });
+      } else {
+        createdDate = data.createdAt;
+      }
+      createdDate = new Date(createdDate).toLocaleDateString();
+
       userCreatedAt.innerText = createdDate;
       currentCreatedAt.innerText = createdDate;
       currentName.innerText = data.name || "";
