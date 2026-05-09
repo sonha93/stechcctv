@@ -6,22 +6,24 @@
 <title>Thông tin cá nhân</title>
 <style>
 body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 50px 0; }
-.container { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); width: 650px; }
+.container { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); width: 700px; }
 h2 { text-align: center; margin-bottom: 20px; }
 .profile { display: flex; gap: 20px; align-items: flex-start; }
-.profile img { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; }
+.avatar-container { position: relative; width: 150px; height: 150px; }
+.avatar-container img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; }
+.change-avatar-btn { position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 18px; display: flex; justify-content: center; align-items: center; }
 .info-fields { flex: 1; }
 .info-fields p, .info-fields input { margin: 6px 0; }
 .info-fields p span { font-weight: bold; }
 input[type="text"], input[type="date"], input[type="password"] { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
 button { padding: 10px; margin-top: 10px; border: none; border-radius: 5px; background: #007BFF; color: white; cursor: pointer; }
 button:hover { background: #0056b3; }
-#message { color: green; margin-top: 10px; text-align: center; }
-#error { color: red; margin-top: 10px; text-align: center; }
 .updated-info { margin-top: 20px; background: #e7f3ff; padding: 10px; border-radius: 5px; }
 .updated-info p { margin: 3px 0; font-size: 14px; }
 .actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
 .actions button { flex: 1; }
+#message { color: green; margin-top: 10px; text-align: center; }
+#error { color: red; margin-top: 10px; text-align: center; }
 </style>
 </head>
 <body>
@@ -29,7 +31,11 @@ button:hover { background: #0056b3; }
 <div class="container">
   <h2>Thông tin cá nhân</h2>
   <div class="profile">
-    <img id="avatarImg" src="https://via.placeholder.com/130" alt="Avatar">
+    <div class="avatar-container">
+      <img id="avatarImg" src="https://via.placeholder.com/150" alt="Avatar">
+      <button class="change-avatar-btn" title="Đổi ảnh">📷</button>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none">
+    </div>
     <div class="info-fields">
       <p>Email: <span id="userEmail"></span></p>
       <p>Ngày tạo: <span id="userCreatedAt"></span></p>
@@ -66,6 +72,7 @@ button:hover { background: #0056b3; }
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
 <script>
 // ---------- INIT FIREBASE ----------
@@ -79,13 +86,15 @@ const firebaseConfig = {
   appId:"1:873739162979:web:978f1a4043f025b1cdaf56",
   measurementId:"G-98Q3927PHZ"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
+const storage = firebase.storage();
 
 // ---------- DOM ----------
 const avatarImg = document.getElementById("avatarImg");
+const changeAvatarBtn = document.querySelector(".change-avatar-btn");
+const avatarInput = document.getElementById("avatarInput");
 const userEmail = document.getElementById("userEmail");
 const userCreatedAt = document.getElementById("userCreatedAt");
 const currentCreatedAt = document.getElementById("currentCreatedAt");
@@ -121,7 +130,7 @@ auth.onAuthStateChanged(user => {
       phoneInput.value = data.phone || "";
       addressInput.value = data.address || "";
       birthdayInput.value = data.birthday || "";
-      avatarImg.src = data.avatar || "https://via.placeholder.com/130";
+      avatarImg.src = data.avatar || "https://via.placeholder.com/150";
       const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : "";
       userCreatedAt.innerText = createdDate;
       currentCreatedAt.innerText = createdDate;
@@ -131,6 +140,22 @@ auth.onAuthStateChanged(user => {
       currentBirthday.innerText = data.birthday || "";
     }
   }).catch(err=>{ errorEl.innerText="Không thể load dữ liệu: "+err.message; });
+});
+
+// ---------- CHANGE AVATAR ----------
+changeAvatarBtn.addEventListener('click', ()=>avatarInput.click());
+
+avatarInput.addEventListener('change', (event)=>{
+  const file = event.target.files[0];
+  if(!file) return;
+  const avatarRef = storage.ref('avatars/' + currentUser.uid + '.jpg');
+  avatarRef.put(file).then(snapshot=>{
+    return avatarRef.getDownloadURL();
+  }).then(url=>{
+    db.ref('users/'+currentUser.uid).update({ avatar: url });
+    avatarImg.src = url;
+    messageEl.innerText = "Cập nhật ảnh đại diện thành công!";
+  }).catch(err=>{ errorEl.innerText = "Lỗi upload ảnh: "+err.message; });
 });
 
 // ---------- UPDATE INFO ----------
