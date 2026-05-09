@@ -21,18 +21,18 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
 
 .profile {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
+  gap: 20px;
+  align-items: flex-start;
 }
 
 .avatar-container {
   width: 130px;
   height: 130px;
-  cursor: pointer;
-  border: 3px solid #4CAF50; /* viền xanh lá */
+  border: 3px solid #4CAF50;
   border-radius: 50%;
   overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,9 +50,9 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
   transform: scale(1.05);
 }
 
-.info-fields { width: 100%; margin-top: 10px; }
-.info-fields p { margin: 6px 0; font-size: 0.95rem; color: #555; }
-.info-fields input { width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.95rem; }
+.info-fields { flex:1; display: flex; flex-direction: column; gap: 10px; }
+.info-fields p { font-size: 0.95rem; color: #555; }
+.info-fields input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.95rem; }
 
 button {
   width: 100%;
@@ -68,25 +68,9 @@ button {
 
 button:hover { background: #0056b3; }
 
-.updated-info {
-  margin-top: 20px;
-  background: #e7f3ff;
-  padding: 12px;
-  border-radius: 8px;
-}
-
-.updated-info p { margin: 4px 0; font-size: 0.9rem; }
-
-#message { color: green; margin-top: 10px; text-align: center; font-size: 0.9rem; }
-#error { color: red; margin-top: 10px; text-align: center; font-size: 0.9rem; }
-
-.actions { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-
-@media(min-width:450px){
-  .profile{ flex-direction: row; align-items:flex-start; }
-  .avatar-container{ margin-right: 15px; }
-  .actions{ flex-direction: row; }
-  .actions button{ flex:1; }
+@media(max-width:450px){
+  .profile{ flex-direction: column; align-items: center; }
+  .info-fields { width: 100%; }
 }
 </style>
 </head>
@@ -109,26 +93,6 @@ button:hover { background: #0056b3; }
       <button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
     </div>
   </div>
-
-  <div class="updated-info">
-    <h3>Thông tin hiện tại:</h3>
-    <p>Họ và tên: <span id="currentName"></span></p>
-    <p>Số điện thoại: <span id="currentPhone"></span></p>
-    <p>Địa chỉ: <span id="currentAddress"></span></p>
-    <p>Ngày sinh: <span id="currentBirthday"></span></p>
-    <p>Ngày tạo tài khoản: <span id="currentCreatedAt"></span></p>
-  </div>
-
-  <h2>Đổi mật khẩu</h2>
-  <input type="password" id="newPassword" placeholder="Mật khẩu mới">
-  <div class="actions">
-    <button id="changePasswordBtn">Đổi mật khẩu</button>
-    <button id="logoutBtn">Đăng xuất</button>
-    <button id="homeBtn">Trang chủ</button>
-  </div>
-
-  <div id="message"></div>
-  <div id="error"></div>
 </div>
 
 <!-- Firebase -->
@@ -152,27 +116,15 @@ const auth = firebase.auth();
 const db = firebase.database();
 const storage = firebase.storage();
 
-// DOM
 const avatarImg = document.getElementById("avatarImg");
 const avatarInput = document.getElementById("avatarInput");
 const userEmail = document.getElementById("userEmail");
 const userCreatedAt = document.getElementById("userCreatedAt");
-const currentCreatedAt = document.getElementById("currentCreatedAt");
 const nameInput = document.getElementById("name");
 const phoneInput = document.getElementById("phone");
 const addressInput = document.getElementById("address");
 const birthdayInput = document.getElementById("birthday");
-const currentName = document.getElementById("currentName");
-const currentPhone = document.getElementById("currentPhone");
-const currentAddress = document.getElementById("currentAddress");
-const currentBirthday = document.getElementById("currentBirthday");
-const newPasswordInput = document.getElementById("newPassword");
-const messageEl = document.getElementById("message");
-const errorEl = document.getElementById("error");
 const updateInfoBtn = document.getElementById("updateInfoBtn");
-const changePasswordBtn = document.getElementById("changePasswordBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const homeBtn = document.getElementById("homeBtn");
 
 let currentUser = null;
 
@@ -194,13 +146,8 @@ auth.onAuthStateChanged(user => {
       const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() 
                                           : new Date(currentUser.metadata.creationTime).toLocaleDateString();
       userCreatedAt.innerText = createdDate;
-      currentCreatedAt.innerText = createdDate;
-      currentName.innerText = data.name || "";
-      currentPhone.innerText = data.phone || "";
-      currentAddress.innerText = data.address || "";
-      currentBirthday.innerText = data.birthday || "";
     }
-  }).catch(err=>{ errorEl.innerText="Không thể load dữ liệu: "+err.message; });
+  }).catch(err=>{ console.error("Không thể load dữ liệu: "+err.message); });
 });
 
 // Avatar upload
@@ -208,63 +155,16 @@ avatarImg.addEventListener('click', ()=> avatarInput.click());
 avatarInput.addEventListener('change', async (e)=>{
   const file = e.target.files[0];
   if(!file || !currentUser) return;
-
   try {
     const storageRef = storage.ref('avatars/' + currentUser.uid + '.jpg');
     await storageRef.put(file);
     const url = await storageRef.getDownloadURL();
     await db.ref('users/' + currentUser.uid).update({ avatar: url });
     avatarImg.src = url + '?t=' + new Date().getTime();
-    messageEl.innerText = "Cập nhật ảnh đại diện thành công!";
   } catch(err){
-    errorEl.innerText = "Lỗi upload avatar: " + err.message;
+    console.error("Lỗi upload avatar: " + err.message);
   }
 });
-
-// Update info
-updateInfoBtn.addEventListener('click', ()=>{
-  messageEl.innerText=""; errorEl.innerText="";
-  const name = nameInput.value.trim();
-  const phone = phoneInput.value.trim();
-  const address = addressInput.value.trim();
-  const birthday = birthdayInput.value;
-  if(!name || !phone){ errorEl.innerText="Vui lòng nhập đầy đủ thông tin!"; return; }
-
-  db.ref('users/'+currentUser.uid).update({ name, phone, address, birthday })
-    .then(()=> {
-      messageEl.innerText="Cập nhật thành công!";
-      currentName.innerText=name;
-      currentPhone.innerText=phone;
-      currentAddress.innerText=address;
-      currentBirthday.innerText=birthday;
-    }).catch(err=>{ errorEl.innerText="Lỗi khi cập nhật: "+err.message; });
-});
-
-// Change password
-changePasswordBtn.addEventListener('click', ()=>{
-  messageEl.innerText=""; errorEl.innerText="";
-  const newPass=newPasswordInput.value.trim();
-  if(newPass.length<6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
-
-  currentUser.updatePassword(newPass).then(()=>{
-    messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value="";
-  }).catch(err=>{
-    if(err.code==="auth/requires-recent-login"){
-      const pwd=prompt("Nhập lại mật khẩu cũ:");
-      if(!pwd) return;
-      const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
-      currentUser.reauthenticateWithCredential(credential)
-        .then(()=>currentUser.updatePassword(newPass)
-        .then(()=>{ messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value=""; }))
-        .catch(e=>errorEl.innerText=e.message)
-        .catch(e=>errorEl.innerText=e.message);
-    } else { errorEl.innerText=err.message; }
-  });
-});
-
-// Logout & home
-logoutBtn.addEventListener('click', ()=>auth.signOut().then(()=>window.location.href="index.html"));
-homeBtn.addEventListener('click', ()=>window.location.href="index.html");
 </script>
 
 </body>
