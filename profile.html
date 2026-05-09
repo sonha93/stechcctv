@@ -6,20 +6,31 @@
 <title>Thông tin cá nhân - Stech</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 20px; }
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
 
 .container {
   background: #fff;
   padding: 25px;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  width: 95%;
-  max-width: 500px;
+  width: 100%;
+  max-width: 600px;
 }
 
 h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
 
-.profile { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
 
 .avatar-container {
   width: 130px;
@@ -32,7 +43,6 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
   align-items: center;
   justify-content: center;
 }
-
 .avatar-container img {
   width: 100%;
   height: 100%;
@@ -40,7 +50,6 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
   object-fit: cover;
   transition: transform 0.3s;
 }
-
 .avatar-container img:hover { transform: scale(1.05); }
 
 .info-fields { width: 100%; margin-top: 10px; }
@@ -48,8 +57,7 @@ h2 { text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #222; }
 .info-fields input { 
   width: 100%; padding: 10px; margin-top: 4px; 
   border-radius: 8px; border: 1px solid #b3e5fc;
-  font-size: 0.95rem; 
-  transition: 0.3s; 
+  font-size: 0.95rem; transition: 0.3s;
 }
 .info-fields input:focus { border-color: #4FC3F7; outline: none; }
 
@@ -70,10 +78,21 @@ button:hover { background: #0056b3; }
 .updated-info {
   margin-top: 20px;
   background: #e7f3ff;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 15px;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  font-size: 0.95rem;
 }
-.updated-info p { margin: 4px 0; font-size: 0.9rem; }
+.updated-info h3 {
+  grid-column: 1 / -1;
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  color: #222;
+}
+.updated-info p { margin: 0; padding: 6px 0; }
 
 #message { color: green; margin-top: 10px; text-align: center; font-size: 0.9rem; }
 #error { color: red; margin-top: 10px; text-align: center; font-size: 0.9rem; }
@@ -123,7 +142,7 @@ button:hover { background: #0056b3; }
       <label for="birthday">Ngày sinh:</label>
       <input type="date" id="birthday">
       <label for="phone">Số điện thoại:</label>
-      <input type="text" id="phone">
+      <input type="text" id="phone" placeholder="VD: 0912345678">
       <button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
     </div>
   </div>
@@ -150,7 +169,6 @@ button:hover { background: #0056b3; }
   <div id="error"></div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -171,7 +189,6 @@ const auth = firebase.auth();
 const db = firebase.database();
 const storage = firebase.storage();
 
-// DOM
 const avatarImg = document.getElementById("avatarImg");
 const avatarInput = document.getElementById("avatarInput");
 const userEmail = document.getElementById("userEmail");
@@ -194,6 +211,7 @@ const homeBtn = document.getElementById("homeBtn");
 
 let currentUser = null;
 
+// Load user data
 auth.onAuthStateChanged(user=>{
   if(!user){ window.location.href="index.html"; return; }
   currentUser=user;
@@ -208,17 +226,9 @@ auth.onAuthStateChanged(user=>{
       addressInput.value=data.address||"";
       birthdayInput.value=data.birthday||"";
       avatarImg.src=data.avatar || avatarImg.src;
-
-      // load ngày đăng ký thực
-      let createdDate;
-      if(data.createdAt){ 
-          createdDate = new Date(data.createdAt).toLocaleDateString();
-      } else {
-          createdDate = new Date(currentUser.metadata.creationTime).toLocaleDateString();
-          db.ref('users/' + currentUser.uid).update({ createdAt: currentUser.metadata.creationTime });
-      }
-      userCreatedAt.innerText = createdDate;
-
+      const createdDate=data.createdAt ? new Date(data.createdAt).toLocaleDateString()
+                                       : new Date(currentUser.metadata.creationTime).toLocaleDateString();
+      userCreatedAt.innerText=createdDate;
       currentName.innerText=data.name||"";
       currentPhone.innerText=data.phone||"";
       currentAddress.innerText=data.address||"";
@@ -229,7 +239,7 @@ auth.onAuthStateChanged(user=>{
 
 // Avatar upload
 avatarImg.addEventListener('click',()=>avatarInput.click());
-avatarInput.addEventListener('change', async (e)=>{
+avatarInput.addEventListener('change', async e=>{
   const file=e.target.files[0];
   if(!file || !currentUser) return;
   try{
@@ -268,7 +278,7 @@ updateInfoBtn.addEventListener('click',()=>{
 });
 
 // Change password
-changePasswordBtn.addEventListener('click',()=>{
+changePasswordBtn.addEventListener('click', ()=>{
   messageEl.innerText=""; errorEl.innerText="";
   const newPass=newPasswordInput.value.trim();
   if(newPass.length<6){ errorEl.innerText="Mật khẩu ≥6 ký tự"; return; }
@@ -281,8 +291,10 @@ changePasswordBtn.addEventListener('click',()=>{
       if(!pwd) return;
       const credential=firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
       currentUser.reauthenticateWithCredential(credential)
-        .then(()=>currentUser.updatePassword(newPass).then(()=>{messageEl.innerText="Đổi mật khẩu thành công!"; newPasswordInput.value="";}))
-        .catch(e=>errorEl.innerText=e.message)
+        .then(()=>currentUser.updatePassword(newPass).then(()=>{
+          messageEl.innerText="Đổi mật khẩu thành công!";
+          newPasswordInput.value="";
+        })).catch(e=>errorEl.innerText=e.message)
         .catch(e=>errorEl.innerText=e.message);
     } else { errorEl.innerText=err.message; }
   });
@@ -292,5 +304,6 @@ changePasswordBtn.addEventListener('click',()=>{
 logoutBtn.addEventListener('click',()=>auth.signOut().then(()=>window.location.href="index.html"));
 homeBtn.addEventListener('click',()=>window.location.href="index.html");
 </script>
+
 </body>
 </html>
