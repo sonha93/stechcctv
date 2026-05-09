@@ -1,80 +1,154 @@
-// auth.js
-document.addEventListener("DOMContentLoaded", ()=>{
-  const loginLink = document.getElementById("loginLink");
-  const logoutLink = document.getElementById("logoutLink");
-  const authModal = document.getElementById("authModal");
-  const authEmail = document.getElementById("authEmail");
-  const authPassword = document.getElementById("authPassword");
-  const authRegisterBtn = document.getElementById("authRegisterBtn");
-  const authLoginBtn = document.getElementById("authLoginBtn");
-  const closeAuth = document.getElementById("closeAuth");
-  const authMessage = document.getElementById("authMessage");
-  const products = document.getElementById("products");
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop Camera Pro</title>
+<style>
+body{font-family:Arial;margin:0;padding:0;background:#f5f5f5;}
+header{display:flex;align-items:center;padding:10px;background:#007BFF;color:#fff;}
+header .logo img{height:38px;}
+header input{flex:1;margin-left:10px;padding:5px;border-radius:4px;border:none;}
+.sidebar{position:fixed;top:0;left:0;width:220px;height:100%;background:#fff;box-shadow:2px 0 5px rgba(0,0,0,0.1);padding:10px;z-index:1000;}
+.sidebar a{display:block;color:#007BFF;text-decoration:none;margin:8px 0;}
+#userInfoPreview{display:none;text-align:center;margin-top:20px;}
+#userInfoPreview img{width:50px;height:50px;border-radius:50%;object-fit:cover;}
+#authModal{position:fixed;top:0;left:0;width:100%;height:100%;display:none;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:9999;}
+#authModal .auth-content{background:#fff;padding:20px;border-radius:8px;max-width:350px;width:90%;}
+#authModal input{width:100%;padding:8px;margin:6px 0;border-radius:4px;border:1px solid #aaa;}
+#authModal button{width:100%;padding:10px;margin-top:10px;border:none;background:#007BFF;color:white;font-weight:bold;cursor:pointer;border-radius:4px;}
+#authModal #closeAuth{background:#f44336;margin-top:5px;}
+#authMessage{color:red;text-align:center;margin-top:8px;}
+</style>
+</head>
+<body>
 
-  loginLink.addEventListener("click", e=>{
-    e.preventDefault();
-    authModal.style.display="flex";
-    authMessage.innerText="";
-  });
+<div class="sidebar">
+  <h3>Menu</h3>
+  <a href="index.html">Trang chủ</a>
+  <a href="profile.html">Thông tin</a>
+  <hr>
+  <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
+  <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
+  <div id="userInfoPreview">
+    <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/50">
+    <p id="sidebarUserNamePreview">Người dùng</p>
+  </div>
+</div>
 
-  closeAuth.addEventListener("click", ()=> authModal.style.display="none");
+<header>
+  <div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo"></div>
+  <input placeholder="Tìm kiếm sản phẩm...">
+</header>
 
-  authRegisterBtn.addEventListener("click", ()=>{
-    const email = authEmail.value.trim();
-    const pass = authPassword.value.trim();
-    if(!email || !pass){
-      authMessage.style.color="red";
-      authMessage.innerText="Vui lòng nhập email và mật khẩu!";
-      return;
-    }
-    auth.createUserWithEmailAndPassword(email, pass)
-      .then(userCredential=>{
-        authMessage.style.color="green";
-        authMessage.innerText="Đăng ký thành công!";
-        authEmail.value=""; authPassword.value="";
-        authModal.style.display="none";
-      })
-      .catch(err=>{
-        authMessage.style.color="red";
-        authMessage.innerText = err.message;
-      });
-  });
+<!-- POPUP LOGIN/REGISTER -->
+<div id="authModal">
+  <div class="auth-content">
+    <h2>Đăng ký / Đăng nhập</h2>
+    <input type="email" id="authEmail" placeholder="Email">
+    <input type="password" id="authPassword" placeholder="Mật khẩu">
+    <button id="authRegisterBtn">Đăng ký</button>
+    <button id="authLoginBtn">Đăng nhập</button>
+    <button id="closeAuth">Đóng</button>
+    <p id="authMessage"></p>
+  </div>
+</div>
 
-  authLoginBtn.addEventListener("click", ()=>{
-    const email = authEmail.value.trim();
-    const pass = authPassword.value.trim();
-    if(!email || !pass){
-      authMessage.style.color="red";
-      authMessage.innerText="Vui lòng nhập email và mật khẩu!";
-      return;
-    }
-    auth.signInWithEmailAndPassword(email, pass)
-      .then(()=>{
-        authMessage.style.color="green";
-        authMessage.innerText="Đăng nhập thành công!";
-        authModal.style.display="none";
-        loginLink.style.display="none";
-        logoutLink.style.display="block";
-        if(products) products.style.display="grid";
-        authEmail.value=""; authPassword.value="";
-      })
-      .catch(err=>{
-        authMessage.style.color="red";
-        authMessage.innerText = err.message;
-      });
-  });
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  logoutLink.addEventListener("click", ()=> auth.signOut());
+// Firebase config stechcctv
+const firebaseConfig = {
+  apiKey: "AIzaSyCaccD7_7LH6QksYuuwNdiLIUJ0wcUBcPU",
+  authDomain: "stechcctv.firebaseapp.com",
+  databaseURL: "https://stechcctv-default-rtdb.firebaseio.com",
+  projectId: "stechcctv",
+  storageBucket: "stechcctv.firebasestorage.app",
+  messagingSenderId: "67844886113",
+  appId: "1:67844886113:web:5bff3b11086d0a67206420"
+};
 
-  auth.onAuthStateChanged(user=>{
-    if(user){
-      loginLink.style.display="none";
-      logoutLink.style.display="block";
-      if(products) products.style.display="grid";
-    } else {
-      loginLink.style.display="block";
-      logoutLink.style.display="none";
-      if(products) products.style.display="none";
-    }
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// ELEMENTS
+const loginLink = document.getElementById("loginLink");
+const logoutLink = document.getElementById("logoutLink");
+const authModal = document.getElementById("authModal");
+const authEmail = document.getElementById("authEmail");
+const authPassword = document.getElementById("authPassword");
+const authRegisterBtn = document.getElementById("authRegisterBtn");
+const authLoginBtn = document.getElementById("authLoginBtn");
+const closeAuth = document.getElementById("closeAuth");
+const authMessage = document.getElementById("authMessage");
+const userInfoPreview = document.getElementById("userInfoPreview");
+const userAvatarPreview = document.getElementById("sidebarUserAvatarPreview");
+const userNamePreview = document.getElementById("sidebarUserNamePreview");
+
+// SHOW / HIDE POPUP
+loginLink.addEventListener("click", e=>{
+  e.preventDefault();
+  authModal.style.display="flex";
+});
+closeAuth.addEventListener("click", ()=> authModal.style.display="none");
+
+// REGISTER
+authRegisterBtn.addEventListener("click", ()=>{
+  const email = authEmail.value.trim();
+  const pass = authPassword.value.trim();
+  if(!email||!pass){authMessage.style.color="red";authMessage.innerText="Vui lòng nhập email và mật khẩu!"; return;}
+  const defaultAvatar = "https://via.placeholder.com/50";
+  const defaultName = email.split("@")[0];
+
+  createUserWithEmailAndPassword(auth,email,pass)
+  .then(userCredential=>{
+    const user = userCredential.user;
+    return updateProfile(user,{displayName:defaultName,photoURL:defaultAvatar});
+  })
+  .then(()=>{
+    authMessage.style.color="green";
+    authMessage.innerText="Đăng ký thành công!";
+    authEmail.value=""; authPassword.value="";
+    authModal.style.display="none";
+  })
+  .catch(err=>{authMessage.style.color="red"; authMessage.innerText=err.message;});
+});
+
+// LOGIN
+authLoginBtn.addEventListener("click", ()=>{
+  const email = authEmail.value.trim();
+  const pass = authPassword.value.trim();
+  signInWithEmailAndPassword(auth,email,pass)
+  .then(()=>{authMessage.style.color="green"; authMessage.innerText="Đăng nhập thành công!"; authModal.style.display="none";})
+  .catch(err=>{authMessage.style.color="red"; authMessage.innerText=err.message;});
+});
+
+// LOGOUT
+logoutLink.addEventListener("click", ()=>{
+  signOut(auth).then(()=>{
+    loginLink.style.display="block";
+    logoutLink.style.display="none";
+    userInfoPreview.style.display="none";
   });
 });
+
+// LOAD INFO USER
+onAuthStateChanged(auth,user=>{
+  if(user){
+    loginLink.style.display="none";
+    logoutLink.style.display="block";
+    userInfoPreview.style.display="block";
+    userAvatarPreview.src = user.photoURL || "https://via.placeholder.com/50";
+    userNamePreview.innerText = user.displayName || user.email;
+  } else {
+    loginLink.style.display="block";
+    logoutLink.style.display="none";
+    userInfoPreview.style.display="none";
+  }
+});
+</script>
+
+</body>
+</html>
