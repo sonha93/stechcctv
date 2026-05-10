@@ -1,4 +1,3 @@
-
 // ========================
 // FIREBASE CONFIG
 // ========================
@@ -12,12 +11,18 @@ const firebaseConfig = {
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 
+// ========================
+// INIT SAFE (TRÁNH DOUBLE INIT)
+// ========================
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
 const auth = firebase.auth();
 const db = firebase.database();
+
+// 🔥 FIX QUAN TRỌNG: ép auth load local trước
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 // ========================
 // DOM
@@ -32,33 +37,40 @@ const cartCountEl = document.getElementById("cartCount");
 // ========================
 let currentUser = null;
 let cartRef = null;
+let authReady = false;
 
 // ========================
-// NORMALIZE FIREBASE DATA
+// SAFE NORMALIZE
 // ========================
 function normalizeCart(data) {
   if (!data) return [];
 
-  // Firebase đôi khi trả object
-  if (!Array.isArray(data)) {
+  if (Array.isArray(data)) return data;
+
+  if (typeof data === "object") {
     return Object.values(data);
   }
 
-  return data;
+  return [];
 }
 
 // ========================
-// AUTH STATE
+// AUTH READY
 // ========================
 auth.onAuthStateChanged(user => {
 
+  authReady = true;
+
   if (!user) {
     currentUser = null;
+    console.log("Chưa login Firebase");
     return;
   }
 
   currentUser = user;
   cartRef = db.ref("carts/" + user.uid);
+
+  console.log("UID CART:", user.uid);
 
   // realtime cart
   cartRef.on("value", snapshot => {
@@ -73,12 +85,12 @@ auth.onAuthStateChanged(user => {
 });
 
 // ========================
-// ADD TO CART (GLOBAL USE)
+// ADD TO CART (GLOBAL)
 // ========================
 window.addToCart = function(id) {
 
-  if (!currentUser) {
-    alert("Bạn cần đăng nhập!");
+  if (!authReady || !currentUser) {
+    alert("Firebase chưa sẵn sàng hoặc chưa đăng nhập!");
     return;
   }
 
@@ -103,7 +115,8 @@ window.addToCart = function(id) {
     );
 
     if (index !== -1) {
-      cart[index].quantity = (cart[index].quantity || 1) + 1;
+      cart[index].quantity =
+        (cart[index].quantity || 1) + 1;
     } else {
       cart.push({
         id: product.id,
@@ -115,8 +128,11 @@ window.addToCart = function(id) {
       });
     }
 
-    cartRef.set(cart);
+    return cartRef.set(cart);
 
+  }).catch(err => {
+    console.error(err);
+    alert("Lỗi thêm giỏ hàng");
   });
 
 };
@@ -130,7 +146,7 @@ function renderCart(cart) {
 
   cartList.innerHTML = "";
 
-  if (!cart.length) {
+  if (!cart || cart.length === 0) {
     cartList.innerHTML = "<p class='empty'>Giỏ hàng trống 🛒</p>";
     if (totalBox) totalBox.innerHTML = "";
     if (cartAction) cartAction.innerHTML = "";
@@ -155,7 +171,6 @@ function renderCart(cart) {
       <img src="${item.img || ''}">
 
       <div class="info">
-
         <b>${item.name || ''}</b>
 
         <div class="price-new">
@@ -179,7 +194,6 @@ function renderCart(cart) {
           <span>${qty}</span>
           <button onclick="changeQty('${item.id}',1)">+</button>
         </div>
-
       </div>
 
       <button onclick="removeItem('${item.id}')">🗑</button>
@@ -190,7 +204,8 @@ function renderCart(cart) {
   });
 
   if (totalBox) {
-    totalBox.innerHTML = "Tổng: " + total.toLocaleString() + "đ";
+    totalBox.innerHTML =
+      "Tổng: " + total.toLocaleString() + "đ";
   }
 
   if (cartAction) {
@@ -216,7 +231,7 @@ window.removeItem = function(id) {
       item => String(item.id) !== String(id)
     );
 
-    cartRef.set(cart);
+    return cartRef.set(cart);
 
   });
 
@@ -246,7 +261,7 @@ window.changeQty = function(id, delta) {
       cart[index].quantity = 1;
     }
 
-    cartRef.set(cart);
+    return cartRef.set(cart);
 
   });
 
@@ -274,7 +289,7 @@ window.checkout = function() {
     const ordersRef = db.ref("orders/" + currentUser.uid);
     const orderKey = ordersRef.push().key;
 
-    ordersRef.child(orderKey).set({
+    return ordersRef.child(orderKey).set({
       items: cart,
       status: "Đang xử lý",
       createdAt: new Date().toISOString()
@@ -290,7 +305,7 @@ window.checkout = function() {
 };
 
 // ========================
-// BADGE UPDATE
+// BADGE
 // ========================
 function updateBadge(cart) {
 
@@ -303,5 +318,4 @@ function updateBadge(cart) {
   });
 
   cartCountEl.innerText = count;
-
 }
