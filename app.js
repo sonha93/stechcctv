@@ -19,7 +19,7 @@ function normalizeProduct(p){
     oldPrice: Number(p.oldPrice) || 0,
 
     /* BASIC */
-    id: p.id || Date.now(),
+    id: String(p.id || ""),   // FIX ID ổn định
     name: p.name || "",
     img: p.img || "",
     category: p.category || "",
@@ -104,76 +104,46 @@ function render(list){
   }
 
   /* FEATURED */
-
   if(isIndex){
-
-    list = list.filter(
-      p => p.featured === true
-    );
-
+    list = list.filter(p => p.featured === true);
   }
 
   /* CATEGORY */
-
   if(!isIndex && category){
-
-    list = list.filter(
-      p => p.category === category
-    );
-
+    list = list.filter(p => p.category === category);
   }
 
   box.innerHTML = "";
 
-  /* EMPTY */
-
   if(list.length === 0){
-
-    box.innerHTML =
-      "<p>Chưa có sản phẩm</p>";
-
+    box.innerHTML = "<p>Chưa có sản phẩm</p>";
     return;
   }
-
-  /* LOOP */
 
   list.forEach(p => {
 
     const id = String(p.id);
+    const price = Number(p.price);
+    const oldPrice = Number(p.oldPrice);
 
-    const price =
-      Number(p.price);
+    const hasDiscount = oldPrice > price;
 
-    const oldPrice =
-      Number(p.oldPrice);
-
-    const hasDiscount =
-      oldPrice > price;
-
-    const percent =
-      hasDiscount
-      ? Math.round(
-          (1 - price / oldPrice) * 100
-        )
+    const percent = hasDiscount
+      ? Math.round((1 - price / oldPrice) * 100)
       : 0;
 
     box.innerHTML += `
 
       <div class="item">
 
-        <!-- IMAGE -->
         <img
           src="${p.img}"
           onclick="goDetail('${id}')"
           style="cursor:pointer;"
         >
 
-        <!-- NAME -->
-        <h4>
-          ${p.name}
-        </h4>
+        <h4>${p.name}</h4>
 
-        <!-- PRICE -->
         <div class="price-box">
 
           <span class="price">
@@ -181,36 +151,24 @@ function render(list){
           </span>
 
           ${hasDiscount ? `
-
             <span class="old-price">
               ${oldPrice.toLocaleString()}đ
             </span>
-
           ` : ""}
 
           ${percent ? `
-
             <span class="discount-text">
               -${percent}%
             </span>
-
           ` : ""}
 
         </div>
 
-        <!-- DETAIL -->
-        <button
-          class="spec-btn"
-          onclick="goDetail('${id}')"
-        >
+        <button class="spec-btn" onclick="goDetail('${id}')">
           ⚙️ Xem chi tiết
         </button>
 
-        <!-- CART -->
-        <button
-          class="cart-btn"
-          onclick="addToCart('${id}')"
-        >
+        <button class="cart-btn" onclick="addToCart('${id}')">
           🛒 Thêm vào giỏ
         </button>
 
@@ -223,54 +181,16 @@ function render(list){
 }
 
 /* =========================
-   🛒 ADD TO CART
+   🛒 ADD TO CART (FIXED HOOK FIREBASE)
 ========================= */
 window.addToCart = function(id){
 
-  const product =
-    normalizeList(getProducts())
-    .find(
-      p => String(p.id) === String(id)
-    );
-
-  if(!product) return;
-
-  let cart =
-    JSON.parse(
-      localStorage.getItem("cart")
-    ) || [];
-
-  const exist =
-    cart.find(
-      item => String(item.id) === String(id)
-    );
-
-  if(exist){
-
-    exist.qty += 1;
-
-  }else{
-
-    cart.push({
-
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      oldPrice: product.oldPrice,
-      img: product.img,
-      qty: 1
-
-    });
-
+  if(typeof window.firebaseAddToCart === "function"){
+    window.firebaseAddToCart(id);
+    return;
   }
 
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
-
-  alert("Đã thêm vào giỏ 🛒");
-
+  alert("Giỏ hàng chưa kết nối Firebase!");
 };
 
 /* =========================
@@ -287,7 +207,6 @@ window.toggleMenu = function(){
   if(!sidebar || !overlay) return;
 
   sidebar.classList.toggle("active");
-
   overlay.classList.toggle("active");
 
 };
@@ -300,66 +219,44 @@ const search =
 
 if(search){
 
-  search.addEventListener(
-    "input",
-    e => {
+  search.addEventListener("input", e => {
 
-      const key =
-        e.target.value.toLowerCase();
+    const key = e.target.value.toLowerCase();
 
-      let data =
-        normalizeList(getProducts());
+    let data = normalizeList(getProducts());
 
-      const category =
-        getPageCategory();
+    const category = getPageCategory();
 
-      const isIndex =
-        !window.location.pathname.includes("the-nho") &&
-        !window.location.pathname.includes("camera-trong-nha") &&
-        !window.location.pathname.includes("camera-ngoai-troi") &&
-        !window.location.pathname.includes("combo");
+    const isIndex =
+      !window.location.pathname.includes("the-nho") &&
+      !window.location.pathname.includes("camera-trong-nha") &&
+      !window.location.pathname.includes("camera-ngoai-troi") &&
+      !window.location.pathname.includes("combo");
 
-      if(isIndex){
-
-        data = data.filter(
-          p => p.featured === true
-        );
-
-      }
-
-      if(!isIndex && category){
-
-        data = data.filter(
-          p => p.category === category
-        );
-
-      }
-
-      render(
-
-        data.filter(
-          p =>
-            p.name
-            .toLowerCase()
-            .includes(key)
-        )
-
-      );
-
+    if(isIndex){
+      data = data.filter(p => p.featured === true);
     }
-  );
+
+    if(!isIndex && category){
+      data = data.filter(p => p.category === category);
+    }
+
+    render(
+      data.filter(p =>
+        p.name.toLowerCase().includes(key)
+      )
+    );
+
+  });
 
 }
 
 /* =========================
    INIT
 ========================= */
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-    render();
-  }
-);
+document.addEventListener("DOMContentLoaded", () => {
+  render();
+});
 
 /* =========================
    🧹 AUTO FIX DATA
@@ -367,83 +264,38 @@ document.addEventListener(
 function fixOldData(){
 
   let list =
-    JSON.parse(
-      localStorage.getItem("products")
-    ) || [];
+    JSON.parse(localStorage.getItem("products")) || [];
 
   let changed = false;
 
   list = list.map(p => {
 
-    let price =
-      Number(p.price) || 0;
+    let price = Number(p.price) || 0;
+    let oldPrice = Number(p.oldPrice) || 0;
 
-    let oldPrice =
-      Number(p.oldPrice) || 0;
-
-    /* XÓA SALE CŨ */
-
-    if(
-      p.salePrice ||
-      p.saleStart ||
-      p.saleEnd
-    ){
-
+    if(p.salePrice || p.saleStart || p.saleEnd){
       delete p.salePrice;
       delete p.saleStart;
       delete p.saleEnd;
-
       changed = true;
-
     }
 
-    /* FIX ĐẢO GIÁ */
-
-    if(
-      oldPrice &&
-      oldPrice < price
-    ){
-
-      [price, oldPrice] =
-      [oldPrice, price];
-
+    if(oldPrice && oldPrice < price){
+      [price, oldPrice] = [oldPrice, price];
       changed = true;
-
     }
 
     return {
-
       ...p,
-
       price,
-      oldPrice,
-
-      model: p.model || "",
-      xuatXu: p.xuatXu || "",
-      baoHanh: p.baoHanh || "",
-      doPhanGiai: p.doPhanGiai || "",
-      gocNhin: p.gocNhin || "",
-      ketNoi: p.ketNoi || "",
-      thietKe: p.thietKe || "",
-      chatLieu: p.chatLieu || "",
-      congSuat: p.congSuat || "",
-      moTa: p.moTa || ""
-
+      oldPrice
     };
 
   });
 
   if(changed){
-
-    console.log(
-      "🛠 Đã làm sạch data"
-    );
-
-    localStorage.setItem(
-      "products",
-      JSON.stringify(list)
-    );
-
+    console.log("🛠 Đã làm sạch data");
+    localStorage.setItem("products", JSON.stringify(list));
   }
 
 }
@@ -454,40 +306,25 @@ fixOldData();
    🎞 AUTO SLIDER
 ========================= */
 const slider =
-  document.querySelector(
-    ".product-slider"
-  );
+  document.querySelector(".product-slider");
 
 let isTouching = false;
 
 if(slider){
 
-  slider.addEventListener(
-    "touchstart",
-    ()=> isTouching = true
-  );
+  slider.addEventListener("touchstart", () => isTouching = true);
+  slider.addEventListener("touchend", () => isTouching = false);
 
-  slider.addEventListener(
-    "touchend",
-    ()=> isTouching = false
-  );
-
-  setInterval(()=>{
+  setInterval(() => {
 
     if(isTouching) return;
 
     slider.scrollLeft += 0.5;
 
-    if(
-      slider.scrollLeft >=
-      slider.scrollWidth -
-      slider.clientWidth
-    ){
-
+    if(slider.scrollLeft >= slider.scrollWidth - slider.clientWidth){
       slider.scrollLeft = 0;
-
     }
 
-  },20);
+  }, 20);
 
 }
