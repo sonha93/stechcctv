@@ -1,127 +1,42 @@
 /* =========================
-   🔥 CAMERA NGOÀI TRỜI JS PRO
+   🔥 CAMERA NGOAI TROI JS FIX FULL
 ========================= */
 
 /* =========================
    GET DATA
 ========================= */
 function getProducts() {
-  return JSON.parse(localStorage.getItem("products")) || [];
+  return JSON.parse(
+    localStorage.getItem("products")
+  ) || [];
 }
 
 /* =========================
    PAGE CATEGORY
 ========================= */
 function getPageCategory() {
-  return "cam-ngoai";
+  return "cam-IN";
 }
 
 /* =========================
-   🧠 NORMALIZE
+   FIX DATA
 ========================= */
-function normalizeProduct(p){
+function fixData(list){
 
-  return {
+  return list.map(p => ({
 
     ...p,
 
-    id: p.id || Date.now(),
-
-    name: p.name || "",
-
-    img: p.img || "",
-
-    category: p.category || "",
-
-    desc: p.desc || "",
-
     price: Number(p.price) || 0,
 
-    oldPrice: Number(p.oldPrice) || 0,
+    oldPrice: Number(p.oldPrice) || 0
 
-    featured: p.featured || false,
-
-    spec: {
-
-      model: p.spec?.model || "",
-
-      xuatXu: p.spec?.xuatXu || "",
-
-      baoHanh: p.spec?.baoHanh || "",
-
-      chatLieu: p.spec?.chatLieu || ""
-
-    }
-
-  };
-
-}
-
-function normalizeList(list){
-  return list.map(normalizeProduct);
-}
-
-/* =========================
-   ⚙️ SPEC HTML
-========================= */
-function renderSpec(p){
-
-  return `
-
-    <div class="spec-grid">
-
-      ${
-        p.spec?.model
-        ? `
-          <div class="spec-item">
-            <span>Model</span>
-            <b>${p.spec.model}</b>
-          </div>
-        `
-        : ""
-      }
-
-      ${
-        p.spec?.xuatXu
-        ? `
-          <div class="spec-item">
-            <span>Xuất xứ</span>
-            <b>${p.spec.xuatXu}</b>
-          </div>
-        `
-        : ""
-      }
-
-      ${
-        p.spec?.chatLieu
-        ? `
-          <div class="spec-item">
-            <span>Chất liệu</span>
-            <b>${p.spec.chatLieu}</b>
-          </div>
-        `
-        : ""
-      }
-
-      ${
-        p.spec?.baoHanh
-        ? `
-          <div class="spec-item">
-            <span>Bảo hành</span>
-            <b>${p.spec.baoHanh}</b>
-          </div>
-        `
-        : ""
-      }
-
-    </div>
-
-  `;
+  }));
 
 }
 
 /* =========================
-   🖥 RENDER PRODUCTS
+   RENDER PRODUCTS
 ========================= */
 function render(list){
 
@@ -132,15 +47,15 @@ function render(list){
 
   if(!list){
 
-    list =
-      normalizeList(getProducts());
+    list = getProducts();
 
   }
 
-  list =
-    list.filter(
-      p => p.category === "cam-ngoai"
-    );
+  list = fixData(list);
+
+  list = list.filter(
+    p => p.category === "cam-ngoai"
+  );
 
   box.innerHTML = "";
 
@@ -154,14 +69,16 @@ function render(list){
 
   list.forEach(p => {
 
+    if(!p.id) return;
+
     const id =
       String(p.id);
 
     const price =
-      Number(p.price);
+      Number(p.price) || 0;
 
     const oldPrice =
-      Number(p.oldPrice);
+      Number(p.oldPrice) || 0;
 
     const hasDiscount =
       oldPrice > price;
@@ -178,15 +95,20 @@ function render(list){
       <div class="item">
 
         <!-- IMAGE -->
-        <img
-          src="${p.img}"
-          onclick="goDetail('${id}')"
-          style="cursor:pointer;"
-        >
+        <div class="img-box">
+
+          <img
+            src="${p.img || ''}"
+            alt="${p.name || ''}"
+            onclick="goDetail('${id}')"
+            style="cursor:pointer;"
+          >
+
+        </div>
 
         <!-- NAME -->
         <h4>
-          ${p.name}
+          ${p.name || 'Không tên'}
         </h4>
 
         <!-- PRICE -->
@@ -198,51 +120,54 @@ function render(list){
 
           ${
             hasDiscount
-            ? `
-              <span class="old-price">
-                ${oldPrice.toLocaleString()}đ
-              </span>
-            `
-            : ""
-          }
 
-          ${
-            percent
             ? `
-              <span class="discount-text">
-                -${percent}%
-              </span>
+
+            <span class="old-price">
+              ${oldPrice.toLocaleString()}đ
+            </span>
+
             `
+
             : ""
           }
 
         </div>
 
-        <!-- BUTTON -->
+        <!-- DISCOUNT -->
+        ${
+          percent
+
+          ? `
+
+          <div class="discount-text">
+            -${percent}%
+          </div>
+
+          `
+
+          : ""
+        }
+
+        <!-- BUTTON SPEC -->
         <button
           class="spec-btn"
-          onclick="toggleSpec('${id}')"
+          onclick="goDetail('${id}')"
         >
+
           ⚙️ Xem thông số
+
         </button>
 
+        <!-- BUTTON CART -->
         <button
           class="cart-btn"
           onclick="addToCart('${id}')"
         >
+
           🛒 Thêm vào giỏ
+
         </button>
-
-        <!-- SPEC -->
-        <div
-          class="spec-box"
-          id="spec-${id}"
-          style="display:none;"
-        >
-
-          ${renderSpec(p)}
-
-        </div>
 
       </div>
 
@@ -253,26 +178,7 @@ function render(list){
 }
 
 /* =========================
-   ⚙️ TOGGLE SPEC
-========================= */
-window.toggleSpec = function(id){
-
-  const el =
-    document.getElementById(
-      `spec-${id}`
-    );
-
-  if(!el) return;
-
-  el.style.display =
-    el.style.display === "block"
-    ? "none"
-    : "block";
-
-};
-
-/* =========================
-   🔗 DETAIL
+   DETAIL PAGE
 ========================= */
 window.goDetail = function(id){
 
@@ -282,112 +188,61 @@ window.goDetail = function(id){
 };
 
 /* =========================
-   🛒 ADD TO CART FIREBASE
+   ADD TO CART
 ========================= */
 window.addToCart = function(id){
 
-  // check login
-  const user = firebase.auth().currentUser;
-
-  if(!user){
-    alert("Bạn cần đăng nhập!");
-    return;
-  }
-
   const product =
-    normalizeList(getProducts())
-    .find(
+    getProducts().find(
       p => String(p.id) === String(id)
     );
 
-  if(!product){
-    alert("Không tìm thấy sản phẩm");
-    return;
-  }
+  if(!product) return;
 
-  const uid = user.uid;
+  let cart =
+    JSON.parse(
+      localStorage.getItem("cart")
+    ) || [];
 
-  const cartRef =
-    firebase.database().ref(
-      "carts/" + uid
+  const exist =
+    cart.find(
+      i => String(i.id) === String(id)
     );
 
-  cartRef.once("value")
-  .then(snapshot => {
+  if(exist){
 
-    let cart =
-      snapshot.val() || [];
+    exist.qty += 1;
 
-    const exist =
-      cart.find(
-        item =>
-          String(item.id) === String(id)
-      );
+  }else{
 
-    // đã tồn tại
-    if(exist){
+    cart.push({
 
-      exist.quantity =
-        (exist.quantity || 1) + 1;
+      ...product,
 
-    }
-
-    // chưa tồn tại
-    else{
-
-      cart.push({
-
-        id: product.id,
-        name: product.name,
-        img: product.img,
-        price: Number(product.price) || 0,
-        oldPrice: Number(product.oldPrice) || 0,
-        quantity: 1
-
-      });
-
-    }
-
-    // save firebase
-    cartRef.set(cart)
-    .then(() => {
-
-      alert("Đã thêm vào giỏ 🛒");
-
-      // update badge
-      const cartCount =
-        document.getElementById("cartCount");
-
-      if(cartCount){
-
-        let total = 0;
-
-        cart.forEach(item => {
-
-          total +=
-            item.quantity || 1;
-
-        });
-
-        cartCount.innerText = total;
-
-      }
+      qty:1
 
     });
 
-  });
+  }
+
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
+
+  alert("Đã thêm vào giỏ 🛒");
 
 };
 
 /* =========================
-   🔍 SEARCH
+   SEARCH
 ========================= */
-const searchInput =
+const search =
   document.getElementById("search");
 
-if(searchInput){
+if(search){
 
-  searchInput.addEventListener(
+  search.addEventListener(
     "input",
     e => {
 
@@ -395,10 +250,7 @@ if(searchInput){
         e.target.value.toLowerCase();
 
       let data =
-        normalizeList(getProducts());
-
-      data =
-        data.filter(
+        getProducts().filter(
           p => p.category === "cam-ngoai"
         );
 
@@ -406,9 +258,10 @@ if(searchInput){
 
         data.filter(
           p =>
+            p.name &&
             p.name
-            .toLowerCase()
-            .includes(key)
+              .toLowerCase()
+              .includes(key)
         )
 
       );
@@ -419,7 +272,7 @@ if(searchInput){
 }
 
 /* =========================
-   📱 MENU
+   MENU
 ========================= */
 window.toggleMenu = function(){
 
@@ -429,64 +282,14 @@ window.toggleMenu = function(){
   const overlay =
     document.getElementById("overlay");
 
-  if(!sidebar || !overlay) return;
+  if(!sidebar || !overlay)
+    return;
 
   sidebar.classList.toggle("active");
 
   overlay.classList.toggle("active");
 
 };
-
-/* =========================
-   🧹 FIX DATA
-========================= */
-function fixOldData(){
-
-  let list =
-    JSON.parse(
-      localStorage.getItem("products")
-    ) || [];
-
-  list = list.map(p => {
-
-    return {
-
-      ...p,
-
-      price:
-        Number(p.price) || 0,
-
-      oldPrice:
-        Number(p.oldPrice) || 0,
-
-      spec: {
-
-        model:
-          p.spec?.model || "",
-
-        xuatXu:
-          p.spec?.xuatXu || "",
-
-        baoHanh:
-          p.spec?.baoHanh || "",
-
-        chatLieu:
-          p.spec?.chatLieu || ""
-
-      }
-
-    };
-
-  });
-
-  localStorage.setItem(
-    "products",
-    JSON.stringify(list)
-  );
-
-}
-
-fixOldData();
 
 /* =========================
    INIT
