@@ -5,112 +5,95 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel - Shop Camera Pro</title>
 <style>
-/* ===== RESET ===== */
-* { margin:0; padding:0; box-sizing:border-box; font-family:sans-serif; }
-body { background:#f5f5f5; padding:20px; }
-.container { max-width:1200px; margin:0 auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
-/* Header */
-h1 { margin-bottom:20px; color:#00acc1; }
-/* Layout bảng */
-table { width:100%; border-collapse:collapse; margin-bottom:20px; }
-table, th, td { border:1px solid #ccc; }
-th, td { padding:10px; text-align:left; }
-th { background:#eee; }
-/* Form upload */
-.upload-section { margin-bottom:20px; }
-input[type=file] { padding:5px; }
-button { padding:8px 12px; background:#00acc1; color:#fff; border:none; border-radius:4px; cursor:pointer; }
-button:hover { background:#007c91; }
-img.preview { max-width:200px; display:block; margin-top:10px; border:1px solid #ccc; border-radius:4px; }
+body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+.container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+th { background: #eee; }
+button { padding: 6px 12px; background: #00acc1; color: #fff; border: none; cursor: pointer; border-radius: 4px; }
+#preview { max-width: 100%; margin-top: 10px; }
 </style>
+
+<!-- Firebase App (cdn) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
 </head>
 <body>
-
 <div class="container">
-  <h1>Admin Panel - Shop Camera Pro</h1>
+<h2>Admin Panel - Shop Camera Pro</h2>
+<table>
+<tr>
+<th>Tên sản phẩm</th>
+<th>Giá</th>
+<th>Ảnh</th>
+</tr>
+<tr>
+<td>Ví dụ Camera 1</td>
+<td>500.000</td>
+<td><img id="current-img" src="" alt="" width="100"></td>
+</tr>
+</table>
 
-  <!-- BẢNG CÁC SẢN PHẨM -->
-  <table id="products-table">
-    <thead>
-      <tr>
-        <th>Tên sản phẩm</th>
-        <th>Giá</th>
-        <th>Ảnh</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Sản phẩm sẽ được load từ JS -->
-    </tbody>
-  </table>
-
-  <!-- PHẦN UPLOAD ẢNH MỚI -->
-  <div class="upload-section">
-    <label>Chọn ảnh để upload:</label>
-    <input type="file" id="fileInput" accept="image/*">
-    <button id="uploadBtn">Upload lên Firebase</button>
-    <img id="preview" class="preview" src="">
-    <p id="uploadStatus"></p>
-  </div>
+<input type="file" id="file-input">
+<button id="upload-btn">Upload lên Firebase</button>
+<p id="progress">Upload 0%</p>
+<img id="preview" src="" alt="Preview">
 
 </div>
 
-<!-- ===== FIREBASE CDN ===== -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
-
 <script>
-// ===== CẤU HÌNH FIREBASE =====
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBgiXCyXP7Ion3dgL-QOckfhGKbZZxkxN0",
   authDomain: "stech-storage.firebaseapp.com",
   projectId: "stech-storage",
   storageBucket: "stech-storage.appspot.com",
   messagingSenderId: "426074076904",
-  appId: "1:426074076904:web:50e3475feb2a2fbbeb3b5d",
-  measurementId: "G-MX7LET5ZS8"
+  appId: "1:426074076904:web:50e3475feb2a2fbbeb3b5d"
 };
 
-// Khởi tạo Firebase
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-firebase.analytics();
 const storage = firebase.storage();
 
-// ===== UPLOAD ẢNH =====
-const fileInput = document.getElementById('fileInput');
-const uploadBtn = document.getElementById('uploadBtn');
+const fileInput = document.getElementById('file-input');
+const uploadBtn = document.getElementById('upload-btn');
+const progressText = document.getElementById('progress');
 const preview = document.getElementById('preview');
-const uploadStatus = document.getElementById('uploadStatus');
+const currentImg = document.getElementById('current-img');
 
-fileInput.addEventListener('change', () => {
-  const file = fileInput.files[0];
-  if(file) {
-    preview.src = URL.createObjectURL(file);
-  }
+let selectedFile = null;
+
+fileInput.addEventListener('change', e => {
+    selectedFile = e.target.files[0];
+    if(selectedFile) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            preview.src = evt.target.result;
+        }
+        reader.readAsDataURL(selectedFile);
+    }
 });
 
 uploadBtn.addEventListener('click', () => {
-  const file = fileInput.files[0];
-  if(!file) { alert('Chọn ảnh trước khi upload'); return; }
+    if(!selectedFile) return alert('Chọn file trước!');
+    const storageRef = storage.ref('uploads/' + selectedFile.name);
+    const uploadTask = storageRef.put(selectedFile);
 
-  const storageRef = storage.ref('uploads/' + file.name);
-  const uploadTask = storageRef.put(file);
-
-  uploadStatus.textContent = 'Đang upload...';
-
-  uploadTask.on('state_changed', 
-    snapshot => {
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      uploadStatus.textContent = `Upload ${progress.toFixed(0)}%`;
-    }, 
-    error => { uploadStatus.textContent = 'Lỗi upload: ' + error; }, 
-    () => {
-      uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-        uploadStatus.textContent = 'Upload xong! URL: ' + downloadURL;
-        console.log('File available at', downloadURL);
-      });
-    }
-  );
+    uploadTask.on('state_changed', snapshot => {
+        const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        progressText.innerText = 'Upload ' + percent + '%';
+    }, error => {
+        console.error('Upload lỗi:', error);
+        alert('Upload thất bại!');
+    }, () => {
+        uploadTask.snapshot.ref.getDownloadURL().then(url => {
+            currentImg.src = url; // hiện ảnh sau upload
+            preview.src = '';
+            progressText.innerText = 'Upload hoàn tất!';
+        });
+    });
 });
 </script>
 
