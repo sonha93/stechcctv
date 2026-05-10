@@ -75,10 +75,17 @@ input, textarea, select{width:100%;padding:10px;margin-top:6px;margin-bottom:10p
 
 <!-- SEND TELEGRAM -->
 <script>
-function sendTelegramNotification(orderNumber, customerName, total) {
+function sendTelegramNotification(orderNumber, customerName, phone, address, cartItems, total) {
   const botToken = "8752443026:AAEHrvCIDLqEDfE_inDeAAI9dzClm3WZyz4";
   const chatId = "6087791909";
-  const message = `📦 Đơn hàng mới!\nMã đơn: ${orderNumber}\nKhách hàng: ${customerName}\nTổng tiền: ${total}`;
+
+  // Tạo nội dung chi tiết đơn hàng
+  let itemsText = cartItems.map(item => {
+    return `• ${item.name} - Giá: ${item.price.toLocaleString()}đ - Số lượng: ${item.qty}`;
+  }).join("\n");
+
+  const message = `📦 Đơn hàng mới!\nMã đơn: ${orderNumber}\nKhách hàng: ${customerName}\nSĐT: ${phone}\nĐịa chỉ: ${address}\n\n🛒 Chi tiết đơn hàng:\n${itemsText}\n\nTổng tiền: ${total}`;
+
   fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`)
     .then(res => res.json())
     .then(data => { if(data.ok) console.log("Đã gửi Telegram!"); else console.error("Telegram lỗi", data); })
@@ -157,7 +164,7 @@ function placeOrder(){
 
   // --- Gửi Telegram ---
   if(typeof sendTelegramNotification==="function"){
-    sendTelegramNotification(orderId,name,total.toLocaleString()+"đ");
+    sendTelegramNotification(orderId, name, phone, address, cart, total.toLocaleString()+"đ");
   }
 
   // Lưu đơn hàng
@@ -186,4 +193,4 @@ updateBank();
 </div>
 
 </body>
-</html>  
+</html>
