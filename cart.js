@@ -11,7 +11,7 @@ const firebaseConfig = {
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 
-// init safe
+// init Firebase safe
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -35,23 +35,23 @@ let cartRef = null;
 let firebaseReady = false;
 
 // ========================
-// NORMALIZE DATA (Firebase object/array fix)
+// NORMALIZE Firebase object/array
 // ========================
 function normalize(data) {
   if (!data) return [];
-  if (Array.isArray(data)) return data;
-  return Object.values(data);
+  return Array.isArray(data) ? data : Object.values(data);
 }
 
 // ========================
 // AUTH STATE
 // ========================
 auth.onAuthStateChanged(user => {
-
   if (!user) {
     currentUser = null;
     cartRef = null;
     firebaseReady = false;
+    renderCart([]); // reset cart UI
+    updateBadge([]);
     return;
   }
 
@@ -59,27 +59,25 @@ auth.onAuthStateChanged(user => {
   cartRef = db.ref("carts/" + user.uid);
   firebaseReady = true;
 
-  // realtime cart
+  // realtime cart update
   cartRef.on("value", snap => {
     const cart = normalize(snap.val());
     renderCart(cart);
     updateBadge(cart);
   });
-
 });
 
 // ========================
-// ADD TO CART (GLOBAL FUNCTION)
+// ADD TO CART
 // ========================
 window.addToCart = function(id) {
 
   if (!firebaseReady || !currentUser || !cartRef) {
-    alert("⚠ Firebase chưa sẵn sàng, vui lòng đăng nhập hoặc chờ 1–2 giây");
+    alert("⚠ Firebase chưa sẵn sàng, hãy đăng nhập hoặc chờ 1–2 giây");
     return;
   }
 
   const products = JSON.parse(localStorage.getItem("products")) || [];
-
   const product = products.find(p => String(p.id) === String(id));
 
   if (!product) {
@@ -88,7 +86,6 @@ window.addToCart = function(id) {
   }
 
   cartRef.once("value").then(snap => {
-
     let cart = normalize(snap.val());
 
     const index = cart.findIndex(i => String(i.id) === String(id));
@@ -98,7 +95,7 @@ window.addToCart = function(id) {
     } else {
       cart.push({
         id: product.id,
-        name: product.name,
+        name: product.name || "",
         price: Number(product.price) || 0,
         oldPrice: Number(product.oldPrice) || 0,
         img: product.img || "",
@@ -106,8 +103,10 @@ window.addToCart = function(id) {
       });
     }
 
-    cartRef.set(cart);
-
+    return cartRef.set(cart);
+  }).catch(err => {
+    console.error("AddToCart error:", err);
+    alert("Lỗi khi thêm giỏ hàng!");
   });
 
 };
@@ -116,11 +115,9 @@ window.addToCart = function(id) {
 // RENDER CART
 // ========================
 function renderCart(cart) {
-
   if (!cartList) return;
 
   cartList.innerHTML = "";
-
   if (!cart.length) {
     cartList.innerHTML = "<p class='empty'>Giỏ hàng trống 🛒</p>";
     if (totalBox) totalBox.innerHTML = "";
@@ -129,121 +126,76 @@ function renderCart(cart) {
   }
 
   let total = 0;
-
   cart.forEach(item => {
-
     const qty = item.quantity || 1;
     const price = Number(item.price) || 0;
     const oldPrice = Number(item.oldPrice) || 0;
-
     const sum = price * qty;
     total += sum;
 
     const div = document.createElement("div");
     div.className = "item";
-
     div.innerHTML = `
       <img src="${item.img || ''}">
-
       <div class="info">
         <b>${item.name || ''}</b>
-
         <div>${price.toLocaleString()}đ</div>
-
-        ${oldPrice > price ? `
-          <div class="old">${oldPrice.toLocaleString()}đ</div>
-        ` : ""}
-
+        ${oldPrice > price ? `<div class="old">${oldPrice.toLocaleString()}đ</div>` : ""}
         <div>SL: ${qty}</div>
-
-        <div style="color:red;font-weight:bold;">
-          ${sum.toLocaleString()}đ
-        </div>
-
+        <div style="color:red;font-weight:bold;">${sum.toLocaleString()}đ</div>
         <div class="qty">
           <button onclick="changeQty('${item.id}',-1)">-</button>
           <span>${qty}</span>
           <button onclick="changeQty('${item.id}',1)">+</button>
         </div>
       </div>
-
       <button onclick="removeItem('${item.id}')">🗑</button>
     `;
-
     cartList.appendChild(div);
-
   });
 
-  if (totalBox) {
-    totalBox.innerHTML = "Tổng: " + total.toLocaleString() + "đ";
-  }
-
-  if (cartAction) {
-    cartAction.innerHTML = `<button onclick="checkout()">Đặt hàng</button>`;
-  }
-
+  if (totalBox) totalBox.innerHTML = "Tổng: " + total.toLocaleString() + "đ";
+  if (cartAction) cartAction.innerHTML = `<button onclick="checkout()">Đặt hàng</button>`;
 }
 
 // ========================
 // REMOVE ITEM
 // ========================
 window.removeItem = function(id) {
-
   if (!cartRef) return;
 
   cartRef.once("value").then(snap => {
-
     let cart = normalize(snap.val());
-
     cart = cart.filter(i => String(i.id) !== String(id));
-
     cartRef.set(cart);
-
   });
-
 };
 
 // ========================
 // CHANGE QTY
 // ========================
 window.changeQty = function(id, delta) {
-
   if (!cartRef) return;
 
   cartRef.once("value").then(snap => {
-
     let cart = normalize(snap.val());
-
     const i = cart.findIndex(x => String(x.id) === String(id));
-
     if (i === -1) return;
-
     cart[i].quantity = (cart[i].quantity || 1) + delta;
-
     if (cart[i].quantity < 1) cart[i].quantity = 1;
-
     cartRef.set(cart);
-
   });
-
 };
 
 // ========================
 // CHECKOUT
 // ========================
 window.checkout = function() {
-
   if (!cartRef || !currentUser) return;
 
   cartRef.once("value").then(snap => {
-
     const cart = normalize(snap.val());
-
-    if (!cart.length) {
-      alert("Giỏ hàng trống!");
-      return;
-    }
-
+    if (!cart.length) return alert("Giỏ hàng trống!");
     const orderRef = db.ref("orders/" + currentUser.uid);
     const key = orderRef.push().key;
 
@@ -254,24 +206,16 @@ window.checkout = function() {
     });
 
     cartRef.remove();
-
     alert("Đặt hàng thành công!");
-
   });
-
 };
 
 // ========================
-// BADGE UPDATE
+// UPDATE BADGE
 // ========================
 function updateBadge(cart) {
-
   if (!cartCountEl) return;
-
   let count = 0;
-
   cart.forEach(i => count += i.quantity || 1);
-
   cartCountEl.innerText = count;
-
 }
