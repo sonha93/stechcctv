@@ -4,19 +4,23 @@
 <meta charset="UTF-8">
 <title>Thanh toán</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
 body{font-family:Arial;background:#f5f5f5;margin:0;}
 .container{max-width:800px;margin:auto;padding:20px;}
 .box{background:#fff;padding:15px;border-radius:10px;margin-bottom:15px;}
 .title-box{background:#fff;padding:15px;border-radius:10px;margin-bottom:15px;font-size:20px;font-weight:bold;}
-.item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #eee;align-items:center;}
+.item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #eee;align-items:center;position:relative;}
 .item img{width:70px;height:70px;object-fit:cover;border-radius:8px;}
-.calc{margin-top:5px;}
-.sale-price{color:#e53935;font-weight:bold;font-size:16px;}
-.old-price{text-decoration:line-through;color:#999;font-size:13px;}
+.calc{margin-top:5px;display:flex;flex-direction:column;flex:1;min-width:140px;}
+.sale-price{color:#e53935;font-weight:bold;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.old-price{text-decoration:line-through;color:#999;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.qty{display:flex;align-items:center;gap:4px;margin-top:5px;}
+.qty button{width:28px;height:28px;background:#eee;border:none;border-radius:6px;cursor:pointer;}
+.qty span{display:inline-block;width:28px;text-align:center;}
+.remove{position:absolute;top:5px;right:5px;background:none;border:none;font-size:18px;cursor:pointer;}
+.check-item{position:absolute;top:5px;left:5px;width:20px;height:20px;cursor:pointer;}
 .total-box{margin-top:12px;padding-top:10px;border-top:1px solid #eee;}
-.total-box .row{display:flex;justify-content:space-between;margin:6px 0;}
+.total-box .row{display:flex;justify-content:space-between;margin:6px 0;flex-wrap:wrap;}
 .total-box .discount b{color:#e53935;}
 .total-box .final{border-top:1px solid #ddd;margin-top:8px;padding-top:10px;font-size:18px;font-weight:bold;}
 .total-box .final b{color:#e53935;}
@@ -50,12 +54,10 @@ input, textarea, select{width:100%;padding:10px;margin-top:6px;margin-bottom:10p
 
 <div class="box">
   <h3>💰 Thanh toán</h3>
-
   <select id="payment">
     <option value="cod">COD</option>
     <option value="bank">Chuyển khoản</option>
   </select>
-
   <div id="bankInfo">
     <h3>🏦 Vietinbank</h3>
     <p>HOANG ANH SON</p>
@@ -65,7 +67,6 @@ input, textarea, select{width:100%;padding:10px;margin-top:6px;margin-bottom:10p
 </div>
 
 <button class="btn" onclick="placeOrder()">🛒 Đặt hàng</button>
-
 </div>
 
 <div id="loading">
@@ -79,8 +80,7 @@ function sendTelegramNotification(orderNumber, customerName, phone, address, car
   const botToken = "8752443026:AAEHrvCIDLqEDfE_inDeAAI9dzClm3WZyz4";
   const chatId = "6087791909";
 
-  // Tạo nội dung chi tiết đơn hàng
-  let itemsText = cartItems.map(item => {
+  let itemsText = cartItems.filter(i=>i.checked!==false).map(item=>{
     return `• ${item.name} - Giá: ${item.price.toLocaleString()}đ - Số lượng: ${item.qty}`;
   }).join("\n");
 
@@ -106,43 +106,64 @@ function renderCart(){
   if(cart.length===0){ box.innerHTML="🛒 Giỏ hàng trống"; return; }
 
   let originalTotal=0, finalTotal=0;
-  cart.forEach(p=>{
+  cart.forEach((p,i)=>{
+    if(p.checked===undefined) p.checked = true;
     let qty = p.qty||1;
     let price = Number(p.price)||0;
     let old = Number(p.oldPrice)||price;
     let subFinal = qty*price;
     let subOld = qty*old;
-    finalTotal+=subFinal;
+    if(p.checked) finalTotal+=subFinal;
     originalTotal+=subOld;
     box.innerHTML += `
       <div class="item">
+        <input type="checkbox" class="check-item" ${p.checked?"checked":""} onclick="toggleItem(${i})">
         <img src="${p.img}">
-        <div>
+        <div class="calc">
           <b>${p.name}</b>
-          <div class="calc">
-            <div class="sale-price">${price.toLocaleString()}đ</div>
-            ${old>price?`<div class="old-price">${old.toLocaleString()}đ</div>`:""}
-            <div>${qty} × ${price.toLocaleString()}đ = ${subFinal.toLocaleString()}đ</div>
+          <div class="sale-price">${price.toLocaleString()}đ</div>
+          ${old>price?`<div class="old-price">${old.toLocaleString()}đ</div>`:""}
+          <div class="qty">
+            <button onclick="changeQty(${i},-1)">-</button>
+            <span>${qty}</span>
+            <button onclick="changeQty(${i},1)">+</button>
           </div>
         </div>
+        <button class="remove" onclick="removeItem(${i})">🗑</button>
       </div>
     `;
   });
-  let discount = originalTotal-finalTotal;
+
   box.innerHTML += `
     <div class="total-box">
       <div class="row"><span>Tổng giá gốc</span><b>${originalTotal.toLocaleString()}đ</b></div>
-      <div class="row discount"><span>Tiết kiệm</span><b>-${discount.toLocaleString()}đ</b></div>
+      <div class="row discount"><span>Tiết kiệm</span><b>-${(originalTotal-finalTotal).toLocaleString()}đ</b></div>
       <div class="row final"><span>Cần thanh toán</span><b>${finalTotal.toLocaleString()}đ</b></div>
     </div>
   `;
 }
 
-document.getElementById("payment").addEventListener("change", updateBank);
+function toggleItem(index){
+  cart[index].checked = !cart[index].checked;
+  renderCart();
+}
+
+function changeQty(index, delta){
+  cart[index].qty = (cart[index].qty||1)+delta;
+  if(cart[index].qty<1) cart[index].qty = 1;
+  renderCart();
+}
+
+function removeItem(index){
+  cart.splice(index,1);
+  renderCart();
+}
+
+document.getElementById("payment").addEventListener("change",updateBank);
 function updateBank(){
   let payment=document.getElementById("payment").value;
   let bank=document.getElementById("bankInfo");
-  let total = cart.reduce((sum,p)=>sum + p.price*(p.qty||1),0);
+  let total = cart.reduce((sum,p)=>sum + (p.checked!==false?p.price*(p.qty||1):0),0);
   if(payment==="bank"){
     bank.style.display="block";
     document.getElementById("qr").src="https://img.vietqr.io/image/ICB-101005245058-compact2.png?amount="+total+"&addInfo=Thanh%20toan";
@@ -160,15 +181,13 @@ function placeOrder(){
   if(!phoneRegex.test(phone)){ alert("⚠️ SĐT không hợp lệ!"); return; }
 
   const orderId = Date.now();
-  const total = cart.reduce((sum,p)=>sum+p.price*(p.qty||1),0);
+  const total = cart.reduce((sum,p)=>sum + (p.checked!==false?p.price*(p.qty||1):0),0);
 
-  // --- Gửi Telegram ---
-  if(typeof sendTelegramNotification==="function"){
-    sendTelegramNotification(orderId, name, phone, address, cart, total.toLocaleString()+"đ");
-  }
+  // Gửi Telegram
+  sendTelegramNotification(orderId,name,phone,address,cart,total.toLocaleString()+"đ");
 
   // Lưu đơn hàng
-  let order = {id:orderId,name,phone,address,cart,time:new Date().toLocaleString()};
+  let order={id:orderId,name,phone,address,cart:cart.filter(p=>p.checked!==false),time:new Date().toLocaleString()};
   let orders=JSON.parse(localStorage.getItem("orders"))||[];
   orders.push(order);
   localStorage.setItem("orders",JSON.stringify(orders));
@@ -176,7 +195,6 @@ function placeOrder(){
   // Xóa giỏ hàng
   localStorage.removeItem("cart");
 
-  // LOADING
   document.getElementById("loading").style.display="flex";
   document.querySelector(".btn").disabled=true;
 
@@ -186,11 +204,6 @@ function placeOrder(){
 renderCart();
 updateBank();
 </script>
-
-<div id="loading">
-  <div class="spinner"></div>
-  <p>Đang xử lý đơn hàng...</p>
-</div>
 
 </body>
 </html>
