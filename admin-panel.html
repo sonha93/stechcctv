@@ -1,4 +1,6 @@
 <script type="module">
+document.addEventListener("DOMContentLoaded", () => {
+
   // Firebase config
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
   import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-storage.js";
@@ -62,7 +64,8 @@
   /* =========================
      ADD PRODUCT
   ======================== */
-  document.getElementById("btnAdd").addEventListener("click", async function(){
+  const btnAdd = document.getElementById("btnAdd");
+  btnAdd.addEventListener("click", async function(){
     const name = getVal("name");
     const price = Number(getVal("price").replace(/\D/g,""));
     const oldPrice = Number(getVal("oldPrice").replace(/\D/g,"") || 0);
@@ -124,7 +127,7 @@
   /* =========================
      DELETE PRODUCT
   ======================== */
-  function del(id){
+  window.del = function(id){
     products = products.filter(p=>p.id!==id);
     save();
     render();
@@ -133,7 +136,7 @@
   /* =========================
      UPDATE PRICE
   ======================== */
-  function updateProduct(id){
+  window.updateProduct = function(id){
     const newPrice = Number(getVal(`price-${id}`));
     const newOldPrice = Number(getVal(`oldPrice-${id}`) || 0);
     products = products.map(p=>{
@@ -172,4 +175,6 @@
   ======================== */
   render();
   document.getElementById("category").dispatchEvent(new Event("change"));
+
+});
 </script>
