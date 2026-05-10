@@ -21,7 +21,6 @@ function renderCheckout() {
   if (!box || !totalBox) return;
 
   const cart = getCart();
-
   box.innerHTML = "";
 
   if (cart.length === 0) {
@@ -34,24 +33,25 @@ function renderCheckout() {
 
   cart.forEach((item, index) => {
     if (item.checked === undefined) item.checked = true; // mặc định checked
-
-    if (item.checked) total += Number(item.price) * Number(item.qty || 1);
-
+    const qty = Number(item.qty) || 1;
     const price = Number(item.price) || 0;
     const oldPrice = Number(item.oldPrice) || 0;
-    const qty = Number(item.qty) || 1;
+    const subTotal = qty * price;
+
+    if (item.checked) total += subTotal;
+
     const hasDiscount = oldPrice > price;
 
     box.innerHTML += `
-      <div class="cart-item" style="display:flex;gap:10px;align-items:center;position:relative;padding:10px 0;">
-        <input type="checkbox" style="position:absolute;top:5px;left:5px;cursor:pointer;" ${item.checked?"checked":""} onclick="toggleItem(${index})">
+      <div class="cart-item" style="display:flex;align-items:center;gap:10px;position:relative;padding:10px 0;">
+        <input type="checkbox" style="position:absolute;top:5px;left:5px;cursor:pointer;" ${item.checked ? "checked" : ""} onclick="toggleItem(${index})">
         <img src="${item.img}" style="width:60px;border-radius:6px;">
         <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
           <h4>${item.name}</h4>
           <div class="price-box" style="display:flex;gap:8px;flex-wrap:nowrap;align-items:center;">
             <span class="price">${formatPrice(price)}</span>
             ${hasDiscount ? `<span class="old-price">${formatPrice(oldPrice)}</span>` : ""}
-            <span style="white-space:nowrap;">${qty} × ${formatPrice(price)} = ${formatPrice(price*qty)}</span>
+            <span style="white-space:nowrap;">${qty} × ${formatPrice(price)} = ${formatPrice(subTotal)}</span>
           </div>
           <div class="qty" style="display:flex;align-items:center;gap:4px;margin-top:5px;">
             <button onclick="changeQty(${index},-1)">-</button>
@@ -90,12 +90,20 @@ function changeQty(index, delta) {
 }
 
 /* =========================
-   🧹 XOÁ GIỎ HÀNG
+   🧹 XOÁ SẢN PHẨM
 ========================= */
 function removeItem(index) {
   const cart = getCart();
-  cart.splice(index,1);
+  cart.splice(index, 1);
   localStorage.setItem("cart", JSON.stringify(cart));
+  renderCheckout();
+}
+
+/* =========================
+   🧹 XOÁ GIỎ HÀNG
+========================= */
+function clearCart() {
+  localStorage.removeItem("cart");
   renderCheckout();
 }
 
