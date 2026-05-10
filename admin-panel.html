@@ -3,225 +3,115 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin sản phẩm</title>
+<title>Admin Panel - Shop Camera Pro</title>
 <style>
-:root{--main-color:#00acc1;}
-body{font-family:Arial;padding:20px;background:#f5f5f5;}
-h2{margin-bottom:15px;}
-input,button,select,textarea{display:block;margin:8px 0;padding:10px;width:320px;border:1px solid #ddd;border-radius:6px;font-family:Arial;}
-textarea{min-height:80px;resize:vertical;}
-button{cursor:pointer;background:var(--main-color);color:#fff;border:none;}
-.item{background:#fff;padding:10px;margin:10px 0;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
-.item img{width:80px;border-radius:6px;display:block;margin-bottom:6px;}
-.home-btn{display:inline-block;margin-bottom:10px;background:#00acc1;color:#fff;padding:8px 12px;border-radius:20px;text-decoration:none;font-size:13px;}
-.home-btn:hover{opacity:0.85;}
-#showCat{margin:6px 0;color:#00acc1;font-weight:bold;}
-.spec-title{font-weight:bold;margin-top:10px;color:#00acc1;}
-@media (max-width:768px){
-  body{padding:10px;}
-  input,select,button,textarea{width:100%;box-sizing:border-box;}
-  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-  .full{grid-column:1 / -1;}
-  .item{display:grid;grid-template-columns:80px 1fr;gap:10px;align-items:center;}
-  .item img{width:100%;height:auto;}
-  .item button{grid-column:1 / -1;}
-}
+/* ===== RESET ===== */
+* { margin:0; padding:0; box-sizing:border-box; font-family:sans-serif; }
+body { background:#f5f5f5; padding:20px; }
+.container { max-width:1200px; margin:0 auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
+/* Header */
+h1 { margin-bottom:20px; color:#00acc1; }
+/* Layout bảng */
+table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+table, th, td { border:1px solid #ccc; }
+th, td { padding:10px; text-align:left; }
+th { background:#eee; }
+/* Form upload */
+.upload-section { margin-bottom:20px; }
+input[type=file] { padding:5px; }
+button { padding:8px 12px; background:#00acc1; color:#fff; border:none; border-radius:4px; cursor:pointer; }
+button:hover { background:#007c91; }
+img.preview { max-width:200px; display:block; margin-top:10px; border:1px solid #ccc; border-radius:4px; }
 </style>
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-storage.js"></script>
 </head>
 <body>
 
-<h2>📦 Admin sản phẩm</h2>
-<a href="index.html" class="home-btn">← Trang chủ</a>
+<div class="container">
+  <h1>Admin Panel - Shop Camera Pro</h1>
 
-<div class="form-grid">
-  <input id="name" placeholder="Tên sản phẩm" class="full">
-  <input id="price" placeholder="Giá">
-  <input id="oldPrice" placeholder="Giá cũ">
-  <textarea id="desc" placeholder="Mô tả" class="full"></textarea>
-  <input id="imgUrl" placeholder="Link ảnh" class="full">
-  <select id="category" class="full">
-    <option value="sd">Thẻ nhớ</option>
-    <option value="cam-in">Camera trong nhà</option>
-    <option value="cam-ngoai">Camera ngoài trời</option>
-    <option value="combo">Combo</option>
-    <option value="home">Trang chủ</option>
-  </select>
-  <div id="showCat" class="full"></div>
-  <div id="specBox" class="full"></div>
-  <input type="file" id="fileImg" class="full">
-  <label class="full"><input type="checkbox" id="featured"> ⭐ Featured</label>
-  <button id="btnAdd" class="full">➕ Thêm sản phẩm</button>
+  <!-- BẢNG CÁC SẢN PHẨM -->
+  <table id="products-table">
+    <thead>
+      <tr>
+        <th>Tên sản phẩm</th>
+        <th>Giá</th>
+        <th>Ảnh</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Sản phẩm sẽ được load từ JS -->
+    </tbody>
+  </table>
+
+  <!-- PHẦN UPLOAD ẢNH MỚI -->
+  <div class="upload-section">
+    <label>Chọn ảnh để upload:</label>
+    <input type="file" id="fileInput" accept="image/*">
+    <button id="uploadBtn">Upload lên Firebase</button>
+    <img id="preview" class="preview" src="">
+    <p id="uploadStatus"></p>
+  </div>
+
 </div>
 
-<hr>
-<div id="list"></div>
+<!-- ===== FIREBASE CDN ===== -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
 
 <script>
-/* =========================
-   Firebase Config
-========================= */
+// ===== CẤU HÌNH FIREBASE =====
 const firebaseConfig = {
   apiKey: "AIzaSyBgiXCyXP7Ion3dgL-QOckfhGKbZZxkxN0",
   authDomain: "stech-storage.firebaseapp.com",
   projectId: "stech-storage",
-  storageBucket: "stech-storage.appspot.com", // lưu ý .appspot.com
+  storageBucket: "stech-storage.appspot.com",
   messagingSenderId: "426074076904",
-  appId: "1:426074076904:web:50e3475feb2a2fbbeb3b5"
+  appId: "1:426074076904:web:50e3475feb2a2fbbeb3b5d",
+  measurementId: "G-MX7LET5ZS8"
 };
-const app = firebase.initializeApp(firebaseConfig);
+
+// Khởi tạo Firebase
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
 const storage = firebase.storage();
 
-/* =========================
-   LOCAL STORAGE
-========================= */
-let products = JSON.parse(localStorage.getItem("products")) || [];
-function save(){ localStorage.setItem("products", JSON.stringify(products)); }
+// ===== UPLOAD ẢNH =====
+const fileInput = document.getElementById('fileInput');
+const uploadBtn = document.getElementById('uploadBtn');
+const preview = document.getElementById('preview');
+const uploadStatus = document.getElementById('uploadStatus');
 
-/* =========================
-   CATEGORY MAP
-========================= */
-const nameMap = {sd:"Thẻ nhớ","cam-in":"Camera trong nhà","cam-ngoai":"Camera ngoài trời",combo:"Combo",home:"Trang chủ"};
-document.getElementById("category").addEventListener("change",function(){
-  const type = this.value;
-  document.getElementById("showCat").innerText="📁 Thư mục: "+nameMap[type];
-  const box=document.getElementById("specBox");
-  if(type==="cam-in"||type==="cam-ngoai"||type==="home"){
-    box.innerHTML=`
-      <div class="spec-title">⚙️ Thông số camera</div>
-      <input id="model" placeholder="Model">
-      <input id="xuatXu" placeholder="Xuất xứ">
-      <input id="baoHanh" placeholder="Bảo hành">
-      <input id="doPhanGiai" placeholder="Độ phân giải">
-      <input id="gocNhin" placeholder="Góc nhìn">
-      <input id="ketNoi" placeholder="Kết nối">
-      <input id="thietKe" placeholder="Thiết kế">
-      <input id="chatLieu" placeholder="Chất liệu">
-      <input id="congSuat" placeholder="Công suất">
-    `;
-  } else if(type==="sd"){
-    box.innerHTML=`
-      <div class="spec-title">💾 Thông số thẻ nhớ</div>
-      <input id="model" placeholder="Model">
-      <input id="xuatXu" placeholder="Xuất xứ">
-      <input id="baoHanh" placeholder="Bảo hành">
-      <input id="dungLuong" placeholder="Dung lượng">
-      <input id="tocDo" placeholder="Tốc độ">
-      <input id="loai" placeholder="Loại">
-      <input id="chatLieu" placeholder="Chất liệu">
-    `;
-  } else if(type==="combo"){
-    box.innerHTML=`
-      <div class="spec-title">🎁 Thông tin combo</div>
-      <textarea id="moTaCombo" placeholder="Mô tả combo"></textarea>
-      <input id="baoHanh" placeholder="Bảo hành">
-    `;
-  } else{ box.innerHTML=""; }
-});
-
-/* =========================
-   GET VAL
-========================= */
-function getVal(id){const el=document.getElementById(id);return el?el.value.trim():"";}
-
-/* =========================
-   ADD PRODUCT
-========================= */
-document.getElementById("btnAdd").addEventListener("click",function(){
-  const name=getVal("name");
-  const price=Number(getVal("price").replace(/\D/g,""));
-  const oldPrice=Number(getVal("oldPrice").replace(/\D/g,"")||0);
-  const desc=getVal("desc");
-  const category=getVal("category");
-  const file=document.getElementById("fileImg").files[0];
-  const imgUrl=getVal("imgUrl");
-
-  if(!name){ return alert("Thiếu tên"); }
-  if(!price){ return alert("Giá không hợp lệ"); }
-  if(!file && !imgUrl){ return alert("Chưa có ảnh"); }
-
-  function addProduct(img){
-    products.push({
-      id: Date.now(),
-      name, price, oldPrice, desc,
-      category, categoryName:nameMap[category],
-      img,
-      featured: document.getElementById("featured").checked,
-      model:getVal("model"), xuatXu:getVal("xuatXu"), baoHanh:getVal("baoHanh"),
-      doPhanGiai:getVal("doPhanGiai"), gocNhin:getVal("gocNhin"), ketNoi:getVal("ketNoi"),
-      thietKe:getVal("thietKe"), chatLieu:getVal("chatLieu"), congSuat:getVal("congSuat"),
-      dungLuong:getVal("dungLuong"), tocDo:getVal("tocDo"), loai:getVal("loai"),
-      moTaCombo:getVal("moTaCombo")
-    });
-    save(); render(); alert("✔ Thêm sản phẩm thành công");
-    document.getElementById("name").value=""; document.getElementById("price").value="";
-    document.getElementById("oldPrice").value=""; document.getElementById("desc").value="";
-    document.getElementById("imgUrl").value=""; document.getElementById("fileImg").value="";
-    document.getElementById("featured").checked=false;
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files[0];
+  if(file) {
+    preview.src = URL.createObjectURL(file);
   }
-
-  /* ===== LINK IMAGE ===== */
-  if(imgUrl){ return addProduct(imgUrl); }
-
-  /* ===== FILE IMAGE ===== */
-  const storageRef = storage.ref(); // Firebase Storage root
-  const fileRef = storageRef.child(file.name);
-  fileRef.put(file).then(snapshot=>{
-    snapshot.ref.getDownloadURL().then(url=>{
-      addProduct(url);
-    });
-  });
-
 });
 
-/* =========================
-   DELETE
-========================= */
-function del(id){ products=products.filter(p=>p.id!==id); save(); render(); }
+uploadBtn.addEventListener('click', () => {
+  const file = fileInput.files[0];
+  if(!file) { alert('Chọn ảnh trước khi upload'); return; }
 
-/* =========================
-   UPDATE PRICE
-========================= */
-function updateProduct(id){
-  const newPrice=getVal(`price-${id}`);
-  const newOldPrice=getVal(`oldPrice-${id}`);
-  products=products.map(p=>{
-    if(p.id===id){ return {...p, price:Number(newPrice), oldPrice:Number(newOldPrice)}; }
-    return p;
-  });
-  save(); render();
-}
+  const storageRef = storage.ref('uploads/' + file.name);
+  const uploadTask = storageRef.put(file);
 
-/* =========================
-   RENDER
-========================= */
-function render(){
-  const box=document.getElementById("list");
-  if(products.length===0){ box.innerHTML="<p>Chưa có sản phẩm</p>"; return; }
-  box.innerHTML=products.map(p=>`
-    <div class="item">
-      <img src="${p.img||''}">
-      <div>
-        <b>${p.name}</b><br>
-        <span style="color:#00acc1;font-size:12px;">📁 ${p.categoryName||p.category}</span><br>
-        Giá: ${Number(p.price).toLocaleString()}đ<br>
-        ${p.oldPrice?`<del>${Number(p.oldPrice).toLocaleString()}đ</del><br>`:""}
-        <input id="price-${p.id}" value="${p.price}" placeholder="Giá bán">
-        <input id="oldPrice-${p.id}" value="${p.oldPrice||''}" placeholder="Giá gốc">
-        <button onclick="updateProduct(${p.id})">Cập nhật</button>
-      </div>
-      <button onclick="del(${p.id})" style="background:red">Xoá</button>
-    </div>
-  `).join("");
-}
+  uploadStatus.textContent = 'Đang upload...';
 
-/* =========================
-   INIT
-========================= */
-render();
-document.getElementById("category").dispatchEvent(new Event("change"));
+  uploadTask.on('state_changed', 
+    snapshot => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      uploadStatus.textContent = `Upload ${progress.toFixed(0)}%`;
+    }, 
+    error => { uploadStatus.textContent = 'Lỗi upload: ' + error; }, 
+    () => {
+      uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+        uploadStatus.textContent = 'Upload xong! URL: ' + downloadURL;
+        console.log('File available at', downloadURL);
+      });
+    }
+  );
+});
 </script>
 
 </body>
