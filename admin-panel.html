@@ -37,13 +37,11 @@ button{cursor:pointer;background:var(--main-color);color:#fff;border:none;}
 <a href="index.html" class="home-btn">← Trang chủ</a>
 
 <div class="form-grid">
-
   <input id="name" placeholder="Tên sản phẩm" class="full">
   <input id="price" placeholder="Giá">
   <input id="oldPrice" placeholder="Giá cũ">
   <textarea id="desc" placeholder="Mô tả" class="full"></textarea>
   <input id="imgUrl" placeholder="Link ảnh" class="full">
-
   <select id="category" class="full">
     <option value="sd">Thẻ nhớ</option>
     <option value="cam-in">Camera trong nhà</option>
@@ -51,29 +49,24 @@ button{cursor:pointer;background:var(--main-color);color:#fff;border:none;}
     <option value="combo">Combo</option>
     <option value="home">Trang chủ</option>
   </select>
-
   <div id="showCat" class="full"></div>
   <div id="specBox" class="full"></div>
-
   <input type="file" id="fileImg" class="full">
   <label class="full">
     <input type="checkbox" id="featured"> ⭐ Featured
   </label>
-
   <button id="btnAdd" class="full">➕ Thêm sản phẩm</button>
-
 </div>
 
 <hr>
 <div id="list"></div>
 
-<!-- =========================
-     FIREBASE STORAGE SDK
-========================= -->
+<!-- Firebase Storage SDK chuẩn -->
 <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-storage-compat.js"></script>
 
 <script>
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyBgiXCyXP7Ion3dgL-QOckfhGKbZZxkxN0",
     authDomain: "stech-storage.firebaseapp.com",
@@ -82,6 +75,7 @@ button{cursor:pointer;background:var(--main-color);color:#fff;border:none;}
     messagingSenderId: "426074076904",
     appId: "1:426074076904:web:50e3475feb2a2fbbeb3b5d"
   };
+
   if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const storage = firebase.storage();
 </script>
@@ -99,11 +93,11 @@ const nameMap = {
   home:"Trang chủ"
 };
 
+// Category change
 document.getElementById("category").addEventListener("change", function(){
   const type = this.value;
   document.getElementById("showCat").innerText = "📁 Thư mục: " + nameMap[type];
   const box = document.getElementById("specBox");
-
   if(type === "cam-in" || type === "cam-ngoai" || type==="home"){
     box.innerHTML = `
       <div class="spec-title">⚙️ Thông số camera</div>
@@ -117,7 +111,7 @@ document.getElementById("category").addEventListener("change", function(){
       <input id="chatLieu" placeholder="Chất liệu">
       <input id="congSuat" placeholder="Công suất">
     `;
-  }else if(type==="sd"){
+  } else if(type==="sd"){
     box.innerHTML = `
       <div class="spec-title">💾 Thông số thẻ nhớ</div>
       <input id="model" placeholder="Model">
@@ -128,17 +122,18 @@ document.getElementById("category").addEventListener("change", function(){
       <input id="loai" placeholder="Loại">
       <input id="chatLieu" placeholder="Chất liệu">
     `;
-  }else if(type==="combo"){
+  } else if(type==="combo"){
     box.innerHTML = `
       <div class="spec-title">🎁 Thông tin combo</div>
       <textarea id="moTaCombo" placeholder="Mô tả combo"></textarea>
       <input id="baoHanh" placeholder="Bảo hành">
     `;
-  }else box.innerHTML = "";
+  } else box.innerHTML = "";
 });
 
 function getVal(id){ const el = document.getElementById(id); return el ? el.value.trim() : ""; }
 
+// Thêm sản phẩm với upload lên Firebase Storage
 document.getElementById("btnAdd").addEventListener("click", function(){
   const name = getVal("name");
   const price = Number(getVal("price").replace(/\D/g,""));
@@ -171,29 +166,25 @@ document.getElementById("btnAdd").addEventListener("click", function(){
     document.getElementById("featured").checked = false;
   }
 
-  if(imgUrl){
-    return addProduct(imgUrl);
-  }
+  if(imgUrl) return addProduct(imgUrl);
 
-  // ===== UPLOAD FIREBASE STORAGE =====
+  // ===== Upload file lên Firebase Storage =====
   if(file){
     const storageRef = storage.ref('images/' + Date.now() + '-' + file.name);
     storageRef.put(file).then(snapshot => {
-      storageRef.getDownloadURL().then(url => {
-        addProduct(url);
-      });
+      storageRef.getDownloadURL().then(url => addProduct(url));
     }).catch(err=>{
       console.error(err);
-      alert("Upload ảnh thất bại!");
+      alert("Upload ảnh thất bại! Kiểm tra CORS hoặc Storage rules.");
     });
   }
 });
 
-// DELETE, UPDATE PRICE, RENDER giữ nguyên
+// DELETE, UPDATE, RENDER giữ nguyên
 function del(id){ products=products.filter(p=>p.id!==id); save(); render(); }
 function updateProduct(id){ const newPrice=getVal(`price-${id}`); const newOldPrice=getVal(`oldPrice-${id}`); products=products.map(p=>p.id===id?{...p, price:Number(newPrice), oldPrice:Number(newOldPrice)}:p); save(); render(); }
 function render(){
-  const box = document.getElementById("list");
+  const box=document.getElementById("list");
   if(products.length===0){ box.innerHTML="<p>Chưa có sản phẩm</p>"; return; }
   box.innerHTML=products.map(p=>`
     <div class="item">
