@@ -32,10 +32,10 @@ const cartCountEl = document.getElementById("cartCount");
 // ========================
 let currentUser = null;
 let cartRef = null;
-let isReady = false;
+let firebaseReady = false;
 
 // ========================
-// NORMALIZE FIREBASE DATA
+// NORMALIZE DATA (Firebase object/array fix)
 // ========================
 function normalize(data) {
   if (!data) return [];
@@ -44,20 +44,20 @@ function normalize(data) {
 }
 
 // ========================
-// AUTH READY
+// AUTH STATE
 // ========================
 auth.onAuthStateChanged(user => {
 
   if (!user) {
     currentUser = null;
     cartRef = null;
-    isReady = false;
+    firebaseReady = false;
     return;
   }
 
   currentUser = user;
   cartRef = db.ref("carts/" + user.uid);
-  isReady = true;
+  firebaseReady = true;
 
   // realtime cart
   cartRef.on("value", snap => {
@@ -69,12 +69,12 @@ auth.onAuthStateChanged(user => {
 });
 
 // ========================
-// ADD TO CART (GLOBAL)
+// ADD TO CART (GLOBAL FUNCTION)
 // ========================
 window.addToCart = function(id) {
 
-  if (!isReady || !currentUser || !cartRef) {
-    alert("Giỏ hàng chưa kết nối Firebase!");
+  if (!firebaseReady || !currentUser || !cartRef) {
+    alert("⚠ Firebase chưa sẵn sàng, vui lòng đăng nhập hoặc chờ 1–2 giây");
     return;
   }
 
@@ -101,12 +101,13 @@ window.addToCart = function(id) {
         name: product.name,
         price: Number(product.price) || 0,
         oldPrice: Number(product.oldPrice) || 0,
-        img: product.img,
+        img: product.img || "",
         quantity: 1
       });
     }
 
-    return cartRef.set(cart);
+    cartRef.set(cart);
+
   });
 
 };
@@ -121,7 +122,7 @@ function renderCart(cart) {
   cartList.innerHTML = "";
 
   if (!cart.length) {
-    cartList.innerHTML = "<p>Giỏ hàng trống 🛒</p>";
+    cartList.innerHTML = "<p class='empty'>Giỏ hàng trống 🛒</p>";
     if (totalBox) totalBox.innerHTML = "";
     if (cartAction) cartAction.innerHTML = "";
     return;
@@ -143,15 +144,29 @@ function renderCart(cart) {
 
     div.innerHTML = `
       <img src="${item.img || ''}">
-      <div>
-        <b>${item.name}</b>
-        <div>${price.toLocaleString()}đ</div>
-        <div>SL: ${qty}</div>
-        <div style="color:red">${sum.toLocaleString()}đ</div>
 
-        <button onclick="changeQty('${item.id}',-1)">-</button>
-        <button onclick="changeQty('${item.id}',1)">+</button>
+      <div class="info">
+        <b>${item.name || ''}</b>
+
+        <div>${price.toLocaleString()}đ</div>
+
+        ${oldPrice > price ? `
+          <div class="old">${oldPrice.toLocaleString()}đ</div>
+        ` : ""}
+
+        <div>SL: ${qty}</div>
+
+        <div style="color:red;font-weight:bold;">
+          ${sum.toLocaleString()}đ
+        </div>
+
+        <div class="qty">
+          <button onclick="changeQty('${item.id}',-1)">-</button>
+          <span>${qty}</span>
+          <button onclick="changeQty('${item.id}',1)">+</button>
+        </div>
       </div>
+
       <button onclick="removeItem('${item.id}')">🗑</button>
     `;
 
@@ -170,7 +185,7 @@ function renderCart(cart) {
 }
 
 // ========================
-// REMOVE
+// REMOVE ITEM
 // ========================
 window.removeItem = function(id) {
 
@@ -218,13 +233,16 @@ window.changeQty = function(id, delta) {
 // ========================
 window.checkout = function() {
 
-  if (!cartRef) return;
+  if (!cartRef || !currentUser) return;
 
   cartRef.once("value").then(snap => {
 
     const cart = normalize(snap.val());
 
-    if (!cart.length) return alert("Giỏ hàng trống!");
+    if (!cart.length) {
+      alert("Giỏ hàng trống!");
+      return;
+    }
 
     const orderRef = db.ref("orders/" + currentUser.uid);
     const key = orderRef.push().key;
@@ -244,7 +262,7 @@ window.checkout = function() {
 };
 
 // ========================
-// BADGE
+// BADGE UPDATE
 // ========================
 function updateBadge(cart) {
 
