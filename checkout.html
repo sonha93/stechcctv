@@ -85,7 +85,7 @@ function sendTelegramNotification(orderNumber, customerName, total) {
     .catch(err => console.error("Lỗi fetch Telegram:", err));
 }
 </script>
-<script src="sendTelegram.js"></script>
+
 <script>
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -186,4 +186,4 @@ updateBank();
 </div>
 
 </body>
-</html>
+</html>  
