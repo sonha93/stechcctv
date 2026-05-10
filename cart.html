@@ -64,12 +64,9 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
 
 <script>
 // MENU
-function toggleMenu(){
-  document.getElementById("sidebar").classList.toggle("active");
-  document.getElementById("overlay").classList.toggle("active");
-}
+function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
 
-// RENDER GIỎ HÀNG
+// RENDER
 let cart = JSON.parse(localStorage.getItem("cart"))||[];
 function renderCart(list=null){
   let arr=list||cart;
@@ -120,12 +117,12 @@ document.getElementById("searchInput").addEventListener("input",function(){
   renderCart(cart.filter(i=>i.name.toLowerCase().includes(key)));
 });
 
-// CHECKOUT (chỉ tính checked)
+// CHECKOUT
 function checkout(){
   let checkedItems=cart.filter(i=>i.checked!==false);
   if(checkedItems.length===0){alert("Chọn ít nhất 1 sản phẩm!");return;}
-  let total=checkedItems.reduce((sum,i)=>sum+i.price*(i.qty||1),0);
-  alert("Tổng tiền các sản phẩm đã chọn: "+total.toLocaleString()+"đ\nTiếp tục gửi lên checkout.html hoặc Telegram ở đây nếu muốn.");
+  // Gọi checkout.html hoặc Telegram riêng (không hiển thị popup)
+  window.location.href="checkout.html";
 }
 
 // LOAD
