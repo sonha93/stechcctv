@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin sản phẩm</title>
-
+<title>Admin sản phẩm - Firebase</title>
 <style>
 :root{--main-color:#00acc1;}
 body{font-family:Arial;padding:20px;background:#f5f5f5;}
@@ -29,11 +28,9 @@ button{cursor:pointer;background:var(--main-color);color:#fff;border:none;}
 }
 </style>
 </head>
-
 <body>
 
 <h2>📦 Admin sản phẩm</h2>
-
 <a href="index.html" class="home-btn">← Trang chủ</a>
 
 <div class="form-grid">
@@ -52,55 +49,44 @@ button{cursor:pointer;background:var(--main-color);color:#fff;border:none;}
   <div id="showCat" class="full"></div>
   <div id="specBox" class="full"></div>
   <input type="file" id="fileImg" class="full">
-  <label class="full">
-    <input type="checkbox" id="featured"> ⭐ Featured
-  </label>
+  <label class="full"><input type="checkbox" id="featured"> ⭐ Featured</label>
   <button id="btnAdd" class="full">➕ Thêm sản phẩm</button>
 </div>
 
 <hr>
 <div id="list"></div>
 
-<!-- Firebase Storage SDK chuẩn -->
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-storage-compat.js"></script>
 
 <script>
-  // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyBgiXCyXP7Ion3dgL-QOckfhGKbZZxkxN0",
-    authDomain: "stech-storage.firebaseapp.com",
-    projectId: "stech-storage",
-    storageBucket: "stech-storage.firebasestorage.app",
-    messagingSenderId: "426074076904",
-    appId: "1:426074076904:web:50e3475feb2a2fbbeb3b5d"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyBgiXCyXP7Ion3dgL-QOckfhGKbZZxkxN0",
+  authDomain: "stech-storage.firebaseapp.com",
+  projectId: "stech-storage",
+  storageBucket: "stech-storage.appspot.com",
+  messagingSenderId: "426074076904",
+  appId: "1:426074076904:web:50e3475feb2a2fbbeb3b5d"
+};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const storage = firebase.storage();
 
-  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const storage = firebase.storage();
-</script>
-
-<script>
+// ========== PRODUCTS ==========
 let products = JSON.parse(localStorage.getItem("products")) || [];
-
 function save(){ localStorage.setItem("products", JSON.stringify(products)); }
 
 const nameMap = {
-  sd:"Thẻ nhớ",
-  "cam-in":"Camera trong nhà",
-  "cam-ngoai":"Camera ngoài trời",
-  combo:"Combo",
-  home:"Trang chủ"
+  sd:"Thẻ nhớ", "cam-in":"Camera trong nhà", "cam-ngoai":"Camera ngoài trời", combo:"Combo", home:"Trang chủ"
 };
 
-// Category change
+// CATEGORY CHANGE
 document.getElementById("category").addEventListener("change", function(){
   const type = this.value;
   document.getElementById("showCat").innerText = "📁 Thư mục: " + nameMap[type];
   const box = document.getElementById("specBox");
   if(type === "cam-in" || type === "cam-ngoai" || type==="home"){
-    box.innerHTML = `
-      <div class="spec-title">⚙️ Thông số camera</div>
+    box.innerHTML = `<div class="spec-title">⚙️ Thông số camera</div>
       <input id="model" placeholder="Model">
       <input id="xuatXu" placeholder="Xuất xứ">
       <input id="baoHanh" placeholder="Bảo hành">
@@ -109,31 +95,26 @@ document.getElementById("category").addEventListener("change", function(){
       <input id="ketNoi" placeholder="Kết nối">
       <input id="thietKe" placeholder="Thiết kế">
       <input id="chatLieu" placeholder="Chất liệu">
-      <input id="congSuat" placeholder="Công suất">
-    `;
-  } else if(type==="sd"){
-    box.innerHTML = `
-      <div class="spec-title">💾 Thông số thẻ nhớ</div>
+      <input id="congSuat" placeholder="Công suất">`;
+  }else if(type==="sd"){
+    box.innerHTML = `<div class="spec-title">💾 Thông số thẻ nhớ</div>
       <input id="model" placeholder="Model">
       <input id="xuatXu" placeholder="Xuất xứ">
       <input id="baoHanh" placeholder="Bảo hành">
       <input id="dungLuong" placeholder="Dung lượng">
       <input id="tocDo" placeholder="Tốc độ">
       <input id="loai" placeholder="Loại">
-      <input id="chatLieu" placeholder="Chất liệu">
-    `;
-  } else if(type==="combo"){
-    box.innerHTML = `
-      <div class="spec-title">🎁 Thông tin combo</div>
+      <input id="chatLieu" placeholder="Chất liệu">`;
+  }else if(type==="combo"){
+    box.innerHTML = `<div class="spec-title">🎁 Thông tin combo</div>
       <textarea id="moTaCombo" placeholder="Mô tả combo"></textarea>
-      <input id="baoHanh" placeholder="Bảo hành">
-    `;
-  } else box.innerHTML = "";
+      <input id="baoHanh" placeholder="Bảo hành">`;
+  }else box.innerHTML = "";
 });
 
-function getVal(id){ const el = document.getElementById(id); return el ? el.value.trim() : ""; }
+function getVal(id){ const el=document.getElementById(id); return el?el.value.trim():""; }
 
-// Thêm sản phẩm với upload lên Firebase Storage
+// ADD PRODUCT
 document.getElementById("btnAdd").addEventListener("click", function(){
   const name = getVal("name");
   const price = Number(getVal("price").replace(/\D/g,""));
@@ -149,8 +130,7 @@ document.getElementById("btnAdd").addEventListener("click", function(){
 
   function addProduct(img){
     products.push({
-      id: Date.now(),
-      name, price, oldPrice, desc,
+      id: Date.now(), name, price, oldPrice, desc,
       category, categoryName:nameMap[category],
       img,
       featured: document.getElementById("featured").checked,
@@ -163,46 +143,30 @@ document.getElementById("btnAdd").addEventListener("click", function(){
     save(); render();
     alert("✔ Thêm sản phẩm thành công");
     ["name","price","oldPrice","desc","imgUrl","fileImg"].forEach(id=>document.getElementById(id).value="");
-    document.getElementById("featured").checked = false;
+    document.getElementById("featured").checked=false;
   }
 
+  // LINK URL
   if(imgUrl) return addProduct(imgUrl);
 
-  // ===== Upload file lên Firebase Storage =====
+  // UPLOAD TO FIREBASE STORAGE
   if(file){
     const storageRef = storage.ref('images/' + Date.now() + '-' + file.name);
-    storageRef.put(file).then(snapshot => {
-      storageRef.getDownloadURL().then(url => addProduct(url));
+    storageRef.put(file).then(snapshot=>{
+      storageRef.getDownloadURL().then(url=>{
+        addProduct(url);
+      });
     }).catch(err=>{
       console.error(err);
-      alert("Upload ảnh thất bại! Kiểm tra CORS hoặc Storage rules.");
+      alert("Upload ảnh thất bại!");
     });
   }
 });
 
-// DELETE, UPDATE, RENDER giữ nguyên
+// DELETE, UPDATE PRICE, RENDER
 function del(id){ products=products.filter(p=>p.id!==id); save(); render(); }
 function updateProduct(id){ const newPrice=getVal(`price-${id}`); const newOldPrice=getVal(`oldPrice-${id}`); products=products.map(p=>p.id===id?{...p, price:Number(newPrice), oldPrice:Number(newOldPrice)}:p); save(); render(); }
-function render(){
-  const box=document.getElementById("list");
-  if(products.length===0){ box.innerHTML="<p>Chưa có sản phẩm</p>"; return; }
-  box.innerHTML=products.map(p=>`
-    <div class="item">
-      <img src="${p.img||''}">
-      <div>
-        <b>${p.name}</b><br>
-        <span style="color:#00acc1;font-size:12px;">📁 ${p.categoryName || p.category}</span><br>
-        Giá: ${Number(p.price).toLocaleString()}đ<br>
-        ${p.oldPrice?`<del>${Number(p.oldPrice).toLocaleString()}đ</del><br>`:""}
-        <input id="price-${p.id}" value="${p.price}" placeholder="Giá bán">
-        <input id="oldPrice-${p.id}" value="${p.oldPrice||''}" placeholder="Giá gốc">
-        <button onclick="updateProduct(${p.id})">Cập nhật</button>
-      </div>
-      <button onclick="del(${p.id})" style="background:red">Xoá</button>
-    </div>
-  `).join("");
-}
-
+function render(){ const box=document.getElementById("list"); if(products.length===0){box.innerHTML="<p>Chưa có sản phẩm</p>"; return;} box.innerHTML=products.map(p=>`<div class="item"><img src="${p.img||''}"><div><b>${p.name}</b><br><span style="color:#00acc1;font-size:12px;">📁 ${p.categoryName || p.category}</span><br>Giá: ${Number(p.price).toLocaleString()}đ<br>${p.oldPrice?`<del>${Number(p.oldPrice).toLocaleString()}đ</del><br>`:""}<input id="price-${p.id}" value="${p.price}" placeholder="Giá bán"><input id="oldPrice-${p.id}" value="${p.oldPrice||''}" placeholder="Giá gốc"><button onclick="updateProduct(${p.id})">Cập nhật</button></div><button onclick="del(${p.id})" style="background:red">Xoá</button></div>`).join(""); }
 render();
 document.getElementById("category").dispatchEvent(new Event("change"));
 </script>
