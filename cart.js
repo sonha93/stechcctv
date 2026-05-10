@@ -1,6 +1,4 @@
-// ========================
-// FIREBASE CONFIG
-// ========================
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain: "stech-73b89.firebaseapp.com",
@@ -10,212 +8,136 @@ const firebaseConfig = {
   messagingSenderId: "873739162979",
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-// init Firebase safe
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+const auth=firebase.auth();
+const db=firebase.database();
 
-const auth = firebase.auth();
-const db = firebase.database();
-
-// ========================
 // DOM
-// ========================
-const cartList = document.getElementById("cartList");
-const totalBox = document.getElementById("total");
-const cartAction = document.getElementById("cartAction");
-const cartCountEl = document.getElementById("cartCount");
+const cartList=document.getElementById("cartList");
+const totalBox=document.getElementById("total");
+const cartAction=document.getElementById("cartAction");
+const cartCountEl=document.getElementById("cartCount");
 
-// ========================
 // STATE
-// ========================
-let currentUser = null;
-let cartRef = null;
-let firebaseReady = false;
+let currentUser=null;
+let cartRef=null;
+let firebaseReady=false;
 
-// ========================
-// NORMALIZE Firebase object/array
-// ========================
-function normalize(data) {
-  if (!data) return [];
-  return Array.isArray(data) ? data : Object.values(data);
+// Normalize Firebase snapshot
+function normalize(data){ return Array.isArray(data)?data:Object.values(data||{}); }
+
+// Menu toggle
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
 }
 
-// ========================
-// AUTH STATE
-// ========================
-auth.onAuthStateChanged(user => {
-  if (!user) {
-    currentUser = null;
-    cartRef = null;
-    firebaseReady = false;
-    renderCart([]); // reset cart UI
-    updateBadge([]);
-    return;
-  }
+// Auth
+auth.onAuthStateChanged(user=>{
+  if(!user){ window.location.href="index.html"; return; }
+  currentUser=user;
+  cartRef=db.ref("carts/"+currentUser.uid);
+  firebaseReady=true;
 
-  currentUser = user;
-  cartRef = db.ref("carts/" + user.uid);
-  firebaseReady = true;
-
-  // realtime cart update
-  cartRef.on("value", snap => {
-    const cart = normalize(snap.val());
+  cartRef.on("value", snap=>{
+    const cart=normalize(snap.val());
     renderCart(cart);
     updateBadge(cart);
   });
 });
 
-// ========================
-// ADD TO CART
-// ========================
-window.addToCart = function(id) {
-
-  if (!firebaseReady || !currentUser || !cartRef) {
-    alert("⚠ Firebase chưa sẵn sàng, hãy đăng nhập hoặc chờ 1–2 giây");
+// Add to cart
+function addToCart(productId){
+  if(!firebaseReady || !currentUser || !cartRef){
+    alert("Firebase chưa sẵn sàng hoặc chưa đăng nhập!");
     return;
   }
+  const products=JSON.parse(localStorage.getItem("products"))||[];
+  const product=products.find(p=>String(p.id)===String(productId));
+  if(!product){ alert("Không tìm thấy sản phẩm!"); return; }
 
-  const products = JSON.parse(localStorage.getItem("products")) || [];
-  const product = products.find(p => String(p.id) === String(id));
-
-  if (!product) {
-    alert("Không tìm thấy sản phẩm");
-    return;
-  }
-
-  cartRef.once("value").then(snap => {
-    let cart = normalize(snap.val());
-
-    const index = cart.findIndex(i => String(i.id) === String(id));
-
-    if (index !== -1) {
-      cart[index].quantity = (cart[index].quantity || 1) + 1;
-    } else {
-      cart.push({
-        id: product.id,
-        name: product.name || "",
-        price: Number(product.price) || 0,
-        oldPrice: Number(product.oldPrice) || 0,
-        img: product.img || "",
-        quantity: 1
-      });
-    }
-
-    return cartRef.set(cart);
-  }).catch(err => {
-    console.error("AddToCart error:", err);
-    alert("Lỗi khi thêm giỏ hàng!");
+  cartRef.once("value").then(snap=>{
+    let cart=normalize(snap.val());
+    const index=cart.findIndex(i=>String(i.id)===String(productId));
+    if(index!==-1) cart[index].quantity=(cart[index].quantity||1)+1;
+    else cart.push({id:product.id,name:product.name,price:product.price,img:product.img,quantity:1});
+    cartRef.set(cart);
   });
+}
 
-};
-
-// ========================
-// RENDER CART
-// ========================
-function renderCart(cart) {
-  if (!cartList) return;
-
-  cartList.innerHTML = "";
-  if (!cart.length) {
-    cartList.innerHTML = "<p class='empty'>Giỏ hàng trống 🛒</p>";
-    if (totalBox) totalBox.innerHTML = "";
-    if (cartAction) cartAction.innerHTML = "";
-    return;
+// Render cart
+function renderCart(cart){
+  cartList.innerHTML="";
+  if(!cart.length){
+    cartList.innerHTML="<p class='empty'>Giỏ hàng trống 🛒</p>";
+    totalBox.innerHTML=""; cartAction.innerHTML=""; return;
   }
-
-  let total = 0;
-  cart.forEach(item => {
-    const qty = item.quantity || 1;
-    const price = Number(item.price) || 0;
-    const oldPrice = Number(item.oldPrice) || 0;
-    const sum = price * qty;
-    total += sum;
-
-    const div = document.createElement("div");
-    div.className = "item";
-    div.innerHTML = `
-      <img src="${item.img || ''}">
+  let total=0;
+  cart.forEach(item=>{
+    const qty=item.quantity||1;
+    total+=item.price*qty;
+    const div=document.createElement("div");
+    div.className="item";
+    div.innerHTML=`
+      <img src="${item.img||''}">
       <div class="info">
-        <b>${item.name || ''}</b>
-        <div>${price.toLocaleString()}đ</div>
-        ${oldPrice > price ? `<div class="old">${oldPrice.toLocaleString()}đ</div>` : ""}
-        <div>SL: ${qty}</div>
-        <div style="color:red;font-weight:bold;">${sum.toLocaleString()}đ</div>
+        <b>${item.name}</b><br>
+        <div class="price-new">${item.price.toLocaleString()}đ × ${qty} = <b style="color:#e53935">${(item.price*qty).toLocaleString()}đ</b></div>
         <div class="qty">
           <button onclick="changeQty('${item.id}',-1)">-</button>
           <span>${qty}</span>
           <button onclick="changeQty('${item.id}',1)">+</button>
         </div>
       </div>
-      <button onclick="removeItem('${item.id}')">🗑</button>
+      <button class="remove" onclick="removeItem('${item.id}')">🗑</button>
     `;
     cartList.appendChild(div);
   });
-
-  if (totalBox) totalBox.innerHTML = "Tổng: " + total.toLocaleString() + "đ";
-  if (cartAction) cartAction.innerHTML = `<button onclick="checkout()">Đặt hàng</button>`;
+  totalBox.innerHTML="Tổng: "+total.toLocaleString()+"đ";
+  cartAction.innerHTML=`<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
 }
 
-// ========================
-// REMOVE ITEM
-// ========================
-window.removeItem = function(id) {
-  if (!cartRef) return;
-
-  cartRef.once("value").then(snap => {
-    let cart = normalize(snap.val());
-    cart = cart.filter(i => String(i.id) !== String(id));
+// Remove item
+function removeItem(id){
+  if(!currentUser || !cartRef) return;
+  cartRef.once("value").then(snap=>{
+    let cart=normalize(snap.val());
+    cart=cart.filter(item=>item.id!==id);
     cartRef.set(cart);
   });
-};
+}
 
-// ========================
-// CHANGE QTY
-// ========================
-window.changeQty = function(id, delta) {
-  if (!cartRef) return;
-
-  cartRef.once("value").then(snap => {
-    let cart = normalize(snap.val());
-    const i = cart.findIndex(x => String(x.id) === String(id));
-    if (i === -1) return;
-    cart[i].quantity = (cart[i].quantity || 1) + delta;
-    if (cart[i].quantity < 1) cart[i].quantity = 1;
+// Change quantity
+function changeQty(id,delta){
+  if(!currentUser || !cartRef) return;
+  cartRef.once("value").then(snap=>{
+    let cart=normalize(snap.val());
+    const index=cart.findIndex(i=>i.id===id);
+    if(index===-1) return;
+    cart[index].quantity=(cart[index].quantity||1)+delta;
+    if(cart[index].quantity<1) cart[index].quantity=1;
     cartRef.set(cart);
   });
-};
+}
 
-// ========================
-// CHECKOUT
-// ========================
-window.checkout = function() {
-  if (!cartRef || !currentUser) return;
-
-  cartRef.once("value").then(snap => {
-    const cart = normalize(snap.val());
-    if (!cart.length) return alert("Giỏ hàng trống!");
-    const orderRef = db.ref("orders/" + currentUser.uid);
-    const key = orderRef.push().key;
-
-    orderRef.child(key).set({
-      items: cart,
-      status: "Đang xử lý",
-      createdAt: new Date().toISOString()
-    });
-
+// Checkout
+function checkout(){
+  if(!currentUser || !cartRef) return alert("Bạn cần đăng nhập!");
+  cartRef.once("value").then(snap=>{
+    const cart=normalize(snap.val());
+    if(cart.length===0) return alert("Giỏ hàng trống!");
+    const ordersRef=db.ref("orders/"+currentUser.uid);
+    const key=ordersRef.push().key;
+    ordersRef.child(key).set({items:cart,status:"Đang xử lý",createdAt:new Date().toISOString()});
     cartRef.remove();
     alert("Đặt hàng thành công!");
   });
-};
+}
 
-// ========================
-// UPDATE BADGE
-// ========================
-function updateBadge(cart) {
-  if (!cartCountEl) return;
-  let count = 0;
-  cart.forEach(i => count += i.quantity || 1);
-  cartCountEl.innerText = count;
+// Update badge
+function updateBadge(cart){
+  if(!cartCountEl) return;
+  let count=cart.reduce((sum,i)=>sum+(i.quantity||1),0);
+  cartCountEl.innerText=count;
 }
