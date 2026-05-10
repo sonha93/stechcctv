@@ -1,5 +1,5 @@
 // ==========================
-// FIREBASE
+// FIREBASE INIT
 // ==========================
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -11,7 +11,8 @@ const firebaseConfig = {
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 
-if (!firebase.apps.length) {
+// Init Firebase
+if(!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
@@ -19,135 +20,91 @@ const auth = firebase.auth();
 const db = firebase.database();
 
 let currentUser = null;
+let cartRef = null;
+let firebaseReady = false;
 
 // ==========================
-// AUTH
+// AUTH STATE
 // ==========================
 auth.onAuthStateChanged(user => {
-
   if(!user){
     currentUser = null;
+    cartRef = null;
+    firebaseReady = true; // firebase init xong nhưng chưa login
     return;
   }
 
   currentUser = user;
-
+  cartRef = db.ref("carts/" + currentUser.uid);
+  firebaseReady = true;
   loadCartCount();
-
 });
 
 // ==========================
 // LOAD CART COUNT
 // ==========================
 function loadCartCount(){
-
-  if(!currentUser) return;
-
-  const cartRef =
-    db.ref("carts/" + currentUser.uid);
+  if(!currentUser || !cartRef) return;
 
   cartRef.on("value", snapshot => {
+    let cart = snapshot.val() || [];
+    if(!Array.isArray(cart)) cart = Object.values(cart);
 
-    const cart =
-      snapshot.val() || [];
-
-    let total = 0;
-
-    cart.forEach(item => {
-
-      total +=
-        item.quantity || 1;
-
-    });
-
-    const badge =
-      document.getElementById("cartCount");
-
+    const badge = document.getElementById("cartCount");
     if(badge){
-
+      let total = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
       badge.innerText = total;
-
     }
-
   });
-
 }
 
 // ==========================
-// ADD TO CART
+// ADD TO CART (FULL READY)
 // ==========================
-window.addToCart = async function(id){
+window.addToCart = async function(productId){
 
-  if(!currentUser){
-
-    alert("Bạn cần đăng nhập!");
-
+  if(!firebaseReady){
+    alert("Firebase chưa sẵn sàng, vui lòng chờ 1–2 giây");
     return;
   }
 
-  const products =
-    JSON.parse(
-      localStorage.getItem("products")
-    ) || [];
+  if(!currentUser || !cartRef){
+    alert("Bạn cần đăng nhập để thêm vào giỏ hàng!");
+    return;
+  }
 
-  const product =
-    products.find(
-      p => String(p.id) === String(id)
-    );
-
+  const products = JSON.parse(localStorage.getItem("products")) || [];
+  const product = products.find(p => String(p.id) === String(productId));
   if(!product){
-
     alert("Không tìm thấy sản phẩm");
-
     return;
   }
 
-  const cartRef =
-    db.ref("carts/" + currentUser.uid);
+  try {
+    const snapshot = await cartRef.once("value");
+    let cart = snapshot.val() || [];
+    if(!Array.isArray(cart)) cart = Object.values(cart);
 
-  const snapshot =
-    await cartRef.once("value");
+    const existIndex = cart.findIndex(item => String(item.id) === String(productId));
+    if(existIndex !== -1){
+      cart[existIndex].quantity = (cart[existIndex].quantity || 1) + 1;
+    } else {
+      cart.push({
+        id: product.id,
+        name: product.name || "",
+        price: Number(product.price) || 0,
+        oldPrice: Number(product.oldPrice) || 0,
+        img: product.img || "",
+        quantity: 1
+      });
+    }
 
-  let cart =
-    snapshot.val() || [];
+    await cartRef.set(cart);
+    loadCartCount(); // cập nhật badge
+    alert("✅ Đã thêm vào giỏ hàng");
 
-  const existIndex =
-    cart.findIndex(
-      item =>
-        String(item.id) === String(id)
-    );
-
-  if(existIndex !== -1){
-
-    cart[existIndex].quantity =
-      (cart[existIndex].quantity || 1) + 1;
-
-  }else{
-
-    cart.push({
-
-      id: product.id,
-
-      name:
-        product.name || "",
-
-      price:
-        Number(product.price) || 0,
-
-      oldPrice:
-        Number(product.oldPrice) || 0,
-
-      img:
-        product.img || "",
-
-      quantity: 1
-
-    });
-
+  } catch(err){
+    console.error("AddToCart Error:", err);
+    alert("Lỗi khi thêm sản phẩm vào giỏ: "+err.message);
   }
-
-  await cartRef.set(cart);
-
-  alert("Đã thêm vào giỏ 🛒");
-
 };
