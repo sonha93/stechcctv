@@ -3,28 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Đăng ký / Đăng nhập</title>
+<title>Giỏ hàng</title>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
-  <h2>Đăng ký</h2>
-  <form id="registerForm">
-    <input type="email" id="registerEmail" placeholder="Email" required><br>
-    <input type="password" id="registerPassword" placeholder="Mật khẩu" required><br>
-    <button type="submit">Đăng ký</button>
-  </form>
+<h2>Giỏ hàng của bạn</h2>
+<ul id="cartList"></ul>
+<p id="totalPrice">Tổng tiền: 0₫</p>
 
-  <h2>Đăng nhập</h2>
-  <form id="loginForm">
-    <input type="email" id="loginEmail" placeholder="Email" required><br>
-    <input type="password" id="loginPassword" placeholder="Mật khẩu" required><br>
-    <button type="submit">Đăng nhập</button>
-  </form>
+<button id="logoutBtn">Đăng xuất</button>
 
-  <p id="message"></p>
+<script src="firebase-config.js"></script> <!-- cấu hình Firebase của bạn -->
 
-  <script src="firebase-config.js"></script> <!-- file config của bạn -->
-  <script src="auth.js"></script> <!-- file JS xử lý auth -->
+<script>
+// ======================
+// Khởi tạo
+// ======================
+const auth = firebase.auth();
+const database = firebase.database();
+const cartList = document.getElementById("cartList");
+const totalPriceElem = document.getElementById("totalPrice");
+const logoutBtn = document.getElementById("logoutBtn");
+
+// Lấy UID từ localStorage
+const uid = localStorage.getItem("uid");
+if (!uid) {
+    alert("Vui lòng đăng nhập trước!");
+    window.location.href = "login.html";
+}
+
+// ======================
+// Load giỏ hàng từ Firebase
+// ======================
+function loadCart() {
+    const cartRef = database.ref("carts/" + uid + "/items");
+    cartRef.on("value", (snapshot) => {
+        cartList.innerHTML = "";
+        let total = 0;
+        const items = snapshot.val();
+        if (items) {
+            Object.keys(items).forEach((key) => {
+                const item = items[key];
+                const li = document.createElement("li");
+                li.textContent = `${item.name} - ${item.price}₫ x ${item.quantity}`;
+                cartList.appendChild(li);
+                total += item.price * item.quantity;
+            });
+        } else {
+            cartList.innerHTML = "<li>Giỏ hàng trống</li>";
+        }
+        totalPriceElem.textContent = "Tổng tiền: " + total + "₫";
+    });
+}
+
+// ======================
+// Thêm sản phẩm vào giỏ (ví dụ demo)
+// ======================
+function addToCart(product) {
+    const itemRef = database.ref("carts/" + uid + "/items/" + product.id);
+    itemRef.get().then((snapshot) => {
+        if (snapshot.exists()) {
+            // nếu có rồi, tăng số lượng
+            const currentQty = snapshot.val().quantity;
+            itemRef.update({ quantity: currentQty + 1 });
+        } else {
+            // nếu chưa có, tạo mới
+            itemRef.set({
+                name: product.name,
+                price: product.price,
+                quantity: 1
+            });
+        }
+    });
+}
+
+// ======================
+// Demo: thêm sản phẩm
+// ======================
+document.addEventListener("DOMContentLoaded", () => {
+    loadCart();
+
+    // ví dụ: thêm 1 sản phẩm khi nhấn F1
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "F1") {
+            addToCart({ id: "prod1", name: "Camera A", price: 2000000 });
+        }
+    });
+});
+
+// ======================
+// Đăng xuất
+// ======================
+logoutBtn.addEventListener("click", () => {
+    auth.signOut().then(() => {
+        localStorage.removeItem("uid");
+        window.location.href = "login.html";
+    });
+});
+</script>
 </body>
 </html>
