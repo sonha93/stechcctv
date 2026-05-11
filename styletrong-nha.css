@@ -340,7 +340,7 @@ left:0;
   overflow-y:auto;
 
   transition:left .25s ease;
-  z-index:4000;
+  z-index:5000;
 
   box-shadow:2px 0 20px rgba(0,0,0,.15);
 }
@@ -388,7 +388,7 @@ left:0;
   visibility:hidden;
 
   transition:.25s;
-   z-index:2999;
+   z-index:4000;
 }
 
 #overlay.active{
@@ -412,4 +412,15 @@ left:0;
 }
 body{
   overflow-x:hidden;
+}
+.sidebar{
+  pointer-events:auto;
+}
+
+#overlay{
+  pointer-events:none;
+}
+
+#overlay.active{
+  pointer-events:auto;
 }
