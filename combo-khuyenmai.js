@@ -111,7 +111,7 @@ function render(list){
 
   /* chỉ camera trong nhà */
   list = list.filter(
-    p => p.category === "cambo"
+    p => p.category === "combo"
   );
 
   box.innerHTML = "";
