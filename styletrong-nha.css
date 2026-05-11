@@ -93,7 +93,7 @@ header div{
   opacity:0;
   visibility:hidden;
   transition:.25s;
-  z-index:9000;
+  z-index:9990;
 }
 
 #overlay.active{
@@ -169,12 +169,12 @@ header div{
 
 .price{
   color:#e60023;
-  font-size:16px;
+  font-size:18px; /* tăng cỡ số tiền */
   font-weight:bold;
 }
 
 .old-price{
-  font-size:12px;
+  font-size:14px; /* in đậm hơn */
   color:#000;
   text-decoration:line-through;
   opacity:0.7;
