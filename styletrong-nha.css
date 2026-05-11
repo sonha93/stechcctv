@@ -187,10 +187,7 @@ header div{
   white-space: nowrap; /* tránh % nhảy xuống dòng */
   background: #c4001d; /* nếu muốn đỏ nổi bật */
 }
-.badge{
-  top:8px;
-  background:linear-gradient(90deg,#1e88e5,#00acc1);
-}
+
 
 .discount-badge{
   top:36px;
@@ -333,7 +330,8 @@ header div{
 .sidebar{
   position:fixed;
   top:0;
-  left:-260px;
+  transform:translateX(-100%);
+left:0;
 
   width:220px;
   max-width:80%;
@@ -353,7 +351,7 @@ header div{
 
 /* mở menu */
 .sidebar.active{
-  left:0;
+  transform:translateX(0);
 }
 
 /* title */
@@ -415,4 +413,7 @@ header div{
     padding:11px 12px;
   }
 
+}
+body{
+  overflow-x:hidden;
 }
