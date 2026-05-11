@@ -1,3 +1,4 @@
+
 /* =========================
    FIREBASE
 ========================= */
@@ -148,7 +149,15 @@ function render(list){
 
     box.innerHTML += `
 
-      <div class="item">
+      ${
+  percent
+  ? `
+    <div class="discount-badge">
+      -${percent}%
+    </div>
+  `
+  : ""
+}
 
         <div class="img-box">
 
@@ -188,11 +197,7 @@ function render(list){
 
         </div>
 
-      
-
-        
-
-        <button
+               <button
           class="spec-btn"
           onclick="goDetail('${id}')"
         >
