@@ -1,6 +1,7 @@
+
 /* =========================
    FIREBASE
-========================= */
+========================= */   
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -14,34 +15,32 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
 
-  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
 
-  authDomain:"stech-73b89.firebaseapp.com",
+  authDomain: "stech-73b89.firebaseapp.com",
 
-  projectId:"stech-73b89",
+  projectId: "stech-73b89",
 
-  storageBucket:"stech-73b89.firebasestorage.app",
+  storageBucket: "stech-73b89.firebasestorage.app",
 
-  messagingSenderId:"873739162979",
+  messagingSenderId: "873739162979",
 
-  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 
 };
 
-const app =
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-const db =
-getFirestore(app);
+const db = getFirestore(app);
 
 /* =========================
-   ALL PRODUCTS
+   CAMERA TRONG NHÀ
 ========================= */
 
 let allProducts = [];
 
 /* =========================
-   GET PRODUCTS FIRESTORE
+   GET PRODUCTS
 ========================= */
 
 async function getProducts(){
@@ -59,8 +58,7 @@ async function getProducts(){
 
       arr.push({
 
-        firestoreId:doc.id,
-
+        id:doc.id,
         ...doc.data()
 
       });
@@ -82,212 +80,39 @@ async function getProducts(){
 }
 
 /* =========================
-   📌 PAGE CATEGORY
+   FIX DATA
 ========================= */
 
-function getPageCategory(){
+function fixData(list){
 
-  return "sd";
-
-}
-
-/* =========================
-   🧠 NORMALIZE
-========================= */
-
-function normalizeProduct(p){
-
-  return {
+  return list.map(p => ({
 
     ...p,
 
-    id:p.id || Date.now(),
-
-    name:p.name || "",
-
-    img:p.img || "",
-
-    category:p.category || "",
-
-    desc:p.desc || "",
-
-    featured:p.featured || false,
-
     price:Number(p.price) || 0,
 
-    oldPrice:Number(p.oldPrice) || 0,
+    oldPrice:Number(p.oldPrice) || 0
 
-    spec:{
-
-      model:
-      p.spec?.model ||
-      p.model ||
-      "",
-
-      xuatXu:
-      p.spec?.xuatXu ||
-      p.xuatXu ||
-      "",
-
-      baoHanh:
-      p.spec?.baoHanh ||
-      p.baoHanh ||
-      "",
-
-      dungLuong:
-      p.spec?.dungLuong ||
-      p.dungLuong ||
-      "",
-
-      tocDo:
-      p.spec?.tocDo ||
-      p.tocDo ||
-      "",
-
-      loai:
-      p.spec?.loai ||
-      p.loai ||
-      "",
-
-      chatLieu:
-      p.spec?.chatLieu ||
-      p.chatLieu ||
-      ""
-
-    }
-
-  };
-
-}
-
-function normalizeList(list){
-
-  return list.map(
-    normalizeProduct
-  );
+  }));
 
 }
 
 /* =========================
-   ⚙️ SPEC HTML
-========================= */
-
-function renderSpec(p){
-
-  return `
-
-    <div class="spec-grid">
-
-      ${
-        p.spec?.model
-        ?
-        `
-        <div class="spec-item">
-          <span>Model</span>
-          <b>${p.spec.model}</b>
-        </div>
-        `
-        : ""
-      }
-
-      ${
-        p.spec?.xuatXu
-        ?
-        `
-        <div class="spec-item">
-          <span>Xuất xứ</span>
-          <b>${p.spec.xuatXu}</b>
-        </div>
-        `
-        : ""
-      }
-
-      ${
-        p.spec?.dungLuong
-        ?
-        `
-        <div class="spec-item">
-          <span>Dung lượng</span>
-          <b>${p.spec.dungLuong}</b>
-        </div>
-        `
-        : ""
-      }
-
-      ${
-        p.spec?.tocDo
-        ?
-        `
-        <div class="spec-item">
-          <span>Tốc độ</span>
-          <b>${p.spec.tocDo}</b>
-        </div>
-        `
-        : ""
-      }
-
-      ${
-        p.spec?.loai
-        ?
-        `
-        <div class="spec-item">
-          <span>Loại thẻ</span>
-          <b>${p.spec.loai}</b>
-        </div>
-        `
-        : ""
-      }
-
-      ${
-        p.spec?.chatLieu
-        ?
-        `
-        <div class="spec-item">
-          <span>Chất liệu</span>
-          <b>${p.spec.chatLieu}</b>
-        </div>
-        `
-        : ""
-      }
-
-      ${
-        p.spec?.baoHanh
-        ?
-        `
-        <div class="spec-item">
-          <span>Bảo hành</span>
-          <b>${p.spec.baoHanh}</b>
-        </div>
-        `
-        : ""
-      }
-
-    </div>
-
-  `;
-
-}
-
-/* =========================
-   🖥 RENDER PRODUCTS
+   RENDER
 ========================= */
 
 function render(list){
 
   const box =
-  document.getElementById(
-    "products"
-  );
+    document.getElementById("products");
 
   if(!box) return;
 
-  list =
-  normalizeList(list);
+  list = fixData(list);
 
-  list =
-  list.filter(
-    p =>
-    p.category === "sd"
+  /* chỉ camera trong nhà */
+  list = list.filter(
+    p => p.category === "sd"
   );
 
   box.innerHTML = "";
@@ -295,7 +120,7 @@ function render(list){
   if(list.length === 0){
 
     box.innerHTML =
-    "<p>Chưa có sản phẩm</p>";
+      "<p>Chưa có sản phẩm</p>";
 
     return;
 
@@ -304,36 +129,50 @@ function render(list){
   list.forEach(p => {
 
     const id =
-    String(p.id);
+      String(p.id);
 
     const price =
-    Number(p.price);
+      Number(p.price) || 0;
 
     const oldPrice =
-    Number(p.oldPrice);
+      Number(p.oldPrice) || 0;
 
     const hasDiscount =
-    oldPrice > price;
+      oldPrice > price;
 
     const percent =
-    hasDiscount
-    ? Math.round(
-      (1 - price / oldPrice) * 100
-    )
-    : 0;
+      hasDiscount
+      ? Math.round(
+          (1 - price / oldPrice) * 100
+        )
+      : 0;
 
     box.innerHTML += `
+    <div class="item">
 
-      <div class="item">
+      ${
+  percent
+  ? `
+    <div class="discount-badge">
+      -${percent}%
+    </div>
+  `
+  : ""
+}
 
-        <img
-          src="${p.img}"
-          onclick="goDetail('${id}')"
-          style="cursor:pointer;"
-        >
+        <div class="img-box">
+
+          <img
+            src="${p.img || ''}"
+            alt="${p.name || ''}"
+            onclick="goDetail('${id}')"
+            style="cursor:pointer;"
+          >
+
+        </div>
 
         <h4>
-          ${p.name}
+          ${p.name || "Không tên"}
         </h4>
 
         <div class="price-box">
@@ -344,40 +183,37 @@ function render(list){
 
           ${
             hasDiscount
-            ?
-            `
+
+            ? `
+
             <span class="old-price">
               ${oldPrice.toLocaleString()}đ
             </span>
-            `
-            : ""
-          }
 
-          ${
-            percent
-            ?
             `
-            <span class="discount-text">
-              -${percent}%
-            </span>
-            `
+
             : ""
+
           }
 
         </div>
 
-        <button
+               <button
           class="spec-btn"
           onclick="goDetail('${id}')"
         >
+
           ⚙️ Xem thông số
+
         </button>
 
         <button
           class="cart-btn"
           onclick="addToCart('${id}')"
         >
+
           🛒 Thêm vào giỏ
+
         </button>
 
       </div>
@@ -389,43 +225,38 @@ function render(list){
 }
 
 /* =========================
-   🔗 DETAIL
+   DETAIL
 ========================= */
 
 window.goDetail = function(id){
 
   window.location.href =
-  `logo.html?id=${id}`;
+    `logo.html?id=${id}`;
 
 };
 
 /* =========================
-   🛒 ADD TO CART
+   CART
 ========================= */
 
 window.addToCart = function(id){
 
   const product =
-  normalizeList(allProducts)
-  .find(
-    p =>
-    String(p.id) ===
-    String(id)
-  );
+    allProducts.find(
+      p => String(p.id) === String(id)
+    );
 
   if(!product) return;
 
   let cart =
-  JSON.parse(
-    localStorage.getItem("cart")
-  ) || [];
+    JSON.parse(
+      localStorage.getItem("cart")
+    ) || [];
 
   const exist =
-  cart.find(
-    item =>
-    String(item.id) ===
-    String(id)
-  );
+    cart.find(
+      i => String(i.id) === String(id)
+    );
 
   if(exist){
 
@@ -446,11 +277,8 @@ window.addToCart = function(id){
   }
 
   localStorage.setItem(
-
     "cart",
-
     JSON.stringify(cart)
-
   );
 
   alert("Đã thêm vào giỏ 🛒");
@@ -458,80 +286,61 @@ window.addToCart = function(id){
 };
 
 /* =========================
-   🔍 SEARCH
+   SEARCH
 ========================= */
 
 const search =
-document.getElementById(
-  "search"
-);
+document.getElementById("search");
 
 if(search){
 
   search.addEventListener(
-
     "input",
-
     e => {
 
       const key =
-      e.target.value
-      .toLowerCase();
+      e.target.value.toLowerCase();
 
       let data =
-      normalizeList(
-        allProducts
-      );
-
-      data =
-      data.filter(
-        p =>
-        p.category === "sd"
+      allProducts.filter(
+        p => p.category === "sd"
       );
 
       render(
 
         data.filter(
           p =>
-          p.name
-          .toLowerCase()
-          .includes(key)
+            p.name &&
+            p.name
+            .toLowerCase()
+            .includes(key)
         )
 
       );
 
     }
-
   );
 
 }
 
 /* =========================
-   📱 MENU
+   MENU
 ========================= */
 
 window.toggleMenu = function(){
 
   const sidebar =
-  document.getElementById(
-    "sidebar"
-  );
+  document.getElementById("sidebar");
 
   const overlay =
-  document.getElementById(
-    "overlay"
-  );
+  document.getElementById("overlay");
 
   if(!sidebar || !overlay)
   return;
 
-  sidebar.classList.toggle(
-    "active"
-  );
+  sidebar.classList.toggle("active");
 
-  overlay.classList.toggle(
-    "active"
-  );
+  overlay.classList.toggle("active");
 
 };
 
@@ -540,9 +349,7 @@ window.toggleMenu = function(){
 ========================= */
 
 document.addEventListener(
-
   "DOMContentLoaded",
-
   async () => {
 
     allProducts =
@@ -550,6 +357,4 @@ document.addEventListener(
 
     render(allProducts);
 
-  }
-
-);
+  });
