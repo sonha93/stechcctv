@@ -112,7 +112,7 @@ function render(list){
 
   /* chỉ camera trong nhà */
   list = list.filter(
-    p => p.category === "combo"
+    p => p.category === "khuyen-mai"
   );
 
   box.innerHTML = "";
@@ -303,7 +303,7 @@ if(search){
 
       let data =
       allProducts.filter(
-        p => p.category === "combo"
+        p => p.category === "khuyen-mai"
       );
 
       render(
