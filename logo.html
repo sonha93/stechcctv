@@ -45,11 +45,6 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
 .old-price{color:#888;text-decoration:line-through;font-size:16px;}
 .sale{background:red;color:#fff;padding:4px 8px;border-radius:9px;font-size:13px;font-weight:bold;}
 .action-wrap{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;width:100%;}
-.buy-btn,.spec-open-btn{width:100%;height:42px;border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:bold;cursor:pointer;transition:.2s;}
-.buy-btn{background:#111;}
-.spec-open-btn{background:#00acc1;}
-.buy-btn:hover,.spec-open-btn:hover{transform:translateY(-2px);}
-.desc{background:#f7f7f7;border-radius:16px;padding:16px;line-height:1.7;font-size:14px;}
 
 /* === PANEL === */
 #specPanel{position:fixed;top:0;right:-100%;width:620px;max-width:100%;height:100vh;background:#fff;z-index:9999;transition:.35s;overflow-y:auto;box-shadow:-5px 0 20px rgba(0,0,0,.15);}
@@ -74,7 +69,6 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
 <body>
 
 <div id="overlay" onclick="toggleMenu()"></div>
-
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
   <a href="index.html">Trang chủ</a>
@@ -206,7 +200,7 @@ async function loadProduct(){
 loadProduct();
 
 // CART
-function addToCart(){
+window.addToCart = function(){
   if(!currentProduct) return;
   let cart=JSON.parse(localStorage.getItem("cart"))||[];
   const exist=cart.find(x=>x.id===currentProduct.id);
@@ -225,12 +219,12 @@ function updateCartCount(){
 updateCartCount();
 
 // PANEL & TAB
-function openPanel(){document.getElementById("specPanel").classList.add("active");document.getElementById("panelOverlay").classList.add("active");}
-function closePanel(){document.getElementById("specPanel").classList.remove("active");document.getElementById("panelOverlay").classList.remove("active");}
-function showTab(tabId,btn){document.querySelectorAll(".spec-content").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".spec-tab").forEach(t=>t.classList.remove("active"));document.getElementById(tabId).classList.add("active");btn.classList.add("active");}
+window.openPanel = function(){document.getElementById("specPanel").classList.add("active");document.getElementById("panelOverlay").classList.add("active");}
+window.closePanel = function(){document.getElementById("specPanel").classList.remove("active");document.getElementById("panelOverlay").classList.remove("active");}
+window.showTab = function(tabId,btn){document.querySelectorAll(".spec-content").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".spec-tab").forEach(t=>t.classList.remove("active"));document.getElementById(tabId).classList.add("active");btn.classList.add("active");}
 
 // MENU
-function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
+window.toggleMenu = function(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
 
 // SEARCH
 async function searchProduct(){
@@ -252,6 +246,5 @@ async function searchProduct(){
   });
 }
 </script>
-   <script type="module"src="app.js"></script>
 </body>
 </html>
