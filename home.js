@@ -34,9 +34,16 @@ async function getProducts() {
     const querySnapshot = await getDocs(collection(db, "products"));
     let arr = [];
     querySnapshot.forEach(doc => {
+      const data = doc.data();
       arr.push({
         id: doc.id,
-        ...doc.data()
+        name: data.name || "Không tên",
+        img: data.img || "https://via.placeholder.com/300", // luôn có ảnh public
+        price: Number(data.price) || 0,
+        oldPrice: Number(data.oldPrice) || 0,
+        featured: data.featured || false,
+        category: data.category || "",
+        spec: data.spec || {}
       });
     });
     return arr;
@@ -83,7 +90,8 @@ function renderHome() {
       const percent = Math.round((1 - p.price / p.oldPrice) * 100);
       percentText = `-${percent}%`;
     }
-    let imgUrl = p.img || "https://via.placeholder.com/300";
+    // Luôn sử dụng link public (Cloudinary)
+    const imgUrl = p.img;
 
     box.innerHTML += `
       <div class="item">
