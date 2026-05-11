@@ -35,8 +35,8 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
 
 /* MAIN LAYOUT */
 .container{display:flex;gap:20px;max-width:1000px;margin:20px auto;padding:0 10px;flex-wrap:nowrap;}
-.left{flex:1;min-width:150px;display:flex;justify-content:center;align-items:flex-start;}
-.left img{width:100%;max-width:350px;max-height:400px;object-fit:contain;border-radius:16px;}
+.left{flex:1;min-width:150px;display:flex;justify-content:flex-start;align-items:flex-start;}
+.left img{width:100%;max-width:300px;max-height:300px;object-fit:contain;border-radius:16px;}
 .right{flex:1;min-width:150px;display:flex;flex-direction:column;gap:12px;}
 
 /* PRODUCT INFO */
@@ -71,21 +71,15 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
 .spec-label{width:180px;color:#666;font-size:14px;line-height:1.5;}
 .spec-value{flex:1;color:#111;font-size:14px;line-height:1.5;font-weight:500;}
 
-/* RESPONSIVE MOBILE - vẫn 2 cột */
+/* RESPONSIVE MOBILE */
 @media(max-width:768px){
   .container{
-    flex-direction:row; /* luôn 2 cột */
+    flex-direction:row; /* 2 cột cố định */
     align-items:flex-start;
   }
-  .left {
-    flex:1;
-  }
-  .right {
-    flex:1;
-  }
   .left img{
-    max-width:150px;
-    max-height:200px;
+    width:150px; /* chiều rộng cố định */
+    height:150px; /* chiều cao cố định */
   }
 }
 </style>
