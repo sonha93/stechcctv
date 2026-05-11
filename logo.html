@@ -574,45 +574,25 @@ header{
      <div class="spec-row">
  
 
-alo ạ
-
-Alo, tôi đây. Bạn cần xử lý gì tiếp cho web stechcctv?
-
-
-muốn thêm 1 dòng load từ admin ra khung thông số 
-muốn thêm 1 thông tin như này ở thanh menu thông số 
   <div class="spec-row">
         <div class="spec-label">Xuất xứ</div>
         <div class="spec-value" id="detailOrigin"></div>
       </div>
-bảo hành là lệnh viết như nào nhĩ 
-
-Nếu đang có:
 
 <div class="spec-row">
   <div class="spec-label">Xuất xứ</div>
   <div class="spec-value" id="detailOrigin"></div>
 </div>
-Thì “Bảo hành” viết y chang kiểu đó:
+:
 
 <div class="spec-row">
   <div class="spec-label">Bảo hành</div>
   <div class="spec-value" id="detailWarranty"></div>
 </div>
-Sau đó JS load dữ liệu:
 
-document.getElementById("detailWarranty").textContent =
-  product.warranty || "Đang cập nhật";
-Còn admin thì thêm input:
 
 <input type="text" id="productWarranty" placeholder="Bảo hành">
-Lưu Firebase:
 
-warranty: document.getElementById("productWarranty").value,
-Xong bên trang chi tiết nó sẽ hiện ra giống “Xuất xứ”.
-
-
-độ phân giải là lênh như nào ạ
  <div class="spec-row">
         <div class="spec-label">Độ phân giải</div>
         <div class="spec-value" id="detailResolution"></div>
@@ -622,42 +602,17 @@ Xong bên trang chi tiết nó sẽ hiện ra giống “Xuất xứ”.
   <div class="spec-label">Độ phân giải</div>
   <div class="spec-value" id="detailResolution"></div>
 </div>
-JS hiển thị:
 
-document.getElementById("detailResolution").textContent =
-  product.resolution || "Đang cập nhật";
-Input admin:
 
-<input type="text" id="productResolution" placeholder="Độ phân giải">
-Lưu Firebase:
 
-resolution: document.getElementById("productResolution").value,
-
-mình nhầm gốc nhìn á
-
-Nếu là “Góc nhìn” thì đổi thành:
 
 <div class="spec-row">
   <div class="spec-label">Góc nhìn</div>
   <div class="spec-value" id="detailViewAngle"></div>
 </div>
-JS:
-
-document.getElementById("detailViewAngle").textContent =
-  product.viewAngle || "Đang cập nhật";
-Admin input:
 
 <input type="text" id="productViewAngle" placeholder="Góc nhìn">
-Lưu Firebase:
 
-viewAngle: document.getElementById("productViewAngle").value,
-
-bạn có thể chạy lại cho mình phần thông số được không ạ
-
-Spec Section Camera Product Detail Example
-
-Khung thông số sản phẩm hoàn chỉnh
-HTML
 <div class="product-specs">
 
   <div class="spec-row">
@@ -681,24 +636,7 @@ HTML
   </div>
 
 </div>
-JS hiển thị dữ liệu
-// Thông số sản phẩm
 
-document.getElementById("detailOrigin").textContent =
-  product.origin || "Đang cập nhật";
-
-
-document.getElementById("detailWarranty").textContent =
-  product.warranty || "Đang cập nhật";
-
-
-document.getElementById("detailResolution").textContent =
-  product.resolution || "Đang cập nhật";
-
-
-document.getElementById("detailViewAngle").textContent =
-  product.viewAngle || "Đang cập nhật";
-Input admin thêm sản phẩm
 <input type="text" id="productOrigin" placeholder="Xuất xứ">
 
 <input type="text" id="productWarranty" placeholder="Bảo hành">
@@ -706,35 +644,6 @@ Input admin thêm sản phẩm
 <input type="text" id="productResolution" placeholder="Độ phân giải">
 
 <input type="text" id="productViewAngle" placeholder="Góc nhìn">
-Lưu Firebase
-const productData = {
-  origin: document.getElementById("productOrigin").value,
-
-  warranty: document.getElementById("productWarranty").value,
-
-  resolution: document.getElementById("productResolution").value,
-
-  viewAngle: document.getElementById("productViewAngle").value,
-};
-Mình đã chạy lại đầy đủ phần “thông số sản phẩm” gồm:
-
-HTML hiển thị
-
-JS load dữ liệu
-
-Input admin
-
-Lưu Firebase
-
-Có sẵn:
-
-Xuất xứ
-
-Bảo hành
-
-Độ phân giải
-
-Góc nhìn
 
 
  <input id="thietKe" placeholder="Thiết kế">
@@ -764,23 +673,7 @@ Phần hiển thị thông số:
   <div class="spec-label">Công suất</div>
   <div class="spec-value" id="detailCongSuat"></div>
 </div>
-JS hiển thị:
 
-document.getElementById("detailThietKe").textContent =
-  product.thietKe || "Đang cập nhật";
-
-document.getElementById("detailChatLieu").textContent =
-  product.chatLieu || "Đang cập nhật";
-
-document.getElementById("detailCongSuat").textContent =
-  product.congSuat || "Đang cập nhật";
-Lưu Firebase:
-
-thietKe: document.getElementById("thietKe").value,
-
-chatLieu: document.getElementById("chatLieu").value,
-
-congSuat: document.getElementById("congSuat").value,
 
 <!DOCTYPE html>
 <html lang="vi">
