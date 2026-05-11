@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -422,6 +423,7 @@ header{
 <div id="overlay" onclick="toggleMenu()"></div>
 
 <div class="sidebar" id="sidebar">
+
   <h3>Danh mục</h3>
 
   <a href="index.html">Trang chủ</a>
@@ -433,6 +435,7 @@ header{
   <a href="camera-ngoai-troi.html">
     Camera ngoài trời
   </a>
+
 </div>
 
 <header>
@@ -663,6 +666,8 @@ let product = null;
 /* LOAD PRODUCT */
 async function loadProduct(){
 
+  products = [];
+
   const querySnapshot =
   await getDocs(collection(db,"products"));
 
@@ -676,7 +681,13 @@ async function loadProduct(){
     p => String(p.id) === String(id)
   );
 
-  if(!product) return;
+  if(!product){
+
+    detailName.innerText =
+    "Không tìm thấy sản phẩm";
+
+    return;
+  }
 
   detailImg.src = product.img || "";
   panelProductImg.src = product.img || "";
@@ -788,7 +799,12 @@ function showTab(tabId,btn){
 /* CART */
 function addToCart(){
 
-  if(!product) return;
+  if(!product){
+
+    alert("Không có sản phẩm");
+    return;
+
+  }
 
   let cart =
   JSON.parse(localStorage.getItem("cart")) || [];
@@ -844,7 +860,7 @@ updateCartCount();
 function searchProduct(){
 
   const term =
-  searchInput.value.toLowerCase();
+  searchInput.value.toLowerCase().trim();
 
   searchResults.innerHTML = "";
 
@@ -852,7 +868,9 @@ function searchProduct(){
 
   const filtered =
   products.filter(
-    p => p.name.toLowerCase().includes(term)
+    p =>
+    p.name &&
+    p.name.toLowerCase().includes(term)
   );
 
   filtered.forEach(p=>{
@@ -877,7 +895,7 @@ function searchProduct(){
     div.onclick = ()=>{
 
       window.location.href =
-      `detail.html?id=${p.id}`;
+      "detail.html?id=" + p.id;
 
     };
 
@@ -887,7 +905,7 @@ function searchProduct(){
 
 }
 
-/* FIX BUTTON MODULE */
+/* FIX MODULE */
 window.toggleMenu = toggleMenu;
 window.openPanel = openPanel;
 window.closePanel = closePanel;
@@ -899,3 +917,4 @@ window.searchProduct = searchProduct;
 
 </body>
 </html>
+```
