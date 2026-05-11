@@ -188,20 +188,9 @@ function render(list){
 
         </div>
 
-        ${
-          percent
+      
 
-          ? `
-
-          <div class="discount-text">
-            -${percent}%
-          </div>
-
-          `
-
-          : ""
-
-        }
+        
 
         <button
           class="spec-btn"
