@@ -175,16 +175,18 @@ header div{
 /* ===== BADGES ===== */
 .badge,
 .discount-badge{
-  position:absolute;
-  left:8px;
-  color:#fff;
-  font-size:11px;
-  font-weight:bold;
-  padding:4px 8px;
-  border-radius:8px;
-  z-index:10;
+  position: absolute;
+  top: 8px;       /* cách trên của card */
+  left: 8px;      /* cách trái của card */
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 8px;
+  z-index: 10;
+  white-space: nowrap; /* tránh % nhảy xuống dòng */
+  background: #c4001d; /* nếu muốn đỏ nổi bật */
 }
-
 .badge{
   top:8px;
   background:linear-gradient(90deg,#1e88e5,#00acc1);
