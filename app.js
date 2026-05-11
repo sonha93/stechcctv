@@ -36,6 +36,10 @@ async function fetchProducts() {
       });
     });
     allProducts = arr;
+
+    // ⚡ Lưu vào localStorage để trang detail/logo đọc được
+    localStorage.setItem("products", JSON.stringify(allProducts));
+
     return arr;
   } catch (err) {
     console.error(err);
@@ -89,8 +93,8 @@ function render(list) {
 
   list.forEach(p => {
     const id = String(p.id);
-    const price = Number(p.price);
-    const oldPrice = Number(p.oldPrice);
+    const price = Number(p.price || 0);
+    const oldPrice = Number(p.oldPrice || 0);
     const hasDiscount = oldPrice > price;
     const percent = hasDiscount ? Math.round((1 - price / oldPrice) * 100) : 0;
 
@@ -135,6 +139,17 @@ window.addToCart = function(id){
 
   localStorage.setItem("cart", JSON.stringify(cart));
   alert("Đã thêm vào giỏ 🛒");
+  updateCartCount();
+}
+
+/* =========================
+   UPDATE CART COUNT
+========================= */
+function updateCartCount(){
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const total = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+  const cartEl = document.getElementById("cartCount");
+  if(cartEl) cartEl.innerText = total;
 }
 
 /* =========================
@@ -173,4 +188,5 @@ if(search){
 document.addEventListener("DOMContentLoaded", async () => {
   await fetchProducts(); // load từ Firestore
   render(); // render trang chủ hoặc category
+  updateCartCount(); // update số lượng giỏ
 });
