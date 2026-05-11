@@ -148,6 +148,7 @@ function render(list){
       : 0;
 
     box.innerHTML += `
+    <div class="item">
 
       ${
   percent
