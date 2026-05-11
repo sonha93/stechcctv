@@ -55,7 +55,7 @@ header div{
   overflow-y:auto;
   transform:translateX(-100%);
   transition:transform .25s ease;
-  z-index:99999;
+  z-index:10001;
   box-shadow:2px 0 20px rgba(0,0,0,.15);
 }
 
@@ -93,7 +93,7 @@ header div{
   opacity:0;
   visibility:hidden;
   transition:.25s;
-  z-index:9990;
+  z-index:10000;
 }
 
 #overlay.active{
@@ -169,12 +169,12 @@ header div{
 
 .price{
   color:#e60023;
-  font-size:18px; /* tăng size */
-  font-weight:bold;
+  font-size:22px; /* tăng size */
+  font-weight:800; /* in đậm */
 }
 
 .old-price{
-  font-size:14px; /* tăng size */
+  font-size:16px;
   color:#000;
   text-decoration:line-through;
   opacity:0.7;
@@ -203,9 +203,9 @@ header div{
   color:#fff;
   font-size:12px;
   font-weight:bold;
-  padding:4px 8px;
-  border-radius:8px;
-  z-index:10;
+  padding:5px 10px;
+  border-radius:999px;
+  z-index:20;
   white-space:nowrap;
   background:linear-gradient(135deg,#ff3b30,#ff6b6b);
 }
