@@ -4,13 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Chi tiết sản phẩm</title>
-<link rel="stylesheet" href="mobipc.css">
 <style>
-/* === RESET === */
+/* ===== RESET ===== */
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:#f5f5f5;color:#111;overflow-x:hidden;}
-
-/* === HEADER === */
+/* ===== HEADER ===== */
 header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10px;padding:12px;background:#33A0AB;box-shadow:0 2px 10px rgba(0,0,0,.08);}
 .menu-btn{width:46px;height:46px;border-radius:14px;background:#00acc1;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;flex-shrink:0;}
 .logo{width:46px;height:46px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.08);flex-shrink:0;}
@@ -25,16 +23,14 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
 .icon-btn{width:46px;height:46px;border-radius:14px;background:#00acc1;color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:22px;position:relative;}
 .admin-btn{background:#6a5acd;}
 .cart-count{position:absolute;top:-5px;right:-5px;min-width:20px;height:20px;border-radius:50%;background:red;color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;}
-
-/* === MENU === */
+/* ===== MENU ===== */
 .sidebar{position:fixed;top:0;left:-280px;width:260px;height:100vh;background:#fff;z-index:9999;transition:.3s;padding:20px;box-shadow:0 0 20px rgba(0,0,0,.15);}
 .sidebar.active{left:0;}
 .sidebar h3{margin-bottom:20px;color:#00acc1;}
 .sidebar a{display:block;padding:14px;margin-bottom:10px;border-radius:12px;background:#f5f5f5;text-decoration:none;color:#111;font-weight:bold;}
 #overlay,#panelOverlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;opacity:0;visibility:hidden;transition:.3s;}
 #overlay.active,#panelOverlay.active{opacity:1;visibility:visible;}
-
-/* === CONTENT === */
+/* ===== CONTENT ===== */
 .container{max-width:1180px;margin:auto;padding:18px;display:flex;gap:18px;align-items:flex-start;}
 .left{width:33%;background:#fff;border-radius:20px;padding:12px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
 .left img{width:100%;height:300px;object-fit:contain;border-radius:16px;}
@@ -50,8 +46,7 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
 .spec-open-btn{background:#00acc1;}
 .buy-btn:hover,.spec-open-btn:hover{transform:translateY(-2px);}
 .desc{background:#f7f7f7;border-radius:16px;padding:16px;line-height:1.7;font-size:14px;}
-
-/* === PANEL === */
+/* ===== PANEL ===== */
 #specPanel{position:fixed;top:0;right:-100%;width:620px;max-width:100%;height:100vh;background:#fff;z-index:9999;transition:.35s;overflow-y:auto;box-shadow:-5px 0 20px rgba(0,0,0,.15);}
 #specPanel.active{right:0;}
 .panel-top{position:sticky;top:0;background:#fff;z-index:20;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eee;}
@@ -69,6 +64,7 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
 .spec-row{display:flex;border-bottom:1px solid #f0f0f0;padding:10px 0;gap:10px;}
 .spec-label{width:180px;color:#666;font-size:14px;line-height:1.5;}
 .spec-value{flex:1;color:#111;font-size:14px;line-height:1.5;font-weight:500;}
+/* ===== MOBILE ===== */
 @media(max-width:768px){
 header{padding:10px;gap:8px;}
 .menu-btn,.logo,.icon-btn{width:42px;height:42px;}
@@ -89,8 +85,6 @@ header{padding:10px;gap:8px;}
 <body>
 
 <div id="overlay" onclick="toggleMenu()"></div>
-
-<!-- MENU -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
   <a href="index.html">Trang chủ</a>
@@ -98,22 +92,19 @@ header{padding:10px;gap:8px;}
   <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
 </div>
 
-<!-- HEADER -->
 <header>
   <div class="menu-btn" onclick="toggleMenu()">☰</div>
   <div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png"></div>
-  <!-- SEARCH BOX -->
-<div class="search-box">
-  <input type="text" placeholder="Tìm kiếm sản phẩm..." id="searchInput" oninput="searchProduct()">
-  <div id="searchResults" class="search-results"></div>
-</div>
+  <div class="search-box">
+    <input type="text" placeholder="Tìm kiếm sản phẩm..." id="searchInput" oninput="searchProduct()">
+    <div id="searchResults" class="search-results"></div>
+  </div>
   <div class="header-icons">
     <a href="admin.html" class="icon-btn admin-btn">🔐</a>
     <a href="cart.html" class="icon-btn">🛒<span class="cart-count" id="cartCount">0</span></a>
   </div>
 </header>
 
-<!-- CONTENT -->
 <div class="container">
   <div class="left"><img id="detailImg" src=""></div>
   <div class="right">
@@ -123,8 +114,6 @@ header{padding:10px;gap:8px;}
       <div class="old-price" id="detailOldPrice"></div>
       <div class="sale" id="detailSale"></div>
     </div>
-    <h2 style="margin:20px 18px 10px;">Sản phẩm khác</h2>
-<div id="productContainer" class="product-grid"></div>
     <div class="action-wrap">
       <button class="spec-open-btn" onclick="openPanel()">⚙️ Xem thông số</button>
       <button class="buy-btn" onclick="addToCart()">🛒 Thêm giỏ hàng</button>
@@ -135,7 +124,6 @@ header{padding:10px;gap:8px;}
 
 <div id="panelOverlay" onclick="closePanel()"></div>
 
-<!-- PANEL -->
 <div id="specPanel">
   <div class="panel-top">
     <div class="panel-product">
@@ -144,15 +132,11 @@ header{padding:10px;gap:8px;}
     </div>
     <button class="close-panel" onclick="closePanel()">✕</button>
   </div>
-
-  <!-- TAB -->
   <div class="spec-tabs">
     <button class="spec-tab active" onclick="showTab('infoTab',this)">Thông tin</button>
     <button class="spec-tab" onclick="showTab('designTab',this)">Thiết kế</button>
     <button class="spec-tab" onclick="showTab('basicTab',this)">Cấu hình</button>
   </div>
-
-  <!-- BODY -->
   <div class="panel-body">
     <div class="spec-content active" id="infoTab">
       <div class="spec-group-title">Thông tin hàng hóa</div>
@@ -175,49 +159,46 @@ header{padding:10px;gap:8px;}
   </div>
 </div>
 
-<script src="app.js"></script> <!-- Nhúng app.js trước để load dữ liệu sản phẩm -->
+<script src="app.js"></script>
 <script>
-// ===== PANEL + TAB =====
+// PANEL + TAB
 function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
 function openPanel(){document.getElementById("specPanel").classList.add("active");document.getElementById("panelOverlay").classList.add("active");}
 function closePanel(){document.getElementById("specPanel").classList.remove("active");document.getElementById("panelOverlay").classList.remove("active");}
 function showTab(tabId,btn){document.querySelectorAll(".spec-content").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".spec-tab").forEach(t=>t.classList.remove("active"));document.getElementById(tabId).classList.add("active");btn.classList.add("active");}
 
-// ===== GET PRODUCT =====
+// GET PRODUCT
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
-const products = JSON.parse(localStorage.getItem('products')) || [];
-const product = products.find(p => String(p.id) === String(id));
-
+const products = JSON.parse(localStorage.getItem("products"))||[];
+const product = products.find(p=>String(p.id)===String(id));
 if(product){
-  document.getElementById("detailImg").src = product.img || "";
-  document.getElementById("panelProductImg").src = product.img || "";
-  document.getElementById("detailName").innerText = product.name || "";
-  document.getElementById("panelProductName").innerText = product.name || "";
-  document.getElementById("detailPrice").innerText = product.price ? Number(product.price).toLocaleString()+"đ" : "";
-  document.getElementById("detailOldPrice").innerText = product.oldPrice ? Number(product.oldPrice).toLocaleString()+"đ" : "";
-  if(product.oldPrice && Number(product.oldPrice) > Number(product.price)){
+  document.getElementById("detailImg").src = product.img||"";
+  document.getElementById("panelProductImg").src = product.img||"";
+  document.getElementById("detailName").innerText = product.name||"";
+  document.getElementById("panelProductName").innerText = product.name||"";
+  document.getElementById("detailPrice").innerText = product.price?Number(product.price).toLocaleString()+"đ":"";
+  document.getElementById("detailOldPrice").innerText = product.oldPrice?Number(product.oldPrice).toLocaleString()+"đ":"";
+  if(product.oldPrice && Number(product.oldPrice)>Number(product.price)){
     const sale = Math.round(((Number(product.oldPrice)-Number(product.price))/Number(product.oldPrice))*100);
     document.getElementById("detailSale").innerText = "-"+sale+"%";
-  } else { document.getElementById("detailSale").style.display = "none"; }
-  document.getElementById("detailDesc").innerText = product.desc || "";
-  document.getElementById("detailModel").innerText = product.model || "Đang cập nhật";
-  document.getElementById("detailOrigin").innerText = product.xuatXu || "Đang cập nhật";
-  document.getElementById("detailBaoHanh").innerText = product.baoHanh || "Đang cập nhật";
-  document.getElementById("detailMaterial").innerText = product.chatLieu || "Đang cập nhật";
-  document.getElementById("detailDesign").innerText = product.thietKe || "Đang cập nhật";
-  document.getElementById("detailSize").innerText = product.kichThuoc || "Đang cập nhật";
-  document.getElementById("detailResolution").innerText = product.doPhanGiai || "Đang cập nhật";
-  document.getElementById("detailConnect").innerText = product.ketNoi || "Đang cập nhật";
-  document.getElementById("detailView").innerText = product.gocNhin || "Đang cập nhật";
-} else {
-  document.body.innerHTML = "<h2>Sản phẩm không tồn tại</h2>";
+  } else {document.getElementById("detailSale").style.display="none";}
+  document.getElementById("detailDesc").innerText = product.desc||"";
+  document.getElementById("detailModel").innerText = product.model||"Đang cập nhật";
+  document.getElementById("detailOrigin").innerText = product.xuatXu||"Đang cập nhật";
+  document.getElementById("detailBaoHanh").innerText = product.baoHanh||"Đang cập nhật";
+  document.getElementById("detailMaterial").innerText = product.chatLieu||"Đang cập nhật";
+  document.getElementById("detailDesign").innerText = product.thietKe||"Đang cập nhật";
+  document.getElementById("detailSize").innerText = product.kichThuoc||"Đang cập nhật";
+  document.getElementById("detailResolution").innerText = product.doPhanGiai||"Đang cập nhật";
+  document.getElementById("detailConnect").innerText = product.ketNoi||"Đang cập nhật";
+  document.getElementById("detailView").innerText = product.gocNhin||"Đang cập nhật";
 }
 
-// ===== CART =====
+// CART
 function addToCart(){
   if(!product) return;
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let cart = JSON.parse(localStorage.getItem('cart'))||[];
   const exist = cart.find(x=>String(x.id)===String(product.id));
   if(exist){exist.qty+=1;} else {cart.push({...product, qty:1});}
   localStorage.setItem('cart', JSON.stringify(cart));
@@ -225,13 +206,27 @@ function addToCart(){
   alert("Đã thêm vào giỏ 🛒");
 }
 function updateCartCount(){
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  let total = 0;
-  cart.forEach(item=>{total += item.qty || 1;});
-  document.getElementById("cartCount").innerText = total;
+  const cart = JSON.parse(localStorage.getItem('cart'))||[];
+  let total=0; cart.forEach(item=>total+=item.qty||1);
+  document.getElementById("cartCount").innerText=total;
 }
 updateCartCount();
-</script>
 
+// SEARCH
+function searchProduct(){
+  const term = document.getElementById("searchInput").value.toLowerCase();
+  const results = document.getElementById("searchResults");
+  results.innerHTML="";
+  if(term==="") return;
+  const filtered = products.filter(p=>p.name.toLowerCase().includes(term));
+  filtered.forEach(p=>{
+    const div=document.createElement("div");
+    div.className="search-result-item";
+    div.innerHTML=`<img src="${p.img}" alt="${p.name}"><div><strong>${p.name}</strong><span>${Number(p.price).toLocaleString()}đ</span></div>`;
+    div.onclick=()=>{window.location.href=`logo.html?id=${p.id}`;};
+    results.appendChild(div);
+  });
+}
+</script>
 </body>
 </html>
