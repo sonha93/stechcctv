@@ -57,8 +57,7 @@ async function getProducts(){
 
       arr.push({
 
-        docId:doc.id,
-
+        id:doc.id,
         ...doc.data()
 
       });
