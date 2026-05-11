@@ -1,43 +1,105 @@
 /* =========================
-   🔥 CAMERA NGOAI TROI JS FIX FULL
+   FIREBASE
 ========================= */
 
-/* =========================
-   GET DATA
-========================= */
-function getProducts() {
-  return JSON.parse(
-    localStorage.getItem("products")
-  ) || [];
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs
 }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+
+  authDomain: "stech-73b89.firebaseapp.com",
+
+  projectId: "stech-73b89",
+
+  storageBucket: "stech-73b89.firebasestorage.app",
+
+  messagingSenderId: "873739162979",
+
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
 
 /* =========================
-   PAGE CATEGORY
+   CAMERA TRONG NHÀ
 ========================= */
-function getPageCategory() {
-  return "cam-ngoai";
+
+let allProducts = [];
+
+/* =========================
+   GET PRODUCTS
+========================= */
+
+async function getProducts(){
+
+  try{
+
+    const querySnapshot =
+    await getDocs(
+      collection(db,"products")
+    );
+
+    let arr = [];
+
+    querySnapshot.forEach(doc => {
+
+      arr.push({
+
+        id:doc.id,
+        ...doc.data()
+
+      });
+
+    });
+
+    return arr;
+
+  }
+
+  catch(err){
+
+    console.log(err);
+
+    return [];
+
+  }
+
 }
 
 /* =========================
    FIX DATA
 ========================= */
+
 function fixData(list){
 
   return list.map(p => ({
 
     ...p,
 
-    price: Number(p.price) || 0,
+    price:Number(p.price) || 0,
 
-    oldPrice: Number(p.oldPrice) || 0
+    oldPrice:Number(p.oldPrice) || 0
 
   }));
 
 }
 
 /* =========================
-   RENDER PRODUCTS
+   RENDER
 ========================= */
+
 function render(list){
 
   const box =
@@ -45,14 +107,9 @@ function render(list){
 
   if(!box) return;
 
-  if(!list){
-
-    list = getProducts();
-
-  }
-
   list = fixData(list);
 
+  /* chỉ camera trong nhà */
   list = list.filter(
     p => p.category === "cam-ngoai"
   );
@@ -65,11 +122,10 @@ function render(list){
       "<p>Chưa có sản phẩm</p>";
 
     return;
+
   }
 
   list.forEach(p => {
-
-    if(!p.id) return;
 
     const id =
       String(p.id);
@@ -94,7 +150,6 @@ function render(list){
 
       <div class="item">
 
-        <!-- IMAGE -->
         <div class="img-box">
 
           <img
@@ -106,12 +161,10 @@ function render(list){
 
         </div>
 
-        <!-- NAME -->
         <h4>
-          ${p.name || 'Không tên'}
+          ${p.name || "Không tên"}
         </h4>
 
-        <!-- PRICE -->
         <div class="price-box">
 
           <span class="price">
@@ -130,11 +183,11 @@ function render(list){
             `
 
             : ""
+
           }
 
         </div>
 
-        <!-- DISCOUNT -->
         ${
           percent
 
@@ -147,9 +200,9 @@ function render(list){
           `
 
           : ""
+
         }
 
-        <!-- BUTTON SPEC -->
         <button
           class="spec-btn"
           onclick="goDetail('${id}')"
@@ -159,7 +212,6 @@ function render(list){
 
         </button>
 
-        <!-- BUTTON CART -->
         <button
           class="cart-btn"
           onclick="addToCart('${id}')"
@@ -178,8 +230,9 @@ function render(list){
 }
 
 /* =========================
-   DETAIL PAGE
+   DETAIL
 ========================= */
+
 window.goDetail = function(id){
 
   window.location.href =
@@ -188,12 +241,13 @@ window.goDetail = function(id){
 };
 
 /* =========================
-   ADD TO CART
+   CART
 ========================= */
+
 window.addToCart = function(id){
 
   const product =
-    getProducts().find(
+    allProducts.find(
       p => String(p.id) === String(id)
     );
 
@@ -213,7 +267,9 @@ window.addToCart = function(id){
 
     exist.qty += 1;
 
-  }else{
+  }
+
+  else{
 
     cart.push({
 
@@ -237,8 +293,9 @@ window.addToCart = function(id){
 /* =========================
    SEARCH
 ========================= */
+
 const search =
-  document.getElementById("search");
+document.getElementById("search");
 
 if(search){
 
@@ -247,12 +304,12 @@ if(search){
     e => {
 
       const key =
-        e.target.value.toLowerCase();
+      e.target.value.toLowerCase();
 
       let data =
-        getProducts().filter(
-          p => p.category === "cam-ngoai"
-        );
+      allProducts.filter(
+        p => p.category === "cam-ngoai"
+      );
 
       render(
 
@@ -260,8 +317,8 @@ if(search){
           p =>
             p.name &&
             p.name
-              .toLowerCase()
-              .includes(key)
+            .toLowerCase()
+            .includes(key)
         )
 
       );
@@ -274,16 +331,17 @@ if(search){
 /* =========================
    MENU
 ========================= */
+
 window.toggleMenu = function(){
 
   const sidebar =
-    document.getElementById("sidebar");
+  document.getElementById("sidebar");
 
   const overlay =
-    document.getElementById("overlay");
+  document.getElementById("overlay");
 
   if(!sidebar || !overlay)
-    return;
+  return;
 
   sidebar.classList.toggle("active");
 
@@ -294,9 +352,15 @@ window.toggleMenu = function(){
 /* =========================
    INIT
 ========================= */
+
 document.addEventListener(
   "DOMContentLoaded",
-  () => {
-    render();
+  async () => {
+
+    allProducts =
+    await getProducts();
+
+    render(allProducts);
+
   }
 );
