@@ -547,7 +547,10 @@ header{
         <div class="spec-label">Xuất xứ</div>
         <div class="spec-value" id="detailOrigin"></div>
       </div>
-
+<div class="spec-row">
+  <div class="spec-label">Bảo hành</div>
+  <div class="spec-value" id="detailWarranty"></div>
+</div>
     </div>
 
     <div class="spec-content" id="basicTab">
@@ -635,6 +638,9 @@ async function loadProduct(){
 
   document.getElementById("detailOrigin").innerText =
   product.xuatXu || "Đang cập nhật";
+
+  document.getElementById("detailWarranty").textContent =
+  product.warranty || "Đang cập nhật";
 
   document.getElementById("detailResolution").innerText =
   product.doPhanGiai || "Đang cập nhật";
