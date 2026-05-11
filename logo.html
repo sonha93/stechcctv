@@ -623,20 +623,17 @@ header{
   </div>
 
 </div>
-
-```html
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
   getFirestore,
   collection,
   getDocs
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+/* FIREBASE */
 const firebaseConfig = {
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain:"stech-73b89.firebaseapp.com",
@@ -661,9 +658,7 @@ async function loadProduct(){
   try{
 
     const querySnapshot =
-      await getDocs(collection(db,"products"));
-
-    products = [];
+    await getDocs(collection(db,"products"));
 
     querySnapshot.forEach(doc=>{
 
@@ -678,31 +673,35 @@ async function loadProduct(){
     if(!product){
 
       document.getElementById("detailName").innerText =
-        "Không tìm thấy sản phẩm";
+      "Không tìm thấy sản phẩm";
 
       return;
     }
 
+    /* IMAGE */
     document.getElementById("detailImg").src =
-      product.img || "https://via.placeholder.com/150";
+    product.img || "https://via.placeholder.com/300";
 
     document.getElementById("panelProductImg").src =
-      product.img || "https://via.placeholder.com/50";
+    product.img || "https://via.placeholder.com/100";
 
+    /* NAME */
     document.getElementById("detailName").innerText =
-      product.name || "";
+    product.name || "";
 
     document.getElementById("panelProductName").innerText =
-      product.name || "";
+    product.name || "";
 
+    /* PRICE */
     document.getElementById("detailPrice").innerText =
-      Number(product.price || 0).toLocaleString() + "đ";
+    Number(product.price || 0).toLocaleString() + "đ";
 
     document.getElementById("detailOldPrice").innerText =
-      product.oldPrice
-      ? Number(product.oldPrice).toLocaleString() + "đ"
-      : "";
+    product.oldPrice
+    ? Number(product.oldPrice).toLocaleString() + "đ"
+   
 
+    /* SALE */
     if(
       product.oldPrice &&
       Number(product.oldPrice) > Number(product.price)
@@ -716,47 +715,53 @@ async function loadProduct(){
       );
 
       document.getElementById("detailSale").innerText =
-        "-" + sale + "%";
+      "-" + sale + "%";
 
     }else{
 
       document.getElementById("detailSale").style.display =
-        "none";
+      "none";
+
     }
 
+    /* DESC */
     document.getElementById("detailDesc").innerText =
-      product.desc || "Không có mô tả";
+    product.desc || "Không có mô tả";
 
+    /* INFO */
     document.getElementById("detailModel").innerText =
-      product.model || "Đang cập nhật";
+    product.model || "Đang cập nhật";
 
     document.getElementById("detailOrigin").innerText =
-      product.xuatXu || "Đang cập nhật";
+    product.xuatXu || "Đang cập nhật";
 
     document.getElementById("detailBaoHanh").innerText =
-      product.baoHanh || "Đang cập nhật";
+    product.baoHanh || "Đang cập nhật";
 
     document.getElementById("detailMaterial").innerText =
-      product.chatLieu || "Đang cập nhật";
+    product.chatLieu || "Đang cập nhật";
 
     document.getElementById("detailDesign").innerText =
-      product.thietKe || "Đang cập nhật";
+    product.thietKe || "Đang cập nhật";
 
     document.getElementById("detailSize").innerText =
-      product.kichThuoc || "Đang cập nhật";
+    product.kichThuoc || "Đang cập nhật";
 
     document.getElementById("detailResolution").innerText =
-      product.doPhanGiai || "Đang cập nhật";
+    product.doPhanGiai || "Đang cập nhật";
 
     document.getElementById("detailConnect").innerText =
-      product.ketNoi || "Đang cập nhật";
+    product.ketNoi || "Đang cập nhật";
 
     document.getElementById("detailView").innerText =
-      product.gocNhin || "Đang cập nhật";
+    product.gocNhin || "Đang cập nhật";
 
   }catch(err){
 
     console.log(err);
+
+    document.getElementById("detailName").innerText =
+    "Lỗi tải dữ liệu";
 
   }
 
@@ -768,12 +773,12 @@ loadProduct();
 function toggleMenu(){
 
   document
-    .getElementById("sidebar")
-    .classList.toggle("active");
+  .getElementById("sidebar")
+  .classList.toggle("active");
 
   document
-    .getElementById("overlay")
-    .classList.toggle("active");
+  .getElementById("overlay")
+  .classList.toggle("active");
 
 }
 
@@ -781,40 +786,41 @@ function toggleMenu(){
 function openPanel(){
 
   document
-    .getElementById("specPanel")
-    .classList.add("active");
+  .getElementById("specPanel")
+  .classList.add("active");
 
   document
-    .getElementById("panelOverlay")
-    .classList.add("active");
+  .getElementById("panelOverlay")
+  .classList.add("active");
 
 }
 
 function closePanel(){
 
   document
-    .getElementById("specPanel")
-    .classList.remove("active");
+  .getElementById("specPanel")
+  .classList.remove("active");
 
   document
-    .getElementById("panelOverlay")
-    .classList.remove("active");
+  .getElementById("panelOverlay")
+  .classList.remove("active");
 
 }
 
+/* TAB */
 function showTab(tabId,btn){
 
   document
-    .querySelectorAll(".spec-content")
-    .forEach(el=>el.classList.remove("active"));
+  .querySelectorAll(".spec-content")
+  .forEach(el=>el.classList.remove("active"));
 
   document
-    .querySelectorAll(".spec-tab")
-    .forEach(el=>el.classList.remove("active"));
+  .querySelectorAll(".spec-tab")
+  .forEach(el=>el.classList.remove("active"));
 
   document
-    .getElementById(tabId)
-    .classList.add("active");
+  .getElementById(tabId)
+  .classList.add("active");
 
   btn.classList.add("active");
 
@@ -826,9 +832,10 @@ function addToCart(){
   if(!product) return;
 
   let cart =
-    JSON.parse(localStorage.getItem("cart")) || [];
+  JSON.parse(localStorage.getItem("cart")) || [];
 
-  const exist = cart.find(
+  const exist =
+  cart.find(
     x => String(x.id) === String(product.id)
   );
 
@@ -859,7 +866,7 @@ function addToCart(){
 function updateCartCount(){
 
   const cart =
-    JSON.parse(localStorage.getItem("cart")) || [];
+  JSON.parse(localStorage.getItem("cart")) || [];
 
   let total = 0;
 
@@ -870,7 +877,7 @@ function updateCartCount(){
   });
 
   document.getElementById("cartCount").innerText =
-    total;
+  total;
 
 }
 
@@ -880,58 +887,59 @@ updateCartCount();
 function searchProduct(){
 
   const term =
-    document
-    .getElementById("searchInput")
-    .value
-    .toLowerCase();
+  document
+  .getElementById("searchInput")
+  .value
+  .toLowerCase();
 
   const results =
-    document.getElementById("searchResults");
+  document.getElementById("searchResults");
 
   results.innerHTML = "";
 
   if(term === "") return;
 
-  const filtered = products.filter(p =>
-
+  const filtered =
+  products.filter(p =>
     (p.name || "")
     .toLowerCase()
     .includes(term)
 
-  );
 
   filtered.forEach(p=>{
 
     const div =
-      document.createElement("div");
+    document.createElement("div");
 
     div.className =
-      "search-result-item";
+    "search-result-item";
 
     const oldPrice =
-      p.oldPrice &&
-      Number(p.oldPrice) > Number(p.price)
-      ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>`
-      : "";
+    p.oldPrice &&
+    Number(p.oldPrice) > Number(p.price)
+    ? `<span class="old-price">
+        ${Number(p.oldPrice).toLocaleString()}đ
+      </span>`
+  
 
     div.innerHTML = `
-      <img src="${p.img}" alt="${p.name}">
+      <img src="${p.img || ''}">
 
       <div>
-        <strong>${p.name}</strong>
+        <strong>${p.name || ''}</strong>
 
         <span style="color:red;">
-          ${Number(p.price).toLocaleString()}đ
+          ${Number(p.price || 0).toLocaleString()}đ
         </span>
 
         ${oldPrice}
       </div>
-    `;
+    
 
     div.onclick = ()=>{
 
       window.location.href =
-        \`logo.html?id=\${p.id}\`;
+      "logo.html?id=" + p.id;
 
     };
 
@@ -941,16 +949,14 @@ function searchProduct(){
 
 }
 
-/* FIX BUTTONS */
+/* GLOBAL FIX */
 window.toggleMenu = toggleMenu;
 window.openPanel = openPanel;
 window.closePanel = closePanel;
 window.showTab = showTab;
 window.addToCart = addToCart;
 window.searchProduct = searchProduct;
-window.updateCartCount = updateCartCount;
 
 </script>
-
 </body>
 </html>
