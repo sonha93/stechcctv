@@ -1,57 +1,158 @@
 /* =========================
-   🔥 GET DATA
+   FIREBASE
 ========================= */
-function getProducts() {
-  return JSON.parse(localStorage.getItem("products")) || [];
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+
+  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+
+  authDomain:"stech-73b89.firebaseapp.com",
+
+  projectId:"stech-73b89",
+
+  storageBucket:"stech-73b89.firebasestorage.app",
+
+  messagingSenderId:"873739162979",
+
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
+
+};
+
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getFirestore(app);
+
+/* =========================
+   ALL PRODUCTS
+========================= */
+
+let allProducts = [];
+
+/* =========================
+   GET PRODUCTS FIRESTORE
+========================= */
+
+async function getProducts(){
+
+  try{
+
+    const querySnapshot =
+    await getDocs(
+      collection(db,"products")
+    );
+
+    let arr = [];
+
+    querySnapshot.forEach(doc => {
+
+      arr.push({
+
+        firestoreId:doc.id,
+
+        ...doc.data()
+
+      });
+
+    });
+
+    return arr;
+
+  }
+
+  catch(err){
+
+    console.log(err);
+
+    return [];
+
+  }
+
 }
 
 /* =========================
    📌 PAGE CATEGORY
 ========================= */
-function getPageCategory() {
+
+function getPageCategory(){
+
   return "sd";
+
 }
 
 /* =========================
    🧠 NORMALIZE
 ========================= */
+
 function normalizeProduct(p){
 
   return {
 
     ...p,
 
-    id: p.id || Date.now(),
+    id:p.id || Date.now(),
 
-    name: p.name || "",
+    name:p.name || "",
 
-    img: p.img || "",
+    img:p.img || "",
 
-    category: p.category || "",
+    category:p.category || "",
 
-    desc: p.desc || "",
+    desc:p.desc || "",
 
-    price: Number(p.price) || 0,
+    featured:p.featured || false,
 
-    oldPrice: Number(p.oldPrice) || 0,
+    price:Number(p.price) || 0,
 
-    featured: p.featured || false,
+    oldPrice:Number(p.oldPrice) || 0,
 
-    spec: {
+    spec:{
 
-      model: p.spec?.model || "",
+      model:
+      p.spec?.model ||
+      p.model ||
+      "",
 
-      xuatXu: p.spec?.xuatXu || "",
+      xuatXu:
+      p.spec?.xuatXu ||
+      p.xuatXu ||
+      "",
 
-      baoHanh: p.spec?.baoHanh || "",
+      baoHanh:
+      p.spec?.baoHanh ||
+      p.baoHanh ||
+      "",
 
-      dungLuong: p.spec?.dungLuong || "",
+      dungLuong:
+      p.spec?.dungLuong ||
+      p.dungLuong ||
+      "",
 
-      tocDo: p.spec?.tocDo || "",
+      tocDo:
+      p.spec?.tocDo ||
+      p.tocDo ||
+      "",
 
-      loai: p.spec?.loai || "",
+      loai:
+      p.spec?.loai ||
+      p.loai ||
+      "",
 
-      chatLieu: p.spec?.chatLieu || ""
+      chatLieu:
+      p.spec?.chatLieu ||
+      p.chatLieu ||
+      ""
 
     }
 
@@ -60,12 +161,17 @@ function normalizeProduct(p){
 }
 
 function normalizeList(list){
-  return list.map(normalizeProduct);
+
+  return list.map(
+    normalizeProduct
+  );
+
 }
 
 /* =========================
    ⚙️ SPEC HTML
 ========================= */
+
 function renderSpec(p){
 
   return `
@@ -74,77 +180,84 @@ function renderSpec(p){
 
       ${
         p.spec?.model
-        ? `
-          <div class="spec-item">
-            <span>Model</span>
-            <b>${p.spec.model}</b>
-          </div>
+        ?
+        `
+        <div class="spec-item">
+          <span>Model</span>
+          <b>${p.spec.model}</b>
+        </div>
         `
         : ""
       }
 
       ${
         p.spec?.xuatXu
-        ? `
-          <div class="spec-item">
-            <span>Xuất xứ</span>
-            <b>${p.spec.xuatXu}</b>
-          </div>
+        ?
+        `
+        <div class="spec-item">
+          <span>Xuất xứ</span>
+          <b>${p.spec.xuatXu}</b>
+        </div>
         `
         : ""
       }
 
       ${
         p.spec?.dungLuong
-        ? `
-          <div class="spec-item">
-            <span>Dung lượng</span>
-            <b>${p.spec.dungLuong}</b>
-          </div>
+        ?
+        `
+        <div class="spec-item">
+          <span>Dung lượng</span>
+          <b>${p.spec.dungLuong}</b>
+        </div>
         `
         : ""
       }
 
       ${
         p.spec?.tocDo
-        ? `
-          <div class="spec-item">
-            <span>Tốc độ</span>
-            <b>${p.spec.tocDo}</b>
-          </div>
+        ?
+        `
+        <div class="spec-item">
+          <span>Tốc độ</span>
+          <b>${p.spec.tocDo}</b>
+        </div>
         `
         : ""
       }
 
       ${
         p.spec?.loai
-        ? `
-          <div class="spec-item">
-            <span>Loại thẻ</span>
-            <b>${p.spec.loai}</b>
-          </div>
+        ?
+        `
+        <div class="spec-item">
+          <span>Loại thẻ</span>
+          <b>${p.spec.loai}</b>
+        </div>
         `
         : ""
       }
 
       ${
         p.spec?.chatLieu
-        ? `
-          <div class="spec-item">
-            <span>Chất liệu</span>
-            <b>${p.spec.chatLieu}</b>
-          </div>
+        ?
+        `
+        <div class="spec-item">
+          <span>Chất liệu</span>
+          <b>${p.spec.chatLieu}</b>
+        </div>
         `
         : ""
       }
 
       ${
         p.spec?.baoHanh
-        ? `
-          <div class="spec-item">
-            <span>Bảo hành</span>
-            <b>${p.spec.baoHanh}</b>
-          </div>
+        ?
+        `
+        <div class="spec-item">
+          <span>Bảo hành</span>
+          <b>${p.spec.baoHanh}</b>
+        </div>
         `
         : ""
       }
@@ -158,73 +271,71 @@ function renderSpec(p){
 /* =========================
    🖥 RENDER PRODUCTS
 ========================= */
+
 function render(list){
 
   const box =
-    document.getElementById("products");
+  document.getElementById(
+    "products"
+  );
 
   if(!box) return;
 
-  if(!list){
-
-    list =
-      normalizeList(getProducts());
-
-  }
+  list =
+  normalizeList(list);
 
   list =
-    list.filter(
-      p => p.category === "sd"
-    );
+  list.filter(
+    p =>
+    p.category === "sd"
+  );
 
   box.innerHTML = "";
 
   if(list.length === 0){
 
     box.innerHTML =
-      "<p>Chưa có sản phẩm</p>";
+    "<p>Chưa có sản phẩm</p>";
 
     return;
+
   }
 
   list.forEach(p => {
 
     const id =
-      String(p.id);
+    String(p.id);
 
     const price =
-      Number(p.price);
+    Number(p.price);
 
     const oldPrice =
-      Number(p.oldPrice);
+    Number(p.oldPrice);
 
     const hasDiscount =
-      oldPrice > price;
+    oldPrice > price;
 
     const percent =
-      hasDiscount
-      ? Math.round(
-          (1 - price / oldPrice) * 100
-        )
-      : 0;
+    hasDiscount
+    ? Math.round(
+      (1 - price / oldPrice) * 100
+    )
+    : 0;
 
     box.innerHTML += `
 
       <div class="item">
 
-        <!-- IMAGE -->
         <img
           src="${p.img}"
           onclick="goDetail('${id}')"
           style="cursor:pointer;"
         >
 
-        <!-- NAME -->
         <h4>
           ${p.name}
         </h4>
 
-        <!-- PRICE -->
         <div class="price-box">
 
           <span class="price">
@@ -233,27 +344,28 @@ function render(list){
 
           ${
             hasDiscount
-            ? `
-              <span class="old-price">
-                ${oldPrice.toLocaleString()}đ
-              </span>
+            ?
+            `
+            <span class="old-price">
+              ${oldPrice.toLocaleString()}đ
+            </span>
             `
             : ""
           }
 
           ${
             percent
-            ? `
-              <span class="discount-text">
-                -${percent}%
-              </span>
+            ?
+            `
+            <span class="discount-text">
+              -${percent}%
+            </span>
             `
             : ""
           }
 
         </div>
 
-        <!-- BUTTON SPEC -->
         <button
           class="spec-btn"
           onclick="goDetail('${id}')"
@@ -261,7 +373,6 @@ function render(list){
           ⚙️ Xem thông số
         </button>
 
-        <!-- BUTTON CART -->
         <button
           class="cart-btn"
           onclick="addToCart('${id}')"
@@ -280,42 +391,49 @@ function render(list){
 /* =========================
    🔗 DETAIL
 ========================= */
+
 window.goDetail = function(id){
 
   window.location.href =
-    `logo.html?id=${id}`;
+  `logo.html?id=${id}`;
 
 };
 
 /* =========================
    🛒 ADD TO CART
 ========================= */
+
 window.addToCart = function(id){
 
   const product =
-    normalizeList(getProducts())
-    .find(
-      p => String(p.id) === String(id)
-    );
+  normalizeList(allProducts)
+  .find(
+    p =>
+    String(p.id) ===
+    String(id)
+  );
 
   if(!product) return;
 
   let cart =
-    JSON.parse(
-      localStorage.getItem("cart")
-    ) || [];
+  JSON.parse(
+    localStorage.getItem("cart")
+  ) || [];
 
   const exist =
-    cart.find(
-      item =>
-        String(item.id) === String(id)
-    );
+  cart.find(
+    item =>
+    String(item.id) ===
+    String(id)
+  );
 
   if(exist){
 
     exist.qty += 1;
 
-  }else{
+  }
+
+  else{
 
     cart.push({
 
@@ -328,8 +446,11 @@ window.addToCart = function(id){
   }
 
   localStorage.setItem(
+
     "cart",
+
     JSON.stringify(cart)
+
   );
 
   alert("Đã thêm vào giỏ 🛒");
@@ -339,38 +460,48 @@ window.addToCart = function(id){
 /* =========================
    🔍 SEARCH
 ========================= */
+
 const search =
-  document.getElementById("search");
+document.getElementById(
+  "search"
+);
 
 if(search){
 
   search.addEventListener(
+
     "input",
+
     e => {
 
       const key =
-        e.target.value.toLowerCase();
+      e.target.value
+      .toLowerCase();
 
       let data =
-        normalizeList(getProducts());
+      normalizeList(
+        allProducts
+      );
 
       data =
-        data.filter(
-          p => p.category === "sd"
-        );
+      data.filter(
+        p =>
+        p.category === "sd"
+      );
 
       render(
 
         data.filter(
           p =>
-            p.name
-            .toLowerCase()
-            .includes(key)
+          p.name
+          .toLowerCase()
+          .includes(key)
         )
 
       );
 
     }
+
   );
 
 }
@@ -378,88 +509,47 @@ if(search){
 /* =========================
    📱 MENU
 ========================= */
+
 window.toggleMenu = function(){
 
   const sidebar =
-    document.getElementById("sidebar");
+  document.getElementById(
+    "sidebar"
+  );
 
   const overlay =
-    document.getElementById("overlay");
+  document.getElementById(
+    "overlay"
+  );
 
-  if(!sidebar || !overlay) return;
+  if(!sidebar || !overlay)
+  return;
 
-  sidebar.classList.toggle("active");
+  sidebar.classList.toggle(
+    "active"
+  );
 
-  overlay.classList.toggle("active");
+  overlay.classList.toggle(
+    "active"
+  );
 
 };
 
 /* =========================
-   🧹 FIX DATA
-========================= */
-function fixOldData(){
-
-  let list =
-    JSON.parse(
-      localStorage.getItem("products")
-    ) || [];
-
-  list = list.map(p => {
-
-    return {
-
-      ...p,
-
-      price:
-        Number(p.price) || 0,
-
-      oldPrice:
-        Number(p.oldPrice) || 0,
-
-      spec: {
-
-        model:
-          p.spec?.model || "",
-
-        xuatXu:
-          p.spec?.xuatXu || "",
-
-        baoHanh:
-          p.spec?.baoHanh || "",
-
-        dungLuong:
-          p.spec?.dungLuong || "",
-
-        tocDo:
-          p.spec?.tocDo || "",
-
-        loai:
-          p.spec?.loai || "",
-
-        chatLieu:
-          p.spec?.chatLieu || ""
-
-      }
-
-    };
-
-  });
-
-  localStorage.setItem(
-    "products",
-    JSON.stringify(list)
-  );
-
-}
-
-fixOldData();
-
-/* =========================
    INIT
 ========================= */
+
 document.addEventListener(
+
   "DOMContentLoaded",
-  () => {
-    render();
+
+  async () => {
+
+    allProducts =
+    await getProducts();
+
+    render(allProducts);
+
   }
+
 );
