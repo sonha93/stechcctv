@@ -596,7 +596,6 @@ header{
   </div>
 
 </div>
-
 <script type="module">
 
 import { initializeApp }
@@ -608,6 +607,18 @@ import {
   getDocs
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+document.getElementById("overlay").onclick = function(){
+
+  document
+  .getElementById("sidebar")
+  .classList.remove("active");
+
+  document
+  .getElementById("overlay")
+  .classList.remove("active");
+
+}
 
 const firebaseConfig = {
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
