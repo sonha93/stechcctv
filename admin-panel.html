@@ -192,21 +192,50 @@ button{
 
 <div id="list"></div>
 
-<script>
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* =========================
+   FIREBASE
+========================= */
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+
+  authDomain: "stech-73b89.firebaseapp.com",
+
+  projectId: "stech-73b89",
+
+  storageBucket: "stech-73b89.firebasestorage.app",
+
+  messagingSenderId: "873739162979",
+
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+/* =========================
+   START
+========================= */
 
 window.addEventListener("load", function(){
 
-let products =
-JSON.parse(localStorage.getItem("products")) || [];
-
-function save(){
-
-  localStorage.setItem(
-    "products",
-    JSON.stringify(products)
-  );
-
-}
+let products = [];
 
 const nameMap = {
 
@@ -238,6 +267,10 @@ document.getElementById("btnAdd");
 
 const list =
 document.getElementById("list");
+
+/* =========================
+   CATEGORY
+========================= */
 
 categoryEl.addEventListener("change", function(){
 
@@ -316,6 +349,37 @@ categoryEl.addEventListener("change", function(){
 
 });
 
+/* =========================
+   LOAD FIRESTORE
+========================= */
+
+async function loadProducts(){
+
+  products = [];
+
+  const querySnapshot =
+  await getDocs(collection(db,"products"));
+
+  querySnapshot.forEach(doc => {
+
+    products.push({
+
+      docId:doc.id,
+
+      ...doc.data()
+
+    });
+
+  });
+
+  render();
+
+}
+
+/* =========================
+   ADD PRODUCT
+========================= */
+
 btnAdd.addEventListener("click", async function(){
 
   const name=getVal("name");
@@ -355,9 +419,9 @@ btnAdd.addEventListener("click", async function(){
 
   }
 
-  function addProduct(img){
+  async function addProduct(img){
 
-    products.push({
+    const productData = {
 
       id:Date.now(),
 
@@ -373,28 +437,50 @@ btnAdd.addEventListener("click", async function(){
       img,
 
       featured:
-      document.getElementById("featured").checked
+      document.getElementById("featured").checked,
 
-    });
+      model:getVal("model"),
+      xuatXu:getVal("xuatXu"),
+      baoHanh:getVal("baoHanh"),
+      doPhanGiai:getVal("doPhanGiai"),
+      gocNhin:getVal("gocNhin"),
+      ketNoi:getVal("ketNoi"),
+      thietKe:getVal("thietKe"),
+      chatLieu:getVal("chatLieu"),
+      congSuat:getVal("congSuat"),
+      dungLuong:getVal("dungLuong"),
+      tocDo:getVal("tocDo"),
+      loai:getVal("loai")
 
-    save();
+    };
 
-    render();
+    await addDoc(
+      collection(db,"products"),
+      productData
+    );
 
     alert("✔ Thêm sản phẩm thành công");
 
+    loadProducts();
+
   }
 
-  // dùng link cloudinary
+  /* =========================
+     LINK CLOUDINARY
+  ========================= */
+
   if(imgUrl){
 
-    addProduct(imgUrl);
+    await addProduct(imgUrl);
 
     return;
 
   }
 
-  // upload cloudinary
+  /* =========================
+     UPLOAD CLOUDINARY
+  ========================= */
+
   if(file){
 
     try{
@@ -403,7 +489,6 @@ btnAdd.addEventListener("click", async function(){
 
       formData.append("file", file);
 
-      // upload preset
       formData.append(
         "upload_preset",
         "stech_upload"
@@ -432,7 +517,7 @@ btnAdd.addEventListener("click", async function(){
 
       }
 
-      addProduct(data.secure_url);
+      await addProduct(data.secure_url);
 
     }
 
@@ -447,6 +532,10 @@ btnAdd.addEventListener("click", async function(){
   }
 
 });
+
+/* =========================
+   RENDER
+========================= */
 
 function render(){
 
@@ -486,7 +575,11 @@ function render(){
 
 }
 
-render();
+/* =========================
+   INIT
+========================= */
+
+loadProducts();
 
 categoryEl.dispatchEvent(
   new Event("change")
