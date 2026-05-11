@@ -1,3 +1,4 @@
+
 /* =========================
    FIREBASE
 ========================= */
@@ -147,8 +148,17 @@ function render(list){
       : 0;
 
     box.innerHTML += `
+    <div class="item">
 
-      <div class="item">
+      ${
+  percent
+  ? `
+    <div class="discount-badge">
+      -${percent}%
+    </div>
+  `
+  : ""
+}
 
         <div class="img-box">
 
@@ -188,22 +198,7 @@ function render(list){
 
         </div>
 
-        ${
-          percent
-
-          ? `
-
-          <div class="discount-text">
-            -${percent}%
-          </div>
-
-          `
-
-          : ""
-
-        }
-
-        <button
+               <button
           class="spec-btn"
           onclick="goDetail('${id}')"
         >
@@ -362,5 +357,4 @@ document.addEventListener(
 
     render(allProducts);
 
-  }
-);
+  });
