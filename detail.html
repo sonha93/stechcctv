@@ -70,15 +70,58 @@ header{position:sticky; top:0; z-index:999; display:flex; align-items:center; ga
 .spec-label{width:120px; color:#666; font-size:14px; line-height:1.5;}
 .spec-value{flex:1; color:#111; font-size:14px; line-height:1.5; font-weight:500;}
 
-/* SEARCH DROPDOWN FIX */
-.search-results {position:absolute; background:#fff; width:100%; max-height:300px; overflow-y:auto; border:1px solid #ddd; border-radius:12px; margin-top:4px; z-index:1000;}
-.search-result-item{display:flex; align-items:center; gap:8px; padding:8px; cursor:pointer;}
-.search-result-item img{width:40px !important; height:40px !important; object-fit:cover !important; border-radius:6px !important;}
-
 /* RESPONSIVE MOBILE */
 @media(max-width:768px){
   .container{flex-direction:row; align-items:stretch;}
   .left img{width:120px; height:100%;}
+}
+
+/* SEARCH DROPDOWN FIX */
+.search-results {
+  position: absolute;
+  background: #fff;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  margin-top: 4px;
+  z-index: 1000;
+}
+.search-result-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px;
+  cursor: pointer;
+}
+.search-result-item img {
+  width: 40px !important;
+  height: 40px !important;
+  object-fit: cover !important;
+  border-radius: 6px !important;
+}
+.search-result-item div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+.search-result-item strong {
+  font-size: 14px;
+  line-height: 1.2;
+}
+.search-result-item span {
+  color: red;
+  font-weight: bold;
+  font-size: 13px;
+}
+.search-result-item .old-price {
+  color: #000;
+  text-decoration: line-through;
+  font-size: 12px;
+  font-weight: normal;
+  margin-left: 4px;
 }
 </style>
 </head>
@@ -208,6 +251,7 @@ function updateCartCount(){
   let total=0; cart.forEach(item=>total+=item.qty||1);
   document.getElementById("cartCount").innerText=total;
 }
+
 function searchProduct(){
   const term = document.getElementById("searchInput").value.toLowerCase();
   const results = document.getElementById("searchResults");
@@ -215,10 +259,21 @@ function searchProduct(){
   if(term==="") return;
   const filtered = products.filter(p=>p.name.toLowerCase().includes(term));
   filtered.forEach(p=>{
-    const div=document.createElement("div");
-    div.className="search-result-item";
-    div.innerHTML=`<img src="${p.img}" alt="${p.name}"><div><strong>${p.name}</strong><span>${Number(p.price).toLocaleString()}đ</span></div>`;
-    div.onclick=()=>{window.location.href=`detail.html?id=${p.id}`;};
+    const div = document.createElement("div");
+    div.className = "search-result-item";
+    
+    const oldPrice = p.oldPrice && Number(p.oldPrice) > Number(p.price)
+      ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>` 
+      : '';
+    
+    div.innerHTML = `
+      <img src="${p.img}" alt="${p.name}">
+      <div>
+        <strong>${p.name}</strong>
+        <span style="color:red;">${Number(p.price).toLocaleString()}đ</span>${oldPrice}
+      </div>
+    `;
+    div.onclick = () => { window.location.href=`detail.html?id=${p.id}`; };
     results.appendChild(div);
   });
 }
