@@ -15,7 +15,7 @@ function getProducts() {
    PAGE CATEGORY
 ========================= */
 function getPageCategory() {
-  return "cam-IN";
+  return "cam-ngoai";
 }
 
 /* =========================
