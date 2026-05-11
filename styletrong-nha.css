@@ -343,3 +343,41 @@ header div{
     padding:11px 12px;
   }
 }
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  max-width: 80%;
+  height: 100vh;
+  background: #fff;
+  padding: 80px 12px 20px;
+  overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform .25s ease;
+  z-index: 10001; /* cao hơn overlay */
+  box-shadow: 2px 0 20px rgba(0,0,0,.15);
+}
+
+.sidebar.active {
+  transform: translateX(0);
+}
+
+/* Overlay */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  opacity: 0;
+  visibility: hidden;
+  transition: .25s;
+  z-index: 10000; /* thấp hơn sidebar */
+  pointer-events: none; /* mặc định không cản */
+}
+
+#overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto; /* chỉ nhận sự kiện khi active */
+}
