@@ -356,5 +356,5 @@ document.addEventListener(
 
     render(allProducts);
 
-  }
-);
+  });
+
