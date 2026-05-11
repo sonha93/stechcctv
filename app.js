@@ -98,19 +98,36 @@ function render(list) {
     const hasDiscount = oldPrice > price;
     const percent = hasDiscount ? Math.round((1 - price / oldPrice) * 100) : 0;
 
-    box.innerHTML += `
-      <div class="item">
-        <img src="${p.img}" onclick="goDetail('${id}')" style="cursor:pointer;" onerror="this.src='https://via.placeholder.com/300'">
-        <h4>${p.name}</h4>
-        <div class="price-box">
-          <span class="price">${price.toLocaleString()}đ</span>
-          ${hasDiscount ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span>` : ""}
-          ${percent ? `<span class="discount-text">-${percent}%</span>` : ""}
-        </div>
-        <button class="spec-btn" onclick="goDetail('${id}')">⚙️ Xem chi tiết</button>
-        <button class="cart-btn" onclick="addToCart('${id}')">🛒 Thêm vào giỏ</button>
-      </div>
-    `;
+box.innerHTML += `
+  <div class="item">
+
+    ${percent ? `<div class="discount-badge">-${percent}%</div>` : ""}
+
+    <img src="${p.img}" 
+      onclick="goDetail('${id}')" 
+      style="cursor:pointer;" 
+      onerror="this.src='https://via.placeholder.com/300'">
+
+    <h4>${p.name}</h4>
+
+    <div class="price-box">
+      <span class="price">${price.toLocaleString()}đ</span>
+
+      ${hasDiscount 
+        ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span>` 
+        : ""}
+    </div>
+
+    <button class="spec-btn" onclick="goDetail('${id}')">
+      ⚙️ Xem chi tiết
+    </button>
+
+    <button class="cart-btn" onclick="addToCart('${id}')">
+      🛒 Thêm vào giỏ
+    </button>
+
+  </div>
+`;
   });
 }
 
