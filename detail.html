@@ -35,9 +35,9 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
 
 /* MAIN LAYOUT */
 .container{display:flex;gap:20px;max-width:1000px;margin:20px auto;padding:0 10px;flex-wrap:wrap;}
-.left{flex:1;min-width:300px;display:flex;justify-content:center;align-items:center;}
-.left img{width:100%;max-width:400px;object-fit:cover;border-radius:16px;}
-.right{flex:1;min-width:300px;display:flex;flex-direction:column;gap:12px;}
+.left{flex:1;min-width:250px;display:flex;justify-content:center;align-items:flex-start;}
+.left img{width:100%;max-width:350px;max-height:400px;object-fit:contain;border-radius:16px;}
+.right{flex:1;min-width:250px;display:flex;flex-direction:column;gap:12px;}
 
 /* PRODUCT INFO */
 .product-name{font-size:22px;font-weight:800;}
@@ -73,9 +73,9 @@ header{position:sticky;top:0;z-index:999;display:flex;align-items:center;gap:10p
 
 /* RESPONSIVE */
 @media(max-width:768px){
-  .container{flex-direction:column;}
+  .container{flex-direction:column;align-items:center;}
   .left,.right{min-width:100%;}
-  .left img{max-width:100%;}
+  .left img{max-width:90%;max-height:50vh;} /* ảnh vừa điện thoại */
 }
 </style>
 </head>
