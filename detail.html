@@ -158,73 +158,99 @@ header{padding:10px;gap:8px;}
   </div>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain:"stech-73b89.firebaseapp.com",
+  projectId:"stech-73b89",
+  storageBucket:"stech-73b89.appspot.com",
+  messagingSenderId:"873739162979",
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// GET PRODUCT FROM FIRESTORE
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+let currentProduct = null;
+
+async function loadProduct(){
+  if(!id) return;
+  try{
+    const docRef = doc(db,"products",id);
+    const docSnap = await getDoc(docRef);
+    if(!docSnap.exists()) return;
+    const p = docSnap.data();
+    p.id = id;
+    currentProduct = p;
+
+    document.getElementById("detailImg").src = p.img||"";
+    document.getElementById("panelProductImg").src = p.img||"";
+    document.getElementById("detailName").innerText = p.name||"";
+    document.getElementById("panelProductName").innerText = p.name||"";
+    document.getElementById("detailPrice").innerText = Number(p.price||0).toLocaleString()+"đ";
+    document.getElementById("detailOldPrice").innerText = p.oldPrice?Number(p.oldPrice).toLocaleString()+"đ":"";
+    if(p.oldPrice && Number(p.oldPrice)>Number(p.price)){
+      const sale=Math.round(((Number(p.oldPrice)-Number(p.price))/Number(p.oldPrice))*100);
+      document.getElementById("detailSale").innerText="-"+sale+"%";
+    } else {document.getElementById("detailSale").style.display="none";}
+    document.getElementById("detailDesc").innerText = p.desc||"Không có mô tả";
+    document.getElementById("detailModel").innerText = p.model||"Đang cập nhật";
+    document.getElementById("detailOrigin").innerText = p.xuatXu||"Đang cập nhật";
+    document.getElementById("detailBaoHanh").innerText = p.baoHanh||"Đang cập nhật";
+    document.getElementById("detailMaterial").innerText = p.chatLieu||"Đang cập nhật";
+    document.getElementById("detailDesign").innerText = p.thietKe||"Đang cập nhật";
+    document.getElementById("detailSize").innerText = p.kichThuoc||"Đang cập nhật";
+    document.getElementById("detailResolution").innerText = p.doPhanGiai||"Đang cập nhật";
+    document.getElementById("detailConnect").innerText = p.ketNoi||"Đang cập nhật";
+    document.getElementById("detailView").innerText = p.gocNhin||"Đang cập nhật";
+
+  }catch(err){ console.error(err); }
+}
+loadProduct();
+
+// CART
+function addToCart(){
+  if(!currentProduct) return;
+  let cart = JSON.parse(localStorage.getItem("cart"))||[];
+  const exist = cart.find(x=>x.id===currentProduct.id);
+  if(exist) exist.qty +=1;
+  else cart.push({...currentProduct, qty:1});
+  localStorage.setItem("cart",JSON.stringify(cart));
+  updateCartCount();
+  alert("Đã thêm vào giỏ 🛒");
+}
+function updateCartCount(){
+  const cart = JSON.parse(localStorage.getItem("cart"))||[];
+  let total=0; cart.forEach(item=>total+=item.qty||1);
+  document.getElementById("cartCount").innerText=total;
+}
+updateCartCount();
+
 // PANEL + TAB
 function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
 function openPanel(){document.getElementById("specPanel").classList.add("active");document.getElementById("panelOverlay").classList.add("active");}
 function closePanel(){document.getElementById("specPanel").classList.remove("active");document.getElementById("panelOverlay").classList.remove("active");}
 function showTab(tabId,btn){document.querySelectorAll(".spec-content").forEach(t=>t.classList.remove("active"));document.querySelectorAll(".spec-tab").forEach(t=>t.classList.remove("active"));document.getElementById(tabId).classList.add("active");btn.classList.add("active");}
 
-// GET PRODUCT FROM localStorage
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
-const products = JSON.parse(localStorage.getItem('products'))||[];
-const product = products.find(p=>String(p.id)===String(id));
-if(product){
-  document.getElementById("detailImg").src = product.img||"";
-  document.getElementById("panelProductImg").src = product.img||"";
-  document.getElementById("detailName").innerText = product.name||"";
-  document.getElementById("panelProductName").innerText = product.name||"";
-  document.getElementById("detailPrice").innerText = product.price?Number(product.price).toLocaleString()+"đ":"";
-  document.getElementById("detailOldPrice").innerText = product.oldPrice?Number(product.oldPrice).toLocaleString()+"đ":"";
-  if(product.oldPrice && Number(product.oldPrice)>Number(product.price)){
-    const sale = Math.round(((Number(product.oldPrice)-Number(product.price))/Number(product.oldPrice))*100);
-    document.getElementById("detailSale").innerText = "-"+sale+"%";
-  } else {document.getElementById("detailSale").style.display="none";}
-  document.getElementById("detailDesc").innerText = product.desc||"";
-  document.getElementById("detailModel").innerText = product.model||"Đang cập nhật";
-  document.getElementById("detailOrigin").innerText = product.xuatXu||"Đang cập nhật";
-  document.getElementById("detailBaoHanh").innerText = product.baoHanh||"Đang cập nhật";
-  document.getElementById("detailMaterial").innerText = product.chatLieu||"Đang cập nhật";
-  document.getElementById("detailDesign").innerText = product.thietKe||"Đang cập nhật";
-  document.getElementById("detailSize").innerText = product.kichThuoc||"Đang cập nhật";
-  document.getElementById("detailResolution").innerText = product.doPhanGiai||"Đang cập nhật";
-  document.getElementById("detailConnect").innerText = product.ketNoi||"Đang cập nhật";
-  document.getElementById("detailView").innerText = product.gocNhin||"Đang cập nhật";
-}
-
-// CART
-function addToCart(){
-  if(!product) return;
-  let cart = JSON.parse(localStorage.getItem('cart'))||[];
-  const exist = cart.find(x=>String(x.id)===String(product.id));
-  if(exist){exist.qty+=1;} else {cart.push({...product, qty:1});}
-  localStorage.setItem('cart', JSON.stringify(cart));
-  updateCartCount();
-  alert("Đã thêm vào giỏ 🛒");
-}
-function updateCartCount(){
-  const cart = JSON.parse(localStorage.getItem('cart'))||[];
-  let total=0; cart.forEach(item=>total+=item.qty||1);
-  document.getElementById("cartCount").innerText=total;
-}
-updateCartCount();
-
 // SEARCH
-function searchProduct(){
+async function searchProduct(){
   const term = document.getElementById("searchInput").value.toLowerCase();
   const results = document.getElementById("searchResults");
   results.innerHTML="";
   if(term==="") return;
-  const filtered = products.filter(p=>p.name.toLowerCase().includes(term));
-  filtered.forEach(p=>{
-    const div=document.createElement("div");
-    div.className="search-result-item";
-    div.innerHTML=`<img src="${p.img}" alt="${p.name}"><div><strong>${p.name}</strong><span>${Number(p.price).toLocaleString()}đ</span></div>`;
-    div.onclick=()=>{window.location.href=`logo.html?id=${p.id}`;};
-    results.appendChild(div);
-  });
-}
-</script>
-</body>
-</html>
+
+  // Lấy tất cả product từ Firestore
+  const snapshot = await db.collection("products")?.get?.() || []; // fallback nếu collection không có
+  snapshot.forEach?.(docSnap=>{
+    const p = docSnap.data(); p.id=docSnap.id;
+    if(p.name.toLowerCase().includes(term)){
+      const div=document.createElement("div");
+      div.className="search-result-item";
+      div.innerHTML=`<img src="${p.img}" alt="${p.name}"><div><strong>${p.name
