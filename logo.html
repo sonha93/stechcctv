@@ -144,22 +144,22 @@ header{
 
 .container{
   max-width:1000px;
-  margin:10px auto;
+  margin:8px auto;
   padding:10px;
 
   display:flex;
   align-items:flex-start;
-  gap:14px;
+  gap:12px;
 }
 
 .left{
-  width:150px;
+  width:165px;
   flex-shrink:0;
 }
 
 .left img{
-  width:150px;
-  height:150px;
+  width:165px;
+  height:240px;
   object-fit:cover;
   border-radius:16px;
   display:block;
@@ -169,32 +169,34 @@ header{
   flex:1;
   display:flex;
   flex-direction:column;
-  gap:10px;
-  padding-top:2px;
+  gap:6px;
+  padding-top:0;
 }
 
 .product-name{
-  font-size:22px;
+  font-size:23px;
   font-weight:800;
-  line-height:1.4;
+  line-height:1.35;
+  margin-top:-2px;
 }
 
 .price-row{
   display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:3px;
 }
 
 .price{
   color:red;
-  font-size:24px;
+  font-size:26px;
   font-weight:bold;
 }
 
 .old-price{
   text-decoration:line-through;
-  color:#666;
+  color:#111;
+  font-size:15px;
 }
 
 .sale{
@@ -209,6 +211,7 @@ header{
   display:flex;
   flex-direction:column;
   gap:8px;
+  margin-top:6px;
 }
 
 .buy-btn,
@@ -234,6 +237,7 @@ header{
   border-radius:14px;
   padding:12px;
   line-height:1.6;
+  margin-top:6px;
 }
 
 /* PANEL */
@@ -340,21 +344,23 @@ header{
   margin-top:4px;
   overflow:hidden;
   z-index:999;
+  box-shadow:0 5px 20px rgba(0,0,0,.1);
 }
 
 .search-result-item{
   display:flex;
-  gap:8px;
-  padding:8px;
+  gap:10px;
+  padding:10px;
   border-bottom:1px solid #eee;
   cursor:pointer;
+  align-items:flex-start;
 }
 
 .search-result-item img{
-  width:40px;
-  height:40px;
+  width:50px;
+  height:50px;
   object-fit:cover;
-  border-radius:6px;
+  border-radius:8px;
 }
 
 @media(max-width:768px){
@@ -364,12 +370,12 @@ header{
   }
 
   .left{
-    width:120px;
+    width:130px;
   }
 
   .left img{
-    width:120px;
-    height:120px;
+    width:130px;
+    height:210px;
   }
 
 }
@@ -454,67 +460,6 @@ header{
 
 </div>
 
-<div id="panelOverlay"></div>
-
-<div id="specPanel">
-
-  <div class="panel-top">
-
-    <div class="panel-product">
-      <img id="panelProductImg">
-      <h3 id="panelProductName"></h3>
-    </div>
-
-    <button class="close-panel" onclick="closePanel()">✕</button>
-
-  </div>
-
-  <div class="spec-tabs">
-
-    <button class="spec-tab active" onclick="showTab('infoTab',this)">
-      Thông tin
-    </button>
-
-    <button class="spec-tab" onclick="showTab('basicTab',this)">
-      Cấu hình
-    </button>
-
-  </div>
-
-  <div class="panel-body">
-
-    <div class="spec-content active" id="infoTab">
-
-      <div class="spec-row">
-        <div class="spec-label">Model</div>
-        <div class="spec-value" id="detailModel"></div>
-      </div>
-
-      <div class="spec-row">
-        <div class="spec-label">Xuất xứ</div>
-        <div class="spec-value" id="detailOrigin"></div>
-      </div>
-
-    </div>
-
-    <div class="spec-content" id="basicTab">
-
-      <div class="spec-row">
-        <div class="spec-label">Độ phân giải</div>
-        <div class="spec-value" id="detailResolution"></div>
-      </div>
-
-      <div class="spec-row">
-        <div class="spec-label">Kết nối</div>
-        <div class="spec-value" id="detailConnect"></div>
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
 <script type="module">
 
 import { initializeApp }
@@ -570,10 +515,7 @@ async function loadProduct(){
   if(!product) return;
 
   detailImg.src = product.img || "";
-  panelProductImg.src = product.img || "";
-
   detailName.innerText = product.name || "";
-  panelProductName.innerText = product.name || "";
 
   detailPrice.innerText =
     Number(product.price || 0).toLocaleString()+"đ";
@@ -586,35 +528,6 @@ async function loadProduct(){
   detailDesc.innerText =
     product.desc || "Không có mô tả";
 
-  detailModel.innerText =
-    product.model || "Đang cập nhật";
-
-  detailOrigin.innerText =
-    product.xuatXu || "Đang cập nhật";
-
-  detailResolution.innerText =
-    product.doPhanGiai || "Đang cập nhật";
-
-  detailConnect.innerText =
-    product.ketNoi || "Đang cập nhật";
-
-  if(
-    product.oldPrice &&
-    Number(product.oldPrice) > Number(product.price)
-  ){
-
-    const sale = Math.round(
-      ((product.oldPrice-product.price)/product.oldPrice)*100
-    );
-
-    detailSale.innerText = "-" + sale + "%";
-
-  }else{
-
-    detailSale.style.display = "none";
-
-  }
-
 }
 
 loadProduct();
@@ -623,38 +536,6 @@ function toggleMenu(){
 
   sidebar.classList.toggle("active");
   overlay.classList.toggle("active");
-
-}
-
-function openPanel(){
-
-  specPanel.classList.add("active");
-  panelOverlay.classList.add("active");
-
-}
-
-function closePanel(){
-
-  specPanel.classList.remove("active");
-  panelOverlay.classList.remove("active");
-
-}
-
-function showTab(tabId,btn){
-
-  document
-  .querySelectorAll(".spec-content")
-  .forEach(el=>el.classList.remove("active"));
-
-  document
-  .querySelectorAll(".spec-tab")
-  .forEach(el=>el.classList.remove("active"));
-
-  document
-  .getElementById(tabId)
-  .classList.add("active");
-
-  btn.classList.add("active");
 
 }
 
@@ -735,11 +616,43 @@ function searchProduct(){
 
     div.innerHTML = `
       <img src="${p.img}">
-      <div>
-        <strong>${p.name}</strong>
-        <div style="color:red;font-weight:bold;">
+
+      <div style="
+        display:flex;
+        flex-direction:column;
+        gap:3px;
+      ">
+
+        <strong style="
+          font-size:14px;
+          line-height:1.4;
+          color:#111;
+        ">
+          ${p.name}
+        </strong>
+
+        <div style="
+          color:red;
+          font-size:15px;
+          font-weight:bold;
+        ">
           ${Number(p.price).toLocaleString()}đ
         </div>
+
+        ${
+          p.oldPrice
+          ? `
+          <div style="
+            color:#111;
+            text-decoration:line-through;
+            font-size:13px;
+          ">
+            ${Number(p.oldPrice).toLocaleString()}đ
+          </div>
+          `
+          : ""
+        }
+
       </div>
     `;
 
@@ -757,9 +670,6 @@ function searchProduct(){
 }
 
 window.toggleMenu = toggleMenu;
-window.openPanel = openPanel;
-window.closePanel = closePanel;
-window.showTab = showTab;
 window.addToCart = addToCart;
 window.searchProduct = searchProduct;
 
