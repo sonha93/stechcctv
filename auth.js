@@ -1,103 +1,62 @@
-// auth.js – chuẩn popup sidebar
+const auth = firebase.auth();
+const database = firebase.database(); // nếu muốn lưu giỏ hàng
 
-document.addEventListener("DOMContentLoaded", () => {
-  // ELEMENTS
-  const loginLink = document.getElementById("loginLink");
-  const logoutLink = document.getElementById("logoutLink");
-  const authModal = document.getElementById("authModal");
-  const authEmail = document.getElementById("authEmail");
-  const authPassword = document.getElementById("authPassword");
-  const authRegisterBtn = document.getElementById("authRegisterBtn");
-  const authLoginBtn = document.getElementById("authLoginBtn");
-  const closeAuth = document.getElementById("closeAuth");
-  const authMessage = document.getElementById("authMessage");
-  const products = document.getElementById("products");
+const registerForm = document.getElementById("registerForm");
+const loginForm = document.getElementById("loginForm");
+const message = document.getElementById("message");
 
-  // HIỆN POPUP LOGIN
-  loginLink.addEventListener("click", (e) => {
+// ======================
+// Đăng ký
+// ======================
+registerForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    authModal.style.display = "flex";
-    authMessage.innerText = "";
-  });
+    const email = document.getElementById("registerEmail").value;
+    const password = document.getElementById("registerPassword").value;
 
-  // ĐÓNG POPUP
-  closeAuth.addEventListener("click", () => {
-    authModal.style.display = "none";
-  });
+    auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            console.log("Đăng ký thành công! UID:", user.uid);
 
-  // ĐĂNG KÝ
-  authRegisterBtn.addEventListener("click", () => {
-    const email = authEmail.value.trim();
-    const pass = authPassword.value.trim();
-    if (!email || !pass) {
-      authMessage.style.color = "red";
-      authMessage.innerText = "Vui lòng nhập email và mật khẩu!";
-      return;
-    }
+            // Tạo node giỏ hàng rỗng cho user
+            database.ref('carts/' + user.uid).set({
+                createdAt: Date.now(),
+                items: {}
+            });
 
-    auth.createUserWithEmailAndPassword(email, pass)
-      .then(() => {
-        authMessage.style.color = "green";
-        authMessage.innerText = "Đăng ký thành công! 🎉";
-        authEmail.value = "";
-        authPassword.value = "";
-      })
-      .catch(err => {
-        authMessage.style.color = "red";
-        if (err.code === "auth/email-already-in-use") {
-          authMessage.innerText = "Email đã tồn tại! Hãy đăng nhập.";
-        } else {
-          authMessage.innerText = err.message;
-        }
-      });
-  });
+            message.textContent = "Đăng ký thành công! Hãy đăng nhập.";
+            registerForm.reset();
+        })
+        .catch((error) => {
+            console.error(error.message);
+            message.textContent = "Đăng ký thất bại: " + error.message;
+        });
+});
 
-  // ĐĂNG NHẬP
-  authLoginBtn.addEventListener("click", () => {
-    const email = authEmail.value.trim();
-    const pass = authPassword.value.trim();
-    if (!email || !pass) {
-      authMessage.style.color = "red";
-      authMessage.innerText = "Vui lòng nhập email và mật khẩu!";
-      return;
-    }
+// ======================
+// Đăng nhập
+// ======================
+loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
 
-    auth.signInWithEmailAndPassword(email, pass)
-      .then(() => {
-        authMessage.style.color = "green";
-        authMessage.innerText = "Đăng nhập thành công! 🎉";
-        authModal.style.display = "none";
-        loginLink.style.display = "none";
-        logoutLink.style.display = "block";
-        if (products) products.style.display = "grid";
-        authEmail.value = "";
-        authPassword.value = "";
-      })
-      .catch(err => {
-        authMessage.style.color = "red";
-        authMessage.innerText = err.message;
-      });
-  });
+    auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            console.log("Đăng nhập thành công! UID:", user.uid);
 
-  // ĐĂNG XUẤT
-  logoutLink.addEventListener("click", () => {
-    auth.signOut().then(() => {
-      loginLink.style.display = "block";
-      logoutLink.style.display = "none";
-      if (products) products.style.display = "none";
-    });
-  });
+            // Lưu UID vào localStorage
+            localStorage.setItem("uid", user.uid);
 
-  // KIỂM TRA AUTH STATE
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      loginLink.style.display = "none";
-      logoutLink.style.display = "block";
-      if (products) products.style.display = "grid";
-    } else {
-      loginLink.style.display = "block";
-      logoutLink.style.display = "none";
-      if (products) products.style.display = "none";
-    }
-  });
+            message.textContent = "Đăng nhập thành công! Chuyển sang giỏ hàng...";
+            loginForm.reset();
+
+            // Chuyển hướng
+            window.location.href = "cart.html";
+        })
+        .catch((error) => {
+            console.error(error.message);
+            message.textContent = "Đăng nhập thất bại: " + error.message;
+        });
 });
