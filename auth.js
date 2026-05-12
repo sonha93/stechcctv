@@ -128,11 +128,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // KIỂM TRA AUTH STATE
   onAuthStateChanged(auth, (user) => {
     if (user) {
+       currentUserUID = user.uid;       // lưu UID user hiện tại
+    cart = getCart(currentUserUID);  // load giỏ hàng của user này
+    renderCart();       
       loginLink.style.display = "none";
       logoutLink.style.display = "block";
       if (products) products.style.display = "grid";
       if (profileUID) profileUID.textContent = user.uid; // luôn hiển thị UID
     } else {
+       currentUserUID = null;
+    cart = []; // reset cart khi logout
+    renderCart(); // render giỏ hàng trống
       loginLink.style.display = "block";
       logoutLink.style.display = "none";
       if (products) products.style.display = "none";
