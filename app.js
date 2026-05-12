@@ -122,9 +122,9 @@ box.innerHTML += `
       ⚙️ Xem chi tiết
     </button>
 
-    <button class="cart-btn" onclick="addToCart('${id}')">
-      🛒 Thêm vào giỏ
-    </button>
+   <button class="cart-btn" onclick="addToCartProduct('${id}')">
+  🛒 Thêm vào giỏ
+</button>
 
   </div>
 `;
@@ -132,38 +132,13 @@ box.innerHTML += `
 }
 
 /* =========================
-   ADD TO CART
-========================= */
-window.addToCart = function(id){
-  const product = allProducts.find(p => String(p.id) === String(id));
-  if(!product) return;
 
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const exist = cart.find(item => String(item.id) === String(id));
-
-  if(exist){
-    exist.qty += 1;
-  } else {
-    cart.push({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      oldPrice: product.oldPrice,
-      img: product.img,
-      qty: 1
-    });
-  }
-
-  localStorage.setItem("cart", JSON.stringify(cart));
-  alert("Đã thêm vào giỏ 🛒");
-  updateCartCount();
-}
 
 /* =========================
    UPDATE CART COUNT
 ========================= */
 function updateCartCount(){
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+ const cart = currentUserUID ? getCart(currentUserUID) : [];
   const total = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
   const cartEl = document.getElementById("cartCount");
   if(cartEl) cartEl.innerText = total;
@@ -207,3 +182,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   render(); // render trang chủ hoặc category
   updateCartCount(); // update số lượng giỏ
 });
+function addToCartProduct(id){
+  const product = allProducts.find(p => String(p.id) === String(id));
+  if(!product) return;
+  addToCart(product); // gọi hàm addToCart ở cart.js (multi-user)
+  updateCartCount();  // update số lượng trên giao diện
+}
