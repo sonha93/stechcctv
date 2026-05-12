@@ -315,7 +315,7 @@ onAuthStateChanged(auth, user => {
 
     // Ẩn avatar và hiển thị chữ "Xin chào, Tên"
     userAvatarPreview.style.display = "none";  
-    userNamePreview.innerText = "Xin chào" + (user.displayName ? ", " + user.displayName : "");
+  userNamePreview.innerText = "Xin chào\n" + (user.displayName ? user.displayName : "");
 
   } else {
     loginLink.style.display = "block";
