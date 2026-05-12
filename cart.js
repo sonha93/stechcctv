@@ -114,18 +114,19 @@ function renderCartAction() {
    ADD TO CART (FIX CHUẨN)
 ========================= */
 function addToCart(product){
+  if(!currentUserUID) return alert("Vui lòng đăng nhập trước");
 
-  
   let index = cart.findIndex(item => item.id === product.id);
 
   if(index !== -1){
     cart[index].quantity = (cart[index].quantity || 1) + 1;
   } else {
-    cart.push({
-      id: product.id,
-      quantity: 1
-    });
+    cart.push({ id: product.id, quantity: 1 });
   }
+
+  saveCart(currentUserUID, cart); // 🔹 Lưu giỏ hàng theo UID
+  renderCart(); // cập nhật giao diện
+}
 
   
 
