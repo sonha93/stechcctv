@@ -126,13 +126,15 @@ function render(list) {
     const hasDiscount = oldPrice > price;
     const percent = hasDiscount ? Math.round((1 - price / oldPrice) * 100) : 0;
 
-    box.innerHTML += `
-      <div class="item">
-        <img src="${p.img}" onclick="goDetail('${id}')" style="cursor:pointer;">
+   <div class="item">
+
+  ${percent ? `<div class="discount-text">-${percent}%</div>` : ""}
+
+  <img src="${p.img}">
         <h4>${p.name}</h4>
         <div class="price-box">
           <span class="price">${price.toLocaleString()}đ</span>
-          ${percent ? `<span class="discount-text">-${percent}%</span>` : ""}
+          ${percent ? `<div class="discount-text">-${percent}%</div>` : ""}
           ${hasDiscount ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span>` : ""}
         
         </div>
