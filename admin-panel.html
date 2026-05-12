@@ -6,7 +6,6 @@
 <title>Admin sản phẩm</title>
 
 <style>
-
 :root{
   --main-color:#00acc1;
 }
@@ -194,16 +193,8 @@ button{
 
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* =========================
    FIREBASE
@@ -287,57 +278,29 @@ categoryEl.addEventListener("change", function(){
     type==="home"
   ){
 
-    box.innerHTML=`
-
-      <div class="spec-title">
-        ⚙️ Thông số camera
-      </div>
-
+    box.innerHTML=`<div class="spec-title">⚙️ Thông số camera</div>
       <input id="model" placeholder="Model">
-
       <input id="xuatXu" placeholder="Xuất xứ">
-
       <input id="baoHanh" placeholder="Bảo hành">
-
       <input id="doPhanGiai" placeholder="Độ phân giải">
-
       <input id="gocNhin" placeholder="Góc nhìn">
-
       <input id="ketNoi" placeholder="Kết nối">
-
       <input id="thietKe" placeholder="Thiết kế">
-
       <input id="chatLieu" placeholder="Chất liệu">
-
-      <input id="congSuat" placeholder="Công suất">
-
-    `;
+      <input id="congSuat" placeholder="Công suất">`;
 
   }
 
   else if(type==="sd"){
 
-    box.innerHTML=`
-
-      <div class="spec-title">
-        💾 Thông số thẻ nhớ
-      </div>
-
+    box.innerHTML=`<div class="spec-title">💾 Thông số thẻ nhớ</div>
       <input id="model" placeholder="Model">
-
       <input id="xuatXu" placeholder="Xuất xứ">
-
       <input id="baoHanh" placeholder="Bảo hành">
-
       <input id="dungLuong" placeholder="Dung lượng">
-
       <input id="tocDo" placeholder="Tốc độ">
-
       <input id="loai" placeholder="Loại">
-
-      <input id="chatLieu" placeholder="Chất liệu">
-
-    `;
+      <input id="chatLieu" placeholder="Chất liệu">`;
 
   }
 
@@ -534,7 +497,7 @@ btnAdd.addEventListener("click", async function(){
 });
 
 /* =========================
-   RENDER
+   RENDER PRODUCTS MỚI
 ========================= */
 
 function render(){
@@ -548,9 +511,9 @@ function render(){
 
   }
 
-  list.innerHTML = products.map(p=>`
+  list.innerHTML = products.map(p => `
 
-    <div class="item">
+    <div class="item" data-id="${p.docId}">
 
       <img src="${p.img || ''}">
 
@@ -564,14 +527,51 @@ function render(){
 
         </span><br>
 
-        Giá:
-        ${Number(p.price).toLocaleString()}đ
+        Giá hiện tại: ${Number(p.price).toLocaleString()}đ
+        ${p.oldPrice ? `<s>${Number(p.oldPrice).toLocaleString()}đ</s>` : ''}<br>
+
+        <!-- Input sửa giá -->
+        <input type="text" class="priceInput" value="${p.price}" placeholder="Giá mới">
+        <input type="text" class="oldPriceInput" value="${p.oldPrice || ''}" placeholder="Giá cũ">
+
+        <!-- Nút cập nhật -->
+        <button class="updateBtn">Cập nhật</button>
+        <!-- Nút xóa -->
+        <button class="deleteBtn">Xóa</button>
 
       </div>
 
     </div>
 
   `).join("");
+
+  // Gắn sự kiện Cập nhật
+  document.querySelectorAll('.updateBtn').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      const item = e.target.closest('.item');
+      const id = item.dataset.id;
+      const newPrice = Number(item.querySelector('.priceInput').value.replace(/\D/g,''));
+      const oldPrice = Number(item.querySelector('.oldPriceInput').value.replace(/\D/g,'') || 0);
+
+      if(!newPrice) return alert("Giá không hợp lệ");
+
+      await updateDoc(doc(db,"products",id), { price: newPrice, oldPrice: oldPrice });
+      alert("Cập nhật thành công");
+      loadProducts();
+    });
+  });
+
+  // Gắn sự kiện Xóa
+  document.querySelectorAll('.deleteBtn').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      const item = e.target.closest('.item');
+      const id = item.dataset.id;
+      if(confirm("Xóa sản phẩm này?")){
+        await deleteDoc(doc(db,"products",id));
+        item.remove();
+      }
+    });
+  });
 
 }
 
