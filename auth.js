@@ -18,8 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeAuth = document.getElementById("closeAuth");
   const authMessage = document.getElementById("authMessage");
   const products = document.getElementById("products");
-  const profileUID = document.getElementById("user-id"); // span hiển thị UID
-
+  const profileUID = document.getElementById("userUID"); // đúng với HTML
   // HIỆN POPUP LOGIN
   loginLink.addEventListener("click", (e) => {
     e.preventDefault();
