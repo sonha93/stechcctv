@@ -1,28 +1,14 @@
-// Giữ UID hiện tại cho giỏ hàng
-let currentUserUID = null;
+// auth.js – popup + UID + multi-user cart
 
-// Cart hiện tại (sẽ load theo user)
-let cart = [];
-
-// Hàm lấy cart theo UID
-function getCart(uid){
-  return JSON.parse(localStorage.getItem(`cart_user_${uid}`)) || [];
-}
-
-// Hàm lưu cart theo UID
-function saveCart(uid, cart){
-  localStorage.setItem(`cart_user_${uid}`, JSON.stringify(cart));
-}
-// auth.js – chuẩn popup sidebar + UID + Firestore
-
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const auth = getAuth();
 const db = getFirestore();
 
 document.addEventListener("DOMContentLoaded", () => {
-  // ELEMENTS
   const loginLink = document.getElementById("loginLink");
   const logoutLink = document.getElementById("logoutLink");
   const authModal = document.getElementById("authModal");
@@ -33,50 +19,53 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeAuth = document.getElementById("closeAuth");
   const authMessage = document.getElementById("authMessage");
   const products = document.getElementById("products");
-  const profileUID = document.getElementById("userUID"); // đúng với HTML
-  // HIỆN POPUP LOGIN
-  loginLink.addEventListener("click", (e) => {
+  const profileUID = document.getElementById("userUID");
+
+  // Popup login
+  loginLink?.addEventListener("click", e => {
     e.preventDefault();
     authModal.style.display = "flex";
     authMessage.innerText = "";
   });
 
-  // ĐÓNG POPUP
-  closeAuth.addEventListener("click", () => {
-    authModal.style.display = "none";
-  });
+  closeAuth?.addEventListener("click", () => authModal.style.display = "none");
 
-  // ĐĂNG KÝ
-  authRegisterBtn.addEventListener("click", () => {
+  // Đăng ký
+  authRegisterBtn?.addEventListener("click", () => {
     const email = authEmail.value.trim();
     const pass = authPassword.value.trim();
-    if (!email || !pass) {
+    if(!email || !pass){
       authMessage.style.color = "red";
       authMessage.innerText = "Vui lòng nhập email và mật khẩu!";
       return;
     }
 
     createUserWithEmailAndPassword(auth, email, pass)
-      .then((userCredential) => {
+      .then(userCredential => {
         const user = userCredential.user;
         const uid = user.uid;
-        console.log("UID mới:", uid);
 
-        // Lưu thông tin user vào Firestore
+        // Lưu user vào Firestore
         setDoc(doc(db, "users", uid), {
-          email: email,
+          email,
           createdAt: new Date()
         });
-        if (profileUID) profileUID.textContent = user.uid; // hiển thị UID ngay sau đăng ký
+
+        currentUserUID = uid; // set UID cho multi-user cart
+        if(profileUID) profileUID.textContent = uid;
+        
         authMessage.style.color = "green";
         authMessage.innerText = "Đăng ký thành công! 🎉";
         authEmail.value = "";
         authPassword.value = "";
         authModal.style.display = "none";
+
+        // load cart cho user này
+        if(typeof renderCart === "function") renderCart();
       })
-      .catch((err) => {
+      .catch(err => {
         authMessage.style.color = "red";
-        if (err.code === "auth/email-already-in-use") {
+        if(err.code === "auth/email-already-in-use"){
           authMessage.innerText = "Email đã tồn tại! Hãy đăng nhập.";
         } else {
           authMessage.innerText = err.message;
@@ -84,65 +73,65 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
-  // ĐĂNG NHẬP
-  authLoginBtn.addEventListener("click", () => {
+  // Đăng nhập
+  authLoginBtn?.addEventListener("click", () => {
     const email = authEmail.value.trim();
     const pass = authPassword.value.trim();
-    if (!email || !pass) {
+    if(!email || !pass){
       authMessage.style.color = "red";
       authMessage.innerText = "Vui lòng nhập email và mật khẩu!";
       return;
     }
 
     signInWithEmailAndPassword(auth, email, pass)
-      .then((userCredential) => {
+      .then(userCredential => {
         const user = userCredential.user;
-        console.log("UID đăng nhập:", user.uid);
+        currentUserUID = user.uid; // set UID cho multi-user cart
 
         authMessage.style.color = "green";
         authMessage.innerText = "Đăng nhập thành công! 🎉";
         authModal.style.display = "none";
         loginLink.style.display = "none";
         logoutLink.style.display = "block";
-        if (products) products.style.display = "grid";
-        if (profileUID) profileUID.textContent = user.uid; // hiển thị UID
-        authEmail.value = "";
-        authPassword.value = "";
+        if(products) products.style.display = "grid";
+        if(profileUID) profileUID.textContent = user.uid;
+
+        if(typeof renderCart === "function") renderCart(); // load cart user
       })
-      .catch((err) => {
+      .catch(err => {
         authMessage.style.color = "red";
         authMessage.innerText = err.message;
       });
   });
 
-  // ĐĂNG XUẤT
-  logoutLink.addEventListener("click", () => {
+  // Đăng xuất
+  logoutLink?.addEventListener("click", () => {
     signOut(auth).then(() => {
+      currentUserUID = null;
+      if(typeof renderCart === "function") renderCart(); // reset cart
       loginLink.style.display = "block";
       logoutLink.style.display = "none";
-      if (products) products.style.display = "none";
-      if (profileUID) profileUID.textContent = ""; // xóa UID khi logout
+      if(products) products.style.display = "none";
+      if(profileUID) profileUID.textContent = "";
     });
   });
 
-  // KIỂM TRA AUTH STATE
+  // Kiểm tra auth state
   onAuthStateChanged(auth, (user) => {
-    if (user) {
-       currentUserUID = user.uid;       // lưu UID user hiện tại
-    cart = getCart(currentUserUID);  // load giỏ hàng của user này
-    renderCart();       
+    if(user){
+      currentUserUID = user.uid;
       loginLink.style.display = "none";
       logoutLink.style.display = "block";
-      if (products) products.style.display = "grid";
-      if (profileUID) profileUID.textContent = user.uid; // luôn hiển thị UID
+      if(products) products.style.display = "grid";
+      if(profileUID) profileUID.textContent = user.uid;
+      if(typeof renderCart === "function") renderCart(); // load cart user
     } else {
-       currentUserUID = null;
-    cart = []; // reset cart khi logout
-    renderCart(); // render giỏ hàng trống
+      currentUserUID = null;
+      if(typeof renderCart === "function") renderCart(); // reset cart
       loginLink.style.display = "block";
       logoutLink.style.display = "none";
-      if (products) products.style.display = "none";
-      if (profileUID) profileUID.textContent = "";
+      if(products) products.style.display = "none";
+      if(profileUID) profileUID.textContent = "";
     }
   });
 });
