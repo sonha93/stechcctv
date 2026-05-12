@@ -174,7 +174,7 @@ auth.onAuthStateChanged(user=>{
   currentUser=user;
   updateInfoBtn.disabled=false;
  const uidToUse = getUIDFromURL() || currentUser.uid;
-userUID.innerText = uidToUse; // chỉ hiển thị UID
+
   userEmail.innerText=currentUser.email;
 const newURL = "profile.html?uid=" + uidToUse;
 window.history.replaceState(null, null, newURL);
