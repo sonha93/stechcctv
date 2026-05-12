@@ -86,6 +86,9 @@ header{
   flex:1;
   margin-left:8px;
   min-width:0;
+  position:relative;
+   padding:0 10px 0 35px;
+font-size:14px;
 }
 
 .search-box input{
@@ -93,10 +96,17 @@ header{
   height:36px;
   border-radius:12px;
   border:none;
-  padding:0 10px;
+  padding:0 10px 0 35px;
   font-size:14px;
 }
-
+.search-icon{
+  position:absolute;
+  left:12px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:14px;
+  opacity:.7;
+}
 .header-icons{
   display:flex;
   gap:8px;
@@ -494,18 +504,17 @@ onclick="toggleMenu()">
 ☰
 </div>
 
-<div class="logo">
-<img
-src="https://i.ibb.co/Z1kv9nJj/logo.png"
-alt="logo">
-</div>
-   
 <div class="search-box">
-<input
-type="text"
-placeholder="Tìm kiếm sản phẩm...">
-</div>
 
+  <span class="search-icon">
+    🔍
+  </span>
+
+  <input
+  type="text"
+  placeholder="Tìm kiếm sản phẩm...">
+
+</div>
 <div class="header-icons">
 
 <a href="#"
@@ -729,210 +738,86 @@ class="fade">
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-
 <script>
+
+
+/* =========================
+   FIREBASE SETUP
+========================= */
 
 /* =========================
    FIREBASE SETUP
 ========================= */
 const firebaseConfig = {
-
   apiKey:"AIzaSy",
-
   authDomain:"",
-
   databaseURL:"",
-
   projectId:"",
-
   storageBucket:"",
-
   messagingSenderId:"",
-
   appId:""
-
 };
 
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
-
 const db = firebase.database();
-
 
 /* =========================
    DOM
 ========================= */
-const userEmail =
-document.getElementById("userEmail");
+const userEmail = document.getElementById("userEmail");
+const userCreatedAt = document.getElementById("userCreatedAt");
 
-const userCreatedAt =
-document.getElementById("userCreatedAt");
+const nameInput = document.getElementById("name");
+const phoneInput = document.getElementById("phone");
+const addressInput = document.getElementById("address");
+const birthdayInput = document.getElementById("birthday");
 
-const nameInput =
-document.getElementById("name");
+const currentName = document.getElementById("currentName");
+const currentPhone = document.getElementById("currentPhone");
+const currentAddress = document.getElementById("currentAddress");
+const currentBirthday = document.getElementById("currentBirthday");
 
-const phoneInput =
-document.getElementById("phone");
+const newPasswordInput = document.getElementById("newPassword");
 
-const addressInput =
-document.getElementById("address");
+const updateInfoBtn = document.getElementById("updateInfoBtn");
+const changePasswordBtn = document.getElementById("changePasswordBtn");
 
-const birthdayInput =
-document.getElementById("birthday");
+const logoutArrow = document.getElementById("logoutArrow");
 
-const currentName =
-document.getElementById("currentName");
+const cartCountEl = document.getElementById("cartCount");
 
-const currentPhone =
-document.getElementById("currentPhone");
+const ordersContainer = document.getElementById("ordersContainer");
+const ordersList = document.getElementById("ordersList");
+const orderHistoryBtn = document.getElementById("orderHistoryBtn");
 
-const currentAddress =
-document.getElementById("currentAddress");
+const avatarImg = document.getElementById("avatarImg");
+const avatarUpload = document.getElementById("avatarUpload");
 
-const currentBirthday =
-document.getElementById("currentBirthday");
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
 
-const newPasswordInput =
-document.getElementById("newPassword");
-
-const updateInfoBtn =
-document.getElementById("updateInfoBtn");
-
-const changePasswordBtn =
-document.getElementById("changePasswordBtn");
-
-const logoutArrow =
-document.getElementById("logoutArrow");
-
-const cartCountEl =
-document.getElementById("cartCount");
-
-const ordersContainer =
-document.getElementById("ordersContainer");
-
-const ordersList =
-document.getElementById("ordersList");
-
-const orderHistoryBtn =
-document.getElementById("orderHistoryBtn");
-
-const avatarImg =
-document.getElementById("avatarImg");
-   
-const avatarUpload =
-document.getElementById("avatarUpload");
-
-const sidebar =
-document.getElementById("sidebar");
-
-const overlay =
-document.getElementById("overlay");
-
-
-
-/* =========================
-   UPLOAD AVATAR CLOUDINARY
-========================= */
-avatarUpload.addEventListener(
-"change",
-async(e)=>{
-
-  const file = e.target.files[0];
-
-  if(!file) return;
-
-  const formData = new FormData();
-
-  formData.append(
-    "file",
-    file
-  );
-
-  formData.append(
-    "upload_preset",
-    "stech_upload"
-  );
-
-  try{
-
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
-      {
-        method:"POST",
-        body:formData
-      }
-    );
-
-    const data = await res.json();
-
-    avatarImg.src = data.secure_url;
-
-    await db.ref(
-      'users/'+currentUser.uid
-    ).update({
-
-      avatar:data.secure_url
-
-    });
-
-  }
-  catch(err){
-
-    console.log(err);
-
-  }
-
-});
-
+const avatarModal = document.getElementById("avatarModal");
+const fullAvatar = document.getElementById("fullAvatar");
+const openAvatar = document.getElementById("openAvatar");
+const closeAvatar = document.getElementById("closeAvatar");
 
 /* =========================
    GLOBAL
 ========================= */
 let currentUser = null;
-/* =========================
-   GLOBAL
-========================= */
-let currentUser = null;
 
-const urlParams =
-new URLSearchParams(window.location.search);
-
-const profileUID =
-urlParams.get('uid');
-
+const urlParams = new URLSearchParams(window.location.search);
+const profileUID = urlParams.get('uid');
 
 /* =========================
    MENU
 ========================= */
 function toggleMenu(){
-
   sidebar.classList.toggle("active");
-
   overlay.classList.toggle("active");
-
 }
-
-
-/* =========================
-   MESSAGE
-========================= */
-function showMsg(el,text,color){
-
-  el.innerText = text;
-
-  el.style.color = color;
-
-  el.classList.add("show");
-
-  setTimeout(()=>{
-
-    el.classList.remove("show");
-
-  },3000);
-
-}
-
 
 /* =========================
    AUTH
@@ -940,39 +825,25 @@ function showMsg(el,text,color){
 auth.onAuthStateChanged(user=>{
 
   if(!user){
-
-    window.location.href =
-    "index.html";
-
+    window.location.href = "index.html";
     return;
-
   }
 
   currentUser = user;
 
   updateInfoBtn.disabled = false;
 
-
-  /* ADD UID TO URL */
-  if(
-    !window.location.search.includes("uid=")
-  ){
-
+  if(!window.location.search.includes("uid=")){
     window.history.replaceState(
       {},
       "",
       `?uid=${user.uid}`
     );
-
   }
 
+  const uidToLoad = profileUID || currentUser.uid;
 
-  const uidToLoad =
-  profileUID || currentUser.uid;
-
-
-  /* LOAD USER */
-  db.ref('users/'+uidToLoad)
+  db.ref('users/' + uidToLoad)
   .once('value')
   .then(snapshot=>{
 
@@ -980,17 +851,10 @@ auth.onAuthStateChanged(user=>{
 
       const data = snapshot.val();
 
-      nameInput.value =
-      data.name || "";
-
-      phoneInput.value =
-      data.phone || "";
-
-      addressInput.value =
-      data.address || "";
-
-      birthdayInput.value =
-      data.birthday || "";
+      nameInput.value = data.name || "";
+      phoneInput.value = data.phone || "";
+      addressInput.value = data.address || "";
+      birthdayInput.value = data.birthday || "";
 
       avatarImg.src =
       data.avatar ||
@@ -1021,18 +885,13 @@ auth.onAuthStateChanged(user=>{
 
   });
 
-
-  /* CART COUNT */
-  db.ref('carts/'+currentUser.uid)
+  db.ref('carts/' + currentUser.uid)
   .on('value',snapshot=>{
 
     let count = 0;
 
     snapshot.forEach(item=>{
-
-      count +=
-      parseInt(item.val().quantity) || 1;
-
+      count += parseInt(item.val().quantity) || 1;
     });
 
     cartCountEl.innerText = count;
@@ -1040,7 +899,6 @@ auth.onAuthStateChanged(user=>{
   });
 
 });
-
 
 /* =========================
    UPDATE INFO
@@ -1054,45 +912,34 @@ async()=>{
   try{
 
     await db.ref(
-      'users/'+currentUser.uid
+      'users/' + currentUser.uid
     ).update({
 
       name:nameInput.value,
-
       phone:phoneInput.value,
-
       address:addressInput.value,
-
       birthday:birthdayInput.value
 
     });
 
-
     currentName.innerText =
-    nameInput.value ||
-    "Chưa cập nhật";
+    nameInput.value || "Chưa cập nhật";
 
     currentPhone.innerText =
-    phoneInput.value ||
-    "Chưa cập nhật";
+    phoneInput.value || "Chưa cập nhật";
 
     currentAddress.innerText =
-    addressInput.value ||
-    "Chưa cập nhật";
+    addressInput.value || "Chưa cập nhật";
 
     currentBirthday.innerText =
-    birthdayInput.value ||
-    "Chưa cập nhật";
+    birthdayInput.value || "Chưa cập nhật";
 
   }
   catch(err){
-
     console.log(err);
-
   }
 
 });
-
 
 /* =========================
    CHANGE PASSWORD
@@ -1104,11 +951,7 @@ async()=>{
   const newPass =
   newPasswordInput.value.trim();
 
-  if(newPass.length < 6){
-
-    return;
-
-  }
+  if(newPass.length < 6) return;
 
   try{
 
@@ -1120,13 +963,10 @@ async()=>{
 
   }
   catch(err){
-
     console.log(err);
-
   }
 
 });
-
 
 /* =========================
    LOGOUT
@@ -1139,14 +979,10 @@ e=>{
 
   auth.signOut()
   .then(()=>{
-
-    window.location.href =
-    "index.html";
-
+    window.location.href = "index.html";
   });
 
 });
-
 
 /* =========================
    ORDER HISTORY
@@ -1155,13 +991,11 @@ orderHistoryBtn.addEventListener(
 "click",
 ()=>{
 
-  ordersContainer.style.display =
-  "block";
+  ordersContainer.style.display = "block";
 
-  ordersList.innerHTML =
-  "Đang tải...";
+  ordersList.innerHTML = "Đang tải...";
 
-  db.ref('orders/'+currentUser.uid)
+  db.ref('orders/' + currentUser.uid)
   .once('value')
   .then(snapshot=>{
 
@@ -1183,8 +1017,7 @@ orderHistoryBtn.addEventListener(
       const div =
       document.createElement('div');
 
-      div.className =
-      'order-item';
+      div.className = 'order-item';
 
       const productNames =
       data.items
@@ -1192,24 +1025,17 @@ orderHistoryBtn.addEventListener(
       : "Không có sản phẩm";
 
       div.innerHTML = `
-
-        <strong>
-        Mã đơn:
-        ${order.key}
-        </strong>
-
+        <strong>Mã đơn:
+        ${order.key}</strong>
         <br>
-
         Trạng thái:
         ${data.status || "Đang xử lý"}
-
         <br>
-
         Sản phẩm:
         ${productNames}
-
       `;
-ordersList.appendChild(div);
+
+      ordersList.appendChild(div);
 
     });
 
@@ -1217,26 +1043,61 @@ ordersList.appendChild(div);
 
 });
 
+/* =========================
+   AVATAR UPLOAD
+========================= */
+avatarUpload.addEventListener(
+"change",
+async(e)=>{
 
-/* AVATAR VIEW */
+  const file = e.target.files[0];
 
-/* AVATAR VIEW */
-const avatarModal =
-document.getElementById("avatarModal");
+  if(!file) return;
 
-const fullAvatar =
-document.getElementById("fullAvatar");
+  const formData = new FormData();
 
-const openAvatar =
-document.getElementById("openAvatar");
+  formData.append("file", file);
 
-const closeAvatar =
-document.getElementById("closeAvatar");
+  formData.append(
+    "upload_preset",
+    "stech_upload"
+  );
 
+  try{
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+      {
+        method:"POST",
+        body:formData
+      }
+    );
+
+    const data = await res.json();
+
+    avatarImg.src = data.secure_url;
+
+    await db.ref(
+      'users/' + currentUser.uid
+    ).update({
+
+      avatar:data.secure_url
+
+    });
+
+  }
+  catch(err){
+    console.log(err);
+  }
+
+});
+
+/* =========================
+   AVATAR VIEW
+========================= */
 openAvatar.onclick = ()=>{
 
-  fullAvatar.src =
-  avatarImg.src;
+  fullAvatar.src = avatarImg.src;
 
   avatarModal.classList.add(
     "active"
@@ -1263,7 +1124,6 @@ avatarModal.onclick = (e)=>{
   }
 
 };
-
 
 </script>
 
