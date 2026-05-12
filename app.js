@@ -66,8 +66,7 @@ function getPageCategory() {
 
   if(page.includes("combo"))
     return "combo";
-if(page.includes("home"))
-    return "home";
+
   return null;
 }
 
