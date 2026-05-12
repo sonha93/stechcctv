@@ -514,16 +514,19 @@ function render() {
         <b>${p.name}</b><br>
         <span style="color:#00acc1;font-size:12px;">📁 ${p.categoryName || p.category}</span><br>
 
-        <!-- Giá hiện tại -->
-        <div style="color:black; font-weight:bold; margin-top:4px;">
+        <!-- Giá hiện tại (bán ra) -->
+        <div style="color:red; font-weight:bold; margin-top:4px;">
           Giá hiện tại: ${Number(p.price).toLocaleString()}đ
         </div>
 
-        <!-- Giá mới -->
-        <div style="color:red; font-weight:bold; margin-top:2px;">
-          <input type="text" class="priceInput" value="${p.price}" placeholder="Giá mới" style="width:150px; font-weight:bold; color:red;">
-          <input type="text" class="oldPriceInput" value="${p.oldPrice || ''}" placeholder="Giá cũ" style="width:150px;">
+        <!-- Giá gốc / cũ -->
+        <div style="color:black; font-weight:normal; margin-top:2px;">
+          Giá gốc: ${p.oldPrice ? Number(p.oldPrice).toLocaleString() + 'đ' : '---'}
         </div>
+
+        <!-- Input sửa giá -->
+        <input type="text" class="priceInput" value="${p.price}" placeholder="Giá mới" style="width:150px; font-weight:bold; color:red; margin-top:4px;">
+        <input type="text" class="oldPriceInput" value="${p.oldPrice || ''}" placeholder="Giá cũ" style="width:150px; margin-top:2px;">
 
         <!-- Nút cập nhật -->
         <button class="updateBtn" style="background:#00acc1; margin-top:6px;">Cập nhật</button>
