@@ -538,40 +538,69 @@ btnAdd.addEventListener("click", async function(){
 ========================= */
 
 function render(){
-
   if(products.length===0){
-
-    list.innerHTML =
-    "<p>Chưa có sản phẩm</p>";
-
+    list.innerHTML = "<p>Chưa có sản phẩm</p>";
     return;
-
   }
 
   list.innerHTML = products.map(p=>`
-
-    <div class="item">
-
+    <div class="item" data-id="${p.docId}">
       <img src="${p.img || ''}">
-
       <div>
-
         <b>${p.name}</b><br>
-
-        <span style="color:#00acc1;font-size:12px;">
-
-          📁 ${p.categoryName || p.category}
-
-        </span><br>
-
-        Giá:
-        ${Number(p.price).toLocaleString()}đ
-
+        <span style="color:#00acc1;font-size:12px;">📁 ${p.categoryName || p.category}</span><br>
+        Giá: <input type="text" class="priceInput" value="${p.price}">
+        Giá cũ: <input type="text" class="oldPriceInput" value="${p.oldPrice || 0}">
+        <button class="btnUpdate">Cập nhật</button>
+        <button class="btnDelete" style="background:red;">Xoá</button>
       </div>
-
     </div>
-
   `).join("");
+
+  // Gắn sự kiện nút Cập nhật
+  document.querySelectorAll(".btnUpdate").forEach(btn=>{
+    btn.addEventListener("click", async e=>{
+      const parent = e.target.closest(".item");
+      const docId = parent.dataset.id;
+      const price = Number(parent.querySelector(".priceInput").value.replace(/\D/g,"")) || 0;
+      const oldPrice = Number(parent.querySelector(".oldPriceInput").value.replace(/\D/g,"")) || 0;
+
+      if(price <= 0){
+        return alert("Giá không hợp lệ");
+      }
+
+      try{
+        const docRef = collection(db, "products");
+        await updateDoc(doc(docRef, docId), { price, oldPrice });
+        alert("Cập nhật thành công");
+        loadProducts();
+      }catch(err){
+        console.log(err);
+        alert("Lỗi khi cập nhật");
+      }
+    });
+  });
+
+  // Gắn sự kiện nút Xoá
+  document.querySelectorAll(".btnDelete").forEach(btn=>{
+    btn.addEventListener("click", async e=>{
+      const parent = e.target.closest(".item");
+      const docId = parent.dataset.id;
+
+      if(!confirm("Bạn có chắc muốn xoá sản phẩm này?")) return;
+
+      try{
+        const docRef = collection(db, "products");
+        await deleteDoc(doc(docRef, docId));
+        alert("Xoá thành công");
+        loadProducts();
+      }catch(err){
+        console.log(err);
+        alert("Lỗi khi xoá sản phẩm");
+      }
+    });
+  });
+}
 
 }
 
