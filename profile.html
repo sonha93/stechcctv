@@ -6,6 +6,43 @@
 <title>Thông tin cá nhân - Stech</title>
 
 <style>
+  .avatar-container{
+  width:130px;
+  height:130px;
+  position:relative;
+  cursor:pointer;
+  border:3px solid #4CAF50;
+  border-radius:50%;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.avatar-container img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:50%;
+}
+
+.avatar-edit{
+  position:absolute;
+  right:5px;
+  bottom:5px;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:#00acc1;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  border:2px solid #fff;
+  cursor:pointer;
+  z-index:5;
+}
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
 body{background:#f5f5f5;color:#111;overflow-x:hidden;}
 /* HEADER */
@@ -78,10 +115,32 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
 
 <div class="container">
   <h2>Thông tin cá nhân</h2>
-  <div class="profile">
-    <div class="avatar-container">
-      <img id="avatarImg" src="https://sf-static.upanhlaylink.com/img/image_20260509a7d8481abffe51016824fa5c6c433dd5.jpg" alt="Avatar">
-      <input type="file" id="avatarInput" accept="image/*" style="display:none">
+ <div class="profile">
+
+  <div class="avatar-container">
+
+    <img
+      id="avatarImg"
+      src="https://sf-static.upanhlaylink.com/img/image_20260509a7d8481abffe51016824fa5c6c433dd5.jpg"
+      alt="Avatar"
+    >
+
+    <div class="avatar-edit" id="avatarEditBtn">
+      📷
+    </div>
+
+    <input
+      type="file"
+      id="avatarInput"
+      accept="image/*"
+      style="display:none"
+    >
+
+ 
+
+  <div class="info-fields">
+
+
     </div>
     <div class="info-fields">
       <p>Email: <b id="userEmail"></b></p>
@@ -274,7 +333,11 @@ logoutArrow.addEventListener('click',e=>{
   e.preventDefault();
   auth.signOut().then(()=>window.location.href="index.html").catch(err=>showMsg(errorEl,err.message,"red"));
 });
- 
+document
+.getElementById("avatarEditBtn")
+.addEventListener("click",()=>{
+  avatarInput.click();
+}); 
 </script>
   
 </body>
