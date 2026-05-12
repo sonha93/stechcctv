@@ -5,14 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thông tin cá nhân - Stech</title>
 <style>
-/* CSS như cậu gửi, giữ nguyên */
-.avatar-container{width:130px;height:130px;position:relative;cursor:pointer;border:3px solid #4CAF50;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;}
-.avatar-container img{width:100%;height:100%;object-fit:cover;border-radius:50%;transition:transform 0.3s;}
-.avatar-container img:hover{transform:scale(1.05);}
-.avatar-edit{position:absolute;right:5px;bottom:5px;width:34px;height:34px;border-radius:50%;background:#00acc1;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid #fff;cursor:pointer;z-index:5;}
+/* ==========================
+   CSS CHUNG
+========================== */
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
 body{background:#f5f5f5;color:#111;overflow-x:hidden;}
-/* HEADER */
 header{display:flex;align-items:center;padding:8px 10px;background:#33A0AB;gap:8px;position:sticky;top:0;z-index:999;}
 .menu-btn{width:40px;height:40px;border-radius:12px;background:#00acc1;color:white;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;flex-shrink:0;}
 .logo{width:40px;height:40px;border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,0.1);flex-shrink:0;}
@@ -22,18 +19,19 @@ header{display:flex;align-items:center;padding:8px 10px;background:#33A0AB;gap:8
 .header-icons{display:flex;gap:8px;}
 .icon-btn{width:40px;height:40px;border-radius:12px;background:#00acc1;color:white;display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none;position:relative;cursor:pointer;}
 .cart-count{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:50%;background:red;color:white;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;}
-/* SIDEBAR */
 .sidebar{position:fixed;top:0;left:-260px;width:240px;height:100vh;background:#fff;z-index:9999;transition:.3s;padding:20px;box-shadow:0 0 20px rgba(0,0,0,.15);}
 .sidebar.active{left:0;}
 .sidebar h3{margin-bottom:20px;color:#00acc1;}
 .sidebar a{display:block;padding:14px;margin-bottom:10px;border-radius:12px;background:#f5f5f5;text-decoration:none;color:#111;font-weight:bold;}
-/* OVERLAY */
 #overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;opacity:0;visibility:hidden;transition:.3s;}
 #overlay.active{opacity:1;visibility:visible;}
-/* CONTAINER PROFILE */
 .container{background:#fff;padding:25px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);width:100%;max-width:600px;margin:20px auto;}
 h2{text-align:center;margin-bottom:20px;font-size:1.6rem;color:#222;}
 .profile{display:flex;flex-direction:column;align-items:center;gap:15px;}
+.avatar-container{width:130px;height:130px;cursor:pointer;border:3px solid #4CAF50;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;}
+.avatar-container img{width:100%;height:100%;border-radius:50%;object-fit:cover;transition:transform 0.3s;}
+.avatar-container img:hover{transform:scale(1.05);}
+.avatar-edit{position:absolute;right:5px;bottom:5px;width:34px;height:34px;border-radius:50%;background:#00acc1;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid #fff;cursor:pointer;z-index:5;}
 .info-fields{width:100%;margin-top:10px;}
 .info-fields label{font-weight:bold;margin-top:10px;display:block;color:#333;}
 .info-fields input{width:100%;padding:10px;margin-top:4px;margin-bottom:8px;border-radius:8px;border:1px solid #b3e5fc;font-size:0.95rem;transition:0.3s;}
@@ -59,12 +57,14 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
 </style>
 </head>
 <body>
+
 <div id="overlay" onclick="toggleMenu()"></div>
 <div class="sidebar" id="sidebar">
   <h3>Menu</h3>
   <a href="index.html">Trang Chủ</a>
   <a href="#" id="orderHistoryBtn">Lịch sử đơn hàng</a>
 </div>
+
 <header>
   <div class="menu-btn" onclick="toggleMenu()">☰</div>
   <div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo"></div>
@@ -74,6 +74,7 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
     <a href="cart.html" class="icon-btn">🛒<span class="cart-count" id="cartCount">0</span></a>
   </div>
 </header>
+
 <div class="container">
   <h2>Thông tin cá nhân</h2>
   <div class="profile">
@@ -92,6 +93,7 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
       <button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
     </div>
   </div>
+
   <div class="updated-info">
     <h3>Thông tin hiện tại:</h3>
     <p>Họ và tên: <span id="currentName"></span></p>
@@ -99,6 +101,7 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
     <p>Ngày sinh: <span id="currentBirthday"></span></p>
     <p>Số điện thoại: <span id="currentPhone"></span></p>
   </div>
+
   <div class="password-section">
     <h2>Đổi mật khẩu</h2>
     <input type="password" id="newPassword" placeholder="Mật khẩu mới">
@@ -106,114 +109,114 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
       <button id="changePasswordBtn">Đổi mật khẩu</button>
     </div>
   </div>
+
   <div class="orders" id="ordersContainer" style="display:none;">
     <h3>Lịch sử đơn hàng</h3>
     <div id="ordersList"></div>
   </div>
+
   <div id="message" class="fade"></div>
   <div id="error" class="fade"></div>
 </div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
 <script>
-const firebaseConfig={apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",authDomain:"stech-73b89.firebaseapp.com",databaseURL:"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"stech-73b89",storageBucket:"stech-73b89.appspot.com",messagingSenderId:"873739162979",appId:"1:873739162979:web:978f1a4043f025b1cdaf56"};
+// =========================
+// FIREBASE INIT
+// =========================
+const firebaseConfig = {
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain: "stech-73b89.firebaseapp.com",
+  databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "stech-73b89",
+  storageBucket: "stech-73b89.appspot.com",
+  messagingSenderId: "873739162979",
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+};
 firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth();
-const db=firebase.database();
-const avatarImg=document.getElementById("avatarImg");
-const avatarInput=document.getElementById("avatarInput");
-const userEmail=document.getElementById("userEmail");
-const userCreatedAt=document.getElementById("userCreatedAt");
-const nameInput=document.getElementById("name");
-const phoneInput=document.getElementById("phone");
-const addressInput=document.getElementById("address");
-const birthdayInput=document.getElementById("birthday");
-const currentName=document.getElementById("currentName");
-const currentPhone=document.getElementById("currentPhone");
-const currentAddress=document.getElementById("currentAddress");
-const currentBirthday=document.getElementById("currentBirthday");
-const newPasswordInput=document.getElementById("newPassword");
-const messageEl=document.getElementById("message");
-const errorEl=document.getElementById("error");
-const updateInfoBtn=document.getElementById("updateInfoBtn");
-const changePasswordBtn=document.getElementById("changePasswordBtn");
-const logoutArrow=document.getElementById("logoutArrow");
-const cartCountEl=document.getElementById("cartCount");
-const ordersContainer=document.getElementById("ordersContainer");
-const ordersList=document.getElementById("ordersList");
-const orderHistoryBtn=document.getElementById("orderHistoryBtn");
-let currentUser=null;
 
-function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
-function showMsg(el,text,color){el.innerText=text;el.style.color=color;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
-function getUIDFromURL(){return new URLSearchParams(window.location.search).get('uid');}
+const auth = firebase.auth();
+const db = firebase.database();
+const storage = firebase.storage();
 
+const avatarImg = document.getElementById("avatarImg");
+const avatarInput = document.getElementById("avatarInput");
+const userEmail = document.getElementById("userEmail");
+const userCreatedAt = document.getElementById("userCreatedAt");
+const nameInput = document.getElementById("name");
+const phoneInput = document.getElementById("phone");
+const addressInput = document.getElementById("address");
+const birthdayInput = document.getElementById("birthday");
+const currentName = document.getElementById("currentName");
+const currentPhone = document.getElementById("currentPhone");
+const currentAddress = document.getElementById("currentAddress");
+const currentBirthday = document.getElementById("currentBirthday");
+const newPasswordInput = document.getElementById("newPassword");
+const messageEl = document.getElementById("message");
+const errorEl = document.getElementById("error");
+const updateInfoBtn = document.getElementById("updateInfoBtn");
+const changePasswordBtn = document.getElementById("changePasswordBtn");
+const logoutArrow = document.getElementById("logoutArrow");
+const cartCountEl = document.getElementById("cartCount");
+const ordersContainer = document.getElementById("ordersContainer");
+const ordersList = document.getElementById("ordersList");
+const orderHistoryBtn = document.getElementById("orderHistoryBtn");
+
+let currentUser = null;
+
+// =========================
+// FUNCTIONS
+// =========================
+function toggleMenu() {
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
+}
+function showMsg(el,text,color){
+  el.innerText=text;el.style.color=color;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);
+}
+function getUIDFromURL(){
+  return new URLSearchParams(window.location.search).get('uid');
+}
+
+// =========================
+// AUTH STATE
+// =========================
 auth.onAuthStateChanged(user=>{
   if(!user){window.location.href="index.html";return;}
   currentUser=user;
   updateInfoBtn.disabled=false;
-  const uidToUse=getUIDFromURL()||currentUser.uid;
-  userEmail.innerText=currentUser.email;
-  window.history.replaceState(null,null,"profile.html?uid="+uidToUse);
+  const uidToUse = getUIDFromURL() || currentUser.uid;
+  userEmail.innerText = currentUser.email;
+  const newURL = "profile.html?uid=" + uidToUse;
+  window.history.replaceState(null,null,newURL);
 
+  // Load user data
   db.ref('users/'+uidToUse).once('value').then(snapshot=>{
     if(snapshot.exists()){
-      const data=snapshot.val();
-      nameInput.value=data.name||"";
-      phoneInput.value=data.phone||"";
-      addressInput.value=data.address||"";
-      birthdayInput.value=data.birthday||"";
-      avatarImg.src=data.avatar||avatarImg.src;
-      currentName.innerText=data.name||"Chưa cập nhật";
-      currentPhone.innerText=data.phone||"Chưa cập nhật";
-      currentAddress.innerText=data.address||"Chưa cập nhật";
-      currentBirthday.innerText=data.birthday||"Chưa cập nhật";
-      userCreatedAt.innerText=data.createdAt?new Date(data.createdAt).toLocaleDateString():new Date(currentUser.metadata.creationTime).toLocaleDateString();
+      const data = snapshot.val();
+      nameInput.value = data.name || "";
+      phoneInput.value = data.phone || "";
+      addressInput.value = data.address || "";
+      birthdayInput.value = data.birthday || "";
+      avatarImg.src = data.avatar || avatarImg.src;
+      const createdDate = data.createdAt?new Date(data.createdAt).toLocaleDateString():new Date(currentUser.metadata.creationTime).toLocaleDateString();
+      userCreatedAt.innerText = createdDate;
+      currentName.innerText = data.name || "Chưa cập nhật";
+      currentPhone.innerText = data.phone || "Chưa cập nhật";
+      currentAddress.innerText = data.address || "Chưa cập nhật";
+      currentBirthday.innerText = data.birthday || "Chưa cập nhật";
     }
   }).catch(err=>showMsg(errorEl,"Không thể load dữ liệu: "+err.message,"red"));
 
-  db.ref('carts/'+uidToUse).on('value',snapshot=>{
-    let count=0;
-    snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;});
-    cartCountEl.innerText=count;
+  // Load cart count
+  db.ref('carts/'+uidToUse).on('value', snapshot=>{
+    let count = 0;
+    snapshot.forEach(item=>{count += parseInt(item.val().quantity)||1;});
+    cartCountEl.innerText = count;
   });
+
 });
-
-avatarImg.addEventListener('click',()=>avatarInput.click());
-avatarInput.addEventListener('change',async e=>{
-  const file=e.target.files[0];
-  if(!file||!currentUser) return;
-  try{
-    const formData=new FormData();
-    formData.append("file",file);
-    formData.append("upload_preset","stech_upload");
-    const res=await fetch("https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",{method:"POST",body:formData});
-    const data=await res.json();
-    const url=data.secure_url;
-    await db.ref('users/'+currentUser.uid).update({avatar:url});
-    avatarImg.src=url;
-    showMsg(messageEl,"Cập nhật ảnh đại diện thành công!","green");
-  }catch(err){showMsg(errorEl,"Lỗi upload avatar: "+err.message,"red");}
-});
-
-orderHistoryBtn.addEventListener('click',()=>{
-  ordersContainer.style.display='block'; ordersList.innerHTML='Đang tải...';
-  db.ref('orders/'+currentUser.uid).once('value').then(snapshot=>{
-    ordersList.innerHTML='';
-    if(!snapshot.exists()){ordersList.innerHTML='<p>Chưa có đơn hàng nào.</p>'; return;}
-    snapshot.forEach(order=>{
-      const data=order.val();
-      const div=document.createElement('div'); div.className='order-item';
-      const productNames=data.items?data.items.map(i=>i.name).join(', '):"Không có sản phẩm";
-      div.innerHTML=`<strong>Mã đơn: ${order.key}</strong><br>Trạng thái: ${data.status||"Đang xử lý"}<br>Sản phẩm: ${productNames}`;
-      ordersList.appendChild(div);
-    });
-  }).catch(err=>{ordersList.innerHTML='Lỗi tải đơn hàng.'; console.log(err);});
-});
-
-logoutArrow.addEventListener('click',e=>{e.preventDefault(); auth.signOut().then(()=>window.location.href="index.html").catch(err=>showMsg(errorEl,err.message,"red"));});
-
-document.getElementById("avatarEditBtn").addEventListener("click",()=>{avatarInput.click();});
-updateInfoBtn.addEventListener("click",async()=>{if(!currentUser) return; try{await db.ref("users/"+currentUser.uid).update({name:nameInput.value,phone:phoneInput.value,address:addressInput.value,birthday:birthdayInput.value});currentName.innerText=nameInput.value||"Chưa cập nhật";current
