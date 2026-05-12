@@ -201,10 +201,7 @@ import {
   getFirestore,
   collection,
   addDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  doc
+  getDocs
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -537,65 +534,45 @@ btnAdd.addEventListener("click", async function(){
 });
 
 /* =========================
-   RENDER - CẬP NHẬT/XÓA
+   RENDER
 ========================= */
 
 function render(){
 
   if(products.length===0){
 
-    list.innerHTML = "<p>Chưa có sản phẩm</p>";
+    list.innerHTML =
+    "<p>Chưa có sản phẩm</p>";
 
     return;
 
   }
 
-  list.innerHTML = products.map((p,idx)=>`
+  list.innerHTML = products.map(p=>`
+
     <div class="item">
+
       <img src="${p.img || ''}">
+
       <div>
+
         <b>${p.name}</b><br>
+
         <span style="color:#00acc1;font-size:12px;">
+
           📁 ${p.categoryName || p.category}
+
         </span><br>
-        Giá hiện tại: ${Number(p.price).toLocaleString()}đ
-        <br>
-        Giá cũ: ${Number(p.oldPrice).toLocaleString()}đ
-        <br>
-        <input type="number" placeholder="Giá mới" class="new-price" value="${p.price}">
-        <input type="number" placeholder="Giá cũ mới" class="new-old-price" value="${p.oldPrice}">
-        <button class="update-btn">💾 Cập nhật</button>
-        <button class="delete-btn" style="background:red;margin-top:4px;">🗑 Xóa</button>
+
+        Giá:
+        ${Number(p.price).toLocaleString()}đ
+
       </div>
+
     </div>
+
   `).join("");
 
-  // Cập nhật giá
-  list.querySelectorAll(".update-btn").forEach((btn,idx)=>{
-    btn.addEventListener("click", async ()=>{
-      const item = products[idx];
-      const newPrice = Number(list.querySelectorAll(".new-price")[idx].value);
-      const newOldPrice = Number(list.querySelectorAll(".new-old-price")[idx].value || 0);
-      if(!newPrice) return alert("Giá mới không hợp lệ");
-      await updateDoc(doc(db,"products",item.docId),{
-        price: newPrice,
-        oldPrice: newOldPrice
-      });
-      alert("✔ Đã cập nhật giá mới!");
-      await loadProducts();
-    });
-  });
-
-  // Xóa sản phẩm
-  list.querySelectorAll(".delete-btn").forEach((btn,idx)=>{
-    btn.addEventListener("click", async ()=>{
-      const item = products[idx];
-      if(!confirm(`Bạn có chắc muốn xóa "${item.name}" không?`)) return;
-      await deleteDoc(doc(db,"products",item.docId));
-      alert("✔ Đã xóa sản phẩm!");
-      await loadProducts();
-    });
-  });
 }
 
 /* =========================
@@ -607,6 +584,8 @@ loadProducts();
 categoryEl.dispatchEvent(
   new Event("change")
 );
+
+});
 
 </script>
 
