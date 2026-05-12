@@ -132,6 +132,7 @@ function render(list) {
         <h4>${p.name}</h4>
         <div class="price-box">
           <span class="price">${price.toLocaleString()}đ</span>
+          ${percent ? `<span class="discount-text">-${percent}%</span>` : ""}
           ${hasDiscount ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span>` : ""}
         
         </div>
