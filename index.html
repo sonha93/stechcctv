@@ -306,18 +306,21 @@ logoutLink.addEventListener("click", ()=>{
   });
 });
 
-// AUTO LOAD USER INFO
-onAuthStateChanged(auth,user=>{
-  if(user){
-    loginLink.style.display="none";
-    logoutLink.style.display="block";
-    userInfoPreview.style.display="block";
-    userAvatarPreview.src = user.photoURL || "https://via.placeholder.com/40";
-    userNamePreview.innerText = user.displayName || user.email || "Người dùng";
+ // AUTO LOAD USER INFO
+onAuthStateChanged(auth, user => {
+  if (user) {
+    loginLink.style.display = "none";
+    logoutLink.style.display = "block";
+    userInfoPreview.style.display = "block";
+
+    // Ẩn avatar và hiển thị chữ "Xin chào, Tên"
+    userAvatarPreview.style.display = "none";  
+    userNamePreview.innerText = "Xin chào" + (user.displayName ? ", " + user.displayName : "");
+
   } else {
-    loginLink.style.display="block";
-    logoutLink.style.display="none";
-    userInfoPreview.style.display="none";
+    loginLink.style.display = "block";
+    logoutLink.style.display = "none";
+    userInfoPreview.style.display = "none";
   }
 });
 </script>
