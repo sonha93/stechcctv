@@ -94,6 +94,7 @@ window.goDetail = function(id){
   window.location.href = `logo.html?id=${id}`;
 };
 
+
 /* =========================
    RENDER PRODUCTS
 ========================= */
@@ -102,15 +103,22 @@ function render(list) {
   if(!box) return;
 
   const category = getPageCategory();
-  const isIndex = !window.location.pathname.includes("the-nho") &&
-                  !window.location.pathname.includes("camera-trong-nha") &&
-                  !window.location.pathname.includes("camera-ngoai-troi") &&
-                  !window.location.pathname.includes("combo");
+
+  const isIndex =
+    !window.location.pathname.includes("the-nho") &&
+    !window.location.pathname.includes("camera-trong-nha") &&
+    !window.location.pathname.includes("camera-ngoai-troi") &&
+    !window.location.pathname.includes("combo");
 
   if(!list) list = normalizeList(getProducts());
 
-  if(isIndex) list = list.filter(p => p.featured === true);
-  if(!isIndex && category) list = list.filter(p => p.category === category);
+  if(isIndex){
+    list = list.filter(p => p.featured === true);
+  }
+
+  if(!isIndex && category){
+    list = list.filter(p => p.category === category);
+  }
 
   box.innerHTML = "";
 
@@ -120,31 +128,64 @@ function render(list) {
   }
 
   list.forEach(p => {
+
     const id = String(p.id);
-    const price = Number(p.price);
-    const oldPrice = Number(p.oldPrice);
+    const price = Number(p.price) || 0;
+    const oldPrice = Number(p.oldPrice) || 0;
+
     const hasDiscount = oldPrice > price;
-    const percent = hasDiscount ? Math.round((1 - price / oldPrice) * 100) : 0;
 
-   <div class="item">
+    const percent = hasDiscount
+      ? Math.round((1 - price / oldPrice) * 100)
+      : 0;
 
-  ${percent ? `<div class="discount-text">-${percent}%</div>` : ""}
+    box.innerHTML += `
+      <div class="item">
 
-  <img src="${p.img}">
+        ${percent ? `<div class="discount-text">-${percent}%</div>` : ""}
+
+        <img
+          src="${p.img}"
+          onclick="goDetail('${id}')"
+          style="cursor:pointer;"
+        >
+
         <h4>${p.name}</h4>
+
         <div class="price-box">
-          <span class="price">${price.toLocaleString()}đ</span>
-          ${percent ? `<div class="discount-text">-${percent}%</div>` : ""}
-          ${hasDiscount ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span>` : ""}
-        
+
+          <span class="price">
+            ${price.toLocaleString()}đ
+          </span>
+
+          ${
+            hasDiscount
+              ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span>`
+              : ""
+          }
+
         </div>
-        <button class="spec-btn" onclick="goDetail('${id}')">⚙️ Xem chi tiết</button>
-        <button class="cart-btn" onclick="addToCart('${id}')">🛒 Thêm vào giỏ</button>
+
+        <button
+          class="spec-btn"
+          onclick="goDetail('${id}')"
+        >
+          ⚙️ Xem chi tiết
+        </button>
+
+        <button
+          class="cart-btn"
+          onclick="addToCart('${id}')"
+        >
+          🛒 Thêm vào giỏ
+        </button>
+
       </div>
     `;
-  });
-}
 
+  });
+
+}
 /* =========================
    ADD TO CART
 ========================= */
@@ -188,7 +229,7 @@ if(search){
                     !window.location.pathname.includes("combo");
     if(isIndex) data = data.filter(p => p.featured === true);
     if(!isIndex && category) data = data.filter(p => p.category === category);
-    render(data.filter(p => p.name.toLowerCase().includes(key)));
+    render(data.filter(p => (p.name || "").toLowerCase().includes(key)));
   });
 }
 
