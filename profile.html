@@ -166,6 +166,15 @@ const profileUID = urlParams.get('uid');
 
 // --- Auth state ---
 auth.onAuthStateChanged(user=>{
+      if(
+       !window.location.search.includes("uid=")
+    ){
+       window.history.replaceState(
+          {},
+          "",
+          `?uid=${user.uid}`
+       );
+    }
     if(!user){window.location.href="index.html"; return;}
     currentUser = user;
     updateInfoBtn.disabled = false;
