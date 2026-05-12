@@ -1,3 +1,15 @@
+let currentUserUID = null; // UID user hiện tại
+let cart = []; // giỏ hàng hiện tại
+
+// hàm lấy cart từ localStorage theo UID
+function getCart(uid){
+  return JSON.parse(localStorage.getItem(`cart_user_${uid}`)) || [];
+}
+
+// hàm lưu cart theo UID
+function saveCart(uid, cart){
+  localStorage.setItem(`cart_user_${uid}`, JSON.stringify(cart));
+}
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 /* =========================
