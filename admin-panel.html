@@ -425,9 +425,9 @@ btnAdd.addEventListener("click", async function(){
     alert("✔ Thêm sản phẩm thành công");
 
     loadProducts();
-await addDoc(collection(db,"products"), productData);
 
-alert("✔ Thêm sản phẩm thành công");
+
+
 
 // 🔹 reload sản phẩm và render trang chủ Featured ngay
 await fetchProducts();  // reload allProducts từ Firestore
