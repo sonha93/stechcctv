@@ -131,10 +131,6 @@ function render(list) {
         <img src="${p.img}" onclick="goDetail('${id}')" style="cursor:pointer;">
         <h4>${p.name}</h4>
         <div class="price-box">
-        <span class="price">${price.toLocaleString()}đ</span>
-  ${hasDiscount ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span>` : ""}
-  ${percent ? `<span class="discount-text">-${percent}%</span>` : ""}
-</div>
           <span class="price">${price.toLocaleString()}đ</span>
           ${hasDiscount ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span>` : ""}
         
@@ -232,4 +228,4 @@ if(slider){
     slider.scrollLeft += 0.5;
     if(slider.scrollLeft >= slider.scrollWidth - slider.clientWidth) slider.scrollLeft = 0;
   },20);
-}
+}   
