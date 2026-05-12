@@ -403,7 +403,50 @@ button:hover{
   }
 
 }
+.avatar-wrapper{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
 
+.upload-btn{
+  background:#00acc1;
+  color:#fff;
+  padding:10px 18px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.avatar-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:99999;
+}
+
+.avatar-modal.active{
+  display:flex;
+}
+
+.avatar-modal img{
+  width:90%;
+  max-width:500px;
+  border-radius:20px;
+}
+
+#closeAvatar{
+  position:absolute;
+  top:20px;
+  right:25px;
+  color:#fff;
+  font-size:35px;
+  cursor:pointer;
+}
 </style>
 
 </head>
@@ -456,10 +499,7 @@ onclick="toggleMenu()">
 src="https://i.ibb.co/Z1kv9nJj/logo.png"
 alt="logo">
 </div>
-<input
-type="file"
-id="avatarUpload"
-accept="image/*">
+   
 <div class="search-box">
 <input
 type="text"
@@ -502,14 +542,45 @@ Thông tin cá nhân
 
 
 <!-- AVATAR -->
-<div class="avatar-container">
+<!-- AVATAR -->
+<div class="avatar-wrapper">
 
-<img
-id="avatarImg"
-src="https://i.ibb.co/Z1kv9nJj/logo.png"
-alt="avatar">
+  <div class="avatar-container" id="openAvatar">
+
+    <img
+    id="avatarImg"
+    src="https://i.ibb.co/Z1kv9nJj/logo.png"
+    alt="avatar">
+
+  </div>
+
+  <label class="upload-btn">
+
+    📷 Đổi ảnh
+
+    <input
+    type="file"
+    id="avatarUpload"
+    accept="image/*"
+    capture="environment"
+    hidden>
+
+  </label>
 
 </div>
+
+<!-- XEM ẢNH -->
+<div class="avatar-modal" id="avatarModal">
+
+  <span id="closeAvatar">
+  ✕
+  </span>
+
+  <img id="fullAvatar">
+
+</div>
+
+
 
 
 <!-- FORM -->
@@ -1138,14 +1209,61 @@ orderHistoryBtn.addEventListener(
         ${productNames}
 
       `;
-
-      ordersList.appendChild(div);
+ordersList.appendChild(div);
 
     });
 
   });
 
 });
+
+
+/* AVATAR VIEW */
+
+/* AVATAR VIEW */
+const avatarModal =
+document.getElementById("avatarModal");
+
+const fullAvatar =
+document.getElementById("fullAvatar");
+
+const openAvatar =
+document.getElementById("openAvatar");
+
+const closeAvatar =
+document.getElementById("closeAvatar");
+
+openAvatar.onclick = ()=>{
+
+  fullAvatar.src =
+  avatarImg.src;
+
+  avatarModal.classList.add(
+    "active"
+  );
+
+};
+
+closeAvatar.onclick = ()=>{
+
+  avatarModal.classList.remove(
+    "active"
+  );
+
+};
+
+avatarModal.onclick = (e)=>{
+
+  if(e.target === avatarModal){
+
+    avatarModal.classList.remove(
+      "active"
+    );
+
+  }
+
+};
+
 
 </script>
 
