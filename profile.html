@@ -148,39 +148,50 @@ function showMsg(el,text,color){
   setTimeout(()=>el.classList.remove('show'),3000);
 }
 
-auth.onAuthStateChanged(user=>{
-  if(!user){window.location.href="index.html";return;}
-  currentUser=user;
-  updateInfoBtn.disabled=false;
+// UID từ URL nếu cần (không cần avatar)
+function getUIDFromURL(){
+  const params = new URLSearchParams(window.location.search);
+  return params.get('uid');
+}
 
+auth.onAuthStateChanged(user=>{
+  if(!user){window.location.href="index.html"; return;}
+  currentUser = user;
+  updateInfoBtn.disabled = false;
+
+  const uidToUse = getUIDFromURL() || currentUser.uid;
+  window.history.replaceState(null,null,"profile.html?uid=" + uidToUse);
+
+  // Hiển thị thông tin
   userEmail.innerText = currentUser.email;
   userCreatedAt.innerText = new Date(currentUser.metadata.creationTime).toLocaleDateString();
 
-  db.ref('users/'+currentUser.uid).once('value').then(snapshot=>{
+  db.ref('users/' + uidToUse).once('value').then(snapshot=>{
     if(snapshot.exists()){
-      const data=snapshot.val();
-      nameInput.value=data.name||"";
-      phoneInput.value=data.phone||"";
-      addressInput.value=data.address||"";
-      birthdayInput.value=data.birthday||"";
-      currentName.innerText = data.name||"Chưa cập nhật";
-      currentPhone.innerText = data.phone||"Chưa cập nhật";
-      currentAddress.innerText = data.address||"Chưa cập nhật";
-      currentBirthday.innerText = data.birthday||"Chưa cập nhật";
+      const data = snapshot.val();
+      nameInput.value = data.name || "";
+      phoneInput.value = data.phone || "";
+      addressInput.value = data.address || "";
+      birthdayInput.value = data.birthday || "";
+      currentName.innerText = data.name || "Chưa cập nhật";
+      currentPhone.innerText = data.phone || "Chưa cập nhật";
+      currentAddress.innerText = data.address || "Chưa cập nhật";
+      currentBirthday.innerText = data.birthday || "Chưa cập nhật";
     }
   });
 
-  db.ref('carts/'+currentUser.uid).on('value',snapshot=>{
-    let count=0;
-    snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;});
-    cartCountEl.innerText=count;
+  db.ref('carts/' + uidToUse).on('value', snapshot=>{
+    let count = 0;
+    snapshot.forEach(item=>{count += parseInt(item.val().quantity)||1;});
+    cartCountEl.innerText = count;
   });
 });
 
 updateInfoBtn.addEventListener("click", async ()=>{
   if(!currentUser) return;
   try{
-    await db.ref('users/'+currentUser.uid).update({
+    const uidToUse = getUIDFromURL() || currentUser.uid;
+    await db.ref('users/'+uidToUse).update({
       name:nameInput.value,
       phone:phoneInput.value,
       address:addressInput.value,
@@ -191,24 +202,17 @@ updateInfoBtn.addEventListener("click", async ()=>{
     currentAddress.innerText = addressInput.value || "Chưa cập nhật";
     currentBirthday.innerText = birthdayInput.value || "Chưa cập nhật";
     showMsg(messageEl,"Cập nhật thành công!","green");
-  }catch(err){
-    showMsg(errorEl,err.message,"red");
-  }
+  }catch(err){showMsg(errorEl,err.message,"red");}
 });
 
 changePasswordBtn.addEventListener("click", async ()=>{
   const newPass = newPasswordInput.value.trim();
-  if(newPass.length < 6){
-    showMsg(errorEl,"Mật khẩu tối thiểu 6 ký tự","red");
-    return;
-  }
+  if(newPass.length<6){showMsg(errorEl,"Mật khẩu tối thiểu 6 ký tự","red");return;}
   try{
     await currentUser.updatePassword(newPass);
     newPasswordInput.value="";
     showMsg(messageEl,"Đổi mật khẩu thành công!","green");
-  }catch(err){
-    showMsg(errorEl,err.message,"red");
-  }
+  }catch(err){showMsg(errorEl,err.message,"red");}
 });
 
 logoutArrow.addEventListener('click',e=>{
@@ -219,15 +223,16 @@ logoutArrow.addEventListener('click',e=>{
 orderHistoryBtn.addEventListener('click',()=>{
   ordersContainer.style.display='block';
   ordersList.innerHTML='Đang tải...';
-  db.ref('orders/'+currentUser.uid).once('value').then(snapshot=>{
+  const uidToUse = getUIDFromURL() || currentUser.uid;
+  db.ref('orders/' + uidToUse).once('value').then(snapshot=>{
     ordersList.innerHTML='';
     if(!snapshot.exists()){ordersList.innerHTML='<p>Chưa có đơn hàng nào.</p>'; return;}
     snapshot.forEach(order=>{
-      const data=order.val();
-      const div=document.createElement('div');
-      div.className='order-item';
-      const productNames=data.items?data.items.map(i=>i.name).join(', '):"Không có sản phẩm";
-      div.innerHTML=`<strong>Mã đơn: ${order.key}</strong><br>Trạng thái: ${data.status||"Đang xử lý"}<br>Sản phẩm: ${productNames}`;
+      const data = order.val();
+      const div = document.createElement('div');
+      div.className = 'order-item';
+      const productNames = data.items ? data.items.map(i=>i.name).join(', ') : "Không có sản phẩm";
+      div.innerHTML = `<strong>Mã đơn: ${order.key}</strong><br>Trạng thái: ${data.status||"Đang xử lý"}<br>Sản phẩm: ${productNames}`;
       ordersList.appendChild(div);
     });
   });
