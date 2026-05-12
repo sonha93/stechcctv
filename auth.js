@@ -1,3 +1,18 @@
+// Giữ UID hiện tại cho giỏ hàng
+let currentUserUID = null;
+
+// Cart hiện tại (sẽ load theo user)
+let cart = [];
+
+// Hàm lấy cart theo UID
+function getCart(uid){
+  return JSON.parse(localStorage.getItem(`cart_user_${uid}`)) || [];
+}
+
+// Hàm lưu cart theo UID
+function saveCart(uid, cart){
+  localStorage.setItem(`cart_user_${uid}`, JSON.stringify(cart));
+}
 // auth.js – chuẩn popup sidebar + UID + Firestore
 
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
