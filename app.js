@@ -112,71 +112,36 @@ function render(list) {
   if(isIndex) list = list.filter(p => p.featured === true);
   if(!isIndex && category) list = list.filter(p => p.category === category);
 
- 
+  box.innerHTML = "";
+
+  if(list.length === 0){
+    box.innerHTML = "<p>Chưa có sản phẩm</p>";
+    return;
+  }
+
+  list.forEach(p => {
+    const id = String(p.id);
+    const price = Number(p.price);
+    const oldPrice = Number(p.oldPrice);
+    const hasDiscount = oldPrice > price;
+    const percent = hasDiscount ? Math.round((1 - price / oldPrice) * 100) : 0;
+
     box.innerHTML += `
-    <div class="item">
-
-      ${
-  percent
-  ? `
-    <div class="discount-badge">
-      -${percent}%
-    </div>
-  `
-  : ""
-}
-
-        <div class="img-box">
-
-          <img
-            src="${p.img || ''}"
-            alt="${p.name || ''}"
-            onclick="goDetail('${id}')"
-            style="cursor:pointer;"
-          >
-
-        </div>
-
-        <h4>
-          ${p.name || "Không tên"}
-        </h4>
-
+      <div class="item">
+        <img src="${p.img}" onclick="goDetail('${id}')" style="cursor:pointer;">
+        <h4>${p.name}</h4>
         <div class="price-box">
-
-          <span class="price">
-            ${price.toLocaleString()}đ
-          </span>
-
-          ${
-            hasDiscount
-
-            ? `
-
-            <span class="old-price">
-              ${oldPrice.toLocaleString()}đ
-            </span>
-
-            `
-
-            : ""
-
-          }
-
+          <span class="price">${price.toLocaleString()}đ</span>
+          ${percent ? `<span class="discount-text">-${percent}%</span>` : ""}
+          ${hasDiscount ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span>` : ""}
+        
         </div>
-
-               <button
-          class="spec-btn"
-          onclick="goDetail('${id}')"
-        >
-
-          ⚙️ Xem thông số
-
-        </button>
-
-        <button
-          class="cart-btn"
-          onclick="addToCart('${id}')"
-        >
+        <button class="spec-btn" onclick="goDetail('${id}')">⚙️ Xem chi tiết</button>
+        <button class="cart-btn" onclick="addToCart('${id}')">🛒 Thêm vào giỏ</button>
+      </div>
+    `;
+  });
+}
 
 /* =========================
    ADD TO CART
