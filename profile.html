@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thông tin cá nhân - Stech</title>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
 body{background:#f5f5f5;color:#111;overflow-x:hidden;}
@@ -137,9 +138,10 @@ firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();
 const db=firebase.database();
 const storage=firebase.storage();
+const avatarImg = document.getElementById("avatarImg");
+const avatarInput = document.getElementById("avatarInput");
 
-const avatarImg=document.getElementById("avatarImg");
-const avatarInput=document.getElementById("avatarInput");
+
 const userEmail=document.getElementById("userEmail");
 const userUID=document.getElementById("userUID");
 const userCreatedAt=document.getElementById("userCreatedAt");
@@ -200,48 +202,58 @@ window.history.replaceState(null, null, newURL);
     cartCountEl.innerText=count;
   });
 });
-
 avatarImg.addEventListener('click',()=>avatarInput.click());
-avatarInput.addEventListener('change',async e=>{
-  const file=e.target.files[0]; if(!file||!currentUser) return;
+
+avatarInput.addEventListener('change', async e=>{
+
+  const file = e.target.files[0];
+
+  if(!file || !currentUser) return;
+
   try{
-    const storageRef=storage.ref('avatars/'+currentUser.uid+'.jpg');
-    await storageRef.put(file);
-    const url=await storageRef.getDownloadURL();
-    await db.ref('users/'+currentUser.uid).update({avatar:url});
-    avatarImg.src=url+'?t='+new Date().getTime();
-    showMsg(messageEl,"Cập nhật ảnh đại diện thành công!","green");
-  }catch(err){showMsg(errorEl,"Lỗi upload avatar: "+err.message,"red");}
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    formData.append("upload_preset", "stech_upload");
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+      {
+        method:"POST",
+        body:formData
+      }
+    );
+
+    const data = await res.json();
+
+    const url = data.secure_url;
+
+    await db.ref('users/'+currentUser.uid).update({
+      avatar:url
+    });
+
+    avatarImg.src = url;
+
+    showMsg(
+      messageEl,
+      "Cập nhật ảnh đại diện thành công!",
+      "green"
+    );
+
+  }catch(err){
+
+    showMsg(
+      errorEl,
+      "Lỗi upload avatar: " + err.message,
+      "red"
+    );
+
+  }
+
 });
 
-updateInfoBtn.addEventListener('click',()=>{
-  messageEl.classList.remove('show'); errorEl.classList.remove('show');
-  const name=nameInput.value.trim(), phone=phoneInput.value.trim(), address=addressInput.value.trim(), birthday=birthdayInput.value;
-  if(!name||!phone||!address||!birthday){showMsg(errorEl,"Vui lòng nhập đầy đủ thông tin!","red"); return;}
-  const spinner=document.createElement('span'); spinner.className='spinner'; updateInfoBtn.appendChild(spinner);
-  db.ref('users/'+currentUser.uid).update({uid:currentUser.uid,name,phone,address,birthday}).then(()=>{
-    currentName.innerText=name; currentPhone.innerText=phone; currentAddress.innerText=address; currentBirthday.innerText=birthday;
-    showMsg(messageEl,"Cập nhật thành công!","green"); spinner.remove();
-  }).catch(err=>{showMsg(errorEl,"Lỗi khi cập nhật: "+err.message,"red"); spinner.remove();});
-});
-
-changePasswordBtn.addEventListener('click',()=>{
-  messageEl.classList.remove('show'); errorEl.classList.remove('show');
-  const newPass=newPasswordInput.value.trim();
-  if(newPass.length<6){showMsg(errorEl,"Mật khẩu ≥6 ký tự","red"); return;}
-  const spinner=document.createElement('span'); spinner.className='spinner'; changePasswordBtn.appendChild(spinner);
-  currentUser.updatePassword(newPass).then(()=>{
-    showMsg(messageEl,"Đổi mật khẩu thành công!","green"); newPasswordInput.value=""; spinner.remove();
-  }).catch(err=>{
-    if(err.code==="auth/requires-recent-login"){
-      const pwd=prompt("Nhập lại mật khẩu cũ:"); if(!pwd){spinner.remove(); return;}
-      const credential=firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
-      currentUser.reauthenticateWithCredential(credential).then(()=>currentUser.updatePassword(newPass)).then(()=>{
-        showMsg(messageEl,"Đổi mật khẩu thành công!","green"); newPasswordInput.value=""; spinner.remove();
-      }).catch(e=>{showMsg(errorEl,e.message,"red"); spinner.remove();});
-    } else {showMsg(errorEl,err.message,"red"); spinner.remove();}
-  });
-});
 
 orderHistoryBtn.addEventListener('click',()=>{
   ordersContainer.style.display='block'; ordersList.innerHTML='Đang tải...';
@@ -262,6 +274,8 @@ logoutArrow.addEventListener('click',e=>{
   e.preventDefault();
   auth.signOut().then(()=>window.location.href="index.html").catch(err=>showMsg(errorEl,err.message,"red"));
 });
+ 
 </script>
+  
 </body>
 </html>
