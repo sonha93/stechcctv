@@ -83,7 +83,7 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
       <input type="file" id="avatarInput" accept="image/*" style="display:none">
     </div>
     <div class="info-fields">
-      <p>ID người dùng: <span id="userUID"></span></p>
+     <p>ID người dùng: <a id="userUID" href="#" target="_blank"></a></p>
       <p>Email: <b id="userEmail"></b></p>
       <p>Ngày đăng ký: <span id="userCreatedAt"></span></p>
       <label for="name">Họ và tên:</label><input type="text" id="name">
@@ -173,8 +173,9 @@ auth.onAuthStateChanged(user=>{
   if(!user){window.location.href="index.html";return;}
   currentUser=user;
   updateInfoBtn.disabled=false;
-  const uidToUse=getUIDFromURL()||currentUser.uid;
-  userUID.innerText=uidToUse;
+ const uidToUse = getUIDFromURL() || currentUser.uid;
+userUID.innerText = uidToUse;
+userUID.href = "profile.html?uid=" + uidToUse; // gắn link dẫn tới profile theo UID
   userEmail.innerText=currentUser.email;
 
   db.ref('users/'+uidToUse).once('value').then(snapshot=>{
