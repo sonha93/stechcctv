@@ -138,7 +138,7 @@ button .spinner{border:2px solid #fff;border-top:2px solid #00acc1;border-radius
 const firebaseConfig={
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain:"stech-73b89.firebaseapp.com",
-  databaseURL:"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
+ databaseURL:"https://stech-73b89-default-rtdb.firebaseio.com",
   projectId:"stech-73b89",
   storageBucket:"stech-73b89.appspot.com",
   messagingSenderId:"873739162979",
@@ -152,6 +152,7 @@ const storage=firebase.storage();
 const avatarImg=document.getElementById("avatarImg");
 const avatarInput=document.getElementById("avatarInput");
 const userEmail=document.getElementById("userEmail");
+const userUID=document.getElementById("userUID");
 const userCreatedAt=document.getElementById("userCreatedAt");
 const nameInput=document.getElementById("name");
 const phoneInput=document.getElementById("phone");
@@ -193,7 +194,8 @@ auth.onAuthStateChanged(user=>{
   if(!user){ window.location.href="index.html"; return; }
   currentUser = user;
   updateInfoBtn.disabled=false;
-  userEmail.innerText=user.email;
+ userEmail.innerText = user.email;
+ userUID.innerText = user.uid;
 
   // Load user info
   db.ref('users/'+currentUser.uid).once('value').then(snapshot=>{
@@ -206,10 +208,10 @@ auth.onAuthStateChanged(user=>{
       avatarImg.src = data.avatar || avatarImg.src;
       const createdDate = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : new Date(currentUser.metadata.creationTime).toLocaleDateString();
       userCreatedAt.innerText = createdDate;
-      currentName.innerText = data.name || "";
-      currentPhone.innerText = data.phone || "";
-      currentAddress.innerText = data.address || "";
-      currentBirthday.innerText = data.birthday || "";
+     currentName.innerText = data.name || "Chưa cập nhật";
+currentPhone.innerText = data.phone || "Chưa cập nhật";
+currentAddress.innerText = data.address || "Chưa cập nhật";
+currentBirthday.innerText = data.birthday || "Chưa cập nhật";
     }
   }).catch(err=>showMsg(errorEl,"Không thể load dữ liệu: "+err.message,"red"));
 
@@ -244,7 +246,13 @@ updateInfoBtn.addEventListener('click', ()=>{
   if(!name||!phone||!address||!birthday){showMsg(errorEl,"Vui lòng nhập đầy đủ thông tin!","red"); return;}
   const spinner=document.createElement('span'); spinner.className='spinner'; updateInfoBtn.appendChild(spinner);
 
-  db.ref('users/'+currentUser.uid).update({name,phone,address,birthday}).then(()=>{
+ db.ref('users/' + currentUser.uid).update({
+  uid: currentUser.uid,
+  name: name,
+  phone: phone,
+  address: address,
+  birthday: birthday
+}).then(()=>{
     currentName.innerText=name;
     currentPhone.innerText=phone;
     currentAddress.innerText=address;
@@ -255,45 +263,142 @@ updateInfoBtn.addEventListener('click', ()=>{
 });
 
 // Change password
+// Change password
 changePasswordBtn.addEventListener('click', ()=>{
-  messageEl.classList.remove('show'); errorEl.classList.remove('show');
+
+  messageEl.classList.remove('show');
+  errorEl.classList.remove('show');
+
   const newPass = newPasswordInput.value.trim();
-  if(newPass.length<6){ showMsg(errorEl,"Mật khẩu ≥6 ký tự","red"); return; }
-  const spinner = document.createElement('span'); spinner.className='spinner'; changePasswordBtn.appendChild(spinner);
 
-  currentUser.updatePassword(newPass).then(()=>{
-    showMsg(messageEl,"Đổi mật khẩu thành công!","green"); newPasswordInput.value=""; spinner.remove();
-  }).catch(err=>{
-    if(err.code==="auth/requires-recent-login"){
-      const pwd=prompt("Nhập lại mật khẩu cũ:"); if(!pwd){spinner.remove(); return;}
-      const credential=firebase.auth.EmailAuthProvider.credential(currentUser.email,pwd);
+  if(newPass.length < 6){
+    showMsg(errorEl,"Mật khẩu ≥6 ký tự","red");
+    return;
+  }
+
+  const spinner = document.createElement('span');
+  spinner.className = 'spinner';
+  changePasswordBtn.appendChild(spinner);
+
+  currentUser.updatePassword(newPass)
+
+  .then(()=>{
+
+    showMsg(messageEl,"Đổi mật khẩu thành công!","green");
+    newPasswordInput.value = "";
+    spinner.remove();
+
+  })
+
+  .catch(err=>{
+
+    if(err.code === "auth/requires-recent-login"){
+
+      const pwd = prompt("Nhập lại mật khẩu cũ:");
+
+      if(!pwd){
+        spinner.remove();
+        return;
+      }
+
+      const credential =
+      firebase.auth.EmailAuthProvider.credential(
+        currentUser.email,
+        pwd
+      );
+
       currentUser.reauthenticateWithCredential(credential)
-        .then(()=>currentUser.updatePassword(newPass).then(()=>{
-          showMsg(messageEl,"Đổi mật khẩu thành công!","green"); newPasswordInput.value=""; spinner.remove();
-        }))
-        .catch(e=>{showMsg(errorEl,e.message,"red"); spinner.remove();});
-    }else{showMsg(errorEl,err.message,"red"); spinner.remove();}
-  });
-});
 
+      .then(()=>{
+
+        return currentUser.updatePassword(newPass);
+
+      })
+
+      .then(()=>{
+
+        showMsg(messageEl,"Đổi mật khẩu thành công!","green");
+        newPasswordInput.value = "";
+        spinner.remove();
+
+      })
+
+      .catch(e=>{
+
+        showMsg(errorEl,e.message,"red");
+        spinner.remove();
+
+      });
+
+    }else{
+
+      showMsg(errorEl,err.message,"red");
+      spinner.remove();
+
+    }
+
+  });
+
+});
 // Orders
 orderHistoryBtn.addEventListener('click', ()=>{
-  ordersContainer.style.display='block';
-  ordersList.innerHTML='Đang tải...';
-  db.ref('orders/'+currentUser.uid).once('value').then(snapshot=>{
-    ordersList.innerHTML='';
-    if(!snapshot.exists()){ ordersList.innerHTML='<p>Chưa có đơn hàng nào.</p>'; return;}
+
+  ordersContainer.style.display = 'block';
+  ordersList.innerHTML = 'Đang tải...';
+
+  db.ref('orders/' + currentUser.uid).once('value')
+
+  .then(snapshot=>{
+
+    ordersList.innerHTML = '';
+
+    if(!snapshot.exists()){
+      ordersList.innerHTML = '<p>Chưa có đơn hàng nào.</p>';
+      return;
+    }
+
     snapshot.forEach(order=>{
+
       const data = order.val();
-      const div=document.createElement('div'); div.className='order-item';
-      div.innerHTML=`<strong>Mã đơn: ${order.key}</strong><br>Trạng thái: ${data.status}<br>Sản phẩm: ${data.items.map(i=>i.name).join(', ')}`;
+
+      const div = document.createElement('div');
+      div.className = 'order-item';
+
+      const productNames = data.items
+        ? data.items.map(i => i.name).join(', ')
+        : "Không có sản phẩm";
+
+      div.innerHTML = `
+        <strong>Mã đơn: ${order.key}</strong><br>
+        Trạng thái: ${data.status || "Đang xử lý"}<br>
+        Sản phẩm: ${productNames}
+      `;
+
       ordersList.appendChild(div);
+
     });
-  }).catch(e=>ordersList.innerHTML='Lỗi tải đơn hàng.');
+
+  })
+
+  .catch(err=>{
+    ordersList.innerHTML = 'Lỗi tải đơn hàng.';
+    console.log(err);
+  });
+
 });
 
 // Logout
-logoutArrow.addEventListener('click', ()=>auth.signOut().then(()=>window.location.href="index.html"));
+logoutArrow.addEventListener('click', (e)=>{
+  e.preventDefault();
+
+  auth.signOut()
+  .then(()=>{
+    window.location.href = "index.html";
+  })
+  .catch(err=>{
+    showMsg(errorEl, err.message, "red");
+  });
+});
 </script>
 </body>
 </html>
