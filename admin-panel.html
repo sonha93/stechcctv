@@ -496,42 +496,53 @@ btnAdd.addEventListener("click", async function(){
 
 });
 
-  RENDER PRODUCTS 2 DÒNG GIÁ
+/* =========================
+   RENDER PRODUCTS MỚI
 ========================= */
-function render() {
+
+function render(){
 
   if(products.length===0){
-    list.innerHTML = "<p>Chưa có sản phẩm</p>";
+
+    list.innerHTML =
+    "<p>Chưa có sản phẩm</p>";
+
     return;
+
   }
 
   list.innerHTML = products.map(p => `
+
     <div class="item" data-id="${p.docId}">
+
       <img src="${p.img || ''}">
+
       <div>
+
         <b>${p.name}</b><br>
-        <span style="color:#00acc1;font-size:12px;">📁 ${p.categoryName || p.category}</span><br>
 
-        <!-- Giá hiện tại (bán ra) -->
-        <div style="color:red; font-weight:bold; margin-top:4px;">
-          Giá hiện tại: ${Number(p.price).toLocaleString()}đ
-        </div>
+        <span style="color:#00acc1;font-size:12px;">
 
-        <!-- Giá gốc / cũ -->
-        <div style="color:black; font-weight:normal; margin-top:2px;">
-          Giá gốc: ${p.oldPrice ? Number(p.oldPrice).toLocaleString() + 'đ' : '---'}
-        </div>
+          📁 ${p.categoryName || p.category}
+
+        </span><br>
+
+        Giá hiện tại: ${Number(p.price).toLocaleString()}đ
+        ${p.oldPrice ? `<s>${Number(p.oldPrice).toLocaleString()}đ</s>` : ''}<br>
 
         <!-- Input sửa giá -->
-        <input type="text" class="priceInput" value="${p.price}" placeholder="Giá mới" style="width:150px; font-weight:bold; color:red; margin-top:4px;">
-        <input type="text" class="oldPriceInput" value="${p.oldPrice || ''}" placeholder="Giá cũ" style="width:150px; margin-top:2px;">
+        <input type="text" class="priceInput" value="${p.price}" placeholder="Giá mới">
+        <input type="text" class="oldPriceInput" value="${p.oldPrice || ''}" placeholder="Giá cũ">
 
         <!-- Nút cập nhật -->
-        <button class="updateBtn" style="background:#00acc1; margin-top:6px;">Cập nhật</button>
+        <button class="updateBtn">Cập nhật</button>
         <!-- Nút xóa -->
-        <button class="deleteBtn" style="background:red; margin-top:6px;">Xóa</button>
+        <button class="deleteBtn">Xóa</button>
+
       </div>
+
     </div>
+
   `).join("");
 
   // Gắn sự kiện Cập nhật
@@ -541,7 +552,9 @@ function render() {
       const id = item.dataset.id;
       const newPrice = Number(item.querySelector('.priceInput').value.replace(/\D/g,''));
       const oldPrice = Number(item.querySelector('.oldPriceInput').value.replace(/\D/g,'') || 0);
+
       if(!newPrice) return alert("Giá không hợp lệ");
+
       await updateDoc(doc(db,"products",id), { price: newPrice, oldPrice: oldPrice });
       alert("Cập nhật thành công");
       loadProducts();
@@ -559,6 +572,7 @@ function render() {
       }
     });
   });
+
 }
 
 /* =========================
