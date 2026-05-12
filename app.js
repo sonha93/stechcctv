@@ -51,9 +51,8 @@ function getProducts() {
 function normalizeProduct(p) {
   return {
     ...p,
-price: Number(String(p.price).replace(/\./g,"").replace(/,/g,"")) || 0,
-
-oldPrice: Number(String(p.oldPrice).replace(/\./g,"").replace(/,/g,"")) || 0,
+    price: Number(p.price) || 0,
+    oldPrice: Number(p.oldPrice) || 0,
     id: p.id || Date.now(),
     name: p.name || "",
     img: p.img || "",
@@ -122,9 +121,8 @@ function render(list) {
 
   list.forEach(p => {
     const id = String(p.id);
-    const price = Number(
-  String(p.price).replace(/\./g,"").replace(/,/g,"")
-) || 0;
+    const price = Number(p.price);
+    const oldPrice = Number(p.oldPrice);
     const hasDiscount = oldPrice > price;
     const percent = hasDiscount ? Math.round((1 - price / oldPrice) * 100) : 0;
 
@@ -231,4 +229,4 @@ if(slider){
     slider.scrollLeft += 0.5;
     if(slider.scrollLeft >= slider.scrollWidth - slider.clientWidth) slider.scrollLeft = 0;
   },20);
-}   
+}
