@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
           email: email,
           createdAt: new Date()
         });
-
+        if (profileUID) profileUID.textContent = user.uid; // hiển thị UID ngay sau đăng ký
         authMessage.style.color = "green";
         authMessage.innerText = "Đăng ký thành công! 🎉";
         authEmail.value = "";
