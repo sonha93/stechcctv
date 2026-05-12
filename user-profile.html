@@ -43,7 +43,6 @@ button:hover{background:#0056b3;}
 </style>
 </head>
 <body>
-
 <div id="overlay" onclick="toggleMenu()"></div>
 <div class="sidebar" id="sidebar">
 <h3>Menu</h3>
@@ -145,16 +144,21 @@ function toggleMenu(){ sidebar.classList.toggle("active"); overlay.classList.tog
 function showMsg(el,text,color){ el.innerText=text; el.style.color=color; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000); }
 
 let currentUser = null;
-const urlParams = new URLSearchParams(window.location.search);
-const profileUID = urlParams.get('uid');
-
 auth.onAuthStateChanged(user=>{
     if(!user){window.location.href="index.html";return;}
     currentUser = user;
     updateInfoBtn.disabled = false;
-    
-    let uidToLoad = profileUID || currentUser.uid;
-    
+
+    // Thêm UID vào URL nếu chưa có
+    const urlParams = new URLSearchParams(window.location.search);
+    let uidToLoad = urlParams.get('uid') || currentUser.uid;
+    if(!window.location.search.includes("uid=")){
+        window.history.replaceState({}, "", `${window.location.pathname}?uid=${currentUser.uid}`);
+    }
+
+    userEmail.innerText = currentUser.email;
+    userCreatedAt.innerText = new Date(currentUser.metadata.creationTime).toLocaleDateString();
+
     db.ref('users/'+uidToLoad).once('value').then(snapshot=>{
         if(snapshot.exists()){
             const data = snapshot.val();
@@ -169,7 +173,7 @@ auth.onAuthStateChanged(user=>{
             currentBirthday.innerText = data.birthday||"Chưa cập nhật";
         }
     });
-    
+
     db.ref('carts/'+currentUser.uid).on('value',snapshot=>{
         let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); 
         cartCountEl.innerText=count;
@@ -177,7 +181,7 @@ auth.onAuthStateChanged(user=>{
 });
 
 updateInfoBtn.addEventListener("click",async()=>{
-    if(!currentUser) return;
+    if(!currentUser)return;
     try{
         await db.ref('users/'+currentUser.uid).update({
             name:nameInput.value,
@@ -185,12 +189,12 @@ updateInfoBtn.addEventListener("click",async()=>{
             address:addressInput.value,
             birthday:birthdayInput.value
         });
-        currentName.innerText = nameInput.value || "Chưa cập nhật";
-        currentPhone.innerText = phoneInput.value || "Chưa cập nhật";
-        currentAddress.innerText = addressInput.value || "Chưa cập nhật";
-        currentBirthday.innerText = birthdayInput.value || "Chưa cập nhật";
+        currentName.innerText = nameInput.value||"Chưa cập nhật";
+        currentPhone.innerText = phoneInput.value||"Chưa cập nhật";
+        currentAddress.innerText = addressInput.value||"Chưa cập nhật";
+        currentBirthday.innerText = birthdayInput.value||"Chưa cập nhật";
         showMsg(messageEl,"Cập nhật thành công!","green");
-    }catch(err){ showMsg(errorEl, err.message, "red"); }
+    }catch(err){ showMsg(errorEl,err.message,"red"); }
 });
 
 changePasswordBtn.addEventListener("click",async()=>{
