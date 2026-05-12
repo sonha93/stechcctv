@@ -12,6 +12,8 @@ function saveCart(uid, cart){
 }
 
 /* =========================
+
+
    GET PRODUCTS
 ========================= */
 function getProducts(){
