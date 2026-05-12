@@ -133,7 +133,7 @@ function render(list) {
         <div class="price-box">
           <span class="price">${price.toLocaleString()}đ</span>
           ${hasDiscount ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span>` : ""}
-          ${percent ? `<span class="discount-text">-${percent}%</span>` : ""}
+        
         </div>
         <button class="spec-btn" onclick="goDetail('${id}')">⚙️ Xem chi tiết</button>
         <button class="cart-btn" onclick="addToCart('${id}')">🛒 Thêm vào giỏ</button>
