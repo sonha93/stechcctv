@@ -10,7 +10,6 @@ function getCart(uid){
 function saveCart(uid, cart){
   localStorage.setItem(`cart_user_${uid}`, JSON.stringify(cart));
 }
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 /* =========================
    GET PRODUCTS (an toàn)
@@ -81,7 +80,7 @@ function renderCart() {
 ========================= */
 function removeItem(index) {
   cart.splice(index, 1);
-  localStorage.setItem("cart", JSON.stringify(cart));
+ 
   renderCart();
 }
 
@@ -116,8 +115,7 @@ function renderCartAction() {
 ========================= */
 function addToCart(product){
 
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
+  
   let index = cart.findIndex(item => item.id === product.id);
 
   if(index !== -1){
@@ -129,8 +127,7 @@ function addToCart(product){
     });
   }
 
-  localStorage.setItem("cart", JSON.stringify(cart));
-}
+  
 
 /* =========================
    INIT
