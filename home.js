@@ -109,10 +109,9 @@ function render(list){
   list = fixData(list);
 
   /* chỉ camera trong nhà */
-  list = list.filter(
-    p => p.category === "home"
-  );
-
+list = list.filter(
+  p => p.featured === true
+);
   box.innerHTML = "";
 
   if(list.length === 0){
@@ -298,10 +297,10 @@ if(search){
       const key =
       e.target.value.toLowerCase();
 
-      let data =
-      allProducts.filter(
-        p => p.category === "home"
-      );
+let data =
+allProducts.filter(
+  p => p.featured === true
+);
 
       render(
 
