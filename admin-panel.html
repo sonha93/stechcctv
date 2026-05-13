@@ -421,13 +421,11 @@ btnAdd.addEventListener("click", async function(){
       collection(db,"products"),
       productData
     );
+alert("✔ Thêm sản phẩm thành công");
 
-    alert("✔ Thêm sản phẩm thành công");
+await loadProducts();
 
-  
-      await loadProducts();
-
-
+}
 
 
   /* =========================
@@ -486,7 +484,7 @@ btnAdd.addEventListener("click", async function(){
 
     }
 
-    catch(err){
+     catch(err){
 
       console.log(err);
 
@@ -497,7 +495,6 @@ btnAdd.addEventListener("click", async function(){
   }
 
 });
-
 /* =========================
    RENDER PRODUCTS MỚI
 ========================= */
@@ -542,18 +539,35 @@ function render() {
   `).join("");
 
   // Gắn sự kiện Cập nhật
-  document.querySelectorAll('.updateBtn').forEach(btn => {
-    btn.addEventListener('click', async e => {
-      const item = e.target.closest('.item');
-      const id = item.dataset.id;
-      const newPrice = Number(item.querySelector('.priceInput').value.replace(/\D/g,''));
-      const oldPrice = Number(item.querySelector('.oldPriceInput').value.replace(/\D/g,'') || 0);
-      if(!newPrice) return alert("Giá không hợp lệ");
-      await updateDoc(doc(db,"products",id), { price: newPrice, oldPrice: oldPrice });
-      alert("Cập nhật thành công");
-      loadProducts();
+ document.querySelectorAll('.updateBtn').forEach(btn => {
+  btn.addEventListener('click', async e => {
+
+    const item = e.target.closest('.item');
+    const id = item.dataset.id;
+
+    const newPrice = Number(
+      item.querySelector('.priceInput').value.replace(/\D/g,'')
+    );
+
+    const oldPrice = Number(
+      item.querySelector('.oldPriceInput').value.replace(/\D/g,'') || 0
+    );
+
+    if(!newPrice){
+      return alert("Giá không hợp lệ");
+    }
+
+    await updateDoc(doc(db,"products",id), {
+      price:newPrice,
+      oldPrice:oldPrice
     });
+
+    alert("Cập nhật thành công");
+
+    loadProducts();
+
   });
+});
 
   // Gắn sự kiện Xóa
   document.querySelectorAll('.deleteBtn').forEach(btn => {
@@ -577,7 +591,7 @@ categoryEl.dispatchEvent(
   new Event("change")
 );
 
-});
+}); // đóng window load
 
 </script>
 
