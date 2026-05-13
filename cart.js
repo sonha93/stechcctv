@@ -1,7 +1,7 @@
 // ======================= Cart.js duy nhất =======================
 
-const auth = firebase.auth();
-const db = firebase.database();
+var auth = firebase.auth();
+var db = firebase.database();
 
 let currentUser = null;
 let cart = [];
