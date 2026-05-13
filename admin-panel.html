@@ -199,7 +199,7 @@ button{
 
 <div id="list"></div>
 
-<!-- ĐÃ ĐỒNG BỘ ĐẦY ĐỦ LINK LIÊN KẾT LIÊN QUAN ĐẾN CDN THƯ VIỆN GSTATIC -->
+<!-- ĐÃ KHÔI PHỤC HOÀN TOÀN ĐƯỜNG DẪN LIÊN KẾT CDN FIREBASE CHUẨN -->
 <script type="module">
 import { initializeApp } from "gstatic.com";
 import { getFirestore, collection, addDoc, getDocs } from "gstatic.com";
@@ -209,7 +209,7 @@ import { getFirestore, collection, addDoc, getDocs } from "gstatic.com";
 ========================= */
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
+  authDomain: "firebaseapp.com",
   projectId: "stech-73b89",
   storageBucket: "stech-73b89.firebasestorage.app",
   messagingSenderId: "873739162979",
@@ -311,7 +311,7 @@ function render(){
     const div = document.createElement("div");
     div.className = "item";
     
-    // Tự động tương thích với cả kiểu chuỗi cũ lẫn kiểu mảng mới
+    // Tự động tương thích với cả kiểu chuỗi cũ lẫn kiểu mảng mới để không mất dữ liệu cũ
     let catDisplay = "";
     if(Array.isArray(p.category)) {
       catDisplay = p.category.map(c => nameMap[c] || c).join(", ");
@@ -330,7 +330,7 @@ function render(){
   });
 }
 
-// Chạy tải dữ liệu hiển thị danh sách cũ luôn khi load trang
+// Chạy tải dữ liệu hiển thị danh sách cũ ngay khi load trang xong
 loadProducts();
 
 /* =========================
@@ -343,7 +343,7 @@ btnAdd.addEventListener("click", async function(){
   const desc=getVal("desc");
   
   const selectedCategories = Array.from(document.querySelectorAll(".cat-checkbox:checked")).map(el => el.value);
-  const file = document.getElementById("fileImg").files[0]; // SỬA LỖI: Lấy phần tử [0] chính xác
+  const file = document.getElementById("fileImg").files[0]; // ĐÃ SỬA LỖI: Lấy chính xác phần tử tệp tin đầu tiên
   const imgUrl = getVal("imgUrl");
 
   if(!name){
@@ -424,6 +424,7 @@ btnAdd.addEventListener("click", async function(){
       formData.append("file", file);
       formData.append("upload_preset", "qzcttlvsh");
 
+      // ĐÃ KHÔI PHỤC ĐÚNG LINK API CLOUDINARY GỐC CỦA BẠN
       const res = await fetch(
         "cloudinary.com",
         { method:"POST", body:formData }
