@@ -192,14 +192,17 @@ h2{
     margin-bottom:20px;
 }
 
+
 /* Avatar */
-.avatar-container{
-    width:130px;
-    height:130px;
-    margin:0 auto 15px;
-    border:3px solid #4CAF50;
-    border-radius:50%;
-    overflow:hidden;
+.avatar-container {
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 15px;
+    border: 3px solid #4CAF50;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+   position:relative;
 }
 
 .avatar-container img{
@@ -208,7 +211,24 @@ h2{
     object-fit:cover;
     border-radius:50%;
 }
-
+.camera-btn{
+    position:absolute;
+    bottom:5px;
+    right:5px;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:#00acc1;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    cursor:pointer;
+    border:2px solid #fff;
+   z-index:5;
+    box-shadow:0 2px 6px rgba(0,0,0,.25);
+}
 /* Inputs */
 .info-fields label{
     font-weight:bold;
@@ -317,11 +337,12 @@ button:hover{
         height:36px;
         font-size:18px;
     }
-   #logoutArrow{
-    font-size: 22px !important;
-    font-weight: bold;
-}
-}
+
+    #logoutArrow{
+        font-size:22px !important;
+        font-weight:bold;
+    }
+
     .logo{
         width:36px;
         height:36px;
@@ -358,8 +379,18 @@ button:hover{
 
     .actions{
         flex-direction:column;
+
+      .camera-btn{
+    width:32px;
+    height:32px;
+    font-size:16px;
+    bottom:4px;
+    right:4px;
+} 
     }
 }
+
+
 </style>
 </head>
 <body>
@@ -383,8 +414,18 @@ button:hover{
 <div class="container">
 <h2>Thông tin cá nhân</h2>
 <div class="avatar-container">
-<img id="avatarImg" src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="avatar">
+
+    <img id="avatarImg"
+    src="https://i.ibb.co/Z1kv9nJj/logo.png"
+    alt="avatar">
+
+    <div class="camera-btn" id="avatarBox">
+        📷
+    </div>
+
 </div>
+
+<input type="file" id="avatarUpload" accept="image/*" hidden>
 
 <div class="info-fields">
 <p>Email: <b id="userEmail"></b></p>
@@ -457,10 +498,62 @@ const ordersContainer = document.getElementById("ordersContainer");
 const ordersList = document.getElementById("ordersList");
 const orderHistoryBtn = document.getElementById("orderHistoryBtn");
 const avatarImg = document.getElementById("avatarImg");
+const avatarUpload = document.getElementById("avatarUpload");
+const avatarBox = document.getElementById("avatarBox");
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
-
+const messageEl = document.getElementById("message");
+const errorEl = document.getElementById("error");
 function toggleMenu(){ sidebar.classList.toggle("active"); overlay.classList.toggle("active"); }
+/* bấm avatar để chọn ảnh */
+avatarBox.addEventListener("click", () => {
+    avatarUpload.click();
+});
+
+/* upload ảnh */
+avatarUpload.addEventListener("change", async (e) => {
+
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("upload_preset", "stech_upload");
+
+    try {
+
+        const res = await fetch(
+            "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        const data = await res.json();
+
+        if (data.secure_url) {
+
+            /* hiện avatar mới */
+            avatarImg.src = data.secure_url;
+
+            /* lưu firebase */
+            await db.ref("users/" + currentUser.uid).update({
+                avatar: data.secure_url
+            });
+
+            alert("Upload avatar thành công!");
+        }
+
+    } catch (err) {
+
+        console.error(err);
+        alert("Upload thất bại!");
+
+    }
+
+});
 function showMsg(el,text,color){ el.innerText=text; el.style.color=color; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000); }
 
 let currentUser = null;
