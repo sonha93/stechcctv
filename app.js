@@ -175,7 +175,7 @@ function render(list) {
 
         <button
           class="cart-btn"
-          onclick="addToCart('${id}')"
+         onclick='addToCart(${JSON.stringify(p)})'
         >
           🛒 Thêm vào giỏ
         </button>
@@ -189,17 +189,41 @@ function render(list) {
 /* =========================
    ADD TO CART
 ========================= */
-window.addToCart = function(id){
-  const product = normalizeList(getProducts()).find(p => String(p.id) === String(id));
-  if(!product) return;
+/* =========================
+   ADD TO CART
+========================= */
+window.addToCart = function(product){
 
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const exist = cart.find(item => String(item.id) === String(id));
+  let cart =
+    JSON.parse(localStorage.getItem("cart")) || [];
 
-  if(exist) exist.qty += 1;
-  else cart.push({ id: product.id, name: product.name, price: product.price, oldPrice: product.oldPrice, img: product.img, qty: 1 });
+  const exist =
+    cart.find(item =>
+      String(item.id) === String(product.id)
+    );
 
-  localStorage.setItem("cart", JSON.stringify(cart));
+  if(exist){
+
+    exist.qty = (exist.qty || 1) + 1;
+
+  } else {
+
+    cart.push({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      oldPrice: product.oldPrice,
+      img: product.img,
+      qty: 1
+    });
+
+  }
+
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
+
   alert("Đã thêm vào giỏ 🛒");
 };
 
@@ -273,3 +297,5 @@ if(slider){
     if(slider.scrollLeft >= slider.scrollWidth - slider.clientWidth) slider.scrollLeft = 0;
   },20);
 }
+
+
