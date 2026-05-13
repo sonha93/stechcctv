@@ -8,6 +8,8 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const auth = getAuth();
 const db = getFirestore();
 
+let currentUserUID = null;
+
 document.addEventListener("DOMContentLoaded", () => {
   const loginLink = document.getElementById("loginLink");
   const logoutLink = document.getElementById("logoutLink");
@@ -40,29 +42,33 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    createUserWithEmailAndPassword(auth, email, pass)
-      .then(userCredential => {
-        const user = userCredential.user;
-        const uid = user.uid;
+createUserWithEmailAndPassword(auth, email, pass)
+  .then(async (userCredential) => {
 
-        // Lưu user vào Firestore
-        setDoc(doc(db, "users", uid), {
-          email,
-          createdAt: new Date()
-        });
+    const user = userCredential.user;
+    const uid = user.uid;
 
-        currentUserUID = uid; // set UID cho multi-user cart
-        if(profileUID) profileUID.textContent = uid;
-        
-        authMessage.style.color = "green";
-        authMessage.innerText = "Đăng ký thành công! 🎉";
-        authEmail.value = "";
-        authPassword.value = "";
-        authModal.style.display = "none";
+    // lưu firestore
+    await setDoc(doc(db, "users", uid), {
+      email,
+      createdAt: new Date()
+    });
 
-        // load cart cho user này
-        if(typeof renderCart === "function") renderCart();
-      })
+    currentUserUID = uid;
+
+    if(profileUID) profileUID.textContent = uid;
+
+    authMessage.style.color = "green";
+    authMessage.innerText = "Đăng ký thành công! 🎉";
+
+    authEmail.value = "";
+    authPassword.value = "";
+    authModal.style.display = "none";
+
+    // chuyển trang
+    window.location.href = "pages/profile.html";
+
+  })
       .catch(err => {
         authMessage.style.color = "red";
         if(err.code === "auth/email-already-in-use"){
@@ -74,9 +80,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Đăng nhập
+    // Đăng nhập
   authLoginBtn?.addEventListener("click", () => {
+
     const email = authEmail.value.trim();
     const pass = authPassword.value.trim();
+
     if(!email || !pass){
       authMessage.style.color = "red";
       authMessage.innerText = "Vui lòng nhập email và mật khẩu!";
@@ -84,27 +93,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     signInWithEmailAndPassword(auth, email, pass)
-      .then(userCredential => {
+
+      .then((userCredential) => {
+
         const user = userCredential.user;
-        currentUserUID = user.uid; // set UID cho multi-user cart
+
+        currentUserUID = user.uid;
 
         authMessage.style.color = "green";
         authMessage.innerText = "Đăng nhập thành công! 🎉";
-        authModal.style.display = "none";
-        window.location.href = "profile.html";
-        loginLink.style.display = "none";
-        logoutLink.style.display = "block";
-        if(products) products.style.display = "grid";
-        if(profileUID) profileUID.textContent = user.uid;
 
-        if(typeof renderCart === "function") renderCart(); // load cart user
+        authModal.style.display = "none";
+
+        // chuyển trang
+        window.location.href = "pages/profile.html";
+
       })
-      .catch(err => {
+
+      .catch((err) => {
+
         authMessage.style.color = "red";
         authMessage.innerText = err.message;
-      });
-  });
 
+      });
+
+  });
   // Đăng xuất
   logoutLink?.addEventListener("click", () => {
     signOut(auth).then(() => {
