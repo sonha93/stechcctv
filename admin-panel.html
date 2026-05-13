@@ -424,15 +424,11 @@ btnAdd.addEventListener("click", async function(){
 
     alert("✔ Thêm sản phẩm thành công");
 
-    loadProducts();
+  
+      await loadProducts();
 
 
 
-
-// 🔹 reload sản phẩm và render trang chủ Featured ngay
-await fetchProducts();  // reload allProducts từ Firestore
-render();               // render lại trang hiện tại
-  }
 
   /* =========================
      LINK CLOUDINARY
