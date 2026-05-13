@@ -123,13 +123,25 @@ function checkout() {
 
 // ======================= ADD TO CART =======================
 function addToCart(product) {
-  if (!currentUser) return alert("Bạn cần đăng nhập!");
+
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("Bạn cần đăng nhập!");
+    return;
+  }
+
+  currentUser = user;
 
   const index = cart.findIndex(i => i.id === product.id);
+
   if (index !== -1) {
     cart[index].qty = (cart[index].qty || 1) + 1;
   } else {
-    cart.push({ ...product, qty: 1 });
+    cart.push({
+      ...product,
+      qty: 1
+    });
   }
 
   saveCart();
