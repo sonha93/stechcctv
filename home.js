@@ -1,38 +1,42 @@
+/* =========================
+   🛠 GET PRODUCTS
+========================= */
 function getProducts() {
   return JSON.parse(localStorage.getItem("products")) || [];
 }
 
 /* =========================
-   🖥 RENDER HOME (CLEAN - NO TIME SALE)
+   🖥 RENDER HOME (ALL PRODUCTS)
 ========================= */
 function renderHome() {
   const box = document.getElementById("products");
   if (!box) return;
 
   const products = getProducts();
-  const featured = products.filter(p => p.featured === true);
+
+  console.log("Products loaded:", products);
 
   box.innerHTML = "";
 
-  if (featured.length === 0) {
-    box.innerHTML = "<p>Chưa có sản phẩm nổi bật</p>";
+  if (!products || products.length === 0) {
+    box.innerHTML = "<p>Chưa có sản phẩm nào</p>";
     return;
   }
 
-  featured.forEach(p => {
-
+  // Dùng map để render tất cả sản phẩm
+  box.innerHTML = products.map(p => {
     const id = String(p.id);
 
-    // ✅ CHỈ ĐỔI: dùng text thay vì badge ngoài
+    // Tính % giảm giá nếu có
     let percentText = "";
     if (p.oldPrice && p.oldPrice > p.price) {
       const percent = Math.round((1 - p.price / p.oldPrice) * 100);
       percentText = `-${percent}%`;
     }
 
-    let imgUrl = p.img || "https://via.placeholder.com/300";
+    const imgUrl = p.img || "https://via.placeholder.com/300";
 
-    box.innerHTML += `
+    return `
       <div class="item">
 
         <img 
@@ -43,21 +47,10 @@ function renderHome() {
 
         <h4>${p.name}</h4>
 
-        <!-- ✅ CHỈ SỬA ĐÚNG CHỖ NÀY -->
         <div class="price-box">
           <span class="price">${Number(p.price).toLocaleString()}đ</span>
-
-          ${
-            p.oldPrice && p.oldPrice > p.price
-              ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>`
-              : ""
-          }
-
-          ${
-            percentText
-              ? `<span class="discount-text">${percentText}</span>`
-              : ""
-          }
+          ${p.oldPrice && p.oldPrice > p.price ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>` : ""}
+          ${percentText ? `<span class="discount-text">${percentText}</span>` : ""}
         </div>
 
         <button class="spec-btn" onclick="toggleSpec('${id}')">
@@ -74,7 +67,7 @@ function renderHome() {
 
       </div>
     `;
-  });
+  }).join("");
 }
 
 /* =========================
@@ -92,7 +85,6 @@ window.toggleSpec = function(id){
 window.addToCart = function(id){
   const products = getProducts();
   const product = products.find(p => String(p.id) === String(id));
-
   if (!product) return;
 
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -114,16 +106,15 @@ window.addToCart = function(id){
 };
 
 /* =========================
-   🧾 SPEC RENDER (GIỮ NGUYÊN)
+   🧾 RENDER SPEC
 ========================= */
 function renderSpec(p) {
   const s = p.spec || {};
-
   return `
    - Độ phân giải: ${s.doPhanGiai || "—"}<br>
    - Góc nhìn: ${s.gocNhin || "—"}<br>
    - Kết nối: ${s.ketNoi || "—"}<br>
-   - Bảo hành: ${s.baoHanh || ""}<br>
+   - Bảo hành: ${s.baoHanh || "—"}<br>
   `;
 }
 
