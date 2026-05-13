@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       // Redirect ngay
-      window.location.href = "pages/profile.html";
+      window.location.href = "pages/user-profile.html";
     } catch(err) {
       authMessage.style.color = "red";
       authMessage.innerText = (err.code === "auth/email-already-in-use") 
