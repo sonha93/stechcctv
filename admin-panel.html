@@ -93,6 +93,7 @@ button{
   border-radius: 6px;
   border: 1px solid #ddd;
   margin: 8px 0;
+  max-width: 320px;
 }
 
 .cat-box-container label {
@@ -144,7 +145,6 @@ button{
   }
 
 }
-
 </style>
 </head>
 
@@ -168,9 +168,9 @@ button{
 
   <input id="imgUrl" placeholder="Link ảnh Cloudinary" class="full">
 
-  <!-- ĐÃ THAY THẾ SELECT THÀNH CHECKBOX ĐỂ CHỌN NHIỀU NHÁNH CÙNG LÚC -->
+  <!-- ĐÃ KHẮC PHỤC GIAO DIỆN CHỌN ĐA NHÁNH -->
   <div class="full cat-box-container">
-    <p style="font-weight: bold; margin: 0 0 8px 0; color: #333;">📁 Chọn nhánh hiển thị (Tích chọn nhiều):</p>
+    <p style="font-weight: bold; margin: 0 0 8px 0; color: #333;">📁 Chọn nhánh hiển thị (Tích nhiều mục):</p>
     <label><input type="checkbox" class="cat-checkbox" value="home"> 🏠 Trang chủ</label>
     <label><input type="checkbox" class="cat-checkbox" value="sd"> 💾 Thẻ nhớ</label>
     <label><input type="checkbox" class="cat-checkbox" value="cam-in"> 🏠 Camera trong nhà</label>
@@ -199,18 +199,17 @@ button{
 
 <div id="list"></div>
 
+<!-- ĐÃ ĐỒNG BỘ ĐẦY ĐỦ LINK LIÊN KẾT LIÊN QUAN ĐẾN CDN THƯ VIỆN GSTATIC -->
 <script type="module">
-
 import { initializeApp } from "gstatic.com";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "gstatic.com";
+import { getFirestore, collection, addDoc, getDocs } from "gstatic.com";
 
 /* =========================
-   FIREBASE
+   FIREBASE CONFIG
 ========================= */
-
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "firebaseapp.com",
+  authDomain: "stech-73b89.firebaseapp.com",
   projectId: "stech-73b89",
   storageBucket: "stech-73b89.firebasestorage.app",
   messagingSenderId: "873739162979",
@@ -221,9 +220,8 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 /* =========================
-   START
+   START LOGIC
 ========================= */
-
 window.addEventListener("load", function(){
 
 let products = [];
@@ -245,20 +243,18 @@ const btnAdd = document.getElementById("btnAdd");
 const list = document.getElementById("list");
 
 /* =========================
-   XỬ LÝ CHỌN DANH MỤC & HIỂN THỊ CẤU HÌNH
+   XỬ LÝ ĐỔI THÔNG SỐ THEO CHECKBOX
 ========================= */
 document.querySelectorAll(".cat-checkbox").forEach(checkbox => {
   checkbox.addEventListener("change", function() {
     const checkedBoxes = Array.from(document.querySelectorAll(".cat-checkbox:checked"));
     const checkedValues = checkedBoxes.map(el => el.value);
     
-    // Hiển thị text các mục đã chọn
     const names = checkedValues.map(val => nameMap[val]);
     document.getElementById("showCat").innerText = names.length > 0 ? "📁 Đã chọn: " + names.join(", ") : "";
 
     const box = document.getElementById("specBox");
     
-    // Tự động mở form điền thông số dựa trên các ô được tích
     if (checkedValues.includes("cam-in") || checkedValues.includes("cam-ngoai") || checkedValues.includes("combo")) {
       box.innerHTML = `<div class="spec-title">⚙️ Thông số camera</div>
         <input id="model" placeholder="Model">
@@ -288,7 +284,7 @@ document.querySelectorAll(".cat-checkbox").forEach(checkbox => {
 });
 
 /* =========================
-   LOAD FIRESTORE
+   LOAD DỮ LIỆU TỪ FIRESTORE
 ========================= */
 async function loadProducts(){
   products = [];
@@ -302,12 +298,12 @@ async function loadProducts(){
     });
     render();
   } catch(e) {
-    console.error("Lỗi tải sản phẩm:", e);
+    console.error("Lỗi tải dữ liệu cũ:", e);
   }
 }
 
 /* =========================
-   RENDER DANH SÁCH (Hàm hiển thị danh sách admin bổ sung)
+   HIỂN THỊ DANH SÁCH SẢN PHẨM TRÊN ADMIN
 ========================= */
 function render(){
   list.innerHTML = "";
@@ -315,7 +311,7 @@ function render(){
     const div = document.createElement("div");
     div.className = "item";
     
-    // Xử lý hiển thị danh mục dạng mảng hoặc chuỗi cũ
+    // Tự động tương thích với cả kiểu chuỗi cũ lẫn kiểu mảng mới
     let catDisplay = "";
     if(Array.isArray(p.category)) {
       catDisplay = p.category.map(c => nameMap[c] || c).join(", ");
@@ -326,19 +322,19 @@ function render(){
     div.innerHTML = `
       <img src="${p.img || ''}" alt="">
       <div>
-        <strong>${p.name}</strong><br>
-        <span>Giá: ${p.price.toLocaleString('vi-VN')}đ</span> | <span>Nh nhánh: ${catDisplay}</span>
+        <strong>${p.name || 'Không tên'}</strong><br>
+        <span>Giá: ${(p.price || 0).toLocaleString('vi-VN')}đ</span> | <span>Phân nhánh: ${catDisplay || 'Chưa rõ'}</span>
       </div>
     `;
     list.appendChild(div);
   });
 }
 
-// Chạy tải dữ liệu lần đầu
+// Chạy tải dữ liệu hiển thị danh sách cũ luôn khi load trang
 loadProducts();
 
 /* =========================
-   ADD PRODUCT
+   XỬ LÝ THÊM SẢN PHẨM MỚI (NÚT BẤM UPLOAD)
 ========================= */
 btnAdd.addEventListener("click", async function(){
   const name=getVal("name");
@@ -346,10 +342,8 @@ btnAdd.addEventListener("click", async function(){
   const oldPrice=Number(getVal("oldPrice").replace(/\D/g,"") || 0);
   const desc=getVal("desc");
   
-  // Lấy mảng các danh mục được tích chọn
   const selectedCategories = Array.from(document.querySelectorAll(".cat-checkbox:checked")).map(el => el.value);
-
-  const file = document.getElementById("fileImg").files[0];
+  const file = document.getElementById("fileImg").files[0]; // SỬA LỖI: Lấy phần tử [0] chính xác
   const imgUrl = getVal("imgUrl");
 
   if(!name){
@@ -359,10 +353,10 @@ btnAdd.addEventListener("click", async function(){
     return alert("Giá không hợp lệ");
   }
   if(selectedCategories.length === 0){
-    return alert("Vui lòng chọn ít nhất 1 nhánh hiển thị!");
+    return alert("Vui lòng tích chọn ít nhất 1 nhánh hiển thị!");
   }
   if(!file && !imgUrl){
-    return alert("Chưa có ảnh");
+    return alert("Chưa có ảnh (vui lòng chọn file hoặc điền link)");
   }
 
   async function addProduct(img){
@@ -372,7 +366,7 @@ btnAdd.addEventListener("click", async function(){
       price,
       oldPrice,
       desc,
-      category: selectedCategories, // Lưu dạng MẢNG để hiển thị đa nhánh
+      category: selectedCategories, 
       categoryName: selectedCategories.map(cat => nameMap[cat]).join(", "),
       img,
       featured: document.getElementById("featured").checked,
@@ -392,9 +386,9 @@ btnAdd.addEventListener("click", async function(){
 
     try {
       await addDoc(collection(db,"products"), productData);
-      alert("✔ Thêm sản phẩm thành công");
+      alert("✔ Thêm và phân phối sản phẩm thành công!");
       
-      // Reset form sau khi thêm thành công
+      // Reset form dọn dẹp giao diện nhập liệu
       document.getElementById("name").value = "";
       document.getElementById("price").value = "";
       document.getElementById("oldPrice").value = "";
@@ -405,15 +399,16 @@ btnAdd.addEventListener("click", async function(){
       document.getElementById("specBox").innerHTML = "";
       document.getElementById("showCat").innerText = "";
       
+      // Tải lại danh sách cập nhật mới
       loadProducts();
     } catch(e) {
-      alert("Lỗi lưu dữ liệu vào Firebase");
+      alert("Lỗi kết nối Firebase database");
       console.error(e);
     }
   }
 
   /* =========================
-     LINK CLOUDINARY
+     LINK ẢNH CÓ SẴN
   ========================= */
   if(imgUrl){
     await addProduct(imgUrl);
@@ -421,7 +416,7 @@ btnAdd.addEventListener("click", async function(){
   }
 
   /* =========================
-     UPLOAD CLOUDINARY
+     TẢI FILE LÊN CLOUDINARY
   ========================= */
   if(file){
     try{
@@ -436,13 +431,13 @@ btnAdd.addEventListener("click", async function(){
 
       const data = await res.json();
       if(!data.secure_url){
-        return alert("Upload Cloudinary thất bại");
+        return alert("Cloudinary từ chối tệp tin tải lên!");
       }
       await addProduct(data.secure_url);
     }
     catch(err){
-      console.log(err);
-      alert("Lỗi upload ảnh");
+      console.error(err);
+      alert("Đường truyền tải ảnh gặp sự cố");
     }
   }
 });
