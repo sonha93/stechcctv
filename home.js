@@ -1,135 +1,360 @@
-function getProducts() {
-  return JSON.parse(localStorage.getItem("products")) || [];
+
+/* =========================
+   FIREBASE
+========================= */
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+
+  authDomain: "stech-73b89.firebaseapp.com",
+
+  projectId: "stech-73b89",
+
+  storageBucket: "stech-73b89.firebasestorage.app",
+
+  messagingSenderId: "873739162979",
+
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+/* =========================
+   CAMERA TRONG NHÀ
+========================= */
+
+let allProducts = [];
+
+/* =========================
+   GET PRODUCTS
+========================= */
+
+async function getProducts(){
+
+  try{
+
+    const querySnapshot =
+    await getDocs(
+      collection(db,"products")
+    );
+
+    let arr = [];
+
+    querySnapshot.forEach(doc => {
+
+      arr.push({
+
+        id:doc.id,
+        ...doc.data()
+
+      });
+
+    });
+
+    return arr;
+
+  }
+
+  catch(err){
+
+    console.log(err);
+
+    return [];
+
+  }
+
 }
 
 /* =========================
-   🖥 RENDER HOME (CLEAN - NO TIME SALE)
+   FIX DATA
 ========================= */
-function renderHome() {
-  const box = document.getElementById("products");
-  if (!box) return;
 
-  const products = getProducts();
-  const featured = products.filter(p => p.featured === true);
+function fixData(list){
+
+  return list.map(p => ({
+
+    ...p,
+
+    price:Number(p.price) || 0,
+
+    oldPrice:Number(p.oldPrice) || 0
+
+  }));
+
+}
+
+/* =========================
+   RENDER
+========================= */
+
+function render(list){
+
+  const box =
+    document.getElementById("products");
+
+  if(!box) return;
+
+  list = fixData(list);
+
+  /* chỉ camera trong nhà */
+  list = list.filter(
+    p => p.category === "home"
+  );
 
   box.innerHTML = "";
 
-  if (featured.length === 0) {
-    box.innerHTML = "<p>Chưa có sản phẩm nổi bật</p>";
+  if(list.length === 0){
+
+    box.innerHTML =
+      "<p>Chưa có sản phẩm</p>";
+
     return;
+
   }
 
-  featured.forEach(p => {
+  list.forEach(p => {
 
-    const id = String(p.id);
+    const id =
+      String(p.id);
 
-    // ✅ CHỈ ĐỔI: dùng text thay vì badge ngoài
-    let percentText = "";
-    if (p.oldPrice && p.oldPrice > p.price) {
-      const percent = Math.round((1 - p.price / p.oldPrice) * 100);
-      percentText = `-${percent}%`;
-    }
+    const price =
+      Number(p.price) || 0;
 
-    let imgUrl = p.img || "https://via.placeholder.com/300";
+    const oldPrice =
+      Number(p.oldPrice) || 0;
+
+    const hasDiscount =
+      oldPrice > price;
+
+    const percent =
+      hasDiscount
+      ? Math.round(
+          (1 - price / oldPrice) * 100
+        )
+      : 0;
 
     box.innerHTML += `
-      <div class="item">
+    <div class="item">
 
-        <img 
-          src="${imgUrl}" 
-          onclick="openZoom('${imgUrl}')"
-          onerror="this.src='https://via.placeholder.com/300'"
+      ${
+  percent
+  ? `
+    <div class="discount-badge">
+      -${percent}%
+    </div>
+  `
+  : ""
+}
+
+        <div class="img-box">
+
+          <img
+            src="${p.img || ''}"
+            alt="${p.name || ''}"
+            onclick="goDetail('${id}')"
+            style="cursor:pointer;"
+          >
+
+        </div>
+
+        <h4>
+          ${p.name || "Không tên"}
+        </h4>
+
+        <div class="price-box">
+
+          <span class="price">
+            ${price.toLocaleString()}đ
+          </span>
+
+          ${
+            hasDiscount
+
+            ? `
+
+            <span class="old-price">
+              ${oldPrice.toLocaleString()}đ
+            </span>
+
+            `
+
+            : ""
+
+          }
+
+        </div>
+
+               <button
+          class="spec-btn"
+          onclick="goDetail('${id}')"
         >
 
-        <h4>${p.name}</h4>
-
-        <!-- ✅ CHỈ SỬA ĐÚNG CHỖ NÀY -->
-        <div class="price-box">
-          <span class="price">${Number(p.price).toLocaleString()}đ</span>
-
-          ${
-            p.oldPrice && p.oldPrice > p.price
-              ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>`
-              : ""
-          }
-
-          ${
-            percentText
-              ? `<span class="discount-text">${percentText}</span>`
-              : ""
-          }
-        </div>
-
-        <button class="spec-btn" onclick="toggleSpec('${id}')">
           ⚙️ Xem thông số
+
         </button>
 
-        <button class="cart-btn" onclick="addToCart('${id}')">
-          🛒 Mua ngay
-        </button>
+        <button
+          class="cart-btn"
+          onclick="addToCart('${id}')"
+        >
 
-        <div class="spec-box" id="spec-${id}" style="display:none;">
-          ${renderSpec(p)}
-        </div>
+          🛒 Thêm vào giỏ
+
+        </button>
 
       </div>
+
     `;
+
   });
+
 }
 
 /* =========================
-   ⚙️ TOGGLE SPEC
+   DETAIL
 ========================= */
-window.toggleSpec = function(id){
-  const el = document.getElementById("spec-" + id);
-  if (!el) return;
-  el.style.display = (el.style.display === "block") ? "none" : "block";
+
+window.goDetail = function(id){
+
+  window.location.href =
+    `logo.html?id=${id}`;
+
 };
 
 /* =========================
-   🛒 ADD TO CART
+   CART
 ========================= */
+
 window.addToCart = function(id){
-  const products = getProducts();
-  const product = products.find(p => String(p.id) === String(id));
 
-  if (!product) return;
+  const product =
+    allProducts.find(
+      p => String(p.id) === String(id)
+    );
 
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  if(!product) return;
 
-  const exist = cart.find(item => String(item.id) === String(id));
+  let cart =
+    JSON.parse(
+      localStorage.getItem("cart")
+    ) || [];
 
-  if (exist) {
-    exist.quantity = (exist.quantity || 1) + 1;
-  } else {
-    cart.push({
-      ...product,
-      quantity: 1
-    });
+  const exist =
+    cart.find(
+      i => String(i.id) === String(id)
+    );
+
+  if(exist){
+
+    exist.qty += 1;
+
   }
 
-  localStorage.setItem("cart", JSON.stringify(cart));
+  else{
+
+    cart.push({
+
+      ...product,
+
+      qty:1
+
+    });
+
+  }
+
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
 
   alert("Đã thêm vào giỏ 🛒");
+
 };
 
 /* =========================
-   🧾 SPEC RENDER (GIỮ NGUYÊN)
+   SEARCH
 ========================= */
-function renderSpec(p) {
-  const s = p.spec || {};
 
-  return `
-   - Độ phân giải: ${s.doPhanGiai || "—"}<br>
-   - Góc nhìn: ${s.gocNhin || "—"}<br>
-   - Kết nối: ${s.ketNoi || "—"}<br>
-   - Bảo hành: ${s.baoHanh || ""}<br>
-  `;
+const search =
+document.getElementById("search");
+
+if(search){
+
+  search.addEventListener(
+    "input",
+    e => {
+
+      const key =
+      e.target.value.toLowerCase();
+
+      let data =
+      allProducts.filter(
+        p => p.category === "home"
+      );
+
+      render(
+
+        data.filter(
+          p =>
+            p.name &&
+            p.name
+            .toLowerCase()
+            .includes(key)
+        )
+
+      );
+
+    }
+  );
+
 }
 
 /* =========================
-   🚀 INIT
+   MENU
 ========================= */
-document.addEventListener("DOMContentLoaded", () => {
-  renderHome();
-});
+
+window.toggleMenu = function(){
+
+  const sidebar =
+  document.getElementById("sidebar");
+
+  const overlay =
+  document.getElementById("overlay");
+
+  if(!sidebar || !overlay)
+  return;
+
+  sidebar.classList.toggle("active");
+
+  overlay.classList.toggle("active");
+
+};
+
+/* =========================
+   INIT
+========================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async () => {
+
+    allProducts =
+    await getProducts();
+
+    render(allProducts);
+
+  });
