@@ -34,7 +34,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 /* =========================
-   CAMERA TRONG NHÀ
+   CAMERA HOME
 ========================= */
 
 let allProducts = [];
@@ -110,7 +110,7 @@ function render(list){
 
   list = fixData(list);
 
-  /* chỉ camera trong nhà */
+  /* chỉ camera home */
   list = list.filter(
     p => p.category === "home"
   );
