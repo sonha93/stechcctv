@@ -1,53 +1,46 @@
 // =========================
-// CART.JS CHUẨN - STECH
+// FIREBASE INIT
 // =========================
+const firebaseConfig = {
+  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain:"stech-73b89.firebaseapp.com",
+  databaseURL:"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"stech-73b89",
+  storageBucket:"stech-73b89.appspot.com",
+  messagingSenderId:"873739162979",
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56",
+  measurementId:"G-98Q3927PHZ"
+};
+firebase.initializeApp(firebaseConfig);
 
-// UID user hiện tại
-let currentUserUID = null;
+// =========================
+// GLOBAL
+// =========================
+let currentUserUID = null; 
 let cart = [];
 
 // =========================
-// Firebase Auth - Lắng nghe login/logout
-// =========================
-firebase.auth().onAuthStateChanged(user => {
-  if(user){
-    currentUserUID = user.uid;
-    console.log("User đang đăng nhập:", currentUserUID);
-    cart = getCart(currentUserUID); // load cart của user
-    renderCart();
-  } else {
-    console.log("User đã logout");
-    currentUserUID = null;
-    cart = [];
-    renderCart();
-  }
-});
-
-// =========================
-// Lấy cart theo UID
+// GET / SAVE CART theo UID
 // =========================
 function getCart(uid){
   return JSON.parse(localStorage.getItem(`cart_user_${uid}`)) || [];
 }
 
-// =========================
-// Lưu cart theo UID
-// =========================
 function saveCart(uid, cart){
   localStorage.setItem(`cart_user_${uid}`, JSON.stringify(cart));
 }
 
 // =========================
-// Lấy products
+// GET PRODUCTS
 // =========================
 function getProducts(){
   return JSON.parse(localStorage.getItem("products")) || [];
 }
 
 // =========================
-// Render cart
+// RENDER CART
 // =========================
-function renderCart(){
+function renderCart() {
   const box = document.getElementById("cartList");
   const totalBox = document.getElementById("total");
   const actionBox = document.getElementById("cartAction");
@@ -64,25 +57,23 @@ function renderCart(){
   if(cart.length === 0){
     box.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
     totalBox.innerHTML = "";
-    actionBox.innerHTML = `<a href="index.html"><button class="checkout">🛍️ Quay lại mua hàng</button></a>`;
+    renderCartAction();
     return;
   }
 
   let total = 0;
   const products = getProducts();
 
-  box.innerHTML = "";
-
-  cart.forEach((item, index) => {
+  box.innerHTML = cart.map((item,index) => {
     const p = products.find(x => String(x.id) === String(item.id));
-    if(!p) return;
+    if(!p) return "";
 
-    const qty = item.quantity || 1;
     const price = Number(p.price) || 0;
+    const qty = item.quantity || 1;
     const itemTotal = price * qty;
     total += itemTotal;
 
-    box.innerHTML += `
+    return `
       <div class="item">
         <img src="${p.img || ''}">
         <div class="info">
@@ -91,76 +82,64 @@ function renderCart(){
             ${price.toLocaleString()}đ × ${qty} = 
             <b style="color:#e53935">${itemTotal.toLocaleString()}đ</b>
           </div>
-          <div class="qty">
-            <button onclick="changeQty(${index},-1)">-</button>
-            <span>${qty}</span>
-            <button onclick="changeQty(${index},1)">+</button>
-          </div>
         </div>
         <button class="remove" onclick="removeItem(${index})">Xoá</button>
       </div>
     `;
-  });
+  }).join("");
 
   totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
-  actionBox.innerHTML = `<a href="checkout.html"><button class="checkout">💳 Thanh toán</button></a>`;
+  renderCartAction();
 }
 
 // =========================
-// Change quantity
+// CART ACTION
 // =========================
-function changeQty(index, delta){
-  if(!currentUserUID) return;
-  cart = getCart(currentUserUID);
-  cart[index].quantity = (cart[index].quantity || 1) + delta;
-  if(cart[index].quantity < 1) cart[index].quantity = 1;
-  saveCart(currentUserUID, cart);
-  renderCart();
+function renderCartAction(){
+  const actionBox = document.getElementById("cartAction");
+  if(!actionBox) return;
+
+  if(cart.length > 0){
+    actionBox.innerHTML = `<a href="checkout.html"><button class="checkout">💳 Thanh toán</button></a>`;
+  } else {
+    actionBox.innerHTML = `<div class="empty-box">
+      <a href="index.html"><button class="checkout" style="background:#2196f3">🛍️ Quay lại mua hàng</button></a>
+    </div>`;
+  }
 }
 
 // =========================
-// Remove item
+// REMOVE ITEM
 // =========================
 function removeItem(index){
   if(!currentUserUID) return;
-  cart = getCart(currentUserUID);
-  cart.splice(index, 1);
-  saveCart(currentUserUID, cart);
+  cart.splice(index,1);
+  saveCart(currentUserUID,cart);
   renderCart();
 }
 
 // =========================
-// Add to cart (global)
+// ADD TO CART (global)
 // =========================
 window.addToCart = function(product){
   if(!currentUserUID) return alert("Vui lòng đăng nhập trước");
 
   cart = getCart(currentUserUID);
-
-  const index = cart.findIndex(item => item.id === product.id);
-  if(index !== -1){
-    cart[index].quantity = (cart[index].quantity || 1) + 1;
+  const idx = cart.findIndex(i => i.id === product.id);
+  if(idx !== -1){
+    cart[idx].quantity = (cart[idx].quantity||1) + 1;
   } else {
-    cart.push({id: product.id, quantity:1});
+    cart.push({id:product.id, quantity:1});
   }
-
   saveCart(currentUserUID, cart);
   renderCart();
 }
 
 // =========================
-// Search cart
+// FIREBASE AUTH STATE
 // =========================
-document.getElementById("searchInput")?.addEventListener("input", function(){
-  const key = this.value.toLowerCase();
-  renderCart(cart.filter(item => {
-    const products = getProducts();
-    const p = products.find(x => String(x.id) === String(item.id));
-    return p && p.name.toLowerCase().includes(key);
-  }));
+firebase.auth().onAuthStateChanged(user=>{
+  currentUserUID = user ? user.uid : null;
+  cart = currentUserUID ? getCart(currentUserUID) : [];
+  renderCart(); // render ngay sau khi có UID
 });
-
-// =========================
-// Init
-// =========================
-renderCart();
