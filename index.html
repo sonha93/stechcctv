@@ -216,10 +216,11 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="firebase-init.js"></script>
+  <script type="module" src="user.js"></script>
+ <script type="module"src="app.js"></script>
 <script src="notify.js"></script>
 <script src="banner.js"></script>
-<script type="module" src="home.js"></script>
-<script type="module"
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -255,7 +256,7 @@ const userNamePreview = document.getElementById("sidebarUserNamePreview");
 loginLink.addEventListener("click", e=>{
   e.preventDefault();
   authModal.style.display="flex";
-}
+});
 
 // Đóng popup
 closeAuth.addEventListener("click", ()=> authModal.style.display="none");
@@ -348,7 +349,6 @@ function toggleMenu(){
   document.getElementById("overlay").classList.toggle("active"); 
 }
 </script>
-
- 
+<script src="addToCart.js"></script>
 </body>
 </html>
