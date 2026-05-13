@@ -338,7 +338,26 @@ async function loadProducts(){
   render();
 
 }
+async function fetchProducts(){
 
+  products = [];
+
+  const querySnapshot =
+  await getDocs(collection(db,"products"));
+
+  querySnapshot.forEach(doc => {
+
+    products.push({
+
+      docId:doc.id,
+
+      ...doc.data()
+
+    });
+
+  });
+
+}
 /* =========================
    ADD PRODUCT
 ========================= */
