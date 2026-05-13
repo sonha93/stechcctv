@@ -91,6 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
         authMessage.style.color = "green";
         authMessage.innerText = "Đăng nhập thành công! 🎉";
         authModal.style.display = "none";
+        window.location.href = "profile.html";
         loginLink.style.display = "none";
         logoutLink.style.display = "block";
         if(products) products.style.display = "grid";
