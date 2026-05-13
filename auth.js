@@ -79,7 +79,7 @@ createUserWithEmailAndPassword(auth, email, pass)
       });
   });
 
-  // Đăng nhập
+
     // Đăng nhập
   authLoginBtn?.addEventListener("click", () => {
 
