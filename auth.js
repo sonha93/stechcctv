@@ -77,7 +77,7 @@ const userNamePreview = document.getElementById("sidebarUserNamePreview");
       currentUserUID = user.uid;
 
       // Redirect ngay
-   window.location.href = "profile.html";
+  authModal.style.display = "none";
     } catch(err) {
       authMessage.style.color = "red";
       authMessage.innerText = err.message;
