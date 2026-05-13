@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -7,6 +6,7 @@
 <title>Giỏ hàng</title>
 <link rel="stylesheet" href="stylecart.css">
 <style>
+/* CSS bạn có thể giữ nguyên từ file cũ */
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:#f4f7fb;}
 #overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;z-index:998;}
@@ -35,24 +35,6 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
 .empty{text-align:center;margin-top:40px;}
 </style>
 </head>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-    authDomain:"stech-73b89.firebaseapp.com",
-    databaseURL:"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId:"stech-73b89",
-    storageBucket:"stech-73b89.appspot.com",
-    messagingSenderId:"873739162979",
-    appId:"1:873739162979:web:978f1a4043f025b1cdaf56",
-    measurementId:"G-98Q3927PHZ"
-  };
-  firebase.initializeApp(firebaseConfig);
-</script>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
 <body>
 
 <div id="overlay" onclick="toggleMenu()"></div>
@@ -83,71 +65,31 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
 
 <script>
 // MENU
-function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
-
-// RENDER
-let cart = JSON.parse(localStorage.getItem("cart"))||[];
-function renderCart(list=null){
-  let arr=list||cart;
-  const box=document.getElementById("cartList");
-  const totalBox=document.getElementById("total");
-  const actionBox=document.getElementById("cartAction");
-  if(arr.length===0){box.innerHTML="<p class='empty'>Giỏ trống</p>";totalBox.innerHTML="";actionBox.innerHTML="";return;}
-  let total=0;
-  box.innerHTML=arr.map((item,i)=>{
-    if(item.checked===undefined)item.checked=true;
-    if(item.checked) total+=item.price*(item.qty||1);
-    return `
-    <div class="item">
-      <input type="checkbox" class="check-item" ${item.checked?"checked":""} onclick="toggleCheck(${i})">
-      <img src="${item.img}">
-      <div class="info">
-        <b>${item.name}</b>
-        <div class="price-row">
-          <span class="price-new">${item.price.toLocaleString()}đ</span>
-          ${item.oldPrice?`<span class="price-old">${item.oldPrice.toLocaleString()}đ</span>`:""}
-          <span>${item.qty||1} × ${item.price.toLocaleString()}đ</span>
-        </div>
-        <div class="qty">
-          <button onclick="changeQty(${i},-1)">-</button>
-          <span>${item.qty||1}</span>
-          <button onclick="changeQty(${i},1)">+</button>
-        </div>
-      </div>
-      <button class="remove" onclick="removeItem(${i})">🗑</button>
-    </div>`;
-  }).join("");
-  totalBox.innerHTML="Tổng: "+total.toLocaleString()+"đ";
-  actionBox.innerHTML=`<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
 }
-
-// TOGGLE CHECK
-function toggleCheck(i){cart[i].checked=!cart[i].checked;localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
-
-// CHANGE QTY
-function changeQty(i,delta){cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1)cart[i].qty=1;localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
-
-// REMOVE
-function removeItem(i){cart.splice(i,1);localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
-
-// SEARCH
-document.getElementById("searchInput").addEventListener("input",function(){
-  const key=this.value.toLowerCase();
-  renderCart(cart.filter(i=>i.name.toLowerCase().includes(key)));
-});
-
-// CHECKOUT
-function checkout(){
-  let checkedItems=cart.filter(i=>i.checked!==false);
-  if(checkedItems.length===0){alert("Chọn ít nhất 1 sản phẩm!");return;}
-  // Gọi checkout.html hoặc Telegram riêng (không hiển thị popup)
-  window.location.href="checkout.html";
-}
-
-// LOAD
-renderCart();
 </script>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+    authDomain:"stech-73b89.firebaseapp.com",
+    databaseURL:"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:"stech-73b89",
+    storageBucket:"stech-73b89.appspot.com",
+    messagingSenderId:"873739162979",
+    appId:"1:873739162979:web:978f1a4043f025b1cdaf56",
+    measurementId:"G-98Q3927PHZ"
+  };
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<!-- Cart JS -->
 <script src="cart.js"></script>
+
 </body>
 </html>
