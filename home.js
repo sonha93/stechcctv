@@ -2,6 +2,9 @@ function renderHome() {
   const box = document.getElementById("products");
   if (!box) return;
 
+  // allProducts phải tồn tại, nếu chưa có thì lấy từ LocalStorage
+  if (!window.allProducts) window.allProducts = JSON.parse(localStorage.getItem("products")) || [];
+
   // Hiển thị tất cả sản phẩm có category "home"
   const productsToShow = allProducts.filter(p => p.category === "home");
 
@@ -14,13 +17,13 @@ function renderHome() {
   }
 
   productsToShow.forEach(p => {
-    const id = String(p.id || p.docId); // fallback
+    const id = String(p.id || p.docId || Date.now()); // fallback id
     let percentText = "";
     if (p.oldPrice && p.oldPrice > p.price) {
       const percent = Math.round((1 - p.price / p.oldPrice) * 100);
       percentText = `-${percent}%`;
     }
-    const imgUrl = p.img;
+    const imgUrl = p.img || "https://via.placeholder.com/300";
 
     box.innerHTML += `
       <div class="item">
@@ -29,15 +32,15 @@ function renderHome() {
           onclick="openZoom('${imgUrl}')"
           onerror="this.src='https://via.placeholder.com/300'"
         >
-        <h4>${p.name}</h4>
+        <h4>${p.name || "Không có tên"}</h4>
         <div class="price-box">
-          <span class="price">${Number(p.price).toLocaleString()}đ</span>
+          <span class="price">${Number(p.price || 0).toLocaleString()}đ</span>
           ${p.oldPrice && p.oldPrice > p.price ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>` : ""}
           ${percentText ? `<span class="discount-text">${percentText}</span>` : ""}
         </div>
         <button class="spec-btn" onclick="toggleSpec('${id}')">⚙️ Xem thông số</button>
         <button class="cart-btn" onclick="addToCart('${id}')">🛒 Mua ngay</button>
-        <div class="spec-box" id="spec-${id}" style="display:none;">${renderSpec(p)}</div>
+        <div class="spec-box" id="spec-${id}" style="display:none;">${renderSpec ? renderSpec(p) : ""}</div>
       </div>
     `;
   });
