@@ -187,21 +187,38 @@ function checkout() {
 
 // ======================= ADD TO CART =======================
 function addToCart(product) {
-   console.log(product);
+
   const user = auth.currentUser;
 
   if (!user) {
-
     alert("Bạn cần đăng nhập!");
-
     return;
   }
 
   currentUser = user;
 
+  // Nếu truyền ID dạng string
+  if (typeof product === "string") {
+
+    const products =
+      JSON.parse(localStorage.getItem("products")) || [];
+
+    product =
+      products.find(p =>
+        String(p.id) === String(product)
+      );
+
+    if (!product) {
+      alert("Không tìm thấy sản phẩm!");
+      return;
+    }
+  }
+
+
   const index =
     cart.findIndex(i => i.id === product.id);
 
+  // Có rồi thì tăng số lượng
   if (index !== -1) {
 
     cart[index].qty =
@@ -209,6 +226,7 @@ function addToCart(product) {
 
   } else {
 
+    // Chưa có thì thêm mới
     cart.push({
       ...product,
       qty: 1
@@ -220,4 +238,6 @@ function addToCart(product) {
   renderCart();
 
   updateBadge();
+
+  alert("✅ Đã thêm vào giỏ hàng!");
 }
