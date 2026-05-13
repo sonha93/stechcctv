@@ -1,110 +1,149 @@
-// cart-functions.js
+let currentUserUID = null; // UID user hiện tại
+let cart = []; // giỏ hàng hiện tại
 
-// Firebase SDK đã include trong HTML
-const firebaseConfig = {
-  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
-  databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "stech-73b89",
-  storageBucket: "stech-73b89.appspot.com",
-  messagingSenderId: "873739162979",
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-};
+// Lấy cart theo UID
+function getCart(uid){
+  return JSON.parse(localStorage.getItem(`cart_user_${uid}`)) || [];
+}
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
+// Lưu cart theo UID
+function saveCart(uid, cart){
+  localStorage.setItem(`cart_user_${uid}`, JSON.stringify(cart));
+}
 
-let currentUser = null;
+// Lắng nghe login/logout
+firebase.auth().onAuthStateChanged(user => {
+  if(user){
+    currentUserUID = user.uid;
+    console.log("User đang đăng nhập: ", currentUserUID);
 
-// DOM
-const cartCountEl = document.getElementById("cartCount");
-const addCartButtons = document.querySelectorAll(".add-to-cart-btn");
-const cartListEl = document.getElementById("cartList"); // trong cart.html
-const totalPriceEl = document.getElementById("totalPrice");
+    // Load cart riêng user
+    cart = getCart(currentUserUID);
+  } else {
+    currentUserUID = null;
+    cart = [];
+  }
 
-// === Kiểm tra đăng nhập ===
-auth.onAuthStateChanged(user => {
-  if (!user) return;
-  currentUser = user;
-  updateCartCount();
-  if (cartListEl) loadCartItems(); // nếu đang ở cart.html
+  // Render cart mỗi khi trạng thái thay đổi
+  renderCart();
 });
 
-// === Thêm sản phẩm vào giỏ hàng ===
-addCartButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (!currentUser) return;
-    const id = btn.dataset.id;
-    const name = btn.dataset.name;
-    const price = parseInt(btn.dataset.price);
-
-    const cartRef = db.ref(`carts/${currentUser.uid}/${id}`);
-    cartRef.once('value').then(snap => {
-      if (snap.exists()) {
-        cartRef.update({ quantity: snap.val().quantity + 1 });
-      } else {
-        cartRef.set({ name, price, quantity: 1 });
-      }
-      updateCartCount();
-    });
-  });
-});
-
-// === Cập nhật số lượng trên icon ===
-function updateCartCount() {
-  if (!currentUser) return;
-  db.ref(`carts/${currentUser.uid}`).once('value').then(snap => {
-    let total = 0;
-    snap.forEach(item => total += parseInt(item.val().quantity) || 1);
-    if (cartCountEl) cartCountEl.innerText = total;
-  });
+/* =========================
+   GET PRODUCTS
+========================= */
+function getProducts(){
+  return JSON.parse(localStorage.getItem("products")) || [];
 }
 
-// === Load giỏ hàng ra cart.html ===
-function loadCartItems() {
-  if (!currentUser || !cartListEl) return;
-  db.ref(`carts/${currentUser.uid}`).once('value').then(snap => {
-    cartListEl.innerHTML = '';
-    let total = 0;
-    if (!snap.exists()) {
-      cartListEl.innerHTML = '<p>Giỏ hàng trống</p>';
-      if (totalPriceEl) totalPriceEl.innerText = '0₫';
-      return;
-    }
+/* =========================
+   RENDER CART
+========================= */
+function renderCart() {
+  const box = document.getElementById("cartList");
+  const totalBox = document.getElementById("total");
 
-    snap.forEach(s => {
-      const item = s.val();
-      total += item.price * item.quantity;
+  if(!currentUserUID){
+    box.innerHTML = "<div class='empty'>Vui lòng đăng nhập để xem giỏ hàng 🛒</div>";
+    totalBox.innerHTML = "";
+    return;
+  }
 
-      const div = document.createElement('div');
-      div.className = 'cart-item';
-      div.innerHTML = `
-        <span>${item.name}</span>
-        <span>${item.quantity} x ${item.price.toLocaleString()}₫</span>
-        <button data-id="${s.key}" class="remove-btn">Xóa</button>
-      `;
-      cartListEl.appendChild(div);
+  cart = getCart(currentUserUID);
+  box.innerHTML = "";
 
-      // Xóa sản phẩm
-      div.querySelector('.remove-btn').addEventListener('click', () => {
-        db.ref(`carts/${currentUser.uid}/${s.key}`).remove().then(() => {
-          div.remove();
-          updateCartCount();
-          loadCartItems();
-        });
-      });
-    });
+  if(cart.length === 0){
+    box.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
+    totalBox.innerHTML = "";
+    renderCartAction();
+    return;
+  }
 
-    if (totalPriceEl) totalPriceEl.innerText = total.toLocaleString() + '₫';
+  let total = 0;
+  const products = getProducts();
+
+  cart.forEach((item, index) => {
+    const p = products.find(x => String(x.id) === String(item.id));
+    if(!p) return;
+
+    const price = Number(p.price) || 0;
+    const qty = item.quantity || 1;
+    const itemTotal = price * qty;
+    total += itemTotal;
+
+    box.innerHTML += `
+      <div class="item">
+        <img src="${p.img || ''}">
+        <div class="info">
+          <h4>${p.name || 'Không tên'}</h4>
+          <div class="price">
+            ${price.toLocaleString()}đ × ${qty} = 
+            <b style="color:#e53935">${itemTotal.toLocaleString()}đ</b>
+          </div>
+        </div>
+        <button class="remove" onclick="removeItem(${index})">Xoá</button>
+      </div>
+    `;
   });
+
+  totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
+  renderCartAction();
 }
 
-// === Xóa toàn bộ giỏ hàng (tùy chọn) ===
-function clearCart() {
-  if (!currentUser) return;
-  db.ref(`carts/${currentUser.uid}`).remove().then(() => {
-    updateCartCount();
-    if (cartListEl) loadCartItems();
-  });
+/* =========================
+   REMOVE ITEM
+========================= */
+function removeItem(index){
+  if(!currentUserUID) return;
+  cart = getCart(currentUserUID);
+  cart.splice(index, 1);
+  saveCart(currentUserUID, cart);
+  renderCart();
 }
+
+/* =========================
+   CART ACTION
+========================= */
+function renderCartAction(){
+  const actionBox = document.getElementById("cartAction");
+  if(!actionBox) return;
+
+  if(cart.length > 0){
+    actionBox.innerHTML = `
+      <a href="checkout.html">
+        <button class="checkout">💳 Thanh toán</button>
+      </a>
+    `;
+  } else {
+    actionBox.innerHTML = `
+      <div class="empty-box">
+        <a href="index.html">
+          <button class="checkout" style="background:#2196f3">
+            🛍️ Quay lại mua hàng
+          </button>
+        </a>
+      </div>
+    `;
+  }
+}
+
+/* =========================
+   ADD TO CART (global)
+========================= */
+window.addToCart = function(product){
+  if(!currentUserUID) return alert("Vui lòng đăng nhập trước");
+
+  cart = getCart(currentUserUID);
+
+  const index = cart.findIndex(item => item.id === product.id);
+  if(index !== -1){
+    cart[index].quantity = (cart[index].quantity || 1) + 1;
+  } else {
+    cart.push({ id: product.id, quantity: 1 });
+  }
+
+  saveCart(currentUserUID, cart);
+  renderCart();
+}
+
+// **Xóa `renderCart();` ở cuối file cũ**
+// Bây giờ cart sẽ tự render khi onAuthStateChanged chạy
