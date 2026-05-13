@@ -2,7 +2,9 @@
 // FIREBASE INIT
 // ==========================
 
-// Cấu hình Firebase của bạn
+
+
+
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain: "stech-73b89.firebaseapp.com",
