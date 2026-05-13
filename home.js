@@ -1,3 +1,4 @@
+
 /* =========================
    FIREBASE
 ========================= */
@@ -13,15 +14,23 @@ import {
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
+
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+
   authDomain: "stech-73b89.firebaseapp.com",
+
   projectId: "stech-73b89",
+
   storageBucket: "stech-73b89.firebasestorage.app",
+
   messagingSenderId: "873739162979",
+
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+
 };
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
 
 /* =========================
@@ -35,21 +44,39 @@ let allProducts = [];
 ========================= */
 
 async function getProducts(){
+
   try{
-    const querySnapshot = await getDocs(collection(db,"products"));
+
+    const querySnapshot =
+    await getDocs(
+      collection(db,"products")
+    );
+
     let arr = [];
+
     querySnapshot.forEach(doc => {
+
       arr.push({
+
         id:doc.id,
         ...doc.data()
+
       });
+
     });
+
     return arr;
+
   }
+
   catch(err){
+
     console.log(err);
+
     return [];
+
   }
+
 }
 
 /* =========================
@@ -57,24 +84,17 @@ async function getProducts(){
 ========================= */
 
 function fixData(list){
-  return list.map(p => ({
-    ...p,
-    price:Number(p.price) || 0,
-    oldPrice:Number(p.oldPrice) || 0
-  }));
-}
 
-/* =========================
-   HÀM KIỂM TRA CATEGORY (Sửa lỗi phân nhánh hiển thị)
-========================= */
-function isHomeCategory(product) {
-  if (!product.category) return false;
-  // Nếu dữ liệu là mảng (từ admin mới), kiểm tra xem có chứa 'home' không
-  if (Array.isArray(product.category)) {
-    return product.category.includes("home");
-  }
-  // Nếu dữ liệu là chuỗi (từ sản phẩm cũ), kiểm tra bằng dấu bằng thông thường
-  return product.category === "home";
+  return list.map(p => ({
+
+    ...p,
+
+    price:Number(p.price) || 0,
+
+    oldPrice:Number(p.oldPrice) || 0
+
+  }));
+
 }
 
 /* =========================
@@ -82,57 +102,123 @@ function isHomeCategory(product) {
 ========================= */
 
 function render(list){
+
   const box = document.getElementById("products");
   if(!box) return;
 
   list = fixData(list);
 
-  /* ĐÃ SỬA: Lọc chính xác sản phẩm thuộc nhánh Trang chủ */
-  list = list.filter(p => isHomeCategory(p));
+  /* chỉ camera trong nhà */
+  list = list.filter(
+    p => p.category === "home"
+  );
 
   box.innerHTML = "";
 
   if(list.length === 0){
-    box.innerHTML = "<p>Chưa có sản phẩm</p>";
+
+    box.innerHTML =
+      "<p>Chưa có sản phẩm</p>";
+
     return;
+
   }
 
   list.forEach(p => {
-    const id = String(p.id);
-    const price = Number(p.price) || 0;
-    const oldPrice = Number(p.oldPrice) || 0;
-    const hasDiscount = oldPrice > price;
-    const percent = hasDiscount ? Math.round((1 - price / oldPrice) * 100) : 0;
+
+    const id =
+      String(p.id);
+
+    const price =
+      Number(p.price) || 0;
+
+    const oldPrice =
+      Number(p.oldPrice) || 0;
+
+    const hasDiscount =
+      oldPrice > price;
+
+    const percent =
+      hasDiscount
+      ? Math.round(
+          (1 - price / oldPrice) * 100
+        )
+      : 0;
 
     box.innerHTML += `
     <div class="item">
-      ${percent ? `<div class="discount-badge">-${percent}%</div>` : ""}
+
+      ${
+  percent
+  ? `
+    <div class="discount-badge">
+      -${percent}%
+    </div>
+  `
+  : ""
+}
+
         <div class="img-box">
+
           <img
             src="${p.img || ''}"
             alt="${p.name || ''}"
             onclick="goDetail('${id}')"
             style="cursor:pointer;"
           >
+
         </div>
 
-        <h4>${p.name || "Không tên"}</h4>
+        <h4>
+          ${p.name || "Không tên"}
+        </h4>
 
         <div class="price-box">
-          <span class="price">${price.toLocaleString()}đ</span>
-          ${hasDiscount ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span>` : ""}
+
+          <span class="price">
+            ${price.toLocaleString()}đ
+          </span>
+
+          ${
+            hasDiscount
+
+            ? `
+
+            <span class="old-price">
+              ${oldPrice.toLocaleString()}đ
+            </span>
+
+            `
+
+            : ""
+
+          }
+
         </div>
 
-        <button class="spec-btn" onclick="goDetail('${id}')">
+               <button
+          class="spec-btn"
+          onclick="goDetail('${id}')"
+        >
+
           ⚙️ Xem thông số
+        
+
+        <button
+          class="cart-btn"
+          onclick="addToCart('${id}')"
+        >
+
+          🛒 Thêm vào giỏ
+
         </button>
 
-        <button class="cart-btn" onclick="addToCart('${id}')">
-          🛒 Thêm vào giỏ
-        </button>
       </div>
+
     `;
+
   });
+
 }
 
 /* =========================
@@ -140,7 +226,10 @@ function render(list){
 ========================= */
 
 window.goDetail = function(id){
-  window.location.href = `logo.html?id=${id}`;
+
+  window.location.href =
+    `logo.html?id=${id}`;
+
 };
 
 /* =========================
@@ -148,43 +237,87 @@ window.goDetail = function(id){
 ========================= */
 
 window.addToCart = function(id){
-  const product = allProducts.find(p => String(p.id) === String(id));
+
+  const product =
+    allProducts.find(
+      p => String(p.id) === String(id)
+    );
+
   if(!product) return;
 
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const exist = cart.find(i => String(i.id) === String(id));
+  let cart =
+    JSON.parse(
+      localStorage.getItem("cart")
+    ) || [];
+
+  const exist =
+    cart.find(
+      i => String(i.id) === String(id)
+    );
 
   if(exist){
+
     exist.qty += 1;
-  }
-  else{
-    cart.push({
-      ...product,
-      qty:1
-    });
+
   }
 
-  localStorage.setItem("cart", JSON.stringify(cart));
+  else{
+
+    cart.push({
+
+      ...product,
+
+      qty:1
+
+    });
+
+  }
+
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
+
   alert("Đã thêm vào giỏ 🛒");
+
 };
 
 /* =========================
    SEARCH
 ========================= */
 
-const search = document.getElementById("search");
+const search =
+document.getElementById("search");
 
 if(search){
-  search.addEventListener("input", e => {
-    const key = e.target.value.toLowerCase();
 
-    /* ĐÃ SỬA: Lọc thanh tìm kiếm theo chuẩn dữ liệu đa nhánh mới */
-    let data = allProducts.filter(p => isHomeCategory(p));
+  search.addEventListener(
+    "input",
+    e => {
 
-    render(
-      data.filter(p => p.name && p.name.toLowerCase().includes(key))
-    );
-  });
+      const key =
+      e.target.value.toLowerCase();
+
+      let data =
+      allProducts.filter(
+        p => p.category === "home"
+      );
+
+      render(
+
+        data.filter(
+          p =>
+            p.name &&
+            p.name
+            .toLowerCase()
+            .includes(key)
+        )
+
+      );
+
+    }
+  );
+
 }
 
 /* =========================
@@ -192,20 +325,33 @@ if(search){
 ========================= */
 
 window.toggleMenu = function(){
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
 
-  if(!sidebar || !overlay) return;
+  const sidebar =
+  document.getElementById("sidebar");
+
+  const overlay =
+  document.getElementById("overlay");
+
+  if(!sidebar || !overlay)
+  return;
 
   sidebar.classList.toggle("active");
+
   overlay.classList.toggle("active");
+
 };
 
 /* =========================
    INIT
 ========================= */
 
-document.addEventListener("DOMContentLoaded", async () => {
-  allProducts = await getProducts();
-  render(allProducts);
-});
+document.addEventListener(
+  "DOMContentLoaded",
+  async () => {
+
+    allProducts =
+    await getProducts();
+
+    render(allProducts);
+
+  });
