@@ -196,23 +196,23 @@ function render(list){
 
         </div>
 
-               <button
-          class="spec-btn"
-          onclick="goDetail('${id}')"
-        >
+       <button
+  class="spec-btn"
+  onclick="goDetail('${id}')"
+>
 
-          ⚙️ Xem thông số
-        
+  ⚙️ Xem thông số
 
-        <button
-          class="cart-btn"
-          onclick="addToCart('${id}')"
-        >
+</button>
 
-          🛒 Thêm vào giỏ
+<button
+  class="cart-btn"
+  onclick="addToCart('${id}')"
+>
 
-        </button>
+  🛒 Thêm vào giỏ
 
+</button>
       </div>
 
     `;
