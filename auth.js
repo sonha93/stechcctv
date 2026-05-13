@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const authLoginBtn = document.getElementById("authLoginBtn");
   const closeAuth = document.getElementById("closeAuth");
   const authMessage = document.getElementById("authMessage");
+  const userInfoPreview = document.getElementById("userInfoPreview");
+const userNamePreview = document.getElementById("sidebarUserNamePreview");
 
   // mở popup login
   loginLink?.addEventListener("click", e => {
@@ -50,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       // Redirect ngay
-      window.location.href = "pages/user-profile.html";
+     window.location.href = "profile.html";
     } catch(err) {
       authMessage.style.color = "red";
       authMessage.innerText = (err.code === "auth/email-already-in-use") 
@@ -75,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
       currentUserUID = user.uid;
 
       // Redirect ngay
-      window.location.href = "pages/profile.html";
+   window.location.href = "profile.html";
     } catch(err) {
       authMessage.style.color = "red";
       authMessage.innerText = err.message;
@@ -91,9 +93,36 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Kiểm tra auth state
-  onAuthStateChanged(auth, (user) => {
-    currentUserUID = user ? user.uid : null;
-    loginLink.style.display = user ? "none" : "block";
-    logoutLink.style.display = user ? "block" : "none";
-  });
+ onAuthStateChanged(auth, (user) => {
+
+  currentUserUID = user ? user.uid : null;
+
+  if(user){
+
+    loginLink.style.display = "none";
+    logoutLink.style.display = "block";
+
+    if(userInfoPreview){
+      userInfoPreview.style.display = "block";
+    }
+
+    if(userNamePreview){
+      userNamePreview.innerText =
+      "Xin chào\n" + (user.email || "");
+    }
+
+  }
+
+  else{
+
+    loginLink.style.display = "block";
+    logoutLink.style.display = "none";
+
+    if(userInfoPreview){
+      userInfoPreview.style.display = "none";
+    }
+
+  }
+
 });
+  });
