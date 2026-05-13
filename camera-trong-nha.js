@@ -192,6 +192,18 @@ function render(list){
 
             `
 
+            : ""
+
+          }
+
+        </div>
+
+               <button
+          class="spec-btn"
+          onclick="goDetail('${id}')"
+        >
+
+          ⚙️ Xem thông số
         
 
         <button
