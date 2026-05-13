@@ -1,8 +1,12 @@
 // ======================= Cart.js duy nhất =======================
 
+// Firebase v10+ Modular SDK
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-auth.js";
+import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-database.js";
+
 // Firebase đã được init sẵn trong HTML
-const auth = firebase.auth();
-const db = firebase.database();
+const auth = getAuth();
+const db = getDatabase();
 
 let currentUser = null;
 let cart = [];
@@ -11,7 +15,7 @@ let cart = [];
 const cartCountEl = document.querySelector(".header-icons .cart-count");
 
 // ======================= AUTH & LOAD CART =======================
-auth.onAuthStateChanged(user => {
+onAuthStateChanged(auth, user => {
   cart = []; // reset cart khi user thay đổi
   if (!user) return window.location.href = "index.html";
 
@@ -23,7 +27,8 @@ auth.onAuthStateChanged(user => {
 function loadCart() {
   if (!currentUser) return;
 
-  db.ref("carts/" + currentUser.uid).on("value", snap => {
+  const userCartRef = ref(db, "carts/" + currentUser.uid);
+  onValue(userCartRef, snap => {
     cart = snap.val() || [];
     renderCart();
     updateBadge();
@@ -101,16 +106,16 @@ function removeItem(index) {
 // ======================= SAVE CART =======================
 function saveCart() {
   if (!currentUser) return;
-  db.ref("carts/" + currentUser.uid).set(cart);
+  const userCartRef = ref(db, "carts/" + currentUser.uid);
+  set(userCartRef, cart);
 }
 
 // ======================= CHECKOUT =======================
 function checkout() {
   if (!currentUser) return;
 
-  // Lưu đơn hàng vào orders/{uid}
-  db.ref("orders/" + currentUser.uid).push(cart).then(() => {
-    // Không reset cart, vẫn giữ giỏ hàng
+  const ordersRef = ref(db, "orders/" + currentUser.uid);
+  push(ordersRef, cart).then(() => {
     alert("Đặt hàng thành công! Giỏ hàng vẫn giữ nguyên.");
     renderCart();
     updateBadge();
