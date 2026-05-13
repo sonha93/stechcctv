@@ -1,15 +1,17 @@
 // ======================= Firebase Config =======================
-const firebaseConfig = {
-  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain:"stech-73b89.firebaseapp.com",
-  databaseURL:"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId:"stech-73b89",
-  storageBucket:"stech-73b89.appspot.com",
-  messagingSenderId:"873739162979",
-  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
-};
+if (!firebase.apps.length) {
+  const firebaseConfig = {
+    apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+    authDomain:"stech-73b89.firebaseapp.com",
+    databaseURL:"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:"stech-73b89",
+    storageBucket:"stech-73b89.appspot.com",
+    messagingSenderId:"873739162979",
+    appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
+  };
+  firebase.initializeApp(firebaseConfig);
+}
 
-firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
@@ -21,14 +23,14 @@ const cartCountEl = document.querySelector(".header-icons .cart-count");
 
 // ======================= AUTH & LOAD CART =======================
 auth.onAuthStateChanged(user => {
-  // Reset cart khi user thay đổi
-  cart = [];
+  cart = []; // reset cart khi user thay đổi
   if (!user) return window.location.href = "index.html";
-  
+
   currentUser = user;
   loadCart();
 });
 
+// ======================= LOAD CART =======================
 function loadCart() {
   if (!currentUser) return;
 
@@ -116,8 +118,10 @@ function saveCart() {
 // ======================= CHECKOUT =======================
 function checkout() {
   if (!currentUser) return;
-  db.ref("carts/" + currentUser.uid).remove().then(() => {
+
+  db.ref("orders/" + currentUser.uid).push(cart).then(() => {
     cart = [];
+    saveCart(); // reset cart
     renderCart();
     updateBadge();
     window.location.href = "checkout.html";
