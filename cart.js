@@ -5,8 +5,8 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-database.js";
 
 // Firebase đã được init sẵn trong HTML
-const auth = getAuth();
-const db = getDatabase();
+const auth = firebase.auth();
+const db = firebase.database();
 
 let currentUser = null;
 let cart = [];
