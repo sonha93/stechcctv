@@ -13,7 +13,7 @@ function renderHome() {
   }
 
   productsToShow.forEach(p => {
-    const id = String(p.id);
+    const id = String(p.id || p.docId); // fix: đảm bảo id luôn tồn tại
     let percentText = "";
     if (p.oldPrice && p.oldPrice > p.price) {
       const percent = Math.round((1 - p.price / p.oldPrice) * 100);
