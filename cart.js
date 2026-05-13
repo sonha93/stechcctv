@@ -21,7 +21,7 @@ const cartCountEl = document.querySelector(".header-icons .cart-count");
 
 // ======================= AUTH & LOAD CART =======================
 auth.onAuthStateChanged(user => {
-  // 🟢 Reset cart cũ khi user thay đổi
+  // Reset cart khi user thay đổi
   cart = [];
   if (!user) return window.location.href = "index.html";
   
@@ -32,7 +32,6 @@ auth.onAuthStateChanged(user => {
 function loadCart() {
   if (!currentUser) return;
 
-  // Lắng nghe cart của user hiện tại
   db.ref("carts/" + currentUser.uid).on("value", snap => {
     cart = snap.val() || [];
     renderCart();
@@ -123,4 +122,20 @@ function checkout() {
     updateBadge();
     window.location.href = "checkout.html";
   });
+}
+
+// ======================= ADD TO CART =======================
+function addToCart(product) {
+  if (!currentUser) return alert("Bạn cần đăng nhập!");
+
+  const index = cart.findIndex(i => i.id === product.id);
+  if (index !== -1) {
+    cart[index].qty = (cart[index].qty || 1) + 1;
+  } else {
+    cart.push({ ...product, qty: 1 });
+  }
+
+  saveCart();
+  renderCart();
+  updateBadge();
 }
