@@ -87,6 +87,26 @@ button{
   color:#00acc1;
 }
 
+.cat-box-container {
+  background: #fff;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  margin: 8px 0;
+}
+
+.cat-box-container label {
+  display: block;
+  margin: 6px 0;
+  cursor: pointer;
+}
+
+.cat-box-container input {
+  display: inline-block;
+  width: auto;
+  margin-right: 8px;
+}
+
 @media (max-width:768px){
 
   body{
@@ -148,27 +168,15 @@ button{
 
   <input id="imgUrl" placeholder="Link ảnh Cloudinary" class="full">
 
-  <select id="category" class="full">
-
-    <option value="sd">Thẻ nhớ</option>
-
-    <option value="cam-in">
-      Camera trong nhà
-    </option>
-
-    <option value="cam-ngoai">
-      Camera ngoài trời
-    </option>
-
-    <option value="combo">
-      Combo
-    </option>
-
-    <option value="home">
-      Trang chủ
-    </option>
-
-  </select>
+  <!-- ĐÃ THAY THẾ SELECT THÀNH CHECKBOX ĐỂ CHỌN NHIỀU NHÁNH CÙNG LÚC -->
+  <div class="full cat-box-container">
+    <p style="font-weight: bold; margin: 0 0 8px 0; color: #333;">📁 Chọn nhánh hiển thị (Tích chọn nhiều):</p>
+    <label><input type="checkbox" class="cat-checkbox" value="home"> 🏠 Trang chủ</label>
+    <label><input type="checkbox" class="cat-checkbox" value="sd"> 💾 Thẻ nhớ</label>
+    <label><input type="checkbox" class="cat-checkbox" value="cam-in"> 🏠 Camera trong nhà</label>
+    <label><input type="checkbox" class="cat-checkbox" value="cam-ngoai"> 🌳 Camera ngoài trời</label>
+    <label><input type="checkbox" class="cat-checkbox" value="combo"> 📦 Combo</label>
+  </div>
 
   <div id="showCat" class="full"></div>
 
@@ -177,7 +185,7 @@ button{
   <input type="file" id="fileImg" class="full">
 
   <label class="full">
-    <input type="checkbox" id="featured">
+    <input type="checkbox" id="featured" style="display:inline-block; width:auto; margin-right:5px;">
     ⭐ Featured
   </label>
 
@@ -193,31 +201,23 @@ button{
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "gstatic.com";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "gstatic.com";
 
 /* =========================
    FIREBASE
 ========================= */
 
 const firebaseConfig = {
-
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-
-  authDomain: "stech-73b89.firebaseapp.com",
-
+  authDomain: "firebaseapp.com",
   projectId: "stech-73b89",
-
   storageBucket: "stech-73b89.firebasestorage.app",
-
   messagingSenderId: "873739162979",
-
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
 
 /* =========================
@@ -229,179 +229,153 @@ window.addEventListener("load", function(){
 let products = [];
 
 const nameMap = {
-
   sd:"Thẻ nhớ",
-
   "cam-in":"Camera trong nhà",
-
   "cam-ngoai":"Camera ngoài trời",
-
   combo:"Combo",
-
   home:"Trang chủ"
-
 };
 
 function getVal(id){
-
   const el=document.getElementById(id);
-
   return el ? el.value.trim() : "";
-
 }
 
-const categoryEl =
-document.getElementById("category");
-
-const btnAdd =
-document.getElementById("btnAdd");
-
-const list =
-document.getElementById("list");
+const btnAdd = document.getElementById("btnAdd");
+const list = document.getElementById("list");
 
 /* =========================
-   CATEGORY
+   XỬ LÝ CHỌN DANH MỤC & HIỂN THỊ CẤU HÌNH
 ========================= */
+document.querySelectorAll(".cat-checkbox").forEach(checkbox => {
+  checkbox.addEventListener("change", function() {
+    const checkedBoxes = Array.from(document.querySelectorAll(".cat-checkbox:checked"));
+    const checkedValues = checkedBoxes.map(el => el.value);
+    
+    // Hiển thị text các mục đã chọn
+    const names = checkedValues.map(val => nameMap[val]);
+    document.getElementById("showCat").innerText = names.length > 0 ? "📁 Đã chọn: " + names.join(", ") : "";
 
-categoryEl.addEventListener("change", function(){
-
-  const type=this.value;
-
-  document.getElementById("showCat").innerText =
-  "📁 Thư mục: " + nameMap[type];
-
-  const box=document.getElementById("specBox");
-
-  if(
-    type==="cam-in" ||
-    type==="cam-ngoai" ||
-    type==="home"
-  ){
-
-    box.innerHTML=`<div class="spec-title">⚙️ Thông số camera</div>
-      <input id="model" placeholder="Model">
-      <input id="xuatXu" placeholder="Xuất xứ">
-      <input id="baoHanh" placeholder="Bảo hành">
-      <input id="doPhanGiai" placeholder="Độ phân giải">
-      <input id="gocNhin" placeholder="Góc nhìn">
-      <input id="ketNoi" placeholder="Kết nối">
-      <input id="thietKe" placeholder="Thiết kế">
-      <input id="chatLieu" placeholder="Chất liệu">
-      <input id="congSuat" placeholder="Công suất">`;
-
-  }
-
-  else if(type==="sd"){
-
-    box.innerHTML=`<div class="spec-title">💾 Thông số thẻ nhớ</div>
-      <input id="model" placeholder="Model">
-      <input id="xuatXu" placeholder="Xuất xứ">
-      <input id="baoHanh" placeholder="Bảo hành">
-      <input id="dungLuong" placeholder="Dung lượng">
-      <input id="tocDo" placeholder="Tốc độ">
-      <input id="loai" placeholder="Loại">
-      <input id="chatLieu" placeholder="Chất liệu">`;
-
-  }
-
-  else{
-
-    box.innerHTML="";
-
-  }
-
+    const box = document.getElementById("specBox");
+    
+    // Tự động mở form điền thông số dựa trên các ô được tích
+    if (checkedValues.includes("cam-in") || checkedValues.includes("cam-ngoai") || checkedValues.includes("combo")) {
+      box.innerHTML = `<div class="spec-title">⚙️ Thông số camera</div>
+        <input id="model" placeholder="Model">
+        <input id="xuatXu" placeholder="Xuất xứ">
+        <input id="baoHanh" placeholder="Bảo hành">
+        <input id="doPhanGiai" placeholder="Độ phân giải">
+        <input id="gocNhin" placeholder="Góc nhìn">
+        <input id="ketNoi" placeholder="Kết nối">
+        <input id="thietKe" placeholder="Thiết kế">
+        <input id="chatLieu" placeholder="Chất liệu">
+        <input id="congSuat" placeholder="Công suất">`;
+    } 
+    else if (checkedValues.includes("sd")) {
+      box.innerHTML = `<div class="spec-title">💾 Thông số thẻ nhớ</div>
+        <input id="model" placeholder="Model">
+        <input id="xuatXu" placeholder="Xuất xứ">
+        <input id="baoHanh" placeholder="Bảo hành">
+        <input id="dungLuong" placeholder="Dung lượng">
+        <input id="tocDo" placeholder="Tốc độ">
+        <input id="loai" placeholder="Loại">
+        <input id="chatLieu" placeholder="Chất liệu">`;
+    } 
+    else {
+      box.innerHTML = "";
+    }
+  });
 });
 
 /* =========================
    LOAD FIRESTORE
 ========================= */
-
 async function loadProducts(){
-
   products = [];
-
-  const querySnapshot =
-  await getDocs(collection(db,"products"));
-
-  querySnapshot.forEach(doc => {
-
-    products.push({
-
-      docId:doc.id,
-
-      ...doc.data()
-
+  try {
+    const querySnapshot = await getDocs(collection(db,"products"));
+    querySnapshot.forEach(doc => {
+      products.push({
+        docId:doc.id,
+        ...doc.data()
+      });
     });
-
-  });
-
-  render();
-
+    render();
+  } catch(e) {
+    console.error("Lỗi tải sản phẩm:", e);
+  }
 }
+
+/* =========================
+   RENDER DANH SÁCH (Hàm hiển thị danh sách admin bổ sung)
+========================= */
+function render(){
+  list.innerHTML = "";
+  products.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "item";
+    
+    // Xử lý hiển thị danh mục dạng mảng hoặc chuỗi cũ
+    let catDisplay = "";
+    if(Array.isArray(p.category)) {
+      catDisplay = p.category.map(c => nameMap[c] || c).join(", ");
+    } else {
+      catDisplay = nameMap[p.category] || p.category;
+    }
+
+    div.innerHTML = `
+      <img src="${p.img || ''}" alt="">
+      <div>
+        <strong>${p.name}</strong><br>
+        <span>Giá: ${p.price.toLocaleString('vi-VN')}đ</span> | <span>Nh nhánh: ${catDisplay}</span>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// Chạy tải dữ liệu lần đầu
+loadProducts();
 
 /* =========================
    ADD PRODUCT
 ========================= */
-
 btnAdd.addEventListener("click", async function(){
-
   const name=getVal("name");
-
-  const price=Number(
-    getVal("price").replace(/\D/g,"")
-  );
-
-  const oldPrice=Number(
-    getVal("oldPrice").replace(/\D/g,"") || 0
-  );
-
+  const price=Number(getVal("price").replace(/\D/g,""));
+  const oldPrice=Number(getVal("oldPrice").replace(/\D/g,"") || 0);
   const desc=getVal("desc");
+  
+  // Lấy mảng các danh mục được tích chọn
+  const selectedCategories = Array.from(document.querySelectorAll(".cat-checkbox:checked")).map(el => el.value);
 
-  const category=categoryEl.value;
-
-  const file=
-  document.getElementById("fileImg").files[0];
-
-  const imgUrl=getVal("imgUrl");
+  const file = document.getElementById("fileImg").files[0];
+  const imgUrl = getVal("imgUrl");
 
   if(!name){
-
     return alert("Thiếu tên sản phẩm");
-
   }
-
   if(!price){
-
     return alert("Giá không hợp lệ");
-
   }
-
+  if(selectedCategories.length === 0){
+    return alert("Vui lòng chọn ít nhất 1 nhánh hiển thị!");
+  }
   if(!file && !imgUrl){
-
     return alert("Chưa có ảnh");
-
   }
 
   async function addProduct(img){
-
     const productData = {
-
       id:Date.now(),
-
       name,
       price,
       oldPrice,
       desc,
-
-      category,
-
-      categoryName:nameMap[category],
-
+      category: selectedCategories, // Lưu dạng MẢNG để hiển thị đa nhánh
+      categoryName: selectedCategories.map(cat => nameMap[cat]).join(", "),
       img,
-
-      featured:
-      document.getElementById("featured").checked,
-
+      featured: document.getElementById("featured").checked,
       model:getVal("model"),
       xuatXu:getVal("xuatXu"),
       baoHanh:getVal("baoHanh"),
@@ -414,176 +388,66 @@ btnAdd.addEventListener("click", async function(){
       dungLuong:getVal("dungLuong"),
       tocDo:getVal("tocDo"),
       loai:getVal("loai")
-
     };
 
-    await addDoc(
-      collection(db,"products"),
-      productData
-    );
-
-    alert("✔ Thêm sản phẩm thành công");
-
-    loadProducts();
-
-
-
-
-// 🔹 reload sản phẩm và render trang chủ Featured ngay
-await fetchProducts();  // reload allProducts từ Firestore
-render();               // render lại trang hiện tại
+    try {
+      await addDoc(collection(db,"products"), productData);
+      alert("✔ Thêm sản phẩm thành công");
+      
+      // Reset form sau khi thêm thành công
+      document.getElementById("name").value = "";
+      document.getElementById("price").value = "";
+      document.getElementById("oldPrice").value = "";
+      document.getElementById("desc").value = "";
+      document.getElementById("imgUrl").value = "";
+      document.getElementById("fileImg").value = "";
+      document.querySelectorAll(".cat-checkbox").forEach(el => el.checked = false);
+      document.getElementById("specBox").innerHTML = "";
+      document.getElementById("showCat").innerText = "";
+      
+      loadProducts();
+    } catch(e) {
+      alert("Lỗi lưu dữ liệu vào Firebase");
+      console.error(e);
+    }
   }
 
   /* =========================
      LINK CLOUDINARY
   ========================= */
-
   if(imgUrl){
-
     await addProduct(imgUrl);
-
     return;
-
   }
 
   /* =========================
      UPLOAD CLOUDINARY
   ========================= */
-
   if(file){
-
     try{
-
       const formData = new FormData();
-
       formData.append("file", file);
-
-      formData.append(
-        "upload_preset",
-        "qzcttlvsh"
-      );
+      formData.append("upload_preset", "qzcttlvsh");
 
       const res = await fetch(
-
-        "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
-
-        {
-          method:"POST",
-          body:formData
-        }
-
+        "cloudinary.com",
+        { method:"POST", body:formData }
       );
 
       const data = await res.json();
-
-      console.log(data);
-
       if(!data.secure_url){
-
-        return alert(
-          "Upload Cloudinary thất bại"
-        );
-
+        return alert("Upload Cloudinary thất bại");
       }
-
       await addProduct(data.secure_url);
-
     }
-
     catch(err){
-
       console.log(err);
-
       alert("Lỗi upload ảnh");
-
     }
-
   }
-
 });
 
-/* =========================
-   RENDER PRODUCTS MỚI
-========================= */
-
-/* =========================
-   RENDER PRODUCTS 2 DÒNG GIÁ
-========================= */
-function render() {
-
-  if(products.length===0){
-    list.innerHTML = "<p>Chưa có sản phẩm</p>";
-    return;
-  }
-
-  list.innerHTML = products.map(p => `
-    <div class="item" data-id="${p.docId}">
-      <img src="${p.img || ''}">
-      <div>
-        <b>${p.name}</b><br>
-        <span style="color:#00acc1;font-size:12px;">📁 ${p.categoryName || p.category}</span><br>
-
-        <!-- Giá hiện tại (bán ra) -->
-        <div style="color:red; font-weight:bold; margin-top:4px;">
-          Giá hiện tại: ${Number(p.price).toLocaleString()}đ
-        </div>
-
-        <!-- Giá gốc / cũ -->
-        <div style="color:black; font-weight:normal; margin-top:2px;">
-          Giá gốc: ${p.oldPrice ? Number(p.oldPrice).toLocaleString() + 'đ' : '---'}
-        </div>
-
-        <!-- Input sửa giá -->
-        <input type="text" class="priceInput" value="${p.price}" placeholder="Giá mới" style="width:150px; font-weight:bold; color:red; margin-top:4px;">
-        <input type="text" class="oldPriceInput" value="${p.oldPrice || ''}" placeholder="Giá cũ" style="width:150px; margin-top:2px;">
-
-        <!-- Nút cập nhật -->
-        <button class="updateBtn" style="background:#00acc1; margin-top:6px;">Cập nhật</button>
-        <!-- Nút xóa -->
-        <button class="deleteBtn" style="background:red; margin-top:6px;">Xóa</button>
-      </div>
-    </div>
-  `).join("");
-
-  // Gắn sự kiện Cập nhật
-  document.querySelectorAll('.updateBtn').forEach(btn => {
-    btn.addEventListener('click', async e => {
-      const item = e.target.closest('.item');
-      const id = item.dataset.id;
-      const newPrice = Number(item.querySelector('.priceInput').value.replace(/\D/g,''));
-      const oldPrice = Number(item.querySelector('.oldPriceInput').value.replace(/\D/g,'') || 0);
-      if(!newPrice) return alert("Giá không hợp lệ");
-      await updateDoc(doc(db,"products",id), { price: newPrice, oldPrice: oldPrice });
-      alert("Cập nhật thành công");
-      loadProducts();
-    });
-  });
-
-  // Gắn sự kiện Xóa
-  document.querySelectorAll('.deleteBtn').forEach(btn => {
-    btn.addEventListener('click', async e => {
-      const item = e.target.closest('.item');
-      const id = item.dataset.id;
-      if(confirm("Xóa sản phẩm này?")){
-        await deleteDoc(doc(db,"products",id));
-        item.remove();
-      }
-    });
-  });
-}
-/* =========================
-   INIT
-========================= */
-
-loadProducts();
-
-categoryEl.dispatchEvent(
-  new Event("change")
-);
-
 });
-
 </script>
-
 </body>
 </html>
