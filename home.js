@@ -9,11 +9,12 @@ function renderHome() {
 
   if (!productsToShow || productsToShow.length === 0) {
     box.innerHTML = "<p>Chưa có sản phẩm nào</p>";
+    console.log("No products to show!", allProducts); // debug
     return;
   }
 
   productsToShow.forEach(p => {
-    const id = String(p.id || p.docId); // fix: đảm bảo id luôn tồn tại
+    const id = String(p.id || p.docId); // fallback
     let percentText = "";
     if (p.oldPrice && p.oldPrice > p.price) {
       const percent = Math.round((1 - p.price / p.oldPrice) * 100);
