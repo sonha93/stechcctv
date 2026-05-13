@@ -11,9 +11,24 @@ function saveCart(uid, cart){
   localStorage.setItem(`cart_user_${uid}`, JSON.stringify(cart));
 }
 
+// Lắng nghe login/logout
+firebase.auth().onAuthStateChanged(user => {
+  if(user){
+    currentUserUID = user.uid;
+    console.log("User đang đăng nhập: ", currentUserUID);
+
+    // Load cart riêng user
+    cart = getCart(currentUserUID);
+  } else {
+    currentUserUID = null;
+    cart = [];
+  }
+
+  // Render cart mỗi khi trạng thái thay đổi
+  renderCart();
+});
+
 /* =========================
-
-
    GET PRODUCTS
 ========================= */
 function getProducts(){
@@ -34,8 +49,8 @@ function renderCart() {
   }
 
   cart = getCart(currentUserUID);
-
   box.innerHTML = "";
+
   if(cart.length === 0){
     box.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
     totalBox.innerHTML = "";
@@ -62,9 +77,7 @@ function renderCart() {
           <h4>${p.name || 'Không tên'}</h4>
           <div class="price">
             ${price.toLocaleString()}đ × ${qty} = 
-            <b style="color:#e53935">
-              ${itemTotal.toLocaleString()}đ
-            </b>
+            <b style="color:#e53935">${itemTotal.toLocaleString()}đ</b>
           </div>
         </div>
         <button class="remove" onclick="removeItem(${index})">Xoá</button>
@@ -130,9 +143,7 @@ window.addToCart = function(product){
 
   saveCart(currentUserUID, cart);
   renderCart();
-};
+}
 
-/* =========================
-   INIT
-========================= */
-renderCart();
+// **Xóa `renderCart();` ở cuối file cũ**
+// Bây giờ cart sẽ tự render khi onAuthStateChanged chạy
