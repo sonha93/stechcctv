@@ -87,27 +87,6 @@ button{
   color:#00acc1;
 }
 
-.cat-box-container {
-  background: #fff;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  margin: 8px 0;
-  max-width: 320px;
-}
-
-.cat-box-container label {
-  display: block;
-  margin: 6px 0;
-  cursor: pointer;
-}
-
-.cat-box-container input {
-  display: inline-block;
-  width: auto;
-  margin-right: 8px;
-}
-
 @media (max-width:768px){
 
   body{
@@ -145,6 +124,7 @@ button{
   }
 
 }
+
 </style>
 </head>
 
@@ -168,15 +148,27 @@ button{
 
   <input id="imgUrl" placeholder="Link ảnh Cloudinary" class="full">
 
-  <!-- ĐÃ KHẮC PHỤC GIAO DIỆN CHỌN ĐA NHÁNH -->
-  <div class="full cat-box-container">
-    <p style="font-weight: bold; margin: 0 0 8px 0; color: #333;">📁 Chọn nhánh hiển thị (Tích nhiều mục):</p>
-    <label><input type="checkbox" class="cat-checkbox" value="home"> 🏠 Trang chủ</label>
-    <label><input type="checkbox" class="cat-checkbox" value="sd"> 💾 Thẻ nhớ</label>
-    <label><input type="checkbox" class="cat-checkbox" value="cam-in"> 🏠 Camera trong nhà</label>
-    <label><input type="checkbox" class="cat-checkbox" value="cam-ngoai"> 🌳 Camera ngoài trời</label>
-    <label><input type="checkbox" class="cat-checkbox" value="combo"> 📦 Combo</label>
-  </div>
+  <select id="category" class="full">
+
+    <option value="sd">Thẻ nhớ</option>
+
+    <option value="cam-in">
+      Camera trong nhà
+    </option>
+
+    <option value="cam-ngoai">
+      Camera ngoài trời
+    </option>
+
+    <option value="combo">
+      Combo
+    </option>
+
+    <option value="home">
+      Trang chủ
+    </option>
+
+  </select>
 
   <div id="showCat" class="full"></div>
 
@@ -185,7 +177,7 @@ button{
   <input type="file" id="fileImg" class="full">
 
   <label class="full">
-    <input type="checkbox" id="featured" style="display:inline-block; width:auto; margin-right:5px;">
+    <input type="checkbox" id="featured">
     ⭐ Featured
   </label>
 
@@ -199,177 +191,217 @@ button{
 
 <div id="list"></div>
 
-<!-- ĐÃ KHÔI PHỤC HOÀN TOÀN ĐƯỜNG DẪN LIÊN KẾT CDN FIREBASE CHUẨN -->
 <script type="module">
-import { initializeApp } from "gstatic.com";
-import { getFirestore, collection, addDoc, getDocs } from "gstatic.com";
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* =========================
-   FIREBASE CONFIG
+   FIREBASE
 ========================= */
+
 const firebaseConfig = {
+
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "firebaseapp.com",
+
+  authDomain: "stech-73b89.firebaseapp.com",
+
   projectId: "stech-73b89",
+
   storageBucket: "stech-73b89.firebasestorage.app",
+
   messagingSenderId: "873739162979",
+
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+
 };
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
 
 /* =========================
-   START LOGIC
+   START
 ========================= */
+
 window.addEventListener("load", function(){
 
 let products = [];
 
 const nameMap = {
+
   sd:"Thẻ nhớ",
+
   "cam-in":"Camera trong nhà",
+
   "cam-ngoai":"Camera ngoài trời",
+
   combo:"Combo",
+
   home:"Trang chủ"
+
 };
 
 function getVal(id){
+
   const el=document.getElementById(id);
+
   return el ? el.value.trim() : "";
+
 }
 
-const btnAdd = document.getElementById("btnAdd");
-const list = document.getElementById("list");
+const categoryEl =
+document.getElementById("category");
+
+const btnAdd =
+document.getElementById("btnAdd");
+
+const list =
+document.getElementById("list");
 
 /* =========================
-   XỬ LÝ ĐỔI THÔNG SỐ THEO CHECKBOX
+   CATEGORY
 ========================= */
-document.querySelectorAll(".cat-checkbox").forEach(checkbox => {
-  checkbox.addEventListener("change", function() {
-    const checkedBoxes = Array.from(document.querySelectorAll(".cat-checkbox:checked"));
-    const checkedValues = checkedBoxes.map(el => el.value);
-    
-    const names = checkedValues.map(val => nameMap[val]);
-    document.getElementById("showCat").innerText = names.length > 0 ? "📁 Đã chọn: " + names.join(", ") : "";
 
-    const box = document.getElementById("specBox");
-    
-    if (checkedValues.includes("cam-in") || checkedValues.includes("cam-ngoai") || checkedValues.includes("combo")) {
-      box.innerHTML = `<div class="spec-title">⚙️ Thông số camera</div>
-        <input id="model" placeholder="Model">
-        <input id="xuatXu" placeholder="Xuất xứ">
-        <input id="baoHanh" placeholder="Bảo hành">
-        <input id="doPhanGiai" placeholder="Độ phân giải">
-        <input id="gocNhin" placeholder="Góc nhìn">
-        <input id="ketNoi" placeholder="Kết nối">
-        <input id="thietKe" placeholder="Thiết kế">
-        <input id="chatLieu" placeholder="Chất liệu">
-        <input id="congSuat" placeholder="Công suất">`;
-    } 
-    else if (checkedValues.includes("sd")) {
-      box.innerHTML = `<div class="spec-title">💾 Thông số thẻ nhớ</div>
-        <input id="model" placeholder="Model">
-        <input id="xuatXu" placeholder="Xuất xứ">
-        <input id="baoHanh" placeholder="Bảo hành">
-        <input id="dungLuong" placeholder="Dung lượng">
-        <input id="tocDo" placeholder="Tốc độ">
-        <input id="loai" placeholder="Loại">
-        <input id="chatLieu" placeholder="Chất liệu">`;
-    } 
-    else {
-      box.innerHTML = "";
-    }
-  });
+categoryEl.addEventListener("change", function(){
+
+  const type=this.value;
+
+  document.getElementById("showCat").innerText =
+  "📁 Thư mục: " + nameMap[type];
+
+  const box=document.getElementById("specBox");
+
+  if(
+    type==="cam-in" ||
+    type==="cam-ngoai" ||
+    type==="home"
+  ){
+
+    box.innerHTML=`<div class="spec-title">⚙️ Thông số camera</div>
+      <input id="model" placeholder="Model">
+      <input id="xuatXu" placeholder="Xuất xứ">
+      <input id="baoHanh" placeholder="Bảo hành">
+      <input id="doPhanGiai" placeholder="Độ phân giải">
+      <input id="gocNhin" placeholder="Góc nhìn">
+      <input id="ketNoi" placeholder="Kết nối">
+      <input id="thietKe" placeholder="Thiết kế">
+      <input id="chatLieu" placeholder="Chất liệu">
+      <input id="congSuat" placeholder="Công suất">`;
+
+  }
+
+  else if(type==="sd"){
+
+    box.innerHTML=`<div class="spec-title">💾 Thông số thẻ nhớ</div>
+      <input id="model" placeholder="Model">
+      <input id="xuatXu" placeholder="Xuất xứ">
+      <input id="baoHanh" placeholder="Bảo hành">
+      <input id="dungLuong" placeholder="Dung lượng">
+      <input id="tocDo" placeholder="Tốc độ">
+      <input id="loai" placeholder="Loại">
+      <input id="chatLieu" placeholder="Chất liệu">`;
+
+  }
+
+  else{
+
+    box.innerHTML="";
+
+  }
+
 });
 
 /* =========================
-   LOAD DỮ LIỆU TỪ FIRESTORE
+   LOAD FIRESTORE
 ========================= */
+
 async function loadProducts(){
+
   products = [];
-  try {
-    const querySnapshot = await getDocs(collection(db,"products"));
-    querySnapshot.forEach(doc => {
-      products.push({
-        docId:doc.id,
-        ...doc.data()
-      });
+
+  const querySnapshot =
+  await getDocs(collection(db,"products"));
+
+  querySnapshot.forEach(doc => {
+
+    products.push({
+
+      docId:doc.id,
+
+      ...doc.data()
+
     });
-    render();
-  } catch(e) {
-    console.error("Lỗi tải dữ liệu cũ:", e);
-  }
-}
 
-/* =========================
-   HIỂN THỊ DANH SÁCH SẢN PHẨM TRÊN ADMIN
-========================= */
-function render(){
-  list.innerHTML = "";
-  products.forEach(p => {
-    const div = document.createElement("div");
-    div.className = "item";
-    
-    // Tự động tương thích với cả kiểu chuỗi cũ lẫn kiểu mảng mới để không mất dữ liệu cũ
-    let catDisplay = "";
-    if(Array.isArray(p.category)) {
-      catDisplay = p.category.map(c => nameMap[c] || c).join(", ");
-    } else {
-      catDisplay = nameMap[p.category] || p.category;
-    }
-
-    div.innerHTML = `
-      <img src="${p.img || ''}" alt="">
-      <div>
-        <strong>${p.name || 'Không tên'}</strong><br>
-        <span>Giá: ${(p.price || 0).toLocaleString('vi-VN')}đ</span> | <span>Phân nhánh: ${catDisplay || 'Chưa rõ'}</span>
-      </div>
-    `;
-    list.appendChild(div);
   });
+
+  render();
+
 }
 
-// Chạy tải dữ liệu hiển thị danh sách cũ ngay khi load trang xong
-loadProducts();
-
 /* =========================
-   XỬ LÝ THÊM SẢN PHẨM MỚI (NÚT BẤM UPLOAD)
+   ADD PRODUCT
 ========================= */
+
 btnAdd.addEventListener("click", async function(){
+
   const name=getVal("name");
-  const price=Number(getVal("price").replace(/\D/g,""));
-  const oldPrice=Number(getVal("oldPrice").replace(/\D/g,"") || 0);
+
+  const price=Number(
+    getVal("price").replace(/\D/g,"")
+  );
+
+  const oldPrice=Number(
+    getVal("oldPrice").replace(/\D/g,"") || 0
+  );
+
   const desc=getVal("desc");
-  
-  const selectedCategories = Array.from(document.querySelectorAll(".cat-checkbox:checked")).map(el => el.value);
-  const file = document.getElementById("fileImg").files[0]; // ĐÃ SỬA LỖI: Lấy chính xác phần tử tệp tin đầu tiên
-  const imgUrl = getVal("imgUrl");
+
+  const category=categoryEl.value;
+
+  const file=
+  document.getElementById("fileImg").files[0];
+
+  const imgUrl=getVal("imgUrl");
 
   if(!name){
+
     return alert("Thiếu tên sản phẩm");
+
   }
+
   if(!price){
+
     return alert("Giá không hợp lệ");
+
   }
-  if(selectedCategories.length === 0){
-    return alert("Vui lòng tích chọn ít nhất 1 nhánh hiển thị!");
-  }
+
   if(!file && !imgUrl){
-    return alert("Chưa có ảnh (vui lòng chọn file hoặc điền link)");
+
+    return alert("Chưa có ảnh");
+
   }
 
   async function addProduct(img){
+
     const productData = {
+
       id:Date.now(),
+
       name,
       price,
       oldPrice,
       desc,
-      category: selectedCategories, 
-      categoryName: selectedCategories.map(cat => nameMap[cat]).join(", "),
+
+      category,
+
+      categoryName:nameMap[category],
+
       img,
-      featured: document.getElementById("featured").checked,
+
+      featured:
+      document.getElementById("featured").checked,
+
       model:getVal("model"),
       xuatXu:getVal("xuatXu"),
       baoHanh:getVal("baoHanh"),
@@ -382,68 +414,176 @@ btnAdd.addEventListener("click", async function(){
       dungLuong:getVal("dungLuong"),
       tocDo:getVal("tocDo"),
       loai:getVal("loai")
+
     };
 
-    try {
-      await addDoc(collection(db,"products"), productData);
-      alert("✔ Thêm và phân phối sản phẩm thành công!");
-      
-      // Reset form dọn dẹp giao diện nhập liệu
-      document.getElementById("name").value = "";
-      document.getElementById("price").value = "";
-      document.getElementById("oldPrice").value = "";
-      document.getElementById("desc").value = "";
-      document.getElementById("imgUrl").value = "";
-      document.getElementById("fileImg").value = "";
-      document.querySelectorAll(".cat-checkbox").forEach(el => el.checked = false);
-      document.getElementById("specBox").innerHTML = "";
-      document.getElementById("showCat").innerText = "";
-      
-      // Tải lại danh sách cập nhật mới
-      loadProducts();
-    } catch(e) {
-      alert("Lỗi kết nối Firebase database");
-      console.error(e);
-    }
+    await addDoc(
+      collection(db,"products"),
+      productData
+    );
+
+    alert("✔ Thêm sản phẩm thành công");
+
+    loadProducts();
+
+
+
+
+// 🔹 reload sản phẩm và render trang chủ Featured ngay
+await fetchProducts();  // reload allProducts từ Firestore
+render();               // render lại trang hiện tại
   }
 
   /* =========================
-     LINK ẢNH CÓ SẴN
+     LINK CLOUDINARY
   ========================= */
+
   if(imgUrl){
+
     await addProduct(imgUrl);
+
     return;
+
   }
 
   /* =========================
-     TẢI FILE LÊN CLOUDINARY
+     UPLOAD CLOUDINARY
   ========================= */
-  if(file){
-    try{
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", "qzcttlvsh");
 
-      // ĐÃ KHÔI PHỤC ĐÚNG LINK API CLOUDINARY GỐC CỦA BẠN
+  if(file){
+
+    try{
+
+      const formData = new FormData();
+
+      formData.append("file", file);
+
+      formData.append(
+        "upload_preset",
+        "qzcttlvsh"
+      );
+
       const res = await fetch(
-        "cloudinary.com",
-        { method:"POST", body:formData }
+
+        "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+
+        {
+          method:"POST",
+          body:formData
+        }
+
       );
 
       const data = await res.json();
+
+      console.log(data);
+
       if(!data.secure_url){
-        return alert("Cloudinary từ chối tệp tin tải lên!");
+
+        return alert(
+          "Upload Cloudinary thất bại"
+        );
+
       }
+
       await addProduct(data.secure_url);
+
     }
+
     catch(err){
-      console.error(err);
-      alert("Đường truyền tải ảnh gặp sự cố");
+
+      console.log(err);
+
+      alert("Lỗi upload ảnh");
+
     }
+
   }
-});
 
 });
+
+/* =========================
+   RENDER PRODUCTS MỚI
+========================= */
+
+/* =========================
+   RENDER PRODUCTS 2 DÒNG GIÁ
+========================= */
+function render() {
+
+  if(products.length===0){
+    list.innerHTML = "<p>Chưa có sản phẩm</p>";
+    return;
+  }
+
+  list.innerHTML = products.map(p => `
+    <div class="item" data-id="${p.docId}">
+      <img src="${p.img || ''}">
+      <div>
+        <b>${p.name}</b><br>
+        <span style="color:#00acc1;font-size:12px;">📁 ${p.categoryName || p.category}</span><br>
+
+        <!-- Giá hiện tại (bán ra) -->
+        <div style="color:red; font-weight:bold; margin-top:4px;">
+          Giá hiện tại: ${Number(p.price).toLocaleString()}đ
+        </div>
+
+        <!-- Giá gốc / cũ -->
+        <div style="color:black; font-weight:normal; margin-top:2px;">
+          Giá gốc: ${p.oldPrice ? Number(p.oldPrice).toLocaleString() + 'đ' : '---'}
+        </div>
+
+        <!-- Input sửa giá -->
+        <input type="text" class="priceInput" value="${p.price}" placeholder="Giá mới" style="width:150px; font-weight:bold; color:red; margin-top:4px;">
+        <input type="text" class="oldPriceInput" value="${p.oldPrice || ''}" placeholder="Giá cũ" style="width:150px; margin-top:2px;">
+
+        <!-- Nút cập nhật -->
+        <button class="updateBtn" style="background:#00acc1; margin-top:6px;">Cập nhật</button>
+        <!-- Nút xóa -->
+        <button class="deleteBtn" style="background:red; margin-top:6px;">Xóa</button>
+      </div>
+    </div>
+  `).join("");
+
+  // Gắn sự kiện Cập nhật
+  document.querySelectorAll('.updateBtn').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      const item = e.target.closest('.item');
+      const id = item.dataset.id;
+      const newPrice = Number(item.querySelector('.priceInput').value.replace(/\D/g,''));
+      const oldPrice = Number(item.querySelector('.oldPriceInput').value.replace(/\D/g,'') || 0);
+      if(!newPrice) return alert("Giá không hợp lệ");
+      await updateDoc(doc(db,"products",id), { price: newPrice, oldPrice: oldPrice });
+      alert("Cập nhật thành công");
+      loadProducts();
+    });
+  });
+
+  // Gắn sự kiện Xóa
+  document.querySelectorAll('.deleteBtn').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      const item = e.target.closest('.item');
+      const id = item.dataset.id;
+      if(confirm("Xóa sản phẩm này?")){
+        await deleteDoc(doc(db,"products",id));
+        item.remove();
+      }
+    });
+  });
+}
+/* =========================
+   INIT
+========================= */
+
+loadProducts();
+
+categoryEl.dispatchEvent(
+  new Event("change")
+);
+
+});
+
 </script>
+
 </body>
 </html>
