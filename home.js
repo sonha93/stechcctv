@@ -163,7 +163,7 @@ function render(list){
         <div class="img-box">
 
           <img
-            src="${p.imgUrl || ''}"
+            src="${p.img || ''}"
             alt="${p.name || ''}"
             onclick="goDetail('${id}')"
             style="cursor:pointer;"
