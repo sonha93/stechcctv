@@ -1,47 +1,589 @@
-function renderHome() {
-  const box = document.getElementById("products");
-  if (!box) return;
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin sản phẩm</title>
 
-  // allProducts phải tồn tại, nếu chưa có thì lấy từ LocalStorage
-  if (!window.allProducts) window.allProducts = JSON.parse(localStorage.getItem("products")) || [];
+<style>
+:root{
+  --main-color:#00acc1;
+}
 
-  // Hiển thị tất cả sản phẩm có category "home"
-  const productsToShow = allProducts.filter(p => p.category === "home");
+body{
+  font-family:Arial;
+  padding:20px;
+  background:#f5f5f5;
+}
 
-  box.innerHTML = "";
+h2{
+  margin-bottom:15px;
+}
 
-  if (!productsToShow || productsToShow.length === 0) {
-    box.innerHTML = "<p>Chưa có sản phẩm nào</p>";
-    console.log("No products to show!", allProducts); // debug
+input,
+button,
+select,
+textarea{
+  display:block;
+  margin:8px 0;
+  padding:10px;
+  width:320px;
+  border:1px solid #ddd;
+  border-radius:6px;
+  font-family:Arial;
+}
+
+textarea{
+  min-height:80px;
+  resize:vertical;
+}
+
+button{
+  cursor:pointer;
+  background:var(--main-color);
+  color:#fff;
+  border:none;
+}
+
+.item{
+  background:#fff;
+  padding:10px;
+  margin:10px 0;
+  border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.item img{
+  width:80px;
+  border-radius:6px;
+  display:block;
+  margin-bottom:6px;
+}
+
+.home-btn{
+  display:inline-block;
+  margin-bottom:10px;
+  background:#00acc1;
+  color:#fff;
+  padding:8px 12px;
+  border-radius:20px;
+  text-decoration:none;
+  font-size:13px;
+}
+
+.home-btn:hover{
+  opacity:0.85;
+}
+
+#showCat{
+  margin:6px 0;
+  color:#00acc1;
+  font-weight:bold;
+}
+
+.spec-title{
+  font-weight:bold;
+  margin-top:10px;
+  color:#00acc1;
+}
+
+@media (max-width:768px){
+
+  body{
+    padding:10px;
+  }
+
+  input,
+  select,
+  button,
+  textarea{
+    width:100%;
+    box-sizing:border-box;
+  }
+
+  .form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:2px;
+  }
+
+  .full{
+    grid-column:1 / -1;
+  }
+
+  .item{
+    display:grid;
+    grid-template-columns:80px 1fr;
+    gap:10px;
+    align-items:center;
+  }
+
+  .item img{
+    width:100%;
+    height:auto;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>📦 Admin sản phẩm</h2>
+
+<a href="index.html" class="home-btn">
+← Trang chủ
+</a>
+
+<div class="form-grid">
+
+  <input id="name" placeholder="Tên sản phẩm" class="full">
+
+  <input id="price" placeholder="Giá">
+
+  <input id="oldPrice" placeholder="Giá cũ">
+
+  <textarea id="desc" placeholder="Mô tả" class="full"></textarea>
+
+  <input id="imgUrl" placeholder="Link ảnh Cloudinary" class="full">
+
+  <select id="category" class="full">
+
+    <option value="sd">Thẻ nhớ</option>
+
+    <option value="cam-in">
+      Camera trong nhà
+    </option>
+
+    <option value="cam-ngoai">
+      Camera ngoài trời
+    </option>
+
+    <option value="combo">
+      Combo
+    </option>
+
+    <option value="home">
+      Trang chủ
+    </option>
+
+  </select>
+
+  <div id="showCat" class="full"></div>
+
+  <div id="specBox" class="full"></div>
+
+  <input type="file" id="fileImg" class="full">
+
+  <label class="full">
+    <input type="checkbox" id="featured">
+    ⭐ Featured
+  </label>
+
+  <button id="btnAdd" class="full">
+    ➕ Thêm sản phẩm
+  </button>
+
+</div>
+
+<hr>
+
+<div id="list"></div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* =========================
+   FIREBASE
+========================= */
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+
+  authDomain: "stech-73b89.firebaseapp.com",
+
+  projectId: "stech-73b89",
+
+  storageBucket: "stech-73b89.firebasestorage.app",
+
+  messagingSenderId: "873739162979",
+
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+/* =========================
+   START
+========================= */
+
+window.addEventListener("load", function(){
+
+let products = [];
+
+const nameMap = {
+
+  sd:"Thẻ nhớ",
+
+  "cam-in":"Camera trong nhà",
+
+  "cam-ngoai":"Camera ngoài trời",
+
+  combo:"Combo",
+
+  home:"Trang chủ"
+
+};
+
+function getVal(id){
+
+  const el=document.getElementById(id);
+
+  return el ? el.value.trim() : "";
+
+}
+
+const categoryEl =
+document.getElementById("category");
+
+const btnAdd =
+document.getElementById("btnAdd");
+
+const list =
+document.getElementById("list");
+
+/* =========================
+   CATEGORY
+========================= */
+
+categoryEl.addEventListener("change", function(){
+
+  const type=this.value;
+
+  document.getElementById("showCat").innerText =
+  "📁 Thư mục: " + nameMap[type];
+
+  const box=document.getElementById("specBox");
+
+  if(
+    type==="cam-in" ||
+    type==="cam-ngoai" ||
+    type==="home"
+  ){
+
+    box.innerHTML=`<div class="spec-title">⚙️ Thông số camera</div>
+      <input id="model" placeholder="Model">
+      <input id="xuatXu" placeholder="Xuất xứ">
+      <input id="baoHanh" placeholder="Bảo hành">
+      <input id="doPhanGiai" placeholder="Độ phân giải">
+      <input id="gocNhin" placeholder="Góc nhìn">
+      <input id="ketNoi" placeholder="Kết nối">
+      <input id="thietKe" placeholder="Thiết kế">
+      <input id="chatLieu" placeholder="Chất liệu">
+      <input id="congSuat" placeholder="Công suất">`;
+
+  }
+
+  else if(type==="sd"){
+
+    box.innerHTML=`<div class="spec-title">💾 Thông số thẻ nhớ</div>
+      <input id="model" placeholder="Model">
+      <input id="xuatXu" placeholder="Xuất xứ">
+      <input id="baoHanh" placeholder="Bảo hành">
+      <input id="dungLuong" placeholder="Dung lượng">
+      <input id="tocDo" placeholder="Tốc độ">
+      <input id="loai" placeholder="Loại">
+      <input id="chatLieu" placeholder="Chất liệu">`;
+
+  }
+
+  else{
+
+    box.innerHTML="";
+
+  }
+
+});
+
+/* =========================
+   LOAD FIRESTORE
+========================= */
+
+async function loadProducts(){
+
+  products = [];
+
+  const querySnapshot =
+  await getDocs(collection(db,"products"));
+
+  querySnapshot.forEach(doc => {
+
+    products.push({
+
+      docId:doc.id,
+
+      ...doc.data()
+
+    });
+
+  });
+
+  render();
+
+}
+
+/* =========================
+   ADD PRODUCT
+========================= */
+
+btnAdd.addEventListener("click", async function(){
+
+  const name=getVal("name");
+
+  const price=Number(
+    getVal("price").replace(/\D/g,"")
+  );
+
+  const oldPrice=Number(
+    getVal("oldPrice").replace(/\D/g,"") || 0
+  );
+
+  const desc=getVal("desc");
+
+  const category=categoryEl.value;
+
+  const file=
+  document.getElementById("fileImg").files[0];
+
+  const imgUrl=getVal("imgUrl");
+
+  if(!name){
+
+    return alert("Thiếu tên sản phẩm");
+
+  }
+
+  if(!price){
+
+    return alert("Giá không hợp lệ");
+
+  }
+
+  if(!file && !imgUrl){
+
+    return alert("Chưa có ảnh");
+
+  }
+
+  async function addProduct(img){
+
+    const productData = {
+
+      id:Date.now(),
+
+      name,
+      price,
+      oldPrice,
+      desc,
+
+      category,
+
+      categoryName:nameMap[category],
+
+      img,
+
+      featured:
+      document.getElementById("featured").checked,
+
+      model:getVal("model"),
+      xuatXu:getVal("xuatXu"),
+      baoHanh:getVal("baoHanh"),
+      doPhanGiai:getVal("doPhanGiai"),
+      gocNhin:getVal("gocNhin"),
+      ketNoi:getVal("ketNoi"),
+      thietKe:getVal("thietKe"),
+      chatLieu:getVal("chatLieu"),
+      congSuat:getVal("congSuat"),
+      dungLuong:getVal("dungLuong"),
+      tocDo:getVal("tocDo"),
+      loai:getVal("loai")
+
+    };
+
+    await addDoc(
+      collection(db,"products"),
+      productData
+    );
+
+    alert("✔ Thêm sản phẩm thành công");
+
+    loadProducts();
+
+
+
+
+// 🔹 reload sản phẩm và render trang chủ Featured ngay
+await fetchProducts();  // reload allProducts từ Firestore
+render();               // render lại trang hiện tại
+  }
+
+  /* =========================
+     LINK CLOUDINARY
+  ========================= */
+
+  if(imgUrl){
+
+    await addProduct(imgUrl);
+
+    return;
+
+  }
+
+  /* =========================
+     UPLOAD CLOUDINARY
+  ========================= */
+
+  if(file){
+
+    try{
+
+      const formData = new FormData();
+
+      formData.append("file", file);
+
+      formData.append(
+        "upload_preset",
+        "qzcttlvsh"
+      );
+
+      const res = await fetch(
+
+        "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+
+        {
+          method:"POST",
+          body:formData
+        }
+
+      );
+
+      const data = await res.json();
+
+      console.log(data);
+
+      if(!data.secure_url){
+
+        return alert(
+          "Upload Cloudinary thất bại"
+        );
+
+      }
+
+      await addProduct(data.secure_url);
+
+    }
+
+    catch(err){
+
+      console.log(err);
+
+      alert("Lỗi upload ảnh");
+
+    }
+
+  }
+
+});
+
+/* =========================
+   RENDER PRODUCTS MỚI
+========================= */
+
+/* =========================
+   RENDER PRODUCTS 2 DÒNG GIÁ
+========================= */
+function render() {
+
+  if(products.length===0){
+    list.innerHTML = "<p>Chưa có sản phẩm</p>";
     return;
   }
 
-  productsToShow.forEach(p => {
-    const id = String(p.id || p.docId || Date.now()); // fallback id
-    let percentText = "";
-    if (p.oldPrice && p.oldPrice > p.price) {
-      const percent = Math.round((1 - p.price / p.oldPrice) * 100);
-      percentText = `-${percent}%`;
-    }
-    const imgUrl = p.img || "https://via.placeholder.com/300";
+  list.innerHTML = products.map(p => `
+    <div class="item" data-id="${p.docId}">
+      <img src="${p.img || ''}">
+      <div>
+        <b>${p.name}</b><br>
+        <span style="color:#00acc1;font-size:12px;">📁 ${p.categoryName || p.category}</span><br>
 
-    box.innerHTML += `
-      <div class="item">
-        <img 
-          src="${imgUrl}" 
-          onclick="openZoom('${imgUrl}')"
-          onerror="this.src='https://via.placeholder.com/300'"
-        >
-        <h4>${p.name || "Không có tên"}</h4>
-        <div class="price-box">
-          <span class="price">${Number(p.price || 0).toLocaleString()}đ</span>
-          ${p.oldPrice && p.oldPrice > p.price ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>` : ""}
-          ${percentText ? `<span class="discount-text">${percentText}</span>` : ""}
+        <!-- Giá hiện tại (bán ra) -->
+        <div style="color:red; font-weight:bold; margin-top:4px;">
+          Giá hiện tại: ${Number(p.price).toLocaleString()}đ
         </div>
-        <button class="spec-btn" onclick="toggleSpec('${id}')">⚙️ Xem thông số</button>
-        <button class="cart-btn" onclick="addToCart('${id}')">🛒 Mua ngay</button>
-        <div class="spec-box" id="spec-${id}" style="display:none;">${renderSpec ? renderSpec(p) : ""}</div>
+
+        <!-- Giá gốc / cũ -->
+        <div style="color:black; font-weight:normal; margin-top:2px;">
+          Giá gốc: ${p.oldPrice ? Number(p.oldPrice).toLocaleString() + 'đ' : '---'}
+        </div>
+
+        <!-- Input sửa giá -->
+        <input type="text" class="priceInput" value="${p.price}" placeholder="Giá mới" style="width:150px; font-weight:bold; color:red; margin-top:4px;">
+        <input type="text" class="oldPriceInput" value="${p.oldPrice || ''}" placeholder="Giá cũ" style="width:150px; margin-top:2px;">
+
+        <!-- Nút cập nhật -->
+        <button class="updateBtn" style="background:#00acc1; margin-top:6px;">Cập nhật</button>
+        <!-- Nút xóa -->
+        <button class="deleteBtn" style="background:red; margin-top:6px;">Xóa</button>
       </div>
-    `;
+    </div>
+  `).join("");
+
+  // Gắn sự kiện Cập nhật
+  document.querySelectorAll('.updateBtn').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      const item = e.target.closest('.item');
+      const id = item.dataset.id;
+      const newPrice = Number(item.querySelector('.priceInput').value.replace(/\D/g,''));
+      const oldPrice = Number(item.querySelector('.oldPriceInput').value.replace(/\D/g,'') || 0);
+      if(!newPrice) return alert("Giá không hợp lệ");
+      await updateDoc(doc(db,"products",id), { price: newPrice, oldPrice: oldPrice });
+      alert("Cập nhật thành công");
+      loadProducts();
+    });
+  });
+
+  // Gắn sự kiện Xóa
+  document.querySelectorAll('.deleteBtn').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      const item = e.target.closest('.item');
+      const id = item.dataset.id;
+      if(confirm("Xóa sản phẩm này?")){
+        await deleteDoc(doc(db,"products",id));
+        item.remove();
+      }
+    });
   });
 }
+/* =========================
+   INIT
+========================= */
+
+loadProducts();
+
+categoryEl.dispatchEvent(
+  new Event("change")
+);
+
+});
+
+</script>
+
+</body>
+</html>
