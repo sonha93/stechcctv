@@ -1,5 +1,7 @@
 // ======================= Cart.js duy nhất =======================
 
+var db = window.db;
+var auth = window.auth;
 
 let currentUser = null;
 let cart = [];
