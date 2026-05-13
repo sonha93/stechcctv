@@ -187,7 +187,7 @@ function checkout() {
 
 // ======================= ADD TO CART =======================
 function addToCart(product) {
-
+   console.log(product);
   const user = auth.currentUser;
 
   if (!user) {
