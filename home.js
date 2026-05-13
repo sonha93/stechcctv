@@ -102,6 +102,8 @@ function fixData(list){
 ========================= */
 
 function render(list){
+     console.log("ALL PRODUCTS:", list);
+
 
   const box =
     document.getElementById("products");
@@ -163,7 +165,7 @@ function render(list){
         <div class="img-box">
 
           <img
-            src="${p.img || ''}"
+          src="${p.img || p.imgUrl || ''}"
             alt="${p.name || ''}"
             onclick="goDetail('${id}')"
             style="cursor:pointer;"
@@ -293,36 +295,23 @@ document.getElementById("search");
 
 if(search){
 
-  search.addEventListener(
-    "input",
-    e => {
+search.addEventListener("input", e => {
 
-      const key =
-      e.target.value.toLowerCase();
+  const key = e.target.value.toLowerCase();
 
-      let data =
-      allProducts.filter(
-        p => p.category === "home"
-      );
-
-      render(
-
-        data.filter(
-          p =>
-            p.name &&
-            p.name
-            .toLowerCase()
-            .includes(key)
-        )
-
-      );
-
-    }
+  let data = allProducts.filter(
+    p => p.category?.trim().toLowerCase() === "home"
   );
 
-}
+  render(
+    data.filter(
+      p => p.name?.toLowerCase().includes(key)
+    )
+  );
 
-/* =========================
+});
+}
+   /* =========================
    MENU
 ========================= */
 
