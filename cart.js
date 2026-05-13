@@ -3,9 +3,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-  /* =========================
-     🔥 FIREBASE INIT
-  ========================== */
+  // =========================
+  // 🔥 FIREBASE INIT
+  // =========================
   const firebaseConfig = {
     apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
     authDomain:"stech-73b89.firebaseapp.com",
@@ -19,25 +19,26 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  /* =========================
-     GLOBAL VARIABLES
-  ========================== */
+  // =========================
+  // GLOBAL VARIABLES
+  // =========================
   let currentUserUID = null;
   let cart = [];
   let sessionToken = null;
 
-  /* =========================
-     🔑 LOGIN FUNCTION
-  ========================== */
+  // =========================
+  // LOGIN
+  // =========================
   function loginUser(uid) {
     currentUserUID = uid;
-    startSession(uid);
-    loadCart();
+    startSession(uid, () => {
+      loadCart();
+    });
   }
 
-  /* =========================
-     🛒 CART FUNCTIONS
-  ========================== */
+  // =========================
+  // CART FUNCTIONS
+  // =========================
   function getCart(uid) {
     return JSON.parse(localStorage.getItem(`cart_user_${uid}`)) || [];
   }
@@ -52,15 +53,12 @@
 
   function getCartFromFirebase(uid, callback) {
     db.ref('carts/' + uid).once('value', snapshot => {
-      if (snapshot.exists()) {
-        callback(snapshot.val().cart || []);
-      } else {
-        callback([]);
-      }
+      if (snapshot.exists()) callback(snapshot.val().cart || []);
+      else callback([]);
     });
   }
 
-  async function loadCart() {
+  function loadCart() {
     if (!currentUserUID) return;
     getCartFromFirebase(currentUserUID, firebaseCart => {
       cart = firebaseCart.length ? firebaseCart : getCart(currentUserUID);
@@ -69,46 +67,53 @@
   }
 
   function addToCart(product) {
-    if (!currentUserUID) { alert("Bạn chưa đăng nhập!"); return; }
-    if (!validateSession()) return;
+    validateSession(valid => {
+      if (!valid) return;
+      if (!currentUserUID) { alert("Bạn chưa đăng nhập!"); return; }
 
-    const index = cart.findIndex(p => p.id === product.id);
-    if (index >= 0) cart[index].quantity += 1;
-    else cart.push({ ...product, quantity: 1 });
+      const index = cart.findIndex(p => p.id === product.id);
+      if (index >= 0) cart[index].quantity += 1;
+      else cart.push({ ...product, quantity: 1 });
 
-    saveCart(currentUserUID, cart);
-    saveCartToFirebase(currentUserUID, cart);
-    renderCart();
-  }
-
-  function removeFromCart(productId) {
-    if (!validateSession()) return;
-
-    cart = cart.filter(p => p.id !== productId);
-    saveCart(currentUserUID, cart);
-    saveCartToFirebase(currentUserUID, cart);
-    renderCart();
-  }
-
-  function updateQuantity(productId, quantity) {
-    if (!validateSession()) return;
-
-    const index = cart.findIndex(p => p.id === productId);
-    if (index >= 0) {
-      cart[index].quantity = quantity;
-      if (cart[index].quantity <= 0) cart.splice(index, 1);
       saveCart(currentUserUID, cart);
       saveCartToFirebase(currentUserUID, cart);
       renderCart();
-    }
+    });
   }
 
-  /* =========================
-     🖥 RENDER CART
-  ========================== */
+  function removeFromCart(productId) {
+    validateSession(valid => {
+      if (!valid) return;
+
+      cart = cart.filter(p => p.id !== productId);
+      saveCart(currentUserUID, cart);
+      saveCartToFirebase(currentUserUID, cart);
+      renderCart();
+    });
+  }
+
+  function updateQuantity(productId, quantity) {
+    validateSession(valid => {
+      if (!valid) return;
+
+      const index = cart.findIndex(p => p.id === productId);
+      if (index >= 0) {
+        cart[index].quantity = quantity;
+        if (cart[index].quantity <= 0) cart.splice(index, 1);
+        saveCart(currentUserUID, cart);
+        saveCartToFirebase(currentUserUID, cart);
+        renderCart();
+      }
+    });
+  }
+
+  // =========================
+  // RENDER CART
+  // =========================
   function renderCart() {
     const cartContainer = document.getElementById("cart-items");
     if (!cartContainer) return;
+
     cartContainer.innerHTML = cart.map(p => `
       <div class="cart-item">
         <span>${p.name}</span>
@@ -116,33 +121,45 @@
         <button onclick="removeFromCart('${p.id}')">Xóa</button>
       </div>
     `).join("");
+
     const countEl = document.getElementById("cart-count");
     if (countEl) countEl.innerText = cart.reduce((sum, p) => sum + p.quantity, 0);
   }
 
-  /* =========================
-     🔄 SESSION CHECK
-  ========================== */
+  // =========================
+  // SESSION FUNCTIONS
+  // =========================
   function generateSessionToken() {
-    return Date.now() + "_" + Math.random().toString(36).substring(2, 10);
+    return Date.now() + "_" + Math.random().toString(36).substring(2,10);
   }
 
-  function startSession(uid) {
+  function startSession(uid, callback) {
     sessionToken = generateSessionToken();
-    db.ref('sessions/' + uid).set({ token: sessionToken });
+    db.ref('sessions/' + uid).set({ token: sessionToken }, error => {
+      if (error) console.error("Lưu session thất bại:", error);
+      else {
+        console.log("Session token lưu thành công!");
+        if (callback) callback();
+      }
+    });
   }
 
-  function validateSession() {
-    if (!currentUserUID) return false;
-    const tokenRef = db.ref('sessions/' + currentUserUID);
-    let valid = true;
-    tokenRef.once('value', snapshot => {
+  function validateSession(callback) {
+    if (!currentUserUID) return callback(false);
+
+    db.ref('sessions/' + currentUserUID).once('value', snapshot => {
       const token = snapshot.val()?.token;
       if (token !== sessionToken) {
         alert("Tài khoản này đang đăng nhập trên thiết bị khác!");
-        valid = false;
+        return callback(false);
       }
+      callback(true);
     });
-    return valid;
   }
+
+  // =========================
+  // EXAMPLE USAGE
+  // =========================
+  // loginUser("user123"); // Gọi khi user login
+  // addToCart({ id: "sp1", name: "Camera A", price: 1500 }); // Thêm sản phẩm test
 </script>
