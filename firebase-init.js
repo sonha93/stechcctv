@@ -30,3 +30,6 @@ let firebaseReady = false;
 auth.onAuthStateChanged(user => {
   firebaseReady = true;
 });
+window.auth = firebase.auth();
+window.db = firebase.database();
+window.storage = firebase.storage();
