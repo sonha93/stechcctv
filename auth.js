@@ -133,12 +133,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (userInfoPreview) userInfoPreview.style.display = "block";
             if (userNamePreview) userNamePreview.innerText = "Xin chào\n" + (user.email || "");
 
-        } else {
-            loginLink.style.display = "block";
-            logoutLink.style.display = "none";
+       } else {
+    loginLink.style.display = "block";
+    logoutLink.style.display = "none";
 
-            if (userInfoPreview) userInfoPreview.style.display = "none";
-        }
+    // ẩn avatar + xóa text bằng JS
+    if (userInfoPreview) userInfoPreview.style.display = "none";
+    if (userNamePreview) userNamePreview.innerText = "";
+}
     });
 
 });
