@@ -19,18 +19,25 @@ document.querySelector(".header-icons .cart-count");
 
 auth.onAuthStateChanged(user => {
 
-```
-if (!user) {
+    currentUser = user || null;
 
-    window.location.href = "index.html";
-    return;
+    // LOGOUT
+    if (!user) {
 
-}
+        // xóa cart
+        localStorage.removeItem("cart");
 
-currentUser = user;
+        cartData = [];
 
-loadCart();
-```
+        renderCart();
+
+        updateBadge();
+
+        return;
+    }
+
+    // LOGIN
+    loadCart();
 
 });
 
@@ -40,20 +47,13 @@ loadCart();
 
 function loadCart() {
 
-```
-if (!currentUser) return;
+    cartData = JSON.parse(
+        localStorage.getItem("cart")
+    ) || [];
 
-const cartKey =
-"cart_" + currentUser.uid;
+    renderCart();
 
-cartData = JSON.parse(
-    localStorage.getItem(cartKey)
-) || [];
-
-renderCart();
-
-updateBadge();
-```
+    updateBadge();
 
 }
 
@@ -63,115 +63,113 @@ updateBadge();
 
 function renderCart() {
 
-```
-const box =
-document.getElementById("cartList");
+    const box =
+    document.getElementById("cartList");
 
-const totalBox =
-document.getElementById("total");
+    const totalBox =
+    document.getElementById("total");
 
-const actionBox =
-document.getElementById("cartAction");
+    const actionBox =
+    document.getElementById("cartAction");
 
-if (!box || !totalBox || !actionBox)
-return;
-
-// GIỎ TRỐNG
-if (cartData.length === 0) {
-
-    box.innerHTML =
-    "<p class='empty'>Giỏ hàng trống 🛒</p>";
-
-    totalBox.innerHTML = "";
-    actionBox.innerHTML = "";
-
+    if (!box || !totalBox || !actionBox)
     return;
 
-}
+    // GIỎ TRỐNG
+    if (cartData.length === 0) {
 
-let total = 0;
+        box.innerHTML =
+        "<p class='empty'>Giỏ hàng trống 🛒</p>";
 
-box.innerHTML = cartData.map((item, i) => {
+        totalBox.innerHTML = "";
+        actionBox.innerHTML = "";
 
-    const qty =
-    item.qty || 1;
+        return;
 
-    total +=
-    (item.price || 0) * qty;
+    }
 
-    return `
+    let total = 0;
 
-    <div class="item">
+    box.innerHTML = cartData.map((item, i) => {
 
-        <img src="${item.img || ''}">
+        const qty =
+        item.qty || 1;
 
-        <div class="info">
+        total +=
+        (item.price || 0) * qty;
 
-            <b>
-                ${item.name || ''}
-            </b>
+        return `
 
-            <br>
+        <div class="item">
 
-            <div class="price-new">
-                ${(item.price || 0).toLocaleString()}đ
-            </div>
+            <img src="${item.img || ''}">
 
-            ${
-                item.oldPrice
-                ? `
-                <div class="price-old">
-                    ${item.oldPrice.toLocaleString()}đ
+            <div class="info">
+
+                <b>
+                    ${item.name || ''}
+                </b>
+
+                <br>
+
+                <div class="price-new">
+                    ${(item.price || 0).toLocaleString()}đ
                 </div>
-                `
-                : ''
-            }
 
-            <div class="qty">
+                ${
+                    item.oldPrice
+                    ? `
+                    <div class="price-old">
+                        ${item.oldPrice.toLocaleString()}đ
+                    </div>
+                    `
+                    : ''
+                }
 
-                <button onclick="changeQty(${i}, -1)">
-                    -
-                </button>
+                <div class="qty">
 
-                <span>
-                    ${qty}
-                </span>
+                    <button onclick="changeQty(${i}, -1)">
+                        -
+                    </button>
 
-                <button onclick="changeQty(${i}, 1)">
-                    +
-                </button>
+                    <span>
+                        ${qty}
+                    </span>
+
+                    <button onclick="changeQty(${i}, 1)">
+                        +
+                    </button>
+
+                </div>
 
             </div>
+
+            <button
+                class="remove"
+                onclick="removeItem(${i})"
+            >
+                🗑
+            </button>
 
         </div>
 
+        `;
+
+    }).join("");
+
+    totalBox.innerHTML =
+    "Tổng: " +
+    total.toLocaleString() +
+    "đ";
+
+    actionBox.innerHTML = `
         <button
-            class="remove"
-            onclick="removeItem(${i})"
+            class="checkout"
+            onclick="checkout()"
         >
-            🗑
+            Đặt hàng
         </button>
-
-    </div>
-
     `;
-
-}).join("");
-
-totalBox.innerHTML =
-"Tổng: " +
-total.toLocaleString() +
-"đ";
-
-actionBox.innerHTML = `
-    <button
-        class="checkout"
-        onclick="checkout()"
-    >
-        Đặt hàng
-    </button>
-`;
-```
 
 }
 
@@ -181,19 +179,17 @@ actionBox.innerHTML = `
 
 function updateBadge() {
 
-```
-if (!cartCountEl) return;
+    if (!cartCountEl) return;
 
-let count = 0;
+    let count = 0;
 
-cartData.forEach(item => {
+    cartData.forEach(item => {
 
-    count += item.qty || 1;
+        count += item.qty || 1;
 
-});
+    });
 
-cartCountEl.innerText = count;
-```
+    cartCountEl.innerText = count;
 
 }
 
@@ -203,18 +199,16 @@ cartCountEl.innerText = count;
 
 function changeQty(i, delta) {
 
-```
-cartData[i].qty =
-(cartData[i].qty || 1) + delta;
+    cartData[i].qty =
+    (cartData[i].qty || 1) + delta;
 
-if (cartData[i].qty < 1) {
+    if (cartData[i].qty < 1) {
 
-    cartData[i].qty = 1;
+        cartData[i].qty = 1;
 
-}
+    }
 
-saveCart();
-```
+    saveCart();
 
 }
 
@@ -224,11 +218,9 @@ saveCart();
 
 function removeItem(i) {
 
-```
-cartData.splice(i, 1);
+    cartData.splice(i, 1);
 
-saveCart();
-```
+    saveCart();
 
 }
 
@@ -238,21 +230,14 @@ saveCart();
 
 function saveCart() {
 
-```
-if (!currentUser) return;
+    localStorage.setItem(
+        "cart",
+        JSON.stringify(cartData)
+    );
 
-const cartKey =
-"cart_" + currentUser.uid;
+    renderCart();
 
-localStorage.setItem(
-    cartKey,
-    JSON.stringify(cartData)
-);
-
-renderCart();
-
-updateBadge();
-```
+    updateBadge();
 
 }
 
@@ -262,23 +247,16 @@ updateBadge();
 
 function checkout() {
 
-```
-if (!currentUser) return;
+    localStorage.removeItem("cart");
 
-const cartKey =
-"cart_" + currentUser.uid;
+    cartData = [];
 
-localStorage.removeItem(cartKey);
+    renderCart();
 
-cartData = [];
+    updateBadge();
 
-renderCart();
-
-updateBadge();
-
-window.location.href =
-"checkout.html";
-```
+    window.location.href =
+    "checkout.html";
 
 }
 
