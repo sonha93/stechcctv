@@ -1,28 +1,18 @@
 
 /* =========================
    FIREBASE
-========================= */
+========================= */   
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 import {
   getFirestore,
   collection,
   getDocs
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-  getDatabase,
-  ref,
-  get,
-  set
-}
-   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
 const firebaseConfig = {
 
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -35,29 +25,16 @@ const firebaseConfig = {
 
   messagingSenderId: "873739162979",
 
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56",
-
-  databaseURL:
-  "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app"
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 
 };
 
 const app = initializeApp(firebaseConfig);
 
-const firestore = getFirestore(app);
+const db = getFirestore(app);
 
-const rtdb = getDatabase(app);
-const auth = getAuth(app);
-
-let currentUser = null;
-
-onAuthStateChanged(auth, user => {
-
-  currentUser = user;
-
-});
 /* =========================
-   CAMERA TRONG NHÀ
+   CAMERA NGOÀI TRỜI
 ========================= */
 
 let allProducts = [];
@@ -72,7 +49,7 @@ async function getProducts(){
 
     const querySnapshot =
     await getDocs(
-    collection(firestore,"products")
+      collection(db,"products")
     );
 
     let arr = [];
@@ -133,7 +110,7 @@ function render(list){
 
   list = fixData(list);
 
-  /* chỉ camera ngoài trời */
+  /* chỉ camera ngoài nha */
   list = list.filter(
     p => p.category === "cam-ngoai"
   );
@@ -221,19 +198,24 @@ function render(list){
 
         </div>
 
-<button
-  class="spec-btn"
-  onclick="goDetail('${id}')"
->
-  ⚙️ Xem thông số
-</button>
+               <button
+          class="spec-btn"
+          onclick="goDetail('${id}')"
+        >
 
-<button
-  class="cart-btn"
-  onclick="addToCart('${id}')"
->
-  🛒 Thêm vào giỏ
-</button>
+          ⚙️ Xem thông số
+
+        </button>
+
+        <button
+          class="cart-btn"
+          onclick="addToCart('${id}')"
+        >
+
+          🛒 Thêm vào giỏ
+
+        </button>
+
       </div>
 
     `;
@@ -241,7 +223,6 @@ function render(list){
   });
 
 }
-
 
 /* =========================
    DETAIL
@@ -258,15 +239,7 @@ window.goDetail = function(id){
    CART
 ========================= */
 
-async function addToCart(id){
-
-  if(!currentUser){
-
-    alert("Vui lòng đăng nhập");
-
-    return;
-
-  }
+window.addToCart = function(id){
 
   const product =
     allProducts.find(
@@ -275,14 +248,10 @@ async function addToCart(id){
 
   if(!product) return;
 
-  const cartRef =
-    ref(rtdb,"carts/" + currentUser.uid);
-
-  const snapshot =
-    await get(cartRef);
-
   let cart =
-    snapshot.val() || [];
+    JSON.parse(
+      localStorage.getItem("cart")
+    ) || [];
 
   const exist =
     cart.find(
@@ -291,8 +260,7 @@ async function addToCart(id){
 
   if(exist){
 
-    exist.qty =
-      (exist.qty || 1) + 1;
+    exist.qty += 1;
 
   }
 
@@ -308,13 +276,14 @@ async function addToCart(id){
 
   }
 
-  await set(cartRef,cart);
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
 
   alert("Đã thêm vào giỏ 🛒");
 
-}
-
-window.addToCart = addToCart;
+};
 
 /* =========================
    SEARCH
