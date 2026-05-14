@@ -1,6 +1,6 @@
-// ==========================
-// FIREBASE INIT
-// ==========================
+ // ==========================
+ // FIREBASE CART SCRIPT
+ // ==========================
 
 // Firebase config
 const firebaseConfig = {
@@ -12,9 +12,6 @@ const firebaseConfig = {
     messagingSenderId: "873739162979",
     appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
 
 // Lấy auth và database
 const auth = firebase.auth();
@@ -32,12 +29,14 @@ const cartCountEl = document.querySelector(".header-icons .cart-count");
 // ==========================
 auth.onAuthStateChanged(user => {
     if (!user) return window.location.href = "index.html";
+
     currentUser = user;
     loadCart();
 });
 
 function loadCart() {
     if (!currentUser) return;
+
     db.ref("carts/" + currentUser.uid).on("value", snap => {
         cart = snap.val() || [];
         renderCart();
@@ -95,7 +94,7 @@ function updateBadge() {
     if (!cartCountEl) return;
 
     let count = 0;
-    cart.forEach(i => count += i.qty || 1);
+    cart.forEach(item => count += item.qty || 1);
     cartCountEl.innerText = count;
 }
 
@@ -121,6 +120,7 @@ function removeItem(i) {
 // ==========================
 function saveCart() {
     if (!currentUser) return;
+
     db.ref("carts/" + currentUser.uid).set(cart);
 }
 
