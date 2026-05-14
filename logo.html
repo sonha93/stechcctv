@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Chi tiết sản phẩm - STECH</title>
+<title>Chi tiết sản phẩm</title>
 
 <style>
 
@@ -11,13 +11,12 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:Arial,sans-serif;
+   font-weight:bold;
 }
 
 body{
-  background:#f4f7fb;
+  background:#f5f5f5;
   color:#111;
-  overflow-x:hidden;
 }
 
 /* HEADER */
@@ -28,33 +27,25 @@ header{
   z-index:999;
   display:flex;
   align-items:center;
-  gap:8px;
-  padding:10px;
+  gap:5px;
+  padding:12px;
   background:#33A0AB;
-  box-shadow:0 2px 10px rgba(0,0,0,.12);
 }
 
 .menu-btn,
 .icon-btn{
-  width:42px;
-  height:42px;
-  border:none;
-  border-radius:12px;
-  background:#0f8d98;
+  width:46px;
+  height:46px;
+  border-radius:14px;
+  background:#00acc1;
   color:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
   text-decoration:none;
+  font-size:22px;
   cursor:pointer;
-  font-size:18px;
   position:relative;
-  transition:.2s;
-}
-
-.menu-btn:hover,
-.icon-btn:hover{
-  transform:scale(.96);
 }
 
 .admin-btn{
@@ -62,12 +53,11 @@ header{
 }
 
 .logo{
-  width:42px;
-  height:42px;
-  border-radius:12px;
+  width:46px;
+  height:46px;
+  border-radius:14px;
   overflow:hidden;
   background:#fff;
-  flex-shrink:0;
 }
 
 .logo img{
@@ -83,25 +73,23 @@ header{
 
 .search-box input{
   width:100%;
-  height:40px;
+  height:46px;
   border:none;
-  outline:none;
-  border-radius:12px;
+  border-radius:14px;
   padding:0 14px;
-  font-size:14px;
+  outline:none;
 }
 
 .cart-count{
   position:absolute;
   top:-5px;
   right:-5px;
-  min-width:18px;
-  height:18px;
-  border-radius:50%;
   background:red;
   color:#fff;
+  min-width:20px;
+  height:20px;
+  border-radius:50%;
   font-size:11px;
-  font-weight:bold;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -112,14 +100,13 @@ header{
 .sidebar{
   position:fixed;
   top:0;
-  left:-270px;
-  width:250px;
+  left:-280px;
+  width:260px;
   height:100vh;
   background:#fff;
   z-index:9999;
   transition:.3s;
   padding:20px;
-  box-shadow:0 0 20px rgba(0,0,0,.2);
 }
 
 .sidebar.active{
@@ -128,18 +115,13 @@ header{
 
 .sidebar a{
   display:block;
+  padding:14px;
+  margin-bottom:10px;
+  border-radius:12px;
+  background:#f5f5f5;
   text-decoration:none;
   color:#111;
-  background:#f5f5f5;
-  padding:14px;
-  border-radius:12px;
-  margin-bottom:10px;
   font-weight:bold;
-  transition:.2s;
-}
-
-.sidebar a:hover{
-  background:#dff7fa;
 }
 
 #overlay,
@@ -159,57 +141,41 @@ header{
   visibility:visible;
 }
 
-/* CONTAINER */
+/* DETAIL */
 
 .container{
-  max-width:1200px;
-  margin:auto;
-  padding:18px;
-}
-
-/* PRODUCT CARD */
-
-.product-card{
-  background:#fff;
-  border-radius:24px;
-  padding:18px;
-  box-shadow:0 5px 20px rgba(0,0,0,.06);
-}
-
-.product-main{
+  max-width:1000px;
+  margin:0auto;
+  padding:0px;
   display:flex;
-  gap:22px;
+  gap:18px;
   align-items:flex-start;
 }
 
-/* LEFT */
-
 .left{
-  width:360px;
+  width:330px;
   flex-shrink:0;
 }
 
 .left img{
   width:100%;
-  height:360px;
+  height:330px;
   object-fit:cover;
-  border-radius:20px;
-  background:#f3f3f3;
+  border-radius:18px;
+  background:#fff;
 }
-
-/* RIGHT */
 
 .right{
   flex:1;
   display:flex;
   flex-direction:column;
-  gap:14px;
+  gap:12px;
 }
 
 .product-name{
-  font-size:30px;
+  font-size:28px;
   font-weight:800;
-  line-height:1.5;
+  line-height:1.4;
 }
 
 .price-row{
@@ -221,12 +187,12 @@ header{
 
 .price{
   color:red;
-  font-size:34px;
+  font-size:32px;
   font-weight:bold;
 }
 
 .old-price{
-  color:#666;
+  color:#555;
   text-decoration:line-through;
   font-size:18px;
 }
@@ -235,34 +201,26 @@ header{
   background:red;
   color:#fff;
   padding:5px 10px;
-  border-radius:10px;
+  border-radius:8px;
   font-size:13px;
   font-weight:bold;
 }
 
 .action-wrap{
   display:flex;
+  flex-direction:column;
   gap:10px;
-  flex-wrap:wrap;
 }
 
 .buy-btn,
 .spec-open-btn{
-  flex:1;
-  min-width:180px;
-  height:50px;
+  height:48px;
   border:none;
-  border-radius:16px;
+  border-radius:14px;
   color:#fff;
-  font-size:15px;
+  font-size:16px;
   font-weight:bold;
   cursor:pointer;
-  transition:.2s;
-}
-
-.buy-btn:hover,
-.spec-open-btn:hover{
-  transform:translateY(-2px);
 }
 
 .buy-btn{
@@ -274,103 +232,10 @@ header{
 }
 
 .desc{
-  background:#f8fbff;
-  border:1px solid #e3eef7;
-  padding:16px;
-  border-radius:18px;
-  line-height:1.8;
-  font-size:15px;
-}
-
-/* REVIEW */
-
-.review-box{
-  margin-top:18px;
   background:#fff;
-  border-radius:20px;
-  padding:18px;
-  box-shadow:0 5px 20px rgba(0,0,0,.05);
-}
-
-.review-title{
-  font-size:22px;
-  margin-bottom:14px;
-}
-
-.review-input{
-  width:100%;
-  min-height:90px;
-  border:none;
-  outline:none;
-  resize:none;
-  background:#f5f7fb;
-  border-radius:14px;
   padding:14px;
-  font-size:14px;
-}
-
-.review-btn{
-  margin-top:12px;
-  width:100%;
-  height:46px;
-  border:none;
-  border-radius:14px;
-  background:#00acc1;
-  color:#fff;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.review-list{
-  margin-top:18px;
-}
-
-.review-item{
-  background:#f8fbff;
-  border-radius:14px;
-  padding:14px;
-  margin-bottom:12px;
+  border-radius:16px;
   line-height:1.7;
-}
-
-.review-user{
-  color:#00acc1;
-  margin-bottom:6px;
-  font-size:14px;
-  font-weight:bold;
-}
-
-/* SEARCH */
-
-.search-results{
-  position:absolute;
-  top:50px;
-  left:0;
-  width:100%;
-  background:#fff;
-  border-radius:14px;
-  overflow:hidden;
-  z-index:999;
-  box-shadow:0 5px 20px rgba(0,0,0,.1);
-}
-
-.search-result-item{
-  display:flex;
-  gap:10px;
-  padding:10px;
-  border-bottom:1px solid #eee;
-  cursor:pointer;
-}
-
-.search-result-item:hover{
-  background:#f5fbff;
-}
-
-.search-result-item img{
-  width:55px;
-  height:55px;
-  object-fit:cover;
-  border-radius:10px;
 }
 
 /* PANEL */
@@ -407,18 +272,17 @@ header{
 }
 
 .panel-product img{
-  width:52px;
-  height:52px;
-  border-radius:10px;
+  width:50px;
+  height:50px;
   object-fit:cover;
+  border-radius:10px;
 }
 
 .close-panel{
   width:40px;
   height:40px;
   border:none;
-  border-radius:12px;
-  background:#f3f3f3;
+  border-radius:10px;
   cursor:pointer;
 }
 
@@ -428,17 +292,16 @@ header{
 }
 
 .spec-tab{
-  flex:1;
-  height:48px;
   border:none;
   background:none;
+  padding:14px;
   cursor:pointer;
   font-weight:bold;
 }
 
 .spec-tab.active{
-  color:#00acc1;
-  border-bottom:3px solid #00acc1;
+  color:red;
+  border-bottom:3px solid red;
 }
 
 .panel-body{
@@ -455,8 +318,8 @@ header{
 
 .spec-row{
   display:flex;
-  gap:12px;
-  padding:12px 0;
+  gap:10px;
+  padding:8px 0;
   border-bottom:1px solid #eee;
 }
 
@@ -469,66 +332,98 @@ header{
   flex:1;
 }
 
-/* MOBILE */
+/* SEARCH */
+
+.search-results{
+  position:absolute;
+  width:100%;
+  background:#fff;
+  border-radius:12px;
+  margin-top:10px;
+  overflow:hidden;
+  z-index:999;
+}
+
+.search-result-item{
+  display:flex;
+  gap:8px;
+  padding:8px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+}
+
+.search-result-item img{
+  width:50px;
+  height:50px;
+  object-fit:cover;
+  border-radius:8px;
+}
 
 @media(max-width:768px){
+.menu-btn,
+  .icon-btn{
+    width:42px;
+    height:42px;
+    font-size:20px;
+  }
 
+  .logo{
+    width:39px;
+    height:39px;
+  }
+
+  
   .container{
-    padding:10px;
+    flex-direction:row;
+    align-items:flex-start;
+    gap:14px;
+    padding:1px; 
+      
   }
-
-  .product-card{
-    padding:12px;
-    border-radius:18px;
-  }
-
-  .product-main{
-    flex-direction:column;
-    gap:12px;
-  }
+}
 
   .left{
-    width:100%;
+    width:120px;
+    flex-shrink:0;
   }
 
   .left img{
-    width:100%;
-    height:320px;
+    width:130px;
+    height:178px;
     border-radius:18px;
+    object-fit:cover;
   }
 
   .right{
-    width:100%;
+    flex:1;
+    gap:10px;
+    padding-top:2px;
   }
 
   .product-name{
-    font-size:22px;
-    line-height:1.5;
+    font-size:18px;
+    line-height:1.4;
   }
 
   .price{
-    font-size:28px;
+    font-size:22px;
   }
 
   .old-price{
     font-size:14px;
   }
 
-  .desc{
-    font-size:14px;
-  }
-
-  .action-wrap{
-    flex-direction:column;
+  .sale{
+    font-size:12px;
+    padding:4px 8px;
+    border-radius:10px;
   }
 
   .buy-btn,
   .spec-open-btn{
-    width:100%;
-  }
-
-  .review-title{
-    font-size:19px;
+    height:46px;
+    font-size:15px;
+    border-radius:18px;
   }
 
 }
@@ -539,31 +434,16 @@ header{
 <body>
 
 <div id="overlay"></div>
-<div id="panelOverlay"></div>
-
-<!-- SIDEBAR -->
 
 <div class="sidebar" id="sidebar">
-
-  <a href="index.html">🏠 Trang chủ</a>
-
-  <a href="camera-trong-nha.html">
-    📷 Camera trong nhà
-  </a>
-
-  <a href="camera-ngoai-troi.html">
-    🌤 Camera ngoài trời
-  </a>
-
+  <a href="index.html">Trang chủ</a>
+  <a href="camera-trong-nha.html">Camera trong nhà</a>
+  <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
 </div>
-
-<!-- HEADER -->
 
 <header>
 
-  <div class="menu-btn" onclick="toggleMenu()">
-    ☰
-  </div>
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
 
   <div class="logo">
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png">
@@ -582,115 +462,65 @@ header{
 
   </div>
 
-  <a href="admin.html" class="icon-btn admin-btn">
-    🔐
-  </a>
+  <div style="display:flex;gap:10px;">
 
-  <a href="cart.html" class="icon-btn">
+    <a href="admin.html" class="icon-btn admin-btn">🔐</a>
 
-    🛒
-
-    <span class="cart-count" id="cartCount">
-      0
-    </span>
-
-  </a>
-
-</header>
-
-<!-- MAIN -->
-
-<div class="container">
-
-  <div class="product-card">
-
-    <div class="product-main">
-
-      <!-- LEFT -->
-
-      <div class="left">
-
-        <img id="detailImg">
-
-      </div>
-
-      <!-- RIGHT -->
-
-      <div class="right">
-
-        <div class="product-name" id="detailName"></div>
-
-        <div class="price-row">
-
-          <div class="price" id="detailPrice"></div>
-
-          <div class="old-price" id="detailOldPrice"></div>
-
-          <div class="sale" id="detailSale"></div>
-
-        </div>
-
-        <div class="action-wrap">
-
-          <button class="spec-open-btn" onclick="openPanel()">
-            ⚙️ Xem thông số
-          </button>
-
-          <button class="buy-btn" onclick="addToCart()">
-            🛒 Thêm giỏ hàng
-          </button>
-
-        </div>
-
-        <div class="desc" id="detailDesc"></div>
-
-      </div>
-
-    </div>
+    <a href="cart.html" class="icon-btn">
+      🛒
+      <span class="cart-count" id="cartCount">0</span>
+    </a>
 
   </div>
 
-  <!-- REVIEW -->
+</header>
 
-  <div class="review-box">
+<div class="container">
 
-    <div class="review-title">
-      ⭐ Đánh giá & bình luận
+  <div class="left">
+    <img id="detailImg">
+  </div>
+
+  <div class="right">
+
+    <div class="product-name" id="detailName"></div>
+
+    <div class="price-row">
+      <div class="price" id="detailPrice"></div>
+      <div class="old-price" id="detailOldPrice"></div>
+      <div class="sale" id="detailSale"></div>
     </div>
 
-    <textarea
-      class="review-input"
-      id="reviewInput"
-      placeholder="Nhập bình luận của bạn..."
-    ></textarea>
+    <div class="action-wrap">
 
-    <button class="review-btn" onclick="sendReview()">
-      Gửi bình luận
-    </button>
+      <button class="spec-open-btn" onclick="openPanel()">
+        ⚙️ Xem thông số
+      </button>
 
-    <div class="review-list" id="reviewList"></div>
+      <button class="buy-btn" onclick="addToCart()">
+        🛒 Thêm giỏ hàng
+      </button>
+
+    </div>
+
+    <div class="desc" id="detailDesc"></div>
 
   </div>
 
 </div>
 
-<!-- PANEL -->
+<div id="panelOverlay"></div>
 
 <div id="specPanel">
 
   <div class="panel-top">
 
     <div class="panel-product">
-
       <img id="panelProductImg">
-
       <h3 id="panelProductName"></h3>
-
     </div>
 
-    <button class="close-panel" onclick="closePanel()">
-      ✕
-    </button>
+    <button class="close-panel" onclick="closePanel()">✕</button>
 
   </div>
 
@@ -712,6 +542,8 @@ header{
 
   <div class="panel-body">
 
+    <!-- THÔNG TIN -->
+
     <div class="spec-content active" id="infoTab">
 
       <div class="spec-row">
@@ -731,6 +563,8 @@ header{
 
     </div>
 
+    <!-- CẤU HÌNH -->
+
     <div class="spec-content" id="configTab">
 
       <div class="spec-row">
@@ -749,6 +583,8 @@ header{
       </div>
 
     </div>
+
+    <!-- THIẾT KẾ -->
 
     <div class="spec-content" id="designTab">
 
@@ -772,7 +608,6 @@ header{
   </div>
 
 </div>
-
 <script type="module">
 
 import { initializeApp }
@@ -785,7 +620,17 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* FIREBASE */
+document.getElementById("overlay").onclick = function(){
+
+  document
+  .getElementById("sidebar")
+  .classList.remove("active");
+
+  document
+  .getElementById("overlay")
+  .classList.remove("active");
+
+}
 
 const firebaseConfig = {
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -799,15 +644,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* DATA */
-
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
 let products = [];
 let product = null;
-
-/* LOAD PRODUCT */
 
 async function loadProduct(){
 
@@ -824,17 +665,11 @@ async function loadProduct(){
 
   if(!product) return;
 
-  document.getElementById("detailImg").src =
-  product.img || "";
+  document.getElementById("detailImg").src = product.img || "";
+  document.getElementById("panelProductImg").src = product.img || "";
 
-  document.getElementById("panelProductImg").src =
-  product.img || "";
-
-  document.getElementById("detailName").innerText =
-  product.name || "";
-
-  document.getElementById("panelProductName").innerText =
-  product.name || "";
+  document.getElementById("detailName").innerText = product.name || "";
+  document.getElementById("panelProductName").innerText = product.name || "";
 
   document.getElementById("detailPrice").innerText =
   Number(product.price || 0).toLocaleString()+"đ";
@@ -902,8 +737,6 @@ async function loadProduct(){
 
 loadProduct();
 
-/* MENU */
-
 function toggleMenu(){
 
   document
@@ -915,11 +748,6 @@ function toggleMenu(){
   .classList.toggle("active");
 
 }
-
-document.getElementById("overlay")
-.onclick = toggleMenu;
-
-/* PANEL */
 
 function openPanel(){
 
@@ -945,9 +773,6 @@ function closePanel(){
 
 }
 
-document.getElementById("panelOverlay")
-.onclick = closePanel;
-
 function showTab(tabId,btn){
 
   document
@@ -966,8 +791,6 @@ function showTab(tabId,btn){
 
 }
 
-/* CART */
-
 function addToCart(){
 
   if(!product) return;
@@ -975,8 +798,7 @@ function addToCart(){
   let cart =
   JSON.parse(localStorage.getItem("cart")) || [];
 
-  const exist =
-  cart.find(
+  const exist = cart.find(
     x => String(x.id) === String(product.id)
   );
 
@@ -1000,7 +822,7 @@ function addToCart(){
 
   updateCartCount();
 
-  alert("Đã thêm vào giỏ hàng");
+  alert("Đã thêm vào giỏ");
 
 }
 
@@ -1022,8 +844,6 @@ function updateCartCount(){
 
 updateCartCount();
 
-/* SEARCH */
-
 function searchProduct(){
 
   const term =
@@ -1040,8 +860,7 @@ function searchProduct(){
 
   const filtered =
   products.filter(
-    p => p.name &&
-    p.name.toLowerCase().includes(term)
+    p => p.name.toLowerCase().includes(term)
   );
 
   filtered.forEach(p=>{
@@ -1055,7 +874,7 @@ function searchProduct(){
       <img src="${p.img}">
       <div>
         <strong>${p.name}</strong>
-        <div style="color:red;font-weight:bold;margin-top:4px;">
+        <div style="color:red;font-weight:bold;">
           ${Number(p.price).toLocaleString()}đ
         </div>
       </div>
@@ -1074,51 +893,12 @@ function searchProduct(){
 
 }
 
-/* REVIEW */
-
-function sendReview(){
-
-  const input =
-  document.getElementById("reviewInput");
-
-  const review =
-  input.value.trim();
-
-  if(review === "") return;
-
-  const reviewList =
-  document.getElementById("reviewList");
-
-  const div =
-  document.createElement("div");
-
-  div.className = "review-item";
-
-  div.innerHTML = `
-    <div class="review-user">
-      👤 Người dùng STECH
-    </div>
-
-    <div>
-      ${review}
-    </div>
-  `;
-
-  reviewList.prepend(div);
-
-  input.value = "";
-
-}
-
-/* GLOBAL */
-
 window.toggleMenu = toggleMenu;
 window.openPanel = openPanel;
 window.closePanel = closePanel;
 window.showTab = showTab;
 window.addToCart = addToCart;
 window.searchProduct = searchProduct;
-window.sendReview = sendReview;
 
 </script>
 
