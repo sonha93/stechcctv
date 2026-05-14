@@ -113,21 +113,20 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================
     // LOGOUT USER
     // ==========================
-    logoutLink?.addEventListener("click", async () => {
+  // ==========================
+// LOGOUT USER
+// ==========================
 
-    // XÓA CART CHÍNH
-    localStorage.removeItem("cart");
+logoutLink?.addEventListener("click", async () => {
 
-    // XÓA CART UID CŨ
-    Object.keys(localStorage).forEach(key => {
+    // xóa cart của user hiện tại
+    if(currentUserUID){
 
-        if(key.startsWith("cart_")){
+        localStorage.removeItem(
+            "cart_" + currentUserUID
+        );
 
-            localStorage.removeItem(key);
-
-        }
-
-    });
+    }
 
     await signOut(auth);
 
@@ -136,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loginLink.style.display = "block";
     logoutLink.style.display = "none";
 
-    // ẨN USER INFO
+    // ẩn user info
     if (userInfoPreview)
         userInfoPreview.style.display = "none";
 
