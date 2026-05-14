@@ -17,12 +17,12 @@ const firebaseConfig = {
 const auth = firebase.auth();
 const db = firebase.database();
 
-// Biến trạng thái
 let currentUser = null;
 let cart = [];
 
 // Badge giỏ hàng nếu có header khác
-const cartCountEl = document.querySelector(".header-icons .cart-count");
+const cartCountEl =
+document.querySelector(".header-icons .cart-count");
 
 // ==========================
 // LOAD USER + CART
