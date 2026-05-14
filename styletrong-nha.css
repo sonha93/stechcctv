@@ -356,3 +356,7 @@ header div{
 header .logo {
     display: none !important;
 }
+/* Ẩn avatar sidebar */
+#userInfoPreview {
+    display: none !important;
+}
