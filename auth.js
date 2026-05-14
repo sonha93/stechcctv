@@ -1,4 +1,6 @@
-// auth.js – popup + UID + multi-user cart
+// ==========================
+// AUTH.JS – POPUP + UID + MULTI-USER CART
+// ==========================
 
 import { 
     getAuth, 
@@ -14,12 +16,15 @@ import {
     setDoc 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// Firebase instances
 const auth = getAuth();
 const db = getFirestore();
 let currentUserUID = null;
 
+// DOM ready
 document.addEventListener("DOMContentLoaded", () => {
 
+    // DOM elements
     const loginLink = document.getElementById("loginLink");
     const logoutLink = document.getElementById("logoutLink");
     const authModal = document.getElementById("authModal");
@@ -32,18 +37,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const userInfoPreview = document.getElementById("userInfoPreview");
     const userNamePreview = document.getElementById("sidebarUserNamePreview");
 
-    // Mở popup login
+    // ==========================
+    // OPEN LOGIN POPUP
+    // ==========================
     loginLink?.addEventListener("click", e => {
         e.preventDefault();
         authModal.style.display = "flex";
         authMessage.innerText = "";
     });
 
-    closeAuth?.addEventListener("click", () => {
-        authModal.style.display = "none";
-    });
+    closeAuth?.addEventListener("click", () => authModal.style.display = "none");
 
-    // Đăng ký
+    // ==========================
+    // REGISTER USER
+    // ==========================
     authRegisterBtn?.addEventListener("click", async () => {
         const email = authEmail.value.trim();
         const pass = authPassword.value.trim();
@@ -59,24 +66,26 @@ document.addEventListener("DOMContentLoaded", () => {
             const user = userCredential.user;
             currentUserUID = user.uid;
 
-            // Lưu vào Firestore
+            // Save to Firestore
             await setDoc(doc(db, "users", currentUserUID), {
                 email,
                 createdAt: new Date()
             });
 
-            // Redirect ngay
+            // Redirect
             window.location.href = "profile.html";
 
         } catch (err) {
             authMessage.style.color = "red";
-            authMessage.innerText = (err.code === "auth/email-already-in-use")
-                ? "Email đã tồn tại! Hãy đăng nhập."
+            authMessage.innerText = (err.code === "auth/email-already-in-use") 
+                ? "Email đã tồn tại! Hãy đăng nhập." 
                 : err.message;
         }
     });
 
-    // Đăng nhập
+    // ==========================
+    // LOGIN USER
+    // ==========================
     authLoginBtn?.addEventListener("click", async () => {
         const email = authEmail.value.trim();
         const pass = authPassword.value.trim();
@@ -92,8 +101,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const user = userCredential.user;
             currentUserUID = user.uid;
 
-            // Redirect ngay
-            window.location.href = "profile.html";
+            // Close modal
+            authModal.style.display = "none";
 
         } catch (err) {
             authMessage.style.color = "red";
@@ -101,7 +110,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Đăng xuất
+    // ==========================
+    // LOGOUT USER
+    // ==========================
     logoutLink?.addEventListener("click", async () => {
         await signOut(auth);
         currentUserUID = null;
@@ -109,7 +120,9 @@ document.addEventListener("DOMContentLoaded", () => {
         logoutLink.style.display = "none";
     });
 
-    // Kiểm tra auth state
+    // ==========================
+    // AUTH STATE CHANGE
+    // ==========================
     onAuthStateChanged(auth, (user) => {
         currentUserUID = user ? user.uid : null;
 
@@ -117,21 +130,14 @@ document.addEventListener("DOMContentLoaded", () => {
             loginLink.style.display = "none";
             logoutLink.style.display = "block";
 
-            if (userInfoPreview) {
-                userInfoPreview.style.display = "block";
-            }
-
-            if (userNamePreview) {
-                userNamePreview.innerText = "Xin chào\n" + (user.email || "");
-            }
+            if (userInfoPreview) userInfoPreview.style.display = "block";
+            if (userNamePreview) userNamePreview.innerText = "Xin chào\n" + (user.email || "");
 
         } else {
             loginLink.style.display = "block";
             logoutLink.style.display = "none";
 
-            if (userInfoPreview) {
-                userInfoPreview.style.display = "none";
-            }
+            if (userInfoPreview) userInfoPreview.style.display = "none";
         }
     });
 
