@@ -24,9 +24,6 @@ auth.onAuthStateChanged(user => {
     // LOGOUT
     if (!user) {
 
-        // xóa cart
-        localStorage.removeItem("cart");
-
         cartData = [];
 
         renderCart();
@@ -45,23 +42,23 @@ auth.onAuthStateChanged(user => {
 // LOAD CART
 // ==========================
 
-function saveCart() {
+function loadCart() {
 
     if (!currentUser) return;
 
     const cartKey =
     "cart_" + currentUser.uid;
 
-    localStorage.setItem(
-        cartKey,
-        JSON.stringify(cartData)
-    );
+    cartData = JSON.parse(
+        localStorage.getItem(cartKey)
+    ) || [];
 
     renderCart();
 
     updateBadge();
 
 }
+
 // ==========================
 // RENDER CART
 // ==========================
@@ -235,8 +232,13 @@ function removeItem(i) {
 
 function saveCart() {
 
+    if (!currentUser) return;
+
+    const cartKey =
+    "cart_" + currentUser.uid;
+
     localStorage.setItem(
-        "cart",
+        cartKey,
         JSON.stringify(cartData)
     );
 
@@ -252,7 +254,12 @@ function saveCart() {
 
 function checkout() {
 
-    localStorage.removeItem("cart");
+    if (!currentUser) return;
+
+    const cartKey =
+    "cart_" + currentUser.uid;
+
+    localStorage.removeItem(cartKey);
 
     cartData = [];
 
