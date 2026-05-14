@@ -90,6 +90,7 @@ const userNamePreview = document.getElementById("sidebarUserNamePreview");
     currentUserUID = null;
     loginLink.style.display = "block";
     logoutLink.style.display = "none";
+    userInfoPreview.style.display = "none";
   });
 
   // Kiểm tra auth state
