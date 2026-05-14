@@ -1,3 +1,4 @@
+
 /* =========================
    FIREBASE
 ========================= */
@@ -6,21 +7,11 @@ import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
-  getAuth,
-  onAuthStateChanged
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
   getFirestore,
   collection,
   getDocs
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-/* =========================
-   CONFIG
-========================= */
 
 const firebaseConfig = {
 
@@ -38,29 +29,15 @@ const firebaseConfig = {
 
 };
 
-/* =========================
-   INIT FIREBASE
-========================= */
-
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-const auth = getAuth(app);
-
-let currentUser = null;
-
-let allProducts = [];
-
 /* =========================
-   AUTH
+   CAMERA TRONG NHÀ
 ========================= */
 
-onAuthStateChanged(auth, user => {
-
-  currentUser = user;
-
-});
+let allProducts = [];
 
 /* =========================
    GET PRODUCTS
@@ -72,7 +49,7 @@ async function getProducts(){
 
     const querySnapshot =
     await getDocs(
-      collection(db, "products")
+      collection(db,"products")
     );
 
     let arr = [];
@@ -81,7 +58,7 @@ async function getProducts(){
 
       arr.push({
 
-        id: doc.id,
+        id:doc.id,
         ...doc.data()
 
       });
@@ -112,38 +89,35 @@ function fixData(list){
 
     ...p,
 
-    price: Number(p.price) || 0,
+    price:Number(p.price) || 0,
 
-    oldPrice: Number(p.oldPrice) || 0
+    oldPrice:Number(p.oldPrice) || 0
 
   }));
 
 }
 
 /* =========================
-   RENDER PRODUCTS
+   RENDER
 ========================= */
 
 function render(list){
 
-  const box =
-  document.getElementById("products");
-
+  const box = document.getElementById("products");
   if(!box) return;
 
   list = fixData(list);
 
-  /* featured */
-  list = list.filter(
-    p => p.featured === true
-  );
-
+  /* chỉ camera trong nhà */
+list = list.filter(
+  p => p.featured === true
+);
   box.innerHTML = "";
 
   if(list.length === 0){
 
     box.innerHTML =
-    "<p>Chưa có sản phẩm</p>";
+      "<p>Chưa có sản phẩm</p>";
 
     return;
 
@@ -151,86 +125,94 @@ function render(list){
 
   list.forEach(p => {
 
-    const id = String(p.id);
+    const id =
+      String(p.id);
 
     const price =
-    Number(p.price) || 0;
+      Number(p.price) || 0;
 
     const oldPrice =
-    Number(p.oldPrice) || 0;
+      Number(p.oldPrice) || 0;
 
     const hasDiscount =
-    oldPrice > price;
+      oldPrice > price;
 
     const percent =
-    hasDiscount
+      hasDiscount
       ? Math.round(
           (1 - price / oldPrice) * 100
         )
       : 0;
 
     box.innerHTML += `
-
     <div class="item">
 
       ${
-        percent
-        ? `
-          <div class="discount-badge">
-            -${percent}%
-          </div>
-        `
-        : ""
-      }
+  percent
+  ? `
+    <div class="discount-badge">
+      -${percent}%
+    </div>
+  `
+  : ""
+}
 
-      <div class="img-box">
+        <div class="img-box">
 
-        <img
-          src="${p.img || ''}"
-          alt="${p.name || ''}"
-          onclick="goDetail('${id}')"
-          style="cursor:pointer;"
-        >
+          <img
+            src="${p.img || ''}"
+            alt="${p.name || ''}"
+            onclick="goDetail('${id}')"
+            style="cursor:pointer;"
+          >
 
-      </div>
+        </div>
 
-      <h4>
-        ${p.name || "Không tên"}
-      </h4>
+        <h4>
+          ${p.name || "Không tên"}
+        </h4>
 
-      <div class="price-box">
+        <div class="price-box">
 
-        <span class="price">
-          ${price.toLocaleString()}đ
-        </span>
+          <span class="price">
+            ${price.toLocaleString()}đ
+          </span>
 
-        ${
-          hasDiscount
-          ? `
+          ${
+            hasDiscount
+
+            ? `
+
             <span class="old-price">
               ${oldPrice.toLocaleString()}đ
             </span>
-          `
-          : ""
-        }
 
+            `
+
+            : ""
+
+          }
+
+        </div>
+
+       <button
+  class="spec-btn"
+  onclick="goDetail('${id}')"
+>
+
+  ⚙️ Xem thông số
+
+</button>
+
+<button
+  class="cart-btn"
+  onclick="addToCart('${id}')"
+>
+
+  🛒 Thêm vào giỏ
+
+</button>
       </div>
-
-      <button
-        class="spec-btn"
-        onclick="goDetail('${id}')"
-      >
-        ⚙️ Xem thông số
-      </button>
-
-      <button
-        class="cart-btn"
-        onclick="addToCart('${id}')"
-      >
-        🛒 Thêm vào giỏ
-      </button>
-
-    </div>
 
     `;
 
@@ -242,73 +224,62 @@ function render(list){
    DETAIL
 ========================= */
 
-function goDetail(id){
+window.goDetail = function(id){
 
   window.location.href =
-  `logo.html?id=${id}`;
+    `logo.html?id=${id}`;
 
-}
+};
 
 /* =========================
-   ADD TO CART
+   CART
 ========================= */
 
-function addToCart(id){
-
-  if(!currentUser){
-
-    alert("Vui lòng đăng nhập");
-    return;
-
-  }
+window.addToCart = function(id){
 
   const product =
-  allProducts.find(
-    p => String(p.id) === String(id)
-  );
+    allProducts.find(
+      p => String(p.id) === String(id)
+    );
 
   if(!product) return;
 
-  /* GIỎ RIÊNG THEO USER */
-  const cartKey =
-  "cart_" + currentUser.uid;
-
-const cartKey =
-"cart_" + currentUser.uid;
-
-let cart =
-JSON.parse(
-  localStorage.getItem(cartKey)
-) || [];
+  let cart =
+    JSON.parse(
+      localStorage.getItem("cart")
+    ) || [];
 
   const exist =
-  cart.find(
-    i => String(i.id) === String(id)
-  );
+    cart.find(
+      i => String(i.id) === String(id)
+    );
 
   if(exist){
 
     exist.qty += 1;
 
-  }else{
+  }
+
+  else{
 
     cart.push({
 
       ...product,
-      qty: 1
+
+      qty:1
 
     });
 
   }
 
   localStorage.setItem(
-    cartKey,
+    "cart",
     JSON.stringify(cart)
   );
 
   alert("Đã thêm vào giỏ 🛒");
 
-}
+};
 
 /* =========================
    SEARCH
@@ -326,10 +297,10 @@ if(search){
       const key =
       e.target.value.toLowerCase();
 
-      let data =
-      allProducts.filter(
-        p => p.featured === true
-      );
+let data =
+allProducts.filter(
+  p => p.featured === true
+);
 
       render(
 
@@ -352,7 +323,7 @@ if(search){
    MENU
 ========================= */
 
-function toggleMenu(){
+window.toggleMenu = function(){
 
   const sidebar =
   document.getElementById("sidebar");
@@ -367,17 +338,7 @@ function toggleMenu(){
 
   overlay.classList.toggle("active");
 
-}
-
-/* =========================
-   GLOBAL
-========================= */
-
-window.goDetail = goDetail;
-
-window.addToCart = addToCart;
-
-window.toggleMenu = toggleMenu;
+};
 
 /* =========================
    INIT
@@ -392,5 +353,4 @@ document.addEventListener(
 
     render(allProducts);
 
-  }
-);
+  });
