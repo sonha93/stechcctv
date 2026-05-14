@@ -1,4 +1,3 @@
-
 /* =========================
    FIREBASE
 ========================= */
@@ -19,6 +18,10 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+/* =========================
+   CONFIG
+========================= */
+
 const firebaseConfig = {
 
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -35,6 +38,10 @@ const firebaseConfig = {
 
 };
 
+/* =========================
+   INIT FIREBASE
+========================= */
+
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
@@ -43,18 +50,17 @@ const auth = getAuth(app);
 
 let currentUser = null;
 
+let allProducts = [];
+
+/* =========================
+   AUTH
+========================= */
+
 onAuthStateChanged(auth, user => {
 
   currentUser = user;
 
 });
-
-
-/* =========================
-   CAMERA TRONG NHÀ
-========================= */
-
-let allProducts = [];
 
 /* =========================
    GET PRODUCTS
@@ -66,7 +72,7 @@ async function getProducts(){
 
     const querySnapshot =
     await getDocs(
-      collection(db,"products")
+      collection(db, "products")
     );
 
     let arr = [];
@@ -75,7 +81,7 @@ async function getProducts(){
 
       arr.push({
 
-        id:doc.id,
+        id: doc.id,
         ...doc.data()
 
       });
@@ -106,35 +112,38 @@ function fixData(list){
 
     ...p,
 
-    price:Number(p.price) || 0,
+    price: Number(p.price) || 0,
 
-    oldPrice:Number(p.oldPrice) || 0
+    oldPrice: Number(p.oldPrice) || 0
 
   }));
 
 }
 
 /* =========================
-   RENDER
+   RENDER PRODUCTS
 ========================= */
 
 function render(list){
 
-  const box = document.getElementById("products");
+  const box =
+  document.getElementById("products");
+
   if(!box) return;
 
   list = fixData(list);
 
-  /* chỉ camera trong nhà */
-list = list.filter(
-  p => p.featured === true
-);
+  /* featured */
+  list = list.filter(
+    p => p.featured === true
+  );
+
   box.innerHTML = "";
 
   if(list.length === 0){
 
     box.innerHTML =
-      "<p>Chưa có sản phẩm</p>";
+    "<p>Chưa có sản phẩm</p>";
 
     return;
 
@@ -142,94 +151,86 @@ list = list.filter(
 
   list.forEach(p => {
 
-    const id =
-      String(p.id);
+    const id = String(p.id);
 
     const price =
-      Number(p.price) || 0;
+    Number(p.price) || 0;
 
     const oldPrice =
-      Number(p.oldPrice) || 0;
+    Number(p.oldPrice) || 0;
 
     const hasDiscount =
-      oldPrice > price;
+    oldPrice > price;
 
     const percent =
-      hasDiscount
+    hasDiscount
       ? Math.round(
           (1 - price / oldPrice) * 100
         )
       : 0;
 
     box.innerHTML += `
+
     <div class="item">
 
       ${
-  percent
-  ? `
-    <div class="discount-badge">
-      -${percent}%
-    </div>
-  `
-  : ""
-}
+        percent
+        ? `
+          <div class="discount-badge">
+            -${percent}%
+          </div>
+        `
+        : ""
+      }
 
-        <div class="img-box">
+      <div class="img-box">
 
-          <img
-            src="${p.img || ''}"
-            alt="${p.name || ''}"
-            onclick="goDetail('${id}')"
-            style="cursor:pointer;"
-          >
+        <img
+          src="${p.img || ''}"
+          alt="${p.name || ''}"
+          onclick="goDetail('${id}')"
+          style="cursor:pointer;"
+        >
 
-        </div>
+      </div>
 
-        <h4>
-          ${p.name || "Không tên"}
-        </h4>
+      <h4>
+        ${p.name || "Không tên"}
+      </h4>
 
-        <div class="price-box">
+      <div class="price-box">
 
-          <span class="price">
-            ${price.toLocaleString()}đ
-          </span>
+        <span class="price">
+          ${price.toLocaleString()}đ
+        </span>
 
-          ${
-            hasDiscount
-
-            ? `
-
+        ${
+          hasDiscount
+          ? `
             <span class="old-price">
               ${oldPrice.toLocaleString()}đ
             </span>
+          `
+          : ""
+        }
 
-            `
-
-            : ""
-
-          }
-
-        </div>
-
-       <button
-  class="spec-btn"
-  onclick="goDetail('${id}')"
->
-
-  ⚙️ Xem thông số
-
-</button>
-
-<button
-  class="cart-btn"
-  onclick="addToCart('${id}')"
->
-
-  🛒 Thêm vào giỏ
-
-</button>
       </div>
+
+      <button
+        class="spec-btn"
+        onclick="goDetail('${id}')"
+      >
+        ⚙️ Xem thông số
+      </button>
+
+      <button
+        class="cart-btn"
+        onclick="addToCart('${id}')"
+      >
+        🛒 Thêm vào giỏ
+      </button>
+
+    </div>
 
     `;
 
@@ -241,18 +242,18 @@ list = list.filter(
    DETAIL
 ========================= */
 
-window.goDetail = function(id){
+function goDetail(id){
 
   window.location.href =
-    `logo.html?id=${id}`;
+  `logo.html?id=${id}`;
 
-};
+}
 
 /* =========================
-   CART
+   ADD TO CART
 ========================= */
 
-window.addToCart = function(id){
+function addToCart(id){
 
   if(!currentUser){
 
@@ -262,24 +263,25 @@ window.addToCart = function(id){
   }
 
   const product =
-    allProducts.find(
-      p => String(p.id) === String(id)
-    );
+  allProducts.find(
+    p => String(p.id) === String(id)
+  );
 
   if(!product) return;
 
+  /* GIỎ RIÊNG THEO USER */
   const cartKey =
-    "cart_" + currentUser.uid;
+  "cart_" + currentUser.uid;
 
   let cart =
-    JSON.parse(
-      localStorage.getItem(cartKey)
-    ) || [];
+  JSON.parse(
+    localStorage.getItem(cartKey)
+  ) || [];
 
   const exist =
-    cart.find(
-      i => String(i.id) === String(id)
-    );
+  cart.find(
+    i => String(i.id) === String(id)
+  );
 
   if(exist){
 
@@ -288,8 +290,10 @@ window.addToCart = function(id){
   }else{
 
     cart.push({
+
       ...product,
-      qty:1
+      qty: 1
+
     });
 
   }
@@ -301,7 +305,7 @@ window.addToCart = function(id){
 
   alert("Đã thêm vào giỏ 🛒");
 
-};
+}
 
 /* =========================
    SEARCH
@@ -319,10 +323,10 @@ if(search){
       const key =
       e.target.value.toLowerCase();
 
-let data =
-allProducts.filter(
-  p => p.featured === true
-);
+      let data =
+      allProducts.filter(
+        p => p.featured === true
+      );
 
       render(
 
@@ -345,7 +349,7 @@ allProducts.filter(
    MENU
 ========================= */
 
-window.toggleMenu = function(){
+function toggleMenu(){
 
   const sidebar =
   document.getElementById("sidebar");
@@ -360,7 +364,17 @@ window.toggleMenu = function(){
 
   overlay.classList.toggle("active");
 
-};
+}
+
+/* =========================
+   GLOBAL
+========================= */
+
+window.goDetail = goDetail;
+
+window.addToCart = addToCart;
+
+window.toggleMenu = toggleMenu;
 
 /* =========================
    INIT
@@ -374,8 +388,6 @@ document.addEventListener(
     await getProducts();
 
     render(allProducts);
-}
-  );
-window.goDetail = goDetail;
-window.addToCart = addToCart;
-window.toggleMenu = toggleMenu;
+
+  }
+);
