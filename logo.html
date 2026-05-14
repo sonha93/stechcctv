@@ -6,21 +6,20 @@
 <title>Chi tiết sản phẩm</title>
 
 <style>
-
 *{
   margin:0;
   padding:0;
   box-sizing:border-box;
-   font-weight:bold;
+  font-weight:bold;
 }
 
 body{
   background:#f5f5f5;
   color:#111;
+  font-family:sans-serif;
 }
 
 /* HEADER */
-
 header{
   position:sticky;
   top:0;
@@ -96,7 +95,6 @@ header{
 }
 
 /* SIDEBAR */
-
 .sidebar{
   position:fixed;
   top:0;
@@ -142,11 +140,10 @@ header{
 }
 
 /* DETAIL */
-
 .container{
   max-width:1000px;
-  margin:0auto;
-  padding:0px;
+  margin:0 auto;
+  padding:10px;
   display:flex;
   gap:18px;
   align-items:flex-start;
@@ -239,7 +236,6 @@ header{
 }
 
 /* PANEL */
-
 #specPanel{
   position:fixed;
   top:0;
@@ -333,7 +329,6 @@ header{
 }
 
 /* SEARCH */
-
 .search-results{
   position:absolute;
   width:100%;
@@ -359,8 +354,34 @@ header{
   border-radius:8px;
 }
 
+/* COMMENT */
+.rating-summary{
+  font-size:16px;
+  margin-bottom:8px;
+}
+
+.comment-section{
+  margin-top:16px;
+}
+
+.comment-item{
+  border:1px solid #ccc;
+  border-radius:10px;
+  padding:8px;
+  margin-bottom:8px;
+}
+
+.comment-item img.avatar{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-right:8px;
+}
+
+/* MOBILE */
 @media(max-width:768px){
-.menu-btn,
+  .menu-btn,
   .icon-btn{
     width:42px;
     height:42px;
@@ -372,65 +393,45 @@ header{
     height:39px;
   }
 
-  
   .container{
-    flex-direction:row;
-    align-items:flex-start;
-    gap:14px;
-    padding:1px; 
-      
+    flex-direction:column;
+    gap:12px;
   }
-}
 
   .left{
-    width:120px;
-    flex-shrink:0;
+    width:100%;
   }
 
   .left img{
-    width:130px;
-    height:178px;
-    border-radius:18px;
-    object-fit:cover;
-  }
-
-  .right{
-    flex:1;
-    gap:10px;
-    padding-top:2px;
+    width:100%;
+    height:auto;
   }
 
   .product-name{
-    font-size:18px;
-    line-height:1.4;
+    font-size:20px;
   }
 
   .price{
-    font-size:22px;
+    font-size:24px;
   }
 
   .old-price{
-    font-size:14px;
+    font-size:16px;
   }
 
   .sale{
-    font-size:12px;
+    font-size:14px;
     padding:4px 8px;
-    border-radius:10px;
   }
 
   .buy-btn,
   .spec-open-btn{
-    height:46px;
+    height:44px;
     font-size:15px;
-    border-radius:18px;
   }
-
 }
-
 </style>
 </head>
-
 <body>
 
 <div id="overlay"></div>
@@ -442,195 +443,129 @@ header{
 </div>
 
 <header>
-
   <div class="menu-btn" onclick="toggleMenu()">☰</div>
-
   <div class="logo">
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png">
   </div>
 
   <div class="search-box">
-
-    <input
-      type="text"
-      placeholder="Tìm kiếm sản phẩm..."
-      id="searchInput"
-      oninput="searchProduct()"
-    >
-
+    <input type="text" placeholder="Tìm kiếm sản phẩm..." id="searchInput" oninput="searchProduct()">
     <div id="searchResults" class="search-results"></div>
-
   </div>
 
   <div style="display:flex;gap:10px;">
-
     <a href="admin.html" class="icon-btn admin-btn">🔐</a>
-
     <a href="cart.html" class="icon-btn">
-      🛒
-      <span class="cart-count" id="cartCount">0</span>
+      🛒 <span class="cart-count" id="cartCount">0</span>
     </a>
-
   </div>
-
 </header>
 
 <div class="container">
-
   <div class="left">
     <img id="detailImg">
   </div>
-
   <div class="right">
-
     <div class="product-name" id="detailName"></div>
-
     <div class="price-row">
       <div class="price" id="detailPrice"></div>
       <div class="old-price" id="detailOldPrice"></div>
       <div class="sale" id="detailSale"></div>
     </div>
-
     <div class="action-wrap">
-
-      <button class="spec-open-btn" onclick="openPanel()">
-        ⚙️ Xem thông số
-      </button>
-
-      <button class="buy-btn" onclick="addToCart()">
-        🛒 Thêm giỏ hàng
-      </button>
-
+      <button class="spec-open-btn" onclick="openPanel()">⚙️ Xem thông số</button>
+      <button class="buy-btn" onclick="addToCart()">🛒 Thêm giỏ hàng</button>
     </div>
-
     <div class="desc" id="detailDesc"></div>
 
-  </div>
+    <!-- RATING + COMMENT -->
+    <div class="rating-summary">
+      <strong>Đánh giá trung bình: </strong>
+      <span id="averageStars">0/5</span>
+      <span id="averagePercent">(0%)</span>
+    </div>
 
+    <div class="comment-section">
+      <input type="text" id="commentName" placeholder="Tên của bạn" style="width:100%; padding:6px; margin-bottom:6px;">
+      <textarea id="commentText" placeholder="Viết bình luận..." style="width:100%; padding:6px; margin-bottom:6px;"></textarea>
+      <input type="file" id="commentImage" style="margin-bottom:6px;">
+      <select id="commentStars" style="margin-bottom:6px;">
+        <option value="5">★★★★★</option>
+        <option value="4">★★★★☆</option>
+        <option value="3">★★★☆☆</option>
+        <option value="2">★★☆☆☆</option>
+        <option value="1">★☆☆☆☆</option>
+      </select>
+      <button onclick="submitComment()" style="padding:6px 12px; margin-bottom:12px;">Gửi bình luận</button>
+      <div id="commentList"></div>
+    </div>
+  </div>
 </div>
 
 <div id="panelOverlay"></div>
 
 <div id="specPanel">
-
   <div class="panel-top">
-
     <div class="panel-product">
       <img id="panelProductImg">
       <h3 id="panelProductName"></h3>
     </div>
-
     <button class="close-panel" onclick="closePanel()">✕</button>
-
   </div>
-
   <div class="spec-tabs">
-
-    <button class="spec-tab active" onclick="showTab('infoTab',this)">
-      Thông tin
-    </button>
-
-    <button class="spec-tab" onclick="showTab('configTab',this)">
-      Cấu hình
-    </button>
-
-    <button class="spec-tab" onclick="showTab('designTab',this)">
-      Thiết kế
-    </button>
-
+    <button class="spec-tab active" onclick="showTab('infoTab',this)">Thông tin</button>
+    <button class="spec-tab" onclick="showTab('configTab',this)">Cấu hình</button>
+    <button class="spec-tab" onclick="showTab('designTab',this)">Thiết kế</button>
   </div>
-
   <div class="panel-body">
-
-    <!-- THÔNG TIN -->
-
     <div class="spec-content active" id="infoTab">
-
       <div class="spec-row">
         <div class="spec-label">Model</div>
         <div class="spec-value" id="detailModel"></div>
       </div>
-
       <div class="spec-row">
         <div class="spec-label">Xuất xứ</div>
         <div class="spec-value" id="detailOrigin"></div>
       </div>
-
       <div class="spec-row">
         <div class="spec-label">Bảo hành</div>
         <div class="spec-value" id="detailWarranty"></div>
       </div>
-
     </div>
-
-    <!-- CẤU HÌNH -->
-
     <div class="spec-content" id="configTab">
-
       <div class="spec-row">
         <div class="spec-label">Độ phân giải</div>
         <div class="spec-value" id="detailResolution"></div>
       </div>
-
       <div class="spec-row">
         <div class="spec-label">Góc nhìn</div>
         <div class="spec-value" id="detailViewAngle"></div>
       </div>
-
       <div class="spec-row">
         <div class="spec-label">Kết nối</div>
         <div class="spec-value" id="detailConnect"></div>
       </div>
-
     </div>
-
-    <!-- THIẾT KẾ -->
-
     <div class="spec-content" id="designTab">
-
       <div class="spec-row">
         <div class="spec-label">Thiết kế</div>
         <div class="spec-value" id="detailThietKe"></div>
       </div>
-
       <div class="spec-row">
         <div class="spec-label">Chất liệu</div>
         <div class="spec-value" id="detailChatLieu"></div>
       </div>
-
       <div class="spec-row">
         <div class="spec-label">Công suất</div>
         <div class="spec-value" id="detailCongSuat"></div>
       </div>
-
     </div>
-
   </div>
-
 </div>
+
 <script type="module">
-
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-  getFirestore,
-  collection,
-  getDocs
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-document.getElementById("overlay").onclick = function(){
-
-  document
-  .getElementById("sidebar")
-  .classList.remove("active");
-
-  document
-  .getElementById("overlay")
-  .classList.remove("active");
-
-}
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -644,264 +579,173 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+document.getElementById("overlay").onclick = toggleMenu;
+document.getElementById("panelOverlay").onclick = closePanel;
+
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
-let products = [];
-let product = null;
+let products = [], product = null;
 
 async function loadProduct(){
-
-  const querySnapshot =
-  await getDocs(collection(db,"products"));
-
-  querySnapshot.forEach(doc=>{
-    products.push(doc.data());
-  });
-
-  product = products.find(
-    p => String(p.id) === String(id)
-  );
-
+  const snapshot = await getDocs(collection(db,"products"));
+  snapshot.forEach(doc=>products.push(doc.data()));
+  product = products.find(p => String(p.id) === String(id));
   if(!product) return;
-
-  document.getElementById("detailImg").src = product.img || "";
-  document.getElementById("panelProductImg").src = product.img || "";
-
-  document.getElementById("detailName").innerText = product.name || "";
-  document.getElementById("panelProductName").innerText = product.name || "";
-
-  document.getElementById("detailPrice").innerText =
-  Number(product.price || 0).toLocaleString()+"đ";
-
-  document.getElementById("detailOldPrice").innerText =
-  product.oldPrice
-  ? Number(product.oldPrice).toLocaleString()+"đ"
-  : "";
-
-  document.getElementById("detailDesc").innerText =
-  product.desc || "Không có mô tả";
-
-  document.getElementById("detailModel").innerText =
-  product.model || "Đang cập nhật";
-
-  document.getElementById("detailOrigin").innerText =
-  product.xuatXu || "Đang cập nhật";
-
-  document.getElementById("detailWarranty").innerText =
-  product.baoHanh || "Đang cập nhật";
-
-  document.getElementById("detailResolution").innerText =
-  product.doPhanGiai || "Đang cập nhật";
-
-  document.getElementById("detailConnect").innerText =
-  product.ketNoi || "Đang cập nhật";
-
-  document.getElementById("detailViewAngle").innerText =
-  product.gocNhin || "Đang cập nhật";
-
-  document.getElementById("detailThietKe").innerText =
-  product.thietKe || "Đang cập nhật";
-
-  document.getElementById("detailChatLieu").innerText =
-  product.chatLieu || "Đang cập nhật";
-
-  document.getElementById("detailCongSuat").innerText =
-  product.congSuat || "Đang cập nhật";
-
-  const saleBox =
-  document.getElementById("detailSale");
-
-  if(
-    product.oldPrice &&
-    Number(product.oldPrice) > Number(product.price)
-  ){
-
-    const sale = Math.round(
-      (
-        (Number(product.oldPrice) - Number(product.price))
-        / Number(product.oldPrice)
-      ) * 100
-    );
-
-    saleBox.style.display = "inline-block";
-    saleBox.innerText = "-" + sale + "%";
-
-  }else{
-
-    saleBox.style.display = "none";
-
-  }
-
+  document.getElementById("detailImg").src = product.img||"";
+  document.getElementById("panelProductImg").src = product.img||"";
+  document.getElementById("detailName").innerText = product.name||"";
+  document.getElementById("panelProductName").innerText = product.name||"";
+  document.getElementById("detailPrice").innerText = Number(product.price||0).toLocaleString()+"đ";
+  document.getElementById("detailOldPrice").innerText = product.oldPrice ? Number(product.oldPrice).toLocaleString()+"đ" : "";
+  document.getElementById("detailDesc").innerText = product.desc||"Không có mô tả";
+  document.getElementById("detailModel").innerText = product.model||"Đang cập nhật";
+  document.getElementById("detailOrigin").innerText = product.xuatXu||"Đang cập nhật";
+  document.getElementById("detailWarranty").innerText = product.baoHanh||"Đang cập nhật";
+  document.getElementById("detailResolution").innerText = product.doPhanGiai||"Đang cập nhật";
+  document.getElementById("detailConnect").innerText = product.ketNoi||"Đang cập nhật";
+  document.getElementById("detailViewAngle").innerText = product.gocNhin||"Đang cập nhật";
+  document.getElementById("detailThietKe").innerText = product.thietKe||"Đang cập nhật";
+  document.getElementById("detailChatLieu").innerText = product.chatLieu||"Đang cập nhật";
+  document.getElementById("detailCongSuat").innerText = product.congSuat||"Đang cập nhật";
+  const saleBox = document.getElementById("detailSale");
+  if(product.oldPrice && Number(product.oldPrice)>Number(product.price)){
+    const sale = Math.round(((Number(product.oldPrice)-Number(product.price))/Number(product.oldPrice))*100);
+    saleBox.style.display="inline-block";
+    saleBox.innerText="-"+sale+"%";
+  } else saleBox.style.display="none";
 }
 
 loadProduct();
 
 function toggleMenu(){
-
-  document
-  .getElementById("sidebar")
-  .classList.toggle("active");
-
-  document
-  .getElementById("overlay")
-  .classList.toggle("active");
-
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
 }
-
 function openPanel(){
-
-  document
-  .getElementById("specPanel")
-  .classList.add("active");
-
-  document
-  .getElementById("panelOverlay")
-  .classList.add("active");
-
+  document.getElementById("specPanel").classList.add("active");
+  document.getElementById("panelOverlay").classList.add("active");
 }
-
 function closePanel(){
-
-  document
-  .getElementById("specPanel")
-  .classList.remove("active");
-
-  document
-  .getElementById("panelOverlay")
-  .classList.remove("active");
-
+  document.getElementById("specPanel").classList.remove("active");
+  document.getElementById("panelOverlay").classList.remove("active");
 }
-
 function showTab(tabId,btn){
-
-  document
-  .querySelectorAll(".spec-content")
-  .forEach(el=>el.classList.remove("active"));
-
-  document
-  .querySelectorAll(".spec-tab")
-  .forEach(el=>el.classList.remove("active"));
-
-  document
-  .getElementById(tabId)
-  .classList.add("active");
-
+  document.querySelectorAll(".spec-content").forEach(el=>el.classList.remove("active"));
+  document.querySelectorAll(".spec-tab").forEach(el=>el.classList.remove("active"));
+  document.getElementById(tabId).classList.add("active");
   btn.classList.add("active");
-
 }
 
 function addToCart(){
-
   if(!product) return;
-
-  let cart =
-  JSON.parse(localStorage.getItem("cart")) || [];
-
-  const exist = cart.find(
-    x => String(x.id) === String(product.id)
-  );
-
-  if(exist){
-
-    exist.qty += 1;
-
-  }else{
-
-    cart.push({
-      ...product,
-      qty:1
-    });
-
-  }
-
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
-
+  let cart = JSON.parse(localStorage.getItem("cart"))||[];
+  const exist = cart.find(x=>String(x.id)===String(product.id));
+  if(exist) exist.qty+=1;
+  else cart.push({...product,qty:1});
+  localStorage.setItem("cart",JSON.stringify(cart));
   updateCartCount();
-
   alert("Đã thêm vào giỏ");
-
 }
 
 function updateCartCount(){
-
-  const cart =
-  JSON.parse(localStorage.getItem("cart")) || [];
-
-  let total = 0;
-
-  cart.forEach(item=>{
-    total += item.qty || 1;
-  });
-
-  document.getElementById("cartCount").innerText =
-  total;
-
+  const cart = JSON.parse(localStorage.getItem("cart"))||[];
+  const total = cart.reduce((sum,item)=>sum+(item.qty||1),0);
+  document.getElementById("cartCount").innerText = total;
 }
-
 updateCartCount();
 
 function searchProduct(){
-
-  const term =
-  document.getElementById("searchInput")
-  .value
-  .toLowerCase();
-
-  const resultBox =
-  document.getElementById("searchResults");
-
-  resultBox.innerHTML = "";
-
-  if(term === "") return;
-
-  const filtered =
-  products.filter(
-    p => p.name.toLowerCase().includes(term)
-  );
-
+  const term=document.getElementById("searchInput").value.toLowerCase();
+  const resultBox=document.getElementById("searchResults");
+  resultBox.innerHTML="";
+  if(term==="") return;
+  const filtered=products.filter(p=>p.name.toLowerCase().includes(term));
   filtered.forEach(p=>{
-
-    const div =
-    document.createElement("div");
-
-    div.className = "search-result-item";
-
-    div.innerHTML = `
-      <img src="${p.img}">
-      <div>
-        <strong>${p.name}</strong>
-        <div style="color:red;font-weight:bold;">
-          ${Number(p.price).toLocaleString()}đ
-        </div>
-      </div>
-    `;
-
-    div.onclick = ()=>{
-
-      window.location.href =
-      "logo.html?id=" + p.id;
-
-    };
-
+    const div=document.createElement("div");
+    div.className="search-result-item";
+    div.innerHTML=`<img src="${p.img}"><div><strong>${p.name}</strong><div style="color:red;font-weight:bold;">${Number(p.price).toLocaleString()}đ</div></div>`;
+    div.onclick=()=>window.location.href="logo.html?id="+p.id;
     resultBox.appendChild(div);
-
   });
-
 }
 
-window.toggleMenu = toggleMenu;
-window.openPanel = openPanel;
-window.closePanel = closePanel;
-window.showTab = showTab;
-window.addToCart = addToCart;
-window.searchProduct = searchProduct;
+// COMMENTS
+let comments = JSON.parse(localStorage.getItem("comments")) || [];
+function renderComments(){
+  const list = document.getElementById("commentList");
+  list.innerHTML="";
+  comments.forEach((c,i)=>{
+    const div=document.createElement("div");
+    div.className="comment-item";
+    div.innerHTML=`
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:#eee;">
+          <img class="avatar" src="${c.avatar||'https://i.ibb.co/0FZ0ZpK/avatar.png'}">
+        </div>
+        <strong>${c.name}</strong>
+        <span style="margin-left:auto;color:orange;">${'★'.repeat(c.stars)+'☆'.repeat(5-c.stars)}</span>
+      </div>
+      <div style="margin-bottom:4px;">${c.text}</div>
+      ${c.img ? `<img src="${c.img}" style="max-width:100%;border-radius:8px;">` : ''}
+      ${c.reply ? `<div style="margin-top:4px;padding-left:20px;border-left:2px solid #ccc;color:#555;">Phản hồi: ${c.reply}</div>` : ''}
+      <button onclick="replyComment(${i})" style="margin-top:4px;padding:4px 6px;font-size:12px;">Phản hồi</button>
+    `;
+    list.appendChild(div);
+  });
+  renderAverageRating();
+}
 
+function renderAverageRating(){
+  if(comments.length===0){
+    document.getElementById("averageStars").innerText="0/5";
+    document.getElementById("averagePercent").innerText="(0%)";
+    return;
+  }
+  const totalStars=comments.reduce((sum,c)=>sum+(c.stars||0),0);
+  const avg=(totalStars/comments.length).toFixed(1);
+  const percent=Math.round((avg/5)*100);
+  document.getElementById("averageStars").innerText=`${avg}/5`;
+  document.getElementById("averagePercent").innerText=`(${percent}%)`;
+}
+
+function submitComment(){
+  const name=document.getElementById("commentName").value.trim()||"Người dùng";
+  const text=document.getElementById("commentText").value.trim();
+  const stars=Number(document.getElementById("commentStars").value);
+  const fileInput=document.getElementById("commentImage");
+  let img="";
+  if(fileInput.files[0]) img=URL.createObjectURL(fileInput.files[0]);
+  if(!text) return alert("Nhập nội dung bình luận");
+  comments.push({name,text,stars,img});
+  localStorage.setItem("comments",JSON.stringify(comments));
+  document.getElementById("commentName").value="";
+  document.getElementById("commentText").value="";
+  document.getElementById("commentStars").value="5";
+  fileInput.value="";
+  renderComments();
+}
+
+function replyComment(index){
+  const reply=prompt("Nhập phản hồi cho bình luận này:");
+  if(reply){
+    comments[index].reply=reply;
+    localStorage.setItem("comments",JSON.stringify(comments));
+    renderComments();
+  }
+}
+
+// KHỞI CHẠY
+renderComments();
+
+// Expose global
+window.toggleMenu=toggleMenu;
+window.openPanel=openPanel;
+window.closePanel=closePanel;
+window.showTab=showTab;
+window.addToCart=addToCart;
+window.searchProduct=searchProduct;
 </script>
-<script type="module" src="detail.js"></script>
 
 </body>
 </html>
