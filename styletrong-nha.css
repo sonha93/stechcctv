@@ -356,6 +356,26 @@ header div{
 header .logo {
     display: none !important;
 }
+.item{
+  position: relative;
+  z-index: 1;
+}
+
+.spec-btn,
+.cart-btn{
+  position: relative;
+  z-index: 999;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+#overlay{
+  display:none;
+}
+
+#overlay.active{
+  display:block;
+}
 
 /* Ẩn avatar sidebar */
 #sidebarUserAvatarPreview {
