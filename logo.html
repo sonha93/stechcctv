@@ -503,7 +503,28 @@ header{
 
     </div>
 
-    <div class="desc" id="detailDesc"></div>
+   </div><div class="desc" id="detailDesc"></div>
+
+<!-- =================== RATING + COMMENT =================== -->
+<div class="rating-wrap" style="margin-top:10px;">
+  <div id="starRating" style="font-size:24px; cursor:pointer;">
+    <span data-value="1">★</span>
+    <span data-value="2">★</span>
+    <span data-value="3">★</span>
+    <span data-value="4">★</span>
+    <span data-value="5">★</span>
+  </div>
+  <div id="ratingValue" style="margin-top:4px;">0/5</div>
+</div>
+
+<div class="comment-section" style="margin-top:16px;">
+  <input type="text" id="commentName" placeholder="Tên của bạn" style="width:100%; padding:6px; margin-bottom:6px;">
+  <textarea id="commentText" placeholder="Viết bình luận..." style="width:100%; padding:6px; margin-bottom:6px;"></textarea>
+  <input type="file" id="commentImage" style="margin-bottom:6px;">
+  <button onclick="submitComment()" style="padding:6px 12px; margin-bottom:12px;">Gửi bình luận</button>
+  <div id="commentList"></div>
+</div>
+<!-- =================== END RATING + COMMENT =================== -->
 
   </div>
 
