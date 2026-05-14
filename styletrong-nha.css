@@ -352,3 +352,6 @@ header div{
 .item:hover img{
   transform:scale(1.03);
 }
+header .logo {
+    display: none !important;
+}
