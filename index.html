@@ -170,12 +170,36 @@
 </div>
 
 <!-- HEADER -->
+<!-- HEADER -->
 <header>
-  <div onclick="toggleMenu()">☰</div>
+  <!-- Nút mở menu -->
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+  <!-- Logo -->
   <div class="logo">
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
-  <input id="search" placeholder="Tìm kiếm sản phẩm...">
+
+  <!-- Khung tìm kiếm -->
+  <div class="search-box" style="flex:1; position:relative;">
+    <input
+      type="text"
+      placeholder="Tìm kiếm sản phẩm..."
+      id="searchInput"
+      oninput="searchProduct()"
+      style="width:100%; height:38px; border-radius:14px; padding:0 10px; outline:none;"
+    >
+    <div id="searchResults" class="search-results"></div>
+  </div>
+
+  <!-- Icon Admin & Giỏ hàng -->
+  <div style="display:flex; gap:10px;">
+    <a href="admin.html" class="icon-btn admin-btn" style="width:38px; height:38px; display:flex; justify-content:center; align-items:center; border-radius:8px; background:#6a5acd; color:#fff;">🔐</a>
+    <a href="cart.html" class="icon-btn" style="width:38px; height:38px; display:flex; justify-content:center; align-items:center; border-radius:8px; background:#00acc1; color:#fff;">
+      🛒
+      <span class="cart-count" id="cartCount" style="position:absolute; top:-5px; right:-5px; background:red; color:#fff; font-size:11px; width:18px; height:18px; display:flex; align-items:center; justify-content:center; border-radius:50%;">0</span>
+    </a>
+  </div>
 </header>
 
 <!-- CONTENT -->
