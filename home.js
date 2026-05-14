@@ -235,7 +235,14 @@ window.goDetail = function(id){
    CART
 ========================= */
 
-window.addToCart = function(id){
+window.addToCart = async function(id){
+
+  const user = firebase.auth().currentUser;
+
+  if(!user){
+    alert("Vui lòng đăng nhập");
+    return;
+  }
 
   const product =
     allProducts.find(
@@ -244,10 +251,13 @@ window.addToCart = function(id){
 
   if(!product) return;
 
-  let cart =
-    JSON.parse(
-      localStorage.getItem("cart")
-    ) || [];
+  const cartRef =
+    firebase.database()
+    .ref("carts/" + user.uid);
+
+  const snap = await cartRef.once("value");
+
+  let cart = snap.val() || [];
 
   const exist =
     cart.find(
@@ -256,7 +266,8 @@ window.addToCart = function(id){
 
   if(exist){
 
-    exist.qty += 1;
+    exist.qty =
+      (exist.qty || 1) + 1;
 
   }
 
@@ -264,18 +275,18 @@ window.addToCart = function(id){
 
     cart.push({
 
-      ...product,
-
+      id:product.id,
+      name:product.name,
+      price:product.price,
+      oldPrice:product.oldPrice || 0,
+      img:product.img || "",
       qty:1
 
     });
 
   }
 
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
+  await cartRef.set(cart);
 
   alert("Đã thêm vào giỏ 🛒");
 
