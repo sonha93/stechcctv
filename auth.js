@@ -89,45 +89,41 @@ const userNamePreview = document.getElementById("sidebarUserNamePreview");
     await signOut(auth);
     currentUserUID = null;
     loginLink.style.display = "block";
-    localStorage.removeItem("cart");
+   // Khi logout, bỏ cache localStorage, cart UID riêng đã ở Firebase
+// localStorage.removeItem("cart");  // không cần nữa
+renderCheckout([]); // truyền mảng trống, render cart trống
     logoutLink.style.display = "none";
     userInfoPreview.style.display = "none";
   });
 
   // Kiểm tra auth state
- onAuthStateChanged(auth, (user) => {
-
+onAuthStateChanged(auth, async (user)=>{
   currentUserUID = user ? user.uid : null;
 
   if(user){
-
     loginLink.style.display = "none";
     logoutLink.style.display = "block";
 
     if(userInfoPreview){
       userInfoPreview.style.display = "block";
     }
+    userNamePreview.innerText = "Xin chào\n" + (user.email || "");
 
-    if(userNamePreview){
-      userNamePreview.innerText =
-      "Xin chào\n" + (user.email || "");
-    }
+    // =======================
+    // Load cart từ Firebase theo UID
+    // =======================
+    const cartRef = db.ref("carts/"+currentUserUID);
+    cartRef.on("value", snapshot=>{
+      const cart = snapshot.val() || [];
+      renderCheckout(cart);  // render cart riêng theo UID
+    });
 
-  }
-
-  else{
-
+  } else {
     loginLink.style.display = "block";
     logoutLink.style.display = "none";
-
-    if(userInfoPreview){
-      userInfoPreview.style.display = "none";
-       // Xoá luôn cart khi logout
-    localStorage.removeItem("cart");
-    renderCheckout(); // render cart trống
+    if(userInfoPreview) userInfoPreview.style.display = "none";
+    renderCheckout([]); // cart trống khi logout
     }
 
-  }
-
 });
-  });
+  
