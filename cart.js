@@ -45,18 +45,23 @@ auth.onAuthStateChanged(user => {
 // LOAD CART
 // ==========================
 
-function loadCart() {
+function saveCart() {
 
-    cartData = JSON.parse(
-        localStorage.getItem("cart")
-    ) || [];
+    if (!currentUser) return;
+
+    const cartKey =
+    "cart_" + currentUser.uid;
+
+    localStorage.setItem(
+        cartKey,
+        JSON.stringify(cartData)
+    );
 
     renderCart();
 
     updateBadge();
 
 }
-
 // ==========================
 // RENDER CART
 // ==========================
