@@ -8,7 +8,7 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
   getFirestore,
-  ,
+  collection,
   getDocs
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -31,9 +31,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-const firestoreDB = getFirestore(app);
+const db = getFirestore(app);
 
-const realtimeDB = firebase.database();
 /* =========================
    CAMERA TRONG NHÀ
 ========================= */
@@ -50,7 +49,7 @@ async function getProducts(){
 
     const querySnapshot =
     await getDocs(
-     collection(firestoreDB,"products")
+      collection(db,"products")
     );
 
     let arr = [];
@@ -225,29 +224,19 @@ list = list.filter(
    DETAIL
 ========================= */
 
+window.goDetail = function(id){
 
+  window.location.href =
+    `logo.html?id=${id}`;
 
-
+};
 
 /* =========================
    CART
 ========================= */
 
-window.addToCart = async function(id){
+window.addToCart = function(id){
 
-  // lấy user hiện tại
-  const user = firebase.auth().currentUser;
-
-  // chưa đăng nhập
-  if(!user){
-
-    alert("Vui lòng đăng nhập");
-
-    return;
-
-  }
-
-  // tìm sản phẩm
   const product =
     allProducts.find(
       p => String(p.id) === String(id)
@@ -255,66 +244,43 @@ window.addToCart = async function(id){
 
   if(!product) return;
 
-  try{
+  let cart =
+    JSON.parse(
+      localStorage.getItem("cart")
+    ) || [];
 
-    // load cart firebase
-    const snapshot =
-      await realtimeDB.ref(
-        "carts/" + user.uid
-      ).once("value");
+  const exist =
+    cart.find(
+      i => String(i.id) === String(id)
+    );
 
-    let cart =
-      snapshot.val() || [];
+  if(exist){
 
-    // tìm sản phẩm đã tồn tại
-    const exist =
-      cart.find(
-        i => String(i.id) === String(id)
-      );
-
-    // tăng số lượng
-    if(exist){
-
-      exist.qty =
-        (exist.qty || 1) + 1;
-
-    }
-
-    // thêm mới
-    else{
-
-      cart.push({
-
-        id:product.id || "",
-        name:product.name || "",
-        img:product.img || "",
-        price:Number(product.price) || 0,
-        oldPrice:Number(product.oldPrice) || 0,
-        qty:1,
-        checked:true
-
-      });
-
-    }
-
-    // lưu firebase
-    await realtimeDB.ref(
-      "carts/" + user.uid
-    ).set(cart);
-
-    alert("Đã thêm vào giỏ 🛒");
+    exist.qty += 1;
 
   }
 
-  catch(err){
+  else{
 
-    console.log(err);
+    cart.push({
 
-    alert("Lỗi thêm giỏ hàng");
+      ...product,
+
+      qty:1
+
+    });
 
   }
+
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
+
+  alert("Đã thêm vào giỏ 🛒");
 
 };
+
 /* =========================
    SEARCH
 ========================= */
