@@ -32,7 +32,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
-
+const realtimeDB = firebase.database();
 /* =========================
    CAMERA TRONG NHÀ
 ========================= */
@@ -224,19 +224,29 @@ list = list.filter(
    DETAIL
 ========================= */
 
-window.goDetail = function(id){
 
-  window.location.href =
-    `logo.html?id=${id}`;
 
-};
+
 
 /* =========================
    CART
 ========================= */
 
-window.addToCart = function(id){
+window.addToCart = async function(id){
 
+  // lấy user hiện tại
+  const user = firebase.auth().currentUser;
+
+  // chưa đăng nhập
+  if(!user){
+
+    alert("Vui lòng đăng nhập");
+
+    return;
+
+  }
+
+  // tìm sản phẩm
   const product =
     allProducts.find(
       p => String(p.id) === String(id)
@@ -244,43 +254,66 @@ window.addToCart = function(id){
 
   if(!product) return;
 
-  let cart =
-    JSON.parse(
-      localStorage.getItem("cart")
-    ) || [];
+  try{
 
-  const exist =
-    cart.find(
-      i => String(i.id) === String(id)
-    );
+    // load cart firebase
+    const snapshot =
+      await realtimeDB.ref(
+        "carts/" + user.uid
+      ).once("value");
 
-  if(exist){
+    let cart =
+      snapshot.val() || [];
 
-    exist.qty += 1;
+    // tìm sản phẩm đã tồn tại
+    const exist =
+      cart.find(
+        i => String(i.id) === String(id)
+      );
+
+    // tăng số lượng
+    if(exist){
+
+      exist.qty =
+        (exist.qty || 1) + 1;
+
+    }
+
+    // thêm mới
+    else{
+
+      cart.push({
+
+        id:product.id || "",
+        name:product.name || "",
+        img:product.img || "",
+        price:Number(product.price) || 0,
+        oldPrice:Number(product.oldPrice) || 0,
+        qty:1,
+        checked:true
+
+      });
+
+    }
+
+    // lưu firebase
+    await realtimeDB.ref(
+      "carts/" + user.uid
+    ).set(cart);
+
+    alert("Đã thêm vào giỏ 🛒");
 
   }
 
-  else{
+  catch(err){
 
-    cart.push({
+    console.log(err);
 
-      ...product,
-
-      qty:1
-
-    });
+    alert("Lỗi thêm giỏ hàng");
 
   }
-
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
-
-  alert("Đã thêm vào giỏ 🛒");
 
 };
-
 /* =========================
    SEARCH
 ========================= */
