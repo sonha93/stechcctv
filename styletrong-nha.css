@@ -352,4 +352,7 @@ header div{
 .item:hover img{
   transform:scale(1.03);
 }
-
+/* Ẩn logo header bất kể inline style hay CSS khác */
+header .logo {
+    display: none !important;
+}
