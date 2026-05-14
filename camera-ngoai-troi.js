@@ -1,7 +1,6 @@
-
 /* =========================
    FIREBASE
-========================= */   
+========================= */
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -12,10 +11,7 @@ import {
   getDocs
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-  getAuth
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 const firebaseConfig = {
 
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -35,7 +31,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
-const auth = getAuth(app);
+
 /* =========================
    CAMERA TRONG NHÀ
 ========================= */
@@ -151,17 +147,8 @@ function render(list){
       : 0;
 
     box.innerHTML += `
-    <div class="item">
 
-      ${
-  percent
-  ? `
-    <div class="discount-badge">
-      -${percent}%
-    </div>
-  `
-  : ""
-}
+      <div class="item">
 
         <div class="img-box">
 
@@ -201,7 +188,22 @@ function render(list){
 
         </div>
 
-               <button
+        ${
+          percent
+
+          ? `
+
+          <div class="discount-text">
+            -${percent}%
+          </div>
+
+          `
+
+          : ""
+
+        }
+
+        <button
           class="spec-btn"
           onclick="goDetail('${id}')"
         >
@@ -244,62 +246,47 @@ window.goDetail = function(id){
 
 window.addToCart = function(id){
 
-// CHECK LOGIN
-const user = auth.currentUser;
+  const product =
+    allProducts.find(
+      p => String(p.id) === String(id)
+    );
 
-if(!user){
+  if(!product) return;
 
+  let cart =
+    JSON.parse(
+      localStorage.getItem("cart")
+    ) || [];
 
-alert("Vui lòng đăng nhập");
-return;
+  const exist =
+    cart.find(
+      i => String(i.id) === String(id)
+    );
 
+  if(exist){
 
-}
+    exist.qty += 1;
 
-const product =
-allProducts.find(
-p => String(p.id) === String(id)
-);
+  }
 
-if(!product) return;
+  else{
 
-// GIỎ RIÊNG THEO USER
-const cartKey =
-"cart_" + user.uid;
+    cart.push({
 
-let cart =
-JSON.parse(
-localStorage.getItem(cartKey)
-) || [];
+      ...product,
 
-const exist =
-cart.find(
-i => String(i.id) === String(id)
-);
+      qty:1
 
-if(exist){
+    });
 
-  exist.qty += 1;
+  }
 
-}else{
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
 
-  cart.push({
-
-    ...product,
-
-    qty: 1
-
-  });
-
-}
-localStorage.setItem(
-cartKey,
-JSON.stringify(cart)
-);
-
-console.log(cart);
-
-alert("Đã thêm vào giỏ 🛒");
+  alert("Đã thêm vào giỏ 🛒");
 
 };
 
