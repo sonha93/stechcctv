@@ -89,6 +89,7 @@ const userNamePreview = document.getElementById("sidebarUserNamePreview");
     await signOut(auth);
     currentUserUID = null;
     loginLink.style.display = "block";
+    localStorage.removeItem("cart");
     logoutLink.style.display = "none";
     userInfoPreview.style.display = "none";
   });
