@@ -21,7 +21,7 @@ if (!firebase.apps.length) {
 // Lấy auth và database dùng chung
 const auth = firebase.auth();
 const db = firebase.database();
-
+const storage = firebase.storage(); // nếu cần upload hình ảnh
 
 // Biến trạng thái Firebase sẵn sàng
 let firebaseReady = false;
