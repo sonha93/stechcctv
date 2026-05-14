@@ -57,14 +57,11 @@ async function loadProduct() {
 loadProduct();
 
 // =================== SIDEBAR TOGGLE ===================
-document.getElementById("overlay").onclick = function(){
-  document.getElementById("sidebar").classList.remove("active");
-  document.getElementById("overlay").classList.remove("active");
-}
 function toggleMenu(){
   document.getElementById("sidebar").classList.toggle("active");
   document.getElementById("overlay").classList.toggle("active");
 }
+document.getElementById("overlay").onclick = toggleMenu;
 
 // =================== PANEL ===================
 function openPanel(){
@@ -110,14 +107,15 @@ function searchProduct(){
   filtered.forEach(p=>{
     const div = document.createElement("div");
     div.className="search-result-item";
-    div.innerHTML=`
+    div.innerHTML = `
       <img src="${p.img}">
       <div>
         <strong>${p.name}</strong>
         <div style="color:red;font-weight:bold;">
           ${Number(p.price).toLocaleString()}đ
         </div>
-      </div>`;
+      </div>
+    `;
     div.onclick = ()=>{ window.location.href="logo.html?id="+p.id; };
     resultBox.appendChild(div);
   });
@@ -126,6 +124,7 @@ function searchProduct(){
 // =================== RATING ===================
 const stars = document.querySelectorAll("#starRating span");
 let currentRating = 0;
+
 stars.forEach(star=>{
   star.addEventListener("mouseover", ()=>highlightStars(star.dataset.value));
   star.addEventListener("mouseout", ()=>highlightStars(currentRating));
@@ -135,22 +134,28 @@ stars.forEach(star=>{
     saveRating(currentRating);
   });
 });
+
 function highlightStars(r){
   stars.forEach(s=>{ s.classList.remove("hover","selected"); if(s.dataset.value<=r) s.classList.add("hover"); });
   if(r==currentRating) stars.forEach(s=>{ if(s.dataset.value<=r) s.classList.add("selected"); });
 }
+
 function saveRating(r){
   const ratings = JSON.parse(localStorage.getItem("ratings")||"{}");
   ratings[id]=r;
   localStorage.setItem("ratings",JSON.stringify(ratings));
 }
+
 const savedRatings = JSON.parse(localStorage.getItem("ratings")||"{}");
-if(savedRatings[id]) { currentRating=savedRatings[id]; document.getElementById("ratingValue").innerText=`${currentRating}/5`; highlightStars(currentRating); }
+if(savedRatings[id]){
+  currentRating=savedRatings[id];
+  document.getElementById("ratingValue").innerText=`${currentRating}/5`;
+  highlightStars(currentRating);
+}
 
 // =================== COMMENTS ===================
 let comments = JSON.parse(localStorage.getItem("comments")||"{}");
 if(!comments[id]) comments[id]=[];
-renderComments();
 
 function submitComment(){
   const name=document.getElementById("commentName").value.trim();
@@ -171,6 +176,7 @@ function submitComment(){
   if(fileInput.files[0]) reader.readAsDataURL(fileInput.files[0]);
   else reader.onload({target:{result:""}});
 }
+
 function renderComments(){
   const list=document.getElementById("commentList");
   list.innerHTML="";
@@ -179,4 +185,62 @@ function renderComments(){
     const div=document.createElement("div");
     div.className="comment-item";
     div.innerHTML=`
-      <img src="${c.img||'https://i.ibb
+      <img src="${c.img||'https://i.ibb.co/7W2vT5J/avatar.png'}" class="comment-avatar">
+      <div class="comment-content">
+        <div class="comment-name">${c.name}</div>
+        <div class="comment-time">${timeAgo(c.time)}</div>
+        <div class="comment-text">${c.text}</div>
+        <div class="comment-actions">
+          <span onclick="likeComment(${c.id})">👍 ${c.likes}</span>
+          <span onclick="replyComment(${c.id})">Trả lời</span>
+        </div>
+        <div class="comment-replies" id="replies-${c.id}"></div>
+      </div>
+    `;
+    // render replies
+    c.replies.forEach(r=>{
+      const rDiv = document.createElement("div");
+      rDiv.innerHTML=`<strong>${r.name}</strong> ${timeAgo(r.time)}<br>${r.text}`;
+      div.querySelector(`#replies-${c.id}`).appendChild(rDiv);
+    });
+    list.appendChild(div);
+  });
+}
+renderComments();
+
+// Like comment
+function likeComment(commentId){
+  const c = comments[id].find(x=>x.id===commentId);
+  if(c){ c.likes++; localStorage.setItem("comments",JSON.stringify(comments)); renderComments(); }
+}
+
+// Reply comment
+function replyComment(commentId){
+  const replyText = prompt("Nhập nội dung trả lời:");
+  if(!replyText) return;
+  const rName = prompt("Nhập tên của bạn:");
+  if(!rName) return;
+  const c = comments[id].find(x=>x.id===commentId);
+  c.replies.push({name:rName,text:replyText,time:new Date().toISOString()});
+  localStorage.setItem("comments",JSON.stringify(comments));
+  renderComments();
+}
+
+// Format thời gian
+function timeAgo(date){
+  const d = new Date(date);
+  const diff = Math.floor((new Date()-d)/1000); // giây
+  if(diff<60) return "Vừa xong";
+  if(diff<3600) return Math.floor(diff/60)+" phút trước";
+  if(diff<86400) return Math.floor(diff/3600)+" giờ trước";
+  return Math.floor(diff/86400)+" ngày trước";
+}
+
+// =================== EXPOSE HÀM CHO HTML ===================
+window.toggleMenu = toggleMenu;
+window.openPanel = openPanel;
+window.closePanel = closePanel;
+window.showTab = showTab;
+window.addToCart = addToCart;
+window.searchProduct = searchProduct;
+window.submitComment = submitComment;
