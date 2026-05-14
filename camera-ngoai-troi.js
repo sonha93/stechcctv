@@ -241,47 +241,68 @@ window.goDetail = function(id){
 
 window.addToCart = function(id){
 
-  const product =
-    allProducts.find(
-      p => String(p.id) === String(id)
-    );
+// CHECK LOGIN
+const user =
+firebase.auth().currentUser;
 
-  if(!product) return;
+if(!user){
 
-  let cart =
-    JSON.parse(
-      localStorage.getItem("cart")
-    ) || [];
+```
+alert("Vui lòng đăng nhập");
+return;
+```
 
-  const exist =
-    cart.find(
-      i => String(i.id) === String(id)
-    );
+}
 
-  if(exist){
+const product =
+allProducts.find(
+p => String(p.id) === String(id)
+);
 
-    exist.qty += 1;
+if(!product) return;
 
-  }
+// GIỎ RIÊNG THEO USER
+const cartKey =
+"cart_" + user.uid;
 
-  else{
+let cart =
+JSON.parse(
+localStorage.getItem(cartKey)
+) || [];
 
-    cart.push({
+const exist =
+cart.find(
+i => String(i.id) === String(id)
+);
 
-      ...product,
+if(exist){
 
-      qty:1
+```
+exist.qty += 1;
+```
 
-    });
+}else{
 
-  }
+```
+cart.push({
 
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
+  ...product,
 
-  alert("Đã thêm vào giỏ 🛒");
+  qty:1
+
+});
+```
+
+}
+
+localStorage.setItem(
+cartKey,
+JSON.stringify(cart)
+);
+
+console.log(cart);
+
+alert("Đã thêm vào giỏ 🛒");
 
 };
 
