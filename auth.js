@@ -114,11 +114,39 @@ document.addEventListener("DOMContentLoaded", () => {
     // LOGOUT USER
     // ==========================
     logoutLink?.addEventListener("click", async () => {
-        await signOut(auth);
-        currentUserUID = null;
-        loginLink.style.display = "block";
-        logoutLink.style.display = "none";
+
+    // XÓA CART CHÍNH
+    localStorage.removeItem("cart");
+
+    // XÓA CART UID CŨ
+    Object.keys(localStorage).forEach(key => {
+
+        if(key.startsWith("cart_")){
+
+            localStorage.removeItem(key);
+
+        }
+
     });
+
+    await signOut(auth);
+
+    currentUserUID = null;
+
+    loginLink.style.display = "block";
+    logoutLink.style.display = "none";
+
+    // ẨN USER INFO
+    if (userInfoPreview)
+        userInfoPreview.style.display = "none";
+
+    if (userNamePreview)
+        userNamePreview.innerText = "";
+
+    // reload sạch trạng thái
+    location.reload();
+
+});
 
     // ==========================
     // AUTH STATE CHANGE
