@@ -273,10 +273,13 @@ function addToCart(id){
   const cartKey =
   "cart_" + currentUser.uid;
 
-  let cart =
-  JSON.parse(
-    localStorage.getItem(cartKey)
-  ) || [];
+const cartKey =
+"cart_" + currentUser.uid;
+
+let cart =
+JSON.parse(
+  localStorage.getItem(cartKey)
+) || [];
 
   const exist =
   cart.find(
