@@ -1,246 +1,982 @@
-// =================== FIREBASE INIT ===================
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// ================= FIREBASE =================
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc,
+  serverTimestamp,
+  query,
+  orderBy,
+  onSnapshot,
+  updateDoc,
+  doc,
+  increment,
+  getDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getAuth,
+  onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+// ================= CONFIG =================
 
 const firebaseConfig = {
+
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+
   authDomain:"stech-73b89.firebaseapp.com",
+
   projectId:"stech-73b89",
+
   storageBucket:"stech-73b89.firebasestorage.app",
+
   messagingSenderId:"873739162979",
+
   appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
+
 };
 
+
+// ================= INIT =================
+
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
 
-// =================== PARAM + DATA ===================
-const params = new URLSearchParams(window.location.search);
+const auth = getAuth(app);
+
+
+// ================= PARAM =================
+
+const params = new URLSearchParams(location.search);
+
 const id = params.get("id");
 
 let products = [];
+
 let product = null;
 
-// =================== LOAD PRODUCT ===================
-async function loadProduct() {
-  const querySnapshot = await getDocs(collection(db,"products"));
-  querySnapshot.forEach(doc => products.push(doc.data()));
-  product = products.find(p => String(p.id) === String(id));
+let currentUser = null;
+
+
+// ================= AUTH =================
+
+onAuthStateChanged(auth,(user)=>{
+
+  currentUser = user;
+
+});
+
+
+// ================= LOAD PRODUCT =================
+
+async function loadProduct(){
+
+  const querySnapshot =
+  await getDocs(
+    collection(db,"products")
+  );
+
+  products = [];
+
+  querySnapshot.forEach(doc=>{
+
+    products.push(doc.data());
+
+  });
+
+  product =
+  products.find(
+    p => String(p.id) === String(id)
+  );
+
   if(!product) return;
 
-  document.getElementById("detailImg").src = product.img || "";
-  document.getElementById("panelProductImg").src = product.img || "";
-  document.getElementById("detailName").innerText = product.name || "";
-  document.getElementById("panelProductName").innerText = product.name || "";
-  document.getElementById("detailPrice").innerText = Number(product.price || 0).toLocaleString()+"đ";
-  document.getElementById("detailOldPrice").innerText = product.oldPrice ? Number(product.oldPrice).toLocaleString()+"đ" : "";
-  document.getElementById("detailDesc").innerText = product.desc || "Không có mô tả";
-  document.getElementById("detailModel").innerText = product.model || "Đang cập nhật";
-  document.getElementById("detailOrigin").innerText = product.xuatXu || "Đang cập nhật";
-  document.getElementById("detailWarranty").innerText = product.baoHanh || "Đang cập nhật";
-  document.getElementById("detailResolution").innerText = product.doPhanGiai || "Đang cập nhật";
-  document.getElementById("detailConnect").innerText = product.ketNoi || "Đang cập nhật";
-  document.getElementById("detailViewAngle").innerText = product.gocNhin || "Đang cập nhật";
-  document.getElementById("detailThietKe").innerText = product.thietKe || "Đang cập nhật";
-  document.getElementById("detailChatLieu").innerText = product.chatLieu || "Đang cập nhật";
-  document.getElementById("detailCongSuat").innerText = product.congSuat || "Đang cập nhật";
+  setText("detailName",product.name);
 
-  const saleBox = document.getElementById("detailSale");
-  if(product.oldPrice && Number(product.oldPrice) > Number(product.price)){
-    const sale = Math.round(((Number(product.oldPrice) - Number(product.price)) / Number(product.oldPrice))*100);
-    saleBox.style.display = "inline-block";
-    saleBox.innerText = "-" + sale + "%";
-  }else{
-    saleBox.style.display = "none";
-  }
+  setText("panelProductName",product.name);
+
+  setText(
+    "detailPrice",
+    formatPrice(product.price)
+  );
+
+  setText(
+    "detailOldPrice",
+    product.oldPrice
+    ?
+    formatPrice(product.oldPrice)
+    :
+    ""
+  );
+
+  setText(
+    "detailDesc",
+    product.desc || "Không có mô tả"
+  );
+
+  setText(
+    "detailModel",
+    product.model || "Đang cập nhật"
+  );
+
+  setText(
+    "detailOrigin",
+    product.xuatXu || "Đang cập nhật"
+  );
+
+  setText(
+    "detailWarranty",
+    product.baoHanh || "Đang cập nhật"
+  );
+
+  setText(
+    "detailResolution",
+    product.doPhanGiai || "Đang cập nhật"
+  );
+
+  setText(
+    "detailConnect",
+    product.ketNoi || "Đang cập nhật"
+  );
+
+  setText(
+    "detailViewAngle",
+    product.gocNhin || "Đang cập nhật"
+  );
+
+  setText(
+    "detailThietKe",
+    product.thietKe || "Đang cập nhật"
+  );
+
+  setText(
+    "detailChatLieu",
+    product.chatLieu || "Đang cập nhật"
+  );
+
+  setText(
+    "detailCongSuat",
+    product.congSuat || "Đang cập nhật"
+  );
+
+  setImage("detailImg",product.img);
+
+  setImage("panelProductImg",product.img);
+
+  renderSale();
+
 }
+
 loadProduct();
 
-// =================== SIDEBAR TOGGLE ===================
+
+// ================= UI HELPERS =================
+
+function setText(id,text){
+
+  document.getElementById(id)
+  .innerText = text || "";
+
+}
+
+function setImage(id,src){
+
+  document.getElementById(id)
+  .src = src || "";
+
+}
+
+function formatPrice(price){
+
+  return Number(price || 0)
+  .toLocaleString() + "đ";
+
+}
+
+
+// ================= SALE =================
+
+function renderSale(){
+
+  const saleBox =
+  document.getElementById("detailSale");
+
+  if(
+    product.oldPrice &&
+    Number(product.oldPrice)
+    >
+    Number(product.price)
+  ){
+
+    const sale = Math.round(
+
+      (
+        (
+          Number(product.oldPrice)
+          -
+          Number(product.price)
+        )
+
+        /
+
+        Number(product.oldPrice)
+
+      ) * 100
+
+    );
+
+    saleBox.style.display =
+    "inline-block";
+
+    saleBox.innerText =
+    "-" + sale + "%";
+
+  }
+
+  else{
+
+    saleBox.style.display = "none";
+
+  }
+
+}
+
+
+// ================= SIDEBAR =================
+
 function toggleMenu(){
-  document.getElementById("sidebar").classList.toggle("active");
-  document.getElementById("overlay").classList.toggle("active");
-}
-document.getElementById("overlay").onclick = toggleMenu;
 
-// =================== PANEL ===================
+  document
+  .getElementById("sidebar")
+  .classList
+  .toggle("active");
+
+  document
+  .getElementById("overlay")
+  .classList
+  .toggle("active");
+
+}
+
+document
+.getElementById("overlay")
+.onclick = toggleMenu;
+
+
+// ================= PANEL =================
+
 function openPanel(){
-  document.getElementById("specPanel").classList.add("active");
-  document.getElementById("panelOverlay").classList.add("active");
-}
-function closePanel(){
-  document.getElementById("specPanel").classList.remove("active");
-  document.getElementById("panelOverlay").classList.remove("active");
-}
-function showTab(tabId,btn){
-  document.querySelectorAll(".spec-content").forEach(el=>el.classList.remove("active"));
-  document.querySelectorAll(".spec-tab").forEach(el=>el.classList.remove("active"));
-  document.getElementById(tabId).classList.add("active");
-  btn.classList.add("active");
+
+  document
+  .getElementById("specPanel")
+  .classList
+  .add("active");
+
+  document
+  .getElementById("panelOverlay")
+  .classList
+  .add("active");
+
 }
 
-// =================== CART ===================
+function closePanel(){
+
+  document
+  .getElementById("specPanel")
+  .classList
+  .remove("active");
+
+  document
+  .getElementById("panelOverlay")
+  .classList
+  .remove("active");
+
+}
+
+function showTab(tabId,btn){
+
+  document
+  .querySelectorAll(".spec-content")
+  .forEach(el=>{
+
+    el.classList.remove("active");
+
+  });
+
+  document
+  .querySelectorAll(".spec-tab")
+  .forEach(el=>{
+
+    el.classList.remove("active");
+
+  });
+
+  document
+  .getElementById(tabId)
+  .classList
+  .add("active");
+
+  btn.classList.add("active");
+
+}
+
+
+// ================= CART =================
+
 function addToCart(){
+
   if(!product) return;
-  let cart = JSON.parse(localStorage.getItem("cart"))||[];
-  const exist = cart.find(x=>String(x.id)===String(product.id));
-  if(exist) exist.qty +=1;
-  else cart.push({...product,qty:1});
-  localStorage.setItem("cart",JSON.stringify(cart));
+
+  let cart =
+  JSON.parse(
+    localStorage.getItem("cart")
+  ) || [];
+
+  const exist =
+  cart.find(
+    x => String(x.id)
+    ===
+    String(product.id)
+  );
+
+  if(exist){
+
+    exist.qty += 1;
+
+  }
+
+  else{
+
+    cart.push({
+
+      ...product,
+
+      qty:1
+
+    });
+
+  }
+
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
+
   updateCartCount();
+
   alert("Đã thêm vào giỏ");
+
 }
+
 function updateCartCount(){
-  const cart = JSON.parse(localStorage.getItem("cart"))||[];
-  let total = cart.reduce((a,b)=>a+(b.qty||1),0);
-  document.getElementById("cartCount").innerText = total;
+
+  const cart =
+  JSON.parse(
+    localStorage.getItem("cart")
+  ) || [];
+
+  const total =
+  cart.reduce(
+    (a,b)=>a+(b.qty||1),
+    0
+  );
+
+  document
+  .getElementById("cartCount")
+  .innerText = total;
+
 }
+
 updateCartCount();
 
-// =================== SEARCH ===================
+
+// ================= SEARCH =================
+
 function searchProduct(){
-  const term = document.getElementById("searchInput").value.toLowerCase();
-  const resultBox = document.getElementById("searchResults");
-  resultBox.innerHTML="";
-  if(term==="") return;
-  const filtered = products.filter(p=>p.name.toLowerCase().includes(term));
+
+  const term =
+  document
+  .getElementById("searchInput")
+  .value
+  .toLowerCase();
+
+  const resultBox =
+  document.getElementById(
+    "searchResults"
+  );
+
+  resultBox.innerHTML = "";
+
+  if(!term) return;
+
+  const filtered =
+  products.filter(
+    p =>
+    p.name
+    .toLowerCase()
+    .includes(term)
+  );
+
   filtered.forEach(p=>{
-    const div = document.createElement("div");
-    div.className="search-result-item";
+
+    const div =
+    document.createElement("div");
+
+    div.className =
+    "search-result-item";
+
     div.innerHTML = `
+
       <img src="${p.img}">
+
       <div>
-        <strong>${p.name}</strong>
-        <div style="color:red;font-weight:bold;">
-          ${Number(p.price).toLocaleString()}đ
+
+        <strong>
+          ${p.name}
+        </strong>
+
+        <div
+        style="
+        color:red;
+        font-weight:bold;
+        ">
+
+          ${formatPrice(p.price)}
+
         </div>
+
       </div>
+
     `;
-    div.onclick = ()=>{ window.location.href="logo.html?id="+p.id; };
+
+    div.onclick = ()=>{
+
+      location.href =
+      "logo.html?id=" + p.id;
+
+    };
+
     resultBox.appendChild(div);
+
   });
+
 }
 
-// =================== RATING ===================
-const stars = document.querySelectorAll("#starRating span");
+
+// ================= RATING =================
+
+const stars =
+document.querySelectorAll(
+  "#starRating span"
+);
+
 let currentRating = 0;
 
 stars.forEach(star=>{
-  star.addEventListener("mouseover", ()=>highlightStars(star.dataset.value));
-  star.addEventListener("mouseout", ()=>highlightStars(currentRating));
-  star.addEventListener("click", ()=>{
-    currentRating=star.dataset.value;
-    document.getElementById("ratingValue").innerText=`${currentRating}/5`;
-    saveRating(currentRating);
-  });
+
+  star.addEventListener(
+    "mouseover",
+    ()=>highlightStars(
+      star.dataset.value
+    )
+  );
+
+  star.addEventListener(
+    "mouseout",
+    ()=>highlightStars(
+      currentRating
+    )
+  );
+
+  star.addEventListener(
+    "click",
+    ()=>{
+
+      currentRating =
+      star.dataset.value;
+
+      document
+      .getElementById(
+        "ratingValue"
+      )
+      .innerText =
+      `${currentRating}/5`;
+
+      saveRating(currentRating);
+
+    }
+  );
+
 });
 
 function highlightStars(r){
-  stars.forEach(s=>{ s.classList.remove("hover","selected"); if(s.dataset.value<=r) s.classList.add("hover"); });
-  if(r==currentRating) stars.forEach(s=>{ if(s.dataset.value<=r) s.classList.add("selected"); });
+
+  stars.forEach(s=>{
+
+    s.classList.remove(
+      "hover",
+      "selected"
+    );
+
+    if(s.dataset.value <= r){
+
+      s.classList.add("hover");
+
+    }
+
+  });
+
 }
 
 function saveRating(r){
-  const ratings = JSON.parse(localStorage.getItem("ratings")||"{}");
-  ratings[id]=r;
-  localStorage.setItem("ratings",JSON.stringify(ratings));
+
+  const ratings =
+  JSON.parse(
+    localStorage.getItem("ratings")
+    || "{}"
+  );
+
+  ratings[id] = r;
+
+  localStorage.setItem(
+    "ratings",
+    JSON.stringify(ratings)
+  );
+
 }
 
-const savedRatings = JSON.parse(localStorage.getItem("ratings")||"{}");
+const savedRatings =
+JSON.parse(
+  localStorage.getItem("ratings")
+  || "{}"
+);
+
 if(savedRatings[id]){
-  currentRating=savedRatings[id];
-  document.getElementById("ratingValue").innerText=`${currentRating}/5`;
+
+  currentRating =
+  savedRatings[id];
+
+  document
+  .getElementById("ratingValue")
+  .innerText =
+  `${currentRating}/5`;
+
   highlightStars(currentRating);
+
 }
 
-// =================== COMMENTS ===================
-let comments = JSON.parse(localStorage.getItem("comments")||"{}");
-if(!comments[id]) comments[id]=[];
 
-function submitComment(){
-  const name=document.getElementById("commentName").value.trim();
-  const text=document.getElementById("commentText").value.trim();
-  const fileInput=document.getElementById("commentImage");
-  if(!name||!text) return alert("Vui lòng nhập tên và nội dung");
+// ================= COMMENTS =================
 
-  let reader=new FileReader();
-  reader.onload=function(e){
-    const newComment={id:Date.now(),name,text,img:e.target.result||"",time:new Date().toISOString(),likes:0,replies:[]};
-    comments[id].push(newComment);
-    localStorage.setItem("comments",JSON.stringify(comments));
-    renderComments();
-    document.getElementById("commentName").value="";
-    document.getElementById("commentText").value="";
-    fileInput.value="";
-  };
-  if(fileInput.files[0]) reader.readAsDataURL(fileInput.files[0]);
-  else reader.onload({target:{result:""}});
+async function submitComment(){
+
+  if(!currentUser){
+
+    alert("Đăng nhập trước");
+
+    return;
+
+  }
+
+  const text =
+  document
+  .getElementById("commentText")
+  .value
+  .trim();
+
+  if(!text){
+
+    alert("Nhập bình luận");
+
+    return;
+
+  }
+
+  const fileInput =
+  document.getElementById(
+    "commentImage"
+  );
+
+  let imageUrl = "";
+
+  if(fileInput.files[0]){
+
+    const file =
+    fileInput.files[0];
+
+    if(
+      !file.type.startsWith("image/")
+    ){
+
+      alert("Chỉ upload ảnh");
+
+      return;
+
+    }
+
+    const formData =
+    new FormData();
+
+    formData.append(
+      "file",
+      file
+    );
+
+    formData.append(
+      "upload_preset",
+      "stech_upload"
+    );
+
+    const res =
+    await fetch(
+      "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+      {
+        method:"POST",
+        body:formData
+      }
+    );
+
+    const data =
+    await res.json();
+
+    imageUrl =
+    data.secure_url || "";
+
+  }
+
+  await addDoc(
+    collection(db,"comments"),
+    {
+
+      productId:id,
+
+      uid:currentUser.uid,
+
+      name:
+      currentUser.displayName
+      || "User",
+
+      avatar:
+      currentUser.photoURL
+      ||
+      "https://i.ibb.co/7W2vT5J/avatar.png",
+
+      text:text,
+
+      image:imageUrl,
+
+      likes:0,
+
+      replies:[],
+
+      createdAt:
+      serverTimestamp()
+
+    }
+  );
+
+  document
+  .getElementById("commentText")
+  .value = "";
+
+  document
+  .getElementById("commentImage")
+  .value = "";
+
 }
 
-function renderComments(){
-  const list=document.getElementById("commentList");
-  list.innerHTML="";
-  const productComments = comments[id]||[];
-  productComments.forEach(c=>{
-    const div=document.createElement("div");
-    div.className="comment-item";
-    div.innerHTML=`
-      <img src="${c.img||'https://i.ibb.co/7W2vT5J/avatar.png'}" class="comment-avatar">
+
+// ================= LOAD COMMENTS =================
+
+const q = query(
+
+  collection(db,"comments"),
+
+  orderBy("createdAt","desc")
+
+);
+
+onSnapshot(q,(snapshot)=>{
+
+  const list =
+  document.getElementById(
+    "commentList"
+  );
+
+  list.innerHTML = "";
+
+  snapshot.forEach(docSnap=>{
+
+    const c = docSnap.data();
+
+    if(
+      String(c.productId)
+      !==
+      String(id)
+    ) return;
+
+    const div =
+    document.createElement("div");
+
+    div.className =
+    "comment-item";
+
+    div.innerHTML = `
+
+      <img
+      src="${
+        c.avatar ||
+        'https://i.ibb.co/7W2vT5J/avatar.png'
+      }"
+      class="comment-avatar">
+
       <div class="comment-content">
-        <div class="comment-name">${c.name}</div>
-        <div class="comment-time">${timeAgo(c.time)}</div>
-        <div class="comment-text">${c.text}</div>
-        <div class="comment-actions">
-          <span onclick="likeComment(${c.id})">👍 ${c.likes}</span>
-          <span onclick="replyComment(${c.id})">Trả lời</span>
+
+        <div class="comment-name">
+          ${c.name}
         </div>
-        <div class="comment-replies" id="replies-${c.id}"></div>
+
+        <div class="comment-time">
+
+          ${
+            c.createdAt
+            ?
+            timeAgo(
+              c.createdAt.toDate()
+            )
+            :
+            "Vừa xong"
+          }
+
+        </div>
+
+        <div class="comment-text">
+          ${c.text}
+        </div>
+
+        ${
+          c.image
+          ?
+          `
+          <img
+          src="${c.image}"
+          class="comment-image">
+          `
+          :
+          ""
+        }
+
+        <div class="comment-actions">
+
+          <span
+          onclick="
+          likeComment(
+            '${docSnap.id}'
+          )
+          ">
+
+          👍 ${c.likes || 0}
+
+          </span>
+
+          <span
+          onclick="
+          replyComment(
+            '${docSnap.id}'
+          )
+          ">
+
+          Trả lời
+
+          </span>
+
+        </div>
+
+        <div
+        class="comment-replies"
+        id="replies-${docSnap.id}">
+        </div>
+
       </div>
+
     `;
-    // render replies
-    c.replies.forEach(r=>{
-      const rDiv = document.createElement("div");
-      rDiv.innerHTML=`<strong>${r.name}</strong> ${timeAgo(r.time)}<br>${r.text}`;
-      div.querySelector(`#replies-${c.id}`).appendChild(rDiv);
-    });
+
+    if(c.replies){
+
+      c.replies.forEach(r=>{
+
+        const rDiv =
+        document.createElement("div");
+
+        rDiv.className =
+        "reply-item";
+
+        rDiv.innerHTML = `
+
+          <strong>
+            ${r.name}
+          </strong>
+
+          <div class="comment-time">
+
+            ${timeAgo(r.time)}
+
+          </div>
+
+          <div>
+
+            ${r.text}
+
+          </div>
+
+        `;
+
+        div
+        .querySelector(
+          `#replies-${docSnap.id}`
+        )
+        .appendChild(rDiv);
+
+      });
+
+    }
+
     list.appendChild(div);
+
   });
-}
-renderComments();
 
-// Like comment
-function likeComment(commentId){
-  const c = comments[id].find(x=>x.id===commentId);
-  if(c){ c.likes++; localStorage.setItem("comments",JSON.stringify(comments)); renderComments(); }
+});
+
+
+// ================= LIKE =================
+
+async function likeComment(commentId){
+
+  const refDoc =
+  doc(
+    db,
+    "comments",
+    commentId
+  );
+
+  await updateDoc(
+    refDoc,
+    {
+      likes:increment(1)
+    }
+  );
+
 }
 
-// Reply comment
-function replyComment(commentId){
-  const replyText = prompt("Nhập nội dung trả lời:");
-  if(!replyText) return;
-  const rName = prompt("Nhập tên của bạn:");
-  if(!rName) return;
-  const c = comments[id].find(x=>x.id===commentId);
-  c.replies.push({name:rName,text:replyText,time:new Date().toISOString()});
-  localStorage.setItem("comments",JSON.stringify(comments));
-  renderComments();
+
+// ================= REPLY =================
+
+async function replyComment(commentId){
+
+  if(!currentUser){
+
+    alert("Đăng nhập trước");
+
+    return;
+
+  }
+
+  const text =
+  prompt("Nhập trả lời");
+
+  if(!text) return;
+
+  const refDoc =
+  doc(
+    db,
+    "comments",
+    commentId
+  );
+
+  const snap =
+  await getDoc(refDoc);
+
+  const data =
+  snap.data();
+
+  const replies =
+  data.replies || [];
+
+  replies.push({
+
+    name:
+    currentUser.displayName
+    || "User",
+
+    text:text,
+
+    time:new Date()
+
+  });
+
+  await updateDoc(
+    refDoc,
+    {
+      replies:replies
+    }
+  );
+
 }
 
-// Format thời gian
+
+// ================= TIME =================
+
 function timeAgo(date){
-  const d = new Date(date);
-  const diff = Math.floor((new Date()-d)/1000); // giây
-  if(diff<60) return "Vừa xong";
-  if(diff<3600) return Math.floor(diff/60)+" phút trước";
-  if(diff<86400) return Math.floor(diff/3600)+" giờ trước";
-  return Math.floor(diff/86400)+" ngày trước";
+
+  const diff =
+  Math.floor(
+    (
+      new Date() - date
+    ) / 1000
+  );
+
+  if(diff < 60)
+    return "Vừa xong";
+
+  if(diff < 3600)
+    return Math.floor(diff/60)
+    + " phút trước";
+
+  if(diff < 86400)
+    return Math.floor(diff/3600)
+    + " giờ trước";
+
+  return Math.floor(diff/86400)
+  + " ngày trước";
+
 }
 
-// =================== EXPOSE HÀM CHO HTML ===================
+
+// ================= EXPORT =================
+
 window.toggleMenu = toggleMenu;
+
 window.openPanel = openPanel;
+
 window.closePanel = closePanel;
+
 window.showTab = showTab;
+
 window.addToCart = addToCart;
+
 window.searchProduct = searchProduct;
+
 window.submitComment = submitComment;
+
+window.likeComment = likeComment;
+
+window.replyComment = replyComment;
