@@ -8,7 +8,7 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
   getFirestore,
-  collection,
+  ,
   getDocs
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -31,7 +31,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-const db = getFirestore(app);
+const firestoreDB = getFirestore(app);
+
 const realtimeDB = firebase.database();
 /* =========================
    CAMERA TRONG NHÀ
@@ -49,7 +50,7 @@ async function getProducts(){
 
     const querySnapshot =
     await getDocs(
-      collection(db,"products")
+     collection(firestoreDB,"products")
     );
 
     let arr = [];
