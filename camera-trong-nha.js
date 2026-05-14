@@ -218,22 +218,18 @@ function render(list){
 
         </div>
 
- <button
+<button
   class="spec-btn"
   onclick="goDetail('${id}')"
 >
-
   ⚙️ Xem thông số
-
 </button>
 
 <button
   class="cart-btn"
   onclick="addToCart('${id}')"
 >
-
   🛒 Thêm vào giỏ
-
 </button>
       </div>
 
