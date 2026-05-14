@@ -352,11 +352,13 @@ header div{
 .item:hover img{
   transform:scale(1.03);
 }
-/* Ẩn logo header bất kể inline style hay CSS khác */
+/* Ẩn logo header */
 header .logo {
     display: none !important;
 }
+
 /* Ẩn avatar sidebar */
-#userInfoPreview {
+#sidebarUserAvatarPreview {
     display: none !important;
+
 }
