@@ -1,8 +1,12 @@
 // ==========================
-// FIREBASE INIT
+// FIREBASE INIT - Modular v10
 // ==========================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-// Cấu hình Firebase của bạn
+// Config Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain: "stech-73b89.firebaseapp.com",
@@ -13,20 +17,17 @@ const firebaseConfig = {
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 
-// Kiểm tra nếu Firebase chưa init thì init
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+// Init app
+const app = initializeApp(firebaseConfig);
 
-// Lấy auth và database dùng chung
-const auth = firebase.auth();
-const db = firebase.database();
-const storage = firebase.storage(); // nếu cần upload hình ảnh
+// Lấy auth / database / storage modular
+const auth = getAuth(app);
+const db = getDatabase(app);       // ✅ modular
+const storage = getStorage(app);   // nếu cần upload hình ảnh
 
 // Biến trạng thái Firebase sẵn sàng
 let firebaseReady = false;
 
-// Đặt firebaseReady = true khi auth state check xong
 auth.onAuthStateChanged(user => {
   firebaseReady = true;
 });
