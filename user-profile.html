@@ -187,28 +187,21 @@ header{
     box-shadow:0 4px 20px rgba(0,0,0,.1);
 }
 
-h2{
-    text-align:center;
-    margin-bottom:20px;
-}
-
 /* =========================
-   AVATAR & COVER
+   COVER FULL WIDTH & PROFILE HEADER
 ========================= */
-.cover-container {
-    width: 100%;
-    height: 160px;
-    border-radius: 12px;
+.cover-full {
+    width: 100vw;
+    height: 220px;
     overflow: hidden;
     position: relative;
-    margin-bottom: 20px;
     cursor: pointer;
 }
 
-.cover-container img {
-    width:100%;
-    height:100%;
-    object-fit:cover;
+.cover-full img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .cover-btn {
@@ -230,14 +223,29 @@ h2{
     box-shadow:0 2px 6px rgba(0,0,0,.25);
 }
 
-.avatar-container {
-    width: 130px;
-    height: 130px;
-    margin: -65px auto 15px;
-    border: 3px solid #4CAF50;
-    border-radius: 50%;
-    overflow: hidden;
-    cursor: pointer;
+.profile-header{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    margin-top:-65px;
+    padding: 0 10px;
+}
+
+.profile-title{
+    margin:0;
+    font-size:1.5rem;
+    font-weight:bold;
+    color:#111;
+}
+
+/* Avatar */
+.avatar-container{
+    width:130px;
+    height:130px;
+    border:3px solid #fff;
+    border-radius:50%;
+    overflow:hidden;
     position:relative;
     z-index:2;
     background:#fff;
@@ -265,29 +273,8 @@ h2{
     font-size:18px;
     cursor:pointer;
     border:2px solid #fff;
-   z-index:5;
+    z-index:5;
     box-shadow:0 2px 6px rgba(0,0,0,.25);
-}
-
-/* Modal */
-#imageModal {
-    display:none;
-    position:fixed;
-    z-index:10000;
-    left:0;
-    top:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,.8);
-    justify-content:center;
-    align-items:center;
-}
-
-#imageModal img {
-    max-width:90%;
-    max-height:90%;
-    border-radius:12px;
-    box-shadow:0 0 20px rgba(0,0,0,.5);
 }
 
 /* =========================
@@ -379,6 +366,27 @@ button:hover{
     opacity:1;
 }
 
+/* Modal */
+#imageModal {
+    display:none;
+    position:fixed;
+    z-index:10000;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.8);
+    justify-content:center;
+    align-items:center;
+}
+
+#imageModal img {
+    max-width:90%;
+    max-height:90%;
+    border-radius:12px;
+    box-shadow:0 0 20px rgba(0,0,0,.5);
+}
+
 /* =========================
    MOBILE
 ========================= */
@@ -466,23 +474,22 @@ button:hover{
 </div>
 </header>
 
-<div class="container">
-<h2>Thông tin cá nhân</h2>
-
-<!-- Cover -->
-<div class="cover-container" id="coverContainer">
+<!-- Cover full -->
+<div class="cover-full" id="coverContainer">
 <img id="coverImg" src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="cover">
 <div class="cover-btn" id="coverBox">📷</div>
 </div>
-<input type="file" id="coverUpload" accept="image/*" hidden>
 
-<!-- Avatar -->
+<!-- Avatar + title -->
+<div class="profile-header">
 <div class="avatar-container">
     <img id="avatarImg" src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="avatar">
     <div class="camera-btn" id="avatarBox">📷</div>
 </div>
-<input type="file" id="avatarUpload" accept="image/*" hidden>
+<h2 class="profile-title">Thông tin cá nhân</h2>
+</div>
 
+<div class="container">
 <div class="info-fields">
 <p>Email: <b id="userEmail"></b></p>
 <p>Ngày đăng ký: <span id="userCreatedAt"></span></p>
