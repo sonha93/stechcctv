@@ -2,36 +2,29 @@
 // FIREBASE CART SCRIPT
 // ==========================
 
-// Firebase config
-const firebaseConfig = {
-apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-authDomain: "stech-73b89.firebaseapp.com",
-databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-projectId: "stech-73b89",
-storageBucket: "stech-73b89.appspot.com",
-messagingSenderId: "873739162979",
-appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-};
-
 // AUTH
 const auth = firebase.auth();
 
+// USER + CART
 let currentUser = null;
-let cartItems = [];
+let cartData = [];
 
-// Badge giỏ hàng
+// BADGE
 const cartCountEl =
 document.querySelector(".header-icons .cart-count");
 
 // ==========================
-// LOAD USER + CART
+// LOAD USER
 // ==========================
+
 auth.onAuthStateChanged(user => {
 
 ```
 if (!user) {
+
     window.location.href = "index.html";
     return;
+
 }
 
 currentUser = user;
@@ -44,6 +37,7 @@ loadCart();
 // ==========================
 // LOAD CART
 // ==========================
+
 function loadCart() {
 
 ```
@@ -52,7 +46,7 @@ if (!currentUser) return;
 const cartKey =
 "cart_" + currentUser.uid;
 
-cartItems = JSON.parse(
+cartData = JSON.parse(
     localStorage.getItem(cartKey)
 ) || [];
 
@@ -66,6 +60,7 @@ updateBadge();
 // ==========================
 // RENDER CART
 // ==========================
+
 function renderCart() {
 
 ```
@@ -81,7 +76,8 @@ document.getElementById("cartAction");
 if (!box || !totalBox || !actionBox)
 return;
 
-if (cartItems.length === 0) {
+// GIỎ TRỐNG
+if (cartData.length === 0) {
 
     box.innerHTML =
     "<p class='empty'>Giỏ hàng trống 🛒</p>";
@@ -95,9 +91,10 @@ if (cartItems.length === 0) {
 
 let total = 0;
 
-box.innerHTML = cartItems.map((item, i) => {
+box.innerHTML = cartData.map((item, i) => {
 
-    const qty = item.qty || 1;
+    const qty =
+    item.qty || 1;
 
     total +=
     (item.price || 0) * qty;
@@ -110,7 +107,11 @@ box.innerHTML = cartItems.map((item, i) => {
 
         <div class="info">
 
-            <b>${item.name || ''}</b><br>
+            <b>
+                ${item.name || ''}
+            </b>
+
+            <br>
 
             <div class="price-new">
                 ${(item.price || 0).toLocaleString()}đ
@@ -132,7 +133,9 @@ box.innerHTML = cartItems.map((item, i) => {
                     -
                 </button>
 
-                <span>${qty}</span>
+                <span>
+                    ${qty}
+                </span>
 
                 <button onclick="changeQty(${i}, 1)">
                     +
@@ -175,6 +178,7 @@ actionBox.innerHTML = `
 // ==========================
 // UPDATE BADGE
 // ==========================
+
 function updateBadge() {
 
 ```
@@ -182,7 +186,7 @@ if (!cartCountEl) return;
 
 let count = 0;
 
-cartItems.forEach(item => {
+cartData.forEach(item => {
 
     count += item.qty || 1;
 
@@ -196,14 +200,17 @@ cartCountEl.innerText = count;
 // ==========================
 // CHANGE QTY
 // ==========================
+
 function changeQty(i, delta) {
 
 ```
-cartItems[i].qty =
-(cartItems[i].qty || 1) + delta;
+cartData[i].qty =
+(cartData[i].qty || 1) + delta;
 
-if (cartItems[i].qty < 1) {
-    cartItems[i].qty = 1;
+if (cartData[i].qty < 1) {
+
+    cartData[i].qty = 1;
+
 }
 
 saveCart();
@@ -214,10 +221,11 @@ saveCart();
 // ==========================
 // REMOVE ITEM
 // ==========================
+
 function removeItem(i) {
 
 ```
-cartItems.splice(i, 1);
+cartData.splice(i, 1);
 
 saveCart();
 ```
@@ -227,6 +235,7 @@ saveCart();
 // ==========================
 // SAVE CART
 // ==========================
+
 function saveCart() {
 
 ```
@@ -237,7 +246,7 @@ const cartKey =
 
 localStorage.setItem(
     cartKey,
-    JSON.stringify(cartItems)
+    JSON.stringify(cartData)
 );
 
 renderCart();
@@ -250,6 +259,7 @@ updateBadge();
 // ==========================
 // CHECKOUT
 // ==========================
+
 function checkout() {
 
 ```
@@ -260,7 +270,7 @@ const cartKey =
 
 localStorage.removeItem(cartKey);
 
-cartItems = [];
+cartData = [];
 
 renderCart();
 
@@ -275,6 +285,9 @@ window.location.href =
 // ==========================
 // GLOBAL
 // ==========================
+
 window.changeQty = changeQty;
+
 window.removeItem = removeItem;
+
 window.checkout = checkout;
