@@ -15,7 +15,7 @@ const firebaseConfig = {
 
 // Lấy auth và database
 const auth = firebase.auth();
-const db = firebase.database();
+
 
 let currentUser = null;
 let cart = [];
@@ -35,13 +35,20 @@ auth.onAuthStateChanged(user => {
 });
 
 function loadCart() {
+
     if (!currentUser) return;
 
-    db.ref("carts/" + currentUser.uid).on("value", snap => {
-        cart = snap.val() || [];
-        renderCart();
-        updateBadge();
-    });
+    const cartKey =
+    "cart_" + currentUser.uid;
+
+    cart = JSON.parse(
+        localStorage.getItem(cartKey)
+    ) || [];
+
+    renderCart();
+
+    updateBadge();
+
 }
 
 // ==========================
@@ -119,21 +126,38 @@ function removeItem(i) {
 // SAVE CART
 // ==========================
 function saveCart() {
+
     if (!currentUser) return;
 
-    db.ref("carts/" + currentUser.uid).set(cart);
+    const cartKey =
+    "cart_" + currentUser.uid;
+
+    localStorage.setItem(
+        cartKey,
+        JSON.stringify(cart)
+    );
+
 }
 
 // ==========================
 // CHECKOUT
 // ==========================
 function checkout() {
+
     if (!currentUser) return;
 
-    db.ref("carts/" + currentUser.uid).remove().then(() => {
-        cart = [];
-        renderCart();
-        updateBadge();
-        window.location.href = "checkout.html";
-    });
+    const cartKey =
+    "cart_" + currentUser.uid;
+
+    localStorage.removeItem(cartKey);
+
+    cart = [];
+
+    renderCart();
+
+    updateBadge();
+
+    window.location.href =
+    "checkout.html";
+
 }
