@@ -122,6 +122,9 @@ const userNamePreview = document.getElementById("sidebarUserNamePreview");
 
     if(userInfoPreview){
       userInfoPreview.style.display = "none";
+       // Xoá luôn cart khi logout
+    localStorage.removeItem("cart");
+    renderCheckout(); // render cart trống
     }
 
   }
