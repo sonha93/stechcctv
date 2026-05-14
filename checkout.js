@@ -47,7 +47,8 @@ function renderCheckout(){
   let total = 0;
 
   currentCart.forEach((item, index) => {
-    const qty = Number(item.qty) || 1;
+   const qty =
+  Number(item.qty || item.quantity) || 1;
     const price = Number(item.price) || 0;
     const oldPrice = Number(item.oldPrice) || 0;
     const subTotal = qty * price;
@@ -97,7 +98,12 @@ async function toggleItem(index){
 // =========================
 async function changeQty(index, delta){
   if(!currentCart[index]) return;
-  currentCart[index].qty = (currentCart[index].qty || 1) + delta;
+  const oldQty =
+currentCart[index].qty ||
+currentCart[index].quantity || 1;
+
+currentCart[index].qty =
+oldQty + delta;
   if(currentCart[index].qty < 1) currentCart[index].qty = 1;
   await db.ref("carts/" + currentUser.uid).set(currentCart);
   renderCheckout();
@@ -138,6 +144,22 @@ async function checkout(){
 // =========================
 // INIT
 // =========================
-document.addEventListener("DOMContentLoaded", () => {
-  if(currentUser) loadCart();
+auth.onAuthStateChanged(user => {
+
+  currentUser = user;
+
+  if(user){
+
+    loadCart();
+
+  }
+
+  else{
+
+    currentCart = [];
+
+    renderCheckout();
+
+  }
+
 });
