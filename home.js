@@ -7,6 +7,12 @@ import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
+  getAuth,
+  onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
   getFirestore,
   collection,
   getDocs
@@ -32,6 +38,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
+
+const auth = getAuth(app);
+
+let currentUser = null;
+
+onAuthStateChanged(auth, user => {
+
+  currentUser = user;
+
+});
+
 
 /* =========================
    CAMERA TRONG NHÀ
@@ -237,6 +254,13 @@ window.goDetail = function(id){
 
 window.addToCart = function(id){
 
+  if(!currentUser){
+
+    alert("Vui lòng đăng nhập");
+    return;
+
+  }
+
   const product =
     allProducts.find(
       p => String(p.id) === String(id)
@@ -244,9 +268,12 @@ window.addToCart = function(id){
 
   if(!product) return;
 
+  const cartKey =
+    "cart_" + currentUser.uid;
+
   let cart =
     JSON.parse(
-      localStorage.getItem("cart")
+      localStorage.getItem(cartKey)
     ) || [];
 
   const exist =
@@ -258,22 +285,17 @@ window.addToCart = function(id){
 
     exist.qty += 1;
 
-  }
-
-  else{
+  }else{
 
     cart.push({
-
       ...product,
-
       qty:1
-
     });
 
   }
 
   localStorage.setItem(
-    "cart",
+    cartKey,
     JSON.stringify(cart)
   );
 
@@ -352,5 +374,8 @@ document.addEventListener(
     await getProducts();
 
     render(allProducts);
-
-  });
+}
+  );
+window.goDetail = goDetail;
+window.addToCart = addToCart;
+window.toggleMenu = toggleMenu;
