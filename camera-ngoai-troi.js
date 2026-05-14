@@ -12,7 +12,10 @@ import {
   getDocs
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+import {
+  getAuth
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 const firebaseConfig = {
 
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -32,7 +35,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
-
+const auth = getAuth(app);
 /* =========================
    CAMERA TRONG NHÀ
 ========================= */
@@ -242,15 +245,14 @@ window.goDetail = function(id){
 window.addToCart = function(id){
 
 // CHECK LOGIN
-const user =
-firebase.auth().currentUser;
+const user = auth.currentUser;
 
 if(!user){
 
-```
+
 alert("Vui lòng đăng nhập");
 return;
-```
+
 
 }
 
@@ -277,24 +279,19 @@ i => String(i.id) === String(id)
 
 if(exist){
 
-```
-exist.qty += 1;
-```
+  exist.qty += 1;
 
 }else{
 
-```
-cart.push({
+  cart.push({
 
-  ...product,
+    ...product,
 
-  qty:1
+    qty: 1
 
-});
-```
+  });
 
 }
-
 localStorage.setItem(
 cartKey,
 JSON.stringify(cart)
@@ -378,4 +375,5 @@ document.addEventListener(
 
     render(allProducts);
 
-  });
+  }
+);
