@@ -22,7 +22,7 @@ import {
   get,
   set
 }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 const firebaseConfig = {
 
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -35,7 +35,10 @@ const firebaseConfig = {
 
   messagingSenderId: "873739162979",
 
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56",
+
+  databaseURL:
+  "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app"
 
 };
 
@@ -254,7 +257,8 @@ window.goDetail = function(id){
 /* =========================
    CART
 ========================= */
-window.addToCart = async function(id){
+
+async function addToCart(id){
 
   if(!currentUser){
 
@@ -308,7 +312,9 @@ window.addToCart = async function(id){
 
   alert("Đã thêm vào giỏ 🛒");
 
-};
+}
+
+window.addToCart = addToCart;
 
 /* =========================
    SEARCH
