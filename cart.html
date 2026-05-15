@@ -42,7 +42,7 @@
 </head>
 <body>
 
-<div id="overlay" onclick="toggleMenu()"></div>
+<div id="overlay"></div>
 
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
@@ -56,7 +56,7 @@
 </div>
 
 <header>
-  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  <div class="menu-btn" id="menuBtn">☰</div>
   <div class="logo"><img src="https://ibb.co" onerror="this.src='https://placeholder.com'"></div>
   <input id="searchInput" placeholder="Tìm kiếm sản phẩm trong giỏ...">
 </header>
@@ -68,50 +68,68 @@
   <div id="cartAction"></div>
 </div>
 
-<!-- Đã sửa lỗi Nhúng Firebase SDK bản Compat giúp hoạt động mượt mà không lỗi F12 -->
-<script src="https://gstatic.com"></script>
-<script src="https://gstatic.com"></script>
-<script src="https://gstatic.com"></script>
+<!-- ĐÃ KHÔI PHỤC ĐẦY ĐỦ LINK TẢI MODULE HỢP LỆ -->
+<script type="module">
+  import { initializeApp } from "https://gstatic.com";
+  import { getAuth, onAuthStateChanged } from "https://gstatic.com";
+  import { getFirestore, doc, getDoc, setDoc } from "https://gstatic.com";
 
-<script>
-  // CẤU HÌNH FIREBASE
+  // ĐÃ SỬA CẤU HÌNH GỐC ĐẦY ĐỦ CỦA BẠN
   const firebaseConfig = {
     apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-    authDomain: "://firebaseapp.com",
+    authDomain: "stech-73b89.firebaseapp.com",
     projectId: "stech-73b89",
-    storageBucket: "://appspot.com",
+    storageBucket: "stech-73b89.appspot.com",
     messagingSenderId: "873739162979",
     appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
   };
 
-  // Khởi tạo ứng dụng theo chuẩn compat dạng toàn cục
-  const app = firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
   let currentUser = null;
   let cart = [];
 
-  // MENU SIDEBAR
-  function toggleMenu(){
-    document.getElementById("sidebar").classList.toggle("active");
-    document.getElementById("overlay").classList.toggle("active");
-  }
+  // ĐIỀU HƯỚNG SIDEBAR MENU BẰNG EVENT LISTENER
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  const menuBtn = document.getElementById("menuBtn");
 
-  // THEO DÕI ĐĂNG NHẬP VÀ LOAD DỮ LIỆU GIỎ HÀNG
-  auth.onAuthStateChanged(user => {
+  function toggleMenu(){
+    if(sidebar && overlay) {
+      sidebar.classList.toggle("active");
+      overlay.classList.toggle("active");
+    }
+  }
+  if(menuBtn) menuBtn.addEventListener("click", toggleMenu);
+  if(overlay) overlay.addEventListener("click", toggleMenu);
+
+  // THEO DÕI TRẠNG THÁI ĐĂNG NHẬP & TẢI GIỎ HÀNG TỪ FIRESTORE
+  onAuthStateChanged(auth, async (user) => {
     if(user){
       currentUser = user;
-      cart = JSON.parse(localStorage.getItem("cart_" + currentUser.uid)) || [];
+      try {
+        const cartRef = doc(db, "carts", currentUser.uid);
+        const cartSnap = await getDoc(cartRef);
+        
+        if (cartSnap.exists()) {
+          cart = cartSnap.data().items || [];
+        } else {
+          cart = [];
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy giỏ hàng từ Firestore:", error);
+        cart = [];
+      }
     } else {
       currentUser = null;
-      // Khách chưa đăng nhập thì dùng chung key mặc định để không bị lỗi trống giỏ hàng
       cart = JSON.parse(localStorage.getItem("cart_guest")) || [];
     }
     renderCart();
   });
 
-  // HIỂN THỊ DANH SÁCH GIỎ HÀNG
+  // HIỂN THỊ DANH SÁCH GIỎ HÀNG TRÊN GIAO DIỆN
   function renderCart(list = null){
     let arr = list || cart;
     const box = document.getElementById("cartList");
@@ -122,8 +140,8 @@
 
     if(arr.length === 0){
       box.innerHTML = "<p class='empty'>Giỏ hàng của bạn đang trống.</p>";
-      totalBox.innerHTML = "";
-      actionBox.innerHTML = "";
+      if(totalBox) totalBox.innerHTML = "";
+      if(actionBox) actionBox.innerHTML = "";
       return;
     }
 
@@ -134,12 +152,11 @@
         total += (Number(item.price) || 0) * (Number(item.qty) || 1);
       }
       
-      // Fix lỗi hiển thị ảnh nếu đường dẫn ảnh bị trống hoặc lỗi
       let imageSrc = item.img || 'https://via.placeholder.com/80';
 
       return `
       <div class="item">
-        <input type="checkbox" class="check-item" ${item.checked ? "checked" : ""} onclick="toggleCheck(${i})">
+        <input type="checkbox" class="check-item btn-check" data-index="${i}" ${item.checked ? "checked" : ""}>
         <img src="${imageSrc}" onerror="this.src='https://via.placeholder.com/80'">
         <div class="info">
           <b>${item.name || 'Sản phẩm không tên'}</b>
@@ -148,64 +165,100 @@
             ${item.oldPrice ? `<span class="price-old">${(Number(item.oldPrice) || 0).toLocaleString()}đ</span>` : ""}
           </div>
           <div class="qty">
-            <button onclick="changeQty(${i}, -1)">-</button>
+            <button class="btn-minus" data-index="${i}">-</button>
             <span>${item.qty || 1}</span>
-            <button onclick="changeQty(${i}, 1)">+</button>
+            <button class="btn-plus" data-index="${i}">+</button>
           </div>
         </div>
-        <button class="remove" onclick="removeItem(${i})">🗑</button>
+        <button class="remove btn-remove" data-index="${i}">🗑</button>
       </div>`;
     }).join("");
 
-    totalBox.innerHTML = "Tổng: " + total.toLocaleString() + "đ";
-    actionBox.innerHTML = `<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
+    if(totalBox) totalBox.innerHTML = "Tổng: " + total.toLocaleString() + "đ";
+    if(actionBox) actionBox.innerHTML = `<button class="checkout" id="checkoutBtn">Đặt hàng</button>`;
+
+    addCartEvents();
   }
 
-  // TƯƠNG TÁC TĂNG GIẢM/XÓA TRONG GIỎ HÀNG
-  function toggleCheck(i){ 
-    cart[i].checked = !cart[i].checked; 
-    saveCart(); 
-    renderCart(); 
-  }
-  
-  function changeQty(i, delta){ 
-    cart[i].qty = (Number(cart[i].qty) || 1) + delta; 
-    if(cart[i].qty < 1) cart[i].qty = 1; 
-    saveCart(); 
-    renderCart(); 
-  }
-  
-  function removeItem(i){ 
-    if(confirm("Bạn muốn xóa sản phẩm này khỏi giỏ hàng?")){
-      cart.splice(i, 1); 
-      saveCart(); 
-      renderCart(); 
+  // GẮN SỰ KIỆN CHO CÁC NÚT BẤM TRONG GIỎ HÀNG (SỬA LỖI SỰ KIỆN TRONG MODULE)
+  function addCartEvents() {
+    document.querySelectorAll(".btn-check").forEach(btn => {
+      btn.addEventListener("change", (e) => {
+        const index = e.target.dataset.index;
+        cart[index].checked = e.target.checked;
+        saveCart();
+        renderCart();
+      });
+    });
+
+    document.querySelectorAll(".btn-minus").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const index = e.target.dataset.index;
+        cart[index].qty = (Number(cart[index].qty) || 1) - 1;
+        if(cart[index].qty < 1) cart[index].qty = 1;
+        saveCart();
+        renderCart();
+      });
+    });
+
+    document.querySelectorAll(".btn-plus").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const index = e.target.dataset.index;
+        cart[index].qty = (Number(cart[index].qty) || 1) + 1;
+        saveCart();
+        renderCart();
+      });
+    });
+
+    document.querySelectorAll(".btn-remove").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const button = e.target.closest(".btn-remove");
+        const index = button.dataset.index;
+        if(confirm("Bạn muốn xóa sản phẩm này khỏi giỏ hàng?")){
+          cart.splice(index, 1);
+          saveCart();
+          renderCart();
+        }
+      });
+    });
+
+    const checkoutBtn = document.getElementById("checkoutBtn");
+    if(checkoutBtn) {
+      checkoutBtn.addEventListener("click", () => {
+        let checkedItems = cart.filter(i => i.checked !== false);
+        if(checkedItems.length === 0){ 
+          alert("Vui lòng tích chọn ít nhất 1 sản phẩm để đặt hàng!"); 
+          return; 
+        }
+        window.location.href = "checkout.html";
+      });
     }
   }
-  
-  function saveCart(){ 
+
+  // ĐỒNG BỘ GIỎ HÀNG LÊN FIRESTORE HOẶC LOCALSTORAGE NẾU LÀ GUEST
+  async function saveCart(){ 
     if(currentUser) {
-      localStorage.setItem("cart_" + currentUser.uid, JSON.stringify(cart));
+      try {
+        await setDoc(doc(db, "carts", currentUser.uid), {
+          items: cart,
+          lastUpdated: new Date()
+        });
+      } catch (error) {
+        console.error("Lỗi khi đồng bộ giỏ hàng lên Firestore:", error);
+      }
     } else {
       localStorage.setItem("cart_guest", JSON.stringify(cart));
     }
   }
 
-  // TÌM KIẾM SẢN PHẨM TRONG GIỎ HÀNG
-  document.getElementById("searchInput").addEventListener("input", function(){
-    const key = this.value.toLowerCase().trim();
-    const filtered = cart.filter(i => (i.name || '').toLowerCase().includes(key));
-    renderCart(filtered);
-  });
-
-  // THANH TOÁN
-  function checkout(){
-    let checkedItems = cart.filter(i => i.checked !== false);
-    if(checkedItems.length === 0){ 
-      alert("Vui lòng tích chọn ít nhất 1 sản phẩm để đặt hàng!"); 
-      return; 
-    }
-    window.location.href = "checkout.html";
+  // TÌM KIẾM SẢN PHẨM TRONG GIỎ
+  const searchInput = document.getElementById("searchInput");
+  if(searchInput) {
+    searchInput.addEventListener("input", function(){
+      const key = this.value.toLowerCase().trim();
+      const filtered = cart.filter(i => (i.name || '').toLowerCase().includes(key));
+      renderCart(filtered);
+    });
   }
 </script>
 
