@@ -93,40 +93,12 @@ function sendTelegramNotification(orderNumber, customerName, phone, address, car
     .catch(err => console.error("Lỗi fetch Telegram:", err));
 }
 </script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
 <script>
-  
-const firebaseConfig = {
-  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain:"stech-73b89.firebaseapp.com",
-  projectId:"stech-73b89",
-  storageBucket:"stech-73b89.firebasestorage.app",
-  messagingSenderId:"873739162979",
-  appId:"1:873739162979:web:123456"
-};
+const user = JSON.parse(localStorage.getItem("user"));
+const cartKey = user ? "cart_" + user.uid : "cart_guest";
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
-let cart = [];
-
-firebase.auth().onAuthStateChanged(user => {
-
-  const cartKey = user
-    ? "cart_" + user.uid
-    : "cart_guest";
-
-  window.currentCartKey = cartKey;
-
-  cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-
-  renderCart();
-  updateBank();
-
-});
-
+let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
 document.getElementById("phone").addEventListener("input", function(){
   this.value = this.value.replace(/\D/g,"");
 });
@@ -199,13 +171,21 @@ function placeOrder(){
   }
 
   // Lưu đơn hàng
-  let order = {id:orderId,name,phone,address,cart,time:new Date().toLocaleString()};
+ let order = {
+  id: orderId,
+  uid: user ? user.uid : "guest",
+  name,
+  phone,
+  address,
+  cart,
+  time: new Date().toLocaleString()
+};
   let orders=JSON.parse(localStorage.getItem("orders"))||[];
   orders.push(order);
   localStorage.setItem("orders",JSON.stringify(orders));
 
   // Xóa giỏ hàng
-localStorage.removeItem(window.currentCartKey);
+  localStorage.removeItem(cartKey);
 
   // LOADING
   document.getElementById("loading").style.display="flex";
@@ -224,7 +204,10 @@ updateBank();
 </div>
 <script src="checkout.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </body>
 </html>
