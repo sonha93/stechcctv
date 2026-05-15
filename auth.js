@@ -113,42 +113,25 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================
     // LOGOUT USER
     // ==========================
-  // ==========================
-// LOGOUT USER
-// ==========================
+    logoutLink?.addEventListener("click", async () => {
 
-logoutLink?.addEventListener("click", async () => {
+        await signOut(auth);
+        currentUserUID = null;
 
-    // xóa cart của user hiện tại
-    if(currentUserUID){
+        loginLink.style.display = "block";
+        logoutLink.style.display = "none";
 
-        localStorage.removeItem(
-            "cart_" + currentUserUID
-        );
+        // ẩn user info
+        if (userInfoPreview) userInfoPreview.style.display = "none";
+        if (userNamePreview) userNamePreview.innerText = "";
 
-    }
+        // reload sạch trạng thái
+        location.reload();
 
-    await signOut(auth);
-
-    currentUserUID = null;
-
-    loginLink.style.display = "block";
-    logoutLink.style.display = "none";
-
-    // ẩn user info
-    if (userInfoPreview)
-        userInfoPreview.style.display = "none";
-
-    if (userNamePreview)
-        userNamePreview.innerText = "";
-
-    // reload sạch trạng thái
-    location.reload();
-
-});
+    });
 
     // ==========================
-    // AUTH STATE CHANGE
+    // AUTH STATE CHANGE + LOAD CART
     // ==========================
     onAuthStateChanged(auth, (user) => {
         currentUserUID = user ? user.uid : null;
@@ -160,14 +143,27 @@ logoutLink?.addEventListener("click", async () => {
             if (userInfoPreview) userInfoPreview.style.display = "block";
             if (userNamePreview) userNamePreview.innerText = "Xin chào\n" + (user.email || "");
 
-       } else {
-    loginLink.style.display = "block";
-    logoutLink.style.display = "none";
+            // ===== Load cart của user khi login =====
+            const savedCart = JSON.parse(localStorage.getItem("cart_" + currentUserUID)) || [];
+            renderCart(savedCart);
 
-    // ẩn avatar + xóa text bằng JS
-    if (userInfoPreview) userInfoPreview.style.display = "none";
-    if (userNamePreview) userNamePreview.innerText = "";
-}
+            // Khi cart thay đổi, cập nhật localStorage
+            window.updateCart = (cartArray) => {
+                localStorage.setItem("cart_" + currentUserUID, JSON.stringify(cartArray));
+                renderCart(cartArray);
+            };
+            // ========================================
+
+        } else {
+            loginLink.style.display = "block";
+            logoutLink.style.display = "none";
+
+            if (userInfoPreview) userInfoPreview.style.display = "none";
+            if (userNamePreview) userNamePreview.innerText = "";
+
+            // Cart trống khi chưa login
+            renderCart([]);
+        }
     });
 
 });
