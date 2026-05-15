@@ -36,7 +36,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
 
 const auth = getAuth(app); // Khởi tạo auth Modular
 /* =========================
-    CHỈ LOAD DỮ LIỆU CHO CAM NGOÀI
+    CHỈ LOAD DỮ LIỆU CHO CAM NGOÀI   
 ========================= */
 
 let allProducts = [];
@@ -110,9 +110,9 @@ function render(list){
 
   list = fixData(list);
 
-  /* chỉ load dữ liệu Cam ngoài */
+  /* chỉ load dữ liệu Sd */
 list = list.filter(
- p => p.category === "cam-in"
+ p => p.category === "cam-ngoai"
 );
   box.innerHTML = "";
 
@@ -280,7 +280,7 @@ if(search){
 
 let data =
 allProducts.filter(
-  p => p.featured === "cam-in"
+  p => p.featured === true
 );
 
       render(
