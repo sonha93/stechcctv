@@ -491,24 +491,32 @@ header{
       <div class="sale" id="detailSale"></div>
     </div>
 
-    <div class="action-wrap">
+      </div>
 
-      <button class="spec-open-btn" onclick="openPanel()">
-        ⚙️ Xem thông số
-      </button>
+       <button
+  class="spec-btn"
+  onclick="goDetail('${id}')"
+>
 
-      <button class="buy-btn" onclick="addToCart()">
-        🛒 Thêm giỏ hàng
-      </button>
+  ⚙️ Xem thông số
 
-    </div>
+</button>
 
-    <div class="desc" id="detailDesc"></div>
+<button
+  class="cart-btn"
+  onclick="addToCart('${id}')"
+>
 
-  </div>
+  🛒 Thêm vào giỏ
 
-</div>
+</button>
+      </div>
 
+    `;
+
+  });
+
+}
 <div id="panelOverlay"></div>
 
 <div id="specPanel">
