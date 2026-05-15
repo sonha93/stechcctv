@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -360,8 +361,7 @@ header{
 }
 
 @media(max-width:768px){
-
-  .menu-btn,
+.menu-btn,
   .icon-btn{
     width:42px;
     height:42px;
@@ -373,12 +373,15 @@ header{
     height:39px;
   }
 
+  
   .container{
     flex-direction:row;
     align-items:flex-start;
     gap:14px;
-    padding:1px;
+    padding:1px; 
+      
   }
+}
 
   .left{
     width:120px;
@@ -653,18 +656,14 @@ async function loadProduct(){
   const querySnapshot =
   await getDocs(collection(db,"products"));
 
- querySnapshot.forEach(doc=>{
-
-  products.push({
-    firebaseId: doc.id,
-    ...doc.data()
+  querySnapshot.forEach(doc=>{
+    products.push(doc.data());
   });
 
-});
+  product = products.find(
+    p => String(p.id) === String(id)
+  );
 
-product = products.find(
-  p => String(p.firebaseId) === String(id)
-);
   if(!product) return;
 
   document.getElementById("detailImg").src = product.img || "";
@@ -801,7 +800,7 @@ function addToCart(){
   JSON.parse(localStorage.getItem("cart")) || [];
 
   const exist = cart.find(
-    x => String(x.firebaseId) === String(product.firebaseId)
+    x => String(x.id) === String(product.id)
   );
 
   if(exist){
@@ -827,6 +826,7 @@ function addToCart(){
   alert("Đã thêm vào giỏ");
 
 }
+
 function updateCartCount(){
 
   const cart =
@@ -884,7 +884,7 @@ function searchProduct(){
     div.onclick = ()=>{
 
       window.location.href =
-    "logo.html?id=" + p.firebaseId
+      "logo.html?id=" + p.id;
 
     };
 
