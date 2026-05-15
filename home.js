@@ -36,7 +36,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
 
 const auth = getAuth(app); // Khởi tạo auth Modular
 /* =========================
-    CHỈ LOAD DỮ LIỆU CHO HOME
+    CHỈ LOAD DỮ LIỆU CHO CAM HOME
 ========================= */
 
 let allProducts = [];
@@ -110,7 +110,7 @@ function render(list){
 
   list = fixData(list);
 
-  /* chỉ load dữ liệu Home */
+  /* chỉ load dữ liệu home */
 list = list.filter(
  p => p.category === "home"
 );
