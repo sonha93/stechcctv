@@ -34,7 +34,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 /* =========================
-   CAMERA TRONG NHÀ
+   CAMERA LOAD DỮ LIỆU COMBO   
 ========================= */
 
 let allProducts = [];
@@ -112,7 +112,7 @@ function render(list){
 
   /* chỉ camera trong nhà */
   list = list.filter(
-    p => p.category === "sd"
+    p => p.category === "combo"
   );
 
   box.innerHTML = "";
