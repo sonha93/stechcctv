@@ -67,7 +67,7 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
 function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
 
 // RENDER
-let cart = JSON.parse(localStorage.getItem("cart"))||[];
+let cart = JSON.parse(localStorage.getItem("cart_" + currentUser.uid)) || [];
 function renderCart(list=null){
   let arr=list||cart;
   const box=document.getElementById("cartList");
@@ -130,5 +130,28 @@ renderCart();
 </script>
 
 <script src="cart.js"></script>
+  <body>
+  ...
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+    authDomain: "stech-73b89.firebaseapp.com",
+    projectId: "stech-73b89",
+    storageBucket: "stech-73b89.appspot.com",
+    messagingSenderId: "873739162979",
+    appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+  };
+
+  const app = firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // Sau này mới dùng currentUser
+  let cart = JSON.parse(localStorage.getItem("cart_" + currentUser.uid)) || [];
+</script>S
 </body>
 </html>
