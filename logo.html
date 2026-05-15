@@ -1,3 +1,5 @@
+logo 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -380,7 +382,7 @@ header{
     padding:1px; 
       
   }
-}
+
 
   .left{
     width:120px;
@@ -502,6 +504,7 @@ header{
       </button>
 
     </div>
+
     <div class="desc" id="detailDesc"></div>
 
   </div>
@@ -615,17 +618,9 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore,
   collection,
-  getDocs,
-  doc,
-  getDoc,
-  setDoc
+  getDocs
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-  getAuth
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 document.getElementById("overlay").onclick = function(){
 
@@ -649,63 +644,43 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
 
-const auth = getAuth(app);
-
 const params = new URLSearchParams(window.location.search);
-
 const id = params.get("id");
 
 let products = [];
-
 let product = null;
-
-/* =========================
-   LOAD PRODUCT
-========================= */
 
 async function loadProduct(){
 
   const querySnapshot =
-  await getDocs(
-    collection(db,"products")
-  );
+  await getDocs(collection(db,"products"));
 
-  querySnapshot.forEach(docItem=>{
-
-    products.push({
-      id:docItem.id,
-      ...docItem.data()
-    });
-
+ querySnapshot.forEach(doc=>{
+  products.push({
+    firebaseId: doc.id,
+    ...doc.data()
   });
-
-  product = products.find(
-    p => String(p.id) === String(id)
-  );
+});
+ product = products.find(
+  p => String(p.firebaseId) === String(id)
+);  
 
   if(!product) return;
 
-  document.getElementById("detailImg").src =
-  product.img || "";
+  document.getElementById("detailImg").src = product.img || "";
+  document.getElementById("panelProductImg").src = product.img || "";
 
-  document.getElementById("panelProductImg").src =
-  product.img || "";
-
-  document.getElementById("detailName").innerText =
-  product.name || "";
-
-  document.getElementById("panelProductName").innerText =
-  product.name || "";
+  document.getElementById("detailName").innerText = product.name || "";
+  document.getElementById("panelProductName").innerText = product.name || "";
 
   document.getElementById("detailPrice").innerText =
-  Number(product.price || 0).toLocaleString() + "đ";
+  Number(product.price || 0).toLocaleString()+"đ";
 
   document.getElementById("detailOldPrice").innerText =
   product.oldPrice
-  ? Number(product.oldPrice).toLocaleString() + "đ"
+  ? Number(product.oldPrice).toLocaleString()+"đ"
   : "";
 
   document.getElementById("detailDesc").innerText =
@@ -754,9 +729,7 @@ async function loadProduct(){
     );
 
     saleBox.style.display = "inline-block";
-
-    saleBox.innerText =
-    "-" + sale + "%";
+    saleBox.innerText = "-" + sale + "%";
 
   }else{
 
@@ -767,10 +740,6 @@ async function loadProduct(){
 }
 
 loadProduct();
-
-/* =========================
-   MENU
-========================= */
 
 function toggleMenu(){
 
@@ -783,10 +752,6 @@ function toggleMenu(){
   .classList.toggle("active");
 
 }
-
-/* =========================
-   PANEL
-========================= */
 
 function openPanel(){
 
@@ -830,196 +795,113 @@ function showTab(tabId,btn){
 
 }
 
-/* =========================
-   ADD TO CART FIRESTORE
-========================= */
-
-import {
-  doc,
-  getDoc,
-  setDoc
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-  getAuth
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const auth = getAuth(app);
-
-async function addToCart(){
-
-  const user = auth.currentUser;
-
-  if(!user){
-    alert("Vui lòng đăng nhập!");
-    return;
-  }
+function addToCart(){
 
   if(!product) return;
 
-  try{
+  let cart =
+  JSON.parse(localStorage.getItem("cart")) || [];
 
-    const cartRef =
-      doc(db, "carts", user.uid);
+  const exist = cart.find(
+  x => String(x.firebaseId) === String(product.firebaseId)
+);
 
-    const cartSnap =
-      await getDoc(cartRef);
+  if(exist){
 
-    let cart = [];
+    exist.qty += 1;
 
-    if(cartSnap.exists()){
-      cart = cartSnap.data().items || [];
-    }
+  }else{
 
-    const exist =
-      cart.find(
-        x => String(x.id) === String(product.id)
-      );
-
-    if(exist){
-
-      exist.qty =
-        (exist.qty || 1) + 1;
-
-    }else{
-
-      cart.push({
-        ...product,
-        qty:1
-      });
-
-    }
-
-    await setDoc(cartRef,{
-      items:cart
+    cart.push({
+      ...product,
+      qty:1
     });
 
-    updateCartCount();
-
-    alert("Đã thêm vào giỏ");
-
-  }catch(err){
-
-    console.log(err);
-    alert("Lỗi thêm giỏ");
-
   }
+
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
+
+  updateCartCount();
+
+  alert("Đã thêm vào giỏ");
 
 }
 
-/* =========================
-   UPDATE CART COUNT
-========================= */
+function updateCartCount(){
 
-async function updateCartCount(){
+  const cart =
+  JSON.parse(localStorage.getItem("cart")) || [];
 
-  const user = auth.currentUser;
+  let total = 0;
 
-  if(!user){
+  cart.forEach(item=>{
+    total += item.qty || 1;
+  });
 
-    document.getElementById("cartCount").innerText = 0;
-
-    return;
-
-  }
-
-  try{
-
-    const cartRef =
-    doc(db,"carts",user.uid);
-
-    const cartSnap =
-    await getDoc(cartRef);
-
-    let cart = [];
-
-    if(cartSnap.exists()){
-
-      cart =
-      cartSnap.data().items || [];
-
-    }
-
-    let total = 0;
-
-    cart.forEach(item=>{
-
-      total += item.qty || 1;
-
-    });
-
-    document.getElementById("cartCount").innerText =
-    total;
-
-  }catch(err){
-
-    console.error(err);
-
-  }
+  document.getElementById("cartCount").innerText =
+  total;
 
 }
 
 updateCartCount();
 
-/* =========================
-   SEARCH
-========================= */
+function searchProduct(){
 
-async function updateCartCount(){
+  const term =
+  document.getElementById("searchInput")
+  .value
+  .toLowerCase();
 
-  const user = auth.currentUser;
+  const resultBox =
+  document.getElementById("searchResults");
 
-  if(!user){
-    document.getElementById("cartCount").innerText = 0;
-    return;
-  }
+  resultBox.innerHTML = "";
 
-  try{
+  if(term === "") return;
 
-    const cartRef =
-      doc(db, "carts", user.uid);
+  const filtered =
+  products.filter(
+    p => p.name.toLowerCase().includes(term)
+  );
 
-    const cartSnap =
-      await getDoc(cartRef);
+  filtered.forEach(p=>{
 
-    let cart = [];
+    const div =
+    document.createElement("div");
 
-    if(cartSnap.exists()){
-      cart = cartSnap.data().items || [];
-    }
+    div.className = "search-result-item";
 
-    let total = 0;
+    div.innerHTML = `
+      <img src="${p.img}">
+      <div>
+        <strong>${p.name}</strong>
+        <div style="color:red;font-weight:bold;">
+          ${Number(p.price).toLocaleString()}đ
+        </div>
+      </div>
+    `;
 
-    cart.forEach(item=>{
-      total += item.qty || 1;
-    });
+    div.onclick = ()=>{
 
-    document.getElementById("cartCount").innerText =
-    total;
+window.location.href =
+"logo.html?id=" + p.firebaseId;
 
-  }catch(err){
+    };
 
-    console.log(err);
+    resultBox.appendChild(div);
 
-  }
+  });
 
 }
-/* =========================
-   GLOBAL
-========================= */
 
 window.toggleMenu = toggleMenu;
-
 window.openPanel = openPanel;
-
 window.closePanel = closePanel;
-
 window.showTab = showTab;
-
 window.addToCart = addToCart;
-
 window.searchProduct = searchProduct;
 
 </script>
