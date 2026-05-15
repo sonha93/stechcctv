@@ -68,18 +68,17 @@
   <div id="cartAction"></div>
 </div>
 
-<!-- ĐÃ KHÔI PHỤC ĐẦY ĐỦ LINK TẢI MODULE HỢP LỆ -->
+<!-- ĐÃ DỌN SẠCH CÁC THẺ SCRIPT LỖI - CHỈ GIỮ LẠI ĐÚNG CHUẨN MODULE KHÔNG BỊ CHẶN CORS -->
 <script type="module">
   import { initializeApp } from "https://gstatic.com";
   import { getAuth, onAuthStateChanged } from "https://gstatic.com";
   import { getFirestore, doc, getDoc, setDoc } from "https://gstatic.com";
 
-  // ĐÃ SỬA CẤU HÌNH GỐC ĐẦY ĐỦ CỦA BẠN
   const firebaseConfig = {
     apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-    authDomain: "stech-73b89.firebaseapp.com",
+    authDomain: "://firebaseapp.com",
     projectId: "stech-73b89",
-    storageBucket: "stech-73b89.appspot.com",
+    storageBucket: "://appspot.com",
     messagingSenderId: "873739162979",
     appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
   };
@@ -91,7 +90,7 @@
   let currentUser = null;
   let cart = [];
 
-  // ĐIỀU HƯỚNG SIDEBAR MENU BẰNG EVENT LISTENER
+  // MENU SIDEBAR
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("overlay");
   const menuBtn = document.getElementById("menuBtn");
@@ -105,7 +104,7 @@
   if(menuBtn) menuBtn.addEventListener("click", toggleMenu);
   if(overlay) overlay.addEventListener("click", toggleMenu);
 
-  // THEO DÕI TRẠNG THÁI ĐĂNG NHẬP & TẢI GIỎ HÀNG TỪ FIRESTORE
+  // THEO DÕI ĐĂNG NHẬP & KẾT NỐI FIRESTORE
   onAuthStateChanged(auth, async (user) => {
     if(user){
       currentUser = user;
@@ -129,7 +128,7 @@
     renderCart();
   });
 
-  // HIỂN THỊ DANH SÁCH GIỎ HÀNG TRÊN GIAO DIỆN
+  // RENDER DANH SÁCH GIỎ HÀNG
   function renderCart(list = null){
     let arr = list || cart;
     const box = document.getElementById("cartList");
@@ -180,7 +179,7 @@
     addCartEvents();
   }
 
-  // GẮN SỰ KIỆN CHO CÁC NÚT BẤM TRONG GIỎ HÀNG (SỬA LỖI SỰ KIỆN TRONG MODULE)
+  // LẮNG NGHE TƯƠNG TÁC NGƯỜI DÙNG
   function addCartEvents() {
     document.querySelectorAll(".btn-check").forEach(btn => {
       btn.addEventListener("change", (e) => {
@@ -235,7 +234,7 @@
     }
   }
 
-  // ĐỒNG BỘ GIỎ HÀNG LÊN FIRESTORE HOẶC LOCALSTORAGE NẾU LÀ GUEST
+  // ĐỒNG BỘ ĐẨY DỮ LIỆU LÊN CLOUD FIRESTORE
   async function saveCart(){ 
     if(currentUser) {
       try {
@@ -251,7 +250,7 @@
     }
   }
 
-  // TÌM KIẾM SẢN PHẨM TRONG GIỎ
+  // TÌM KIẾM SẢN PHẨM
   const searchInput = document.getElementById("searchInput");
   if(searchInput) {
     searchInput.addEventListener("input", function(){
