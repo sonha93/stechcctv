@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -92,9 +93,39 @@ function sendTelegramNotification(orderNumber, customerName, phone, address, car
     .catch(err => console.error("Lỗi fetch Telegram:", err));
 }
 </script>
-
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  
+const firebaseConfig = {
+  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain:"stech-73b89.firebaseapp.com",
+  projectId:"stech-73b89",
+  storageBucket:"stech-73b89.firebasestorage.app",
+  messagingSenderId:"873739162979",
+  appId:"1:873739162979:web:123456"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+let cart = [];
+
+firebase.auth().onAuthStateChanged(user => {
+
+  const cartKey = user
+    ? "cart_" + user.uid
+    : "cart_guest";
+
+  window.currentCartKey = cartKey;
+
+  cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+
+  renderCart();
+  updateBank();
+
+});
 
 document.getElementById("phone").addEventListener("input", function(){
   this.value = this.value.replace(/\D/g,"");
@@ -174,7 +205,7 @@ function placeOrder(){
   localStorage.setItem("orders",JSON.stringify(orders));
 
   // Xóa giỏ hàng
-  localStorage.removeItem("cart");
+localStorage.removeItem(window.currentCartKey);
 
   // LOADING
   document.getElementById("loading").style.display="flex";
@@ -193,10 +224,7 @@ updateBank();
 </div>
 <script src="checkout.js"></script>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 </body>
 </html>
