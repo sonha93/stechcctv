@@ -1,7 +1,7 @@
 
 /* =========================
    FIREBASE
-========================= */   
+========================= */
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -32,9 +32,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+const auth = getAuth(app); // Khởi tạo auth Modular
 /* =========================
-   CAMERA LOAD DỮ LIỆU COMBO   
+    CHỈ LOAD DỮ LIỆU CHO SD
 ========================= */
 
 let allProducts = [];
@@ -103,18 +105,15 @@ function fixData(list){
 
 function render(list){
 
-  const box =
-    document.getElementById("products");
-
+  const box = document.getElementById("products");
   if(!box) return;
 
   list = fixData(list);
 
-  /* chỉ camera trong nhà */
-  list = list.filter(
-    p => p.category === "combo"
-  );
-
+  /* chỉ load dữ liệu Sd */
+list = list.filter(
+ p => p.category === "sd"
+);
   box.innerHTML = "";
 
   if(list.length === 0){
@@ -198,24 +197,23 @@ function render(list){
 
         </div>
 
-               <button
-          class="spec-btn"
-          onclick="goDetail('${id}')"
-        >
+       <button
+  class="spec-btn"
+  onclick="goDetail('${id}')"
+>
 
-          ⚙️ Xem thông số
+  ⚙️ Xem thông số
 
-        </button>
+</button>
 
-        <button
-          class="cart-btn"
-          onclick="addToCart('${id}')"
-        >
+<button
+  class="cart-btn"
+  onclick="addToCart('${id}')"
+>
 
-          🛒 Thêm vào giỏ
+  🛒 Thêm vào giỏ
 
-        </button>
-
+</button>
       </div>
 
     `;
@@ -240,49 +238,28 @@ window.goDetail = function(id){
 ========================= */
 
 window.addToCart = function(id){
+  const user = auth.currentUser; // dùng modular auth
+  if(!user){
+    alert("Vui lòng đăng nhập!");
+    return;
+  }
 
-  const product =
-    allProducts.find(
-      p => String(p.id) === String(id)
-    );
+  const cartKey = "cart_" + user.uid;
 
+  const product = allProducts.find(p => String(p.id) === String(id));
   if(!product) return;
 
-  let cart =
-    JSON.parse(
-      localStorage.getItem("cart")
-    ) || [];
+  let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
 
-  const exist =
-    cart.find(
-      i => String(i.id) === String(id)
-    );
-
+  const exist = cart.find(i => String(i.id) === String(id));
   if(exist){
-
     exist.qty += 1;
-
+  } else {
+    cart.push({...product, qty:1});
   }
 
-  else{
-
-    cart.push({
-
-      ...product,
-
-      qty:1
-
-    });
-
-  }
-
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
-
+  localStorage.setItem(cartKey, JSON.stringify(cart));
   alert("Đã thêm vào giỏ 🛒");
-
 };
 
 /* =========================
@@ -301,10 +278,10 @@ if(search){
       const key =
       e.target.value.toLowerCase();
 
-      let data =
-      allProducts.filter(
-        p => p.category === "sd"
-      );
+let data =
+allProducts.filter(
+  p => p.featured === true
+);
 
       render(
 
