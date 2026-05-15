@@ -32,9 +32,6 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
 .total{text-align:right;font-size:20px;font-weight:bold;color:red;margin-top:10px;}
 .checkout{width:100%;margin-top:10px;padding:12px;background:linear-gradient(90deg,#1e88e5,#00acc1,#43a047);color:#fff;border:none;border-radius:10px;cursor:pointer;}
 .empty{text-align:center;margin-top:40px;}
-.login-form{display:flex;gap:5px;margin-bottom:10px;}
-.login-form input{flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;}
-.login-form button{padding:8px 10px;border:none;border-radius:6px;background:#1e88e5;color:#fff;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -59,14 +56,6 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
 </header>
 
 <div class="container">
-  <!-- LOGIN -->
-  <div class="login-form" id="loginSection">
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Mật khẩu">
-    <button id="loginBtn">Đăng nhập</button>
-    <button id="logoutBtn" style="display:none;">Đăng xuất</button>
-  </div>
-
   <h2>🛒 Giỏ hàng</h2>
   <div id="cartList"></div>
   <div class="total" id="total"></div>
@@ -82,10 +71,7 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
 // ==========================
 // MENU
 // ==========================
-function toggleMenu(){
-  document.getElementById("sidebar").classList.toggle("active");
-  document.getElementById("overlay").classList.toggle("active");
-}
+function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
 
 // ==========================
 // FIREBASE CONFIG
@@ -99,29 +85,12 @@ const firebaseConfig = {
   messagingSenderId: "873739162979",
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
-
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
 let currentUser = null;
-
-// ==========================
-// LOGIN/LOGOUT
-// ==========================
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-
-loginBtn.addEventListener("click", async ()=>{
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  try{ await auth.signInWithEmailAndPassword(email,password); }
-  catch(err){ alert("Lỗi: "+err.message); }
-});
-
-logoutBtn.addEventListener("click", async ()=>{
-  await auth.signOut();
-});
+let cart = [];
 
 // ==========================
 // AUTH STATE
@@ -129,24 +98,17 @@ logoutBtn.addEventListener("click", async ()=>{
 auth.onAuthStateChanged(user=>{
   if(user){
     currentUser = user;
-    document.getElementById("loginSection").style.display="none";
-    logoutBtn.style.display="inline";
     loadCart();
-  }else{
+  } else {
     currentUser = null;
-    document.getElementById("loginSection").style.display="flex";
-    logoutBtn.style.display="none";
-    document.getElementById("cartList").innerHTML="";
-    document.getElementById("total").innerHTML="";
-    document.getElementById("cartAction").innerHTML="";
+    cart = [];
+    renderCart();
   }
 });
 
 // ==========================
-// CART FUNCTIONS
+// LOAD CART FROM FIREBASE
 // ==========================
-let cart = [];
-
 function loadCart(){
   if(!currentUser) return;
   const cartRef = db.ref("carts/"+currentUser.uid);
@@ -156,16 +118,14 @@ function loadCart(){
   });
 }
 
+// ==========================
+// RENDER CART
+// ==========================
 function renderCart(){
-  const box = document.getElementById("cartList");
-  const totalBox = document.getElementById("total");
-  const actionBox = document.getElementById("cartAction");
-  if(cart.length===0){
-    box.innerHTML="<p class='empty'>Giỏ trống</p>";
-    totalBox.innerHTML="";
-    actionBox.innerHTML="";
-    return;
-  }
+  const box=document.getElementById("cartList");
+  const totalBox=document.getElementById("total");
+  const actionBox=document.getElementById("cartAction");
+  if(cart.length===0){box.innerHTML="<p class='empty'>Giỏ trống</p>";totalBox.innerHTML="";actionBox.innerHTML="";return;}
   let total=0;
   box.innerHTML=cart.map((item,i)=>{
     if(item.checked===undefined)item.checked=true;
@@ -177,7 +137,7 @@ function renderCart(){
         <b>${item.name}</b>
         <div class="price-row">
           <span class="price-new">${item.price.toLocaleString()}đ</span>
-                 ${item.oldPrice?`<span class="price-old">${item.oldPrice.toLocaleString()}đ</span>`:""}
+          ${item.oldPrice?`<span class="price-old">${item.oldPrice.toLocaleString()}đ</span>`:""}
           <span>${item.qty||1} × ${item.price.toLocaleString()}đ</span>
         </div>
         <div class="qty">
@@ -189,75 +149,40 @@ function renderCart(){
       <button class="remove" onclick="removeItem(${i})">🗑</button>
     </div>`;
   }).join("");
-  totalBox.innerHTML = "Tổng: "+total.toLocaleString()+"đ";
-  actionBox.innerHTML = `<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
+  totalBox.innerHTML="Tổng: "+total.toLocaleString()+"đ";
+  actionBox.innerHTML=`<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
 }
 
-// TOGGLE CHECKBOX
-function toggleCheck(i){
-  cart[i].checked = !cart[i].checked;
-  updateCart();
-}
+// ==========================
+// CART FUNCTIONS
+// ==========================
+function toggleCheck(i){cart[i].checked=!cart[i].checked;updateCart();}
+function changeQty(i,delta){cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1)cart[i].qty=1;updateCart();}
+function removeItem(i){cart.splice(i,1);updateCart();}
 
-// CHANGE QTY
-function changeQty(i, delta){
-  cart[i].qty = (cart[i].qty||1) + delta;
-  if(cart[i].qty < 1) cart[i].qty = 1;
-  updateCart();
-}
-
-// REMOVE ITEM
-function removeItem(i){
-  cart.splice(i,1);
-  updateCart();
-}
-
-// UPDATE CART FIREBASE
 async function updateCart(){
   if(!currentUser) return;
   await db.ref("carts/"+currentUser.uid).set(cart);
   renderCart();
 }
 
+// ==========================
 // CHECKOUT
+// ==========================
 function checkout(){
-  let checkedItems = cart.filter(i=>i.checked!==false);
-  if(checkedItems.length===0){ alert("Chọn ít nhất 1 sản phẩm!"); return; }
-  // Ở đây bạn có thể điều hướng sang checkout.html
-  window.location.href = "checkout.html";
+  let checkedItems=cart.filter(i=>i.checked!==false);
+  if(checkedItems.length===0){alert("Chọn ít nhất 1 sản phẩm!");return;}
+  window.location.href="checkout.html";
 }
 
+// ==========================
 // SEARCH
-document.getElementById("searchInput").addEventListener("input", function(){
-  const key = this.value.toLowerCase();
+// ==========================
+document.getElementById("searchInput").addEventListener("input",function(){
+  const key=this.value.toLowerCase();
   renderCart(cart.filter(i=>i.name.toLowerCase().includes(key)));
 });
-
-// ==========================
-// ADD PRODUCT EXAMPLE
-// ==========================
-// Nếu muốn test thêm sản phẩm:
-// addToCartFirebase({id:1,name:"Camera test",price:1200000,oldPrice:1500000,img:"https://i.ibb.co/xyz.jpg"})
-
-async function addToCartFirebase(product){
-  if(!currentUser){ alert("Bạn cần đăng nhập!"); return; }
-  const cartRef = db.ref("carts/"+currentUser.uid);
-  const snapshot = await cartRef.once("value");
-  let userCart = snapshot.val() || [];
-  const existIndex = userCart.findIndex(i=>String(i.id)===String(product.id));
-  if(existIndex!==-1){
-    userCart[existIndex].qty = (userCart[existIndex].qty||1) + 1;
-  } else {
-    userCart.push({...product, qty:1, checked:true});
-  }
-  await cartRef.set(userCart);
-}
-
-// ==========================
-// LOAD INITIAL CART
-// ==========================
-renderCart();
 </script>
+
 </body>
 </html>
-            
