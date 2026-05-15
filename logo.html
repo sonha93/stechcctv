@@ -662,12 +662,11 @@ async function loadProduct(){
     ...doc.data()
   });
 
- });
+});
 
-  product = products.find(
-p => String(p.firebaseId) === String(id)
-  );
-
+product = products.find(
+  p => String(p.firebaseId) === String(id)
+);
   if(!product) return;
 
   document.getElementById("detailImg").src = product.img || "";
@@ -803,9 +802,9 @@ function addToCart(){
   let cart =
   JSON.parse(localStorage.getItem("cart")) || [];
 
-  const exist = cart.find(
-   x => String(x.firebaseId) === String(product.firebaseId)
-  );
+ const exist = cart.find(
+  x => String(x.firebaseId) === String(product.firebaseId)
+);
 
   if(exist){
 
