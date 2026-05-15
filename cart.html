@@ -17,6 +17,8 @@ header{display:flex;align-items:center;gap:10px;padding:10px;background:linear-g
 .menu-btn{width:40px;height:40px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;}
 .logo img{width:40px;height:40px;border-radius:50%;}
 header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0e0;}
+#cartBadge{background:red;color:#fff;border-radius:50%;padding:2px 8px;font-size:12px;margin-left:5px;}
+#authBtn{margin-left:10px;padding:6px 12px;border:none;border-radius:8px;background:#fff;color:#333;cursor:pointer;}
 .container{max-width:900px;margin:auto;padding:15px;}
 .item{display:flex;gap:10px;background:#fff;padding:12px;margin-bottom:10px;border-radius:12px;align-items:center;position:relative;}
 .item img{width:80px;height:80px;border-radius:10px;}
@@ -53,6 +55,8 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
   <div class="menu-btn" onclick="toggleMenu()">☰</div>
   <div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png"></div>
   <input id="searchInput" placeholder="Tìm kiếm">
+  <div>🛒 <span id="cartBadge">0</span></div>
+  <button id="authBtn" onclick="authAction()">Login</button>
 </header>
 
 <div class="container">
@@ -62,19 +66,13 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
   <div id="cartAction"></div>
 </div>
 
-<!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
 
 <script>
 // ==========================
-// MENU
-// ==========================
-function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
-
-// ==========================
-// FIREBASE CONFIG
+// FIREBASE
 // ==========================
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -95,42 +93,68 @@ let cart = [];
 // ==========================
 // AUTH STATE
 // ==========================
-auth.onAuthStateChanged(user=>{
+auth.onAuthStateChanged(async user=>{
+  currentUser=user;
+  document.getElementById("authBtn").innerText=user?"Logout":"Login";
   if(user){
-    currentUser = user;
-    loadCart();
+    await loadCart();
   } else {
-    currentUser = null;
-    cart = [];
+    cart=[];
     renderCart();
+    updateBadge();
   }
 });
 
 // ==========================
-// LOAD CART FROM FIREBASE
+// LOGIN/LOGOUT
 // ==========================
-function loadCart(){
+function authAction(){
+  if(currentUser){
+    auth.signOut();
+  } else {
+    const email = prompt("Nhập email test:");
+    const pass = prompt("Nhập mật khẩu:");
+    if(email && pass){
+      auth.signInWithEmailAndPassword(email,pass).catch(e=>alert(e.message));
+    }
+  }
+}
+
+// ==========================
+// LOAD CART
+// ==========================
+async function loadCart(){
   if(!currentUser) return;
-  const cartRef = db.ref("carts/"+currentUser.uid);
-  cartRef.on("value", snapshot=>{
-    cart = snapshot.val() || [];
-    renderCart();
-  });
+  const snapshot = await db.ref("carts/"+currentUser.uid).once("value");
+  cart = snapshot.val()||[];
+  renderCart();
+  updateBadge();
+}
+
+// ==========================
+// SAVE CART
+// ==========================
+async function saveCart(){
+  if(!currentUser) return;
+  await db.ref("carts/"+currentUser.uid).set(cart);
+  updateBadge();
 }
 
 // ==========================
 // RENDER CART
 // ==========================
-function renderCart(){
-  const box=document.getElementById("cartList");
-  const totalBox=document.getElementById("total");
-  const actionBox=document.getElementById("cartAction");
-  if(cart.length===0){box.innerHTML="<p class='empty'>Giỏ trống</p>";totalBox.innerHTML="";actionBox.innerHTML="";return;}
+function renderCart(list=null){
+  let arr=list||cart;
+  const box = document.getElementById("cartList");
+  const totalBox = document.getElementById("total");
+  const actionBox = document.getElementById("cartAction");
+  if(arr.length===0){box.innerHTML="<p class='empty'>Giỏ trống</p>";totalBox.innerHTML="";actionBox.innerHTML="";return;}
   let total=0;
-  box.innerHTML=cart.map((item,i)=>{
+  box.innerHTML=arr.map((item,i)=>{
     if(item.checked===undefined)item.checked=true;
     if(item.checked) total+=item.price*(item.qty||1);
-    return `<div class="item">
+    return `
+    <div class="item">
       <input type="checkbox" class="check-item" ${item.checked?"checked":""} onclick="toggleCheck(${i})">
       <img src="${item.img}">
       <div class="info">
@@ -154,26 +178,19 @@ function renderCart(){
 }
 
 // ==========================
-// CART FUNCTIONS
+// UPDATE BADGE
 // ==========================
-function toggleCheck(i){cart[i].checked=!cart[i].checked;updateCart();}
-function changeQty(i,delta){cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1)cart[i].qty=1;updateCart();}
-function removeItem(i){cart.splice(i,1);updateCart();}
-
-async function updateCart(){
-  if(!currentUser) return;
-  await db.ref("carts/"+currentUser.uid).set(cart);
-  renderCart();
+function updateBadge(){
+  const count = cart.reduce((sum,i)=>sum+(i.qty||1),0);
+  document.getElementById("cartBadge").innerText=count;
 }
 
 // ==========================
-// CHECKOUT
+// CART ACTIONS
 // ==========================
-function checkout(){
-  let checkedItems=cart.filter(i=>i.checked!==false);
-  if(checkedItems.length===0){alert("Chọn ít nhất 1 sản phẩm!");return;}
-  window.location.href="checkout.html";
-}
+function toggleCheck(i){cart[i].checked=!cart[i].checked;saveCart();renderCart();}
+function changeQty(i,delta){cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1)cart[i].qty=1;saveCart();renderCart();}
+function removeItem(i){cart.splice(i,1);saveCart();renderCart();}
 
 // ==========================
 // SEARCH
@@ -182,7 +199,34 @@ document.getElementById("searchInput").addEventListener("input",function(){
   const key=this.value.toLowerCase();
   renderCart(cart.filter(i=>i.name.toLowerCase().includes(key)));
 });
-</script>
 
+// ==========================
+// CHECKOUT
+// ==========================
+function checkout(){
+  const checked = cart.filter(i=>i.checked!==false);
+  if(checked.length===0){alert("Chọn ít nhất 1 sản phẩm!");return;}
+  window.location.href="checkout.html";
+}
+
+// ==========================
+// ADD TO CART FROM OTHER PAGE
+// ==========================
+async function addToCartFirebase(product){
+  if(!currentUser){alert("Bạn cần đăng nhập!"); return;}
+  const idx = cart.findIndex(i=>String(i.id)===String(product.id));
+  if(idx!==-1){cart[idx].qty=(cart[idx].qty||1)+1;}
+  else cart.push({...product, qty:1});
+  await saveCart();
+  renderCart();
+}
+
+renderCart();
+
+// ==========================
+// MENU TOGGLE
+// ==========================
+function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
+</script>
 </body>
 </html>
