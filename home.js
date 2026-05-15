@@ -1,4 +1,6 @@
 
+
+
 /* =========================
    FIREBASE
 ========================= */
@@ -110,9 +112,9 @@ function render(list){
 
   list = fixData(list);
 
-  /* chỉ load dữ liệu Home */
+  /* chỉ camera home */
 list = list.filter(
- p => p.category === "home"
+  p => p.featured ==="home"
 );
   box.innerHTML = "";
 
@@ -280,7 +282,7 @@ if(search){
 
 let data =
 allProducts.filter(
-  p => p.featured ==='home'
+  p => p.featured ==="home"
 );
 
       render(
