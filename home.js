@@ -1,6 +1,3 @@
-
-
-
 /* =========================
    FIREBASE
 ========================= */
@@ -38,7 +35,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
 
 const auth = getAuth(app); // Khởi tạo auth Modular
 /* =========================
-   CAMERA TRONG NHÀ
+  CHỈ LOAD DỮ LIỆU CAMERA HOME
 ========================= */
 
 let allProducts = [];
@@ -112,7 +109,7 @@ function render(list){
 
   list = fixData(list);
 
-  /* chỉ camera home */
+  /* chỉ camera home*/
 list = list.filter(
   p => p.featured ==="home"
 );
@@ -282,7 +279,7 @@ if(search){
 
 let data =
 allProducts.filter(
-  p => p.featured ==="home"
+  p => p.featured === true
 );
 
       render(
