@@ -1,7 +1,9 @@
+cart.js
+
 /* =========================
    CART.JS FIX UID
 ========================= */
-const db = firebase.firestore();
+
 // AUTH
 const auth = firebase.auth();
 let currentUser = null;
@@ -26,29 +28,16 @@ auth.onAuthStateChanged(user => {
 // ==========================
 // LOAD CART
 // ==========================
-async function loadCart(){
+function loadCart(){
   if(!currentUser) return;
 
-  try{
+  const cartKey = "cart_" + currentUser.uid;
+  cartData = JSON.parse(localStorage.getItem(cartKey)) || [];
 
-    const doc = await db
-      .collection("carts")
-      .doc(currentUser.uid)
-      .get();
-
-    if(doc.exists){
-      cartData = doc.data().items || [];
-    }else{
-      cartData = [];
-    }
-
-    renderCart();
-    updateBadge();
-
-  }catch(err){
-    console.error(err);
-  }
+  renderCart();
+  updateBadge();
 }
+
 // ==========================
 // RENDER CART
 // ==========================
@@ -121,58 +110,34 @@ function removeItem(i){
 // ==========================
 // SAVE CART
 // ==========================
-async function saveCart(){
+function saveCart(){
   if(!currentUser) return;
-
-  try{
-
-    await db
-      .collection("carts")
-      .doc(currentUser.uid)
-      .set({
-        items: cartData
-      });
-
-    renderCart();
-    updateBadge();
-
-  }catch(err){
-    console.error(err);
-  }
+  const cartKey = "cart_" + currentUser.uid;
+  localStorage.setItem(cartKey, JSON.stringify(cartData));
+  renderCart();
+  updateBadge();
 }
 
 // ==========================
 // CHECKOUT
 // ==========================
-async function checkout(){
-
+function checkout(){
   if(!currentUser) return;
+  const cartKey = "cart_" + currentUser.uid;
 
   if(cartData.length === 0){
     alert("Giỏ hàng trống!");
     return;
   }
 
-  try{
+  localStorage.removeItem(cartKey);
+  cartData = [];
+  renderCart();
+  updateBadge();
 
-    await db
-      .collection("carts")
-      .doc(currentUser.uid)
-      .delete();
-
-    cartData = [];
-
-    renderCart();
-    updateBadge();
-
-    window.location.href = "checkout.html";
-
-  }catch(err){
-    console.error(err);
-    alert("Lỗi đặt hàng!");
-  }
-
+  window.location.href = "checkout.html";
 }
+
 // ==========================
 // GLOBAL
 // ==========================
