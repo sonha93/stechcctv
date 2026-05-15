@@ -6,7 +6,7 @@
 <title>Giỏ hàng</title>
 <link rel="stylesheet" href="stylecart.css">
 <style>
-/* === giữ nguyên CSS cũ === */
+/* CSS giữ nguyên như bạn đã gửi */
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:#f4f7fb;}
 #overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;z-index:998;}
@@ -68,15 +68,14 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
 </div>
 
 <!-- ========================== -->
-<!-- Firebase -->
-<!-- ========================== -->
+<!-- Firebase scripts load đúng thứ tự -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
 
 <script>
 // ==========================
-// CONFIG
+// CONFIG FIREBASE
 // ==========================
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -208,7 +207,7 @@ function checkout(){
 }
 
 // ==========================
-// ADD TO CART TỪ PRODUCT PAGE
+// ADD TO CART
 // ==========================
 async function addToCartFirebase(product){
   if(!currentUser){alert("Bạn cần đăng nhập!"); return;}
