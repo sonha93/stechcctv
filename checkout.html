@@ -243,60 +243,32 @@ select{
   <p>Đang xử lý đơn hàng...</p>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-
 <script>
-/* =========================
-   FIREBASE AUTH
-========================= */
-const firebaseConfig = {
-  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
-  projectId: "stech-73b89",
-  storageBucket: "stech-73b89.appspot.com",
-  messagingSenderId: "873739162979",
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-let currentUser = null;
-let cart = [];
 
 /* =========================
-   LOAD CART THEO UID
+   CART
 ========================= */
-auth.onAuthStateChanged(user => {
-  if(!user){
-    alert("Vui lòng đăng nhập để thanh toán!");
-    window.location.href = "index.html";
-    return;
-  }
-  currentUser = user;
-  loadCart();
-});
 
-function loadCart(){
-  if(!currentUser) return;
-  const cartKey = "cart_" + currentUser.uid;
-  cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-  renderCart();
-  updateBank();
-}
+let cart =
+JSON.parse(localStorage.getItem("cart")) || [];
 
 /* =========================
-   PHONE INPUT
+   PHONE
 ========================= */
+
 document
 .getElementById("phone")
 .addEventListener("input",function(){
-  this.value = this.value.replace(/\D/g,"");
+
+  this.value =
+  this.value.replace(/\D/g,"");
+
 });
 
 /* =========================
    TELEGRAM
 ========================= */
+
 function sendTelegramNotification(
   orderNumber,
   customerName,
@@ -305,13 +277,19 @@ function sendTelegramNotification(
   cartItems,
   total
 ){
-  const botToken = "8752443026:AAEHrvCIDLqEDfE_inDeAAI9dzClm3WZyz4";
-  const chatId = "6087791909";
+
+  const botToken =
+  "8752443026:AAEHrvCIDLqEDfE_inDeAAI9dzClm3WZyz4";
+
+  const chatId =
+  "6087791909";
 
   let itemsText = cartItems.map(item=>{
+
     return `• ${item.name}
 Giá: ${(Number(item.price)||0).toLocaleString()}đ
 SL: ${item.qty || 1}`;
+
   }).join("\n\n");
 
   const message = `
@@ -339,21 +317,28 @@ ${total.toLocaleString()}đ
   fetch(
     `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`
   );
+
 }
 
 /* =========================
    RENDER CART
 ========================= */
+
 function renderCart(){
-  const box = document.getElementById("cartBox");
+
+  const box =
+  document.getElementById("cartBox");
+
   box.innerHTML = "";
 
   if(cart.length===0){
+
     box.innerHTML = `
       <div style="text-align:center;padding:20px;">
         🛒 Giỏ hàng trống
       </div>
     `;
+
     return;
   }
 
@@ -361,131 +346,245 @@ function renderCart(){
   let finalTotal = 0;
 
   cart.forEach(p=>{
-    let qty = Number(p.qty) || 1;
-    let price = Number(String(p.price).replace(/\D/g,'')) || 0;
-    let old = Number(String(p.oldPrice).replace(/\D/g,'')) || price;
 
-    finalTotal += qty * price;
-    originalTotal += qty * old;
+let qty = Number(p.qty) || 1;
+
+ let price =
+Number(String(p.price).replace(/\D/g,'')) || 0;
+
+    let old =
+Number(String(p.oldPrice).replace(/\D/g,'')) || price;
+
+    let subFinal = qty * price;
+
+    let subOld = qty * old;
+
+    finalTotal += subFinal;
+
+    originalTotal += subOld;
 
     box.innerHTML += `
       <div class="item">
-      <img src="${p.img || 'https://via.placeholder.com/70'}"
-           onerror="this.src='https://via.placeholder.com/70'">
-      <div style="flex:1;">
-        <b>${p.name}</b>
-        <div class="calc">
-          <div class="sale-price">${price.toLocaleString()}đ</div>
-          ${old>price?`<div class="old-price">${old.toLocaleString()}đ</div>`:""}
-          <div>${qty} × ${price.toLocaleString()}đ</div>
+
+      <img
+  src="${p.img || 'https://via.placeholder.com/70'}"
+  onerror="this.src='https://via.placeholder.com/70'"
+>
+
+        <div style="flex:1;">
+
+          <b>${p.name}</b>
+
+          <div class="calc">
+
+            <div class="sale-price">
+              ${price.toLocaleString()}đ
+            </div>
+
+            ${
+              old > price
+              ? `<div class="old-price">${old.toLocaleString()}đ</div>`
+              : ""
+            }
+
+            <div>
+              ${qty} × ${price.toLocaleString()}đ
+            </div>
+
+          </div>
+
         </div>
-      </div>
+
       </div>
     `;
+
   });
 
-  let discount = originalTotal - finalTotal;
+  let discount =
+  originalTotal - finalTotal;
 
   box.innerHTML += `
     <div class="total-box">
+
       <div class="row">
         <span>Tổng giá gốc</span>
         <b>${originalTotal.toLocaleString()}đ</b>
       </div>
+
       <div class="row discount">
         <span>Tiết kiệm</span>
         <b>-${discount.toLocaleString()}đ</b>
       </div>
+
       <div class="row final">
         <span>Cần thanh toán</span>
         <b>${finalTotal.toLocaleString()}đ</b>
       </div>
+
     </div>
   `;
+
 }
 
 /* =========================
-   BANK INFO
+   BANK
 ========================= */
-document.getElementById("payment").addEventListener("change",updateBank);
+
+document
+.getElementById("payment")
+.addEventListener("change",updateBank);
 
 function updateBank(){
-  let payment = document.getElementById("payment").value;
-  let bank = document.getElementById("bankInfo");
+
+  let payment =
+  document.getElementById("payment").value;
+
+  let bank =
+  document.getElementById("bankInfo");
 
   let total = cart.reduce((sum,p)=>{
-    return sum + ((Number(String(p.price).replace(/\D/g,''))||0) * (Number(p.qty)||1));
+
+    return sum + (
+
+      (Number(String(p.price).replace(/\D/g,'')) || 0)
+
+      *
+
+      (Number(p.qty) || 1)
+
+    );
+
   },0);
 
   if(payment==="bank"){
+
     bank.style.display = "block";
+
     document.getElementById("qr").src =
-      "https://img.vietqr.io/image/ICB-101005245058-compact2.png?amount="
-      + total +
-      "&addInfo=Thanh%20toan";
+    "https://img.vietqr.io/image/ICB-101005245058-compact2.png?amount="
+    + total +
+    "&addInfo=Thanh%20toan";
+
   }else{
+
     bank.style.display = "none";
+
   }
+
 }
 
 /* =========================
    PLACE ORDER
 ========================= */
+
 function placeOrder(){
+
   if(cart.length===0){
+
     alert("🛒 Giỏ hàng trống!");
+
     return;
   }
 
-  let name = document.getElementById("name").value.trim();
-  let phone = document.getElementById("phone").value.trim();
-  let address = document.getElementById("address").value.trim();
+  let name =
+  document.getElementById("name").value.trim();
+
+  let phone =
+  document.getElementById("phone").value.trim();
+
+  let address =
+  document.getElementById("address").value.trim();
 
   if(!name || !phone || !address){
+
     alert("⚠️ Nhập đầy đủ thông tin!");
+
     return;
   }
 
-  const phoneRegex = /^(03|05|07|08|09)\d{8}$/;
+  const phoneRegex =
+  /^(03|05|07|08|09)\d{8}$/;
+
   if(!phoneRegex.test(phone)){
+
     alert("⚠️ SĐT không hợp lệ!");
+
     return;
   }
 
   const orderId = Date.now();
 
   const total = cart.reduce((sum,p)=>{
-    return sum + ((Number(String(p.price).replace(/\D/g,''))||0) * (Number(p.qty)||1));
-  },0);
 
-  document.getElementById("loading").style.display = "flex";
+    return sum +
+   (
+  (Number(String(p.price).replace(/\D/g,'')) || 0)
+  *
+  (Number(p.qty) || 1)
+);
+}, 0);
+  document.getElementById("loading").style.display =
+  "flex";
+
   document.querySelector(".btn").disabled = true;
 
   let order = {
+
     id: orderId,
+
+    name,
+
+    phone,
+
+    address,
+
+    total,
+
+    cart:[...cart],
+
+    time:new Date().toLocaleString()
+
+  };
+
+  let orders =
+  JSON.parse(localStorage.getItem("orders")) || [];
+
+  orders.push(order);
+
+  localStorage.setItem(
+    "orders",
+    JSON.stringify(orders)
+  );
+
+  sendTelegramNotification(
+    orderId,
     name,
     phone,
     address,
-    total,
-    cart:[...cart],
-    time:new Date().toLocaleString()
-  };
+    cart,
+    total
+  );
 
-  let orders = JSON.parse(localStorage.getItem("orders")) || [];
-  orders.push(order);
-  localStorage.setItem("orders",JSON.stringify(orders));
-
-  sendTelegramNotification(orderId,name,phone,address,cart,total);
-
-  // Xóa giỏ hàng theo UID
-  const cartKey = "cart_" + currentUser.uid;
-  localStorage.removeItem(cartKey);
+  localStorage.removeItem("cart");
 
   setTimeout(()=>{
-    window.location.href = "success.html";
+
+    window.location.href =
+    "success.html";
+
   },1200);
+
 }
 
 /* =========================
    INIT
 ========================= */
+
+renderCart();
+
+updateBank();
+
+</script>
+
+</body>
+</html>
