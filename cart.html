@@ -31,6 +31,7 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
 .remove{position:absolute;top:5px;right:5px;background:none;border:none;font-size:18px;cursor:pointer;}
 .total{text-align:right;font-size:20px;font-weight:bold;color:red;margin-top:10px;}
 .checkout{width:100%;margin-top:10px;padding:12px;background:linear-gradient(90deg,#1e88e5,#00acc1,#43a047);color:#fff;border:none;border-radius:10px;cursor:pointer;}
+.clear-cart{width:100%;margin-top:5px;padding:10px;background:#eee;color:#333;border:none;border-radius:10px;cursor:pointer;}
 .empty{text-align:center;margin-top:40px;}
 </style>
 </head>
@@ -64,10 +65,10 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
 
 <script type="module">
 // =========================
-// FIREBASE
+// FIREBASE CONFIG
 // =========================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -96,7 +97,7 @@ onAuthStateChanged(auth, async (user)=>{
     const cartSnap = await getDoc(cartRef);
     cart = cartSnap.exists() ? cartSnap.data().items : [];
     renderCart();
-  } else {
+  }else{
     uid = null;
     cart = [];
     renderCart();
@@ -142,8 +143,11 @@ function renderCart(list=null){
     `;
   }).join("");
 
-  totalBox.innerHTML = "Tổng: " + total.toLocaleString() + "đ";
-  actionBox.innerHTML = `<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
+  totalBox.innerHTML = "Tổng: "+total.toLocaleString()+"đ";
+  actionBox.innerHTML=`
+    <button class="checkout" onclick="checkout()">Đặt hàng</button>
+    <button class="clear-cart" onclick="clearCart()">Xóa giỏ</button>
+  `;
   saveCart();
 }
 
@@ -151,13 +155,36 @@ async function saveCart(){
   if(!uid) return;
   try{
     await setDoc(doc(db,"carts",uid),{items:cart});
-  }catch(e){console.error("Lưu cart lỗi:",e);}
+  }catch(e){console.error(e);}
 }
 
-window.toggleCheck = (i)=>{cart[i].checked=!cart[i].checked; renderCart();}
-window.changeQty = (i,delta)=>{cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1) cart[i].qty=1; renderCart();}
-window.removeItem = (i)=>{cart.splice(i,1); renderCart();}
-window.checkout = ()=>{let checked = cart.filter(i=>i.checked!==false); if(!checked.length){alert("Chọn ít nhất 1 sản phẩm!"); return;} window.location.href="checkout.html";}
+// =========================
+// CART FUNCTIONS
+// =========================
+window.toggleCheck=(i)=>{cart[i].checked=!cart[i].checked; renderCart();}
+window.changeQty=(i,delta)=>{cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1) cart[i].qty=1; renderCart();}
+window.removeItem=(i)=>{cart.splice(i,1); renderCart();}
+window.checkout=()=>{let checked = cart.filter(i=>i.checked!==false); if(!checked.length){alert("Chọn ít nhất 1 sản phẩm!"); return;} window.location.href="checkout.html";}
+
+// =========================
+// CLEAR CART
+// =========================
+async function clearCart(){
+  if(!uid) return alert("Chưa login!");
+  cart=[];
+  renderCart();
+  // Xóa Firestore luôn
+  try{await deleteDoc(doc(db,"carts",uid)); console.log("✅ Giỏ trống");}
+  catch(e){console.error(e);}
+}
+
+// =========================
+// SEARCH
+// =========================
+document.getElementById("searchInput").addEventListener("input",function(){
+  const key = this.value.toLowerCase();
+  renderCart(cart.filter(i=>i.name.toLowerCase().includes(key)));
+});
 
 // =========================
 // MENU
@@ -169,15 +196,6 @@ window.toggleMenu = function(){
   sidebar.classList.toggle("active");
   overlay.classList.toggle("active");
 };
-
-// =========================
-// SEARCH
-// =========================
-document.getElementById("searchInput").addEventListener("input",function(){
-  const key = this.value.toLowerCase();
-  renderCart(cart.filter(i=>i.name.toLowerCase().includes(key)));
-});
 </script>
-
 </body>
 </html>
