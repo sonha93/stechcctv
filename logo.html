@@ -616,9 +616,17 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore,
   collection,
-  getDocs
+  getDocs,
+  doc,
+  getDoc,
+  setDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getAuth
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 document.getElementById("overlay").onclick = function(){
 
@@ -642,21 +650,37 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
 
+const auth = getAuth(app);
+
 const params = new URLSearchParams(window.location.search);
+
 const id = params.get("id");
 
 let products = [];
+
 let product = null;
+
+/* =========================
+   LOAD PRODUCT
+========================= */
 
 async function loadProduct(){
 
   const querySnapshot =
-  await getDocs(collection(db,"products"));
+  await getDocs(
+    collection(db,"products")
+  );
 
-  querySnapshot.forEach(doc=>{
-    products.push(doc.data());
+  querySnapshot.forEach(docItem=>{
+
+    products.push({
+      id:docItem.id,
+      ...docItem.data()
+    });
+
   });
 
   product = products.find(
@@ -665,18 +689,24 @@ async function loadProduct(){
 
   if(!product) return;
 
-  document.getElementById("detailImg").src = product.img || "";
-  document.getElementById("panelProductImg").src = product.img || "";
+  document.getElementById("detailImg").src =
+  product.img || "";
 
-  document.getElementById("detailName").innerText = product.name || "";
-  document.getElementById("panelProductName").innerText = product.name || "";
+  document.getElementById("panelProductImg").src =
+  product.img || "";
+
+  document.getElementById("detailName").innerText =
+  product.name || "";
+
+  document.getElementById("panelProductName").innerText =
+  product.name || "";
 
   document.getElementById("detailPrice").innerText =
-  Number(product.price || 0).toLocaleString()+"đ";
+  Number(product.price || 0).toLocaleString() + "đ";
 
   document.getElementById("detailOldPrice").innerText =
   product.oldPrice
-  ? Number(product.oldPrice).toLocaleString()+"đ"
+  ? Number(product.oldPrice).toLocaleString() + "đ"
   : "";
 
   document.getElementById("detailDesc").innerText =
@@ -725,7 +755,9 @@ async function loadProduct(){
     );
 
     saleBox.style.display = "inline-block";
-    saleBox.innerText = "-" + sale + "%";
+
+    saleBox.innerText =
+    "-" + sale + "%";
 
   }else{
 
@@ -736,6 +768,10 @@ async function loadProduct(){
 }
 
 loadProduct();
+
+/* =========================
+   MENU
+========================= */
 
 function toggleMenu(){
 
@@ -748,6 +784,10 @@ function toggleMenu(){
   .classList.toggle("active");
 
 }
+
+/* =========================
+   PANEL
+========================= */
 
 function openPanel(){
 
@@ -791,58 +831,135 @@ function showTab(tabId,btn){
 
 }
 
-function addToCart(){
+/* =========================
+   ADD TO CART FIRESTORE
+========================= */
 
-  if(!product) return;
+async function addToCart(){
 
-  let cart =
-  JSON.parse(localStorage.getItem("cart")) || [];
+  const user = auth.currentUser;
 
-  const exist = cart.find(
-    x => String(x.id) === String(product.id)
-  );
+  if(!user){
 
-  if(exist){
+    alert("Vui lòng đăng nhập!");
 
-    exist.qty += 1;
-
-  }else{
-
-    cart.push({
-      ...product,
-      qty:1
-    });
+    return;
 
   }
 
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
+  if(!product) return;
 
-  updateCartCount();
+  try{
 
-  alert("Đã thêm vào giỏ");
+    const cartRef =
+    doc(db,"carts",user.uid);
+
+    const cartSnap =
+    await getDoc(cartRef);
+
+    let cart = [];
+
+    if(cartSnap.exists()){
+
+      cart =
+      cartSnap.data().items || [];
+
+    }
+
+    const exist =
+    cart.find(
+      x => String(x.id) === String(product.id)
+    );
+
+    if(exist){
+
+      exist.qty =
+      (exist.qty || 1) + 1;
+
+    }else{
+
+      cart.push({
+        ...product,
+        qty:1
+      });
+
+    }
+
+    await setDoc(cartRef,{
+      items:cart
+    });
+
+    updateCartCount();
+
+    alert("Đã thêm vào giỏ");
+
+  }catch(err){
+
+    console.error(err);
+
+    alert("Lỗi thêm giỏ hàng!");
+
+  }
 
 }
 
-function updateCartCount(){
+/* =========================
+   UPDATE CART COUNT
+========================= */
 
-  const cart =
-  JSON.parse(localStorage.getItem("cart")) || [];
+async function updateCartCount(){
 
-  let total = 0;
+  const user = auth.currentUser;
 
-  cart.forEach(item=>{
-    total += item.qty || 1;
-  });
+  if(!user){
 
-  document.getElementById("cartCount").innerText =
-  total;
+    document.getElementById("cartCount").innerText = 0;
+
+    return;
+
+  }
+
+  try{
+
+    const cartRef =
+    doc(db,"carts",user.uid);
+
+    const cartSnap =
+    await getDoc(cartRef);
+
+    let cart = [];
+
+    if(cartSnap.exists()){
+
+      cart =
+      cartSnap.data().items || [];
+
+    }
+
+    let total = 0;
+
+    cart.forEach(item=>{
+
+      total += item.qty || 1;
+
+    });
+
+    document.getElementById("cartCount").innerText =
+    total;
+
+  }catch(err){
+
+    console.error(err);
+
+  }
 
 }
 
 updateCartCount();
+
+/* =========================
+   SEARCH
+========================= */
 
 function searchProduct(){
 
@@ -860,7 +977,9 @@ function searchProduct(){
 
   const filtered =
   products.filter(
-    p => p.name.toLowerCase().includes(term)
+    p =>
+    p.name &&
+    p.name.toLowerCase().includes(term)
   );
 
   filtered.forEach(p=>{
@@ -868,7 +987,8 @@ function searchProduct(){
     const div =
     document.createElement("div");
 
-    div.className = "search-result-item";
+    div.className =
+    "search-result-item";
 
     div.innerHTML = `
       <img src="${p.img}">
@@ -893,11 +1013,20 @@ function searchProduct(){
 
 }
 
+/* =========================
+   GLOBAL
+========================= */
+
 window.toggleMenu = toggleMenu;
+
 window.openPanel = openPanel;
+
 window.closePanel = closePanel;
+
 window.showTab = showTab;
+
 window.addToCart = addToCart;
+
 window.searchProduct = searchProduct;
 
 </script>
