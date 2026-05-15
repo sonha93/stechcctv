@@ -62,22 +62,64 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
   <div id="cartAction"></div>
 </div>
 
-<script>
-// MENU
-function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
+<script type="module">
+// =========================
+// FIREBASE
+// =========================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// RENDER
-let cart = JSON.parse(localStorage.getItem("cart"))||[];
+const firebaseConfig = {
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain: "stech-73b89.firebaseapp.com",
+  projectId: "stech-73b89",
+  storageBucket: "stech-73b89.firebasestorage.app",
+  messagingSenderId: "873739162979",
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// =========================
+// CART LOGIC
+// =========================
+let cart = [];
+let uid = null;
+
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    uid = user.uid;
+    const cartRef = doc(db,"carts",uid);
+    const cartSnap = await getDoc(cartRef);
+    cart = cartSnap.exists() ? cartSnap.data().items : [];
+    renderCart();
+  } else {
+    uid = null;
+    cart = [];
+    renderCart();
+  }
+});
+
 function renderCart(list=null){
-  let arr=list||cart;
-  const box=document.getElementById("cartList");
-  const totalBox=document.getElementById("total");
-  const actionBox=document.getElementById("cartAction");
-  if(arr.length===0){box.innerHTML="<p class='empty'>Giỏ trống</p>";totalBox.innerHTML="";actionBox.innerHTML="";return;}
+  const arr = list||cart;
+  const box = document.getElementById("cartList");
+  const totalBox = document.getElementById("total");
+  const actionBox = document.getElementById("cartAction");
+
+  if(arr.length===0){
+    box.innerHTML="<p class='empty'>Giỏ trống</p>";
+    totalBox.innerHTML="";
+    actionBox.innerHTML="";
+    return;
+  }
+
   let total=0;
-  box.innerHTML=arr.map((item,i)=>{
+  box.innerHTML = arr.map((item,i)=>{
     if(item.checked===undefined)item.checked=true;
-    if(item.checked) total+=item.price*(item.qty||1);
+    if(item.checked) total += item.price*(item.qty||1);
     return `
     <div class="item">
       <input type="checkbox" class="check-item" ${item.checked?"checked":""} onclick="toggleCheck(${i})">
@@ -96,39 +138,46 @@ function renderCart(list=null){
         </div>
       </div>
       <button class="remove" onclick="removeItem(${i})">🗑</button>
-    </div>`;
+    </div>
+    `;
   }).join("");
-  totalBox.innerHTML="Tổng: "+total.toLocaleString()+"đ";
-  actionBox.innerHTML=`<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
+
+  totalBox.innerHTML = "Tổng: " + total.toLocaleString() + "đ";
+  actionBox.innerHTML = `<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
+  saveCart();
 }
 
-// TOGGLE CHECK
-function toggleCheck(i){cart[i].checked=!cart[i].checked;localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
+async function saveCart(){
+  if(!uid) return;
+  try{
+    await setDoc(doc(db,"carts",uid),{items:cart});
+  }catch(e){console.error("Lưu cart lỗi:",e);}
+}
 
-// CHANGE QTY
-function changeQty(i,delta){cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1)cart[i].qty=1;localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
+window.toggleCheck = (i)=>{cart[i].checked=!cart[i].checked; renderCart();}
+window.changeQty = (i,delta)=>{cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1) cart[i].qty=1; renderCart();}
+window.removeItem = (i)=>{cart.splice(i,1); renderCart();}
+window.checkout = ()=>{let checked = cart.filter(i=>i.checked!==false); if(!checked.length){alert("Chọn ít nhất 1 sản phẩm!"); return;} window.location.href="checkout.html";}
 
-// REMOVE
-function removeItem(i){cart.splice(i,1);localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
+// =========================
+// MENU
+// =========================
+window.toggleMenu = function(){
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  if(!sidebar||!overlay) return;
+  sidebar.classList.toggle("active");
+  overlay.classList.toggle("active");
+};
 
+// =========================
 // SEARCH
+// =========================
 document.getElementById("searchInput").addEventListener("input",function(){
-  const key=this.value.toLowerCase();
+  const key = this.value.toLowerCase();
   renderCart(cart.filter(i=>i.name.toLowerCase().includes(key)));
 });
-
-// CHECKOUT
-function checkout(){
-  let checkedItems=cart.filter(i=>i.checked!==false);
-  if(checkedItems.length===0){alert("Chọn ít nhất 1 sản phẩm!");return;}
-  // Gọi checkout.html hoặc Telegram riêng (không hiển thị popup)
-  window.location.href="checkout.html";
-}
-
-// LOAD
-renderCart();
 </script>
 
-<script src="cart.js"></script>
 </body>
 </html>
