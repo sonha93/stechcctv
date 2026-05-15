@@ -64,9 +64,6 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
 </div>
 
 <script type="module">
-// =========================
-// FIREBASE CONFIG
-// =========================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -84,115 +81,109 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// =========================
-// CART LOGIC
-// =========================
 let cart = [];
 let uid = null;
 
-onAuthStateChanged(auth, async (user)=>{
-  if(user){
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
     uid = user.uid;
-    const cartRef = doc(db,"carts",uid);
+    const cartRef = doc(db, "carts", uid);
     const cartSnap = await getDoc(cartRef);
     cart = cartSnap.exists() ? cartSnap.data().items : [];
     renderCart();
-  }else{
+  } else {
     uid = null;
     cart = [];
     renderCart();
   }
 });
 
-function renderCart(list=null){
-  const arr = list||cart;
+function renderCart(list = null) {
+  const arr = list || cart;
   const box = document.getElementById("cartList");
   const totalBox = document.getElementById("total");
   const actionBox = document.getElementById("cartAction");
 
-  if(arr.length===0){
-    box.innerHTML="<p class='empty'>Giỏ trống</p>";
-    totalBox.innerHTML="";
-    actionBox.innerHTML="";
+  if (arr.length === 0) {
+    box.innerHTML = "<p class='empty'>Giỏ trống</p>";
+    totalBox.innerHTML = "";
+    actionBox.innerHTML = "";
     return;
   }
 
-  let total=0;
-  box.innerHTML = arr.map((item,i)=>{
-    if(item.checked===undefined)item.checked=true;
-    if(item.checked) total += item.price*(item.qty||1);
+  let total = 0;
+  box.innerHTML = arr.map((item, i) => {
+    if (item.checked === undefined) item.checked = true;
+    if (item.checked) total += item.price * (item.qty || 1);
     return `
-    <div class="item">
-      <input type="checkbox" class="check-item" ${item.checked?"checked":""} onclick="toggleCheck(${i})">
-      <img src="${item.img}">
-      <div class="info">
-        <b>${item.name}</b>
-        <div class="price-row">
-          <span class="price-new">${item.price.toLocaleString()}đ</span>
-          ${item.oldPrice?`<span class="price-old">${item.oldPrice.toLocaleString()}đ</span>`:""}
-          <span>${item.qty||1} × ${item.price.toLocaleString()}đ</span>
+      <div class="item">
+        <input type="checkbox" class="check-item" ${item.checked ? "checked" : ""} onclick="toggleCheck(${i})">
+        <img src="${item.img}">
+        <div class="info">
+          <b>${item.name}</b>
+          <div class="price-row">
+            <span class="price-new">${item.price.toLocaleString()}đ</span>
+            ${item.oldPrice ? `<span class="price-old">${item.oldPrice.toLocaleString()}đ</span>` : ""}
+            <span>${item.qty || 1} × ${item.price.toLocaleString()}đ</span>
+          </div>
+          <div class="qty">
+            <button onclick="changeQty(${i},-1)">-</button>
+            <span>${item.qty || 1}</span>
+            <button onclick="changeQty(${i},1)">+</button>
+          </div>
         </div>
-        <div class="qty">
-          <button onclick="changeQty(${i},-1)">-</button>
-          <span>${item.qty||1}</span>
-          <button onclick="changeQty(${i},1)">+</button>
-        </div>
+        <button class="remove" onclick="removeItem(${i})">🗑</button>
       </div>
-      <button class="remove" onclick="removeItem(${i})">🗑</button>
-    </div>
     `;
   }).join("");
 
-  totalBox.innerHTML = "Tổng: "+total.toLocaleString()+"đ";
-  actionBox.innerHTML=`
+  totalBox.innerHTML = "Tổng: " + total.toLocaleString() + "đ";
+  actionBox.innerHTML = `
     <button class="checkout" onclick="checkout()">Đặt hàng</button>
     <button class="clear-cart" onclick="clearCart()">Xóa giỏ</button>
   `;
   saveCart();
 }
 
-async function saveCart(){
-  if(!uid) return;
-  try{
-    await setDoc(doc(db,"carts",uid),{items:cart});
-  }catch(e){console.error(e);}
+async function saveCart() {
+  if (!uid) return;
+  try {
+    await setDoc(doc(db, "carts", uid), { items: cart });
+  } catch (e) {
+    console.error(e);
+  }
 }
 
-// =========================
 // CART FUNCTIONS
-// =========================
-window.toggleCheck=(i)=>{cart[i].checked=!cart[i].checked; renderCart();}
-window.changeQty=(i,delta)=>{cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1) cart[i].qty=1; renderCart();}
-window.removeItem=(i)=>{cart.splice(i,1); renderCart();}
-window.checkout=()=>{let checked = cart.filter(i=>i.checked!==false); if(!checked.length){alert("Chọn ít nhất 1 sản phẩm!"); return;} window.location.href="checkout.html";}
-
-// =========================
-// CLEAR CART
-// =========================
-async function clearCart(){
-  if(!uid) return alert("Chưa login!");
-  cart=[];
-  renderCart();
-  // Xóa Firestore luôn
-  try{await deleteDoc(doc(db,"carts",uid)); console.log("✅ Giỏ trống");}
-  catch(e){console.error(e);}
+window.toggleCheck = (i) => { cart[i].checked = !cart[i].checked; renderCart(); }
+window.changeQty = (i, delta) => { cart[i].qty = (cart[i].qty || 1) + delta; if (cart[i].qty < 1) cart[i].qty = 1; renderCart(); }
+window.removeItem = (i) => { cart.splice(i, 1); renderCart(); }
+window.checkout = () => {
+  let checked = cart.filter(i => i.checked !== false);
+  if (!checked.length) { alert("Chọn ít nhất 1 sản phẩm!"); return; }
+  window.location.href = "checkout.html";
 }
 
-// =========================
+// CLEAR CART
+async function clearCart() {
+  if (!uid) return alert("Chưa login!");
+  cart = [];
+  renderCart();
+  try { await deleteDoc(doc(db, "carts", uid)); console.log("✅ Giỏ trống"); }
+  catch (e) { console.error(e); }
+}
+
 // SEARCH
-// =========================
-document.getElementById("searchInput").addEventListener("input",function(){
+document.getElementById("searchInput").addEventListener("input", function () {
   const key = this.value.toLowerCase();
-  renderCart(cart.filter(i=>i.name.toLowerCase().includes(key)));
+  renderCart(cart.filter(i => i.name.toLowerCase().includes(key)));
 });
 
-// =========================
 // MENU
-// =========================
-window.toggleMenu = function(){
+window.toggleMenu = function () {
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("overlay");
-  if(!sidebar||!overlay) return;
+  if (!sidebar || !overlay) return;
   sidebar.classList.toggle("active");
   overlay.classList.toggle("active");
 };
