@@ -863,7 +863,7 @@ function searchProduct(){
 
   const filtered =
   products.filter(
-    p => p.name.toLowerCase().includes(term)
+ p => (p.name || "").toLowerCase().includes(term)
   );
 
   filtered.forEach(p=>{
@@ -878,7 +878,7 @@ function searchProduct(){
       <div>
         <strong>${p.name}</strong>
         <div style="color:red;font-weight:bold;">
-          ${Number(p.price).toLocaleString()}đ
+         ${Number(p.price || 0).toLocaleString()}đ
         </div>
       </div>
     `;
