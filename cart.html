@@ -6,177 +6,339 @@
 <title>Giỏ hàng</title>
 <link rel="stylesheet" href="stylecart.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
-body{background:#f4f7fb;}
-#overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;z-index:998;}
-#overlay.active{display:block;}
-.sidebar{position:fixed;left:-260px;top:0;width:260px;height:100%;background:#fff;padding:20px;transition:0.3s;z-index:999;}
-.sidebar.active{left:0;}
-.sidebar a{display:block;padding:10px;border-radius:8px;text-decoration:none;color:#333;}
-header{display:flex;align-items:center;gap:10px;padding:10px;background:linear-gradient(90deg,#1e88e5,#00acc1,#43a047);position:sticky;top:0;z-index:1000;}
-.menu-btn{width:40px;height:40px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;}
-.logo img{width:40px;height:40px;border-radius:50%;}
-header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0e0;}
-.container{max-width:900px;margin:auto;padding:15px;}
-.item{display:flex;gap:10px;background:#fff;padding:12px;margin-bottom:10px;border-radius:12px;align-items:center;position:relative;}
-.item img{width:80px;height:80px;border-radius:10px;}
-.check-item{position:absolute;top:5px;left:5px;width:20px;height:20px;cursor:pointer;}
-.info{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:180px;}
-.price-row{display:flex;justify-content:space-between;flex-wrap:nowrap;gap:5px;align-items:center;}
-.price-new{color:red;font-weight:bold;white-space:nowrap;}
-.price-old{text-decoration:line-through;color:#888;font-size:13px;white-space:nowrap;}
-.qty{display:flex;align-items:center;border:1px solid #ccc;border-radius:8px;overflow:hidden;gap:4px;margin-top:5px;}
-.qty button{border:none;background:#eee;width:28px;height:28px;border-radius:6px;cursor:pointer;}
-.qty span{display:inline-block;width:28px;text-align:center;}
-.remove{position:absolute;top:5px;right:5px;background:none;border:none;font-size:18px;cursor:pointer;}
-.total{text-align:right;font-size:20px;font-weight:bold;color:red;margin-top:10px;}
-.checkout{width:100%;margin-top:10px;padding:12px;background:linear-gradient(90deg,#1e88e5,#00acc1,#43a047);color:#fff;border:none;border-radius:10px;cursor:pointer;}
-.clear-cart{width:100%;margin-top:5px;padding:10px;background:#eee;color:#333;border:none;border-radius:10px;cursor:pointer;}
-.empty{text-align:center;margin-top:40px;}
+
+/* RESET */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial;
+}
+
+body{
+  background:#f4f7fb;
+}
+
+/* ===== MENU ===== */
+#overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  z-index:998;
+}
+#overlay.active{ display:block; }
+
+.sidebar{
+  position:fixed;
+  left:-260px;
+  top:0;
+  width:260px;
+  height:100%;
+  background:#fff;
+  padding:20px;
+  transition:0.3s;
+  z-index:999;
+}
+.sidebar.active{ left:0; }
+
+.sidebar a{
+  display:block;
+  padding:10px;
+  border-radius:8px;
+  text-decoration:none;
+  color:#333;
+}
+
+/* ===== HEADER ===== */
+header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  background:linear-gradient(90deg,#1e88e5,#00acc1,#43a047);
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.menu-btn{
+  width:40px;
+  height:40px;
+  background:#fff;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  cursor:pointer;
+}
+
+.logo img{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+}
+
+header input{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:20px;
+  background:#e0e0e0;
+}
+
+/* ===== CART ===== */
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+.item{
+  display:flex;
+  gap:10px;
+  background:#fff;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:12px;
+  align-items:center;
+}
+
+.item img{
+  width:80px;
+  height:80px;
+  border-radius:10px;
+}
+
+.check{
+  width:20px;
+  height:20px;
+}
+
+.info{ flex:1; }
+
+.price-new{
+  color:red;
+  font-weight:bold;
+}
+
+.price-old{
+  text-decoration:line-through;
+  color:#888;
+  font-size:13px;
+}
+
+.qty{
+  display:flex;
+  align-items:center;
+  border:1px solid #ccc;
+  border-radius:8px;
+  overflow:hidden;
+}
+
+.qty button{
+  border:none;
+  background:#eee;
+  width:30px;
+  height:30px;
+  cursor:pointer;
+}
+
+.qty span{
+  padding:0 10px;
+}
+
+.remove{
+  background:none;
+  border:none;
+  font-size:18px;
+  cursor:pointer;
+}
+
+.total{
+  text-align:right;
+  font-size:20px;
+  font-weight:bold;
+  color:red;
+  margin-top:10px;
+}
+
+.checkout{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  background:linear-gradient(90deg,#1e88e5,#00acc1,#43a047);
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.empty{
+  text-align:center;
+  margin-top:40px;
+}
+
 </style>
 </head>
+
 <body>
 
 <div id="overlay" onclick="toggleMenu()"></div>
 
+<!-- MENU -->
 <div class="sidebar" id="sidebar">
-<h3>Danh mục</h3>
-<a href="admin.html">Admin</a>
-<a href="cart.html">Giỏ hàng</a>
-<a href="index.html">Trang chủ</a>
-<a href="camera-trong-nha.html">Camera trong nhà</a>
-<a href="camera-ngoai-troi.html">Camera ngoài trời</a>
-<a href="the-nho.html">Thẻ nhớ</a>
-<a href="combo-khuyenmai.html">Combo khuyến mãi</a>
-</div>
+  <h3>Danh mục</h3>
 
+  <a href="admin.html">Admin</a>
+  <a href="cart.html">Giỏ hàng</a>
+  <a href="index.html">Trang chủ</a>
+  <a href="camera-trong-nha.html">Camera trong nhà</a>
+  <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
+  <a href="the-nho.html">Thẻ nhớ</a>
+  <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
+</div>
+<link rel="stylesheet" href="stylecart.css">
 <header>
-<div class="menu-btn" onclick="toggleMenu()">☰</div>
-<div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png"></div>
-<input id="searchInput" placeholder="Tìm kiếm">
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  <div class="logo">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png">
+  </div>
+  <input id="searchInput" placeholder="Tìm kiếm">
 </header>
 
 <div class="container">
-<h2>🛒 Giỏ hàng</h2>
-<div id="cartList"></div>
-<div class="total" id="total"></div>
-<div id="cartAction"></div>
+  <h2>🛒 Giỏ hàng</h2>
+  <div id="cartList"></div>
+  <div class="total" id="total"></div>
+  <div id="cartAction"></div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+<script>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
-  projectId: "stech-73b89",
-  storageBucket: "stech-73b89.firebasestorage.app",
-  messagingSenderId: "873739162979",
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-};
+/* MENU FIX */
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
+}
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+/* ===== RENDER ===== */
+function renderCart(list = null){
 
-let cart = [];
-let uid = null;
+  let cart = list || JSON.parse(localStorage.getItem("cart")) || [];
 
-onAuthStateChanged(auth, async (user)=>{
-  if(user){
-    uid = user.uid;
-    const cartRef = doc(db,"carts",uid);
-    const cartSnap = await getDoc(cartRef);
-
-    if(!cartSnap.exists()){
-      await setDoc(cartRef, {items: []});
-    }
-
-    cart = cartSnap.exists() ? cartSnap.data().items : [];
-    renderCart();
-  } else {
-    uid = null;
-    cart = [];
-    renderCart();
-  }
-});
-
-function renderCart(list=null){
-  const arr = list||cart;
   const box = document.getElementById("cartList");
   const totalBox = document.getElementById("total");
   const actionBox = document.getElementById("cartAction");
 
-  if(arr.length===0){
-    box.innerHTML="<p class='empty'>Giỏ trống</p>";
-    totalBox.innerHTML="";
-    actionBox.innerHTML="";
+  if(cart.length === 0){
+    box.innerHTML = "<p class='empty'>Giỏ trống</p>";
+    totalBox.innerHTML = "";
+    actionBox.innerHTML = "";
     return;
   }
 
-  let total=0;
-  box.innerHTML = arr.map((item,i)=>{
-    if(item.checked===undefined) item.checked=true;
-    if(item.checked) total += item.price*(item.qty||1);
+  let total = 0;
+
+  box.innerHTML = cart.map((item,i)=>{
+
+    let qty = item.qty || 1;
+    let checked = item.checked !== false;
+
+    if(checked){
+      total += item.price * qty;
+    }
+
     return `
     <div class="item">
-      <input type="checkbox" class="check-item" ${item.checked?"checked":""} onclick="toggleCheck(${i})">
+      <input type="checkbox" class="check" 
+        ${checked ? "checked":""}
+        onchange="toggleCheck(${i})">
+
       <img src="${item.img}">
+
       <div class="info">
-        <b>${item.name}</b>
-        <div class="price-row">
-          <span class="price-new">${item.price.toLocaleString()}đ</span>
-          ${item.oldPrice?`<span class="price-old">${item.oldPrice.toLocaleString()}đ</span>`:""}
-          <span>${item.qty||1} × ${item.price.toLocaleString()}đ</span>
+        <b>${item.name}</b><br>
+
+        <div class="price-new">
+          ${item.price.toLocaleString()}đ
         </div>
+
+        ${item.oldPrice ? `
+          <div class="price-old">
+            ${item.oldPrice.toLocaleString()}đ
+          </div>
+        ` : ""}
+
         <div class="qty">
           <button onclick="changeQty(${i},-1)">-</button>
-          <span>${item.qty||1}</span>
+          <span>${qty}</span>
           <button onclick="changeQty(${i},1)">+</button>
         </div>
       </div>
-      <button class="remove" onclick="removeItem(${i})">🗑</button>
+
+      <button class="remove" onclick="removeItem(${item.id})">🗑</button>
     </div>
     `;
   }).join("");
 
-  totalBox.innerHTML = "Tổng: "+total.toLocaleString()+"đ";
-  actionBox.innerHTML=`
+  totalBox.innerHTML = "Tổng: " + total.toLocaleString()+"đ";
+
+  actionBox.innerHTML = `
     <button class="checkout" onclick="checkout()">Đặt hàng</button>
-    <button class="clear-cart" onclick="clearCart()">Xóa giỏ</button>
   `;
-
-  saveCart();
 }
 
-// **Đặt renderCart ra global**
-window.renderCart = renderCart;
+/* ===== SEARCH FIX ===== */
+document.getElementById("searchInput").addEventListener("input", function(){
 
-async function saveCart(){
-  if(!uid) return;
-  try{
-    await setDoc(doc(db,"carts",uid),{items:cart});
-  }catch(e){console.error(e);}
-}
+  const keyword = this.value.toLowerCase();
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-// CART FUNCTIONS
-window.toggleCheck=(i)=>{cart[i].checked=!cart[i].checked; renderCart();}
-window.changeQty=(i,delta)=>{cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1) cart[i].qty=1; renderCart();}
-window.removeItem=(i)=>{cart.splice(i,1); renderCart();}
-window.checkout=()=>{let checked=cart.filter(i=>i.checked!==false); if(!checked.length){alert("Chọn ít nhất 1 sản phẩm!"); return;} window.location.href="checkout.html";}
-async function clearCart(){if(!uid) return alert("Chưa login!"); cart=[]; renderCart(); try{await deleteDoc(doc(db,"carts",uid)); console.log("✅ Giỏ trống");}catch(e){console.error(e);}}
+  const filtered = cart.filter(item =>
+    item.name.toLowerCase().includes(keyword)
+  );
 
-// SEARCH
-document.getElementById("searchInput").addEventListener("input",function(){
-  const key=this.value.toLowerCase();
-  renderCart(cart.filter(i=>i.name.toLowerCase().includes(key)));
+  renderCart(filtered);
 });
 
-// MENU
-window.toggleMenu=()=>{const s=document.getElementById("sidebar"); const o=document.getElementById("overlay"); if(!s||!o) return; s.classList.toggle("active"); o.classList.toggle("active");}
+/* ===== CHECK ===== */
+function toggleCheck(i){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart[i].checked = !cart[i].checked;
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
+
+/* ===== QTY ===== */
+function changeQty(i,delta){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart[i].qty = (cart[i].qty || 1) + delta;
+
+  if(cart[i].qty < 1) cart[i].qty = 1;
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
+
+/* ===== XOÁ ===== */
+function removeItem(id){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart = cart.filter(item => item.id !== id);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
+
+/* ===== CHECKOUT ===== */
+function checkout(){
+  window.location.href = "checkout.html";
+}
+
+/* LOAD */
+renderCart();
 
 </script>
+
 </body>
 </html>
