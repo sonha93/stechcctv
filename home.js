@@ -280,7 +280,7 @@ if(search){
 
 let data =
 allProducts.filter(
-  p => p.featured === true
+  p => p.featured ==='home'
 );
 
       render(
