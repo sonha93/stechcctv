@@ -8,10 +8,12 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore,
   collection,
-  getDocs
+  getDocs,
+  doc,
+  getDoc,
+  setDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 const firebaseConfig = {
 
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -236,31 +238,70 @@ window.goDetail = function(id){
    CART
 ========================= */
 
-window.addToCart = function(id){
-  const user = auth.currentUser; // dùng modular auth
+window.addToCart = async function(id){
+
+  const user = auth.currentUser;
+
   if(!user){
     alert("Vui lòng đăng nhập!");
     return;
   }
 
-  const cartKey = "cart_" + user.uid;
+  try{
 
-  const product = allProducts.find(p => String(p.id) === String(id));
-  if(!product) return;
+    const product =
+      allProducts.find(
+        p => String(p.id) === String(id)
+      );
 
-  let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+    if(!product) return;
 
-  const exist = cart.find(i => String(i.id) === String(id));
-  if(exist){
-    exist.qty += 1;
-  } else {
-    cart.push({...product, qty:1});
+    const cartRef =
+      doc(db, "carts", user.uid);
+
+    const cartSnap =
+      await getDoc(cartRef);
+
+    let cart = [];
+
+    if(cartSnap.exists()){
+      cart = cartSnap.data().items || [];
+    }
+
+    const exist =
+      cart.find(
+        i => String(i.id) === String(id)
+      );
+
+    if(exist){
+
+      exist.qty =
+        (exist.qty || 1) + 1;
+
+    }else{
+
+      cart.push({
+        ...product,
+        qty:1
+      });
+
+    }
+
+    await setDoc(cartRef, {
+      items: cart
+    });
+
+    alert("Đã thêm vào giỏ 🛒");
+
+  }catch(err){
+
+    console.error(err);
+    alert("Lỗi thêm giỏ hàng!");
+
   }
 
-  localStorage.setItem(cartKey, JSON.stringify(cart));
-  alert("Đã thêm vào giỏ 🛒");
-};
 
+};
 /* =========================
    SEARCH
 ========================= */
