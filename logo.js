@@ -110,9 +110,9 @@ function render(list){
 
   list = fixData(list);
 
-  /* chỉ load dữ liệu Combo */
+  /* chỉ load dữ liệu logo */
 list = list.filter(
- p => p.category === true
+ p => p.category === "logo"
 );
   box.innerHTML = "";
 
@@ -280,7 +280,7 @@ if(search){
 
 let data =
 allProducts.filter(
-  p => p.featured === true
+  p => p.featured === "logo"
 );
 
       render(
