@@ -6,6 +6,7 @@
 <title>Giỏ hàng</title>
 <link rel="stylesheet" href="stylecart.css">
 <style>
+/* === giữ nguyên CSS cũ === */
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 body{background:#f4f7fb;}
 #overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;z-index:998;}
@@ -66,13 +67,16 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
   <div id="cartAction"></div>
 </div>
 
+<!-- ========================== -->
+<!-- Firebase -->
+<!-- ========================== -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
 
 <script>
 // ==========================
-// FIREBASE
+// CONFIG
 // ==========================
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -84,6 +88,7 @@ const firebaseConfig = {
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.database();
 
@@ -94,25 +99,19 @@ let cart = [];
 // AUTH STATE
 // ==========================
 auth.onAuthStateChanged(async user=>{
-  currentUser=user;
-  document.getElementById("authBtn").innerText=user?"Logout":"Login";
-  if(user){
-    await loadCart();
-  } else {
-    cart=[];
-    renderCart();
-    updateBadge();
-  }
+  currentUser = user;
+  document.getElementById("authBtn").innerText = user?"Logout":"Login";
+  if(user) await loadCart();
+  else {cart=[]; renderCart(); updateBadge();}
 });
 
 // ==========================
-// LOGIN/LOGOUT
+// LOGIN / LOGOUT
 // ==========================
 function authAction(){
-  if(currentUser){
-    auth.signOut();
-  } else {
-    const email = prompt("Nhập email test:");
+  if(currentUser) auth.signOut();
+  else {
+    const email = prompt("Nhập email:");
     const pass = prompt("Nhập mật khẩu:");
     if(email && pass){
       auth.signInWithEmailAndPassword(email,pass).catch(e=>alert(e.message));
@@ -144,17 +143,16 @@ async function saveCart(){
 // RENDER CART
 // ==========================
 function renderCart(list=null){
-  let arr=list||cart;
+  let arr = list||cart;
   const box = document.getElementById("cartList");
   const totalBox = document.getElementById("total");
   const actionBox = document.getElementById("cartAction");
-  if(arr.length===0){box.innerHTML="<p class='empty'>Giỏ trống</p>";totalBox.innerHTML="";actionBox.innerHTML="";return;}
+  if(arr.length===0){box.innerHTML="<p class='empty'>Giỏ trống</p>"; totalBox.innerHTML=""; actionBox.innerHTML=""; return;}
   let total=0;
   box.innerHTML=arr.map((item,i)=>{
-    if(item.checked===undefined)item.checked=true;
-    if(item.checked) total+=item.price*(item.qty||1);
-    return `
-    <div class="item">
+    if(item.checked===undefined) item.checked=true;
+    if(item.checked) total += item.price*(item.qty||1);
+    return `<div class="item">
       <input type="checkbox" class="check-item" ${item.checked?"checked":""} onclick="toggleCheck(${i})">
       <img src="${item.img}">
       <div class="info">
@@ -173,12 +171,12 @@ function renderCart(list=null){
       <button class="remove" onclick="removeItem(${i})">🗑</button>
     </div>`;
   }).join("");
-  totalBox.innerHTML="Tổng: "+total.toLocaleString()+"đ";
-  actionBox.innerHTML=`<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
+  totalBox.innerHTML = "Tổng: "+total.toLocaleString()+"đ";
+  actionBox.innerHTML = `<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
 }
 
 // ==========================
-// UPDATE BADGE
+// BADGE
 // ==========================
 function updateBadge(){
   const count = cart.reduce((sum,i)=>sum+(i.qty||1),0);
@@ -188,15 +186,15 @@ function updateBadge(){
 // ==========================
 // CART ACTIONS
 // ==========================
-function toggleCheck(i){cart[i].checked=!cart[i].checked;saveCart();renderCart();}
-function changeQty(i,delta){cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1)cart[i].qty=1;saveCart();renderCart();}
-function removeItem(i){cart.splice(i,1);saveCart();renderCart();}
+function toggleCheck(i){cart[i].checked=!cart[i].checked; saveCart(); renderCart();}
+function changeQty(i,d){cart[i].qty=(cart[i].qty||1)+d; if(cart[i].qty<1)cart[i].qty=1; saveCart(); renderCart();}
+function removeItem(i){cart.splice(i,1); saveCart(); renderCart();}
 
 // ==========================
 // SEARCH
 // ==========================
 document.getElementById("searchInput").addEventListener("input",function(){
-  const key=this.value.toLowerCase();
+  const key = this.value.toLowerCase();
   renderCart(cart.filter(i=>i.name.toLowerCase().includes(key)));
 });
 
@@ -205,28 +203,31 @@ document.getElementById("searchInput").addEventListener("input",function(){
 // ==========================
 function checkout(){
   const checked = cart.filter(i=>i.checked!==false);
-  if(checked.length===0){alert("Chọn ít nhất 1 sản phẩm!");return;}
+  if(checked.length===0){alert("Chọn ít nhất 1 sản phẩm!"); return;}
   window.location.href="checkout.html";
 }
 
 // ==========================
-// ADD TO CART FROM OTHER PAGE
+// ADD TO CART TỪ PRODUCT PAGE
 // ==========================
 async function addToCartFirebase(product){
   if(!currentUser){alert("Bạn cần đăng nhập!"); return;}
   const idx = cart.findIndex(i=>String(i.id)===String(product.id));
-  if(idx!==-1){cart[idx].qty=(cart[idx].qty||1)+1;}
+  if(idx!==-1) cart[idx].qty = (cart[idx].qty||1)+1;
   else cart.push({...product, qty:1});
   await saveCart();
   renderCart();
 }
 
-renderCart();
-
 // ==========================
 // MENU TOGGLE
 // ==========================
-function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
+}
+
+renderCart();
 </script>
 </body>
 </html>
