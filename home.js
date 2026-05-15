@@ -110,9 +110,9 @@ function render(list){
 
   list = fixData(list);
 
-  /* chỉ camera trong nhà */
+  /* chỉ load dữ liệu Home */
 list = list.filter(
-  p => p.featured === true
+ p => p.category === "home"
 );
   box.innerHTML = "";
 
