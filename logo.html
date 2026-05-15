@@ -668,15 +668,19 @@ async function loadProduct(){
 
   if(!product) return;
 
-  document.getElementById("detailImg").src = product.img || "";
-  document.getElementById("panelProductImg").src = product.img || "";
+ document.getElementById("detailImg").src =
+product.img || "https://via.placeholder.com/300x300?text=No+Image";
 
   document.getElementById("detailName").innerText = product.name || "";
-  document.getElementById("panelProductName").innerText = product.name || "";
+document.getElementById("panelProductName").innerText = product.name || "";
 
-  document.getElementById("detailPrice").innerText =
-  Number(product.price || 0).toLocaleString()+"đ";
+document.getElementById("detailPrice").innerText =
+Number(product.price || 0).toLocaleString()+"đ";
 
+
+
+document.getElementById("panelProductImg").src =
+product.img || "https://via.placeholder.com/300x300?text=No+Image";
   document.getElementById("detailOldPrice").innerText =
   product.oldPrice
   ? Number(product.oldPrice).toLocaleString()+"đ"
@@ -802,8 +806,8 @@ function addToCart(){
   JSON.parse(localStorage.getItem("cart")) || [];
 
   const exist = cart.find(
-  x => String(x.firebaseId) === String(product.firebaseId)
-);
+    x => String(x.firebaseId) === String(product.firebaseId)
+  );
 
   if(exist){
 
@@ -812,6 +816,7 @@ function addToCart(){
   }else{
 
     cart.push({
+      firebaseId: product.firebaseId,
       ...product,
       qty:1
     });
@@ -828,7 +833,6 @@ function addToCart(){
   alert("Đã thêm vào giỏ");
 
 }
-
 function updateCartCount(){
 
   const cart =
