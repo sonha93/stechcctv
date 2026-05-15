@@ -90,7 +90,6 @@ onAuthStateChanged(auth, async (user)=>{
     const cartRef = doc(db,"carts",uid);
     const cartSnap = await getDoc(cartRef);
 
-    // === FIX CHỈ 1 LẦN DUY NHẤT ===
     if(!cartSnap.exists()){
       await setDoc(cartRef, {items: []});
     }
@@ -103,6 +102,7 @@ onAuthStateChanged(auth, async (user)=>{
     renderCart();
   }
 });
+
 function renderCart(list=null){
   const arr = list||cart;
   const box = document.getElementById("cartList");
@@ -118,7 +118,7 @@ function renderCart(list=null){
 
   let total=0;
   box.innerHTML = arr.map((item,i)=>{
-    if(item.checked===undefined)item.checked=true;
+    if(item.checked===undefined) item.checked=true;
     if(item.checked) total += item.price*(item.qty||1);
     return `
     <div class="item">
@@ -147,15 +147,18 @@ function renderCart(list=null){
     <button class="checkout" onclick="checkout()">Đặt hàng</button>
     <button class="clear-cart" onclick="clearCart()">Xóa giỏ</button>
   `;
+
   saveCart();
 }
+
+// **Đặt renderCart ra global**
+window.renderCart = renderCart;
 
 async function saveCart(){
   if(!uid) return;
   try{
     await setDoc(doc(db,"carts",uid),{items:cart});
   }catch(e){console.error(e);}
-
 }
 
 // CART FUNCTIONS
@@ -172,7 +175,7 @@ document.getElementById("searchInput").addEventListener("input",function(){
 });
 
 // MENU
-window.toggleMenu=()=>{const s=document.getElementById("sidebar"); const o=document.getElementById("overlay"); if(!s||!o)return; s.classList.toggle("active"); o.classList.toggle("active");}
+window.toggleMenu=()=>{const s=document.getElementById("sidebar"); const o=document.getElementById("overlay"); if(!s||!o) return; s.classList.toggle("active"); o.classList.toggle("active");}
 
 </script>
 </body>
