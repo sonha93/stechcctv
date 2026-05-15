@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Giỏ hàng</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="stylecart.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
@@ -66,8 +66,10 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
 // MENU
 function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
 
-// RENDER
+// LOAD CART
 let cart = JSON.parse(localStorage.getItem("cart"))||[];
+
+// RENDER CART
 function renderCart(list=null){
   let arr=list||cart;
   const box=document.getElementById("cartList");
@@ -96,8 +98,7 @@ function renderCart(list=null){
         </div>
       </div>
       <button class="remove" onclick="removeItem(${i})">🗑</button>
-    </div>`;
-  }).join("");
+    </div>`}).join("");
   totalBox.innerHTML="Tổng: "+total.toLocaleString()+"đ";
   actionBox.innerHTML=`<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
 }
@@ -121,24 +122,12 @@ document.getElementById("searchInput").addEventListener("input",function(){
 function checkout(){
   let checkedItems=cart.filter(i=>i.checked!==false);
   if(checkedItems.length===0){alert("Chọn ít nhất 1 sản phẩm!");return;}
-  // Gọi checkout.html hoặc Telegram riêng (không hiển thị popup)
   window.location.href="checkout.html";
 }
 
-// LOAD
+// INITIAL RENDER
 renderCart();
 </script>
-<!-- Firebase App (bắt buộc) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-
-<!-- Firebase Firestore nếu bạn dùng Firestore -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
-
-<!-- Nếu dùng Firebase Auth -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-
-<!-- File JS của bạn -->
-<script src="cart.js"></script>
 
 </body>
 </html>
