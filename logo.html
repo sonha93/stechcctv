@@ -834,16 +834,27 @@ function showTab(tabId,btn){
    ADD TO CART FIRESTORE
 ========================= */
 
+import {
+  doc,
+  getDoc,
+  setDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getAuth
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const auth = getAuth(app);
+
 async function addToCart(){
 
   const user = auth.currentUser;
 
   if(!user){
-
     alert("Vui lòng đăng nhập!");
-
     return;
-
   }
 
   if(!product) return;
@@ -851,29 +862,26 @@ async function addToCart(){
   try{
 
     const cartRef =
-    doc(db,"carts",user.uid);
+      doc(db, "carts", user.uid);
 
     const cartSnap =
-    await getDoc(cartRef);
+      await getDoc(cartRef);
 
     let cart = [];
 
     if(cartSnap.exists()){
-
-      cart =
-      cartSnap.data().items || [];
-
+      cart = cartSnap.data().items || [];
     }
 
     const exist =
-    cart.find(
-      x => String(x.id) === String(product.id)
-    );
+      cart.find(
+        x => String(x.id) === String(product.id)
+      );
 
     if(exist){
 
       exist.qty =
-      (exist.qty || 1) + 1;
+        (exist.qty || 1) + 1;
 
     }else{
 
@@ -894,9 +902,8 @@ async function addToCart(){
 
   }catch(err){
 
-    console.error(err);
-
-    alert("Lỗi thêm giỏ hàng!");
+    console.log(err);
+    alert("Lỗi thêm giỏ");
 
   }
 
@@ -960,58 +967,45 @@ updateCartCount();
    SEARCH
 ========================= */
 
-function searchProduct(){
+async function updateCartCount(){
 
-  const term =
-  document.getElementById("searchInput")
-  .value
-  .toLowerCase();
+  const user = auth.currentUser;
 
-  const resultBox =
-  document.getElementById("searchResults");
+  if(!user){
+    document.getElementById("cartCount").innerText = 0;
+    return;
+  }
 
-  resultBox.innerHTML = "";
+  try{
 
-  if(term === "") return;
+    const cartRef =
+      doc(db, "carts", user.uid);
 
-  const filtered =
-  products.filter(
-    p =>
-    p.name &&
-    p.name.toLowerCase().includes(term)
-  );
+    const cartSnap =
+      await getDoc(cartRef);
 
-  filtered.forEach(p=>{
+    let cart = [];
 
-    const div =
-    document.createElement("div");
+    if(cartSnap.exists()){
+      cart = cartSnap.data().items || [];
+    }
 
-    div.className =
-    "search-result-item";
+    let total = 0;
 
-    div.innerHTML = `
-      <img src="${p.img}">
-      <div>
-        <strong>${p.name}</strong>
-        <div style="color:red;font-weight:bold;">
-          ${Number(p.price).toLocaleString()}đ
-        </div>
-      </div>
-    `;
+    cart.forEach(item=>{
+      total += item.qty || 1;
+    });
 
-    div.onclick = ()=>{
+    document.getElementById("cartCount").innerText =
+    total;
 
-      window.location.href =
-      "logo.html?id=" + p.id;
+  }catch(err){
 
-    };
+    console.log(err);
 
-    resultBox.appendChild(div);
-
-  });
+  }
 
 }
-
 /* =========================
    GLOBAL
 ========================= */
