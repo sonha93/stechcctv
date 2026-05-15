@@ -347,13 +347,13 @@ function renderCart(){
 
   cart.forEach(p=>{
 
-    let qty = p.qty || 1;
+let qty = Number(p.qty) || 1;
 
-    let price =
-    Number(p.price) || 0;
+ let price =
+Number(String(p.price).replace(/\D/g,'')) || 0;
 
     let old =
-    Number(p.oldPrice) || price;
+Number(String(p.oldPrice).replace(/\D/g,'')) || price;
 
     let subFinal = qty * price;
 
@@ -366,10 +366,10 @@ function renderCart(){
     box.innerHTML += `
       <div class="item">
 
-        <img
-          src="${p.img}"
-          onerror="this.src='https://via.placeholder.com/70'"
-        >
+      <img
+  src="${p.img || 'https://via.placeholder.com/70'}"
+  onerror="this.src='https://via.placeholder.com/70'"
+>
 
         <div style="flex:1;">
 
@@ -444,8 +444,15 @@ function updateBank(){
 
   let total = cart.reduce((sum,p)=>{
 
-    return sum +
-    ((Number(p.price)||0)*(p.qty||1));
+    return sum + (
+
+      (Number(String(p.price).replace(/\D/g,'')) || 0)
+
+      *
+
+      (Number(p.qty) || 1)
+
+    );
 
   },0);
 
@@ -510,10 +517,12 @@ function placeOrder(){
   const total = cart.reduce((sum,p)=>{
 
     return sum +
-    ((Number(p.price)||0)*(p.qty||1));
-
-  },0);
-
+   (
+  (Number(String(p.price).replace(/\D/g,'')) || 0)
+  *
+  (Number(p.qty) || 1)
+);
+}, 0);
   document.getElementById("loading").style.display =
   "flex";
 
