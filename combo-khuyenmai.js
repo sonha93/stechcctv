@@ -110,7 +110,7 @@ function render(list){
 
   list = fixData(list);
 
-  /* chỉ load dữ liệu Home */
+  /* chỉ load dữ liệu Combo */
 list = list.filter(
  p => p.category === "combo"
 );
