@@ -1,5 +1,3 @@
-
-
 /* =========================
    CART.JS FIX UID
 ========================= */
@@ -123,11 +121,17 @@ function saveCart(){
 // ==========================
 function checkout(){
   if(!currentUser) return;
+  const cartKey = "cart_" + currentUser.uid;
 
   if(cartData.length === 0){
     alert("Giỏ hàng trống!");
     return;
   }
+
+  localStorage.removeItem(cartKey);
+  cartData = [];
+  renderCart();
+  updateBadge();
 
   window.location.href = "checkout.html";
 }
