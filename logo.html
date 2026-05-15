@@ -380,7 +380,7 @@ header{
     padding:1px; 
       
   }
-
+}
 
   .left{
     width:120px;
@@ -491,31 +491,24 @@ header{
       <div class="sale" id="detailSale"></div>
     </div>
 
-      </div>
+    <div class="action-wrap">
 
-       <button
-  class="spec-btn"
-  onclick="goDetail('${id}')"
->
+      <button class="spec-open-btn" onclick="openPanel()">
+        ⚙️ Xem thông số
+      </button>
 
-  ⚙️ Xem thông số
+      <button class="buy-btn" onclick="addToCart()">
+        🛒 Thêm giỏ hàng
+      </button>
 
-</button>
+    </div>
 
-<button
-  class="cart-btn"
-  onclick="addToCart('${id}')"
->
+    <div class="desc" id="detailDesc"></div>
 
-  🛒 Thêm vào giỏ
+  </div>
 
-</button>
-      </div>
+</div>
 
- 
-
-
-}
 <div id="panelOverlay"></div>
 
 <div id="specPanel">
@@ -896,7 +889,7 @@ function searchProduct(){
 
     resultBox.appendChild(div);
 
- 
+  });
 
 }
 
