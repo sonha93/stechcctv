@@ -32,7 +32,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+const auth = getAuth(app); // Khởi tạo auth Modular
 /* =========================
    CAMERA TRONG NHÀ
 ========================= */
@@ -236,8 +238,7 @@ window.goDetail = function(id){
 ========================= */
 
 window.addToCart = function(id){
-  const auth = firebase.auth();
-  const user = auth.currentUser;
+  const user = auth.currentUser; // dùng modular auth
   if(!user){
     alert("Vui lòng đăng nhập!");
     return;
