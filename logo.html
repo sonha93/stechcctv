@@ -662,7 +662,7 @@ async function loadProduct(){
     ...doc.data()
   });
 
-
+ });
 
   product = products.find(
 p => String(p.firebaseId) === String(id)
@@ -804,7 +804,7 @@ function addToCart(){
   JSON.parse(localStorage.getItem("cart")) || [];
 
   const exist = cart.find(
-    x => String(x.id) === String(product.id)
+   x => String(x.firebaseId) === String(product.firebaseId)
   );
 
   if(exist){
