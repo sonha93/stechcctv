@@ -1,3 +1,4 @@
+logo 
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -381,7 +382,7 @@ header{
     padding:1px; 
       
   }
-
+}
 
   .left{
     width:120px;
@@ -656,46 +657,25 @@ async function loadProduct(){
   const querySnapshot =
   await getDocs(collection(db,"products"));
 
-  products = [];
-
   querySnapshot.forEach(doc=>{
-    products.push({
-      firebaseId: doc.id,
-      ...doc.data()
-    });
+    products.push(doc.data());
   });
 
   product = products.find(
-    p => String(p.firebaseId) === String(id)
+    p => String(p.id) === String(id)
   );
 
-  console.log(product);
+  if(!product) return;
 
-  if(!product){
-    alert("Không tìm thấy sản phẩm");
-    return;
-  }
+  document.getElementById("detailImg").src = product.img || "";
+  document.getElementById("panelProductImg").src = product.img || "";
 
-  document.getElementById("detailImg").src =
-  product.img || "https://via.placeholder.com/300x300?text=No+Image";
+  document.getElementById("detailName").innerText = product.name || "";
+  document.getElementById("panelProductName").innerText = product.name || "";
 
-  document.getElementById("panelProductImg").src =
-  product.img || "https://via.placeholder.com/300x300?text=No+Image";
+  document.getElementById("detailPrice").innerText =
+  Number(product.price || 0).toLocaleString()+"đ";
 
-  document.getElementById("detailName").innerText =
-  product.name || "";
-
-  document.getElementById("panelProductName").innerText =
-  product.name || "";
-document.getElementById("panelProductName").innerText =
-product.name || "";
-
-document.getElementById("detailPrice").innerText =
-Number(product.price || 0).toLocaleString()+"đ";
-
-
-document.getElementById("panelProductImg").src =
-product.img || "https://via.placeholder.com/300x300?text=No+Image";
   document.getElementById("detailOldPrice").innerText =
   product.oldPrice
   ? Number(product.oldPrice).toLocaleString()+"đ"
@@ -821,7 +801,7 @@ function addToCart(){
   JSON.parse(localStorage.getItem("cart")) || [];
 
   const exist = cart.find(
-    x => String(x.firebaseId) === String(product.firebaseId)
+    x => String(x.id) === String(product.id)
   );
 
   if(exist){
@@ -831,7 +811,6 @@ function addToCart(){
   }else{
 
     cart.push({
-      firebaseId: product.firebaseId,
       ...product,
       qty:1
     });
@@ -848,6 +827,7 @@ function addToCart(){
   alert("Đã thêm vào giỏ");
 
 }
+
 function updateCartCount(){
 
   const cart =
@@ -882,7 +862,7 @@ function searchProduct(){
 
   const filtered =
   products.filter(
- p => (p.name || "").toLowerCase().includes(term)
+    p => p.name.toLowerCase().includes(term)
   );
 
   filtered.forEach(p=>{
@@ -897,17 +877,17 @@ function searchProduct(){
       <div>
         <strong>${p.name}</strong>
         <div style="color:red;font-weight:bold;">
-         ${Number(p.price || 0).toLocaleString()}đ
+          ${Number(p.price).toLocaleString()}đ
         </div>
       </div>
     `;
 
-   div.onclick = ()=>{
+    div.onclick = ()=>{
 
-  window.location.href =
-  "logo.html?id=" + p.firebaseId;
+      window.location.href =
+      "logo.html?id=" + p.id;
 
-};
+    };
 
     resultBox.appendChild(div);
 
