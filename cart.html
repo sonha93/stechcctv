@@ -89,6 +89,12 @@ onAuthStateChanged(auth, async (user)=>{
     uid = user.uid;
     const cartRef = doc(db,"carts",uid);
     const cartSnap = await getDoc(cartRef);
+
+    // === FIX CHỈ 1 LẦN DUY NHẤT ===
+    if(!cartSnap.exists()){
+      await setDoc(cartRef, {items: []});
+    }
+
     cart = cartSnap.exists() ? cartSnap.data().items : [];
     renderCart();
   } else {
@@ -97,7 +103,6 @@ onAuthStateChanged(auth, async (user)=>{
     renderCart();
   }
 });
-
 function renderCart(list=null){
   const arr = list||cart;
   const box = document.getElementById("cartList");
@@ -150,6 +155,7 @@ async function saveCart(){
   try{
     await setDoc(doc(db,"carts",uid),{items:cart});
   }catch(e){console.error(e);}
+
 }
 
 // CART FUNCTIONS
