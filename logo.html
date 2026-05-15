@@ -656,27 +656,42 @@ async function loadProduct(){
   const querySnapshot =
   await getDocs(collection(db,"products"));
 
- querySnapshot.forEach(doc=>{
-  products.push({
-    firebaseId: doc.id,
-    ...doc.data()
+  products = [];
+
+  querySnapshot.forEach(doc=>{
+    products.push({
+      firebaseId: doc.id,
+      ...doc.data()
+    });
   });
-});
- product = products.find(
-  p => String(p.firebaseId) === String(id)
-);  
 
-  if(!product) return;
+  product = products.find(
+    p => String(p.firebaseId) === String(id)
+  );
 
- document.getElementById("detailImg").src =
-product.img || "https://via.placeholder.com/300x300?text=No+Image";
+  console.log(product);
 
-  document.getElementById("detailName").innerText = product.name || "";
-document.getElementById("panelProductName").innerText = product.name || "";
+  if(!product){
+    alert("Không tìm thấy sản phẩm");
+    return;
+  }
+
+  document.getElementById("detailImg").src =
+  product.img || "https://via.placeholder.com/300x300?text=No+Image";
+
+  document.getElementById("panelProductImg").src =
+  product.img || "https://via.placeholder.com/300x300?text=No+Image";
+
+  document.getElementById("detailName").innerText =
+  product.name || "";
+
+  document.getElementById("panelProductName").innerText =
+  product.name || "";
+document.getElementById("panelProductName").innerText =
+product.name || "";
 
 document.getElementById("detailPrice").innerText =
 Number(product.price || 0).toLocaleString()+"đ";
-
 
 
 document.getElementById("panelProductImg").src =
