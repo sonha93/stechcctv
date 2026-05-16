@@ -60,118 +60,47 @@ updateBadge();
 // ==========================
 
 function renderCart() {
+    const box = document.getElementById("cartList");
+    const totalBox = document.getElementById("total");
+    const actionBox = document.getElementById("cartAction");
 
-const box =
-document.getElementById("cartList");
+    if (!box || !totalBox || !actionBox) return;
 
-const totalBox =
-document.getElementById("total");
+    if (cartData.length === 0) {
+        box.innerHTML = "<p class='empty'>Giỏ hàng trống 🛒</p>";
+        totalBox.innerHTML = "";
+        actionBox.innerHTML = "";
+        return;
+    }
 
-const actionBox =
-document.getElementById("cartAction");
+    let total = 0;
 
-if (!box || !totalBox || !actionBox)
-return;
+    box.innerHTML = cartData.map((item, i) => {
+        const qty = item.qty || 1;
+        total += (item.price || 0) * qty;
 
-// GIỎ TRỐNG
-if (cartData.length === 0) {
-
-    box.innerHTML =
-    "<p class='empty'>Giỏ hàng trống 🛒</p>";
-
-    totalBox.innerHTML = "";
-    actionBox.innerHTML = "";
-
-    return;
-
-}
-
-let total = 0;
-
-box.innerHTML = cartData.map((item, i) => {
-
-    const qty =
-    item.qty || 1;
-
-    total +=
-    (item.price || 0) * qty;
-
-    return `
-
-    <div class="item">
-
-        <img src="${item.img || ''}">
-
-        <div class="info">
-
-            <b>
-                ${item.name || ''}
-            </b>
-
-            <br>
-
-            <div class="price-new">
-                ${(item.price || 0).toLocaleString()}đ
-            </div>
-
-            ${
-                item.oldPrice
-                ? `
-                <div class="price-old">
-                    ${item.oldPrice.toLocaleString()}đ
+        return `
+        <div class="item">
+            <img src="${item.img || ''}">
+            <div class="info">
+                <b>${item.name || ''}</b>
+                <br>
+                <div class="price-new">${(item.price || 0).toLocaleString()}đ</div>
+                ${item.oldPrice ? `<div class="price-old">${item.oldPrice.toLocaleString()}đ</div>` : ''}
+                <div class="qty">
+                    <button onclick="changeQty(${i}, -1)">-</button>
+                    <span>${qty}</span>
+                    <button onclick="changeQty(${i}, 1)">+</button>
                 </div>
-             
-                : ''
-            }
-
-            <div class="qty">
-
-                <button onclick="changeQty(${i}, -1)">
-                    -
-                </button>
-
-                <span>
-                    ${qty}
-                </span>
-
-                <button onclick="changeQty(${i}, 1)">
-                    +
-                </button>
-
             </div>
-
+            <button class="remove" onclick="removeItem(${i})">🗑</button>
         </div>
+       
+    }).join("");
 
-        <button
-            class="remove"
-            onclick="removeItem(${i})"
-        >
-            🗑
-        </button>
-
-    </div>
-
-   
-
-}).join("");
-
-totalBox.innerHTML =
-"Tổng: " +
-total.toLocaleString() +
-"đ";
-
-actionBox.innerHTML = `
-    <button
-        class="checkout"
-        onclick="checkout()"
-    >
-        Đặt hàng
-    </button>
-`;
-
-
+    totalBox.innerHTML = `Tổng: ${total.toLocaleString()}đ`;
+    actionBox.innerHTML = `<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
 }
-
 // ==========================
 // UPDATE BADGE
 // ==========================
