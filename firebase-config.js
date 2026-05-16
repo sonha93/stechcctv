@@ -2,6 +2,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain: "stech-73b89.firebaseapp.com",
+   databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "stech-73b89",
   storageBucket: "stech-73b89.appspot.com", // sửa lại chỗ này
   messagingSenderId: "873739162979",
