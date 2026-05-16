@@ -4,131 +4,158 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Giỏ hàng</title>
-<link rel="stylesheet" href="stylecart.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
-body{background:#f4f7fb;}
-#overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;z-index:998;}
-#overlay.active{display:block;}
-.sidebar{position:fixed;left:-260px;top:0;width:260px;height:100%;background:#fff;padding:20px;transition:0.3s;z-index:999;}
-.sidebar.active{left:0;}
-.sidebar a{display:block;padding:10px;border-radius:8px;text-decoration:none;color:#333;}
-header{display:flex;align-items:center;gap:10px;padding:10px;background:linear-gradient(90deg,#1e88e5,#00acc1,#43a047);position:sticky;top:0;z-index:1000;}
-.menu-btn{width:40px;height:40px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;}
-.logo img{width:40px;height:40px;border-radius:50%;}
-header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0e0;}
-.container{max-width:900px;margin:auto;padding:15px;}
-.item{display:flex;gap:10px;background:#fff;padding:12px;margin-bottom:10px;border-radius:12px;align-items:center;position:relative;}
-.item img{width:80px;height:80px;border-radius:10px;}
-.check-item{position:absolute;top:5px;left:5px;width:20px;height:20px;cursor:pointer;}
-.info{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:180px;}
-.price-row{display:flex;justify-content:space-between;flex-wrap:nowrap;gap:5px;align-items:center;}
-.price-new{color:red;font-weight:bold;white-space:nowrap;}
-.price-old{text-decoration:line-through;color:#888;font-size:13px;white-space:nowrap;}
-.qty{display:flex;align-items:center;border:1px solid #ccc;border-radius:8px;overflow:hidden;gap:4px;margin-top:5px;}
-.qty button{border:none;background:#eee;width:28px;height:28px;border-radius:6px;cursor:pointer;}
-.qty span{display:inline-block;width:28px;text-align:center;}
-.remove{position:absolute;top:5px;right:5px;background:none;border:none;font-size:18px;cursor:pointer;}
-.total{text-align:right;font-size:20px;font-weight:bold;color:red;margin-top:10px;}
-.checkout{width:100%;margin-top:10px;padding:12px;background:linear-gradient(90deg,#1e88e5,#00acc1,#43a047);color:#fff;border:none;border-radius:10px;cursor:pointer;}
-.empty{text-align:center;margin-top:40px;}
+body{font-family:Arial; background:#f4f7fb; padding:20px;}
+h2{margin-bottom:15px;}
+#cartList .cart-item{display:flex; justify-content:space-between; padding:8px; background:#fff; margin-bottom:6px; border-radius:6px; box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+#cartList .cart-item span{flex:1;}
+#cartList .cart-item button{background:#e53935; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;}
+#total{margin-top:10px; font-weight:bold;}
+#logoutBtn{margin-top:20px; padding:8px 12px; border:none; background:#00acc1; color:#fff; border-radius:6px; cursor:pointer;}
+.empty{color:#888; font-style:italic;}
 </style>
 </head>
 <body>
 
-<div id="overlay" onclick="toggleMenu()"></div>
+<h2>🛒 Giỏ hàng của bạn</h2>
+<div id="cartList"></div>
+<p id="total">Tổng: 0₫</p>
+<button id="logoutBtn">Đăng xuất</button>
 
-<div class="sidebar" id="sidebar">
-  <h3>Danh mục</h3>
-  <a href="admin.html">Admin</a>
-  <a href="cart.html">Giỏ hàng</a>
-  <a href="index.html">Trang chủ</a>
-  <a href="camera-trong-nha.html">Camera trong nhà</a>
-  <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
-  <a href="the-nho.html">Thẻ nhớ</a>
-  <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
-</div>
-
-<header>
-  <div class="menu-btn" onclick="toggleMenu()">☰</div>
-  <div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png"></div>
-  <input id="searchInput" placeholder="Tìm kiếm">
-</header>
-
-<div class="container">
-  <h2>🛒 Giỏ hàng</h2>
-  <div id="cartList"></div>
-  <div class="total" id="total"></div>
-  <div id="cartAction"></div>
-</div>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
 
 <script>
-// MENU
-function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
+// ======================
+// Khởi tạo
+// ======================
+const db = firebase.database();
+const cartList = document.getElementById("cartList");
+const totalBox = document.getElementById("total");
+const logoutBtn = document.getElementById("logoutBtn");
 
-// RENDER
-let cart = JSON.parse(localStorage.getItem("cart"))||[];
-function renderCart(list=null){
-  let arr=list||cart;
-  const box=document.getElementById("cartList");
-  const totalBox=document.getElementById("total");
-  const actionBox=document.getElementById("cartAction");
-  if(arr.length===0){box.innerHTML="<p class='empty'>Giỏ trống</p>";totalBox.innerHTML="";actionBox.innerHTML="";return;}
-  let total=0;
-  box.innerHTML=arr.map((item,i)=>{
-    if(item.checked===undefined)item.checked=true;
-    if(item.checked) total+=item.price*(item.qty||1);
-    return `
-    <div class="item">
-      <input type="checkbox" class="check-item" ${item.checked?"checked":""} onclick="toggleCheck(${i})">
-      <img src="${item.img}">
-      <div class="info">
-        <b>${item.name}</b>
-        <div class="price-row">
-          <span class="price-new">${item.price.toLocaleString()}đ</span>
-          ${item.oldPrice?`<span class="price-old">${item.oldPrice.toLocaleString()}đ</span>`:""}
-          <span>${item.qty||1} × ${item.price.toLocaleString()}đ</span>
-        </div>
-        <div class="qty">
-          <button onclick="changeQty(${i},-1)">-</button>
-          <span>${item.qty||1}</span>
-          <button onclick="changeQty(${i},1)">+</button>
-        </div>
-      </div>
-      <button class="remove" onclick="removeItem(${i})">🗑</button>
-    </div>`;
-  }).join("");
-  totalBox.innerHTML="Tổng: "+total.toLocaleString()+"đ";
-  actionBox.innerHTML=`<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
+let cart = [];
+
+// ======================
+// Lưu giỏ hàng
+// ======================
+function saveCart() {
+    const uid = localStorage.getItem("uid");
+    if(uid){
+        const cartRef = db.ref("carts/" + uid);
+        let newCart = {};
+        cart.forEach((item,i)=>{ newCart[i] = item; });
+        cartRef.set(newCart);
+    } else {
+        localStorage.setItem("cart", JSON.stringify(cart));
+    }
 }
 
-// TOGGLE CHECK
-function toggleCheck(i){cart[i].checked=!cart[i].checked;localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
+// ======================
+// Load giỏ hàng
+// ======================
+function loadCart() {
+    const uid = localStorage.getItem("uid");
+    if(uid){
+        db.ref("carts/" + uid).once("value").then(snapshot=>{
+            const data = snapshot.val();
+            cart = data ? Object.values(data) : [];
+            renderCart();
+        });
+    } else {
+        const local = localStorage.getItem("cart");
+        cart = local ? JSON.parse(local) : [];
+        renderCart();
+    }
+}
 
-// CHANGE QTY
-function changeQty(i,delta){cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1)cart[i].qty=1;localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
+// ======================
+// Render giỏ hàng
+// ======================
+function renderCart() {
+    cartList.innerHTML = "";
+    if(!cart || cart.length===0){
+        cartList.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
+        totalBox.innerText = "Tổng: 0₫";
+        return;
+    }
+    let total = 0;
+    cart.forEach((item,index)=>{
+        const li = document.createElement("div");
+        li.className = "cart-item";
+        li.innerHTML = `
+            <span>${item.name} - ${item.price.toLocaleString()}₫ x ${item.quantity}</span>
+            <button class="removeBtn">❌</button>
+        `;
+        li.querySelector(".removeBtn").addEventListener("click", ()=>{
+            cart.splice(index,1);
+            saveCart();
+            renderCart();
+        });
+        cartList.appendChild(li);
+        total += item.price * item.quantity;
+    });
+    totalBox.innerText = "Tổng: " + total.toLocaleString() + "₫";
+}
 
-// REMOVE
-function removeItem(i){cart.splice(i,1);localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
+// ======================
+// Thêm sản phẩm vào cart
+// ======================
+function addToCart(product){
+    const exist = cart.find(i=>i.id===product.id);
+    if(exist){
+        exist.quantity +=1;
+    } else {
+        cart.push({...product, quantity:1});
+    }
+    saveCart();
+    renderCart();
+}
 
-// SEARCH
-document.getElementById("searchInput").addEventListener("input",function(){
-  const key=this.value.toLowerCase();
-  renderCart(cart.filter(i=>i.name.toLowerCase().includes(key)));
+// ======================
+// Đăng xuất
+// ======================
+logoutBtn.addEventListener("click", ()=>{
+    auth.signOut().then(()=>{
+        localStorage.removeItem("uid");
+        loadCart();
+    });
 });
 
-// CHECKOUT
-function checkout(){
-  let checkedItems=cart.filter(i=>i.checked!==false);
-  if(checkedItems.length===0){alert("Chọn ít nhất 1 sản phẩm!");return;}
-  // Gọi checkout.html hoặc Telegram riêng (không hiển thị popup)
-  window.location.href="checkout.html";
+// ======================
+// Sync local cart lên Firebase khi login
+// ======================
+function syncLocalCartToFirebase(){
+    const local = localStorage.getItem("cart");
+    const uid = localStorage.getItem("uid");
+    if(uid && local){
+        const cartRef = db.ref("carts/" + uid);
+        const localCart = JSON.parse(local);
+        cartRef.set(localCart).then(()=> localStorage.removeItem("cart"));
+    }
 }
 
-// LOAD
-renderCart();
+// ======================
+// Theo dõi login realtime
+// ======================
+auth.onAuthStateChanged(user=>{
+    if(user){
+        localStorage.setItem("uid", user.uid);
+        syncLocalCartToFirebase();
+        loadCart();
+    } else {
+        localStorage.removeItem("uid");
+        loadCart();
+    }
+});
+
+// ======================
+// Khi load trang
+// ======================
+window.addEventListener("load", loadCart);
 </script>
 
-<script src="cart.js"></script>
 </body>
 </html>
