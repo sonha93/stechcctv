@@ -19,7 +19,6 @@ document.querySelector(".header-icons .cart-count");
 
 auth.onAuthStateChanged(user => {
 
-```
 if (!user) {
 
     window.location.href = "index.html";
@@ -30,7 +29,7 @@ if (!user) {
 currentUser = user;
 
 loadCart();
-```
+
 
 });
 
@@ -40,7 +39,6 @@ loadCart();
 
 function loadCart() {
 
-```
 if (!currentUser) return;
 
 const cartKey =
@@ -53,7 +51,7 @@ cartData = JSON.parse(
 renderCart();
 
 updateBadge();
-```
+
 
 }
 
@@ -63,7 +61,6 @@ updateBadge();
 
 function renderCart() {
 
-```
 const box =
 document.getElementById("cartList");
 
@@ -123,7 +120,7 @@ box.innerHTML = cartData.map((item, i) => {
                 <div class="price-old">
                     ${item.oldPrice.toLocaleString()}đ
                 </div>
-                `
+             
                 : ''
             }
 
@@ -171,7 +168,7 @@ actionBox.innerHTML = `
         Đặt hàng
     </button>
 `;
-```
+
 
 }
 
@@ -181,7 +178,6 @@ actionBox.innerHTML = `
 
 function updateBadge() {
 
-```
 if (!cartCountEl) return;
 
 let count = 0;
@@ -193,7 +189,7 @@ cartData.forEach(item => {
 });
 
 cartCountEl.innerText = count;
-```
+
 
 }
 
@@ -203,7 +199,6 @@ cartCountEl.innerText = count;
 
 function changeQty(i, delta) {
 
-```
 cartData[i].qty =
 (cartData[i].qty || 1) + delta;
 
@@ -214,7 +209,7 @@ if (cartData[i].qty < 1) {
 }
 
 saveCart();
-```
+
 
 }
 
@@ -224,11 +219,10 @@ saveCart();
 
 function removeItem(i) {
 
-```
 cartData.splice(i, 1);
 
 saveCart();
-```
+
 
 }
 
@@ -238,7 +232,6 @@ saveCart();
 
 function saveCart() {
 
-```
 if (!currentUser) return;
 
 const cartKey =
@@ -252,7 +245,7 @@ localStorage.setItem(
 renderCart();
 
 updateBadge();
-```
+
 
 }
 
@@ -262,7 +255,6 @@ updateBadge();
 
 function checkout() {
 
-```
 if (!currentUser) return;
 
 const cartKey =
@@ -278,7 +270,7 @@ updateBadge();
 
 window.location.href =
 "checkout.html";
-```
+
 
 }
 
