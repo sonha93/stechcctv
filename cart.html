@@ -183,34 +183,32 @@ auth.onAuthStateChanged(async user=>{
   currentUser = user;
   if(user){
     const snapshot = await db.ref("carts/"+user.uid).once("value");
-let firebaseCart = snapshot.val() ? Object.values(snapshot.val()) : []; // FIX: chuyển object thành array
-    // gộp localCart vào firebaseCart
-    firebaseCart.forEach(fItem=>{
-     localCart.forEach(lItem=>{
-  if(!lItem.id) lItem.id = Date.now() + Math.random(); // tạo id nếu chưa có
-  if(!firebaseCart.some(f=>f.id===lItem.id)) {
-    firebaseCart.push({...lItem, checked: true});
-  }
-});
+    let firebaseCart = snapshot.val() ? Object.values(snapshot.val()) : [];
 
+    // Gộp localCart vào firebaseCart
     localCart.forEach(lItem=>{
-      if(!firebaseCart.some(f=>f.id===lItem.id)) {
+      if(!lItem.id) lItem.id = Date.now() + Math.random();
+      if(!firebaseCart.some(f=>f.id===lItem.id)){
         firebaseCart.push({...lItem, checked: true});
       }
     });
 
     currentCart = firebaseCart;
     await saveCart();
+
+    // Xóa localCart
     localCart = [];
     localStorage.removeItem("cart");
   } else {
-    // Nếu chưa đăng nhập, lấy dữ liệu từ localStorage và gán mặc định checked = true
-    currentCart = localCart.map(item => ({
+    // Nếu chưa đăng nhập, lấy từ localStorage
+    currentCart = localCart.map(item=>({
       ...item,
-      checked: item.checked !== undefined ? item.checked : true
+      checked: item.checked !== undefined ? item.checked : true,
+      id: item.id || Date.now() + Math.random() // đảm bảo có id
     }));
   }
-  // Kích hoạt render sau khi dữ liệu giỏ hàng được đồng bộ xong
+
+  // Render cart
   renderCart();
 });
 </script>
