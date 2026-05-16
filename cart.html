@@ -113,7 +113,7 @@ function renderCart(filteredCart = null){
 
   let total = 0;
   box.innerHTML = cartData.map(item=>{
-    if(item.checked) total += (item.price||0)*(item.qty||1);
+    if(item.checked) total += (Number(item.price)||0)*(Number(item.qty)||1);
     const idx = currentCart.indexOf(item);
     return `
       <div class="item">
@@ -122,9 +122,9 @@ function renderCart(filteredCart = null){
         <div class="info">
           <b>${item.name}</b>
           <div class="price-row">
-            <span class="price-new">${item.price.toLocaleString()}đ</span>
-            ${item.oldPrice?`<span class="price-old">${item.oldPrice.toLocaleString()}đ</span>`:""}
-            <span>${item.qty||1} × ${item.price.toLocaleString()}đ</span>
+            <span class="price-new">${(Number(item.price)||0).toLocaleString()}đ</span>
+            ${item.oldPrice?`<span class="price-old">${(Number(item.oldPrice)||0).toLocaleString()}đ</span>`:""}
+            <span>${item.qty||1} × ${(Number(item.price)||0).toLocaleString()}đ</span>
           </div>
           <div class="qty">
             <button onclick="changeQty(${idx},-1)">-</button>
@@ -166,7 +166,8 @@ async function removeItem(i){
 // CHECKOUT
 async function checkout(){
   if(currentCart.length===0){ alert("Giỏ hàng trống!"); return; }
-  currentCart=[];
+  // Chỉ xóa các sản phẩm được chọn để mua
+  currentCart = currentCart.filter(item => !item.checked);
   await saveCart();
   renderCart();
   window.location.href="checkout.html";
@@ -185,16 +186,17 @@ auth.onAuthStateChanged(async user=>{
     const snapshot = await db.ref("carts/"+user.uid).once("value");
     const firebaseCart = snapshot.val() || [];
 
-    // merge localCart
+    // gộp localCart vào firebaseCart
     firebaseCart.forEach(fItem=>{
       const lItem = localCart.find(l=>l.id===fItem.id);
       if(lItem) fItem.qty = Math.max(fItem.qty||1,lItem.qty||1);
       if(fItem.checked===undefined) fItem.checked=true;
     });
 
-    // add local-only items
     localCart.forEach(lItem=>{
-      if(!firebaseCart.some(f=>f.id===lItem.id)) firebaseCart.push({...lItem, checked:true});
+      if(!firebaseCart.some(f=>f.id===lItem.id)) {
+        firebaseCart.push({...lItem, checked: true});
+      }
     });
 
     currentCart = firebaseCart;
@@ -202,13 +204,15 @@ auth.onAuthStateChanged(async user=>{
     localCart = [];
     localStorage.removeItem("cart");
   } else {
-    currentCart = localCart;
+    // Nếu chưa đăng nhập, lấy dữ liệu từ localStorage và gán mặc định checked = true
+    currentCart = localCart.map(item => ({
+      ...item,
+      checked: item.checked !== undefined ? item.checked : true
+    }));
   }
+  // Kích hoạt render sau khi dữ liệu giỏ hàng được đồng bộ xong
   renderCart();
 });
-
-// INIT
-renderCart();
 </script>
 </body>
 </html>
