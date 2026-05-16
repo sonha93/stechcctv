@@ -1,165 +1,91 @@
-// =========================
-// checkout.js – Cart đồng bộ Firebase theo UID
-// =========================
+import { auth, db } from "./firebase-init.js";
 
 const cartBox = document.getElementById("cart");
 const totalBox = document.getElementById("total");
-
-if (!cartBox || !totalBox) console.warn("Checkout elements not found");
-
+let currentUser = null;
 let currentCart = [];
 
-// =========================
-// 💰 Format tiền
-// =========================
-function formatPrice(n){
-  return Number(n).toLocaleString("vi-VN") + "đ";
-}
+function formatPrice(n){ return Number(n).toLocaleString("vi-VN") + "đ"; }
 
-// =========================
-// 📦 Load cart từ Firebase
-// =========================
 async function loadCart(){
   if(!currentUser) return;
-
-  const snapshot = await db.ref("carts/" + currentUser.uid).once("value");
-  currentCart = snapshot.val() || [];
-
-  // Nếu chưa có checked, mặc định true
-  currentCart.forEach(item => { if(item.checked === undefined) item.checked = true; });
-
+  const snapshot = await db.collection("users").doc(currentUser.uid).collection("cart").get();
+  currentCart = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  currentCart.forEach(item => { if(item.checked===undefined) item.checked=true; });
   renderCheckout();
 }
 
-// =========================
-// 🖥 Render checkout
-// =========================
 function renderCheckout(){
   if(!cartBox || !totalBox) return;
-
   cartBox.innerHTML = "";
-  if(currentCart.length === 0){
-    cartBox.innerHTML = "<p>Giỏ hàng trống 🛒</p>";
-    totalBox.innerText = formatPrice(0);
-    return;
-  }
-
-  let total = 0;
-
-  currentCart.forEach((item, index) => {
-   const qty =
-  Number(item.qty || item.quantity) || 1;
-    const price = Number(item.price) || 0;
-    const oldPrice = Number(item.oldPrice) || 0;
-    const subTotal = qty * price;
-
-    if(item.checked) total += subTotal;
-
-    const hasDiscount = oldPrice > price;
-
+  if(currentCart.length===0){ cartBox.innerHTML="<p>Giỏ hàng trống 🛒</p>"; totalBox.innerText=formatPrice(0); return; }
+  let total=0;
+  currentCart.forEach((item,index)=>{
+    const qty=item.qty||1;
+    const price=Number(item.price)||0;
+    const oldPrice=Number(item.oldPrice)||0;
+    const subTotal=qty*price;
+    if(item.checked) total+=subTotal;
+    const hasDiscount=oldPrice>price;
     cartBox.innerHTML += `
-      <div class="cart-item" style="display:flex;align-items:center;gap:10px;position:relative;padding:10px 0;">
-        <input type="checkbox" style="position:absolute;top:5px;left:5px;cursor:pointer;" ${item.checked ? "checked" : ""} onclick="toggleItem(${index})">
-        <img src="${item.img}" style="width:60px;border-radius:6px;">
-        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+      <div class="cart-item">
+        <input type="checkbox" ${item.checked?"checked":""} onclick="toggleItem(${index})">
+        <img src="${item.img}">
+        <div>
           <h4>${item.name}</h4>
-          <div class="price-box" style="display:flex;gap:8px;flex-wrap:nowrap;align-items:center;">
-            <span class="price">${formatPrice(price)}</span>
-            ${hasDiscount ? `<span class="old-price">${formatPrice(oldPrice)}</span>` : ""}
-            <span style="white-space:nowrap;">${qty} × ${formatPrice(price)} = ${formatPrice(subTotal)}</span>
-          </div>
-          <div class="qty" style="display:flex;align-items:center;gap:4px;margin-top:5px;">
-            <button onclick="changeQty(${index},-1)">-</button>
-            <span>${qty}</span>
-            <button onclick="changeQty(${index},1)">+</button>
-          </div>
+          <div>${qty} × ${formatPrice(price)} = ${formatPrice(subTotal)}</div>
         </div>
-        <button class="remove" style="position:absolute;top:5px;right:5px;background:none;border:none;font-size:18px;cursor:pointer;" onclick="removeItem(${index})">🗑</button>
-      </div>
-      <hr>
-    `;
+        <button onclick="removeItem(${index})">🗑</button>
+      </div>`;
   });
-
-  totalBox.innerText = formatPrice(total);
+  totalBox.innerText=formatPrice(total);
 }
 
-// =========================
-// ✅ Toggle checkbox
-// =========================
 async function toggleItem(index){
   if(!currentCart[index]) return;
-  currentCart[index].checked = !currentCart[index].checked;
-  await db.ref("carts/" + currentUser.uid).set(currentCart);
+  currentCart[index].checked=!currentCart[index].checked;
+  await db.collection("users").doc(currentUser.uid).collection("cart").doc(currentCart[index].id).update({checked:currentCart[index].checked});
   renderCheckout();
 }
 
-// =========================
-// 🛠 Change quantity
-// =========================
-async function changeQty(index, delta){
+async function changeQty(index,delta){
   if(!currentCart[index]) return;
-  const oldQty =
-currentCart[index].qty ||
-currentCart[index].quantity || 1;
-
-currentCart[index].qty =
-oldQty + delta;
-  if(currentCart[index].qty < 1) currentCart[index].qty = 1;
-  await db.ref("carts/" + currentUser.uid).set(currentCart);
+  const item=currentCart[index];
+  item.qty=(item.qty||1)+delta;
+  if(item.qty<1) item.qty=1;
+  await db.collection("users").doc(currentUser.uid).collection("cart").doc(item.id).update({qty:item.qty});
   renderCheckout();
 }
 
-// =========================
-// 🧹 Remove item
-// =========================
 async function removeItem(index){
   if(!currentCart[index]) return;
+  const item=currentCart[index];
+  await db.collection("users").doc(currentUser.uid).collection("cart").doc(item.id).delete();
   currentCart.splice(index,1);
-  await db.ref("carts/" + currentUser.uid).set(currentCart);
   renderCheckout();
 }
 
-// =========================
-// 🧹 Clear cart
-// =========================
 async function clearCart(){
   if(!currentUser) return;
-  currentCart = [];
-  await db.ref("carts/" + currentUser.uid).remove();
+  const cartRef = db.collection("users").doc(currentUser.uid).collection("cart");
+  const snapshot = await cartRef.get();
+  snapshot.forEach(doc => doc.ref.delete());
+  currentCart=[];
   renderCheckout();
 }
 
-// =========================
-// 🚀 Checkout / đặt hàng
-// =========================
 async function checkout(){
   if(!currentUser) return;
-  // ở đây bạn có thể push order vào "orders/<uid>"
-  await db.ref("carts/" + currentUser.uid).remove();
-  currentCart = [];
+  const cartRef = db.collection("users").doc(currentUser.uid).collection("cart");
+  const snapshot = await cartRef.get();
+  snapshot.forEach(doc => doc.ref.delete());
+  currentCart=[];
   renderCheckout();
-  window.location.href = "checkout.html"; // chuyển sang trang thanh toán
+  window.location.href="checkout.html";
 }
 
-// =========================
-// INIT
-// =========================
-auth.onAuthStateChanged(user => {
-
-  currentUser = user;
-
-  if(user){
-
-    loadCart();
-
-  }
-
-  else{
-
-    currentCart = [];
-
-    renderCheckout();
-
-  }
-
+auth.onAuthStateChanged(user=>{
+  currentUser=user;
+  if(user) loadCart();
+  else { currentCart=[]; renderCheckout(); }
 });
