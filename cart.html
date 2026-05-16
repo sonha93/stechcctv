@@ -34,10 +34,12 @@ body{ font-family:Arial; background:#f1f3f6; margin:0; }
   <div class="total" id="total"></div>
   <button class="checkout">💳 Thanh toán</button>
 </div>
+
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -49,20 +51,25 @@ const firebaseConfig = {
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 
+// Initialize Firebase
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+
 let currentUser = null;
 let cart = [];
+
+// Render giỏ hàng
 function renderCart() {
   const box = document.getElementById("cartList");
   const totalBox = document.getElementById("total");
- </script>
- <script src="cart.js"></script>
   box.innerHTML = "";
   if (!cart || cart.length === 0) {
     box.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
     totalBox.innerHTML = "";
     return;
   }
+
   let total = 0;
   cart.forEach((p, index) => {
     const price = Number(p.price) || 0;
@@ -87,6 +94,7 @@ function renderCart() {
   totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
 }
 
+// Lưu cart lên Firebase
 function saveCart() {
   if (!currentUser) return;
   const cartRef = db.ref("carts/" + currentUser.uid);
@@ -95,18 +103,21 @@ function saveCart() {
   cartRef.set(obj);
 }
 
+// Xóa item
 function removeItem(index) {
   cart.splice(index, 1);
   saveCart();
   renderCart();
 }
 
+// Cập nhật số lượng
 function updateQty(index, value) {
   cart[index].qty = Number(value);
   saveCart();
   renderCart();
 }
 
+// Load cart từ Firebase
 function loadCart() {
   if (!currentUser) return;
   const cartRef = db.ref("carts/" + currentUser.uid);
@@ -122,8 +133,21 @@ function loadCart() {
   });
 }
 
+// Listen auth state
 auth.onAuthStateChanged(user => {
   currentUser = user;
   loadCart();
 });
+
+// Checkout button
+document.querySelector('.checkout').addEventListener('click', () => {
+  if(cart.length === 0){
+    alert("Giỏ hàng trống!");
+    return;
+  }
+  alert("Chức năng thanh toán chưa triển khai!");
+});
 </script>
+
+</body>
+</html>
