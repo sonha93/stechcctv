@@ -298,9 +298,9 @@ window.addToCart = addToCart;
 // ==========================
 // GLOBAL
 // ==========================
-
+window.cartData = cartData;
+window.renderCart = renderCart;
+window.addToCart = addToCart;
 window.changeQty = changeQty;
-
 window.removeItem = removeItem;
-
 window.checkout = checkout;
