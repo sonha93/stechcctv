@@ -2,7 +2,6 @@
 // FIREBASE INIT - CHUẨN FIRESTORE
 // ==========================
 
-// Cấu hình Firebase của bạn
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain: "stech-73b89.firebaseapp.com",
@@ -17,14 +16,13 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-// Firestore modular
-const db = firebase.firestore();    // dùng Firestore cho cart
-const auth = firebase.auth();       // auth dùng chung
-const storage = firebase.storage(); // nếu cần upload hình ảnh
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
 
 // Biến trạng thái Firebase sẵn sàng
 let firebaseReady = false;
 auth.onAuthStateChanged(user => { firebaseReady = true; });
 
-// EXPORT để các file khác dùng
+// EXPORT
 export { auth, db, storage };
