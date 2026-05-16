@@ -36,7 +36,7 @@ function renderHome() {
           ${percentText ? `<span class="discount-text">${percentText}</span>` : ""}
         </div>
         <button class="spec-btn" onclick="toggleSpec('${id}')">⚙️ Xem thông số</button>
-        <button class="cart-btn" onclick="addToCart('${id}')">🛒 Mua ngay</button>
+       <button class="cart-btn" onclick="addToCart(${id})">🛒 Mua ngay</button>
         <div class="spec-box" id="spec-${id}" style="display:none;">${renderSpec(p)}</div>
       </div>
     `;
