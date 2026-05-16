@@ -1,55 +1,32 @@
 // ==========================
-// AUTH.JS - FIREBASE CART CHUẨN
+// FIREBASE INIT - CHUẨN
 // ==========================
 
-// IMPORT FIREBASE INIT
-import { auth, db } from "./firebase-init.js";   // firebase-init.js phải export auth, db
-import { renderCart } from "./cart.js";          // cart.js phải export renderCart
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+// Cấu hình Firebase của bạn
+const firebaseConfig = {
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain: "stech-73b89.firebaseapp.com",
+  databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "stech-73b89",
+  storageBucket: "stech-73b89.appspot.com",
+  messagingSenderId: "873739162979",
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+};
 
-// USER HIỆN TẠI
-let currentUser = null;
+// Khởi tạo Firebase
+const app = firebase.initializeApp(firebaseConfig);
 
-// SELECTOR BADGE
-const cartCountEl = document.querySelector(".header-icons .cart-count");
+// Lấy auth và Firestore
+export const auth = firebase.auth();       // xuất auth để auth.js và home.js dùng
+export const db = firebase.firestore();    // xuất db để cart.js, auth.js dùng
 
-// ==========================
-// LẮNG NGHE AUTH
-// ==========================
-auth.onAuthStateChanged(async user => {
-  if (!user) {
-    window.location.href = "index.html"; // nếu chưa đăng nhập
-    return;
-  }
+// Nếu bạn có cần storage:
+export const storage = firebase.storage();
 
-  currentUser = user;
+// Biến trạng thái Firebase sẵn sàng
+let firebaseReady = false;
 
-  // Hiển thị cart từ Firestore
-  await renderCart();
-
-  // Cập nhật badge
-  await updateBadge();
+// Đặt firebaseReady = true khi auth state check xong
+auth.onAuthStateChanged(user => {
+  firebaseReady = true;
 });
-
-// ==========================
-// CẬP NHẬT BADGE SỐ LƯỢNG
-// ==========================
-async function updateBadge() {
-  if (!cartCountEl || !currentUser) return;
-
-  const cartRef = collection(db, "users", currentUser.uid, "cart");
-  const snapshot = await getDocs(cartRef);
-
-  let count = 0;
-  snapshot.forEach(docSnap => {
-    const item = docSnap.data();
-    count += item.qty || 1;
-  });
-
-  cartCountEl.textContent = count;
-}
-
-// ==========================
-// EXPORT (nếu cần dùng bên ngoài)
-// ==========================
-export { currentUser, updateBadge };
