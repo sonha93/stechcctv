@@ -151,7 +151,7 @@ box.innerHTML = cartData.map((item, i) => {
 
     </div>
 
-    `;
+   
 
 }).join("");
 
