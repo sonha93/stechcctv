@@ -1,1 +1,55 @@
-// ========================== // FIREBASE CART SCRIPT // ========================== // AUTH const auth = firebase.auth(); // USER + CART let currentUser = null; let cartData = []; // BADGE const cartCountEl = document.querySelector(".header-icons .cart-count"); // ========================== // LOAD USER // ========================== auth.onAuthStateChanged(user => { if (!user) { window.location.href = "index.html"; return; } currentUser = user; loadCart(); }); // ========================== // LOAD CART // ========================== function loadCart() { if (!currentUser) return; const cartKey = "cart_" + currentUser.uid; cartData = JSON.parse( localStorage.getItem(cartKey) ) || []; renderCart(); updateBadge(); } // ========================== // RENDER CART // ========================== function renderCart() { const box = document.getElementById("cartList"); const totalBox = document.getElementById("total"); const actionBox = document.getElementById("cartAction"); if (!box || !totalBox || !actionBox) return; if (cartData.length === 0) { box.innerHTML = "<p class='empty'>Giỏ hàng trống 🛒</p>"; totalBox.innerHTML = ""; actionBox.innerHTML = ""; return; } let total = 0; box.innerHTML = cartData.map((item, i) => { const qty = item.qty || 1; total += (item.price || 0) * qty; return <div class="item"> <img src="${item.img || ''}"> <div class="info"> <b>${item.name || ''}</b> <br> <div class="price-new">${(item.price || 0).toLocaleString()}đ</div> ${item.oldPrice ? <div class="price-old">${item.oldPrice.toLocaleString()}đ</div> : ''} <div class="qty"> <button onclick="changeQty(${i}, -1)">-</button> <span>${qty}</span> <button onclick="changeQty(${i}, 1)">+</button> </div> </div> <button class="remove" onclick="removeItem(${i})">🗑</button> </div> }).join(""); totalBox.innerHTML = Tổng: ${total.toLocaleString()}đ; actionBox.innerHTML = <button class="checkout" onclick="checkout()">Đặt hàng</button>; } // ========================== // UPDATE BADGE // ========================== function updateBadge() { if (!cartCountEl) return; let count = 0; cartData.forEach(item => { count += item.qty || 1; }); cartCountEl.innerText = count; } // ========================== // CHANGE QTY // ========================== function changeQty(i, delta) { cartData[i].qty = (cartData[i].qty || 1) + delta; if (cartData[i].qty < 1) { cartData[i].qty = 1; } saveCart(); } // ========================== // REMOVE ITEM // ========================== function removeItem(i) { cartData.splice(i, 1); saveCart(); } // ========================== // SAVE CART // ========================== function saveCart() { if (!currentUser) return; const cartKey = "cart_" + currentUser.uid; localStorage.setItem( cartKey, JSON.stringify(cartData) ); renderCart(); updateBadge(); } // ========================== // CHECKOUT // ========================== function checkout() { if (!currentUser) return; const cartKey = "cart_" + currentUser.uid; localStorage.removeItem(cartKey); cartData = []; renderCart(); updateBadge(); window.location.href = "checkout.html"; } // ========================== // ADD TO CART // ========================== function addToCart(id) { // Tìm sản phẩm trong allProducts const product = allProducts.find(p => p.id === id); // Nếu p.id là number if (!product) { console.warn("Product not found:", id); return; } // Kiểm tra đã có trong cart chưa const existing = cartData.find(item => item.id === id); if (existing) { existing.qty = (existing.qty || 1) + 1; } else { cartData.push({ ...product, qty: 1 }); } saveCart(); // Lưu và render } window.addToCart = addToCart; // ========================== // GLOBAL // ========================== window.cartData = cartData; window.renderCart = renderCart; window.addToCart = addToCart; window.changeQty = changeQty; window.removeItem = removeItem; window.checkout = checkout;
+// ==========================
+// AUTH.JS - FIREBASE CART CHUẨN
+// ==========================
+
+// IMPORT FIREBASE INIT
+import { auth, db } from "./firebase-init.js";   // firebase-init.js phải export auth, db
+import { renderCart } from "./cart.js";          // cart.js phải export renderCart
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+// USER HIỆN TẠI
+let currentUser = null;
+
+// SELECTOR BADGE
+const cartCountEl = document.querySelector(".header-icons .cart-count");
+
+// ==========================
+// LẮNG NGHE AUTH
+// ==========================
+auth.onAuthStateChanged(async user => {
+  if (!user) {
+    window.location.href = "index.html"; // nếu chưa đăng nhập
+    return;
+  }
+
+  currentUser = user;
+
+  // Hiển thị cart từ Firestore
+  await renderCart();
+
+  // Cập nhật badge
+  await updateBadge();
+});
+
+// ==========================
+// CẬP NHẬT BADGE SỐ LƯỢNG
+// ==========================
+async function updateBadge() {
+  if (!cartCountEl || !currentUser) return;
+
+  const cartRef = collection(db, "users", currentUser.uid, "cart");
+  const snapshot = await getDocs(cartRef);
+
+  let count = 0;
+  snapshot.forEach(docSnap => {
+    const item = docSnap.data();
+    count += item.qty || 1;
+  });
+
+  cartCountEl.textContent = count;
+}
+
+// ==========================
+// EXPORT (nếu cần dùng bên ngoài)
+// ==========================
+export { currentUser, updateBadge };
