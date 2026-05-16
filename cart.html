@@ -62,155 +62,73 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
   <div id="cartAction"></div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
-  projectId: "stech-73b89",
-  storageBucket: "stech-73b89.firebasestorage.app",
-  messagingSenderId: "873739162979",
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56",
-  databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const auth = firebase.auth();
-let currentUser = null;
-let currentCart = [];
-let localCart = JSON.parse(localStorage.getItem("cart") || "[]"); // FIX: parse chắc chắn array
 // MENU
-function toggleMenu(){
-  document.getElementById("sidebar").classList.toggle("active");
-  document.getElementById("overlay").classList.toggle("active");
-}
+function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
 
-// SAVE CART
-async function saveCart(){
-  if(currentUser){
-    await db.ref("carts/"+currentUser.uid).set(currentCart);
-  } else {
-    localStorage.setItem("cart", JSON.stringify(currentCart));
-  }
-}
-
-// RENDER CART
-function renderCart(filteredCart = null){
-  const cartData = filteredCart || currentCart;
-  const box = document.getElementById("cartList");
-  const totalBox = document.getElementById("total");
-  const actionBox = document.getElementById("cartAction");
-
-  if(!cartData || cartData.length===0){
-    box.innerHTML="<p class='empty'>Giỏ trống</p>";
-    totalBox.innerHTML="";
-    actionBox.innerHTML="";
-    return;
-  }
-
-  let total = 0;
-  box.innerHTML = cartData.map(item=>{
-    if(item.checked) total += (Number(item.price)||0)*(Number(item.qty)||1);
-   const idx = currentCart.findIndex(i => i.id === item.id); // FIX: tìm index theo id
+// RENDER
+let cart = JSON.parse(localStorage.getItem("cart"))||[];
+function renderCart(list=null){
+  let arr=list||cart;
+  const box=document.getElementById("cartList");
+  const totalBox=document.getElementById("total");
+  const actionBox=document.getElementById("cartAction");
+  if(arr.length===0){box.innerHTML="<p class='empty'>Giỏ trống</p>";totalBox.innerHTML="";actionBox.innerHTML="";return;}
+  let total=0;
+  box.innerHTML=arr.map((item,i)=>{
+    if(item.checked===undefined)item.checked=true;
+    if(item.checked) total+=item.price*(item.qty||1);
     return `
-      <div class="item">
-        <input type="checkbox" class="check-item" ${item.checked?"checked":""} onclick="toggleCheck(${idx})">
-        <img src="${item.img}">
-        <div class="info">
-          <b>${item.name}</b>
-          <div class="price-row">
-            <span class="price-new">${(Number(item.price)||0).toLocaleString()}đ</span>
-            ${item.oldPrice?`<span class="price-old">${(Number(item.oldPrice)||0).toLocaleString()}đ</span>`:""}
-            <span>${item.qty||1} × ${(Number(item.price)||0).toLocaleString()}đ</span>
-          </div>
-          <div class="qty">
-            <button onclick="changeQty(${idx},-1)">-</button>
-            <span>${item.qty||1}</span>
-            <button onclick="changeQty(${idx},1)">+</button>
-          </div>
+    <div class="item">
+      <input type="checkbox" class="check-item" ${item.checked?"checked":""} onclick="toggleCheck(${i})">
+      <img src="${item.img}">
+      <div class="info">
+        <b>${item.name}</b>
+        <div class="price-row">
+          <span class="price-new">${item.price.toLocaleString()}đ</span>
+          ${item.oldPrice?`<span class="price-old">${item.oldPrice.toLocaleString()}đ</span>`:""}
+          <span>${item.qty||1} × ${item.price.toLocaleString()}đ</span>
         </div>
-        <button class="remove" onclick="removeItem(${idx})">🗑</button>
+        <div class="qty">
+          <button onclick="changeQty(${i},-1)">-</button>
+          <span>${item.qty||1}</span>
+          <button onclick="changeQty(${i},1)">+</button>
+        </div>
       </div>
-    `;
+      <button class="remove" onclick="removeItem(${i})">🗑</button>
+    </div>`;
   }).join("");
-
   totalBox.innerHTML="Tổng: "+total.toLocaleString()+"đ";
   actionBox.innerHTML=`<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
 }
 
-// CHECKBOX TOGGLE
-async function toggleCheck(i){
-  currentCart[i].checked = !currentCart[i].checked;
-  await saveCart();
-  renderCart();
-}
+// TOGGLE CHECK
+function toggleCheck(i){cart[i].checked=!cart[i].checked;localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
 
 // CHANGE QTY
-async function changeQty(i, delta){
-  currentCart[i].qty = (currentCart[i].qty||1) + delta;
-  if(currentCart[i].qty<1) currentCart[i].qty=1;
-  await saveCart();
-  renderCart();
-}
+function changeQty(i,delta){cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1)cart[i].qty=1;localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
 
-// REMOVE ITEM
-async function removeItem(i){
-  currentCart.splice(i,1);
-  await saveCart();
-  renderCart();
-}
+// REMOVE
+function removeItem(i){cart.splice(i,1);localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
+
+// SEARCH
+document.getElementById("searchInput").addEventListener("input",function(){
+  const key=this.value.toLowerCase();
+  renderCart(cart.filter(i=>i.name.toLowerCase().includes(key)));
+});
 
 // CHECKOUT
-async function checkout(){
-  if(currentCart.length===0){ alert("Giỏ hàng trống!"); return; }
-  // Chỉ xóa các sản phẩm được chọn để mua
-  currentCart = currentCart.filter(item => !item.checked);
-  await saveCart();
-  renderCart();
+function checkout(){
+  let checkedItems=cart.filter(i=>i.checked!==false);
+  if(checkedItems.length===0){alert("Chọn ít nhất 1 sản phẩm!");return;}
+  // Gọi checkout.html hoặc Telegram riêng (không hiển thị popup)
   window.location.href="checkout.html";
 }
 
-// SEARCH
-document.getElementById("searchInput").addEventListener("input", function(){
-  const key = this.value.toLowerCase();
-  renderCart(currentCart.filter(i=>i.name.toLowerCase().includes(key)));
-});
-
-// AUTH STATE + LOAD CART
-auth.onAuthStateChanged(async user=>{
-  currentUser = user;
-  if(user){
-    const snapshot = await db.ref("carts/"+user.uid).once("value");
-    let firebaseCart = snapshot.val() ? Object.values(snapshot.val()) : [];
-
-    // Gộp localCart vào firebaseCart
-    localCart.forEach(lItem=>{
-      if(!lItem.id) lItem.id = Date.now() + Math.random();
-      if(!firebaseCart.some(f=>f.id===lItem.id)){
-        firebaseCart.push({...lItem, checked: true});
-      }
-    });
-
-    currentCart = firebaseCart;
-    await saveCart();
-
-    // Xóa localCart
-    localCart = [];
-    localStorage.removeItem("cart");
-  } else {
-    // Nếu chưa đăng nhập, lấy từ localStorage
-    currentCart = localCart.map(item=>({
-      ...item,
-      checked: item.checked !== undefined ? item.checked : true,
-      id: item.id || Date.now() + Math.random() // đảm bảo có id
-    }));
-  }
-
-  // Render cart
-  renderCart();
-});
+// LOAD
+renderCart();
 </script>
+
+<script src="cart.js"></script>
 </body>
 </html>
