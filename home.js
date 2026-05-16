@@ -1,55 +1,336 @@
-import { auth, db } from "./firebase-init.js";
-import { addToCart } from "./cart.js"; // từ cart.js
+
+
+/* =========================
+   FIREBASE
+========================= */
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+
+  authDomain: "stech-73b89.firebaseapp.com",
+
+  projectId: "stech-73b89",
+
+  storageBucket: "stech-73b89.firebasestorage.app",
+
+  messagingSenderId: "873739162979",
+
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const auth = getAuth(app); // Khởi tạo auth Modular
+/* =========================
+   CAMERA HOME
+========================= */
 
 let allProducts = [];
 
-// Fetch products Firestore
+/* =========================
+   GET PRODUCTS
+========================= */
+
 async function getProducts(){
-  const snapshot = await db.collection("products").get();
-  const arr = [];
-  snapshot.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
-  return arr;
+
+  try{
+
+    const querySnapshot =
+    await getDocs(
+      collection(db,"products")
+    );
+
+    let arr = [];
+
+    querySnapshot.forEach(doc => {
+
+      arr.push({
+
+        id:doc.id,
+        ...doc.data()
+
+      });
+
+    });
+
+    return arr;
+
+  }
+
+  catch(err){
+
+    console.log(err);
+
+    return [];
+
+  }
+
 }
 
-// Render products
+/* =========================
+   FIX DATA
+========================= */
+
+function fixData(list){
+
+  return list.map(p => ({
+
+    ...p,
+
+    price:Number(p.price) || 0,
+
+    oldPrice:Number(p.oldPrice) || 0
+
+  }));
+
+}
+
+/* =========================
+   RENDER
+========================= */
+
 function render(list){
+
   const box = document.getElementById("products");
   if(!box) return;
+
+  list = fixData(list);
+
+  /* chỉ camera home */
+list = list.filter(
+  p => p.featured === "home"
+);
   box.innerHTML = "";
+
+  if(list.length === 0){
+
+    box.innerHTML =
+      "<p>Chưa có sản phẩm</p>";
+
+    return;
+
+  }
+
   list.forEach(p => {
-    const id = String(p.id);
-    const price = Number(p.price) || 0;
-    const oldPrice = Number(p.oldPrice) || 0;
-    const percent = oldPrice > price ? Math.round((1 - price/oldPrice)*100) : 0;
+
+    const id =
+      String(p.id);
+
+    const price =
+      Number(p.price) || 0;
+
+    const oldPrice =
+      Number(p.oldPrice) || 0;
+
+    const hasDiscount =
+      oldPrice > price;
+
+    const percent =
+      hasDiscount
+      ? Math.round(
+          (1 - price / oldPrice) * 100
+        )
+      : 0;
 
     box.innerHTML += `
-      <div class="item">
-        ${percent ? `<div class="discount-badge">-${percent}%</div>` : ""}
-        <div class="img-box">
-          <img src="${p.img}" alt="${p.name}" onclick="goDetail('${id}')" style="cursor:pointer;">
-        </div>
-        <h4>${p.name}</h4>
-        <div class="price-box">
-          <span class="price">${price.toLocaleString()}đ</span>
-          ${hasDiscount ? `<span class="old-price">${oldPrice.toLocaleString()}đ</span>` : ""}
-        </div>
-        <button class="cart-btn" onclick="addToCartHandler('${id}')">🛒 Thêm vào giỏ</button>
-      </div>`;
-  });
+    <div class="item">
+
+      ${
+  percent
+  ? `
+    <div class="discount-badge">
+      -${percent}%
+    </div>
+  `
+  : ""
 }
 
-window.goDetail = function(id){ window.location.href = `logo.html?id=${id}`; };
+        <div class="img-box">
 
-window.addToCartHandler = async function(id){
+          <img
+            src="${p.img || ''}"
+            alt="${p.name || ''}"
+            onclick="goDetail('${id}')"
+            style="cursor:pointer;"
+          >
+
+        </div>
+
+        <h4>
+          ${p.name || "Không tên"}
+        </h4>
+
+        <div class="price-box">
+
+          <span class="price">
+            ${price.toLocaleString()}đ
+          </span>
+
+          ${
+            hasDiscount
+
+            ? `
+
+            <span class="old-price">
+              ${oldPrice.toLocaleString()}đ
+            </span>
+
+            `
+
+            : ""
+
+          }
+
+        </div>
+
+       <button
+  class="spec-btn"
+  onclick="goDetail('${id}')"
+>
+
+  ⚙️ Xem thông số
+
+</button>
+
+<button
+  class="cart-btn"
+  onclick="addToCart('${id}')"
+>
+
+  🛒 Thêm vào giỏ
+
+</button>
+      </div>
+
+    `;
+
+  });
+
+}
+
+/* =========================
+   DETAIL
+========================= */
+
+window.goDetail = function(id){
+
+  window.location.href =
+    `logo.html?id=${id}`;
+
+};
+
+/* =========================
+   CART
+========================= */
+
+import { addToCart } from "./cart.js"; // import chức năng Firestore
+
+window.addToCart = async function(id){
   const user = auth.currentUser;
-  if(!user){ alert("Vui lòng đăng nhập!"); return; }
+  if(!user){
+    alert("Vui lòng đăng nhập!");
+    return;
+  }
+
   const product = allProducts.find(p => String(p.id) === String(id));
   if(!product) return;
-  await addToCart({ id: product.id, name: product.name, price: product.price, img: product.img, qty:1 });
+
+  await addToCart({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    img: product.img,
+    qty: 1
+  });
+
   alert("Đã thêm vào giỏ 🛒");
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-  allProducts = await getProducts();
-  render(allProducts);
-});
+/* =========================
+   SEARCH
+========================= */
+
+const search =
+document.getElementById("search");
+
+if(search){
+
+  search.addEventListener(
+    "input",
+    e => {
+
+      const key =
+      e.target.value.toLowerCase();
+
+let data =
+allProducts.filter(
+  p => p.featured === "home"
+);
+
+      render(
+
+        data.filter(
+          p =>
+            p.name &&
+            p.name
+            .toLowerCase()
+            .includes(key)
+        )
+
+      );
+
+    }
+  );
+
+}
+
+/* =========================
+   MENU
+========================= */
+
+window.toggleMenu = function(){
+
+  const sidebar =
+  document.getElementById("sidebar");
+
+  const overlay =
+  document.getElementById("overlay");
+
+  if(!sidebar || !overlay)
+  return;
+
+  sidebar.classList.toggle("active");
+
+  overlay.classList.toggle("active");
+
+};
+
+/* =========================
+   INIT
+========================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async () => {
+
+    allProducts =
+    await getProducts();
+
+    render(allProducts);
+
+  });
