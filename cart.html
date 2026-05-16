@@ -80,8 +80,7 @@ const db = firebase.database();
 const auth = firebase.auth();
 let currentUser = null;
 let currentCart = [];
-let localCart = JSON.parse(localStorage.getItem("cart")) || [];
-
+let localCart = JSON.parse(localStorage.getItem("cart") || "[]"); // FIX: parse chắc chắn array
 // MENU
 function toggleMenu(){
   document.getElementById("sidebar").classList.toggle("active");
@@ -114,7 +113,7 @@ function renderCart(filteredCart = null){
   let total = 0;
   box.innerHTML = cartData.map(item=>{
     if(item.checked) total += (Number(item.price)||0)*(Number(item.qty)||1);
-    const idx = currentCart.indexOf(item);
+   const idx = currentCart.findIndex(i => i.id === item.id); // FIX: tìm index theo id
     return `
       <div class="item">
         <input type="checkbox" class="check-item" ${item.checked?"checked":""} onclick="toggleCheck(${idx})">
@@ -184,14 +183,15 @@ auth.onAuthStateChanged(async user=>{
   currentUser = user;
   if(user){
     const snapshot = await db.ref("carts/"+user.uid).once("value");
-    const firebaseCart = snapshot.val() || [];
-
+let firebaseCart = snapshot.val() ? Object.values(snapshot.val()) : []; // FIX: chuyển object thành array
     // gộp localCart vào firebaseCart
     firebaseCart.forEach(fItem=>{
-      const lItem = localCart.find(l=>l.id===fItem.id);
-      if(lItem) fItem.qty = Math.max(fItem.qty||1,lItem.qty||1);
-      if(fItem.checked===undefined) fItem.checked=true;
-    });
+     localCart.forEach(lItem=>{
+  if(!lItem.id) lItem.id = Date.now() + Math.random(); // tạo id nếu chưa có
+  if(!firebaseCart.some(f=>f.id===lItem.id)) {
+    firebaseCart.push({...lItem, checked: true});
+  }
+});
 
     localCart.forEach(lItem=>{
       if(!firebaseCart.some(f=>f.id===lItem.id)) {
