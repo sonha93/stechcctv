@@ -1,126 +1,293 @@
 // ==========================
-// FIXED CART.JS
+// FIREBASE CART SCRIPT
 // ==========================
 
+// AUTH
+const auth = firebase.auth();
+
+// USER + CART
+let currentUser = null;
 let cartData = [];
-let currentUserUID = null;
 
 // BADGE
-const cartCountEl = document.querySelector(".header-icons .cart-count");
+const cartCountEl =
+document.querySelector(".header-icons .cart-count");
 
 // ==========================
-// AUTH STATE CHANGE
+// LOAD USER
 // ==========================
-firebase.auth().onAuthStateChanged(user => {
-    currentUserUID = user ? user.uid : null;
 
-    // Load cart nếu có user
-    const cartKey = currentUserUID ? "cart_" + currentUserUID : null;
-    cartData = cartKey ? JSON.parse(localStorage.getItem(cartKey)) || [] : [];
-    renderCart();
-    updateBadge();
+auth.onAuthStateChanged(user => {
+
+```
+if (!user) {
+
+    window.location.href = "index.html";
+    return;
+
+}
+
+currentUser = user;
+
+loadCart();
+```
+
 });
+
+// ==========================
+// LOAD CART
+// ==========================
+
+function loadCart() {
+
+```
+if (!currentUser) return;
+
+const cartKey =
+"cart_" + currentUser.uid;
+
+cartData = JSON.parse(
+    localStorage.getItem(cartKey)
+) || [];
+
+renderCart();
+
+updateBadge();
+```
+
+}
 
 // ==========================
 // RENDER CART
 // ==========================
+
 function renderCart() {
-    const box = document.getElementById("cartList");
-    const totalBox = document.getElementById("total");
-    const actionBox = document.getElementById("cartAction");
-    if (!box || !totalBox || !actionBox) return;
 
-    if (!cartData || cartData.length === 0) {
-        box.innerHTML = "<p class='empty'>Giỏ hàng trống 🛒</p>";
-        totalBox.innerHTML = "";
-        actionBox.innerHTML = "";
-        return;
-    }
+```
+const box =
+document.getElementById("cartList");
 
-    let total = 0;
-    box.innerHTML = cartData.map((item, i) => {
-        const qty = item.qty || 1;
-        total += (item.price || 0) * qty;
-        return `
-        <div class="item">
-            <img src="${item.img || ''}">
-            <div class="info">
-                <b>${item.name || ''}</b>
-                <br>
-                <div class="price-new">${(item.price || 0).toLocaleString()}đ</div>
-                ${item.oldPrice ? `<div class="price-old">${item.oldPrice.toLocaleString()}đ</div>` : ''}
-                <div class="qty">
-                    <button onclick="changeQty(${i}, -1)">-</button>
-                    <span>${qty}</span>
-                    <button onclick="changeQty(${i}, 1)">+</button>
-                </div>
+const totalBox =
+document.getElementById("total");
+
+const actionBox =
+document.getElementById("cartAction");
+
+if (!box || !totalBox || !actionBox)
+return;
+
+// GIỎ TRỐNG
+if (cartData.length === 0) {
+
+    box.innerHTML =
+    "<p class='empty'>Giỏ hàng trống 🛒</p>";
+
+    totalBox.innerHTML = "";
+    actionBox.innerHTML = "";
+
+    return;
+
+}
+
+let total = 0;
+
+box.innerHTML = cartData.map((item, i) => {
+
+    const qty =
+    item.qty || 1;
+
+    total +=
+    (item.price || 0) * qty;
+
+    return `
+
+    <div class="item">
+
+        <img src="${item.img || ''}">
+
+        <div class="info">
+
+            <b>
+                ${item.name || ''}
+            </b>
+
+            <br>
+
+            <div class="price-new">
+                ${(item.price || 0).toLocaleString()}đ
             </div>
-            <button class="remove" onclick="removeItem(${i})">🗑</button>
-        </div>`;
-    }).join("");
 
-    totalBox.innerHTML = `Tổng: ${total.toLocaleString()}đ`;
-    actionBox.innerHTML = `<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
+            ${
+                item.oldPrice
+                ? `
+                <div class="price-old">
+                    ${item.oldPrice.toLocaleString()}đ
+                </div>
+                `
+                : ''
+            }
+
+            <div class="qty">
+
+                <button onclick="changeQty(${i}, -1)">
+                    -
+                </button>
+
+                <span>
+                    ${qty}
+                </span>
+
+                <button onclick="changeQty(${i}, 1)">
+                    +
+                </button>
+
+            </div>
+
+        </div>
+
+        <button
+            class="remove"
+            onclick="removeItem(${i})"
+        >
+            🗑
+        </button>
+
+    </div>
+
+    `;
+
+}).join("");
+
+totalBox.innerHTML =
+"Tổng: " +
+total.toLocaleString() +
+"đ";
+
+actionBox.innerHTML = `
+    <button
+        class="checkout"
+        onclick="checkout()"
+    >
+        Đặt hàng
+    </button>
+`;
+```
+
 }
 
 // ==========================
-// ADD / REMOVE / CHANGE QTY
+// UPDATE BADGE
 // ==========================
-function saveCart() {
-    if (!currentUserUID) return;
-    localStorage.setItem("cart_" + currentUserUID, JSON.stringify(cartData));
-    renderCart();
-    updateBadge();
+
+function updateBadge() {
+
+```
+if (!cartCountEl) return;
+
+let count = 0;
+
+cartData.forEach(item => {
+
+    count += item.qty || 1;
+
+});
+
+cartCountEl.innerText = count;
+```
+
 }
 
-function addToCart(id) {
-    if (!window.allProducts) return;
-    const product = allProducts.find(p => p.id === id);
-    if (!product) return;
-
-    const existing = cartData.find(item => item.id === id);
-    if (existing) existing.qty = (existing.qty || 1) + 1;
-    else cartData.push({ ...product, qty: 1 });
-
-    saveCart();
-}
+// ==========================
+// CHANGE QTY
+// ==========================
 
 function changeQty(i, delta) {
-    if (!cartData[i]) return;
-    cartData[i].qty = (cartData[i].qty || 1) + delta;
-    if (cartData[i].qty < 1) cartData[i].qty = 1;
-    saveCart();
+
+```
+cartData[i].qty =
+(cartData[i].qty || 1) + delta;
+
+if (cartData[i].qty < 1) {
+
+    cartData[i].qty = 1;
+
 }
+
+saveCart();
+```
+
+}
+
+// ==========================
+// REMOVE ITEM
+// ==========================
 
 function removeItem(i) {
-    cartData.splice(i, 1);
-    saveCart();
+
+```
+cartData.splice(i, 1);
+
+saveCart();
+```
+
 }
+
+// ==========================
+// SAVE CART
+// ==========================
+
+function saveCart() {
+
+```
+if (!currentUser) return;
+
+const cartKey =
+"cart_" + currentUser.uid;
+
+localStorage.setItem(
+    cartKey,
+    JSON.stringify(cartData)
+);
+
+renderCart();
+
+updateBadge();
+```
+
+}
+
+// ==========================
+// CHECKOUT
+// ==========================
 
 function checkout() {
-    if (!currentUserUID) return;
-    localStorage.removeItem("cart_" + currentUserUID);
-    cartData = [];
-    renderCart();
-    updateBadge();
-    window.location.href = "checkout.html";
-}
 
-// ==========================
-// BADGE
-// ==========================
-function updateBadge() {
-    if (!cartCountEl) return;
-    const count = cartData.reduce((sum, item) => sum + (item.qty || 1), 0);
-    cartCountEl.innerText = count;
+```
+if (!currentUser) return;
+
+const cartKey =
+"cart_" + currentUser.uid;
+
+localStorage.removeItem(cartKey);
+
+cartData = [];
+
+renderCart();
+
+updateBadge();
+
+window.location.href =
+"checkout.html";
+```
+
 }
 
 // ==========================
 // GLOBAL
 // ==========================
-window.cartData = cartData;
-window.renderCart = renderCart;
-window.addToCart = addToCart;
+
 window.changeQty = changeQty;
+
 window.removeItem = removeItem;
+
 window.checkout = checkout;
