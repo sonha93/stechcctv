@@ -1,5 +1,5 @@
 // ==========================
-// AUTH.JS – POPUP + UID + MULTI-USER CART
+// AUTH.JS – POPUP + UID + MULTI-USER CART (FIXED)
 // ==========================
 
 import { 
@@ -20,6 +20,7 @@ import {
 const auth = getAuth();
 const db = getFirestore();
 let currentUserUID = null;
+let cartData = []; // giữ cart toàn cục
 
 // DOM ready
 document.addEventListener("DOMContentLoaded", () => {
@@ -72,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 createdAt: new Date()
             });
 
-            // Redirect
             window.location.href = "profile.html";
 
         } catch (err) {
@@ -101,7 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const user = userCredential.user;
             currentUserUID = user.uid;
 
-            // Close modal
             authModal.style.display = "none";
 
         } catch (err) {
@@ -114,20 +113,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // LOGOUT USER
     // ==========================
     logoutLink?.addEventListener("click", async () => {
-
         await signOut(auth);
         currentUserUID = null;
+        cartData = [];
 
         loginLink.style.display = "block";
         logoutLink.style.display = "none";
 
-        // ẩn user info
         if (userInfoPreview) userInfoPreview.style.display = "none";
         if (userNamePreview) userNamePreview.innerText = "";
 
-        // reload sạch trạng thái
+        // reload để reset trạng thái cart
         location.reload();
-
     });
 
     // ==========================
@@ -144,13 +141,16 @@ document.addEventListener("DOMContentLoaded", () => {
             if (userNamePreview) userNamePreview.innerText = "Xin chào\n" + (user.email || "");
 
             // ===== Load cart của user khi login =====
-            const savedCart = JSON.parse(localStorage.getItem("cart_" + currentUserUID)) || [];
-            renderCart(savedCart);
+            const cartKey = "cart_" + currentUserUID;
+            cartData = JSON.parse(localStorage.getItem(cartKey)) || [];
+            window.cartData = cartData; // đảm bảo global
+            renderCart(); // render trực tiếp từ cartData
 
             // Khi cart thay đổi, cập nhật localStorage
-            window.updateCart = (cartArray) => {
-                localStorage.setItem("cart_" + currentUserUID, JSON.stringify(cartArray));
-                renderCart(cartArray);
+            window.updateCart = (newCart) => {
+                cartData = newCart;
+                localStorage.setItem(cartKey, JSON.stringify(cartData));
+                renderCart();
             };
             // ========================================
 
@@ -162,7 +162,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (userNamePreview) userNamePreview.innerText = "";
 
             // Cart trống khi chưa login
-            renderCart([]);
+            cartData = [];
+            renderCart();
         }
     });
 
