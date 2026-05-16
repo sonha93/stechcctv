@@ -1,326 +1,111 @@
-// ==========================
-// FIREBASE CART SCRIPT
-// ==========================
+// ============================
+// CART.JS - FIREBASE VERSION
+// ============================
 
-// AUTH
-const auth = firebase.auth();
+import { getFirestore, collection, getDocs, doc, deleteDoc, setDoc, updateDoc } 
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-// USER + CART
+const db = getFirestore();
+const auth = getAuth();
+
 let currentUser = null;
-let cartData = [];
 
-// BADGE
-const cartCountEl =
-document.querySelector(".header-icons .cart-count");
+// DOM Elements
+const cartBox = document.getElementById("cartList");
+const totalBox = document.getElementById("total");
 
-// ==========================
-// LOAD USER
-// ==========================
-
-auth.onAuthStateChanged(user => {
-
-
-if (!user) {
-
-    window.location.href = "index.html";
-    return;
-
-}
-
-currentUser = user;
-
-loadCart();
-
-
-});
-
-// ==========================
-// LOAD CART
-// ==========================
-
-function loadCart() {
-
-
-if (!currentUser) return;
-
-const cartKey =
-"cart_" + currentUser.uid;
-
-cartData = JSON.parse(
-    localStorage.getItem(cartKey)
-) || [];
-
-renderCart();
-
-updateBadge();
-
-
-}
-
-// ==========================
+// ============================
 // RENDER CART
-// ==========================
+// ============================
+async function renderCart() {
+  cartBox.innerHTML = "";
+  totalBox.innerHTML = "";
 
-function renderCart() {
-
-const box =
-document.getElementById("cartList");
-
-const totalBox =
-document.getElementById("total");
-
-const actionBox =
-document.getElementById("cartAction");
-
-if (!box || !totalBox || !actionBox)
-return;
-
-// GIỎ TRỐNG
-if (cartData.length === 0) {
-
-    box.innerHTML =
-    "<p class='empty'>Giỏ hàng trống 🛒</p>";
-
-    totalBox.innerHTML = "";
-    actionBox.innerHTML = "";
-
-    return;
-
-}
-
-let total = 0;
-
-box.innerHTML = cartData.map((item, i) => {
-
-    const qty =
-    item.qty || 1;
-
-    total +=
-    (item.price || 0) * qty;
-
-    return 
-
-    <div class="item">
-
-        <img src="${item.img || ''}">
-
-        <div class="info">
-
-            <b>
-                ${item.name || ''}
-            </b>
-
-            <br>
-
-            <div class="price-new">
-                ${(item.price || 0).toLocaleString()}đ
-            </div>
-
-            ${
-                item.oldPrice
-                ? `
-                <div class="price-old">
-                    ${item.oldPrice.toLocaleString()}đ
-                </div>
-                `
-                : ''
-            }
-
-            <div class="qty">
-
-                <button onclick="changeQty(${i}, -1)">
-                    -
-                </button>
-
-                <span>
-                    ${qty}
-                </span>
-
-                <button onclick="changeQty(${i}, 1)">
-                    +
-                </button>
-
-            </div>
-
-        </div>
-
-        <button
-            class="remove"
-            onclick="removeItem(${i})"
-        >
-            🗑
-        </button>
-
-    </div>
-
-    `;
-
-}).join("");
-
-totalBox.innerHTML =
-"Tổng: " +
-total.toLocaleString() +
-"đ";
-
-actionBox.innerHTML = `
-    <button
-        class="checkout"
-        onclick="checkout()"
-    >
-        Đặt hàng
-    </button>
-`;
-
-
-}
-
-// ==========================
-// UPDATE BADGE
-// ==========================
-
-function updateBadge() {
-
-
-if (!cartCountEl) return;
-
-let count = 0;
-
-cartData.forEach(item => {
-
-    count += item.qty || 1;
-
-});
-
-cartCountEl.innerText = count;
-
-}
-
-// ==========================
-// CHANGE QTY
-// ==========================
-
-function changeQty(i, delta) {
-
-```
-cartData[i].qty =
-(cartData[i].qty || 1) + delta;
-
-if (cartData[i].qty < 1) {
-
-    cartData[i].qty = 1;
-
-}
-
-saveCart();
-
-
-}
-
-// ==========================
-// REMOVE ITEM
-// ==========================
-
-function removeItem(i) {
-
-```
-cartData.splice(i, 1);
-
-saveCart();
-
-
-}
-
-// ==========================
-// SAVE CART
-// ==========================
-
-function saveCart() {
-
-
-if (!currentUser) return;
-
-const cartKey =
-"cart_" + currentUser.uid;
-
-localStorage.setItem(
-    cartKey,
-    JSON.stringify(cartData)
-);
-
-renderCart();
-
-updateBadge();
-
-
-}
-
-// ==========================
-// CHECKOUT
-// ==========================
-
-function checkout() {
-
-```
-if (!currentUser) return;
-
-const cartKey =
-"cart_" + currentUser.uid;
-
-localStorage.removeItem(cartKey);
-
-cartData = [];
-
-renderCart();
-
-updateBadge();
-
-window.location.href =
-"checkout.html";
-
-
-}
-// ==========================
-// ADD TO CART FUNCTION
-// ==========================
-function addToCart(product) {
   if (!currentUser) {
-    alert("Vui lòng đăng nhập để thêm giỏ hàng");
+    cartBox.innerHTML = "<div class='empty'>Bạn chưa đăng nhập 🛒</div>";
     return;
   }
 
-  // kiểm tra nếu sản phẩm đã có trong giỏ
-  const existing = cartData.find(item => item.id === product.id);
-  if (existing) {
-    existing.qty = (existing.qty || 1) + 1;
-  } else {
-    product.qty = 1;
-    cartData.push(product);
+  const cartRef = collection(db, "users", currentUser.uid, "cart");
+  const snapshot = await getDocs(cartRef);
+
+  if (snapshot.empty) {
+    cartBox.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
+    return;
   }
 
-  saveCart(); // lưu localStorage và render lại giỏ
-  alert("Đã thêm vào giỏ 🛒");
-}
-// ==========================
-// BIND BUTTONS
-// ==========================
-document.querySelectorAll(".cart-btn").forEach(btn => {
-  btn.addEventListener("click", function() {
-    const product = {
-      id: this.dataset.id,
-      name: this.dataset.name,
-      price: parseFloat(this.dataset.price),
-      img: this.dataset.img
-    };
+  let total = 0;
 
-    addToCart(product);
+  snapshot.forEach(docSnap => {
+    const p = docSnap.data();
+    const subTotal = (Number(p.price) || 0) * (Number(p.qty) || 1);
+    total += subTotal;
+
+    cartBox.innerHTML += `
+      <div class="item">
+        <img src="${p.img}">
+        <div class="info">
+          <h4>${p.name}</h4>
+          <div class="row-info">
+            <span>Số lượng: <input type="number" min="1" value="${p.qty}" onchange="updateQty('${docSnap.id}', this.value)"></span>
+            <span>Đơn giá: ${Number(p.price).toLocaleString()}đ</span>
+            <span>Thành tiền: ${subTotal.toLocaleString()}đ</span>
+          </div>
+        </div>
+        <button class="remove" onclick="removeItem('${docSnap.id}')">Xoá</button>
+      </div>
+    `;
   });
+
+  totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
+}
+
+// ============================
+// ADD ITEM TO CART
+// ============================
+export async function addToCart(product) {
+  if (!currentUser) return alert("Bạn cần đăng nhập để thêm giỏ hàng!");
+
+  const itemRef = doc(db, "users", currentUser.uid, "cart", product.id);
+  await setDoc(itemRef, product);
+  renderCart();
+}
+
+// ============================
+// REMOVE ITEM
+// ============================
+window.removeItem = async function(itemId) {
+  if (!currentUser) return;
+  await deleteDoc(doc(db, "users", currentUser.uid, "cart", itemId));
+  renderCart();
+}
+
+// ============================
+// UPDATE QUANTITY
+// ============================
+window.updateQty = async function(itemId, qty) {
+  if (!currentUser) return;
+  qty = Number(qty);
+  if (qty < 1) qty = 1;
+
+  const itemRef = doc(db, "users", currentUser.uid, "cart", itemId);
+  await updateDoc(itemRef, { qty: qty });
+  renderCart();
+}
+
+// ============================
+// AUTH STATE CHANGE
+// ============================
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  renderCart();
 });
-// ==========================
-// GLOBAL
-// ==========================
 
-window.changeQty = changeQty;
-
-window.removeItem = removeItem;
-
-window.checkout = checkout;
+// ============================
+// INIT
+// ============================
+document.addEventListener("DOMContentLoaded", () => {
+  renderCart();
+});
