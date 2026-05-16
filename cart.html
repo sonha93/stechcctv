@@ -2,180 +2,588 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<title>Thanh toán</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Giỏ hàng</title>
+
 <style>
-body{ font-family:Arial; background:#f1f3f6; margin:0; }
-.header{ background:linear-gradient(135deg,#ff6a00,#ee0979); color:#fff; padding:20px; text-align:center; position:relative; }
-.back-btn{ position:absolute; left:15px; top:15px; background:rgba(255,255,255,0.2); color:#fff; padding:6px 12px; border-radius:20px; text-decoration:none; font-size:13px; }
-.container{ max-width:900px; margin:auto; padding:15px; }
-.item{ display:flex; gap:12px; background:#fff; padding:12px; margin-bottom:10px; border-radius:12px; align-items:center; box-shadow:0 2px 10px rgba(0,0,0,0.08); }
-.item img{ width:90px; height:90px; object-fit:cover; border-radius:10px; }
-.info{ flex:1; }
-.row-info{ display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
-.row-info span{ background:#f5f5f5; padding:4px 8px; border-radius:6px; font-size:12px; }
-.remove{ background:red; color:#fff; border:none; padding:6px 10px; border-radius:8px; cursor:pointer; }
-.total{ text-align:right; font-size:18px; font-weight:bold; margin-top:15px; }
-.empty{ text-align:center; color:gray; margin-top:40px; }
-.checkout{ width:100%; margin-top:15px; padding:12px; background:#00c853; color:#fff; border:none; border-radius:10px; font-weight:bold; cursor:pointer; }
-.add-btn{ padding:6px 12px; background:#2979ff; color:#fff; border:none; border-radius:6px; cursor:pointer; }
+body{
+  font-family:Arial;
+  background:#f5f5f5;
+  margin:0;
+}
+
+.container{
+  max-width:800px;
+  margin:auto;
+  padding:20px;
+}
+
+.box{
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+
+.title-box{
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+  font-size:20px;
+  font-weight:bold;
+}
+
+.item{
+  display:flex;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid #eee;
+  align-items:center;
+}
+
+.item img{
+  width:70px;
+  height:70px;
+  object-fit:cover;
+  border-radius:8px;
+}
+
+.calc{
+  margin-top:5px;
+}
+
+.sale-price{
+  color:#e53935;
+  font-weight:bold;
+  font-size:16px;
+}
+
+.old-price{
+  text-decoration:line-through;
+  color:#999;
+  font-size:13px;
+}
+
+.total-box{
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid #eee;
+}
+
+.total-box .row{
+  display:flex;
+  justify-content:space-between;
+  margin:6px 0;
+}
+
+.total-box .discount b{
+  color:#e53935;
+}
+
+.total-box .final{
+  border-top:1px solid #ddd;
+  margin-top:8px;
+  padding-top:10px;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.total-box .final b{
+  color:#e53935;
+}
+
+input,
+textarea,
+select{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  margin-bottom:10px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  box-sizing:border-box;
+}
+
+.btn{
+  width:100%;
+  padding:12px;
+  background:linear-gradient(90deg,#1e88e5,#00acc1,#43a047);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.back-btn{
+  display:inline-block;
+  margin-bottom:15px;
+  background:#fff;
+  color:#00acc1;
+  padding:8px 12px;
+  border-radius:10px;
+  text-decoration:none;
+  font-size:13px;
+}
+
+#bankInfo{
+  display:none;
+  margin-top:10px;
+  padding:10px;
+  border:1px dashed #ccc;
+  border-radius:8px;
+}
+
+#loading{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:9999;
+  color:#fff;
+}
+
+.spinner{
+  width:40px;
+  height:40px;
+  border:4px solid #fff;
+  border-top:4px solid transparent;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin-bottom:10px;
+}
+
+@keyframes spin{
+  to{
+    transform:rotate(360deg);
+  }
+}
+
+@media(max-width:768px){
+  .container{
+    max-width:100%;
+    padding:10px;
+  }
+}
 </style>
 </head>
+
 <body>
 
-<div class="header">
-  <a href="index.html" class="back-btn">← Trang chủ</a>
-  <h2>🛒 Giỏ hàng</h2>
-</div>
-
 <div class="container">
-  <div id="cartList"></div>
-  <div class="total" id="total"></div>
-  <button class="checkout">💳 Thanh toán</button>
-  <hr>
-  <h3>Demo sản phẩm</h3>
-  <div>
-    <button class="add-btn" onclick="addToCart({name:'Camera A', price:5000000, qty:1, img:'https://via.placeholder.com/90'})">Thêm Camera A</button>
-    <button class="add-btn" onclick="addToCart({name:'Camera B', price:3000000, qty:1, img:'https://via.placeholder.com/90'})">Thêm Camera B</button>
-  </div>
+
+<a href="index.html" class="back-btn">
+← Quay lại
+</a>
+
+<div class="title-box">
+💳 Thanh toán đơn hàng
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<div class="box" id="cartBox"></div>
+
+<div class="box">
+  <h3>📦 Thông tin giao hàng</h3>
+
+  <input id="name" placeholder="Họ tên">
+
+  <input
+    id="phone"
+    placeholder="Số điện thoại"
+    maxlength="10"
+  >
+
+  <textarea
+    id="address"
+    placeholder="Địa chỉ"
+  ></textarea>
+</div>
+
+<div class="box">
+
+  <h3>💰 Thanh toán</h3>
+
+  <select id="payment">
+    <option value="cod">COD</option>
+    <option value="bank">Chuyển khoản</option>
+  </select>
+
+  <div id="bankInfo">
+
+    <h3>🏦 Vietinbank</h3>
+
+    <p>HOANG ANH SON</p>
+
+    <p>101005245058</p>
+
+    <img
+      id="qr"
+      style="width:100%;max-width:250px;"
+    >
+
+  </div>
+
+</div>
+
+<button class="btn" onclick="placeOrder()">
+🛒 Đặt hàng
+</button>
+
+</div>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <p>Đang xử lý đơn hàng...</p>
+</div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
-  databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "stech-73b89",
-  storageBucket: "stech-73b89.appspot.com",
-  messagingSenderId: "873739162979",
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-};
-if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-const auth = firebase.auth();
-const db = firebase.database();
+/* =========================
+   CART
+========================= */
 
-let currentUser = null;
-let cart = [];
+let cart =
+JSON.parse(localStorage.getItem("cart")) || [];
 
-// Render cart
+/* =========================
+   PHONE
+========================= */
+
+document
+.getElementById("phone")
+.addEventListener("input",function(){
+
+  this.value =
+  this.value.replace(/\D/g,"");
+
+});
+
+/* =========================
+   TELEGRAM
+========================= */
+
+function sendTelegramNotification(
+  orderNumber,
+  customerName,
+  phone,
+  address,
+  cartItems,
+  total
+){
+
+  const botToken =
+  "8752443026:AAEHrvCIDLqEDfE_inDeAAI9dzClm3WZyz4";
+
+  const chatId =
+  "6087791909";
+
+  let itemsText = cartItems.map(item=>{
+
+    return `• ${item.name}
+Giá: ${(Number(item.price)||0).toLocaleString()}đ
+SL: ${item.qty || 1}`;
+
+  }).join("\n\n");
+
+  const message = `
+📦 ĐƠN HÀNG MỚI
+
+🆔 Mã đơn:
+${orderNumber}
+
+👤 Khách:
+${customerName}
+
+📞 SĐT:
+${phone}
+
+📍 Địa chỉ:
+${address}
+
+🛒 Sản phẩm:
+${itemsText}
+
+💰 Tổng:
+${total.toLocaleString()}đ
+`;
+
+  fetch(
+    `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`
+  );
+
+}
+
+/* =========================
+   RENDER CART
+========================= */
+
 function renderCart(){
-  const box = document.getElementById("cartList");
-  const totalBox = document.getElementById("total");
-  box.innerHTML="";
-  if(!cart || cart.length===0){
-    box.innerHTML="<div class='empty'>Giỏ hàng trống 🛒</div>";
-    totalBox.innerHTML="";
-    return;
-  }
-  let total=0;
-  cart.forEach((p,index)=>{
-    const price=Number(p.price)||0;
-    const qty=Number(p.qty)||1;
-    const subTotal=price*qty;
-    total+=subTotal;
-    box.innerHTML+=`
-      <div class="item">
-        <img src="${p.img}">
-        <div class="info">
-          <h4>${p.name}</h4>
-          <div class="row-info">
-            <span>Số lượng: <input type="number" min="1" value="${qty}" onchange="updateQty(${index},this.value)"></span>
-            <span>Đơn giá: ${price.toLocaleString()}đ</span>
-            <span>Thành tiền: ${subTotal.toLocaleString()}đ</span>
-          </div>
-        </div>
-        <button class="remove" onclick="removeItem(${index})">Xóa</button>
+
+  const box =
+  document.getElementById("cartBox");
+
+  box.innerHTML = "";
+
+  if(cart.length===0){
+
+    box.innerHTML = `
+      <div style="text-align:center;padding:20px;">
+        🛒 Giỏ hàng trống
       </div>
     `;
+
+    return;
+  }
+
+  let originalTotal = 0;
+  let finalTotal = 0;
+
+  cart.forEach(p=>{
+
+let qty = Number(p.qty) || 1;
+
+ let price =
+Number(String(p.price).replace(/\D/g,'')) || 0;
+
+    let old =
+Number(String(p.oldPrice).replace(/\D/g,'')) || price;
+
+    let subFinal = qty * price;
+
+    let subOld = qty * old;
+
+    finalTotal += subFinal;
+
+    originalTotal += subOld;
+
+    box.innerHTML += `
+      <div class="item">
+
+      <img
+  src="${p.img || 'https://via.placeholder.com/70'}"
+  onerror="this.src='https://via.placeholder.com/70'"
+>
+
+        <div style="flex:1;">
+
+          <b>${p.name}</b>
+
+          <div class="calc">
+
+            <div class="sale-price">
+              ${price.toLocaleString()}đ
+            </div>
+
+            ${
+              old > price
+              ? `<div class="old-price">${old.toLocaleString()}đ</div>`
+              : ""
+            }
+
+            <div>
+              ${qty} × ${price.toLocaleString()}đ
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    `;
+
   });
-  totalBox.innerHTML="Tổng tiền: "+total.toLocaleString()+"đ";
+
+  let discount =
+  originalTotal - finalTotal;
+
+  box.innerHTML += `
+    <div class="total-box">
+
+      <div class="row">
+        <span>Tổng giá gốc</span>
+        <b>${originalTotal.toLocaleString()}đ</b>
+      </div>
+
+      <div class="row discount">
+        <span>Tiết kiệm</span>
+        <b>-${discount.toLocaleString()}đ</b>
+      </div>
+
+      <div class="row final">
+        <span>Cần thanh toán</span>
+        <b>${finalTotal.toLocaleString()}đ</b>
+      </div>
+
+    </div>
+  `;
+
 }
 
-// Save cart
-function saveCart(){
-  if(currentUser){
-    const ref=db.ref("carts/"+currentUser.uid);
-    let obj={};
-    cart.forEach((item,i)=>obj[i]=item);
-    ref.set(obj);
+/* =========================
+   BANK
+========================= */
+
+document
+.getElementById("payment")
+.addEventListener("change",updateBank);
+
+function updateBank(){
+
+  let payment =
+  document.getElementById("payment").value;
+
+  let bank =
+  document.getElementById("bankInfo");
+
+  let total = cart.reduce((sum,p)=>{
+
+    return sum + (
+
+      (Number(String(p.price).replace(/\D/g,'')) || 0)
+
+      *
+
+      (Number(p.qty) || 1)
+
+    );
+
+  },0);
+
+  if(payment==="bank"){
+
+    bank.style.display = "block";
+
+    document.getElementById("qr").src =
+    "https://img.vietqr.io/image/ICB-101005245058-compact2.png?amount="
+    + total +
+    "&addInfo=Thanh%20toan";
+
   }else{
-    localStorage.setItem("cart",JSON.stringify(cart));
+
+    bank.style.display = "none";
+
   }
+
 }
 
-// Add to cart
-function addToCart(product){
-  const idx=cart.findIndex(p=>p.name===product.name);
-  if(idx!==-1){
-    cart[idx].qty+=product.qty;
-  }else{
-    cart.push(product);
+/* =========================
+   PLACE ORDER
+========================= */
+
+function placeOrder(){
+
+  if(cart.length===0){
+
+    alert("🛒 Giỏ hàng trống!");
+
+    return;
   }
-  saveCart();
-  renderCart();
-}
 
-// Remove / update
-function removeItem(index){if(cart[index]==null)return;cart.splice(index,1);saveCart();renderCart();}
-function updateQty(index,value){if(cart[index]==null)return;cart[index].qty=Number(value);saveCart();renderCart();}
+  let name =
+  document.getElementById("name").value.trim();
 
-// Merge carts
-function mergeCarts(local,firebaseCart){
-  const merged=[...firebaseCart];
-  local.forEach(l=>{
-    const idx=merged.findIndex(f=>f.name===l.name);
-    if(idx!==-1){merged[idx].qty+=l.qty;}else{merged.push(l);}
-  });
-  return merged;
-}
+  let phone =
+  document.getElementById("phone").value.trim();
 
-// Load cart
-function loadCart(){
-  if(currentUser){
-    const ref=db.ref("carts/"+currentUser.uid);
-    ref.once("value").then(snapshot=>{
-      const data=snapshot.val()||{};
-      let fbCart=Object.values(data).map(item=>({
-        name:item.name||"",
-        price:Number(item.price)||0,
-        qty:Number(item.qty||item.quantity)||1,
-        img:item.img||""
-      }));
-      const localData=localStorage.getItem("cart");
-      if(localData){
-        const localCart=JSON.parse(localData);
-        cart=mergeCarts(localCart,fbCart);
-        localStorage.removeItem("cart");
-      }else{cart=fbCart;}
-      saveCart();
-      renderCart();
-    });
-  }else{
-    const data=localStorage.getItem("cart");
-    cart=data?JSON.parse(data):[];
-    renderCart();
+  let address =
+  document.getElementById("address").value.trim();
+
+  if(!name || !phone || !address){
+
+    alert("⚠️ Nhập đầy đủ thông tin!");
+
+    return;
   }
+
+  const phoneRegex =
+  /^(03|05|07|08|09)\d{8}$/;
+
+  if(!phoneRegex.test(phone)){
+
+    alert("⚠️ SĐT không hợp lệ!");
+
+    return;
+  }
+
+  const orderId = Date.now();
+
+  const total = cart.reduce((sum,p)=>{
+
+    return sum +
+   (
+  (Number(String(p.price).replace(/\D/g,'')) || 0)
+  *
+  (Number(p.qty) || 1)
+);
+}, 0);
+  document.getElementById("loading").style.display =
+  "flex";
+
+  document.querySelector(".btn").disabled = true;
+
+  let order = {
+
+    id: orderId,
+
+    name,
+
+    phone,
+
+    address,
+
+    total,
+
+    cart:[...cart],
+
+    time:new Date().toLocaleString()
+
+  };
+
+  let orders =
+  JSON.parse(localStorage.getItem("orders")) || [];
+
+  orders.push(order);
+
+  localStorage.setItem(
+    "orders",
+    JSON.stringify(orders)
+  );
+
+  sendTelegramNotification(
+    orderId,
+    name,
+    phone,
+    address,
+    cart,
+    total
+  );
+
+  localStorage.removeItem("cart");
+
+  setTimeout(()=>{
+
+    window.location.href =
+    "success.html";
+
+  },1200);
+
 }
 
-// Auth listener
-auth.onAuthStateChanged(user=>{
-  currentUser=user;
-  loadCart();
-});
+/* =========================
+   INIT
+========================= */
 
-// Checkout
-document.querySelector('.checkout').addEventListener('click',()=>{
-  if(cart.length===0){alert("Giỏ hàng trống!");return;}
-  alert("Chức năng thanh toán chưa triển khai!");
-});
+renderCart();
 
-// Load guest cart
-if(!currentUser) loadCart();
+updateBank();
+
 </script>
 
 </body>
