@@ -1,200 +1,88 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<title>Thanh toán</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body{font-family:Arial;background:#f5f5f5;margin:0;}
-.container{max-width:800px;margin:auto;padding:20px;}
-.box{background:#fff;padding:15px;border-radius:10px;margin-bottom:15px;}
-.title-box{background:#fff;padding:15px;border-radius:10px;margin-bottom:15px;font-size:20px;font-weight:bold;}
-.item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #eee;align-items:center;}
-.item img{width:70px;height:70px;object-fit:cover;border-radius:8px;}
-.calc{margin-top:5px;}
-.sale-price{color:#e53935;font-weight:bold;font-size:16px;}
-.old-price{text-decoration:line-through;color:#999;font-size:13px;}
-.total-box{margin-top:12px;padding-top:10px;border-top:1px solid #eee;}
-.total-box .row{display:flex;justify-content:space-between;margin:6px 0;}
-.total-box .discount b{color:#e53935;}
-.total-box .final{border-top:1px solid #ddd;margin-top:8px;padding-top:10px;font-size:18px;font-weight:bold;}
-.total-box .final b{color:#e53935;}
-input, textarea, select{width:100%;padding:10px;margin-top:6px;margin-bottom:10px;border:1px solid #ddd;border-radius:8px;}
-.btn{width:100%;padding:12px;background:linear-gradient(90deg,#1e88e5,#00acc1,#43a047);color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer;}
-.back-btn{display:inline-block;margin-bottom:15px;background:#fff;color:#00acc1;padding:8px 12px;border-radius:10px;text-decoration:none;font-size:13px;}
-#bankInfo{display:none;margin-top:10px;padding:10px;border:1px dashed #ccc;border-radius:8px;}
-@media (max-width:768px){.container{max-width:100%;margin:0;padding:10px;}}
-#loading{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;flex-direction:column;z-index:9999;color:#fff;}
-.spinner{width:40px;height:40px;border:4px solid #fff;border-top:4px solid transparent;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:10px;}
-@keyframes spin{to{ transform:rotate(360deg); }}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-<a href="index.html" class="back-btn">← Quay lại</a>
-
-<div class="title-box">💳 Thanh toán đơn hàng</div>
-
-<div class="box" id="cartBox"></div>
-
-<div class="box">
-  <h3>📦 Thông tin giao hàng</h3>
-  <input id="name" placeholder="Họ tên">
-  <input id="phone" placeholder="Số điện thoại" maxlength="10">
-  <textarea id="address" placeholder="Địa chỉ"></textarea>
-</div>
-
-<div class="box">
-  <h3>💰 Thanh toán</h3>
-
-  <select id="payment">
-    <option value="cod">COD</option>
-    <option value="bank">Chuyển khoản</option>
-  </select>
-
-  <div id="bankInfo">
-    <h3>🏦 Vietinbank</h3>
-    <p>HOANG ANH SON</p>
-    <p>101005245058</p>
-    <img id="qr" style="width:100%;max-width:250px;">
-  </div>
-</div>
-
-<button class="btn" onclick="placeOrder()">🛒 Đặt hàng</button>
-
-</div>
-
-<div id="loading">
-  <div class="spinner"></div>
-  <p>Đang xử lý đơn hàng...</p>
-</div>
-
-<!-- SEND TELEGRAM -->
-<script>
-function sendTelegramNotification(orderNumber, customerName, phone, address, cartItems, total) {
-  const botToken = "8752443026:AAEHrvCIDLqEDfE_inDeAAI9dzClm3WZyz4";
-  const chatId = "6087791909";
-
-  // Tạo nội dung chi tiết đơn hàng
-  let itemsText = cartItems.map(item => {
-    return `• ${item.name} - Giá: ${item.price.toLocaleString()}đ - Số lượng: ${item.qty}`;
-  }).join("\n");
-
-  const message = `📦 Đơn hàng mới!\nMã đơn: ${orderNumber}\nKhách hàng: ${customerName}\nSĐT: ${phone}\nĐịa chỉ: ${address}\n\n🛒 Chi tiết đơn hàng:\n${itemsText}\n\nTổng tiền: ${total}`;
-
-  fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`)
-    .then(res => res.json())
-    .then(data => { if(data.ok) console.log("Đã gửi Telegram!"); else console.error("Telegram lỗi", data); })
-    .catch(err => console.error("Lỗi fetch Telegram:", err));
+/* =========================
+   📦 GET DATA
+========================= */
+function getCart() {
+  return JSON.parse(localStorage.getItem("cart")) || [];
 }
-</script>
 
-<script>
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+/* =========================
+   💰 FORMAT TIỀN
+========================= */
+function formatPrice(n) {
+  return Number(n).toLocaleString("vi-VN") + "đ";
+}
 
-document.getElementById("phone").addEventListener("input", function(){
-  this.value = this.value.replace(/\D/g,"");
-});
+/* =========================
+   🖥 RENDER CHECKOUT
+========================= */
+function renderCheckout() {
+  const box = document.getElementById("cart");
+  const totalBox = document.getElementById("total");
 
-function renderCart(){
-  const box = document.getElementById("cartBox");
+  if (!box || !totalBox) return;
+
+  const cart = getCart();
+
   box.innerHTML = "";
-  if(cart.length===0){ box.innerHTML="🛒 Giỏ hàng trống"; return; }
 
-  let originalTotal=0, finalTotal=0;
-  cart.forEach(p=>{
-    let qty = p.qty||1;
-    let price = Number(p.price)||0;
-    let old = Number(p.oldPrice)||price;
-    let subFinal = qty*price;
-    let subOld = qty*old;
-    finalTotal+=subFinal;
-    originalTotal+=subOld;
-    box.innerHTML += `
-      <div class="item">
-        <img src="${p.img}">
-        <div>
-          <b>${p.name}</b>
-          <div class="calc">
-            <div class="sale-price">${price.toLocaleString()}đ</div>
-            ${old>price?`<div class="old-price">${old.toLocaleString()}đ</div>`:""}
-            <div>${qty} × ${price.toLocaleString()}đ = ${subFinal.toLocaleString()}đ</div>
-          </div>
-        </div>
-      </div>
-    `;
-  });
-  let discount = originalTotal-finalTotal;
-  box.innerHTML += `
-    <div class="total-box">
-      <div class="row"><span>Tổng giá gốc</span><b>${originalTotal.toLocaleString()}đ</b></div>
-      <div class="row discount"><span>Tiết kiệm</span><b>-${discount.toLocaleString()}đ</b></div>
-      <div class="row final"><span>Cần thanh toán</span><b>${finalTotal.toLocaleString()}đ</b></div>
-    </div>
-  `;
-}
-
-document.getElementById("payment").addEventListener("change", updateBank);
-function updateBank(){
-  let payment=document.getElementById("payment").value;
-  let bank=document.getElementById("bankInfo");
-  let total = cart.reduce((sum,p)=>sum + p.price*(p.qty||1),0);
-  if(payment==="bank"){
-    bank.style.display="block";
-    document.getElementById("qr").src="https://img.vietqr.io/image/ICB-101005245058-compact2.png?amount="+total+"&addInfo=Thanh%20toan";
-  } else bank.style.display="none";
-}
-
-function placeOrder(){
-  if(cart.length===0){ alert("🛒 Giỏ hàng trống!"); return; }
-
-  let name=document.getElementById("name").value.trim();
-  let phone=document.getElementById("phone").value.trim();
-  let address=document.getElementById("address").value.trim();
-  if(!name||!phone||!address){ alert("⚠️ Nhập đầy đủ thông tin!"); return; }
-  const phoneRegex=/^(03|05|07|08|09)\d{8}$/;
-  if(!phoneRegex.test(phone)){ alert("⚠️ SĐT không hợp lệ!"); return; }
-
-  const orderId = Date.now();
-  const total = cart.reduce((sum,p)=>sum+p.price*(p.qty||1),0);
-
-  // --- Gửi Telegram ---
-  if(typeof sendTelegramNotification==="function"){
-    sendTelegramNotification(orderId, name, phone, address, cart, total.toLocaleString()+"đ");
+  if (cart.length === 0) {
+    box.innerHTML = "<p>Giỏ hàng trống</p>";
+    totalBox.innerText = "0";
+    return;
   }
 
-  // Lưu đơn hàng
-  let order = {id:orderId,name,phone,address,cart,time:new Date().toLocaleString()};
-  let orders=JSON.parse(localStorage.getItem("orders"))||[];
-  orders.push(order);
-  localStorage.setItem("orders",JSON.stringify(orders));
+  let total = 0;
 
-  // Xóa giỏ hàng
-  localStorage.removeItem("cart");
+  cart.forEach(item => {
+    const price = Number(item.price) || 0;
+    const oldPrice = Number(item.oldPrice) || 0;
+    const qty = Number(item.qty) || 1;
 
-  // LOADING
-  document.getElementById("loading").style.display="flex";
-  document.querySelector(".btn").disabled=true;
+    const hasDiscount = oldPrice > price;
 
-  setTimeout(()=>{ window.location.href="success.html"; },1000);
+    total += price * qty;
+
+    box.innerHTML += `
+      <div class="cart-item">
+
+        <img src="${item.img}" style="width:60px">
+
+        <div>
+          <h4>${item.name}</h4>
+
+          <div class="price-box">
+            <span class="price">${formatPrice(price)}</span>
+
+            ${
+              hasDiscount
+                ? `<span class="old-price">${formatPrice(oldPrice)}</span>`
+                : ""
+            }
+          </div>
+
+          <p>Số lượng: ${qty}</p>
+          <p>Thành tiền: ${formatPrice(price * qty)}</p>
+        </div>
+
+      </div>
+      <hr>
+    `;
+  });
+
+  totalBox.innerText = formatPrice(total);
 }
 
-renderCart();
-updateBank();
-</script>
+/* =========================
+   🧹 XOÁ GIỎ HÀNG
+========================= */
+function clearCart() {
+  localStorage.removeItem("cart");
+  renderCheckout();
+}
 
-<div id="loading">
-  <div class="spinner"></div>
-  <p>Đang xử lý đơn hàng...</p>
-</div>
-<script type="module" src="firebase-init.js"></script>
-<script type="module" src="auth.js"></script>
-<script type="module" src="home.js"></script>
-<script type="module" src="cart.js"></script>
-<script type="module" src="checkout.js"></script>
-</body>
-</html>
+/* =========================
+   🚀 INIT
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  renderCheckout();
+});
