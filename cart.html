@@ -62,118 +62,112 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
   <div id="cartAction"></div>
 </div>
 
-<!-- =========================
-     Firebase Init (luôn ở đầu)
-========================= -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-    authDomain: "stech-73b89.firebaseapp.com",
-    projectId: "stech-73b89",
-    storageBucket: "stech-73b89.firebasestorage.app",
-    messagingSenderId: "873739162979",
-    appId: "1:873739162979:web:978f1a4043f025b1cdaf56",
-    databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-  const auth = firebase.auth();
-  let currentUser = null;
-  let currentCart = [];
+const firebaseConfig = {
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain: "stech-73b89.firebaseapp.com",
+  projectId: "stech-73b89",
+  storageBucket: "stech-73b89.firebasestorage.app",
+  messagingSenderId: "873739162979",
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56",
+  databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const auth = firebase.auth();
+let currentUser = null;
+let currentCart = [];
+let localCart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  auth.onAuthStateChanged(user=>{
-    currentUser = user;
-    if(user) loadCart();
-    else { currentCart=[]; renderCart(); }
-  });
-</script>
-
-<script>
 // MENU
-function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
-
-// LOAD + RENDER CART
-async function loadCart(){
-  if(!currentUser) return;
-  const snapshot = await db.ref("carts/" + currentUser.uid).once("value");
-  currentCart = snapshot.val() || [];
-  currentCart.forEach(item => { if(item.checked===undefined) item.checked=true; });
-  renderCart();
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
 }
 
-function renderCart(){
+// SAVE CART
+async function saveCart(){
+  if(currentUser){
+    await db.ref("carts/"+currentUser.uid).set(currentCart);
+  } else {
+    localStorage.setItem("cart", JSON.stringify(currentCart));
+  }
+}
+
+// RENDER CART
+function renderCart(filteredCart = null){
+  const cartData = filteredCart || currentCart;
   const box = document.getElementById("cartList");
   const totalBox = document.getElementById("total");
   const actionBox = document.getElementById("cartAction");
 
-  if(!currentCart || currentCart.length===0){
+  if(!cartData || cartData.length===0){
     box.innerHTML="<p class='empty'>Giỏ trống</p>";
     totalBox.innerHTML="";
     actionBox.innerHTML="";
     return;
   }
 
-  let total=0;
-  box.innerHTML = currentCart.map((item,i)=>{
+  let total = 0;
+  box.innerHTML = cartData.map(item=>{
     if(item.checked) total += (item.price||0)*(item.qty||1);
+    const idx = currentCart.indexOf(item);
     return `
-    <div class="item">
-      <input type="checkbox" class="check-item" ${item.checked?"checked":""} onclick="toggleCheck(${i})">
-      <img src="${item.img}">
-      <div class="info">
-        <b>${item.name}</b>
-        <div class="price-row">
-          <span class="price-new">${item.price.toLocaleString()}đ</span>
-          ${item.oldPrice?`<span class="price-old">${item.oldPrice.toLocaleString()}đ</span>`:""}
-          <span>${item.qty||1} × ${item.price.toLocaleString()}đ</span>
+      <div class="item">
+        <input type="checkbox" class="check-item" ${item.checked?"checked":""} onclick="toggleCheck(${idx})">
+        <img src="${item.img}">
+        <div class="info">
+          <b>${item.name}</b>
+          <div class="price-row">
+            <span class="price-new">${item.price.toLocaleString()}đ</span>
+            ${item.oldPrice?`<span class="price-old">${item.oldPrice.toLocaleString()}đ</span>`:""}
+            <span>${item.qty||1} × ${item.price.toLocaleString()}đ</span>
+          </div>
+          <div class="qty">
+            <button onclick="changeQty(${idx},-1)">-</button>
+            <span>${item.qty||1}</span>
+            <button onclick="changeQty(${idx},1)">+</button>
+          </div>
         </div>
-        <div class="qty">
-          <button onclick="changeQty(${i},-1)">-</button>
-          <span>${item.qty||1}</span>
-          <button onclick="changeQty(${i},1)">+</button>
-        </div>
+        <button class="remove" onclick="removeItem(${idx})">🗑</button>
       </div>
-      <button class="remove" onclick="removeItem(${i})">🗑</button>
-    </div>`;
+    `;
   }).join("");
 
-  totalBox.innerHTML = "Tổng: "+total.toLocaleString()+"đ";
+  totalBox.innerHTML="Tổng: "+total.toLocaleString()+"đ";
   actionBox.innerHTML=`<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
 }
 
-// Hàm đồng bộ Firebase
+// CHECKBOX TOGGLE
 async function toggleCheck(i){
   currentCart[i].checked = !currentCart[i].checked;
-  await db.ref("carts/" + currentUser.uid).set(currentCart);
+  await saveCart();
   renderCart();
 }
 
-async function changeQty(i,delta){
+// CHANGE QTY
+async function changeQty(i, delta){
   currentCart[i].qty = (currentCart[i].qty||1) + delta;
   if(currentCart[i].qty<1) currentCart[i].qty=1;
-  await db.ref("carts/" + currentUser.uid).set(currentCart);
+  await saveCart();
   renderCart();
 }
 
+// REMOVE ITEM
 async function removeItem(i){
   currentCart.splice(i,1);
-  await db.ref("carts/" + currentUser.uid).set(currentCart);
+  await saveCart();
   renderCart();
 }
 
-async function clearCart(){
-  currentCart=[];
-  if(currentUser) await db.ref("carts/" + currentUser.uid).remove();
-  renderCart();
-}
-
+// CHECKOUT
 async function checkout(){
   if(currentCart.length===0){ alert("Giỏ hàng trống!"); return; }
-  if(currentUser) await db.ref("carts/" + currentUser.uid).remove();
   currentCart=[];
+  await saveCart();
   renderCart();
   window.location.href="checkout.html";
 }
@@ -184,9 +178,37 @@ document.getElementById("searchInput").addEventListener("input", function(){
   renderCart(currentCart.filter(i=>i.name.toLowerCase().includes(key)));
 });
 
-// LOAD CART
+// AUTH STATE + LOAD CART
+auth.onAuthStateChanged(async user=>{
+  currentUser = user;
+  if(user){
+    const snapshot = await db.ref("carts/"+user.uid).once("value");
+    const firebaseCart = snapshot.val() || [];
+
+    // merge localCart
+    firebaseCart.forEach(fItem=>{
+      const lItem = localCart.find(l=>l.id===fItem.id);
+      if(lItem) fItem.qty = Math.max(fItem.qty||1,lItem.qty||1);
+      if(fItem.checked===undefined) fItem.checked=true;
+    });
+
+    // add local-only items
+    localCart.forEach(lItem=>{
+      if(!firebaseCart.some(f=>f.id===lItem.id)) firebaseCart.push({...lItem, checked:true});
+    });
+
+    currentCart = firebaseCart;
+    await saveCart();
+    localCart = [];
+    localStorage.removeItem("cart");
+  } else {
+    currentCart = localCart;
+  }
+  renderCart();
+});
+
+// INIT
 renderCart();
 </script>
-<script src="cart.js"></script>
 </body>
 </html>
