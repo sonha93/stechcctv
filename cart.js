@@ -19,7 +19,7 @@ document.querySelector(".header-icons .cart-count");
 
 auth.onAuthStateChanged(user => {
 
-```
+
 if (!user) {
 
     window.location.href = "index.html";
@@ -30,7 +30,7 @@ if (!user) {
 currentUser = user;
 
 loadCart();
-```
+
 
 });
 
@@ -40,7 +40,7 @@ loadCart();
 
 function loadCart() {
 
-```
+
 if (!currentUser) return;
 
 const cartKey =
@@ -53,7 +53,7 @@ cartData = JSON.parse(
 renderCart();
 
 updateBadge();
-```
+
 
 }
 
@@ -63,7 +63,6 @@ updateBadge();
 
 function renderCart() {
 
-```
 const box =
 document.getElementById("cartList");
 
@@ -99,7 +98,7 @@ box.innerHTML = cartData.map((item, i) => {
     total +=
     (item.price || 0) * qty;
 
-    return `
+    return 
 
     <div class="item">
 
@@ -171,7 +170,7 @@ actionBox.innerHTML = `
         Đặt hàng
     </button>
 `;
-```
+
 
 }
 
@@ -181,7 +180,7 @@ actionBox.innerHTML = `
 
 function updateBadge() {
 
-```
+
 if (!cartCountEl) return;
 
 let count = 0;
@@ -193,7 +192,6 @@ cartData.forEach(item => {
 });
 
 cartCountEl.innerText = count;
-```
 
 }
 
@@ -214,7 +212,7 @@ if (cartData[i].qty < 1) {
 }
 
 saveCart();
-```
+
 
 }
 
@@ -228,7 +226,7 @@ function removeItem(i) {
 cartData.splice(i, 1);
 
 saveCart();
-```
+
 
 }
 
@@ -238,7 +236,7 @@ saveCart();
 
 function saveCart() {
 
-```
+
 if (!currentUser) return;
 
 const cartKey =
@@ -252,7 +250,7 @@ localStorage.setItem(
 renderCart();
 
 updateBadge();
-```
+
 
 }
 
@@ -278,7 +276,7 @@ updateBadge();
 
 window.location.href =
 "checkout.html";
-```
+
 
 }
 
