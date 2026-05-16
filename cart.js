@@ -95,7 +95,7 @@ function renderCart() {
             </div>
             <button class="remove" onclick="removeItem(${i})">🗑</button>
         </div>
-       
+     
     }).join("");
 
     totalBox.innerHTML = `Tổng: ${total.toLocaleString()}đ`;
