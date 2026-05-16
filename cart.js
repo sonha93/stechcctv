@@ -279,7 +279,42 @@ window.location.href =
 
 
 }
+// ==========================
+// ADD TO CART FUNCTION
+// ==========================
+function addToCart(product) {
+  if (!currentUser) {
+    alert("Vui lòng đăng nhập để thêm giỏ hàng");
+    return;
+  }
 
+  // kiểm tra nếu sản phẩm đã có trong giỏ
+  const existing = cartData.find(item => item.id === product.id);
+  if (existing) {
+    existing.qty = (existing.qty || 1) + 1;
+  } else {
+    product.qty = 1;
+    cartData.push(product);
+  }
+
+  saveCart(); // lưu localStorage và render lại giỏ
+  alert("Đã thêm vào giỏ 🛒");
+}
+// ==========================
+// BIND BUTTONS
+// ==========================
+document.querySelectorAll(".cart-btn").forEach(btn => {
+  btn.addEventListener("click", function() {
+    const product = {
+      id: this.dataset.id,
+      name: this.dataset.name,
+      price: parseFloat(this.dataset.price),
+      img: this.dataset.img
+    };
+
+    addToCart(product);
+  });
+});
 // ==========================
 // GLOBAL
 // ==========================
