@@ -94,17 +94,21 @@ function renderCart() {
   totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
 }
 
-// Save cart to Firebase
+// Save cart to Firebase or localStorage
 function saveCart() {
-  if (!currentUser) return;
-  const cartRef = db.ref("carts/" + currentUser.uid);
-  let obj = {};
-  cart.forEach((item,i)=> obj[i] = item);
-  cartRef.set(obj);
+  if (currentUser) {
+    const cartRef = db.ref("carts/" + currentUser.uid);
+    let obj = {};
+    cart.forEach((item, i) => obj[i] = item);
+    cartRef.set(obj);
+  } else {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
 }
 
 // Remove item
 function removeItem(index) {
+  if (cart[index] == null) return;
   cart.splice(index,1);
   saveCart();
   renderCart();
@@ -112,25 +116,56 @@ function removeItem(index) {
 
 // Update qty
 function updateQty(index,value) {
+  if (cart[index] == null) return;
   cart[index].qty = Number(value);
   saveCart();
   renderCart();
 }
 
+// Merge two carts: local + firebase, merge qty if same product name
+function mergeCarts(localCart, firebaseCart) {
+  const merged = [...firebaseCart];
+  localCart.forEach(lItem => {
+    const idx = merged.findIndex(fItem => fItem.name === lItem.name);
+    if (idx !== -1) {
+      // Merge quantity
+      merged[idx].qty = Number(merged[idx].qty) + Number(lItem.qty);
+    } else {
+      merged.push(lItem);
+    }
+  });
+  return merged;
+}
+
 // Load cart
 function loadCart() {
-  if (!currentUser) return;
-  const cartRef = db.ref("carts/" + currentUser.uid);
-  cartRef.on("value", snapshot => {
-    const data = snapshot.val() || {};
-    cart = Object.values(data).map(item => ({
-      name: item.name || "",
-      price: Number(item.price) || 0,
-      qty: Number(item.qty || item.quantity) || 1,
-      img: item.img || ""
-    }));
+  if (currentUser) {
+    const cartRef = db.ref("carts/" + currentUser.uid);
+    cartRef.once("value").then(snapshot => {
+      const data = snapshot.val() || {};
+      let firebaseCart = Object.values(data).map(item => ({
+        name: item.name || "",
+        price: Number(item.price) || 0,
+        qty: Number(item.qty || item.quantity) || 1,
+        img: item.img || ""
+      }));
+      // Merge localStorage if exists
+      const localData = localStorage.getItem("cart");
+      if (localData) {
+        const localCart = JSON.parse(localData);
+        cart = mergeCarts(localCart, firebaseCart);
+        localStorage.removeItem("cart"); // clear after merge
+      } else {
+        cart = firebaseCart;
+      }
+      saveCart();
+      renderCart();
+    });
+  } else {
+    const data = localStorage.getItem("cart");
+    cart = data ? JSON.parse(data) : [];
     renderCart();
-  });
+  }
 }
 
 // Auth listener
@@ -147,6 +182,9 @@ document.querySelector('.checkout').addEventListener('click', ()=>{
   }
   alert("Chức năng thanh toán chưa triển khai!");
 });
+
+// Load guest cart if not login
+if (!currentUser) loadCart();
 </script>
 
 </body>
