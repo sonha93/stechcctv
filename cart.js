@@ -273,7 +273,28 @@ window.location.href =
 
 
 }
+// ==========================
+// ADD TO CART
+// ==========================
+function addToCart(id) {
+    // Tìm sản phẩm trong allProducts
+    const product = allProducts.find(p => p.id === id); // Nếu p.id là number
+    if (!product) {
+        console.warn("Product not found:", id);
+        return;
+    }
 
+    // Kiểm tra đã có trong cart chưa
+    const existing = cartData.find(item => item.id === id);
+    if (existing) {
+        existing.qty = (existing.qty || 1) + 1;
+    } else {
+        cartData.push({ ...product, qty: 1 });
+    }
+
+    saveCart(); // Lưu và render
+}
+window.addToCart = addToCart;
 // ==========================
 // GLOBAL
 // ==========================
