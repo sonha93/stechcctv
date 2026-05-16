@@ -13,6 +13,7 @@ const firebaseConfig = {
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 
+
 // Kiểm tra nếu Firebase chưa init thì init
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
