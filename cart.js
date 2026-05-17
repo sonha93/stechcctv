@@ -100,13 +100,10 @@ actionBox = document.getElementById("cartAction");
     <b>${p.name || ''}</b>
 
     <div class="price-row">
-  <div class="price-old">
-    ${(p.originalPrice || price).toLocaleString()}đ
-  </div>
-  <div class="price-new">
-    ${price.toLocaleString()}đ
-  </div>
-</div>
+      <div class="price-new">
+        ${price.toLocaleString()}đ
+      </div>
+    </div>
 
     <div class="qty">
 
