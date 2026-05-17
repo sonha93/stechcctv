@@ -238,32 +238,54 @@ window.goDetail = function(id){
 ========================= */
 
 window.addToCart = function(id){
-  const user = auth.currentUser; // dùng modular auth
+
+  const user = auth.currentUser;
+
   if(!user){
-    alert("Vui lòng đăng nhập!");
+    window.location.href = "login.html";
     return;
   }
 
   const cartKey = "cart_" + user.uid;
 
-  const product = allProducts.find(p => String(p.id) === String(id));
+  const product =
+  allProducts.find(
+    p => String(p.id) === String(id)
+  );
+
   if(!product) return;
 
-  let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+  let cart =
+  JSON.parse(localStorage.getItem(cartKey)) || [];
 
-  const exist = cart.find(i => String(i.id) === String(id));
+  const exist =
+  cart.find(
+    i => String(i.id) === String(id)
+  );
+
   if(exist){
+
     exist.qty += 1;
-  } else {
-    cart.push({...product, qty:1});
+
+  }else{
+
+    cart.push({
+      ...product,
+      qty:1
+    });
+
   }
 
-  localStorage.setItem(cartKey, JSON.stringify(cart));
- updateCartCount();
+  localStorage.setItem(
+    cartKey,
+    JSON.stringify(cart)
+  );
 
-alert("Đã thêm vào giỏ 🛒");
+  updateCartCount();
+
+  alert("Đã thêm vào giỏ 🛒");
+
 };
-
 /* =========================
    SEARCH
 ========================= */
