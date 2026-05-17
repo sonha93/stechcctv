@@ -205,9 +205,9 @@ String(p.firebaseId);
 
         </div>
 
-       <button
+   <button
   class="cart-btn"
-  onclick="addToCart('${p.firebaseId}')"
+  onclick="addToCart('${p.id || p.firebaseId}')"
 >
   🛒 Thêm vào giỏ
 </button>
@@ -237,8 +237,7 @@ window.addToCart = async function(id) {
   }
 
   // Thêm || p.id để tránh trường hợp dữ liệu cũ
-  const product = allProducts.find(p => String(p.firebaseId || p.id) === String(id));
-
+ const product = allProducts.find(p => String(p.firebaseId || p.id) === String(id));
   if (!product) {
     console.log("Không tìm thấy product", id, allProducts); // debug dữ liệu
     alert("Không tìm thấy sản phẩm!");
