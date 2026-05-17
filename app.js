@@ -65,4 +65,7 @@ window.addToCartById = function(id) {
   addToCart(product);
 
 };
-renderHome();
+
+window.addEventListener("DOMContentLoaded", () => {
+  renderHome();
+});
