@@ -91,7 +91,7 @@ actionBox = document.getElementById("cartAction");
 
       total += subTotal;
 
- cartBox.innerHTML += `
+cartBox.innerHTML += `
 <div class="item">
 
   <img src="${p.img || ''}">
@@ -99,23 +99,27 @@ actionBox = document.getElementById("cartAction");
   <div class="info">
 
     <b>${p.name || ''}</b>
-<div class="price-row">
 
-  ${
-    p.oldPrice
-    ? `
-      <div class="price-old">
-        ${Number(p.oldPrice).toLocaleString()}đ
-      </div>
-    `
-    : ""
-  }
+    <div class="price-row">
 
-  <div class="price-new">
-    ${price.toLocaleString()}đ
-  </div>
+      <span style="
+        color:blue;
+        font-size:40px;
+        background:yellow;
+        text-decoration:line-through;
+        display:inline-block;
+      ">
+        OLD: ${Number(p.oldPrice).toLocaleString()}đ
+      </span>
 
-</div>
+      <span style="
+        color:red;
+        font-size:35px;
+      ">
+        NEW: ${price.toLocaleString()}đ
+      </span>
+
+    </div>
 
     <div class="qty">
 
@@ -123,11 +127,11 @@ actionBox = document.getElementById("cartAction");
         -
       </button>
 
-     <span>${qty}</span>
+      <span>${qty}</span>
 
-<button onclick="updateQty('${docSnap.id}', ${qty + 1})">
-  +
-</button>
+      <button onclick="updateQty('${docSnap.id}', ${qty + 1})">
+        +
+      </button>
 
     </div>
 
@@ -142,7 +146,9 @@ actionBox = document.getElementById("cartAction");
 
 </div>
 `;
-    });
+     });
+
+
 
     totalBox.innerHTML =
       "Tổng tiền: " +
