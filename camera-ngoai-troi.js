@@ -68,9 +68,9 @@ function renderHome() {
   const box = document.getElementById("products");
   if (!box) return;
 
-  // Chỉ lấy sản phẩm category "home" hoặc featured
+  // Chỉ lấy sản phẩm category "cam ngoai" 
 const featured = allProducts.filter(
-  p => p.featured === true || p.category === "cam-ngoai"
+  p => p.category === "cam-ngoai"
 );
 
   box.innerHTML = "";
