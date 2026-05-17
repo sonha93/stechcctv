@@ -206,12 +206,10 @@ String(p.firebaseId);
         </div>
 
        <button
-  class="spec-btn"
- onclick="goDetail('${p.firebaseId}')"
+  class="cart-btn"
+  onclick="addToCart('${p.firebaseId}')"
 >
-
-  ⚙️ Xem thông số
-
+  🛒 Thêm vào giỏ
 </button>
 
 <button
@@ -238,15 +236,16 @@ window.addToCart = async function(id) {
     return;
   }
 
-const product = allProducts.find(p => String(p.firebaseId) === String(id));
+  // Thêm || p.id để tránh trường hợp dữ liệu cũ
+  const product = allProducts.find(p => String(p.firebaseId || p.id) === String(id));
 
-if (!product) {
-  console.log("Không tìm thấy product", id);
-  alert("Không tìm thấy sản phẩm!");
-  return;
-}
+  if (!product) {
+    console.log("Không tìm thấy product", id, allProducts); // debug dữ liệu
+    alert("Không tìm thấy sản phẩm!");
+    return;
+  }
 
-  product.id = product.firebaseId;
+  product.id = product.firebaseId || product.id;
 
   await firebaseAddToCart(product); // gọi cart.js
   await updateCartCount();
