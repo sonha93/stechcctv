@@ -1,4 +1,9 @@
+window.goDetail = function(id){
 
+  window.location.href =
+  `logo.html?id=${id}`;
+
+};
 /* =========================
    FIREBASE
 ========================= */
@@ -36,6 +41,9 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
 import { addToCart as firebaseAddToCart }
 from "./cart.js";
 const auth = getAuth(app); // Khởi tạo auth Modular
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 /* =========================
     CHỈ LOAD DỮ LIỆU CHO COMBO
 ========================= */
@@ -227,22 +235,19 @@ list = list.filter(
    DETAIL
 ========================= */
 
-window.addToCart = function(id){
-
-  const product =
-  allProducts.find(
-    p => String(p.id) === String(id)
-  );
-
-  if(!product){
-
+window.addToCart = async function(id) {
+  const product = allProducts.find(p => String(p.id) === String(id));
+  if (!product) {
     console.log("Không tìm thấy product");
     return;
-
   }
 
-  firebaseAddToCart(product);
+  await firebaseAddToCart(product);
 
+  // Cập nhật số lượng trong header
+  await updateCartCount();
+
+  alert("Đã thêm vào giỏ 🛒");
 };
 /* =========================
    SEARCH
@@ -316,7 +321,15 @@ document.addEventListener(
 
     render(allProducts);
 
-    updateCartCount();
+    onAuthStateChanged(auth, async(user)=>{
+
+      if(user){
+
+        await updateCartCount();
+
+      }
+
+    });
 
   }
 );
@@ -325,32 +338,26 @@ document.addEventListener(
    CART COUNT
 ========================= */
 
-function updateCartCount(){
-
+async function updateCartCount() {
   const user = auth.currentUser;
+  if (!user) return;
 
-  if(!user) return;
+  try {
+    const cartRef = collection(db, "users", user.uid, "cart");
+    const snapshot = await getDocs(cartRef);
 
-  const cartKey = "cart_" + user.uid;
+    let total = 0;
+    snapshot.forEach(docSnap => {
+      const p = docSnap.data();
+      total += p.qty || 1;
+    });
 
-  const cart =
-  JSON.parse(localStorage.getItem(cartKey)) || [];
+    const cartCount = document.getElementById("cartCount");
+    if (cartCount) {
+      cartCount.innerText = total;
+    }
 
-  let total = 0;
-
-  cart.forEach(item => {
-
-    total += item.qty || 1;
-
-  });
-
-  const cartCount =
-  document.getElementById("cartCount");
-
-  if(cartCount){
-
-    cartCount.innerText = total;
-
+  } catch (err) {
+    console.error("Lỗi updateCartCount:", err);
   }
-
 }
