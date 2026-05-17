@@ -1,5 +1,8 @@
-console.log("APP JS RUNNING");
 import { addToCart } from "./cart.js";
+
+console.log("APP JS RUNNING");
+
+console.log("BEFORE RENDER");
 
 function renderHome() {
 
