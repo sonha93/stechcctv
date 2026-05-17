@@ -157,15 +157,16 @@ window.addToCartById = function(id) {
     p => String(p.id) === String(id)
   );
 
-  console.log("FOUND PRODUCT:", product);
-
   if (!product) {
+
     console.error("Không tìm thấy sản phẩm");
+
     return;
   }
 
   addToCart(product);
 };
+
 window.addEventListener(
   "DOMContentLoaded",
   () => {
