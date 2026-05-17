@@ -82,10 +82,10 @@ function render(list) {
 
   box.innerHTML = "";
 
-  // lọc featured home
-  list = list.filter(
-    p => p.featured === "home"
-  );
+ // lọc featured home
+list = list.filter(
+  p => p.featured === "home"
+);
 
   if (list.length === 0) {
 
@@ -243,7 +243,6 @@ async function(id) {
 
 };
 
-
 // ==========================
 // SEARCH
 // ==========================
@@ -260,17 +259,17 @@ if (search) {
       const key =
         e.target.value.toLowerCase();
 
-      const filtered =
-        allProducts.filter(p =>
+    const filtered =
+  allProducts.filter(p =>
 
-          p.featured === "home" &&
+    p.featured === "home" &&
 
-          p.name &&
-          p.name
-            .toLowerCase()
-            .includes(key)
+    p.name &&
+    p.name
+      .toLowerCase()
+      .includes(key)
 
-        );
+  );
 
       render(filtered);
 
