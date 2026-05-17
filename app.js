@@ -1,19 +1,58 @@
 import { addToCart } from "./cart.js";
+let allProducts = [];
+import {
+  getFirestore,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+import { app } from "./auth.js";
+
+const db = getFirestore(app);
 console.log("APP JS RUNNING");
 
 console.log("BEFORE RENDER");
+async function loadProducts() {
 
+  try {
+
+    const querySnapshot = await getDocs(
+      collection(db, "products")
+    );
+
+    allProducts = [];
+
+    querySnapshot.forEach(doc => {
+
+      allProducts.push({
+        id: doc.id,
+        ...doc.data()
+      });
+
+    });
+
+    console.log("PRODUCTS:", allProducts);
+
+    renderHome();
+
+  } catch (err) {
+
+    console.error("LOAD PRODUCT ERROR:", err);
+
+  }
+
+}
 function renderHome() {
 
   const box = document.getElementById("products");
   if (!box) return;
 
   // Hiển thị tất cả sản phẩm có category "home"
-  const productsToShow = allProducts.filter(
-    p => p.category === "home"
-  );
 
+
+ const productsToShow = allProducts.filter(
+  p => p.featured === "home"
+);
   box.innerHTML = "";
 
   if (!productsToShow || productsToShow.length === 0) {
@@ -104,7 +143,7 @@ function renderHome() {
           id="spec-${id}"
           style="display:none;"
         >
-          ${renderSpec(p)}
+        ${p.spec || ""}
         </div>
 
       </div>
@@ -131,6 +170,6 @@ window.addToCartById = function(id) {
 window.addEventListener(
   "DOMContentLoaded",
   () => {
-    renderHome();
+loadProducts();
   }
 );
