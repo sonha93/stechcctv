@@ -6,6 +6,7 @@
    FIRESTORE INIT
 ========================= */
 
+import { addToCart as saveToCart } from "./cart.js";
 import { app } from "./auth.js";
 
 import {
@@ -122,17 +123,24 @@ window.toggleSpec = function(id){
 /* =========================
    ADD TO CART
 ========================= */
-window.addToCart = function(id){
-  const product = allProducts.find(p => String(p.id) === String(id));
-  if (!product) return;
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const exist = cart.find(item => String(item.id) === String(id));
-  if (exist) exist.quantity = (exist.quantity || 1) + 1;
-  else cart.push({...product, quantity:1});
-  localStorage.setItem("cart", JSON.stringify(cart));
-  alert("Đã thêm vào giỏ 🛒");
-};
+window.addToCart = async function(id){
 
+  const product = allProducts.find(
+    p => String(p.id) === String(id)
+  );
+
+  if (!product) return;
+
+  await saveToCart({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    img: product.img
+  });
+
+  alert("Đã thêm vào giỏ 🛒");
+
+};
 /* =========================
    INIT
 ========================= */
