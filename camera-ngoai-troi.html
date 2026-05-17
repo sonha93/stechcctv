@@ -6,7 +6,8 @@
 <title>Shop Camera Pro</title>
 <link rel="stylesheet" href="styletrong-nha.css">
 
-<style>  
+<style>
+/* LOGO KHÔNG VIỀN */
 .logo img{
   height:38px;
   width:auto;
@@ -16,62 +17,138 @@
   display:block;
   background:transparent;
 }
-  .sidebar{
+
+/* POPUP LOGIN/REGISTER */
+#authModal{
   position:fixed;
-  top:0;
-  left:-280px;
-  width:260px;
-  height:100%;
-  background:#fff;
-  transition:.3s;
+  top:0; left:0; right:0; bottom:0;
+  display:none;
+  background:rgba(0,0,0,0.6);
+  align-items:center;
+  justify-content:center;
   z-index:9999;
 }
-
-.sidebar.active{
-  left:0;
+#authModal .auth-content{
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  max-width:350px;
+  width:90%;
+}
+#authModal h2{
+  text-align:center;
+  margin-bottom:10px;
+}
+#authModal input{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border-radius:4px;
+  border:1px solid #aaa;
+}
+#authModal button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  background:#007BFF;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:4px;
+}
+#authModal #closeAuth{
+  background:#f44336;
+  margin-top:5px;
+}
+#authModal #authMessage{
+  text-align:center;
+  margin-top:8px;
+  color:red;
 }
 
-#overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.5);
-  opacity:0;
-  visibility:hidden;
-  transition:.3s;
-  z-index:9998;
+/* SIDEBAR USER INFO */
+#userInfoPreview{
+  display:none;
+  margin-top:10px;
+  text-align:center;
+  cursor:pointer;
+}
+#userInfoPreview img{
+  width:40px; height:40px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:5px;
 }
 
-#overlay.active{
-  opacity:1;
-  visibility:visible;
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  z-index: 1000; /* fix click bị overlay chặn */
+}
+
+/* 2 CỘT SẢN PHẨM */
+#products{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+
+.product-card{
+  background:#fff;
+  border:1px solid #ccc;
+  border-radius:8px;
+  overflow:hidden;
+  text-align:center;
+  padding:0px;
+}
+
+.product-card img{
+  width:100%;
+  height:auto;
+  border-bottom:1px solid #ccc;
+  border-radius:4px;
+  object-fit:cover;
+}
+
+/* MÁY TÍNH 3 CỘT */
+@media(min-width:1024px){
+
+  #products{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+}
+
+.product-card .product-info{
+  margin-top:8px;
+}
+.discount-text{
+  position:absolute;
+  top:3px;
+  left:0px;
+
+  font-size:11px;
+  padding:2px 5px;
+
+  background:red;
+  color:white;
+
+  border-radius:6px;
+  z-index:10;
+}
+
+.item{
+  position:relative;
 }
 </style>
-
 </head>
-<script>
-window.addEventListener("DOMContentLoaded", () => {
-
-  document.getElementById("overlay").onclick = function(){
-
-    document
-      .getElementById("sidebar")
-      .classList.remove("active");
-
-    document
-      .getElementById("overlay")
-      .classList.remove("active");
-
-  };
-
-});
-</script>
+  
 <body>
 
+<div id="overlay" onclick="toggleMenu()"></div>
 
-
-<!-- MENU -->
-<div id="overlay"></div>
-
+<!-- MENU / SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
 
@@ -83,18 +160,18 @@ window.addEventListener("DOMContentLoaded", () => {
   <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
 </div>
 
+<!-- HEADER -->
 <header>
-
-  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  <div onclick="toggleMenu()">☰</div>
 
   <div class="logo">
-    <img src="https://i.ibb.co/Z1kv9nJj/logo.png">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
 
   <input id="search" placeholder="Tìm kiếm sản phẩm...">
-
 </header>
 
+<!-- CONTENT -->
 <div class="container">
 
   <div class="products" id="products"></div>
@@ -107,13 +184,17 @@ window.addEventListener("DOMContentLoaded", () => {
     <button onclick="clearCart()">Xoá giỏ hàng</button>
   </div>
 
-</div> 
-<script type="module" src="camera-ngoai-troi.js"></script>
+</div>
+
+
+  <script type="module" src="camera-ngoai-troi.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-container">
@@ -131,6 +212,17 @@ window.addEventListener("DOMContentLoaded", () => {
 
   </div>
 </footer>
+</footer>
+
+<script>
+function toggleMenu() {
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    sidebar.classList.toggle("active");
+    overlay.classList.toggle("active");
+}
+</script>
 
 </body>
 </html>
