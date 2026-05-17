@@ -23,15 +23,18 @@ const db = getFirestore(app);
 let currentUser = null;
 
 // DOM
-const cartBox = document.getElementById("cartList");
-const totalBox = document.getElementById("total");
+let cartBox = null;
+let totalBox = null;
 // ============================
 // RENDER CART
 // ============================
 async function renderCart() {
 
+  cartBox = document.getElementById("cartList");
+  totalBox = document.getElementById("total");
+
+  // Nếu không phải trang cart thì bỏ qua
   if (!cartBox || !totalBox) {
-    console.error("Không tìm thấy cartList hoặc total");
     return;
   }
 
@@ -81,11 +84,9 @@ async function renderCart() {
 
       cartBox.innerHTML += `
         <div class="item">
-
           <img src="${p.img || ''}">
 
           <div class="info">
-
             <h4>${p.name || ''}</h4>
 
             <div class="row-info">
@@ -111,7 +112,6 @@ async function renderCart() {
               </span>
 
             </div>
-
           </div>
 
           <button
@@ -123,7 +123,6 @@ async function renderCart() {
 
         </div>
       `;
-
     });
 
     totalBox.innerHTML =
