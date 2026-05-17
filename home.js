@@ -1,301 +1,147 @@
-// ==========================
-// IMPORT
-// ==========================
+/* =========================
+   🔥 HOME PAGE JS
+========================= */
 
+/* =========================
+   FIRESTORE INIT
+========================= */
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore,
   collection,
   getDocs
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import {
-  getAuth
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain: "stech-73b89.firebaseapp.com",
+  projectId: "stech-73b89",
+  storageBucket: "stech-73b89.appspot.com",
+  messagingSenderId: "873739162979",
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+};
 
-import { app } from "./auth.js";
-
-import {
-  addToCart
-}
-from "./cart.js";
-
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const auth = getAuth(app);
-
-
-// ==========================
-// DATA
-// ==========================
-
+/* =========================
+   GET PRODUCTS FROM FIRESTORE
+========================= */
 let allProducts = [];
 
-
-// ==========================
-// LOAD PRODUCTS
-// ==========================
-
 async function getProducts() {
-
   try {
-
-    const querySnapshot = await getDocs(
-      collection(db, "products")
-    );
-
+    const querySnapshot = await getDocs(collection(db, "products"));
     let arr = [];
-
     querySnapshot.forEach(doc => {
-
+      const data = doc.data();
       arr.push({
         id: doc.id,
-        ...doc.data()
+        name: data.name || "Không tên",
+        img: data.img || "https://via.placeholder.com/300", // luôn có ảnh public
+        price: Number(data.price) || 0,
+        oldPrice: Number(data.oldPrice) || 0,
+        featured: data.featured || false,
+        category: data.category || "",
+        spec: data.spec || {}
       });
-
     });
-
     return arr;
-
   } catch (err) {
-
-    console.error(err);
-
+    console.log(err);
     return [];
-
   }
-
 }
 
+/* =========================
+   RENDER SPEC
+========================= */
+function renderSpec(p) {
+  const s = p.spec || {};
+  return `
+    - Độ phân giải: ${s.doPhanGiai || "—"}<br>
+    - Góc nhìn: ${s.gocNhin || "—"}<br>
+    - Kết nối: ${s.ketNoi || "—"}<br>
+    - Bảo hành: ${s.baoHanh || "—"}<br>
+  `;
+}
 
-// ==========================
-// RENDER
-// ==========================
-
-function render(list) {
-
-  const box =
-    document.getElementById("products");
-
+/* =========================
+   RENDER HOME
+========================= */
+function renderHome() {
+  const box = document.getElementById("products");
   if (!box) return;
+
+  // Chỉ lấy sản phẩm category "home" hoặc featured
+  const featured = allProducts.filter(p => p.featured === true && p.category === "home");
 
   box.innerHTML = "";
 
- // lọc featured home
-list = list.filter(
-  p => p.featured === "home"
-);
-
-  if (list.length === 0) {
-
-    box.innerHTML =
-      "<p>Chưa có sản phẩm</p>";
-
-    console.log("NO PRODUCTS", list);
-
+  if (featured.length === 0) {
+    box.innerHTML = "<p>Chưa có sản phẩm nổi bật</p>";
     return;
   }
 
-  list.forEach(p => {
-
+  featured.forEach(p => {
     const id = String(p.id);
-
-    const price =
-      Number(p.price) || 0;
-
-    const oldPrice =
-      Number(p.oldPrice) || 0;
-
-    const hasDiscount =
-      oldPrice > price;
-
-    const percent =
-      hasDiscount
-      ? Math.round(
-          (1 - price / oldPrice) * 100
-        )
-      : 0;
+    let percentText = "";
+    if (p.oldPrice && p.oldPrice > p.price) {
+      const percent = Math.round((1 - p.price / p.oldPrice) * 100);
+      percentText = `-${percent}%`;
+    }
+    // Luôn sử dụng link public (Cloudinary)
+    const imgUrl = p.img;
 
     box.innerHTML += `
-
       <div class="item">
-
-        ${
-          percent
-          ? `
-            <div class="discount-text">
-              -${percent}%
-            </div>
-          `
-          : ""
-        }
-
-        <img
-          src="${p.img || ""}"
-          onclick="goDetail('${id}')"
-          onerror="this.src='https://dummyimage.com/300x300/cccccc/000000'"
+        <img 
+          src="${imgUrl}" 
+          onclick="openZoom('${imgUrl}')"
+          onerror="this.src='https://via.placeholder.com/300'"
         >
-
-        <h4>
-          ${p.name || ""}
-        </h4>
-
+        <h4>${p.name}</h4>
         <div class="price-box">
-
-          <span class="price">
-            ${price.toLocaleString()}đ
-          </span>
-
-          ${
-            hasDiscount
-            ? `
-              <span class="old-price">
-                ${oldPrice.toLocaleString()}đ
-              </span>
-            `
-            : ""
-          }
-
+          <span class="price">${Number(p.price).toLocaleString()}đ</span>
+          ${p.oldPrice && p.oldPrice > p.price ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>` : ""}
+          ${percentText ? `<span class="discount-text">${percentText}</span>` : ""}
         </div>
-
-        <button
-          class="spec-btn"
-          onclick="goDetail('${id}')"
-        >
-          ⚙️ Xem thông số
-        </button>
-
-        <button
-          class="cart-btn"
-          onclick="addToCartById('${id}')"
-        >
-          🛒 Mua ngay
-        </button>
-
+        <button class="spec-btn" onclick="toggleSpec('${id}')">⚙️ Xem thông số</button>
+        <button class="cart-btn" onclick="addToCart('${id}')">🛒 Mua ngay</button>
+        <div class="spec-box" id="spec-${id}" style="display:none;">${renderSpec(p)}</div>
       </div>
-
     `;
-
   });
-
 }
 
-
-// ==========================
-// DETAIL
-// ==========================
-
-window.goDetail = function(id) {
-
-  window.location.href =
-    `logo.html?id=${id}`;
-
+/* =========================
+   TOGGLE SPEC
+========================= */
+window.toggleSpec = function(id){
+  const el = document.getElementById("spec-" + id);
+  if (!el) return;
+  el.style.display = (el.style.display === "block") ? "none" : "block";
 };
 
-
-// ==========================
-// CART
-// ==========================
-
-window.addToCartById =
-async function(id) {
-
-  const user =
-    auth.currentUser;
-
-  if (!user) {
-
-    alert("Vui lòng đăng nhập!");
-
-    return;
-  }
-
-  const product =
-    allProducts.find(
-      p => String(p.id) === String(id)
-    );
-
-  if (!product) {
-
-    console.error(
-      "Không tìm thấy sản phẩm"
-    );
-
-    return;
-  }
-
-  await addToCart({
-
-    id: product.id,
-
-    name: product.name,
-
-    price: product.price,
-
-    img: product.img,
-
-    qty: 1
-
-  });
-
+/* =========================
+   ADD TO CART
+========================= */
+window.addToCart = function(id){
+  const product = allProducts.find(p => String(p.id) === String(id));
+  if (!product) return;
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const exist = cart.find(item => String(item.id) === String(id));
+  if (exist) exist.quantity = (exist.quantity || 1) + 1;
+  else cart.push({...product, quantity:1});
+  localStorage.setItem("cart", JSON.stringify(cart));
   alert("Đã thêm vào giỏ 🛒");
-
 };
 
-// ==========================
-// SEARCH
-// ==========================
-
-const search =
-document.getElementById("search");
-
-if (search) {
-
-  search.addEventListener(
-    "input",
-    e => {
-
-      const key =
-        e.target.value.toLowerCase();
-
-    const filtered =
-  allProducts.filter(p =>
-
-    p.featured === "home" &&
-
-    p.name &&
-    p.name
-      .toLowerCase()
-      .includes(key)
-
-  );
-
-      render(filtered);
-
-    }
-  );
-
-}
-
-
-// ==========================
-// INIT
-// ==========================
-
-document.addEventListener(
-  "DOMContentLoaded",
-  async () => {
-
-    allProducts =
-      await getProducts();
-
-    console.log(
-      "ALL PRODUCTS:",
-      allProducts
-    );
-
-    render(allProducts);
-
-  }
-);
+/* =========================
+   INIT
+========================= */
+document.addEventListener("DOMContentLoaded", async () => {
+  allProducts = await getProducts();
+  renderHome();
+});
