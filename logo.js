@@ -172,7 +172,7 @@ String(p.firebaseId);
           <img
             src="${p.img || ''}"
             alt="${p.name || ''}"
-            onclick="goDetail('${id}')"
+           onclick="goDetail('${p.firebaseId}')"
             style="cursor:pointer;"
           >
 
@@ -216,11 +216,9 @@ String(p.firebaseId);
 
 <button
   class="cart-btn"
-  onclick="addToCart('${id}')"
+  onclick="addToCart('${p.firebaseId}')"
 >
-
   🛒 Thêm vào giỏ
-
 </button>
       </div>
 
@@ -240,15 +238,13 @@ window.addToCart = async function(id) {
     return;
   }
 
- const product = allProducts.find(
-  p => String(p.firebaseId || p.id) === String(id)
-);
+const product = allProducts.find(p => String(p.firebaseId) === String(id));
 
-  if (!product) {
-    console.log("Không tìm thấy product", id);
-    alert("Không tìm thấy sản phẩm!");
-    return;
-  }
+if (!product) {
+  console.log("Không tìm thấy product", id);
+  alert("Không tìm thấy sản phẩm!");
+  return;
+}
 
   product.id = product.firebaseId;
 
