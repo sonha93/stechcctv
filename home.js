@@ -1,8 +1,6 @@
-
-
-/* =========================
-   FIREBASE
-========================= */
+// ==========================
+// IMPORT
+// ==========================
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -14,6 +12,21 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+import {
+  getAuth
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  addToCart
+}
+from "./cart.js";
+
+
+// ==========================
+// FIREBASE
+// ==========================
+
 const firebaseConfig = {
 
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -22,7 +35,7 @@ const firebaseConfig = {
 
   projectId: "stech-73b89",
 
-storageBucket: "stech-73b89.appspot.com",
+  storageBucket: "stech-73b89.appspot.com",
 
   messagingSenderId: "873739162979",
 
@@ -33,26 +46,27 @@ storageBucket: "stech-73b89.appspot.com",
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const auth = getAuth(app); // Khởi tạo auth Modular
-/* =========================
-   CAMERA HOME
-========================= */
+const auth = getAuth(app);
+
+
+// ==========================
+// DATA
+// ==========================
 
 let allProducts = [];
 
-/* =========================
-   GET PRODUCTS
-========================= */
 
-async function getProducts(){
+// ==========================
+// LOAD PRODUCTS
+// ==========================
 
-  try{
+async function getProducts() {
 
-    const querySnapshot =
-    await getDocs(
-      collection(db,"products")
+  try {
+
+    const querySnapshot = await getDocs(
+      collection(db, "products")
     );
 
     let arr = [];
@@ -60,21 +74,17 @@ async function getProducts(){
     querySnapshot.forEach(doc => {
 
       arr.push({
-
-        id:doc.id,
+        id: doc.id,
         ...doc.data()
-
       });
 
     });
 
     return arr;
 
-  }
+  } catch (err) {
 
-  catch(err){
-
-    console.log(err);
+    console.error(err);
 
     return [];
 
@@ -82,199 +92,235 @@ async function getProducts(){
 
 }
 
-/* =========================
-   FIX DATA
-========================= */
 
-function fixData(list){
+// ==========================
+// RENDER
+// ==========================
 
-list.forEach(p => {
+function render(list) {
 
-  const id = String(p.id);
+  const box =
+    document.getElementById("products");
 
-  const price = Number(p.price) || 0;
+  if (!box) return;
 
-  const oldPrice = Number(p.oldPrice) || 0;
+  box.innerHTML = "";
 
-  const hasDiscount = oldPrice > price;
+  // lọc featured home
+  list = list.filter(
+    p => p.featured === "home"
+  );
 
-  const percent = hasDiscount
-    ? Math.round((1 - price / oldPrice) * 100)
-    : 0;
+  if (list.length === 0) {
 
-  box.innerHTML += `
-    <div class="item">
+    box.innerHTML =
+      "<p>Chưa có sản phẩm</p>";
 
-      ${
-        percent
-        ? `
-          <div class="discount-badge">
-            -${percent}%
-          </div>
-        `
-        : ""
-      }
+    console.log("NO PRODUCTS", list);
 
-      <div class="img-box">
+    return;
+  }
 
-        <img
-          src="${p.img || ''}"
-          alt="${p.name || ''}"
-          onclick="goDetail('${id}')"
-          style="cursor:pointer;"
-        >
+  list.forEach(p => {
 
-      </div>
+    const id = String(p.id);
 
-      <h4>
-        ${p.name || "Không tên"}
-      </h4>
+    const price =
+      Number(p.price) || 0;
 
-      <div class="price-box">
+    const oldPrice =
+      Number(p.oldPrice) || 0;
 
-        <span class="price">
-          ${price.toLocaleString()}đ
-        </span>
+    const hasDiscount =
+      oldPrice > price;
+
+    const percent =
+      hasDiscount
+      ? Math.round(
+          (1 - price / oldPrice) * 100
+        )
+      : 0;
+
+    box.innerHTML += `
+
+      <div class="item">
 
         ${
-          hasDiscount
+          percent
           ? `
-            <span class="old-price">
-              ${oldPrice.toLocaleString()}đ
-            </span>
+            <div class="discount-text">
+              -${percent}%
+            </div>
           `
           : ""
         }
 
+        <img
+          src="${p.img || ""}"
+          onclick="goDetail('${id}')"
+          onerror="this.src='https://dummyimage.com/300x300/cccccc/000000'"
+        >
+
+        <h4>
+          ${p.name || ""}
+        </h4>
+
+        <div class="price-box">
+
+          <span class="price">
+            ${price.toLocaleString()}đ
+          </span>
+
+          ${
+            hasDiscount
+            ? `
+              <span class="old-price">
+                ${oldPrice.toLocaleString()}đ
+              </span>
+            `
+            : ""
+          }
+
+        </div>
+
+        <button
+          class="spec-btn"
+          onclick="goDetail('${id}')"
+        >
+          ⚙️ Xem thông số
+        </button>
+
+        <button
+          class="cart-btn"
+          onclick="addToCartById('${id}')"
+        >
+          🛒 Mua ngay
+        </button>
+
       </div>
 
-      <button
-        class="spec-btn"
-        onclick="goDetail('${id}')"
-      >
-        ⚙️ Xem thông số
-      </button>
+    `;
 
-      <button
-        class="cart-btn"
-        onclick="addToCart('${id}')"
-      >
-        🛒 Thêm vào giỏ
-      </button>
+  });
 
-    </div>
-  `;
+}
 
-});
 
-/* =========================
-   DETAIL
-========================= */
+// ==========================
+// DETAIL
+// ==========================
 
-window.goDetail = function(id){
+window.goDetail = function(id) {
 
   window.location.href =
     `logo.html?id=${id}`;
 
 };
 
-/* =========================
-   CART
-========================= */
 
-import { addToCart } from "./cart.js"; // import chức năng Firestore
+// ==========================
+// CART
+// ==========================
 
-window.addToCart = async function(id){
-  const user = auth.currentUser;
-  if(!user){
+window.addToCartById =
+async function(id) {
+
+  const user =
+    auth.currentUser;
+
+  if (!user) {
+
     alert("Vui lòng đăng nhập!");
+
     return;
   }
 
-  const product = allProducts.find(p => String(p.id) === String(id));
-  if(!product) return;
+  const product =
+    allProducts.find(
+      p => String(p.id) === String(id)
+    );
+
+  if (!product) {
+
+    console.error(
+      "Không tìm thấy sản phẩm"
+    );
+
+    return;
+  }
 
   await addToCart({
+
     id: product.id,
+
     name: product.name,
+
     price: product.price,
+
     img: product.img,
+
     qty: 1
+
   });
 
   alert("Đã thêm vào giỏ 🛒");
+
 };
 
-/* =========================
-   SEARCH
-========================= */
+
+// ==========================
+// SEARCH
+// ==========================
 
 const search =
 document.getElementById("search");
 
-if(search){
+if (search) {
 
   search.addEventListener(
     "input",
     e => {
 
       const key =
-      e.target.value.toLowerCase();
+        e.target.value.toLowerCase();
 
-let data =
-allProducts.filter(
-  p => p.featured === "home"
-);
+      const filtered =
+        allProducts.filter(p =>
 
-      render(
+          p.featured === "home" &&
 
-        data.filter(
-          p =>
-            p.name &&
-            p.name
+          p.name &&
+          p.name
             .toLowerCase()
             .includes(key)
-        )
 
-      );
+        );
+
+      render(filtered);
 
     }
   );
 
 }
 
-/* =========================
-   MENU
-========================= */
 
-window.toggleMenu = function(){
-
-  const sidebar =
-  document.getElementById("sidebar");
-
-  const overlay =
-  document.getElementById("overlay");
-
-  if(!sidebar || !overlay)
-  return;
-
-  sidebar.classList.toggle("active");
-
-  overlay.classList.toggle("active");
-
-};
-
-/* =========================
-   INIT
-========================= */
+// ==========================
+// INIT
+// ==========================
 
 document.addEventListener(
   "DOMContentLoaded",
   async () => {
 
     allProducts =
-    await getProducts();
+      await getProducts();
+
+    console.log(
+      "ALL PRODUCTS:",
+      allProducts
+    );
 
     render(allProducts);
 
-  });
+  }
+);
