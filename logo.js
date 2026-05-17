@@ -67,13 +67,12 @@ async function getProducts(){
 
     querySnapshot.forEach(doc => {
 
-      arr.push({
+  arr.push({
 
-        id:doc.id,
-        ...doc.data()
+  firebaseId: doc.id,
+  ...doc.data()
 
-      });
-
+});
     });
 
     return arr;
@@ -136,8 +135,8 @@ list = list.filter(
 
   list.forEach(p => {
 
-    const id =
-      String(p.id);
+   const id =
+String(p.firebaseId);
 
     const price =
       Number(p.price) || 0;
@@ -236,15 +235,21 @@ list = list.filter(
 ========================= */
 
 window.addToCart = async function(id) {
-  const product = allProducts.find(p => String(p.id) === String(id));
+
+  const product =
+  allProducts.find(
+    p => String(p.firebaseId) === String(id)
+  );
+
   if (!product) {
     console.log("Không tìm thấy product");
     return;
   }
 
+  product.id = product.firebaseId;
+
   await firebaseAddToCart(product);
 
-  // Cập nhật số lượng trong header
   await updateCartCount();
 
   alert("Đã thêm vào giỏ 🛒");
