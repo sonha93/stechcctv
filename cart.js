@@ -1,4 +1,3 @@
-
 import {
   getFirestore,
   collection,
@@ -59,13 +58,10 @@ actionBox = document.getElementById("cartAction");
 
     const snapshot = await getDocs(cartRef);
 
-   console.log(
-  "FIREBASE CART:",
-  snapshot.docs.map(d => ({
-    id: d.id,
-    ...d.data()
-  }))
-);
+    console.log(
+      "FIREBASE CART:",
+      snapshot.docs.map(d => d.data())
+    );
 
     if (snapshot.empty) {
 
@@ -94,7 +90,7 @@ actionBox = document.getElementById("cartAction");
 
       total += subTotal;
 
-cartBox.innerHTML += `
+ cartBox.innerHTML += `
 <div class="item">
 
   <img src="${p.img || ''}">
@@ -102,28 +98,11 @@ cartBox.innerHTML += `
   <div class="info">
 
     <b>${p.name || ''}</b>
-<div style="font-size:50px;color:lime;background:black">
-TEST OLD PRICE: ${p.oldPrice}
-</div>
+
     <div class="price-row">
-
-      <span style="
-        color:blue;
-        font-size:40px;
-        background:yellow;
-        text-decoration:line-through;
-        display:inline-block;
-      ">
-        OLD: ${Number(p.oldPrice).toLocaleString()}đ
-      </span>
-
-      <span style="
-        color:red;
-        font-size:35px;
-      ">
-        NEW: ${price.toLocaleString()}đ
-      </span>
-
+      <div class="price-new">
+        ${price.toLocaleString()}đ
+      </div>
     </div>
 
     <div class="qty">
@@ -132,11 +111,11 @@ TEST OLD PRICE: ${p.oldPrice}
         -
       </button>
 
-      <span>${qty}</span>
+     <span>${qty}</span>
 
-      <button onclick="updateQty('${docSnap.id}', ${qty + 1})">
-        +
-      </button>
+<button onclick="updateQty('${docSnap.id}', ${qty + 1})">
+  +
+</button>
 
     </div>
 
@@ -151,9 +130,7 @@ TEST OLD PRICE: ${p.oldPrice}
 
 </div>
 `;
-     });
-
-
+    });
 
     totalBox.innerHTML =
       "Tổng tiền: " +
@@ -183,7 +160,7 @@ if(actionBox){
 // ADD TO CART
 // ============================
 export async function addToCart(product) {
-console.log(product)
+
   if (!currentUser) {
     alert("Bạn cần đăng nhập!");
     return;
@@ -223,20 +200,16 @@ console.log(product)
 
     });
 
-  await setDoc(itemRef, {
+    await setDoc(itemRef, {
 
-  id: product.id,
-  name: product.name || "",
+      id: product.id,
+      name: product.name || "",
+      price: Number(product.price) || 0,
+      img: product.img || "",
+      qty: oldQty + 1
 
-  price: Number(product.price) || 0,
+    });
 
-  oldPrice: Number(product.oldPrice) || 0,
-
-  img: product.img || "",
-
-  qty: oldQty + 1
-
-});
     alert("Đã thêm vào giỏ 🛒");
 
     renderCart();
