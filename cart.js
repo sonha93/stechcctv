@@ -1,5 +1,3 @@
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 
 import {
   getFirestore,
@@ -11,32 +9,22 @@ import {
   updateDoc
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
+
 import {
-  getAuth,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-const firebaseConfig = {
-  
-  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
-  projectId: "stech-73b89",
-  storageBucket: "stech-73b89.appspot.com",
-  messagingSenderId: "873739162979",
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-};
+import { app, auth } from "./auth.js";
 
-const app = initializeApp(firebaseConfig);
-
+// FIRESTORE
 const db = getFirestore(app);
 
-const auth = getAuth(app);
-
+// USER
 let currentUser = null;
 
+// DOM
 const cartBox = document.getElementById("cartList");
 const totalBox = document.getElementById("total");
-
 // ============================
 // RENDER CART
 // ============================
@@ -252,15 +240,6 @@ window.updateQty = async function(itemId, qty) {
 onAuthStateChanged(auth, user => {
 
   currentUser = user;
-
-  renderCart();
-
-});
-
-// ============================
-// INIT
-// ============================
-document.addEventListener("DOMContentLoaded", () => {
 
   renderCart();
 
