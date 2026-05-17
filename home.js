@@ -92,32 +92,36 @@ const featured = allProducts.filter(
 
     box.innerHTML += `
       <div class="item">
-        <img 
-          src="${imgUrl}" 
-          onclick="openZoom('${imgUrl}')"
-          onerror="this.src='https://via.placeholder.com/300'"
-        >
+      <img 
+  src="${imgUrl}" 
+  onclick="goDetail('${id}')"
+  onerror="this.src='https://via.placeholder.com/300'"
+  style="cursor:pointer;"
+>
         <h4>${p.name}</h4>
         <div class="price-box">
           <span class="price">${Number(p.price).toLocaleString()}đ</span>
           ${p.oldPrice && p.oldPrice > p.price ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>` : ""}
           ${percentText ? `<span class="discount-text">${percentText}</span>` : ""}
         </div>
-        <button class="spec-btn" onclick="toggleSpec('${id}')">⚙️ Xem thông số</button>
+        <button class="spec-btn" onclick="goDetail('${id}')">
+  ⚙️ Xem thông số
+</button>
         <button class="cart-btn" onclick="addToCart('${id}')">🛒 Mua ngay</button>
-        <div class="spec-box" id="spec-${id}" style="display:none;">${renderSpec(p)}</div>
-      </div>
+       </div>
     `;
   });
 }
-
 /* =========================
-   TOGGLE SPEC
+   DETAIL PAGE
 ========================= */
-window.toggleSpec = function(id){
-  const el = document.getElementById("spec-" + id);
-  if (!el) return;
-  el.style.display = (el.style.display === "block") ? "none" : "block";
+
+window.goDetail = function(id){
+
+  window.location.href =
+    `logo.html?id=${id}`;
+
+
 };
 
 /* =========================
