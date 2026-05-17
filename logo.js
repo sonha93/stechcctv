@@ -259,7 +259,9 @@ window.addToCart = function(id){
   }
 
   localStorage.setItem(cartKey, JSON.stringify(cart));
-  alert("Đã thêm vào giỏ 🛒");
+ updateCartCount();
+
+alert("Đã thêm vào giỏ 🛒");
 };
 
 /* =========================
@@ -280,7 +282,7 @@ if(search){
 
 let data =
 allProducts.filter(
-  p => p.featured === "logo"
+p => p.category === "logo"
 );
 
       render(
@@ -334,4 +336,41 @@ document.addEventListener(
 
     render(allProducts);
 
+    updateCartCount();
+
+  }
+);
+
+/* =========================
+   CART COUNT
+========================= */
+
+function updateCartCount(){
+
+  const user = auth.currentUser;
+
+  if(!user) return;
+
+  const cartKey = "cart_" + user.uid;
+
+  const cart =
+  JSON.parse(localStorage.getItem(cartKey)) || [];
+
+  let total = 0;
+
+  cart.forEach(item => {
+
+    total += item.qty || 1;
+
   });
+
+  const cartCount =
+  document.getElementById("cartCount");
+
+  if(cartCount){
+
+    cartCount.innerText = total;
+
+  }
+
+}
