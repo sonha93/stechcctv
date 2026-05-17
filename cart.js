@@ -101,15 +101,21 @@ console.log(p);
 
     <b>${p.name || ''}</b>
 
-   <div class="price-row">
+  <div class="price-row">
 
-  <div class="price-old">
-    ${Number(p.oldPrice || 0).toLocaleString()}đ
-  </div>
+  ${
+    p.oldPrice > 0
+    ? `
+      <span class="price-old">
+        ${Number(p.oldPrice).toLocaleString()}đ
+      </span>
+    `
+    : ""
+  }
 
-  <div class="price-new">
+  <span class="price-new">
     ${price.toLocaleString()}đ
-  </div>
+  </span>
 
 </div>
 
