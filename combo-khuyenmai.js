@@ -68,11 +68,11 @@ function renderHome() {
   const box = document.getElementById("products");
   if (!box) return;
 
-  // Chỉ lấy sản phẩm category "home" hoặc featured
-const featured = allProducts.filter(
-  p => p.featured === true || p.category === "combo"
-);
 
+// Chỉ lấy sản phẩm category "combo"
+const featured = allProducts.filter(
+  p => p.category === "combo"
+);
   box.innerHTML = "";
 
   if (featured.length === 0) {
