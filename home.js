@@ -22,7 +22,7 @@ const firebaseConfig = {
 
   projectId: "stech-73b89",
 
-  storageBucket: "stech-73b89.firebasestorage.app",
+storageBucket: "stech-73b89.appspot.com",
 
   messagingSenderId: "873739162979",
 
@@ -113,7 +113,7 @@ function render(list){
 
   /* chỉ camera home */
 list = list.filter(
-  p => p.featured === "home"
+p.category === "home"
 );
   box.innerHTML = "";
 
