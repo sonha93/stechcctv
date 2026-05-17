@@ -71,6 +71,7 @@ function loadCartCount(){
 // ==========================
 // ADD TO CART FIREBASE
 // ==========================
+console.log("ADD PRODUCT:", product);
 async function addToCartFirebase(product){
 
   if(!currentUser){
