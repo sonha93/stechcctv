@@ -173,3 +173,33 @@ window.addEventListener(
 loadProducts();
   }
 );
+window.toggleMenu = function(){
+
+  const sidebar =
+  document.getElementById("sidebar");
+
+  const overlay =
+  document.getElementById("overlay");
+
+  if(!sidebar || !overlay){
+    console.log("Không tìm thấy sidebar");
+    return;
+  }
+
+  sidebar.classList.toggle("active");
+  overlay.classList.toggle("active");
+
+};
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+  const btn =
+  document.getElementById("menuBtn");
+
+  if(btn){
+
+    btn.addEventListener("click",toggleMenu);
+
+  }
+
+});
