@@ -164,7 +164,9 @@ window.addToCartById = function(id) {
     return;
   }
 
-  addToCart(product);
+  console.log(product);
+
+addToCart(product);
 };
 
 window.addEventListener(
