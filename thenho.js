@@ -17,6 +17,8 @@ import {
 
 const db = getFirestore(app);
 
+
+
 /* =========================
    GET PRODUCTS FROM FIRESTORE
 ========================= */
@@ -31,7 +33,7 @@ async function getProducts() {
       arr.push({
         id: doc.id,
         name: data.name || "Không tên",
-        img: data.img || "https://via.placeholder.com/300",
+        img: data.img || "https://via.placeholder.com/300", // luôn có ảnh public
         price: Number(data.price) || 0,
         oldPrice: Number(data.oldPrice) || 0,
         featured: data.featured || false,
@@ -60,15 +62,16 @@ function renderSpec(p) {
 }
 
 /* =========================
-   RENDER PRODUCTS
+   RENDER HOME
 ========================= */
 function renderHome() {
   const box = document.getElementById("products");
   if (!box) return;
 
-  const featured = allProducts.filter(
-    p => p.featured === true || p.category === "sd"
-  );
+  // Chỉ lấy sản phẩm category "home" hoặc featured
+const featured = allProducts.filter(
+  p => p.featured === true || p.category === "sd"
+);
 
   box.innerHTML = "";
 
@@ -84,16 +87,17 @@ function renderHome() {
       const percent = Math.round((1 - p.price / p.oldPrice) * 100);
       percentText = `-${percent}%`;
     }
+    // Luôn sử dụng link public (Cloudinary)
     const imgUrl = p.img;
 
     box.innerHTML += `
       <div class="item">
-        <img 
-          src="${imgUrl}" 
-          onclick="goDetail('${id}')"
-          onerror="this.src='https://via.placeholder.com/300'"
-          style="cursor:pointer;"
-        >
+      <img 
+  src="${imgUrl}" 
+  onclick="goDetail('${id}')"
+  onerror="this.src='https://via.placeholder.com/300'"
+  style="cursor:pointer;"
+>
         <h4>${p.name}</h4>
         <div class="price-box">
           <span class="price">${Number(p.price).toLocaleString()}đ</span>
@@ -101,26 +105,34 @@ function renderHome() {
           ${percentText ? `<span class="discount-text">${percentText}</span>` : ""}
         </div>
         <button class="spec-btn" onclick="goDetail('${id}')">
-          ⚙️ Xem thông số
-        </button>
+  ⚙️ Xem thông số
+</button>
         <button class="cart-btn" onclick="addToCart('${id}')">🛒 Mua ngay</button>
-      </div>
+       </div>
     `;
   });
 }
-
 /* =========================
    DETAIL PAGE
 ========================= */
+
 window.goDetail = function(id){
-  window.location.href = `logo.html?id=${id}`;
+
+  window.location.href =
+    `logo.html?id=${id}`;
+
+
 };
 
 /* =========================
    ADD TO CART
 ========================= */
 window.addToCart = async function(id){
-  const product = allProducts.find(p => String(p.id) === String(id));
+
+  const product = allProducts.find(
+    p => String(p.id) === String(id)
+  );
+
   if (!product) return;
 
   await saveToCart({
@@ -131,36 +143,8 @@ window.addToCart = async function(id){
   });
 
   alert("Đã thêm vào giỏ 🛒");
+
 };
-
-/* =========================
-   TOGGLE MENU (FIX NÚT LIỆT)
-========================= */
-window.addEventListener("DOMContentLoaded", () => {
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
-  const menuBtns = document.querySelectorAll(".menu-btn"); // hỗ trợ nhiều trang
-
-  if(!sidebar || !overlay || !menuBtns){
-    console.error("Sidebar / overlay / button missing!");
-    return;
-  }
-
-  // Mở / đóng menu khi bấm nút ☰
-  menuBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      sidebar.classList.toggle("active");
-      overlay.classList.toggle("active");
-    });
-  });
-
-  // Click overlay để đóng menu
-  overlay.addEventListener("click", () => {
-    sidebar.classList.remove("active");
-    overlay.classList.remove("active");
-  });
-});
-
 /* =========================
    INIT
 ========================= */
