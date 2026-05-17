@@ -99,7 +99,9 @@ cartBox.innerHTML += `
   <div class="info">
 
     <b>${p.name || ''}</b>
-
+<div style="font-size:50px;color:lime;background:black">
+TEST OLD PRICE: ${p.oldPrice}
+</div>
     <div class="price-row">
 
       <span style="
