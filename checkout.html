@@ -92,6 +92,14 @@ function sendTelegramNotification(orderNumber, customerName, phone, address, car
     .catch(err => console.error("Lỗi fetch Telegram:", err));
 }
 </script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
 <script type="module">
 
 import { auth, db } from "./firebase-init.js";
@@ -307,11 +315,9 @@ function placeOrder(){
   });
 
 }
+  
 window.placeOrder = placeOrder;
 </script>
-
-
-
 
 </body>
 </html>
