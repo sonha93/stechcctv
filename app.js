@@ -1,3 +1,4 @@
+console.log("APP JS RUNNING");
 import { addToCart } from "./cart.js";
 let allProducts = [];
 import {
@@ -152,7 +153,7 @@ function renderHome() {
 }
 
 window.addToCartById = function(id) {
-
+console.log("CLICK CART", id);
   const product = allProducts.find(
     p => String(p.id) === String(id)
   );
