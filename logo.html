@@ -361,7 +361,8 @@ header{
 }
 
 @media(max-width:768px){
-.menu-btn,
+
+  .menu-btn,
   .icon-btn{
     width:42px;
     height:42px;
@@ -373,15 +374,12 @@ header{
     height:39px;
   }
 
-  
   .container{
     flex-direction:row;
     align-items:flex-start;
     gap:14px;
-    padding:1px; 
-      
+    padding:1px;
   }
-}
 
   .left{
     width:120px;
@@ -428,16 +426,11 @@ header{
   }
 
 }
-
 </style>
 </head>
-<script src="app.js"></script>
-<script type="module" src="camera-ngoai-troi.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <!-- FOOTER -->
 <body>
 
@@ -616,11 +609,16 @@ header{
   </div>
 
 </div>
+
+
+
+
+
+
 <script type="module">
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
 import {
   getFirestore,
   collection,
