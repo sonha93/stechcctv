@@ -207,7 +207,7 @@ String(p.firebaseId);
 
        <button
   class="spec-btn"
-  onclick="goDetail('${id}')"
+ onclick="goDetail('${p.firebaseId}')"
 >
 
   ⚙️ Xem thông số
@@ -235,21 +235,24 @@ String(p.firebaseId);
 ========================= */
 
 window.addToCart = async function(id) {
+  if (!allProducts || allProducts.length === 0) {
+    alert("Sản phẩm chưa load xong, thử lại sau!");
+    return;
+  }
 
-  const product =
-  allProducts.find(
+  const product = allProducts.find(
     p => String(p.firebaseId) === String(id)
   );
 
   if (!product) {
-    console.log("Không tìm thấy product");
+    console.log("Không tìm thấy product", id);
+    alert("Không tìm thấy sản phẩm!");
     return;
   }
 
   product.id = product.firebaseId;
 
-  await firebaseAddToCart(product);
-
+  await firebaseAddToCart(product); // gọi cart.js
   await updateCartCount();
 
   alert("Đã thêm vào giỏ 🛒");
