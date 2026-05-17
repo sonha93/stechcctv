@@ -80,47 +80,46 @@ async function renderCart() {
 
       total += subTotal;
 
-      cartBox.innerHTML += `
-        <div class="item">
-          <img src="${p.img || ''}">
+ cartBox.innerHTML += `
+<div class="item">
 
-          <div class="info">
-            <h4>${p.name || ''}</h4>
+  <img src="${p.img || ''}">
 
-            <div class="row-info">
+  <div class="info">
 
-              <span>
-                Số lượng:
-                <input
-                  type="number"
-                  min="1"
-                  value="${qty}"
-                  onchange="updateQty('${docSnap.id}', this.value)"
-                >
-              </span>
+    <b>${p.name || ''}</b>
 
-              <span>
-                Đơn giá:
-                ${price.toLocaleString()}đ
-              </span>
+    <div class="price-row">
+      <div class="price-new">
+        ${price.toLocaleString()}đ
+      </div>
+    </div>
 
-              <span>
-                Thành tiền:
-                ${subTotal.toLocaleString()}đ
-              </span>
+    <div class="qty">
 
-            </div>
-          </div>
+      <button onclick="updateQty('${docSnap.id}', ${qty - 1})">
+        -
+      </button>
 
-          <button
-            class="remove"
-            onclick="removeItem('${docSnap.id}')"
-          >
-            Xoá
-          </button>
+      <span>${qty}</span>
 
-        </div>
-      `;
+      <button onclick="updateQty('${docSnap.id}', ${qty + 1})">
+        +
+      </button>
+
+    </div>
+
+  </div>
+
+  <button
+    class="remove"
+    onclick="removeItem('${docSnap.id}')"
+  >
+    🗑
+  </button>
+
+</div>
+`;
     });
 
     totalBox.innerHTML =
@@ -182,7 +181,6 @@ export async function addToCart(product) {
   }
 
 }
-
 // ============================
 // REMOVE ITEM
 // ============================
