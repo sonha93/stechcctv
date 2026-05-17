@@ -1,4 +1,3 @@
-console.log("APP JS RUNNING");
 import { addToCart } from "./cart.js";
 let allProducts = [];
 import {
@@ -153,7 +152,7 @@ function renderHome() {
 }
 
 window.addToCartById = function(id) {
-console.log("CLICK CART", id);
+
   const product = allProducts.find(
     p => String(p.id) === String(id)
   );
@@ -165,9 +164,7 @@ console.log("CLICK CART", id);
     return;
   }
 
-  console.log(product);
-console.log("PRODUCT ADD:", product);
-addToCart(product);
+  addToCart(product);
 };
 
 window.addEventListener(
