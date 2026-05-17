@@ -61,74 +61,17 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
   <div class="total" id="total"></div>
   <div id="cartAction"></div>
 </div>
-
 <script>
-// MENU
-function toggleMenu(){document.getElementById("sidebar").classList.toggle("active");document.getElementById("overlay").classList.toggle("active");}
+function toggleMenu() {
+  document.getElementById("sidebar")
+    .classList.toggle("active");
 
-// RENDER
-let cart = JSON.parse(localStorage.getItem("cart"))||[];
-function renderCart(list=null){
-  let arr=list||cart;
-  const box=document.getElementById("cartList");
-  const totalBox=document.getElementById("total");
-  const actionBox=document.getElementById("cartAction");
-  if(arr.length===0){box.innerHTML="<p class='empty'>Giỏ trống</p>";totalBox.innerHTML="";actionBox.innerHTML="";return;}
-  let total=0;
-  box.innerHTML=arr.map((item,i)=>{
-    if(item.checked===undefined)item.checked=true;
-    if(item.checked) total+=item.price*(item.qty||1);
-    return `
-    <div class="item">
-      <input type="checkbox" class="check-item" ${item.checked?"checked":""} onclick="toggleCheck(${i})">
-      <img src="${item.img}">
-      <div class="info">
-        <b>${item.name}</b>
-        <div class="price-row">
-          <span class="price-new">${item.price.toLocaleString()}đ</span>
-          ${item.oldPrice?`<span class="price-old">${item.oldPrice.toLocaleString()}đ</span>`:""}
-          <span>${item.qty||1} × ${item.price.toLocaleString()}đ</span>
-        </div>
-        <div class="qty">
-          <button onclick="changeQty(${i},-1)">-</button>
-          <span>${item.qty||1}</span>
-          <button onclick="changeQty(${i},1)">+</button>
-        </div>
-      </div>
-      <button class="remove" onclick="removeItem(${i})">🗑</button>
-    </div>`;
-  }).join("");
-  totalBox.innerHTML="Tổng: "+total.toLocaleString()+"đ";
-  actionBox.innerHTML=`<button class="checkout" onclick="checkout()">Đặt hàng</button>`;
+  document.getElementById("overlay")
+    .classList.toggle("active");
 }
-
-// TOGGLE CHECK
-function toggleCheck(i){cart[i].checked=!cart[i].checked;localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
-
-// CHANGE QTY
-function changeQty(i,delta){cart[i].qty=(cart[i].qty||1)+delta;if(cart[i].qty<1)cart[i].qty=1;localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
-
-// REMOVE
-function removeItem(i){cart.splice(i,1);localStorage.setItem("cart",JSON.stringify(cart));renderCart();}
-
-// SEARCH
-document.getElementById("searchInput").addEventListener("input",function(){
-  const key=this.value.toLowerCase();
-  renderCart(cart.filter(i=>i.name.toLowerCase().includes(key)));
-});
-
-// CHECKOUT
-function checkout(){
-  let checkedItems=cart.filter(i=>i.checked!==false);
-  if(checkedItems.length===0){alert("Chọn ít nhất 1 sản phẩm!");return;}
-  // Gọi checkout.html hoặc Telegram riêng (không hiển thị popup)
-  window.location.href="checkout.html";
-}
-
-// LOAD
-renderCart();
 </script>
 
 <script type="module" src="cart.js"></script>
+
 </body>
 </html>
