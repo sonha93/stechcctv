@@ -98,12 +98,23 @@ actionBox = document.getElementById("cartAction");
   <div class="info">
 
     <b>${p.name || ''}</b>
+<div class="price-row">
 
-    <div class="price-row">
-      <div class="price-new">
-        ${price.toLocaleString()}đ
+  ${
+    p.oldPrice
+    ? `
+      <div class="price-old">
+        ${Number(p.oldPrice).toLocaleString()}đ
       </div>
-    </div>
+    `
+    : ""
+  }
+
+  <div class="price-new">
+    ${price.toLocaleString()}đ
+  </div>
+
+</div>
 
     <div class="qty">
 
@@ -160,7 +171,7 @@ if(actionBox){
 // ADD TO CART
 // ============================
 export async function addToCart(product) {
-
+console.log(product)
   if (!currentUser) {
     alert("Bạn cần đăng nhập!");
     return;
@@ -200,16 +211,20 @@ export async function addToCart(product) {
 
     });
 
-    await setDoc(itemRef, {
+  await setDoc(itemRef, {
 
-      id: product.id,
-      name: product.name || "",
-      price: Number(product.price) || 0,
-      img: product.img || "",
-      qty: oldQty + 1
+  id: product.id,
+  name: product.name || "",
 
-    });
+  price: Number(product.price) || 0,
 
+  oldPrice: Number(product.oldPrice) || 0,
+
+  img: product.img || "",
+
+  qty: oldQty + 1
+
+});
     alert("Đã thêm vào giỏ 🛒");
 
     renderCart();
