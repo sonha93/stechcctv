@@ -65,3 +65,4 @@ window.addToCartById = function(id) {
   addToCart(product);
 
 };
+renderHome();
