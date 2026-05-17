@@ -23,13 +23,15 @@ let currentUser = null;
 // DOM
 let cartBox = null;
 let totalBox = null;
+let actionBox = null;
 // ============================
 // RENDER CART
 // ============================
 async function renderCart() {
 
   cartBox = document.getElementById("cartList");
-  totalBox = document.getElementById("total");
+ totalBox = document.getElementById("total");
+actionBox = document.getElementById("cartAction");
 
   // Nếu không phải trang cart thì bỏ qua
   if (!cartBox || !totalBox) {
@@ -62,10 +64,18 @@ async function renderCart() {
     );
 
     if (snapshot.empty) {
-      cartBox.innerHTML =
-        "<div class='empty'>Giỏ hàng trống 🛒</div>";
-      return;
-    }
+
+  cartBox.innerHTML =
+    "<div class='empty'>Giỏ hàng trống 🛒</div>";
+
+  totalBox.innerHTML = "";
+
+  if(actionBox){
+    actionBox.innerHTML = "";
+  }
+
+  return;
+}
 
     let total = 0;
 
@@ -101,11 +111,11 @@ async function renderCart() {
         -
       </button>
 
-      <span>${qty}</span>
+     <span>${qty}</span>
 
-      <button onclick="updateQty('${docSnap.id}', ${qty + 1})">
-        +
-      </button>
+<button onclick="updateQty('${docSnap.id}', ${qty + 1})">
+  +
+</button>
 
     </div>
 
@@ -126,7 +136,18 @@ async function renderCart() {
       "Tổng tiền: " +
       total.toLocaleString() +
       "đ";
+if(actionBox){
 
+  actionBox.innerHTML = `
+    <button
+      class="checkout"
+      onclick="checkout()"
+    >
+      Đặt hàng
+    </button>
+  `;
+
+}
   } catch (err) {
 
     console.error("Lỗi renderCart:", err);
@@ -201,7 +222,6 @@ window.removeItem = async function(itemId) {
   renderCart();
 
 };
-
 // ============================
 // UPDATE QTY
 // ============================
@@ -228,6 +248,15 @@ window.updateQty = async function(itemId, qty) {
   renderCart();
 
 };
+// ============================
+// CHECKOUT
+// ============================
+window.checkout = function(){
+
+
+  window.location.href = "checkout.html";
+
+};
 
 // ============================
 // AUTH
@@ -241,4 +270,5 @@ onAuthStateChanged(auth, async user => {
   await renderCart();
 
 });
+
 window.renderCart = renderCart;
