@@ -165,7 +165,7 @@ window.addToCartById = function(id) {
   }
 
   console.log(product);
-
+console.log("PRODUCT ADD:", product);
 addToCart(product);
 };
 
