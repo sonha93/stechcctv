@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shop Camera Pro</title>
 <link rel="stylesheet" href="styletrong-nha.css">
+
 <style>
+/* LOGO KHÔNG VIỀN */
 .logo img{
   height:38px;
   width:auto;
@@ -15,15 +17,138 @@
   display:block;
   background:transparent;
 }
+
+/* POPUP LOGIN/REGISTER */
+#authModal{
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
+  display:none;
+  background:rgba(0,0,0,0.6);
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+#authModal .auth-content{
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  max-width:350px;
+  width:90%;
+}
+#authModal h2{
+  text-align:center;
+  margin-bottom:10px;
+}
+#authModal input{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border-radius:4px;
+  border:1px solid #aaa;
+}
+#authModal button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  background:#007BFF;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:4px;
+}
+#authModal #closeAuth{
+  background:#f44336;
+  margin-top:5px;
+}
+#authModal #authMessage{
+  text-align:center;
+  margin-top:8px;
+  color:red;
+}
+
+/* SIDEBAR USER INFO */
+#userInfoPreview{
+  display:none;
+  margin-top:10px;
+  text-align:center;
+  cursor:pointer;
+}
+#userInfoPreview img{
+  width:40px; height:40px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:5px;
+}
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  z-index: 1000; /* fix click bị overlay chặn */
+}
+
+/* 2 CỘT SẢN PHẨM */
+#products{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+
+.product-card{
+  background:#fff;
+  border:1px solid #ccc;
+  border-radius:8px;
+  overflow:hidden;
+  text-align:center;
+  padding:0px;
+}
+
+.product-card img{
+  width:100%;
+  height:auto;
+  border-bottom:1px solid #ccc;
+  border-radius:4px;
+  object-fit:cover;
+}
+
+/* MÁY TÍNH 3 CỘT */
+@media(min-width:1024px){
+
+  #products{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+}
+
+.product-card .product-info{
+  margin-top:8px;
+}
+.discount-text{
+  position:absolute;
+  top:3px;
+  left:0px;
+
+  font-size:11px;
+  padding:2px 5px;
+
+  background:red;
+  color:white;
+
+  border-radius:6px;
+  z-index:10;
+}
+
+.item{
+  position:relative;
+}
 </style>
-
 </head>
-
+  
 <body>
-<div id="notify-box"></div>
+
 <div id="overlay" onclick="toggleMenu()"></div>
 
-<!-- MENU -->
+<!-- MENU / SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
 
@@ -87,6 +212,17 @@
 
   </div>
 </footer>
+</footer>
+
+<script>
+function toggleMenu() {
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    sidebar.classList.toggle("active");
+    overlay.classList.toggle("active");
+}
+</script>
 
 </body>
 </html>
