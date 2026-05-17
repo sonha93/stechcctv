@@ -68,8 +68,7 @@ function renderHome() {
   const box = document.getElementById("products");
   if (!box) return;
 
-  // Chỉ lấy sản phẩm category "home" hoặc featured
-const featured = allProducts.filter(
+   // Chỉ lấy sản phẩm category "sd" 
   p => p.featured === true || p.category === "sd"
 );
 
