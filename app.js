@@ -1,4 +1,7 @@
+import { addToCart } from "./cart.js";
+
 function renderHome() {
+
   const box = document.getElementById("products");
   if (!box) return;
 
@@ -36,9 +39,25 @@ function renderHome() {
           ${percentText ? `<span class="discount-text">${percentText}</span>` : ""}
         </div>
         <button class="spec-btn" onclick="toggleSpec('${id}')">⚙️ Xem thông số</button>
-       <button class="cart-btn" onclick="addToCart(${id})">🛒 Mua ngay</button>
+      <button class="cart-btn" onclick="addToCartById('${id}')">
+🛒 Mua ngay
+</button>
         <div class="spec-box" id="spec-${id}" style="display:none;">${renderSpec(p)}</div>
       </div>
     `;
   });
 }  
+window.addToCartById = function(id) {
+
+  const product = allProducts.find(
+    p => String(p.id) === String(id)
+  );
+
+  if (!product) {
+    console.error("Không tìm thấy sản phẩm");
+    return;
+  }
+
+  addToCart(product);
+
+};
