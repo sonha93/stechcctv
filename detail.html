@@ -205,7 +205,7 @@ async function loadProduct() {
   }
   updateCartCount();
 
-  // **CHỈNH OPEN PANEL**
+  // OPEN PANEL CHỈNH SỬ DỤNG PRODUCT HIỆN TẠI
   window.openPanel = function() {
     document.getElementById("specPanel").classList.add("active");
     document.getElementById("panelOverlay").classList.add("active");
@@ -215,3 +215,5 @@ async function loadProduct() {
     document.getElementById("panelProductName").innerText = product.name || "";
   };
 }
+
+loadProduct();
