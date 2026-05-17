@@ -81,9 +81,7 @@ actionBox = document.getElementById("cartAction");
 
     snapshot.forEach(docSnap => {
 
-     const p = docSnap.data();
-
-console.log(p);
+      const p = docSnap.data();
 
       const qty = Number(p.qty) || 1;
       const price = Number(p.price) || 0;
@@ -101,23 +99,11 @@ console.log(p);
 
     <b>${p.name || ''}</b>
 
-  <div class="price-row">
-
-  ${
-    p.oldPrice > 0
-    ? `
-      <span class="price-old">
-        ${Number(p.oldPrice).toLocaleString()}đ
-      </span>
-    `
-    : ""
-  }
-
-  <span class="price-new">
-    ${price.toLocaleString()}đ
-  </span>
-
-</div>
+    <div class="price-row">
+      <div class="price-new">
+        ${price.toLocaleString()}đ
+      </div>
+    </div>
 
     <div class="qty">
 
@@ -214,20 +200,16 @@ export async function addToCart(product) {
 
     });
 
-   await setDoc(itemRef, {
+    await setDoc(itemRef, {
 
-  id: product.id,
-  name: product.name || "",
+      id: product.id,
+      name: product.name || "",
+      price: Number(product.price) || 0,
+      img: product.img || "",
+      qty: oldQty + 1
 
-  price: Number(product.price) || 0,
+    });
 
-  oldPrice: Number(product.oldPrice) || 0,
-
-  img: product.img || "",
-
-  qty: oldQty + 1
-
-});
     alert("Đã thêm vào giỏ 🛒");
 
     renderCart();
