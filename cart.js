@@ -161,8 +161,6 @@ if(actionBox){
 // ============================
 export async function addToCart(product) {
 
-  console.log("PRODUCT:", product);
-
   if (!currentUser) {
     alert("Bạn cần đăng nhập!");
     return;
@@ -183,15 +181,36 @@ export async function addToCart(product) {
       String(product.id)
     );
 
+    const snapshot = await getDocs(
+      collection(
+        db,
+        "users",
+        currentUser.uid,
+        "cart"
+      )
+    );
+
+    let oldQty = 0;
+
+    snapshot.forEach(d => {
+
+      if(d.id === String(product.id)){
+        oldQty = Number(d.data().qty) || 0;
+      }
+
+    });
+
     await setDoc(itemRef, {
+
       id: product.id,
       name: product.name || "",
       price: Number(product.price) || 0,
       img: product.img || "",
-      qty: 1
+      qty: oldQty + 1
+
     });
 
-    console.log("Đã thêm cart");
+    alert("Đã thêm vào giỏ 🛒");
 
     renderCart();
 
@@ -202,6 +221,8 @@ export async function addToCart(product) {
   }
 
 }
+
+
 // ============================
 // REMOVE ITEM
 // ============================
