@@ -1,3 +1,4 @@
+console.log("APP JS RUNNING");
 import { addToCart } from "./cart.js";
 
 function renderHome() {
