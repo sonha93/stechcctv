@@ -240,9 +240,9 @@ window.addToCart = async function(id) {
     return;
   }
 
-  const product = allProducts.find(
-    p => String(p.firebaseId) === String(id)
-  );
+ const product = allProducts.find(
+  p => String(p.firebaseId || p.id) === String(id)
+);
 
   if (!product) {
     console.log("Không tìm thấy product", id);
