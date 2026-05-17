@@ -1,5 +1,5 @@
 /* =========================
-   🔥 HOME SD JS
+   🔥 SD PAGE JS
 ========================= */
 
 /* =========================
@@ -68,10 +68,10 @@ function renderHome() {
   const box = document.getElementById("products");
   if (!box) return;
 
-   // Chỉ lấy sản phẩm category "sd" 
-  p => p.featured === true || p.category === "sd"
+  // Chỉ lấy sản phẩm category "home" hoặc featured
+const featured = allProducts.filter(
+  p => p.category === "sd"
 );
-
   box.innerHTML = "";
 
   if (featured.length === 0) {
