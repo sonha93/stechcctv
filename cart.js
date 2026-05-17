@@ -59,10 +59,13 @@ actionBox = document.getElementById("cartAction");
 
     const snapshot = await getDocs(cartRef);
 
-    console.log(
-      "FIREBASE CART:",
-      snapshot.docs.map(d => d.data())
-    );
+   console.log(
+  "FIREBASE CART:",
+  snapshot.docs.map(d => ({
+    id: d.id,
+    ...d.data()
+  }))
+);
 
     if (snapshot.empty) {
 
