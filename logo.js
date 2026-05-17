@@ -33,7 +33,8 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
+import { addToCart as firebaseAddToCart }
+from "./cart.js";
 const auth = getAuth(app); // Khởi tạo auth Modular
 /* =========================
     CHỈ LOAD DỮ LIỆU CHO COMBO
@@ -226,64 +227,21 @@ list = list.filter(
    DETAIL
 ========================= */
 
-window.goDetail = function(id){
-
-  window.location.href =
-    `logo.html?id=${id}`;
-
-};
-
-/* =========================
-   CART
-========================= */
-
 window.addToCart = function(id){
-
-  const user = auth.currentUser;
-
-  if(!user){
-    window.location.href = "login.html";
-    return;
-  }
-
-  const cartKey = "cart_" + user.uid;
 
   const product =
   allProducts.find(
     p => String(p.id) === String(id)
   );
 
-  if(!product) return;
+  if(!product){
 
-  let cart =
-  JSON.parse(localStorage.getItem(cartKey)) || [];
-
-  const exist =
-  cart.find(
-    i => String(i.id) === String(id)
-  );
-
-  if(exist){
-
-    exist.qty += 1;
-
-  }else{
-
-    cart.push({
-      ...product,
-      qty:1
-    });
+    console.log("Không tìm thấy product");
+    return;
 
   }
 
-  localStorage.setItem(
-    cartKey,
-    JSON.stringify(cart)
-  );
-
-  updateCartCount();
-
-  alert("Đã thêm vào giỏ 🛒");
+  firebaseAddToCart(product);
 
 };
 /* =========================
