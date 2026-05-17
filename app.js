@@ -191,15 +191,3 @@ window.toggleMenu = function(){
 
 };
 
-document.addEventListener("DOMContentLoaded",()=>{
-
-  const btn =
-  document.getElementById("menuBtn");
-
-  if(btn){
-
-    btn.addEventListener("click",toggleMenu);
-
-  }
-
-});
