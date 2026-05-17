@@ -88,140 +88,84 @@ async function getProducts(){
 
 function fixData(list){
 
-  return list.map(p => ({
+list.forEach(p => {
 
-    ...p,
+  const id = String(p.id);
 
-    price:Number(p.price) || 0,
+  const price = Number(p.price) || 0;
 
-    oldPrice:Number(p.oldPrice) || 0
+  const oldPrice = Number(p.oldPrice) || 0;
 
-  }));
+  const hasDiscount = oldPrice > price;
 
-}
+  const percent = hasDiscount
+    ? Math.round((1 - price / oldPrice) * 100)
+    : 0;
 
-/* =========================
-   RENDER
-========================= */
-
-function render(list){
-
-  const box = document.getElementById("products");
-  if(!box) return;
-
-  list = fixData(list);
-
-  /* chỉ camera home */
-list = list.filter(
-p.category === "home"
-);
-  box.innerHTML = "";
-
-  if(list.length === 0){
-
-    box.innerHTML =
-      "<p>Chưa có sản phẩm</p>";
-
-    return;
-
-  }
-
-  list.forEach(p => {
-
-    const id =
-      String(p.id);
-
-    const price =
-      Number(p.price) || 0;
-
-    const oldPrice =
-      Number(p.oldPrice) || 0;
-
-    const hasDiscount =
-      oldPrice > price;
-
-    const percent =
-      hasDiscount
-      ? Math.round(
-          (1 - price / oldPrice) * 100
-        )
-      : 0;
-
-    box.innerHTML += `
+  box.innerHTML += `
     <div class="item">
 
       ${
-  percent
-  ? `
-    <div class="discount-badge">
-      -${percent}%
-    </div>
-  `
-  : ""
-}
+        percent
+        ? `
+          <div class="discount-badge">
+            -${percent}%
+          </div>
+        `
+        : ""
+      }
 
-        <div class="img-box">
+      <div class="img-box">
 
-          <img
-            src="${p.img || ''}"
-            alt="${p.name || ''}"
-            onclick="goDetail('${id}')"
-            style="cursor:pointer;"
-          >
+        <img
+          src="${p.img || ''}"
+          alt="${p.name || ''}"
+          onclick="goDetail('${id}')"
+          style="cursor:pointer;"
+        >
 
-        </div>
+      </div>
 
-        <h4>
-          ${p.name || "Không tên"}
-        </h4>
+      <h4>
+        ${p.name || "Không tên"}
+      </h4>
 
-        <div class="price-box">
+      <div class="price-box">
 
-          <span class="price">
-            ${price.toLocaleString()}đ
-          </span>
+        <span class="price">
+          ${price.toLocaleString()}đ
+        </span>
 
-          ${
-            hasDiscount
-
-            ? `
-
+        ${
+          hasDiscount
+          ? `
             <span class="old-price">
               ${oldPrice.toLocaleString()}đ
             </span>
+          `
+          : ""
+        }
 
-            `
-
-            : ""
-
-          }
-
-        </div>
-
-       <button
-  class="spec-btn"
-  onclick="goDetail('${id}')"
->
-
-  ⚙️ Xem thông số
-
-</button>
-
-<button
-  class="cart-btn"
-  onclick="addToCart('${id}')"
->
-
-  🛒 Thêm vào giỏ
-
-</button>
       </div>
 
-    `;
+      <button
+        class="spec-btn"
+        onclick="goDetail('${id}')"
+      >
+        ⚙️ Xem thông số
+      </button>
 
-  });
+      <button
+        class="cart-btn"
+        onclick="addToCart('${id}')"
+      >
+        🛒 Thêm vào giỏ
+      </button>
 
-}
+    </div>
+  `;
+
+});
 
 /* =========================
    DETAIL
