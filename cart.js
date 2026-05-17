@@ -1,4 +1,3 @@
-
 import {
   getFirestore,
   collection,
@@ -7,12 +6,11 @@ import {
   deleteDoc,
   setDoc,
   updateDoc
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
   onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import { app, auth } from "./auth.js";
 
@@ -236,10 +234,13 @@ window.updateQty = async function(itemId, qty) {
 // ============================
 // AUTH
 // ============================
-onAuthStateChanged(auth, user => {
+onAuthStateChanged(auth, async user => {
 
   currentUser = user;
 
-  renderCart();
+  console.log("USER:", user);
+
+  await renderCart();
 
 });
+window.renderCart = renderCart;
