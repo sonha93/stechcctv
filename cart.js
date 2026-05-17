@@ -1,7 +1,3 @@
-// ============================
-// CART.JS - FIREBASE VERSION
-// ============================
-
 import {
   getFirestore,
   collection,
@@ -22,7 +18,6 @@ const auth = getAuth();
 
 let currentUser = null;
 
-// DOM
 const cartBox = document.getElementById("cartList");
 const totalBox = document.getElementById("total");
 
@@ -40,7 +35,8 @@ async function renderCart() {
   totalBox.innerHTML = "";
 
   if (!currentUser) {
-    cartBox.innerHTML = "<div class='empty'>Bạn chưa đăng nhập 🛒</div>";
+    cartBox.innerHTML =
+      "<div class='empty'>Bạn chưa đăng nhập 🛒</div>";
     return;
   }
 
@@ -61,7 +57,8 @@ async function renderCart() {
     );
 
     if (snapshot.empty) {
-      cartBox.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
+      cartBox.innerHTML =
+        "<div class='empty'>Giỏ hàng trống 🛒</div>";
       return;
     }
 
@@ -74,15 +71,17 @@ async function renderCart() {
       const qty = Number(p.qty) || 1;
       const price = Number(p.price) || 0;
 
-      const subTotal = price * qty;
+      const subTotal = qty * price;
 
       total += subTotal;
 
       cartBox.innerHTML += `
         <div class="item">
+
           <img src="${p.img || ''}">
 
           <div class="info">
+
             <h4>${p.name || ''}</h4>
 
             <div class="row-info">
@@ -108,6 +107,7 @@ async function renderCart() {
               </span>
 
             </div>
+
           </div>
 
           <button
@@ -116,8 +116,10 @@ async function renderCart() {
           >
             Xoá
           </button>
+
         </div>
       `;
+
     });
 
     totalBox.innerHTML =
@@ -130,6 +132,7 @@ async function renderCart() {
     console.error("Lỗi renderCart:", err);
 
   }
+
 }
 
 // ============================
@@ -140,12 +143,12 @@ export async function addToCart(product) {
   console.log("PRODUCT:", product);
 
   if (!currentUser) {
-    alert("Bạn cần đăng nhập để thêm giỏ hàng!");
+    alert("Bạn cần đăng nhập!");
     return;
   }
 
   if (!product.id) {
-    console.error("Thiếu product.id", product);
+    console.error("Thiếu product.id");
     return;
   }
 
@@ -167,7 +170,7 @@ export async function addToCart(product) {
       qty: 1
     });
 
-    console.log("Đã thêm vào cart");
+    console.log("Đã thêm cart");
 
     renderCart();
 
@@ -176,6 +179,7 @@ export async function addToCart(product) {
     console.error("Lỗi addToCart:", err);
 
   }
+
 }
 
 // ============================
@@ -186,11 +190,18 @@ window.removeItem = async function(itemId) {
   if (!currentUser) return;
 
   await deleteDoc(
-    doc(db, "users", currentUser.uid, "cart", itemId)
+    doc(
+      db,
+      "users",
+      currentUser.uid,
+      "cart",
+      itemId
+    )
   );
 
   renderCart();
-}
+
+};
 
 // ============================
 // UPDATE QTY
@@ -216,7 +227,8 @@ window.updateQty = async function(itemId, qty) {
   });
 
   renderCart();
-}
+
+};
 
 // ============================
 // AUTH
