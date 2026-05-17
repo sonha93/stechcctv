@@ -81,7 +81,9 @@ actionBox = document.getElementById("cartAction");
 
     snapshot.forEach(docSnap => {
 
-      const p = docSnap.data();
+     const p = docSnap.data();
+
+console.log(p);
 
       const qty = Number(p.qty) || 1;
       const price = Number(p.price) || 0;
