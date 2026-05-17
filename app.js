@@ -1,18 +1,3 @@
-import { addToCart } from "./cart.js";
-
-console.log("APP JS RUNNING");
-
-const allProducts = [
-  {
-    id: 1,
-    name: "Camera Ezviz C6N",
-    price: 500000,
-    oldPrice: 700000,
-    img: "https://via.placeholder.com/300",
-    category: "home"
-  }
-];
-
 function renderHome() {
 import { addToCart } from "./cart.js";
 
