@@ -674,5 +674,147 @@ updateInfoBtn.addEventListener("click", async () => {
 
 });
 </script>
+   <script>
+
+// ==========================
+// LOGOUT
+// ==========================
+logoutArrow.addEventListener("click", async (e) => {
+
+    e.preventDefault();
+
+    try {
+
+        await auth.signOut();
+
+        window.location.href = "index.html";
+
+    } catch (err) {
+
+        alert(err.message);
+
+    }
+
+});
+
+// ==========================
+// ĐỔI MẬT KHẨU
+// ==========================
+changePasswordBtn.addEventListener("click", async () => {
+
+    const newPassword =
+        newPasswordInput.value.trim();
+
+    if (newPassword.length < 6) {
+
+        showMsg(
+            errorEl,
+            "Mật khẩu tối thiểu 6 ký tự!",
+            "red"
+        );
+
+        return;
+    }
+
+    try {
+
+        await currentUser.updatePassword(
+            newPassword
+        );
+
+        newPasswordInput.value = "";
+
+        showMsg(
+            messageEl,
+            "Đổi mật khẩu thành công!",
+            "green"
+        );
+
+    } catch (err) {
+
+        showMsg(
+            errorEl,
+            err.message,
+            "red"
+        );
+
+    }
+
+});
+
+// ==========================
+// LỊCH SỬ ĐƠN HÀNG
+// ==========================
+orderHistoryBtn.addEventListener("click", (e) => {
+
+    e.preventDefault();
+
+    ordersContainer.style.display =
+        ordersContainer.style.display === "none"
+        ? "block"
+        : "none";
+
+    loadOrders();
+
+});
+
+// ==========================
+// LOAD ORDERS
+// ==========================
+function loadOrders(){
+
+    if(!currentUser) return;
+
+    db.ref("orders/" + currentUser.uid)
+    .once("value")
+    .then(snapshot => {
+
+        ordersList.innerHTML = "";
+
+        if(!snapshot.exists()){
+
+            ordersList.innerHTML =
+            "<p>Chưa có đơn hàng</p>";
+
+            return;
+        }
+
+        snapshot.forEach(item => {
+
+            const order = item.val();
+
+            const div =
+            document.createElement("div");
+
+            div.className = "order-item";
+
+            div.innerHTML = `
+
+                <p>
+                <b>Mã đơn:</b>
+                ${item.key}
+                </p>
+
+                <p>
+                <b>Tổng tiền:</b>
+                ${order.total || 0}đ
+                </p>
+
+                <p>
+                <b>Ngày:</b>
+                ${order.date || ""}
+                </p>
+
+            `;
+
+            ordersList.appendChild(div);
+
+        });
+
+    });
+
+}
+
+</script>
 </body>
 </html>
