@@ -377,19 +377,18 @@ button:hover{
         padding:18px;
     }
 
-    .actions{
-        flex-direction:column;
+.actions{
+    flex-direction:column;
+}
 
-      .camera-btn{
+.camera-btn{
     width:32px;
     height:32px;
     font-size:16px;
     bottom:4px;
     right:4px;
-} 
-    }
 }
-
+}
 
 </style>
 </head>
@@ -433,7 +432,13 @@ button:hover{
 <label for="name">Họ và tên:</label><input type="text" id="name">
 <label for="address">Địa chỉ:</label><input type="text" id="address">
 <label for="birthday">Ngày sinh:</label><input type="date" id="birthday">
-<label for="phone">Số điện thoại:</label><input type="text" id="phone" placeholder="VD: 0912345678">
+<label for="phone">Số điện thoại:</label>
+
+<input
+type="tel"
+id="phone"
+maxlength="10"
+placeholder="VD: 0912345678">
 <button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
 </div>
 
@@ -593,50 +598,80 @@ auth.onAuthStateChanged(user=>{
     });
 });
 
-updateInfoBtn.addEventListener("click",async()=>{
-    if(!currentUser)return;
-    try{
-        await db.ref('users/'+currentUser.uid).update({
-            name:nameInput.value,
-            phone:phoneInput.value,
-            address:addressInput.value,
-            birthday:birthdayInput.value
+
+updateInfoBtn.addEventListener("click", async () => {
+
+    if (!currentUser) return;
+
+    // Lấy dữ liệu
+    const name = nameInput.value.trim();
+    const address = addressInput.value.trim();
+    const birthday = birthdayInput.value;
+    const phone = phoneInput.value.trim();
+
+    // =========================
+    // KIỂM TRA RỖNG
+    // =========================
+    if (!name || !address || !birthday || !phone) {
+
+        showMsg(
+            errorEl,
+            "Vui lòng nhập đầy đủ thông tin!",
+            "red"
+        );
+
+        return;
+    }
+
+    // =========================
+    // KIỂM TRA SỐ ĐIỆN THOẠI VN
+    // - đúng 10 số
+    // - đầu số Việt Nam
+    // =========================
+    const vnPhoneRegex =
+        /^(03|05|07|08|09)\d{8}$/;
+
+    if (!vnPhoneRegex.test(phone)) {
+
+        showMsg(
+            errorEl,
+            "Số điện thoại không hợp lệ!",
+            "red"
+        );
+
+        return;
+    }
+
+    try {
+
+        await db.ref('users/' + currentUser.uid).update({
+            name: name,
+            phone: phone,
+            address: address,
+            birthday: birthday
         });
-        currentName.innerText = nameInput.value||"Chưa cập nhật";
-        currentPhone.innerText = phoneInput.value||"Chưa cập nhật";
-        currentAddress.innerText = addressInput.value||"Chưa cập nhật";
-        currentBirthday.innerText = birthdayInput.value||"Chưa cập nhật";
-        showMsg(messageEl,"Cập nhật thành công!","green");
-    }catch(err){ showMsg(errorEl,err.message,"red"); }
-});
 
-changePasswordBtn.addEventListener("click",async()=>{
-    const newPass = newPasswordInput.value.trim();
-    if(newPass.length<6){ showMsg(errorEl,"Mật khẩu tối thiểu 6 ký tự","red"); return; }
-    try{
-        await currentUser.updatePassword(newPass);
-        newPasswordInput.value="";
-        showMsg(messageEl,"Đổi mật khẩu thành công!","green");
-    }catch(err){ showMsg(errorEl,err.message,"red"); }
-});
+        currentName.innerText = name;
+        currentPhone.innerText = phone;
+        currentAddress.innerText = address;
+        currentBirthday.innerText = birthday;
 
-logoutArrow.addEventListener('click', e=>{ e.preventDefault(); auth.signOut().then(()=>window.location.href="index.html"); });
+        showMsg(
+            messageEl,
+            "Cập nhật thành công!",
+            "green"
+        );
 
-orderHistoryBtn.addEventListener('click',()=>{
-    ordersContainer.style.display='block';
-    ordersList.innerHTML='Đang tải...';
-    db.ref('orders/'+currentUser.uid).once('value').then(snapshot=>{
-        ordersList.innerHTML='';
-        if(!snapshot.exists()){ ordersList.innerHTML='<p>Chưa có đơn hàng nào.</p>'; return; }
-        snapshot.forEach(order=>{
-            const data = order.val();
-            const div = document.createElement('div');
-            div.className='order-item';
-            const productNames = data.items ? data.items.map(i=>i.name).join(', ') : "Không có sản phẩm";
-            div.innerHTML=`<strong>Mã đơn: ${order.key}</strong><br>Trạng thái: ${data.status||"Đang xử lý"}<br>Sản phẩm: ${productNames}`;
-            ordersList.appendChild(div);
-        });
-    });
+    } catch (err) {
+
+        showMsg(
+            errorEl,
+            err.message,
+            "red"
+        );
+
+    }
+
 });
 </script>
 </body>
