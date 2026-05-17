@@ -16,15 +16,62 @@
   display:block;
   background:transparent;
 }
+  .sidebar{
+  position:fixed;
+  top:0;
+  left:-280px;
+  width:260px;
+  height:100%;
+  background:#fff;
+  transition:.3s;
+  z-index:9999;
+}
+
+.sidebar.active{
+  left:0;
+}
+
+#overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  opacity:0;
+  visibility:hidden;
+  transition:.3s;
+  z-index:9998;
+}
+
+#overlay.active{
+  opacity:1;
+  visibility:visible;
+}
 </style>
 
 </head>
+<script>
+window.addEventListener("DOMContentLoaded", () => {
 
+  document.getElementById("overlay").onclick = function(){
+
+    document
+      .getElementById("sidebar")
+      .classList.remove("active");
+
+    document
+      .getElementById("overlay")
+      .classList.remove("active");
+
+  };
+
+});
+</script>
 <body>
 
 
 
 <!-- MENU -->
+<div id="overlay"></div>
+
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
 
@@ -36,18 +83,18 @@
   <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
 </div>
 
-<!-- HEADER -->
 <header>
+
   <div class="menu-btn" onclick="toggleMenu()">☰</div>
 
   <div class="logo">
-    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png">
   </div>
 
   <input id="search" placeholder="Tìm kiếm sản phẩm...">
+
 </header>
 
-<!-- CONTENT -->
 <div class="container">
 
   <div class="products" id="products"></div>
@@ -60,9 +107,7 @@
     <button onclick="clearCart()">Xoá giỏ hàng</button>
   </div>
 
-</div>
-
-
+</div> 
 <script type="module" src="camera-ngoai-troi.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 
