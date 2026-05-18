@@ -1,8 +1,4 @@
-console.log("FLASH OK");
 
-document.getElementById("flash-sale").innerHTML = `
-<h1>FLASH SALE TEST</h1>
-`;
 /* =========================
    🔥 FLASH SALE MODULE
    FILE: flash-sale.js
