@@ -129,9 +129,9 @@ body{
   border-radius:6px;
   cursor:pointer;
 }
-
 /* 📱 MOBILE FULL SCREEN */
 @media (max-width: 768px){
+
   .container{
     max-width:100%;
     padding:10px;
@@ -159,11 +159,13 @@ body{
     font-size:14px;
     padding:6px 10px;
   }
+
 }
 </style>
 </head>
 
 <body>
+
 <div class="container">
 
 <a href="index.html" class="back-btn">← Quay lại</a>
@@ -178,34 +180,19 @@ body{
 </div>
 
 <script>
-/* =========================
-   📦 GET ORDERS THEO UID
-========================= */
-function getOrders(){
-  const uid = localStorage.getItem("uid");
-  if(!uid) return [];
-  return JSON.parse(localStorage.getItem("orders_" + uid)) || [];
-}
 
 /* =========================
-   💰 FORMAT TIỀN
-========================= */
-function format(n){
-  return Number(n || 0).toLocaleString("vi-VN") + "đ";
-}
-
-/* =========================
-   🔢 PAGINATION
+   PAGINATION
 ========================= */
 let currentPage = 1;
 const perPage = 5;
 
 /* =========================
-   🖥️ RENDER ORDERS
+   RENDER ORDERS
 ========================= */
 function renderOrders(){
   const box = document.getElementById("orders");
-  let orders = getOrders();
+  let orders = JSON.parse(localStorage.getItem("orders")) || [];
 
   if(orders.length === 0){
     box.innerHTML = "Chưa có đơn hàng";
@@ -215,7 +202,7 @@ function renderOrders(){
 
   box.innerHTML = "";
 
-  orders.reverse(); // đơn mới lên đầu
+  orders.reverse();
 
   const start = (currentPage - 1) * perPage;
   const end = start + perPage;
@@ -230,7 +217,9 @@ function renderOrders(){
     let itemsHTML = "";
 
     order.cart.forEach(p => {
+
       let qty = p.qty || 1;
+
       let price = Number(p.price) || 0;
       let old = Number(p.oldPrice) || price;
 
@@ -243,13 +232,28 @@ function renderOrders(){
       itemsHTML += `
         <div class="item">
           <img src="${p.img}">
+
           <div>
             <b>${p.name}</b>
+
             <div class="calc">
-              <div class="sale-price">${price.toLocaleString()}đ</div>
-              ${old > price ? `<div class="old-price">${old.toLocaleString()}đ</div>` : ""}
-              <div>${qty} × ${price.toLocaleString()}đ = ${subFinal.toLocaleString()}đ</div>
+
+              <div class="sale-price">
+                ${price.toLocaleString()}đ
+              </div>
+
+              ${
+                old > price
+                ? `<div class="old-price">${old.toLocaleString()}đ</div>`
+                : ""
+              }
+
+              <div>
+                ${qty} × ${price.toLocaleString()}đ = ${subFinal.toLocaleString()}đ
+              </div>
+
             </div>
+
           </div>
         </div>
       `;
@@ -259,33 +263,46 @@ function renderOrders(){
 
     box.innerHTML += `
       <div class="order-box">
+
+        <!-- 🔴 KHUNG ĐỎ ĐƠN HÀNG -->
         <div class="order-title">Đơn hàng #${order.id}</div>
+
         <p><b>Khách hàng: ${order.name}</b> - ${order.phone}</p>
         <p>Địa chỉ: ${order.address}</p>
         <p>Ngày đặt hàng: ${order.time}</p>
-        <p>Hình thức thanh toán: ${order.payment === "bank" ? "🏦 Chuyển khoản" : "💵 COD"}</p>
+       <p>Hình thức thanh toán: ${
+       order.payment === "bank"
+    ? "🏦 Chuyển khoản"
+    : "💵 COD"
+}</p>
         ${itemsHTML}
+
         <div class="total-box">
+
           <div class="row">
             <span>Tổng giá gốc</span>
             <b>${originalTotal.toLocaleString()}đ</b>
           </div>
+
           <div class="row discount">
             <span>Tiết kiệm</span>
             <b>-${discount.toLocaleString()}đ</b>
           </div>
+
           <div class="row final">
             <span>Thanh toán</span>
             <b>${finalTotal.toLocaleString()}đ</b>
           </div>
+
         </div>
+
       </div>
     `;
   });
 
   /* =========================
      RENDER PAGINATION
-  ========================== */
+  ========================= */
   const totalPage = Math.ceil(orders.length / perPage);
   const pagi = document.getElementById("pagination");
 
@@ -316,6 +333,7 @@ function goPage(page){
    INIT
 ========================= */
 renderOrders();
+
 </script>
 
 </body>
