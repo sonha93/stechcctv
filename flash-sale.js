@@ -18,7 +18,7 @@
 
 */
 
-const FLASH_CATEGORY = "home";
+const FLASH_CATEGORY = "cam-in";
 
 /*
   % GIẢM TỐI THIỂU
