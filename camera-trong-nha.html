@@ -111,7 +111,7 @@
   object-fit:cover;
 }
 
-/* MÁY TÍNH 4 CỘT */
+/* MÁY TÍNH 3 CỘT */
 @media(min-width:1200px){
 
   #products{
@@ -140,6 +140,20 @@
 
 .item{
   position:relative;
+}
+
+
+
+/* NÚT XEM THÊM */
+#loadMoreBtn{
+  display:block;
+  margin:20px auto;
+  padding:12px 20px;
+  border:none;
+  border-radius:10px;
+  background:#111;
+  color:#fff;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -174,7 +188,10 @@
 <!-- CONTENT -->
 <div class="container">
 
+ 
   <div class="products" id="products"></div>
+
+<button id="loadMoreBtn"></button>
 
   <div class="cart">
     <h3>🛒 Giỏ hàng</h3>
@@ -212,7 +229,7 @@
 
   </div>
 </footer>
-</footer>
+
 
 <script>
 function toggleMenu() {
@@ -226,4 +243,3 @@ function toggleMenu() {
 
 </body>
 </html>
-
