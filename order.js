@@ -1,7 +1,9 @@
 import {
   getFirestore,
   collection,
-  getDocs
+  getDocs,
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import { app, onAuthStateChangedListener } from "./auth.js";
@@ -11,7 +13,7 @@ const db = getFirestore(app);
 let currentUID = null;
 
 /* =========================
-   LOGIN CHECK (QUAN TRỌNG)
+   LOGIN CHECK
 ========================= */
 onAuthStateChangedListener((user) => {
   if (user) {
@@ -25,16 +27,20 @@ onAuthStateChangedListener((user) => {
 });
 
 /* =========================
-   GET ORDERS FIREBASE
+   GET ORDERS
 ========================= */
 async function getOrders() {
   if (!currentUID) return [];
 
-  const snap = await getDocs(
-    collection(db, "orders", currentUID, "userOrders")
+  const q = query(
+    collection(db, "orders"),
+    where("uid", "==", currentUID)
   );
 
+  const snap = await getDocs(q);
+
   let list = [];
+
   snap.forEach(doc => {
     list.push({ id: doc.id, ...doc.data() });
   });
@@ -58,7 +64,7 @@ async function renderOrders() {
 
   const orders = await getOrders();
 
-  if (!orders.length) {
+  if (!orders || orders.length === 0) {
     box.innerHTML = "<p>Chưa có đơn hàng</p>";
     return;
   }
@@ -69,15 +75,16 @@ async function renderOrders() {
 
     let total = 0;
 
-    let htmlItems = order.cart.map(p => {
-      let qty = p.qty || 1;
-      let price = Number(p.price || 0);
+    let htmlItems = (order.cart || []).map(p => {
+
+      let qty = Number(p.qty ?? 1);
+      let price = Number(p.price ?? 0);
 
       total += price * qty;
 
       return `
         <div style="padding:5px 0;border-bottom:1px solid #eee">
-          <b>${p.name}</b><br>
+          <b>${p.name || ""}</b><br>
           ${qty} x ${format(price)} = ${format(price * qty)}
         </div>
       `;
