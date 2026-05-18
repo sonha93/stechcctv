@@ -1,3 +1,4 @@
+console.log("🔥 FLASH SALE JS IS RUNNING");
 /* =========================
    🔥 FLASH SALE FIREBASE v9
 ========================= */
