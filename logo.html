@@ -482,7 +482,7 @@ header{
     <img
       id="detailImg"
       src=""
-      onerror="this.src='https://via.placeholder.com/300'"
+      onerror="this.src='https://dummyimage.com/300x300/cccccc/000000&text=No+Image'"
     >
   </div>
 
@@ -523,7 +523,7 @@ header{
     <div class="panel-product">
       <img
         id="panelProductImg"
-        onerror="this.src='https://via.placeholder.com/80'"
+        onerror="this.src='https://dummyimage.com/80x80/cccccc/000000&text=No+Image'"
       >
       <h3 id="panelProductName"></h3>
     </div>
@@ -630,8 +630,14 @@ import {
 const db = getFirestore(app);
 
 const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
 
+const rawId = params.get("id");
+
+const id = rawId
+  ? decodeURIComponent(rawId).trim()
+  : "";
+
+console.log("PRODUCT ID =", id);
 let products = [];
 let product = null;
 
@@ -670,10 +676,10 @@ async function loadProducts(){
 
   querySnapshot.forEach(docSnap=>{
 
-    products.push({
-      id: docSnap.id,
-      ...docSnap.data()
-    });
+  products.push({
+  firebaseId: docSnap.id,
+  ...docSnap.data()
+});
 
   });
 
@@ -698,7 +704,10 @@ async function loadProduct(){
 
   const docSnap = await getDoc(docRef);
 
-  if(!docSnap.exists()){
+ if(!docSnap.exists()){
+
+  console.log("Không tìm thấy doc id:", id);
+
 
     document.body.innerHTML = `
       <h2 style="padding:40px;text-align:center">
@@ -903,7 +912,7 @@ function searchProduct(){
     div.innerHTML = `
       <img
         src="${p.img}"
-        onerror="this.src='https://via.placeholder.com/50'"
+        onerror="this.src='https://dummyimage.com/50x50/cccccc/000000&text=No+Image'"
       >
 
       <div>
@@ -919,9 +928,8 @@ function searchProduct(){
 
       resultBox.innerHTML = "";
 
-      window.location.href =
-        "logo.html?id=" + p.id;
-
+     window.location.href =
+     "./logo.html?id=" + encodeURIComponent(p.firebaseId);
     };
 
     resultBox.appendChild(div);
