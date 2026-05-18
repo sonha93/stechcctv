@@ -638,10 +638,12 @@ const id = rawId
   : "";
 
 console.log("PRODUCT ID =", id);
+
 let products = [];
 let product = null;
 
-// MENU
+/* MENU */
+
 function toggleMenu(){
 
   document
@@ -651,7 +653,6 @@ function toggleMenu(){
   document
     .getElementById("overlay")
     .classList.toggle("active");
-
 }
 
 document.getElementById("overlay").onclick = function(){
@@ -663,10 +664,10 @@ document.getElementById("overlay").onclick = function(){
   document
     .getElementById("overlay")
     .classList.remove("active");
-
 };
 
-// LOAD PRODUCTS
+/* LOAD ALL PRODUCTS */
+
 async function loadProducts(){
 
   const querySnapshot =
@@ -674,18 +675,18 @@ async function loadProducts(){
 
   products = [];
 
-  querySnapshot.forEach(docSnap=>{
+  querySnapshot.forEach(docSnap => {
 
-  products.push({
-  firebaseId: docSnap.id,
-  ...docSnap.data()
-});
+    products.push({
+      firebaseId: docSnap.id,
+      ...docSnap.data()
+    });
 
   });
-
 }
 
-// LOAD PRODUCT DETAIL
+/* LOAD PRODUCT DETAIL */
+
 async function loadProduct(){
 
   if(!id){
@@ -697,17 +698,15 @@ async function loadProduct(){
     `;
 
     return;
-
   }
 
   const docRef = doc(db,"products",id);
 
   const docSnap = await getDoc(docRef);
 
- if(!docSnap.exists()){
+  if(!docSnap.exists()){
 
-  console.log("Không tìm thấy doc id:", id);
-
+    console.log("Không tìm thấy doc id:", id);
 
     document.body.innerHTML = `
       <h2 style="padding:40px;text-align:center">
@@ -716,29 +715,31 @@ async function loadProduct(){
     `;
 
     return;
-
   }
 
   product = {
-    id: docSnap.id,
+    firebaseId: docSnap.id,
     ...docSnap.data()
   };
 
-  // IMAGE
+  /* IMAGE */
+
   document.getElementById("detailImg").src =
     product.img || "";
 
   document.getElementById("panelProductImg").src =
     product.img || "";
 
-  // NAME
+  /* NAME */
+
   document.getElementById("detailName").innerText =
     product.name || "";
 
   document.getElementById("panelProductName").innerText =
     product.name || "";
 
-  // PRICE
+  /* PRICE */
+
   document.getElementById("detailPrice").innerText =
     Number(product.price || 0).toLocaleString() + "đ";
 
@@ -747,11 +748,13 @@ async function loadProduct(){
       ? Number(product.oldPrice).toLocaleString() + "đ"
       : "";
 
-  // DESC
+  /* DESC */
+
   document.getElementById("detailDesc").innerText =
     product.desc || "Không có mô tả";
 
-  // INFO
+  /* INFO */
+
   document.getElementById("detailModel").innerText =
     product.model || "Đang cập nhật";
 
@@ -761,7 +764,8 @@ async function loadProduct(){
   document.getElementById("detailWarranty").innerText =
     product.baoHanh || "Đang cập nhật";
 
-  // CONFIG
+  /* CONFIG */
+
   document.getElementById("detailResolution").innerText =
     product.doPhanGiai || "Đang cập nhật";
 
@@ -771,7 +775,8 @@ async function loadProduct(){
   document.getElementById("detailConnect").innerText =
     product.ketNoi || "Đang cập nhật";
 
-  // DESIGN
+  /* DESIGN */
+
   document.getElementById("detailThietKe").innerText =
     product.thietKe || "Đang cập nhật";
 
@@ -781,8 +786,10 @@ async function loadProduct(){
   document.getElementById("detailCongSuat").innerText =
     product.congSuat || "Đang cập nhật";
 
-  // SALE
-  const saleBox = document.getElementById("detailSale");
+  /* SALE */
+
+  const saleBox =
+    document.getElementById("detailSale");
 
   if(
     product.oldPrice &&
@@ -797,17 +804,17 @@ async function loadProduct(){
     );
 
     saleBox.style.display = "inline-block";
+
     saleBox.innerText = "-" + sale + "%";
 
   }else{
 
     saleBox.style.display = "none";
-
   }
-
 }
 
-// PANEL
+/* PANEL */
+
 function openPanel(){
 
   document
@@ -817,7 +824,6 @@ function openPanel(){
   document
     .getElementById("panelOverlay")
     .classList.add("active");
-
 }
 
 function closePanel(){
@@ -829,28 +835,27 @@ function closePanel(){
   document
     .getElementById("panelOverlay")
     .classList.remove("active");
-
 }
 
 function showTab(tabId,btn){
 
   document
     .querySelectorAll(".spec-content")
-    .forEach(el=>el.classList.remove("active"));
+    .forEach(el => el.classList.remove("active"));
 
   document
     .querySelectorAll(".spec-tab")
-    .forEach(el=>el.classList.remove("active"));
+    .forEach(el => el.classList.remove("active"));
 
   document
     .getElementById(tabId)
     .classList.add("active");
 
   btn.classList.add("active");
-
 }
 
-// ADD TO CART
+/* ADD TO CART */
+
 async function addToCart(){
 
   if(!product) return;
@@ -858,10 +863,10 @@ async function addToCart(){
   await addToCartFirebase(product);
 
   updateCartCount();
-
 }
 
-// CART COUNT
+/* CART COUNT */
+
 function updateCartCount(){
 
   const cart =
@@ -869,22 +874,23 @@ function updateCartCount(){
 
   let total = 0;
 
-  cart.forEach(item=>{
+  cart.forEach(item => {
     total += item.qty || 1;
   });
 
   document.getElementById("cartCount").innerText =
     total;
-
 }
 
-// SEARCH
+/* SEARCH */
+
 function searchProduct(){
 
   const term =
-    document.getElementById("searchInput")
-    .value
-    .toLowerCase();
+    document
+      .getElementById("searchInput")
+      .value
+      .toLowerCase();
 
   const resultBox =
     document.getElementById("searchResults");
@@ -894,16 +900,15 @@ function searchProduct(){
   if(term === "") return;
 
   const filtered = products
-    .filter(
-      p =>
-        p.name &&
-        p.name.toLowerCase().includes(term)
+    .filter(p =>
+      p.name &&
+      p.name.toLowerCase().includes(term)
     )
     .sort((a,b)=>
       a.name.length - b.name.length
     );
 
-  filtered.slice(0,10).forEach(p=>{
+  filtered.slice(0,10).forEach(p => {
 
     const div = document.createElement("div");
 
@@ -924,26 +929,28 @@ function searchProduct(){
       </div>
     `;
 
-    div.onclick = ()=>{
+    div.onclick = () => {
 
       resultBox.innerHTML = "";
 
-     window.location.href =
-     "./logo.html?id=" + encodeURIComponent(p.firebaseId);
+      window.location.href =
+        "./logo.html?id=" +
+        encodeURIComponent(p.firebaseId);
     };
 
     resultBox.appendChild(div);
 
   });
-
 }
 
-// INIT
+/* INIT */
+
 loadProducts();
 loadProduct();
 updateCartCount();
 
-// GLOBAL
+/* GLOBAL */
+
 window.toggleMenu = toggleMenu;
 window.openPanel = openPanel;
 window.closePanel = closePanel;
@@ -952,6 +959,3 @@ window.addToCart = addToCart;
 window.searchProduct = searchProduct;
 
 </script>
-
-</body>
-</html>
