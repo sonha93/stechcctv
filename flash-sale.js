@@ -134,10 +134,8 @@ function renderFlashSale(allProducts) {
 
   html += `</div></section>`;
 
-  const box = document.getElementById("products");
-
-  if (box) box.insertAdjacentHTML("beforebegin", html);
-
+const box = document.getElementById("flash-sale");
+box.innerHTML = html;
   flashRendered = true;
 
   startTimer();
