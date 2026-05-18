@@ -106,7 +106,7 @@ const featured = allProducts.filter(
         </div>
        
 </button>
-        <button class="cart-btn" onclick="addToCart('${id}')">🛒 Mua ngay</button>
+        <button class="cart-btn" onclick="addToCart('${id}')">🛒 Thêm vào giỏ</button>
        </div>
     `;
   });
