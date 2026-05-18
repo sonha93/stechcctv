@@ -38,71 +38,75 @@ async function renderCart() {
     return;
   }
 
-  const cartRef = collection(db, "users", currentUser.uid, "cart");
-  const snapshot = await getDocs(cartRef);
+  try {
 
-  if (snapshot.empty) {
-    cartBox.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
-    return;
-  }
+    const cartRef = collection(db, "users", currentUser.uid, "cart");
+    const snapshot = await getDocs(cartRef);
 
-  let total = 0;
-
-  for (const docSnap of snapshot.docs) {
-
-    const item = docSnap.data();
-
-    const productId = item.productId || item.id;
-
-    const productSnap = await getDoc(doc(db, "products", productId));
-
-    let price = 0;
-
-    if (productSnap.exists()) {
-      price = Number(productSnap.data().price) || 0;
+    if (snapshot.empty) {
+      cartBox.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
+      return;
     }
 
-    const qty = Number(item.qty) || 1;
+    let total = 0;
 
-    total += price * qty;
+    for (const docSnap of snapshot.docs) {
 
-    cartBox.innerHTML += `
-      <div class="item">
+      const item = docSnap.data();
 
-        <img src="${item.img || ''}">
+      // 🔥 LẤY GIÁ MỚI TỪ PRODUCTS (QUAN TRỌNG)
+      const productSnap = await getDoc(
+        doc(db, "products", item.id)
+      );
 
-        <div class="info">
+      const product = productSnap.data();
 
-          <b>${item.name || ''}</b>
+      const price = Number(product?.price) || 0;
+      const qty = Number(item.qty) || 1;
 
-          <div class="price-row">
-            <div class="price-new">
-              ${price.toLocaleString()}đ
+      total += price * qty;
+
+      cartBox.innerHTML += `
+        <div class="item">
+
+          <img src="${item.img || ''}">
+
+          <div class="info">
+
+            <b>${item.name || ''}</b>
+
+            <div class="price-row">
+              <div class="price-new">
+                ${price.toLocaleString()}đ
+              </div>
             </div>
+
+            <div class="qty">
+              <button onclick="updateQty('${docSnap.id}', ${qty - 1})">-</button>
+              <span>${qty}</span>
+              <button onclick="updateQty('${docSnap.id}', ${qty + 1})">+</button>
+            </div>
+
           </div>
 
-          <div class="qty">
-            <button onclick="updateQty('${docSnap.id}', ${qty - 1})">-</button>
-            <span>${qty}</span>
-            <button onclick="updateQty('${docSnap.id}', ${qty + 1})">+</button>
-          </div>
+          <button class="remove" onclick="removeItem('${docSnap.id}')">🗑</button>
 
         </div>
+      `;
+    }
 
-        <button class="remove" onclick="removeItem('${docSnap.id}')">🗑</button>
+    totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
 
-      </div>
-    `;
-  }
+    if (actionBox) {
+      actionBox.innerHTML = `
+        <button class="checkout" onclick="checkout()">
+          Đặt hàng
+        </button>
+      `;
+    }
 
-  totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
-
-  if (actionBox) {
-    actionBox.innerHTML = `
-      <button class="checkout" onclick="checkout()">
-        Đặt hàng
-      </button>
-    `;
+  } catch (err) {
+    console.error("Lỗi renderCart:", err);
   }
 }
 
@@ -116,9 +120,17 @@ export async function addToCart(product) {
     return;
   }
 
-  const itemRef = doc(db, "users", currentUser.uid, "cart", String(product.id));
+  const itemRef = doc(
+    db,
+    "users",
+    currentUser.uid,
+    "cart",
+    String(product.id)
+  );
 
-  const snapshot = await getDocs(collection(db, "users", currentUser.uid, "cart"));
+  const snapshot = await getDocs(
+    collection(db, "users", currentUser.uid, "cart")
+  );
 
   let oldQty = 0;
 
@@ -128,10 +140,11 @@ export async function addToCart(product) {
     }
   });
 
+  // ❗ KHÔNG LƯU PRICE NỮA
   await setDoc(itemRef, {
-    productId: product.id,
-    name: product.name,
-    img: product.img,
+    id: product.id,
+    name: product.name || "",
+    img: product.img || "",
     qty: oldQty + 1
   });
 
@@ -139,13 +152,15 @@ export async function addToCart(product) {
 }
 
 // ============================
-// REMOVE ITEM (FIXED)
+// REMOVE ITEM
 // ============================
 window.removeItem = async function(itemId) {
 
   if (!currentUser) return;
 
-  await deleteDoc(doc(db, "users", currentUser.uid, "cart", itemId));
+  await deleteDoc(
+    doc(db, "users", currentUser.uid, "cart", itemId)
+  );
 
   renderCart();
 };
