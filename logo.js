@@ -137,92 +137,32 @@ list = list.filter(
 
   list.forEach(p => {
 
-   const id =
-String(p.firebaseId);
+  const id = String(p.firebaseId);
 
-    const price =
-      Number(p.price) || 0;
+box.innerHTML += `
+<div class="item">
 
-    const oldPrice =
-      Number(p.oldPrice) || 0;
+  <div class="img-box">
+    <img
+      src="${p.img || ''}"
+      alt="${p.name || ''}"
+      onclick="goDetail('${id}')"
+      style="cursor:pointer;"
+    >
+  </div>
 
-    const hasDiscount =
-      oldPrice > price;
+  <h4>${p.name || "Không tên"}</h4>
 
-    const percent =
-      hasDiscount
-      ? Math.round(
-          (1 - price / oldPrice) * 100
-        )
-      : 0;
+  <button
+    class="cart-btn"
+    onclick="addToCart('${id}')"
+  >
+    🛒 Thêm vào giỏ
+  </button>
 
-    box.innerHTML += `
-    <div class="item">
-
-      ${
-  percent
-  ? `
-    <div class="discount-badge">
-      -${percent}%
-    </div>
-  `
-  : ""
-}
-
-        <div class="img-box">
-
-          <img
-            src="${p.img || ''}"
-            alt="${p.name || ''}"
-           onclick="goDetail('${p.firebaseId}')"
-            style="cursor:pointer;"
-          >
-
-        </div>
-
-        <h4>
-          ${p.name || "Không tên"}
-        </h4>
-
-        <div class="price-box">
-
-          <span class="price">
-            ${price.toLocaleString()}đ
-          </span>
-
-          ${
-            hasDiscount
-
-            ? `
-
-            <span class="old-price">
-              ${oldPrice.toLocaleString()}đ
-            </span>
-
-            `
-
-            : ""
-
-          }
-
-        </div>
-
-   <button
-  class="cart-btn"
-  onclick="addToCart('${p.id || p.firebaseId}')"
->
-  🛒 Thêm vào giỏ
-</button>
-
-<button
-  class="cart-btn"
-  onclick="addToCart('${p.firebaseId}')"
->
-  🛒 Thêm vào giỏ
-</button>
-      </div>
-
-    `;
+</div>
+`;
+    
 
   });
 
