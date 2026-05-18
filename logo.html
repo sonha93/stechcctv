@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -12,7 +11,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-   font-weight:bold;
+  font-family:Arial;
 }
 
 body{
@@ -47,6 +46,7 @@ header{
   font-size:22px;
   cursor:pointer;
   position:relative;
+  border:none;
 }
 
 .admin-btn{
@@ -146,8 +146,8 @@ header{
 
 .container{
   max-width:1000px;
-  margin:0auto;
-  padding:0px;
+  margin:auto;
+  padding:15px;
   display:flex;
   gap:18px;
   align-items:flex-start;
@@ -327,6 +327,7 @@ header{
 .spec-label{
   width:120px;
   color:#666;
+  font-weight:bold;
 }
 
 .spec-value{
@@ -343,6 +344,7 @@ header{
   margin-top:10px;
   overflow:hidden;
   z-index:999;
+  box-shadow:0 5px 20px rgba(0,0,0,.1);
 }
 
 .search-result-item{
@@ -362,76 +364,31 @@ header{
 
 @media(max-width:768px){
 
-  .menu-btn,
-  .icon-btn{
-    width:42px;
-    height:42px;
-    font-size:20px;
-  }
-
-  .logo{
-    width:39px;
-    height:39px;
-  }
-
   .container{
-    flex-direction:row;
-    align-items:flex-start;
-    gap:14px;
-    padding:1px;
+    flex-direction:column;
   }
 
   .left{
-    width:120px;
-    flex-shrink:0;
+    width:100%;
   }
 
   .left img{
-    width:130px;
-    height:178px;
-    border-radius:18px;
-    object-fit:cover;
-  }
-
-  .right{
-    flex:1;
-    gap:10px;
-    padding-top:2px;
+    height:280px;
   }
 
   .product-name{
-    font-size:18px;
-    line-height:1.4;
-  }
-
-  .price{
     font-size:22px;
   }
 
-  .old-price{
-    font-size:14px;
-  }
-
-  .sale{
-    font-size:12px;
-    padding:4px 8px;
-    border-radius:10px;
-  }
-
-  .buy-btn,
-  .spec-open-btn{
-    height:46px;
-    font-size:15px;
-    border-radius:18px;
+  .price{
+    font-size:24px;
   }
 
 }
+
 </style>
 </head>
 
-
-
-<!-- FOOTER -->
 <body>
 
 <div id="overlay"></div>
@@ -440,11 +397,12 @@ header{
   <a href="index.html">Trang chủ</a>
   <a href="camera-trong-nha.html">Camera trong nhà</a>
   <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
+  <a href="cart.html">Giỏ hàng</a>
 </div>
 
 <header>
 
-  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
 
   <div class="logo">
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png">
@@ -479,11 +437,11 @@ header{
 <div class="container">
 
   <div class="left">
-<img
-  id="detailImg"
-  src=""
-  onerror="this.src='https://via.placeholder.com/300'"
->
+    <img
+      id="detailImg"
+      src=""
+      onerror="this.src='https://via.placeholder.com/300'"
+    >
   </div>
 
   <div class="right">
@@ -521,10 +479,10 @@ header{
   <div class="panel-top">
 
     <div class="panel-product">
-    <img
-  id="panelProductImg"
-  onerror="this.src='https://via.placeholder.com/80'"
->
+      <img
+        id="panelProductImg"
+        onerror="this.src='https://via.placeholder.com/80'"
+      >
       <h3 id="panelProductName"></h3>
     </div>
 
@@ -550,8 +508,6 @@ header{
 
   <div class="panel-body">
 
-    <!-- THÔNG TIN -->
-
     <div class="spec-content active" id="infoTab">
 
       <div class="spec-row">
@@ -571,8 +527,6 @@ header{
 
     </div>
 
-    <!-- CẤU HÌNH -->
-
     <div class="spec-content" id="configTab">
 
       <div class="spec-row">
@@ -591,8 +545,6 @@ header{
       </div>
 
     </div>
-
-    <!-- THIẾT KẾ -->
 
     <div class="spec-content" id="designTab">
 
@@ -617,23 +569,42 @@ header{
 
 </div>
 
-
-
-
-
-
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { app } from "./auth.js";
+
 import {
   getFirestore,
   collection,
   getDocs,
   doc,
   getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  addToCart as addToCartFirebase
+} from "./cart.js";
+
+const db = getFirestore(app);
+
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+let products = [];
+let product = null;
+
+// MENU
+function toggleMenu(){
+
+  document
+    .getElementById("sidebar")
+    .classList.toggle("active");
+
+  document
+    .getElementById("overlay")
+    .classList.toggle("active");
+
 }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 document.getElementById("overlay").onclick = function(){
 
@@ -647,37 +618,11 @@ document.getElementById("overlay").onclick = function(){
 
 };
 
-const firebaseConfig = {
-  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain:"stech-73b89.firebaseapp.com",
-  projectId:"stech-73b89",
-  storageBucket:"stech-73b89.firebasestorage.app",
-  messagingSenderId:"873739162979",
-  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
-  if(!id){
-
-  document.body.innerHTML = `
-    <h2 style="padding:40px;text-align:center">
-      ID sản phẩm không hợp lệ
-    </h2>
-  `;
-
-  throw new Error("Missing product ID");
-
-}
-console.log("URL ID =", id);
-let products = [];
-  async function loadProducts(){
+// LOAD PRODUCTS
+async function loadProducts(){
 
   const querySnapshot =
-  await getDocs(collection(db,"products"));
+    await getDocs(collection(db,"products"));
 
   products = [];
 
@@ -691,81 +636,102 @@ let products = [];
   });
 
 }
-let product = null;
 
+// LOAD PRODUCT DETAIL
 async function loadProduct(){
-const docRef = doc(db,"products",id);
 
-const docSnap = await getDoc(docRef);
+  if(!id){
 
-if(docSnap.exists()){
+    document.body.innerHTML = `
+      <h2 style="padding:40px;text-align:center">
+        ID sản phẩm không hợp lệ
+      </h2>
+    `;
+
+    return;
+
+  }
+
+  const docRef = doc(db,"products",id);
+
+  const docSnap = await getDoc(docRef);
+
+  if(!docSnap.exists()){
+
+    document.body.innerHTML = `
+      <h2 style="padding:40px;text-align:center">
+        Không tìm thấy sản phẩm
+      </h2>
+    `;
+
+    return;
+
+  }
 
   product = {
     id: docSnap.id,
     ...docSnap.data()
   };
 
-}else{
-
-  document.body.innerHTML = `
-    <h2 style="padding:40px;text-align:center">
-      Không tìm thấy sản phẩm
-    </h2>
-  `;
-
-  return;
-}
-
+  // IMAGE
   document.getElementById("detailImg").src =
-  product.img || "";
+    product.img || "";
 
   document.getElementById("panelProductImg").src =
-  product.img || "";
+    product.img || "";
 
+  // NAME
   document.getElementById("detailName").innerText =
-  product.name || "";
+    product.name || "";
 
   document.getElementById("panelProductName").innerText =
-  product.name || "";
+    product.name || "";
 
+  // PRICE
   document.getElementById("detailPrice").innerText =
-  Number(product.price || 0).toLocaleString()+"đ";
+    Number(product.price || 0).toLocaleString() + "đ";
 
   document.getElementById("detailOldPrice").innerText =
-  product.oldPrice
-  ? Number(product.oldPrice).toLocaleString()+"đ"
-  : "";
+    product.oldPrice
+      ? Number(product.oldPrice).toLocaleString() + "đ"
+      : "";
 
+  // DESC
   document.getElementById("detailDesc").innerText =
-  product.desc || "Không có mô tả";
+    product.desc || "Không có mô tả";
+
+  // INFO
   document.getElementById("detailModel").innerText =
-product.model || "Đang cập nhật";
+    product.model || "Đang cập nhật";
 
-document.getElementById("detailOrigin").innerText =
-product.xuatXu || "Đang cập nhật";
+  document.getElementById("detailOrigin").innerText =
+    product.xuatXu || "Đang cập nhật";
 
-document.getElementById("detailWarranty").innerText =
-product.baoHanh || "Đang cập nhật";
+  document.getElementById("detailWarranty").innerText =
+    product.baoHanh || "Đang cập nhật";
 
-document.getElementById("detailResolution").innerText =
-product.doPhanGiai || "Đang cập nhật";
+  // CONFIG
+  document.getElementById("detailResolution").innerText =
+    product.doPhanGiai || "Đang cập nhật";
 
-document.getElementById("detailConnect").innerText =
-product.ketNoi || "Đang cập nhật";
+  document.getElementById("detailViewAngle").innerText =
+    product.gocNhin || "Đang cập nhật";
 
-document.getElementById("detailViewAngle").innerText =
-product.gocNhin || "Đang cập nhật";
+  document.getElementById("detailConnect").innerText =
+    product.ketNoi || "Đang cập nhật";
 
-document.getElementById("detailThietKe").innerText =
-product.thietKe || "Đang cập nhật";
+  // DESIGN
+  document.getElementById("detailThietKe").innerText =
+    product.thietKe || "Đang cập nhật";
 
-document.getElementById("detailChatLieu").innerText =
-product.chatLieu || "Đang cập nhật";
+  document.getElementById("detailChatLieu").innerText =
+    product.chatLieu || "Đang cập nhật";
 
-document.getElementById("detailCongSuat").innerText =
-product.congSuat || "Đang cập nhật";
-  const saleBox =
-  document.getElementById("detailSale");
+  document.getElementById("detailCongSuat").innerText =
+    product.congSuat || "Đang cập nhật";
+
+  // SALE
+  const saleBox = document.getElementById("detailSale");
 
   if(
     product.oldPrice &&
@@ -790,101 +756,65 @@ product.congSuat || "Đang cập nhật";
 
 }
 
-loadProducts();
-loadProduct();
-function toggleMenu(){
-
-  document
-  .getElementById("sidebar")
-  .classList.toggle("active");
-
-  document
-  .getElementById("overlay")
-  .classList.toggle("active");
-
-}
-
+// PANEL
 function openPanel(){
 
   document
-  .getElementById("specPanel")
-  .classList.add("active");
+    .getElementById("specPanel")
+    .classList.add("active");
 
   document
-  .getElementById("panelOverlay")
-  .classList.add("active");
+    .getElementById("panelOverlay")
+    .classList.add("active");
 
 }
 
 function closePanel(){
 
   document
-  .getElementById("specPanel")
-  .classList.remove("active");
+    .getElementById("specPanel")
+    .classList.remove("active");
 
   document
-  .getElementById("panelOverlay")
-  .classList.remove("active");
+    .getElementById("panelOverlay")
+    .classList.remove("active");
 
 }
 
 function showTab(tabId,btn){
 
   document
-  .querySelectorAll(".spec-content")
-  .forEach(el=>el.classList.remove("active"));
+    .querySelectorAll(".spec-content")
+    .forEach(el=>el.classList.remove("active"));
 
   document
-  .querySelectorAll(".spec-tab")
-  .forEach(el=>el.classList.remove("active"));
+    .querySelectorAll(".spec-tab")
+    .forEach(el=>el.classList.remove("active"));
 
   document
-  .getElementById(tabId)
-  .classList.add("active");
+    .getElementById(tabId)
+    .classList.add("active");
 
   btn.classList.add("active");
 
 }
 
-function addToCart(){
+// ADD TO CART
+async function addToCart(){
 
   if(!product) return;
 
-  let cart =
-  JSON.parse(localStorage.getItem("cart")) || [];
-
-  const exist = cart.find(
-    x => String(x.id) === String(product.id)
-  );
-
-  if(exist){
-
-    exist.qty += 1;
-
-  }else{
-
-    cart.push({
-      ...product,
-      qty:1
-    });
-
-  }
-
-  localStorage.setItem(
-    "cart",
-    JSON.stringify(cart)
-  );
+  await addToCartFirebase(product);
 
   updateCartCount();
 
-  alert("Đã thêm vào giỏ");
-
 }
 
+// CART COUNT
 function updateCartCount(){
 
   const cart =
-  JSON.parse(localStorage.getItem("cart")) || [];
+    JSON.parse(localStorage.getItem("cart")) || [];
 
   let total = 0;
 
@@ -893,48 +823,50 @@ function updateCartCount(){
   });
 
   document.getElementById("cartCount").innerText =
-  total;
+    total;
 
 }
 
-updateCartCount();
-
+// SEARCH
 function searchProduct(){
 
   const term =
-  document.getElementById("searchInput")
-  .value
-  .toLowerCase();
+    document.getElementById("searchInput")
+    .value
+    .toLowerCase();
 
   const resultBox =
-  document.getElementById("searchResults");
+    document.getElementById("searchResults");
 
   resultBox.innerHTML = "";
 
   if(term === "") return;
 
-const filtered = products
-.filter(
-  p =>
-    p.name &&
-    p.name.toLowerCase().includes(term)
-)
-.sort((a,b)=>
-  a.name.length - b.name.length
-);
-filtered.slice(0,10).forEach(p=>{
-    const div =
-    document.createElement("div");
+  const filtered = products
+    .filter(
+      p =>
+        p.name &&
+        p.name.toLowerCase().includes(term)
+    )
+    .sort((a,b)=>
+      a.name.length - b.name.length
+    );
+
+  filtered.slice(0,10).forEach(p=>{
+
+    const div = document.createElement("div");
 
     div.className = "search-result-item";
 
     div.innerHTML = `
       <img
-  src="${p.img}"
-  onerror="this.src='https://via.placeholder.com/50'"
->
+        src="${p.img}"
+        onerror="this.src='https://via.placeholder.com/50'"
+      >
+
       <div>
         <strong>${p.name}</strong>
+
         <div style="color:red;font-weight:bold;">
           ${Number(p.price).toLocaleString()}đ
         </div>
@@ -943,18 +875,25 @@ filtered.slice(0,10).forEach(p=>{
 
     div.onclick = ()=>{
 
-  resultBox.innerHTML = "";
+      resultBox.innerHTML = "";
 
-  window.location.href =
-  "logo.html?id=" + p.id;
+      window.location.href =
+        "logo.html?id=" + p.id;
 
-};
+    };
+
     resultBox.appendChild(div);
 
   });
 
 }
 
+// INIT
+loadProducts();
+loadProduct();
+updateCartCount();
+
+// GLOBAL
 window.toggleMenu = toggleMenu;
 window.openPanel = openPanel;
 window.closePanel = closePanel;
@@ -963,7 +902,6 @@ window.addToCart = addToCart;
 window.searchProduct = searchProduct;
 
 </script>
- 
 
 </body>
 </html>
