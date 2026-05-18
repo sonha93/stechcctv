@@ -1,5 +1,3 @@
-
-
 window.goDetail = function(id){
 
   window.location.href =
@@ -137,32 +135,85 @@ list = list.filter(
 
   list.forEach(p => {
 
-  const id = String(p.firebaseId);
+   const id =
+String(p.firebaseId);
 
-box.innerHTML += `
-<div class="item">
+    const price =
+      Number(p.price) || 0;
 
-  <div class="img-box">
-    <img
-      src="${p.img || ''}"
-      alt="${p.name || ''}"
-      onclick="goDetail('${id}')"
-      style="cursor:pointer;"
-    >
-  </div>
+    const oldPrice =
+      Number(p.oldPrice) || 0;
 
-  <h4>${p.name || "Không tên"}</h4>
+    const hasDiscount =
+      oldPrice > price;
 
-  <button
-    class="cart-btn"
-    onclick="addToCart('${id}')"
-  >
-    🛒 Thêm vào giỏ
-  </button>
+    const percent =
+      hasDiscount
+      ? Math.round(
+          (1 - price / oldPrice) * 100
+        )
+      : 0;
 
-</div>
-`;
-    
+    box.innerHTML += `
+    <div class="item">
+
+      ${
+  percent
+  ? `
+    <div class="discount-badge">
+      -${percent}%
+    </div>
+  `
+  : ""
+}
+
+        <div class="img-box">
+
+          <img
+            src="${p.img || ''}"
+            alt="${p.name || ''}"
+           onclick="goDetail('${p.firebaseId}')"
+            style="cursor:pointer;"
+          >
+
+        </div>
+
+        <h4>
+          ${p.name || "Không tên"}
+        </h4>
+
+        <div class="price-box">
+
+          <span class="price">
+            ${price.toLocaleString()}đ
+          </span>
+
+          ${
+            hasDiscount
+
+            ? `
+
+            <span class="old-price">
+              ${oldPrice.toLocaleString()}đ
+            </span>
+
+            `
+
+            : ""
+
+          }
+
+        </div>
+
+<button
+  class="cart-btn"
+  onclick="addToCart('${p.firebaseId}')"
+>
+  🛒 Thêm vào giỏ
+</button>
+      </div>
+
+    `;
 
   });
 
