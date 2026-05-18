@@ -172,22 +172,23 @@ let currentPage = 1;
 const perPage = 5;
 
 /* =========================
-   AUTH CHECK (UID FIREBASE)
+   AUTH CHECK
 ========================= */
 onAuthStateChangedListener((user) => {
-  if (user) {
-    currentUID = user.uid;
-    loadOrders();
-  } else {
+  if (!user) {
     document.getElementById("orders").innerHTML = "Chưa đăng nhập";
+    return;
   }
+
+  currentUID = user.uid;
+  loadOrders();
 });
 
 /* =========================
-   LOAD ORDERS FIREBASE
+   LOAD FIREBASE ORDERS
 ========================= */
-async function loadOrders(){
-  if(!currentUID) return;
+async function loadOrders() {
+  if (!currentUID) return;
 
   const snap = await getDocs(
     collection(db, "orders", currentUID, "userOrders")
@@ -203,13 +204,13 @@ async function loadOrders(){
 }
 
 /* =========================
-   RENDER ORDERS
+   RENDER
 ========================= */
-function renderOrders(){
+function renderOrders() {
   const box = document.getElementById("orders");
   const pagi = document.getElementById("pagination");
 
-  if(!orders || orders.length === 0){
+  if (!orders.length) {
     box.innerHTML = "Chưa có đơn hàng";
     pagi.innerHTML = "";
     return;
@@ -218,88 +219,55 @@ function renderOrders(){
   box.innerHTML = "";
 
   const start = (currentPage - 1) * perPage;
-  const end = start + perPage;
-
-  const pageOrders = orders.slice(start, end);
+  const pageOrders = orders.slice(start, start + perPage);
 
   pageOrders.forEach(order => {
 
-    let originalTotal = 0;
-    let finalTotal = 0;
+    let totalOld = 0;
+    let totalNew = 0;
 
     let itemsHTML = "";
 
     (order.cart || []).forEach(p => {
 
       let qty = p.qty || 1;
-      let price = Number(p.price) || 0;
-      let old = Number(p.oldPrice) || price;
+      let price = Number(p.price || 0);
+      let old = Number(p.oldPrice || price);
 
-      let subFinal = qty * price;
-      let subOld = qty * old;
-
-      finalTotal += subFinal;
-      originalTotal += subOld;
+      totalNew += price * qty;
+      totalOld += old * qty;
 
       itemsHTML += `
         <div class="item">
           <img src="${p.img || ''}">
-
           <div>
             <b>${p.name || ''}</b>
-
             <div class="calc">
-              <div class="sale-price">
-                ${price.toLocaleString()}đ
-              </div>
-
+              <div class="sale-price">${price.toLocaleString()}đ</div>
               ${old > price ? `<div class="old-price">${old.toLocaleString()}đ</div>` : ""}
-
-              <div>
-                ${qty} × ${price.toLocaleString()}đ = ${subFinal.toLocaleString()}đ
-              </div>
+              <div>${qty} × ${price.toLocaleString()}đ</div>
             </div>
-
           </div>
         </div>
       `;
     });
 
-    let discount = originalTotal - finalTotal;
-
     box.innerHTML += `
       <div class="order-box">
 
-        <div class="order-title">Đơn hàng #${order.id}</div>
+        <div class="order-title">Đơn #${order.id}</div>
 
         <p><b>${order.name || ""}</b> - ${order.phone || ""}</p>
-        <p>Địa chỉ: ${order.address || ""}</p>
-        <p>Ngày: ${order.time || ""}</p>
-
-        <p>
-          Thanh toán:
-          ${order.payment === "bank" ? "🏦 Chuyển khoản" : "💵 COD"}
-        </p>
+        <p>${order.address || ""}</p>
+        <p>${order.time || ""}</p>
 
         ${itemsHTML}
 
         <div class="total-box">
-
           <div class="row">
-            <span>Tổng gốc</span>
-            <b>${originalTotal.toLocaleString()}đ</b>
+            <span>Tổng</span>
+            <b>${totalNew.toLocaleString()}đ</b>
           </div>
-
-          <div class="row discount">
-            <span>Tiết kiệm</span>
-            <b>-${discount.toLocaleString()}đ</b>
-          </div>
-
-          <div class="row final">
-            <span>Thanh toán</span>
-            <b>${finalTotal.toLocaleString()}đ</b>
-          </div>
-
         </div>
 
       </div>
@@ -312,13 +280,13 @@ function renderOrders(){
 /* =========================
    PAGINATION
 ========================= */
-function renderPagination(){
+function renderPagination() {
   const pagi = document.getElementById("pagination");
   const totalPage = Math.ceil(orders.length / perPage);
 
   pagi.innerHTML = "";
 
-  for(let i = 1; i <= totalPage; i++){
+  for (let i = 1; i <= totalPage; i++) {
     pagi.innerHTML += `
       <button onclick="goPage(${i})"
         style="background:${i === currentPage ? '#e53935' : '#ddd'}">
@@ -334,6 +302,3 @@ window.goPage = function(page){
 };
 
 </script>
-
-</body>
-</html>
