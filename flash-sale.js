@@ -18,7 +18,7 @@
 
 */
 
-const FLASH_CATEGORY = "cam-in";
+const FLASH_CATEGORY = "camera-ngoai-troi";
 
 /*
   % GIẢM TỐI THIỂU
