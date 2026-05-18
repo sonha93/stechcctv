@@ -52,15 +52,14 @@ async function renderCart() {
 
     const item = docSnap.data();
 
-    // 🔥 FIX LẤY GIÁ CHUẨN
-    const productRef = doc(db, "products", item.productId || item.id);
-    const productSnap = await getDoc(productRef);
+    const productId = item.productId || item.id;
+
+    const productSnap = await getDoc(doc(db, "products", productId));
 
     let price = 0;
 
     if (productSnap.exists()) {
-      const product = productSnap.data();
-      price = Number(product.price) || 0;
+      price = Number(productSnap.data().price) || 0;
     }
 
     const qty = Number(item.qty) || 1;
@@ -117,17 +116,9 @@ export async function addToCart(product) {
     return;
   }
 
-  const itemRef = doc(
-    db,
-    "users",
-    currentUser.uid,
-    "cart",
-    String(product.id)
-  );
+  const itemRef = doc(db, "users", currentUser.uid, "cart", String(product.id));
 
-  const snapshot = await getDocs(
-    collection(db, "users", currentUser.uid, "cart")
-  );
+  const snapshot = await getDocs(collection(db, "users", currentUser.uid, "cart"));
 
   let oldQty = 0;
 
@@ -139,8 +130,8 @@ export async function addToCart(product) {
 
   await setDoc(itemRef, {
     productId: product.id,
-    name: product.name || "",
-    img: product.img || "",
+    name: product.name,
+    img: product.img,
     qty: oldQty + 1
   });
 
@@ -148,7 +139,7 @@ export async function addToCart(product) {
 }
 
 // ============================
-// REMOVE ITEM
+// REMOVE ITEM (FIXED)
 // ============================
 window.removeItem = async function(itemId) {
 
