@@ -5,8 +5,7 @@ import {
   doc,
   deleteDoc,
   setDoc,
-  updateDoc,
-  getDoc
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -15,99 +14,146 @@ import {
 
 import { app, auth } from "./auth.js";
 
+// FIRESTORE
 const db = getFirestore(app);
 
+// USER
 let currentUser = null;
 
+// DOM
+let cartBox = null;
+let totalBox = null;
+let actionBox = null;
 // ============================
 // RENDER CART
 // ============================
 async function renderCart() {
 
-  const cartBox = document.getElementById("cartList");
-  const totalBox = document.getElementById("total");
-  const actionBox = document.getElementById("cartAction");
+  cartBox = document.getElementById("cartList");
+ totalBox = document.getElementById("total");
+actionBox = document.getElementById("cartAction");
 
-  if (!cartBox || !totalBox) return;
+  // Nếu không phải trang cart thì bỏ qua
+  if (!cartBox || !totalBox) {
+    return;
+  }
 
   cartBox.innerHTML = "";
   totalBox.innerHTML = "";
 
   if (!currentUser) {
-    cartBox.innerHTML = "<div class='empty'>Bạn chưa đăng nhập 🛒</div>";
+    cartBox.innerHTML =
+      "<div class='empty'>Bạn chưa đăng nhập 🛒</div>";
     return;
   }
 
   try {
 
-    const cartRef = collection(db, "users", currentUser.uid, "cart");
+    const cartRef = collection(
+      db,
+      "users",
+      currentUser.uid,
+      "cart"
+    );
+
     const snapshot = await getDocs(cartRef);
 
+    console.log(
+      "FIREBASE CART:",
+      snapshot.docs.map(d => d.data())
+    );
+
     if (snapshot.empty) {
-      cartBox.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
-      return;
-    }
+
+  cartBox.innerHTML =
+    "<div class='empty'>Giỏ hàng trống 🛒</div>";
+
+  totalBox.innerHTML = "";
+
+  if(actionBox){
+    actionBox.innerHTML = "";
+  }
+
+  return;
+}
 
     let total = 0;
 
-    for (const docSnap of snapshot.docs) {
+    snapshot.forEach(docSnap => {
 
-      const item = docSnap.data();
+      const p = docSnap.data();
 
-      // 🔥 LẤY GIÁ MỚI TỪ PRODUCTS (QUAN TRỌNG)
-      const productSnap = await getDoc(
-        doc(db, "products", item.id)
-      );
+      const qty = Number(p.qty) || 1;
+      const price = Number(p.price) || 0;
 
-      const product = productSnap.data();
+      const subTotal = qty * price;
 
-      const price = Number(product?.price) || 0;
-      const qty = Number(item.qty) || 1;
+      total += subTotal;
 
-      total += price * qty;
+ cartBox.innerHTML += `
+<div class="item">
 
-      cartBox.innerHTML += `
-        <div class="item">
+  <img src="${p.img || ''}">
 
-          <img src="${item.img || ''}">
+  <div class="info">
 
-          <div class="info">
+    <b>${p.name || ''}</b>
 
-            <b>${item.name || ''}</b>
+    <div class="price-row">
+      <div class="price-new">
+        ${price.toLocaleString()}đ
+      </div>
+    </div>
 
-            <div class="price-row">
-              <div class="price-new">
-                ${price.toLocaleString()}đ
-              </div>
-            </div>
+    <div class="qty">
 
-            <div class="qty">
-              <button onclick="updateQty('${docSnap.id}', ${qty - 1})">-</button>
-              <span>${qty}</span>
-              <button onclick="updateQty('${docSnap.id}', ${qty + 1})">+</button>
-            </div>
+      <button onclick="updateQty('${docSnap.id}', ${qty - 1})">
+        -
+      </button>
 
-          </div>
+     <span>${qty}</span>
 
-          <button class="remove" onclick="removeItem('${docSnap.id}')">🗑</button>
+<button onclick="updateQty('${docSnap.id}', ${qty + 1})">
+  +
+</button>
 
-        </div>
-      `;
-    }
+    </div>
 
-    totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
+  </div>
 
-    if (actionBox) {
-      actionBox.innerHTML = `
-        <button class="checkout" onclick="checkout()">
-          Đặt hàng
-        </button>
-      `;
-    }
+  <button
+    class="remove"
+    onclick="removeItem('${docSnap.id}')"
+  >
+    🗑
+  </button>
 
+</div>
+`;
+    });
+
+    totalBox.innerHTML =
+      "Tổng tiền: " +
+      total.toLocaleString() +
+      "đ";
+if(actionBox){
+
+  actionBox.innerHTML = `
+    <button
+      class="checkout"
+      onclick="checkout()"
+    >
+      Đặt hàng
+    </button>
+  `;
+
+}
   } catch (err) {
+
     console.error("Lỗi renderCart:", err);
+
   }
+
 }
 
 // ============================
@@ -120,36 +166,62 @@ export async function addToCart(product) {
     return;
   }
 
-  const itemRef = doc(
-    db,
-    "users",
-    currentUser.uid,
-    "cart",
-    String(product.id)
-  );
+  if (!product.id) {
+    console.error("Thiếu product.id");
+    return;
+  }
 
-  const snapshot = await getDocs(
-    collection(db, "users", currentUser.uid, "cart")
-  );
+  try {
 
-  let oldQty = 0;
+    const itemRef = doc(
+      db,
+      "users",
+      currentUser.uid,
+      "cart",
+      String(product.id)
+    );
 
-  snapshot.forEach(d => {
-    if (d.id === String(product.id)) {
-      oldQty = Number(d.data().qty) || 0;
-    }
-  });
+    const snapshot = await getDocs(
+      collection(
+        db,
+        "users",
+        currentUser.uid,
+        "cart"
+      )
+    );
 
-  // ❗ KHÔNG LƯU PRICE NỮA
-  await setDoc(itemRef, {
-    id: product.id,
-    name: product.name || "",
-    img: product.img || "",
-    qty: oldQty + 1
-  });
+    let oldQty = 0;
 
-  renderCart();
+    snapshot.forEach(d => {
+
+      if(d.id === String(product.id)){
+        oldQty = Number(d.data().qty) || 0;
+      }
+
+    });
+
+    await setDoc(itemRef, {
+
+      id: product.id,
+      name: product.name || "",
+      price: Number(product.price) || 0,
+      img: product.img || "",
+      qty: oldQty + 1
+
+    });
+
+    alert("Đã thêm vào giỏ 🛒");
+
+    renderCart();
+
+  } catch (err) {
+
+    console.error("Lỗi addToCart:", err);
+
+  }
+
 }
+
 
 // ============================
 // REMOVE ITEM
@@ -159,12 +231,18 @@ window.removeItem = async function(itemId) {
   if (!currentUser) return;
 
   await deleteDoc(
-    doc(db, "users", currentUser.uid, "cart", itemId)
+    doc(
+      db,
+      "users",
+      currentUser.uid,
+      "cart",
+      itemId
+    )
   );
 
   renderCart();
-};
 
+};
 // ============================
 // UPDATE QTY
 // ============================
@@ -172,29 +250,46 @@ window.updateQty = async function(itemId, qty) {
 
   if (!currentUser) return;
 
-  qty = Math.max(1, Number(qty));
+  qty = Number(qty);
 
-  await updateDoc(
-    doc(db, "users", currentUser.uid, "cart", itemId),
-    { qty }
+  if (qty < 1) qty = 1;
+
+  const itemRef = doc(
+    db,
+    "users",
+    currentUser.uid,
+    "cart",
+    itemId
   );
 
-  renderCart();
-};
+  await updateDoc(itemRef, {
+    qty: qty
+  });
 
+  renderCart();
+
+};
 // ============================
 // CHECKOUT
 // ============================
-window.checkout = function() {
+window.checkout = function(){
+
+
   window.location.href = "checkout.html";
+
 };
 
 // ============================
 // AUTH
 // ============================
 onAuthStateChanged(auth, async user => {
+
   currentUser = user;
+
+  console.log("USER:", user);
+
   await renderCart();
+
 });
 
 window.renderCart = renderCart;
