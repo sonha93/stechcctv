@@ -23,7 +23,7 @@ const FLASH_CATEGORY = "combo";
   % GIẢM TỐI THIỂU
 */
 
-const MIN_DISCOUNT = 10;
+const MIN_DISCOUNT = 91;
 
 
 /* =========================
