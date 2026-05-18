@@ -479,7 +479,11 @@ header{
 <div class="container">
 
   <div class="left">
-    <img id="detailImg">
+<img
+  id="detailImg"
+  src=""
+  onerror="this.src='https://via.placeholder.com/300'"
+>
   </div>
 
   <div class="right">
@@ -517,7 +521,10 @@ header{
   <div class="panel-top">
 
     <div class="panel-product">
-      <img id="panelProductImg">
+    <img
+  id="panelProductImg"
+  onerror="this.src='https://via.placeholder.com/80'"
+>
       <h3 id="panelProductName"></h3>
     </div>
 
@@ -622,21 +629,23 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore,
   collection,
-  getDocs
+  getDocs,
+  doc,
+  getDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 document.getElementById("overlay").onclick = function(){
 
   document
-  .getElementById("sidebar")
-  .classList.remove("active");
+    .getElementById("sidebar")
+    .classList.remove("active");
 
   document
-  .getElementById("overlay")
-  .classList.remove("active");
+    .getElementById("overlay")
+    .classList.remove("active");
 
-}
+};
 
 const firebaseConfig = {
   apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -652,33 +661,72 @@ const db = getFirestore(app);
 
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
+  if(!id){
 
+  document.body.innerHTML = `
+    <h2 style="padding:40px;text-align:center">
+      ID sản phẩm không hợp lệ
+    </h2>
+  `;
+
+  throw new Error("Missing product ID");
+
+}
+console.log("URL ID =", id);
 let products = [];
-let product = null;
-
-async function loadProduct(){
+  async function loadProducts(){
 
   const querySnapshot =
   await getDocs(collection(db,"products"));
 
-querySnapshot.forEach(doc=>{
-  products.push({
-    firebaseId: doc.id,
-    ...doc.data()
+  products = [];
+
+  querySnapshot.forEach(docSnap=>{
+
+    products.push({
+      id: docSnap.id,
+      ...docSnap.data()
+    });
+
   });
-});
 
-  product = products.find(
- p => String(p.firebaseId) === String(id)
-  );
+}
+let product = null;
 
-  if(!product) return;
+async function loadProduct(){
+const docRef = doc(db,"products",id);
 
-  document.getElementById("detailImg").src = product.img || "";
-  document.getElementById("panelProductImg").src = product.img || "";
+const docSnap = await getDoc(docRef);
 
-  document.getElementById("detailName").innerText = product.name || "";
-  document.getElementById("panelProductName").innerText = product.name || "";
+if(docSnap.exists()){
+
+  product = {
+    id: docSnap.id,
+    ...docSnap.data()
+  };
+
+}else{
+
+  document.body.innerHTML = `
+    <h2 style="padding:40px;text-align:center">
+      Không tìm thấy sản phẩm
+    </h2>
+  `;
+
+  return;
+}
+
+  document.getElementById("detailImg").src =
+  product.img || "";
+
+  document.getElementById("panelProductImg").src =
+  product.img || "";
+
+  document.getElementById("detailName").innerText =
+  product.name || "";
+
+  document.getElementById("panelProductName").innerText =
+  product.name || "";
 
   document.getElementById("detailPrice").innerText =
   Number(product.price || 0).toLocaleString()+"đ";
@@ -690,34 +738,32 @@ querySnapshot.forEach(doc=>{
 
   document.getElementById("detailDesc").innerText =
   product.desc || "Không có mô tả";
-
   document.getElementById("detailModel").innerText =
-  product.model || "Đang cập nhật";
+product.model || "Đang cập nhật";
 
-  document.getElementById("detailOrigin").innerText =
-  product.xuatXu || "Đang cập nhật";
+document.getElementById("detailOrigin").innerText =
+product.xuatXu || "Đang cập nhật";
 
-  document.getElementById("detailWarranty").innerText =
-  product.baoHanh || "Đang cập nhật";
+document.getElementById("detailWarranty").innerText =
+product.baoHanh || "Đang cập nhật";
 
-  document.getElementById("detailResolution").innerText =
-  product.doPhanGiai || "Đang cập nhật";
+document.getElementById("detailResolution").innerText =
+product.doPhanGiai || "Đang cập nhật";
 
-  document.getElementById("detailConnect").innerText =
-  product.ketNoi || "Đang cập nhật";
+document.getElementById("detailConnect").innerText =
+product.ketNoi || "Đang cập nhật";
 
-  document.getElementById("detailViewAngle").innerText =
-  product.gocNhin || "Đang cập nhật";
+document.getElementById("detailViewAngle").innerText =
+product.gocNhin || "Đang cập nhật";
 
-  document.getElementById("detailThietKe").innerText =
-  product.thietKe || "Đang cập nhật";
+document.getElementById("detailThietKe").innerText =
+product.thietKe || "Đang cập nhật";
 
-  document.getElementById("detailChatLieu").innerText =
-  product.chatLieu || "Đang cập nhật";
+document.getElementById("detailChatLieu").innerText =
+product.chatLieu || "Đang cập nhật";
 
-  document.getElementById("detailCongSuat").innerText =
-  product.congSuat || "Đang cập nhật";
-
+document.getElementById("detailCongSuat").innerText =
+product.congSuat || "Đang cập nhật";
   const saleBox =
   document.getElementById("detailSale");
 
@@ -744,8 +790,8 @@ querySnapshot.forEach(doc=>{
 
 }
 
+loadProducts();
 loadProduct();
-
 function toggleMenu(){
 
   document
@@ -867,20 +913,26 @@ function searchProduct(){
 
   if(term === "") return;
 
-  const filtered =
-  products.filter(
-    p => p.name.toLowerCase().includes(term)
-  );
-
-  filtered.forEach(p=>{
-
+const filtered = products
+.filter(
+  p =>
+    p.name &&
+    p.name.toLowerCase().includes(term)
+)
+.sort((a,b)=>
+  a.name.length - b.name.length
+);
+filtered.slice(0,10).forEach(p=>{
     const div =
     document.createElement("div");
 
     div.className = "search-result-item";
 
     div.innerHTML = `
-      <img src="${p.img}">
+      <img
+  src="${p.img}"
+  onerror="this.src='https://via.placeholder.com/50'"
+>
       <div>
         <strong>${p.name}</strong>
         <div style="color:red;font-weight:bold;">
@@ -891,11 +943,12 @@ function searchProduct(){
 
     div.onclick = ()=>{
 
-      window.location.href =
-      "logo.html?id=" + p.id;
+  resultBox.innerHTML = "";
 
-    };
+  window.location.href =
+  "logo.html?id=" + p.id;
 
+};
     resultBox.appendChild(div);
 
   });
@@ -910,13 +963,7 @@ window.addToCart = addToCart;
 window.searchProduct = searchProduct;
 
 </script>
-  <script type="module" src="logo.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
+ 
 
 </body>
 </html>
