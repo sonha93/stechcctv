@@ -239,8 +239,7 @@ window.addToCart = async function(id) {
     return;
   }
 
-  product.id = product.firebaseId || product.id;
-
+  
   await firebaseAddToCart(product); // gọi cart.js
   await updateCartCount();
 
