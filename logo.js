@@ -45,7 +45,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 /* =========================
-    CHỈ LOAD DỮ LIỆU CHO COMBO
+   LOAD DỮ LIỆU CHO logo
 ========================= */
 
 let allProducts = [];
