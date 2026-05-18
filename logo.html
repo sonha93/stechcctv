@@ -799,22 +799,16 @@ function showTab(tabId,btn){
   btn.classList.add("active");
 
 }
+
 function addToCart(){
 
-  if(!product){
-    alert("Không tìm thấy sản phẩm!");
-    return;
-  }
+  if(!product) return;
 
   let cart =
   JSON.parse(localStorage.getItem("cart")) || [];
 
-  // luôn dùng firebaseId
-  const productId =
-  String(product.firebaseId);
-
   const exist = cart.find(
-    x => String(x.firebaseId) === productId
+    x => String(x.id) === String(product.id)
   );
 
   if(exist){
@@ -825,7 +819,6 @@ function addToCart(){
 
     cart.push({
       ...product,
-      firebaseId: productId,
       qty:1
     });
 
@@ -841,6 +834,7 @@ function addToCart(){
   alert("Đã thêm vào giỏ");
 
 }
+
 function updateCartCount(){
 
   const cart =
@@ -862,8 +856,7 @@ updateCartCount();
 function searchProduct(){
 
   const term =
-  document
-  .getElementById("searchInput")
+  document.getElementById("searchInput")
   .value
   .toLowerCase();
 
@@ -876,9 +869,7 @@ function searchProduct(){
 
   const filtered =
   products.filter(
-    p =>
-      p.name &&
-      p.name.toLowerCase().includes(term)
+    p => p.name.toLowerCase().includes(term)
   );
 
   filtered.forEach(p=>{
@@ -886,15 +877,14 @@ function searchProduct(){
     const div =
     document.createElement("div");
 
-    div.className =
-    "search-result-item";
+    div.className = "search-result-item";
 
     div.innerHTML = `
-      <img src="${p.img || ''}">
+      <img src="${p.img}">
       <div>
-        <strong>${p.name || ''}</strong>
+        <strong>${p.name}</strong>
         <div style="color:red;font-weight:bold;">
-          ${Number(p.price || 0).toLocaleString()}đ
+          ${Number(p.price).toLocaleString()}đ
         </div>
       </div>
     `;
@@ -902,7 +892,7 @@ function searchProduct(){
     div.onclick = ()=>{
 
       window.location.href =
-      "logo.html?id=" + p.firebaseId;
+      "logo.html?id=" + p.id;
 
     };
 
@@ -911,6 +901,7 @@ function searchProduct(){
   });
 
 }
+
 window.toggleMenu = toggleMenu;
 window.openPanel = openPanel;
 window.closePanel = closePanel;
@@ -919,7 +910,12 @@ window.addToCart = addToCart;
 window.searchProduct = searchProduct;
 
 </script>
- 
+  <script type="module" src="logo.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 
 </body>
