@@ -1,99 +1,93 @@
+// ==========================
+// IMPORT FIREBASE
+// ==========================
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // ==========================
-// EMAIL AUTH
+// FIREBASE CONFIG
+// ==========================
+const firebaseConfig = {
+
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+
+  authDomain: "stech-73b89.firebaseapp.com",
+
+  projectId: "stech-73b89",
+
+  storageBucket: "stech-73b89.firebasestorage.app",
+
+  messagingSenderId: "873739162979",
+
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+
+};
+
+// ==========================
+// INIT FIREBASE
+// ==========================
+export const app =
+  initializeApp(firebaseConfig);
+
+export const auth =
+  getAuth(app);
+
+// ==========================
+// AUTH FUNCTIONS
 // ==========================
 
 // Đăng ký
-function register(email, password) {
-  return firebase.auth().createUserWithEmailAndPassword(email, password)
-    .then(user => {
-      console.log("REGISTER OK:", user.user);
-      return user.user;
-    })
-    .catch(err => {
-      console.log(err);
-    });
-}
+export const registerUser = async (
+  email,
+  password
+) => {
+
+  const userCredential =
+    await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+  return userCredential.user;
+};
 
 // Đăng nhập
-function login(email, password) {
-  return firebase.auth().signInWithEmailAndPassword(email, password)
-    .then(user => {
-      console.log("LOGIN OK:", user.user);
-      return user.user;
-    })
-    .catch(err => {
-      console.log(err);
-    });
-}
+export const loginUser = async (
+  email,
+  password
+) => {
 
-// Logout
-function logout() {
-  return firebase.auth().signOut();
-}
+  const userCredential =
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
-// Listen user
-firebase.auth().onAuthStateChanged(user => {
-  console.log("AUTH STATE:", user);
-});
+  return userCredential.user;
+};
 
+// Đăng xuất
+export const logoutUser = async () => {
 
-// ==========================
-// PHONE OTP AUTH
-// ==========================
+  await signOut(auth);
 
-let confirmationResult;
+};
 
-// CAPTCHA
-window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-  "recaptcha-container",
-  {
-    size: "normal"
-  }
-);
+// Listener login
+export const onAuthStateChangedListener =
+(callback) => {
 
-// gửi OTP
-function sendOTP() {
-  const phoneNumber = document.getElementById("phone").value;
+  onAuthStateChanged(auth, callback);
 
-  firebase.auth().signInWithPhoneNumber(
-    phoneNumber,
-    window.recaptchaVerifier
-  )
-  .then(result => {
-    confirmationResult = result;
-    document.getElementById("message").innerText = "OTP đã gửi";
-  })
-  .catch(error => {
-    console.log(error);
-    document.getElementById("message").innerText = "Gửi OTP lỗi";
-  });
-}
-
-// verify OTP
-function verifyOTP() {
-  const code = document.getElementById("otp").value;
-
-  confirmationResult.confirm(code)
-    .then(result => {
-      const user = result.user;
-
-      console.log("LOGIN PHONE OK:", user);
-
-      document.getElementById("message").innerText =
-        "Đăng nhập OK: " + user.phoneNumber;
-    })
-    .catch(error => {
-      console.log(error);
-      document.getElementById("message").innerText = "Sai OTP";
-    });
-}
-
-
-// expose ra HTML dùng onclick
-window.register = register;
-window.login = login;
-window.logout = logout;
-window.sendOTP = sendOTP;
-window.verifyOTP = verifyOTP;
+};
