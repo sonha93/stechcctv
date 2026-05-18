@@ -862,7 +862,8 @@ updateCartCount();
 function searchProduct(){
 
   const term =
-  document.getElementById("searchInput")
+  document
+  .getElementById("searchInput")
   .value
   .toLowerCase();
 
@@ -874,26 +875,26 @@ function searchProduct(){
   if(term === "") return;
 
   const filtered =
-  const filtered =
-products.filter(
-  p =>
-    p.name &&
-    p.name.toLowerCase().includes(term)
-);
+  products.filter(
+    p =>
+      p.name &&
+      p.name.toLowerCase().includes(term)
+  );
 
   filtered.forEach(p=>{
 
     const div =
     document.createElement("div");
 
-    div.className = "search-result-item";
+    div.className =
+    "search-result-item";
 
     div.innerHTML = `
-      <img src="${p.img}">
+      <img src="${p.img || ''}">
       <div>
-        <strong>${p.name}</strong>
+        <strong>${p.name || ''}</strong>
         <div style="color:red;font-weight:bold;">
-          ${Number(p.price).toLocaleString()}đ
+          ${Number(p.price || 0).toLocaleString()}đ
         </div>
       </div>
     `;
@@ -901,7 +902,7 @@ products.filter(
     div.onclick = ()=>{
 
       window.location.href =
-"logo.html?id=" + p.firebaseId;
+      "logo.html?id=" + p.firebaseId;
 
     };
 
@@ -910,7 +911,6 @@ products.filter(
   });
 
 }
-
 window.toggleMenu = toggleMenu;
 window.openPanel = openPanel;
 window.closePanel = closePanel;
