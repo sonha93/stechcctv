@@ -67,11 +67,10 @@ async function getProducts(){
 
     querySnapshot.forEach(doc => {
 
- arr.push({
+arr.push({
 
-  id: doc.id,
-  firebaseId: doc.id,
-  ...doc.data()
+  ...doc.data(),
+  id: doc.id
 
 });
     });
