@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -473,17 +474,12 @@ header{
 
   </div>
 
-
 </header>
 
 <div class="container">
 
   <div class="left">
-    <img
-      id="detailImg"
-      src=""
-      onerror="this.src='https://dummyimage.com/300x300/cccccc/000000&text=No+Image'"
-    >
+    <img id="detailImg">
   </div>
 
   <div class="right">
@@ -521,10 +517,7 @@ header{
   <div class="panel-top">
 
     <div class="panel-product">
-      <img
-        id="panelProductImg"
-        onerror="this.src='https://dummyimage.com/80x80/cccccc/000000&text=No+Image'"
-      >
+      <img id="panelProductImg">
       <h3 id="panelProductName"></h3>
     </div>
 
@@ -550,6 +543,8 @@ header{
 
   <div class="panel-body">
 
+    <!-- THÔNG TIN -->
+
     <div class="spec-content active" id="infoTab">
 
       <div class="spec-row">
@@ -569,6 +564,8 @@ header{
 
     </div>
 
+    <!-- CẤU HÌNH -->
+
     <div class="spec-content" id="configTab">
 
       <div class="spec-row">
@@ -587,6 +584,8 @@ header{
       </div>
 
     </div>
+
+    <!-- THIẾT KẾ -->
 
     <div class="spec-content" id="designTab">
 
@@ -611,187 +610,116 @@ header{
 
 </div>
 
+
+
+
+
+
 <script type="module">
 
-import { app } from "./auth.js";
-
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore,
   collection,
-  getDocs,
-  doc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-  addToCart as addToCartFirebase
-} from "./cart.js";
-
-const db = getFirestore(app);
-
-const params = new URLSearchParams(window.location.search);
-
-const rawId = params.get("id");
-
-const id = rawId
-  ? decodeURIComponent(rawId).trim()
-  : "";
-
-console.log("PRODUCT ID =", id);
-
-let products = [];
-let product = null;
-
-/* MENU */
-
-function toggleMenu(){
-
-  document
-    .getElementById("sidebar")
-    .classList.toggle("active");
-
-  document
-    .getElementById("overlay")
-    .classList.toggle("active");
+  getDocs
 }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 document.getElementById("overlay").onclick = function(){
 
   document
-    .getElementById("sidebar")
-    .classList.remove("active");
+  .getElementById("sidebar")
+  .classList.remove("active");
 
   document
-    .getElementById("overlay")
-    .classList.remove("active");
-};
+  .getElementById("overlay")
+  .classList.remove("active");
 
-/* LOAD ALL PRODUCTS */
-
-async function loadProducts(){
-
-  const querySnapshot =
-    await getDocs(collection(db,"products"));
-
-  products = [];
-
-  querySnapshot.forEach(docSnap => {
-
-    products.push({
-      firebaseId: docSnap.id,
-      ...docSnap.data()
-    });
-
-  });
 }
 
-/* LOAD PRODUCT DETAIL */
+const firebaseConfig = {
+  apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain:"stech-73b89.firebaseapp.com",
+  projectId:"stech-73b89",
+  storageBucket:"stech-73b89.firebasestorage.app",
+  messagingSenderId:"873739162979",
+  appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+let products = [];
+let product = null;
 
 async function loadProduct(){
 
-  if(!id){
+  const querySnapshot =
+  await getDocs(collection(db,"products"));
 
-    document.body.innerHTML = `
-      <h2 style="padding:40px;text-align:center">
-        ID sản phẩm không hợp lệ
-      </h2>
-    `;
+querySnapshot.forEach(doc=>{
+  products.push({
+    firebaseId: doc.id,
+    ...doc.data()
+  });
+});
 
-    return;
-  }
+  product = products.find(
+ p => String(p.firebaseId) === String(id)
+  );
 
-const q = query(
-  collection(db, "products"),
-  where("id", "==", id)
-);
+  if(!product) return;
 
-const querySnapshot = await getDocs(q);
+  document.getElementById("detailImg").src = product.img || "";
+  document.getElementById("panelProductImg").src = product.img || "";
 
-if(querySnapshot.empty){
-
-  document.body.innerHTML = `
-    <h2 style="padding:40px;text-align:center">
-      Không tìm thấy sản phẩm
-    </h2>
-  `;
-
-  return;
-}
-
-const docSnap = querySnapshot.docs[0];
-
-product = {
-  firebaseId: docSnap.id,
-  ...docSnap.data()
-};
-  /* IMAGE */
-
-  document.getElementById("detailImg").src =
-    product.img || "";
-
-  document.getElementById("panelProductImg").src =
-    product.img || "";
-
-  /* NAME */
-
-  document.getElementById("detailName").innerText =
-    product.name || "";
-
-  document.getElementById("panelProductName").innerText =
-    product.name || "";
-
-  /* PRICE */
+  document.getElementById("detailName").innerText = product.name || "";
+  document.getElementById("panelProductName").innerText = product.name || "";
 
   document.getElementById("detailPrice").innerText =
-    Number(product.price || 0).toLocaleString() + "đ";
+  Number(product.price || 0).toLocaleString()+"đ";
 
   document.getElementById("detailOldPrice").innerText =
-    product.oldPrice
-      ? Number(product.oldPrice).toLocaleString() + "đ"
-      : "";
-
-  /* DESC */
+  product.oldPrice
+  ? Number(product.oldPrice).toLocaleString()+"đ"
+  : "";
 
   document.getElementById("detailDesc").innerText =
-    product.desc || "Không có mô tả";
-
-  /* INFO */
+  product.desc || "Không có mô tả";
 
   document.getElementById("detailModel").innerText =
-    product.model || "Đang cập nhật";
+  product.model || "Đang cập nhật";
 
   document.getElementById("detailOrigin").innerText =
-    product.xuatXu || "Đang cập nhật";
+  product.xuatXu || "Đang cập nhật";
 
   document.getElementById("detailWarranty").innerText =
-    product.baoHanh || "Đang cập nhật";
-
-  /* CONFIG */
+  product.baoHanh || "Đang cập nhật";
 
   document.getElementById("detailResolution").innerText =
-    product.doPhanGiai || "Đang cập nhật";
-
-  document.getElementById("detailViewAngle").innerText =
-    product.gocNhin || "Đang cập nhật";
+  product.doPhanGiai || "Đang cập nhật";
 
   document.getElementById("detailConnect").innerText =
-    product.ketNoi || "Đang cập nhật";
+  product.ketNoi || "Đang cập nhật";
 
-  /* DESIGN */
+  document.getElementById("detailViewAngle").innerText =
+  product.gocNhin || "Đang cập nhật";
 
   document.getElementById("detailThietKe").innerText =
-    product.thietKe || "Đang cập nhật";
+  product.thietKe || "Đang cập nhật";
 
   document.getElementById("detailChatLieu").innerText =
-    product.chatLieu || "Đang cập nhật";
+  product.chatLieu || "Đang cập nhật";
 
   document.getElementById("detailCongSuat").innerText =
-    product.congSuat || "Đang cập nhật";
-
-  /* SALE */
+  product.congSuat || "Đang cập nhật";
 
   const saleBox =
-    document.getElementById("detailSale");
+  document.getElementById("detailSale");
 
   if(
     product.oldPrice &&
@@ -806,152 +734,173 @@ product = {
     );
 
     saleBox.style.display = "inline-block";
-
     saleBox.innerText = "-" + sale + "%";
 
   }else{
 
     saleBox.style.display = "none";
+
   }
+
 }
 
-/* PANEL */
+loadProduct();
+
+function toggleMenu(){
+
+  document
+  .getElementById("sidebar")
+  .classList.toggle("active");
+
+  document
+  .getElementById("overlay")
+  .classList.toggle("active");
+
+}
 
 function openPanel(){
 
   document
-    .getElementById("specPanel")
-    .classList.add("active");
+  .getElementById("specPanel")
+  .classList.add("active");
 
   document
-    .getElementById("panelOverlay")
-    .classList.add("active");
+  .getElementById("panelOverlay")
+  .classList.add("active");
+
 }
 
 function closePanel(){
 
   document
-    .getElementById("specPanel")
-    .classList.remove("active");
+  .getElementById("specPanel")
+  .classList.remove("active");
 
   document
-    .getElementById("panelOverlay")
-    .classList.remove("active");
+  .getElementById("panelOverlay")
+  .classList.remove("active");
+
 }
 
 function showTab(tabId,btn){
 
   document
-    .querySelectorAll(".spec-content")
-    .forEach(el => el.classList.remove("active"));
+  .querySelectorAll(".spec-content")
+  .forEach(el=>el.classList.remove("active"));
 
   document
-    .querySelectorAll(".spec-tab")
-    .forEach(el => el.classList.remove("active"));
+  .querySelectorAll(".spec-tab")
+  .forEach(el=>el.classList.remove("active"));
 
   document
-    .getElementById(tabId)
-    .classList.add("active");
+  .getElementById(tabId)
+  .classList.add("active");
 
   btn.classList.add("active");
+
 }
 
-/* ADD TO CART */
-
-async function addToCart(){
+function addToCart(){
 
   if(!product) return;
 
-  await addToCartFirebase(product);
+  let cart =
+  JSON.parse(localStorage.getItem("cart")) || [];
+
+  const exist = cart.find(
+    x => String(x.id) === String(product.id)
+  );
+
+  if(exist){
+
+    exist.qty += 1;
+
+  }else{
+
+    cart.push({
+      ...product,
+      qty:1
+    });
+
+  }
+
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
 
   updateCartCount();
-}
 
-/* CART COUNT */
+  alert("Đã thêm vào giỏ");
+
+}
 
 function updateCartCount(){
 
   const cart =
-    JSON.parse(localStorage.getItem("cart")) || [];
+  JSON.parse(localStorage.getItem("cart")) || [];
 
   let total = 0;
 
-  cart.forEach(item => {
+  cart.forEach(item=>{
     total += item.qty || 1;
   });
 
   document.getElementById("cartCount").innerText =
-    total;
+  total;
+
 }
 
-/* SEARCH */
+updateCartCount();
 
 function searchProduct(){
 
   const term =
-    document
-      .getElementById("searchInput")
-      .value
-      .toLowerCase();
+  document.getElementById("searchInput")
+  .value
+  .toLowerCase();
 
   const resultBox =
-    document.getElementById("searchResults");
+  document.getElementById("searchResults");
 
   resultBox.innerHTML = "";
 
   if(term === "") return;
 
-  const filtered = products
-    .filter(p =>
-      p.name &&
-      p.name.toLowerCase().includes(term)
-    )
-    .sort((a,b)=>
-      a.name.length - b.name.length
-    );
+  const filtered =
+  products.filter(
+    p => p.name.toLowerCase().includes(term)
+  );
 
-  filtered.slice(0,10).forEach(p => {
+  filtered.forEach(p=>{
 
-    const div = document.createElement("div");
+    const div =
+    document.createElement("div");
 
     div.className = "search-result-item";
 
     div.innerHTML = `
-      <img
-        src="${p.img}"
-        onerror="this.src='https://dummyimage.com/50x50/cccccc/000000&text=No+Image'"
-      >
-
+      <img src="${p.img}">
       <div>
         <strong>${p.name}</strong>
-
         <div style="color:red;font-weight:bold;">
           ${Number(p.price).toLocaleString()}đ
         </div>
       </div>
     `;
 
-    div.onclick = () => {
-
-      resultBox.innerHTML = "";
+    div.onclick = ()=>{
 
       window.location.href =
-        "./logo.html?id=" +
-        encodeURIComponent(p.firebaseId);
+      "logo.html?id=" + p.id;
+
     };
 
     resultBox.appendChild(div);
 
   });
+
 }
-
-/* INIT */
-
-loadProducts();
-loadProduct();
-updateCartCount();
-
-/* GLOBAL */
 
 window.toggleMenu = toggleMenu;
 window.openPanel = openPanel;
@@ -961,3 +910,13 @@ window.addToCart = addToCart;
 window.searchProduct = searchProduct;
 
 </script>
+  <script type="module" src="logo.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+
+</body>
+</html>
