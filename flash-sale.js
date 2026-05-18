@@ -1,3 +1,4 @@
+document.getElementById("flash-sale-box").innerHTML = "FLASH SALE TEST";
 /* =========================
    🔥 FLASH SALE MODULE
    FILE: flash-sale.js
@@ -17,13 +18,13 @@
 
 */
 
-const FLASH_CATEGORY = "combo";
+const FLASH_CATEGORY = "home";
 
 /*
   % GIẢM TỐI THIỂU
 */
 
-const MIN_DISCOUNT = 91;
+const MIN_DISCOUNT = 11;
 
 
 /* =========================
