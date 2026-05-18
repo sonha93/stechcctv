@@ -3,150 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login Full Firebase</title>
-
+<title>Đăng ký / Đăng nhập</title>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-<style>
-body { font-family: Arial; padding: 20px; }
-input { display:block; margin:10px 0; padding:10px; width:250px; }
-button { padding:10px 15px; cursor:pointer; }
-hr { margin:20px 0; }
-</style>
 </head>
-
 <body>
+  <h2>Đăng ký</h2>
+  <form id="registerForm">
+    <input type="email" id="registerEmail" placeholder="Email" required><br>
+    <input type="password" id="registerPassword" placeholder="Mật khẩu" required><br>
+    <button type="submit">Đăng ký</button>
+  </form>
 
-<h1>🔥 AUTH SYSTEM FULL</h1>
+  <h2>Đăng nhập</h2>
+  <form id="loginForm">
+    <input type="email" id="loginEmail" placeholder="Email" required><br>
+    <input type="password" id="loginPassword" placeholder="Mật khẩu" required><br>
+    <button type="submit">Đăng nhập</button>
+  </form>
 
-<p id="message"></p>
+  <p id="message"></p>
 
-<!-- ================= EMAIL ================= -->
-<h2>Đăng ký Email</h2>
-<input id="registerEmail" placeholder="Email">
-<input id="registerPassword" placeholder="Password">
-<button onclick="register()">Đăng ký</button>
-
-<h2>Đăng nhập Email</h2>
-<input id="loginEmail" placeholder="Email">
-<input id="loginPassword" placeholder="Password">
-<button onclick="login()">Đăng nhập</button>
-
-<hr>
-
-<!-- ================= PHONE ================= -->
-<h2>Đăng nhập SĐT (OTP)</h2>
-
-<input id="phone" placeholder="+84xxxxxxxxx">
-<button onclick="sendOTP()">Gửi OTP</button>
-
-<br>
-
-<input id="otp" placeholder="Nhập OTP">
-<button onclick="verifyOTP()">Xác nhận OTP</button>
-
-<div id="recaptcha-container"></div>
-
-<hr>
-
-<button onclick="logout()">Logout</button>
-
-<script>
-// ================= FIREBASE CONFIG =================
-const firebaseConfig = {
-  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
-  databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "stech-73b89",
-  storageBucket: "stech-73b89.appspot.com",
-  messagingSenderId: "873739162979",
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.database();
-
-
-// ================= EMAIL AUTH =================
-function register() {
-  const email = document.getElementById("registerEmail").value;
-  const pass = document.getElementById("registerPassword").value;
-
-  auth.createUserWithEmailAndPassword(email, pass)
-    .then(user => {
-      document.getElementById("message").innerText =
-        "Đăng ký OK: " + user.user.email;
-    })
-    .catch(err => {
-      document.getElementById("message").innerText = err.message;
-    });
-}
-
-function login() {
-  const email = document.getElementById("loginEmail").value;
-  const pass = document.getElementById("loginPassword").value;
-
-  auth.signInWithEmailAndPassword(email, pass)
-    .then(user => {
-      document.getElementById("message").innerText =
-        "Login OK: " + user.user.email;
-    })
-    .catch(err => {
-      document.getElementById("message").innerText = err.message;
-    });
-}
-
-function logout() {
-  auth.signOut();
-  document.getElementById("message").innerText = "Đã logout";
-}
-
-
-// ================= PHONE OTP =================
-let confirmationResult;
-
-// captcha
-window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-  "recaptcha-container",
-  { size: "normal" }
-);
-
-function sendOTP() {
-  const phone = document.getElementById("phone").value;
-
-  auth.signInWithPhoneNumber(phone, window.recaptchaVerifier)
-    .then(result => {
-      confirmationResult = result;
-      document.getElementById("message").innerText = "OTP đã gửi";
-    })
-    .catch(err => {
-      document.getElementById("message").innerText = err.message;
-    });
-}
-
-function verifyOTP() {
-  const code = document.getElementById("otp").value;
-
-  confirmationResult.confirm(code)
-    .then(result => {
-      document.getElementById("message").innerText =
-        "Login SĐT OK: " + result.user.phoneNumber;
-    })
-    .catch(err => {
-      document.getElementById("message").innerText = "Sai OTP";
-    });
-}
-
-
-// ================= LISTENER =================
-auth.onAuthStateChanged(user => {
-  console.log("USER:", user);
-});
-</script>
-
+  <script src="firebase-config.js"></script> <!-- file config của bạn -->
+  <script src="auth.js"></script> <!-- file JS xử lý auth -->
 </body>
 </html>
