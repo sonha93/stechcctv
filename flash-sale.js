@@ -17,13 +17,13 @@
 
 */
 
-const FLASH_CATEGORY = "camera-trong-nha";
+const FLASH_CATEGORY = "combo";
 
 /*
   % GIẢM TỐI THIỂU
 */
 
-const MIN_DISCOUNT = 40;
+const MIN_DISCOUNT = 10;
 
 
 /* =========================
