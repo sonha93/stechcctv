@@ -75,14 +75,21 @@ function renderFlashSale(allProducts) {
 
   const products = allProducts.filter(p => {
 
-    if (!p?.img || !p?.price || !p?.oldPrice) return false;
+  if (!p?.img || !p?.price || !p?.oldPrice) return false;
 
-    if (p.category !== FLASH_CATEGORY) return false;
+  if (!p.category) return false;
 
-    const percent = Math.round((1 - p.price / p.oldPrice) * 100);
+  if (p.category.trim().toLowerCase() !== FLASH_CATEGORY) return false;
 
-    return percent >= MIN_DISCOUNT;
-  });
+  const price = Number(p.price);
+  const oldPrice = Number(p.oldPrice);
+
+  if (!price || !oldPrice || oldPrice <= price) return false;
+
+  const percent = Math.round((1 - price / oldPrice) * 100);
+
+  return percent >= MIN_DISCOUNT;
+});
 
   if (!products.length) return;
 
