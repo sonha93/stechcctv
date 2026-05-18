@@ -205,7 +205,12 @@ String(p.firebaseId);
 
         </div>
 
- 
+   <button
+  class="cart-btn"
+  onclick="addToCart('${p.id || p.firebaseId}')"
+>
+  🛒 Thêm vào giỏ
+</button>
 
 <button
   class="cart-btn"
@@ -239,7 +244,8 @@ window.addToCart = async function(id) {
     return;
   }
 
-  
+  product.id = product.firebaseId || product.id;
+
   await firebaseAddToCart(product); // gọi cart.js
   await updateCartCount();
 
