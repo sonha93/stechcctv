@@ -2,6 +2,7 @@ import { auth, db } from "./firebase-init.js";
 
 const cartBox = document.getElementById("cart");
 const totalBox = document.getElementById("total");
+
 let currentUser = null;
 let currentCart = [];
 
@@ -36,12 +37,14 @@ async function loadCart(){
 }
 
 // ============================
-// RENDER CHECKOUT
+// RENDER CHECKOUT (FIXED)
 // ============================
-function renderCheckout(){
+async function renderCheckout(){
   if(!cartBox || !totalBox) return;
+
   cartBox.innerHTML = "";
-  if(currentCart.length===0){
+
+  if(currentCart.length === 0){
     cartBox.innerHTML = "<p>Giỏ hàng trống 🛒</p>"; 
     totalBox.innerText = formatPrice(0); 
     return; 
@@ -49,23 +52,42 @@ function renderCheckout(){
 
   let total = 0;
 
-  currentCart.forEach((item,index)=>{
+  for (const item of currentCart) {
+
     const qty = item.qty || 1;
-    const price = Number(item.price) || 0;
+
+    // 🔥 FIX: LẤY GIÁ GỐC TỪ PRODUCTS
+    let price = 0;
+
+    try {
+      const productSnap = await db
+        .collection("products")
+        .doc(item.productId || item.id)
+        .get();
+
+      if (productSnap.exists) {
+        price = Number(productSnap.data().price) || 0;
+      }
+    } catch (e) {
+      console.warn("Không lấy được product:", item.productId);
+    }
+
     const subTotal = qty * price;
+
     if(item.checked) total += subTotal;
 
     cartBox.innerHTML += `
       <div class="cart-item">
-        <input type="checkbox" ${item.checked?"checked":""} onclick="toggleItem(${index})">
+        <input type="checkbox" ${item.checked?"checked":""} onclick="toggleItem(${currentCart.indexOf(item)})">
         <img src="${item.img}">
         <div>
           <h4>${item.name}</h4>
           <div>${qty} × ${formatPrice(price)} = ${formatPrice(subTotal)}</div>
         </div>
-        <button onclick="removeItem(${index})">🗑</button>
-      </div>`;
-  });
+        <button onclick="removeItem(${currentCart.indexOf(item)})">🗑</button>
+      </div>
+    `;
+  }
 
   totalBox.innerText = formatPrice(total);
 }
@@ -75,21 +97,25 @@ function renderCheckout(){
 // ============================
 async function toggleItem(index){
   if(!currentCart[index]) return;
+
   currentCart[index].checked = !currentCart[index].checked;
+
   await db
     .collection("users")
     .doc(currentUser.uid)
     .collection("cart")
     .doc(currentCart[index].id)
     .update({checked: currentCart[index].checked});
+
   renderCheckout();
 }
 
 // ============================
-// CHANGE QUANTITY
+// CHANGE QTY
 // ============================
 async function changeQty(index, delta){
   if(!currentCart[index]) return;
+
   const item = currentCart[index];
   item.qty = (item.qty || 1) + delta;
   if(item.qty < 1) item.qty = 1;
@@ -109,7 +135,9 @@ async function changeQty(index, delta){
 // ============================
 async function removeItem(index){
   if(!currentCart[index]) return;
+
   const item = currentCart[index];
+
   await db
     .collection("users")
     .doc(currentUser.uid)
@@ -126,9 +154,15 @@ async function removeItem(index){
 // ============================
 async function clearCart(){
   if(!currentUser) return;
-  const cartRef = db.collection("users").doc(currentUser.uid).collection("cart");
-  const snapshot = await cartRef.get();
+
+  const snapshot = await db
+    .collection("users")
+    .doc(currentUser.uid)
+    .collection("cart")
+    .get();
+
   snapshot.forEach(doc => doc.ref.delete());
+
   currentCart = [];
   renderCheckout();
 }
@@ -138,6 +172,7 @@ async function clearCart(){
 // ============================
 async function checkout(){
   if(!currentUser) return;
+
   await clearCart();
   window.location.href = "checkout.html";
 }
@@ -151,7 +186,7 @@ auth.onAuthStateChanged(user=>{
   else { currentCart = []; renderCheckout(); }
 });
 
-// Đưa các hàm ra global để onclick HTML có thể gọi
+// GLOBAL
 window.removeItem = removeItem;
 window.toggleItem = toggleItem;
 window.changeQty = changeQty;
