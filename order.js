@@ -2,19 +2,41 @@
    📦 GET ORDERS
 ========================= */
 function getOrders(){
-  return JSON.parse(localStorage.getItem("orders")) || [];
-}
 
+  const uid = localStorage.getItem("uid");
+
+  if(!uid) return [];
+
+  return JSON.parse(
+    localStorage.getItem("orders_" + uid)
+  ) || [];
+
+}
 /* =========================
    ➕ ADD ORDER
 ========================= */
 function addOrder(order){
+
+  const uid = localStorage.getItem("uid");
+
+  if(!uid){
+    alert("Chưa đăng nhập");
+    return false;
+  }
+
+  order.uid = uid;
+
   let list = getOrders();
+
   list.unshift(order);
-  localStorage.setItem("orders", JSON.stringify(list));
+
+  localStorage.setItem(
+    "orders_" + uid,
+    JSON.stringify(list)
+  );
+
   return true;
 }
-
 /* =========================
    💰 FORMAT TIỀN
 ========================= */
