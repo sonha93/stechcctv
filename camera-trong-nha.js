@@ -69,7 +69,7 @@ function renderHome() {
   if (!box) return;
 
 
- // Chỉ lấy sản phẩm category "cam ngoai" 
+ // Chỉ lấy sản phẩm category "cam trong" 
 const featured = allProducts.filter(
   p => p.category === "cam-in"
 );
@@ -105,8 +105,7 @@ const featured = allProducts.filter(
           ${p.oldPrice && p.oldPrice > p.price ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>` : ""}
           ${percentText ? `<span class="discount-text">${percentText}</span>` : ""}
         </div>
-        <button class="spec-btn" onclick="goDetail('${id}')">
-  ⚙️ Xem thông số
+      
 </button>
         <button class="cart-btn" onclick="addToCart('${id}')">🛒 Mua ngay</button>
        </div>
