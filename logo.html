@@ -700,28 +700,30 @@ async function loadProduct(){
     return;
   }
 
-  const docRef = doc(db,"products",id);
+const q = query(
+  collection(db, "products"),
+  where("id", "==", id)
+);
 
-  const docSnap = await getDoc(docRef);
+const querySnapshot = await getDocs(q);
 
-  if(!docSnap.exists()){
+if(querySnapshot.empty){
 
-    console.log("Không tìm thấy doc id:", id);
+  document.body.innerHTML = `
+    <h2 style="padding:40px;text-align:center">
+      Không tìm thấy sản phẩm
+    </h2>
+  `;
 
-    document.body.innerHTML = `
-      <h2 style="padding:40px;text-align:center">
-        Không tìm thấy sản phẩm
-      </h2>
-    `;
+  return;
+}
 
-    return;
-  }
+const docSnap = querySnapshot.docs[0];
 
-  product = {
-    firebaseId: docSnap.id,
-    ...docSnap.data()
-  };
-
+product = {
+  firebaseId: docSnap.id,
+  ...docSnap.data()
+};
   /* IMAGE */
 
   document.getElementById("detailImg").src =
