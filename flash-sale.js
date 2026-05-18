@@ -1,4 +1,4 @@
-document.getElementById("flash-sale-box").innerHTML = "FLASH SALE TEST";
+
 /* =========================
    🔥 FLASH SALE MODULE
    FILE: flash-sale.js
