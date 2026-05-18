@@ -33,7 +33,7 @@ const MIN_DISCOUNT = 11;
 
 const waitProducts = setInterval(()=>{
 
-  if(window.allProducts){
+ if(Array.isArray(window.allProducts) && window.allProducts.length > 0){
 
     clearInterval(waitProducts);
 
@@ -47,34 +47,19 @@ const waitProducts = setInterval(()=>{
 /* =========================
    RENDER FLASH SALE
 ========================= */
-
 function renderFlashSale(){
-   if(!window.allProducts || !window.allProducts.length) return;
-  renderFlashSale();
-}
 
-  const allProducts =
-    window.allProducts || [];
+  if(!window.allProducts || !window.allProducts.length) return;
 
-  /* FILTER */
+  const allProducts = window.allProducts;
 
-  const products = allProducts.filter(p=>{
+  const products = allProducts.filter(p => {
 
-    /* ĐÚNG CATEGORY */
+    if(p.category !== FLASH_CATEGORY) return false;
 
-    if(p.category !== FLASH_CATEGORY)
-      return false;
+    if(!p.oldPrice) return false;
 
-    /* CÓ GIÁ CŨ */
-
-    if(!p.oldPrice)
-      return false;
-
-    /* % GIẢM */
-
-    const percent = Math.round(
-      (1 - p.price / p.oldPrice) * 100
-    );
+    const percent = Math.round((1 - p.price / p.oldPrice) * 100);
 
     return percent >= MIN_DISCOUNT;
 
@@ -82,79 +67,43 @@ function renderFlashSale(){
 
   if(products.length <= 0) return;
 
-  /* HTML */
-
   let html = `
-
   <section class="flash-sale-wrap">
-
     <div class="flash-header">
-
-      <div class="flash-left">
-
-        ⚡ FLASH SALE
-
-      </div>
+      <div class="flash-left">⚡ FLASH SALE</div>
 
       <div class="flash-right">
-
         <span id="flashH">00</span> :
         <span id="flashM">00</span> :
         <span id="flashS">00</span>
-
       </div>
-
     </div>
 
     <div class="flash-products">
-
   `;
 
-  /* LOOP */
+  products.forEach(p => {
 
-  products.forEach(p=>{
-
-    const percent = Math.round(
-      (1 - p.price / p.oldPrice) * 100
-    );
+    const percent = Math.round((1 - p.price / p.oldPrice) * 100);
 
     html += `
+      <div class="flash-card">
 
-    <div class="flash-card">
+        <div class="flash-percent">-${percent}%</div>
 
-      <div class="flash-percent">
-        -${percent}%
-      </div>
+        <img src="${p.img}" onclick="goDetail('${p.id}')">
 
-      <img
-        src="${p.img}"
-        onclick="goDetail('${p.id}')"
-      >
+        <h3>${p.name}</h3>
 
-      <h3>${p.name}</h3>
+        <div class="flash-price">
+          <span class="new-price">${Number(p.price).toLocaleString()}đ</span>
+          <span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>
+        </div>
 
-      <div class="flash-price">
-
-        <span class="new-price">
-          ${Number(p.price).toLocaleString()}đ
-        </span>
-
-        <span class="old-price">
-          ${Number(p.oldPrice).toLocaleString()}đ
-        </span>
+        <button onclick="addToCart('${p.id}')">🛒 Thêm vào giỏ</button>
 
       </div>
-
-      <button
-        onclick="addToCart('${p.id}')"
-      >
-        🛒 Thêm vào giỏ
-      </button>
-
-    </div>
-
     `;
-
   });
 
   html += `
@@ -162,22 +111,12 @@ function renderFlashSale(){
   </section>
   `;
 
-  /* CHÈN VÀO WEB */
-
-  const productsBox =
-    document.getElementById("products");
-
-  if(productsBox){
-
-    productsBox.insertAdjacentHTML(
-      "beforebegin",
-      html
-    );
-
+  const box = document.getElementById("products");
+  if(box){
+    box.insertAdjacentHTML("beforebegin", html);
   }
 
   startFlashTimer();
-
 }
 
 
