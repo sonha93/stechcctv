@@ -799,16 +799,22 @@ function showTab(tabId,btn){
   btn.classList.add("active");
 
 }
-
 function addToCart(){
 
-  if(!product) return;
+  if(!product){
+    alert("Không tìm thấy sản phẩm!");
+    return;
+  }
 
   let cart =
   JSON.parse(localStorage.getItem("cart")) || [];
 
+  // luôn dùng firebaseId
+  const productId =
+  String(product.firebaseId);
+
   const exist = cart.find(
-    x => String(x.id) === String(product.id)
+    x => String(x.firebaseId) === productId
   );
 
   if(exist){
@@ -819,6 +825,7 @@ function addToCart(){
 
     cart.push({
       ...product,
+      firebaseId: productId,
       qty:1
     });
 
@@ -834,7 +841,6 @@ function addToCart(){
   alert("Đã thêm vào giỏ");
 
 }
-
 function updateCartCount(){
 
   const cart =
@@ -868,9 +874,12 @@ function searchProduct(){
   if(term === "") return;
 
   const filtered =
-  products.filter(
-    p => p.name.toLowerCase().includes(term)
-  );
+  const filtered =
+products.filter(
+  p =>
+    p.name &&
+    p.name.toLowerCase().includes(term)
+);
 
   filtered.forEach(p=>{
 
@@ -892,7 +901,7 @@ function searchProduct(){
     div.onclick = ()=>{
 
       window.location.href =
-      "logo.html?id=" + p.id;
+"logo.html?id=" + p.firebaseId;
 
     };
 
@@ -910,12 +919,7 @@ window.addToCart = addToCart;
 window.searchProduct = searchProduct;
 
 </script>
-  <script type="module" src="logo.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+ 
 
 
 </body>
