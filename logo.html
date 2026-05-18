@@ -663,15 +663,14 @@ async function loadProduct(){
 
 querySnapshot.forEach(doc=>{
   products.push({
-    firebaseId: doc.id,
+    id: doc.id,
     ...doc.data()
   });
 });
 
   product = products.find(
- p => String(p.firebaseId) === String(id)
-  );
-
+ p => String(p.id) === String(id)
+);
   if(!product) return;
 
   document.getElementById("detailImg").src = product.img || "";
@@ -807,10 +806,9 @@ function addToCart(){
   let cart =
   JSON.parse(localStorage.getItem("cart")) || [];
 
-  const exist = cart.find(
-    x => String(x.id) === String(product.id)
-  );
-
+const exist = cart.find(
+  x => String(x.id) === String(product.id)
+);
   if(exist){
 
     exist.qty += 1;
@@ -891,8 +889,8 @@ function searchProduct(){
 
     div.onclick = ()=>{
 
-      window.location.href =
-      "logo.html?id=" + p.id;
+     window.location.href =
+"logo.html?id=" + p.id;
 
     };
 
