@@ -116,7 +116,6 @@ body{
   font-size:13px;
 }
 
-/* 🔥 PAGINATION */
 #pagination{
   text-align:center;
   margin-top:10px;
@@ -129,37 +128,14 @@ body{
   border-radius:6px;
   cursor:pointer;
 }
-/* 📱 MOBILE FULL SCREEN */
+
 @media (max-width: 768px){
-
-  .container{
-    max-width:100%;
-    padding:10px;
-  }
-
-  .order-box{
-    padding:12px;
-  }
-
-  .item{
-    gap:8px;
-  }
-
-  .item img{
-    width:60px;
-    height:60px;
-  }
-
-  .title-box{
-    font-size:18px;
-    padding:12px;
-  }
-
-  .order-title{
-    font-size:14px;
-    padding:6px 10px;
-  }
-
+  .container{max-width:100%;padding:10px;}
+  .order-box{padding:12px;}
+  .item{gap:8px;}
+  .item img{width:60px;height:60px;}
+  .title-box{font-size:18px;padding:12px;}
+  .order-title{font-size:14px;padding:6px 10px;}
 }
 </style>
 </head>
@@ -173,36 +149,73 @@ body{
 <div class="title-box">📦 Đơn hàng của bạn</div>
 
 <div id="orders"></div>
-
-<!-- 🔥 PHÂN TRANG -->
 <div id="pagination"></div>
 
 </div>
 
-<script>
+<script type="module">
 
-/* =========================
-   PAGINATION
-========================= */
+import {
+  getFirestore,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import { app, onAuthStateChangedListener } from "./auth.js";
+
+const db = getFirestore(app);
+
+let currentUID = null;
+let orders = [];
+
 let currentPage = 1;
 const perPage = 5;
+
+/* =========================
+   AUTH CHECK (UID FIREBASE)
+========================= */
+onAuthStateChangedListener((user) => {
+  if (user) {
+    currentUID = user.uid;
+    loadOrders();
+  } else {
+    document.getElementById("orders").innerHTML = "Chưa đăng nhập";
+  }
+});
+
+/* =========================
+   LOAD ORDERS FIREBASE
+========================= */
+async function loadOrders(){
+  if(!currentUID) return;
+
+  const snap = await getDocs(
+    collection(db, "orders", currentUID, "userOrders")
+  );
+
+  orders = [];
+
+  snap.forEach(doc => {
+    orders.push({ id: doc.id, ...doc.data() });
+  });
+
+  renderOrders();
+}
 
 /* =========================
    RENDER ORDERS
 ========================= */
 function renderOrders(){
   const box = document.getElementById("orders");
-  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+  const pagi = document.getElementById("pagination");
 
-  if(orders.length === 0){
+  if(!orders || orders.length === 0){
     box.innerHTML = "Chưa có đơn hàng";
-    document.getElementById("pagination").innerHTML = "";
+    pagi.innerHTML = "";
     return;
   }
 
   box.innerHTML = "";
-
-  orders.reverse();
 
   const start = (currentPage - 1) * perPage;
   const end = start + perPage;
@@ -216,10 +229,9 @@ function renderOrders(){
 
     let itemsHTML = "";
 
-    order.cart.forEach(p => {
+    (order.cart || []).forEach(p => {
 
       let qty = p.qty || 1;
-
       let price = Number(p.price) || 0;
       let old = Number(p.oldPrice) || price;
 
@@ -231,27 +243,21 @@ function renderOrders(){
 
       itemsHTML += `
         <div class="item">
-          <img src="${p.img}">
+          <img src="${p.img || ''}">
 
           <div>
-            <b>${p.name}</b>
+            <b>${p.name || ''}</b>
 
             <div class="calc">
-
               <div class="sale-price">
                 ${price.toLocaleString()}đ
               </div>
 
-              ${
-                old > price
-                ? `<div class="old-price">${old.toLocaleString()}đ</div>`
-                : ""
-              }
+              ${old > price ? `<div class="old-price">${old.toLocaleString()}đ</div>` : ""}
 
               <div>
                 ${qty} × ${price.toLocaleString()}đ = ${subFinal.toLocaleString()}đ
               </div>
-
             </div>
 
           </div>
@@ -264,23 +270,23 @@ function renderOrders(){
     box.innerHTML += `
       <div class="order-box">
 
-        <!-- 🔴 KHUNG ĐỎ ĐƠN HÀNG -->
         <div class="order-title">Đơn hàng #${order.id}</div>
 
-        <p><b>Khách hàng: ${order.name}</b> - ${order.phone}</p>
-        <p>Địa chỉ: ${order.address}</p>
-        <p>Ngày đặt hàng: ${order.time}</p>
-       <p>Hình thức thanh toán: ${
-       order.payment === "bank"
-    ? "🏦 Chuyển khoản"
-    : "💵 COD"
-}</p>
+        <p><b>${order.name || ""}</b> - ${order.phone || ""}</p>
+        <p>Địa chỉ: ${order.address || ""}</p>
+        <p>Ngày: ${order.time || ""}</p>
+
+        <p>
+          Thanh toán:
+          ${order.payment === "bank" ? "🏦 Chuyển khoản" : "💵 COD"}
+        </p>
+
         ${itemsHTML}
 
         <div class="total-box">
 
           <div class="row">
-            <span>Tổng giá gốc</span>
+            <span>Tổng gốc</span>
             <b>${originalTotal.toLocaleString()}đ</b>
           </div>
 
@@ -300,39 +306,32 @@ function renderOrders(){
     `;
   });
 
-  /* =========================
-     RENDER PAGINATION
-  ========================= */
-  const totalPage = Math.ceil(orders.length / perPage);
+  renderPagination();
+}
+
+/* =========================
+   PAGINATION
+========================= */
+function renderPagination(){
   const pagi = document.getElementById("pagination");
+  const totalPage = Math.ceil(orders.length / perPage);
 
   pagi.innerHTML = "";
 
   for(let i = 1; i <= totalPage; i++){
     pagi.innerHTML += `
       <button onclick="goPage(${i})"
-        style="
-          background:${i === currentPage ? '#e53935' : '#ddd'};
-          color:${i === currentPage ? '#fff' : '#000'};
-        ">
+        style="background:${i === currentPage ? '#e53935' : '#ddd'}">
         ${i}
       </button>
     `;
   }
 }
 
-/* =========================
-   GO PAGE
-========================= */
-function goPage(page){
+window.goPage = function(page){
   currentPage = page;
   renderOrders();
-}
-
-/* =========================
-   INIT
-========================= */
-renderOrders();
+};
 
 </script>
 
