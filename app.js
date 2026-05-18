@@ -30,7 +30,7 @@ async function loadProducts() {
       });
 
     });
-
+    window.allProducts = allProducts;
     console.log("PRODUCTS:", allProducts);
 
     renderHome();
