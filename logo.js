@@ -205,12 +205,7 @@ String(p.firebaseId);
 
         </div>
 
-   <button
-  class="cart-btn"
-  onclick="addToCart('${p.id || p.firebaseId}')"
->
-  🛒 Thêm vào giỏ
-</button>
+ 
 
 <button
   class="cart-btn"
