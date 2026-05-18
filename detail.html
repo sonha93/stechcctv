@@ -159,7 +159,9 @@ function showTab(tabId,btn){document.querySelectorAll(".spec-content").forEach(t
 const params=new URLSearchParams(window.location.search);
 const id=params.get("id");
 const products=JSON.parse(localStorage.getItem("products"))||[];
-const product=products.find(p=>String(p.id)===String(id));
+const product = products.find(
+ p => String(p.firebaseId || p.id) === String(id)
+);
 if(product){
   document.getElementById("detailImg").src=product.img||"https://via.placeholder.com/150";
   document.getElementById("panelProductImg").src=product.img||"https://via.placeholder.com/50";
@@ -183,15 +185,55 @@ if(product){
   document.getElementById("detailView").innerText=product.gocNhin||"Đang cập nhật";
 }
 
-function addToCart(){
+
+ function addToCart(){
+
   if(!product) return;
-  let cart=JSON.parse(localStorage.getItem('cart'))||[];
-  const exist=cart.find(x=>String(x.id)===String(product.id));
-  if(exist){exist.qty+=1;}else{cart.push({...product,qty:1});}
-  localStorage.setItem('cart',JSON.stringify(cart));
+
+  let cart =
+  JSON.parse(localStorage.getItem('cart')) || [];
+
+  const exist = cart.find(
+
+    x =>
+
+    String(x.firebaseId || x.id)
+
+    ===
+
+    String(product.firebaseId || product.id)
+
+  );
+
+  if(exist){
+
+    exist.qty += 1;
+
+  }else{
+
+    cart.push({
+
+      ...product,
+
+      id: product.firebaseId || product.id,
+
+      qty:1
+
+    });
+
+  }
+
+  localStorage.setItem(
+    'cart',
+    JSON.stringify(cart)
+  );
+
   updateCartCount();
+
   alert("Đã thêm vào giỏ 🛒");
+
 }
+
 function updateCartCount(){
   const cart=JSON.parse(localStorage.getItem('cart'))||[];
   let total=0; cart.forEach(item=>total+=item.qty||1);
@@ -199,36 +241,79 @@ function updateCartCount(){
 }
 updateCartCount();
 
+
 /* SEARCH */
 function searchProduct(){
-  const term=document.getElementById("searchInput").value.toLowerCase();
-  const results=document.getElementById("searchResults");
-  results.innerHTML="";
-  if(term==="") return;
-  const filtered=products.filter(p=>p.name.toLowerCase().includes(term));
+
+  const term =
+  document.getElementById("searchInput")
+  .value
+  .toLowerCase();
+
+  const results =
+  document.getElementById("searchResults");
+
+  results.innerHTML = "";
+
+  if(term === "") return;
+
+ const filtered =
+products.filter(
+  p =>
+    p &&
+    p.name &&
+    p.name.toLowerCase().includes(term)
+);
+
   filtered.forEach(p=>{
-    const div=document.createElement("div");
-    div.className="search-result-item";
-    const oldPrice=p.oldPrice && Number(p.oldPrice)>Number(p.price)
-      ? `<span class="old-price">${Number(p.oldPrice).toLocaleString()}đ</span>` : '';
-    div.innerHTML=`
+
+    const div =
+    document.createElement("div");
+
+    div.className = "search-result-item";
+
+    const oldPrice =
+    p.oldPrice &&
+    Number(p.oldPrice) > Number(p.price)
+
+    ? `
+      <span class="old-price">
+        ${Number(p.oldPrice).toLocaleString()}đ
+      </span>
+    `
+
+    : '';
+
+    div.innerHTML = `
       <img src="${p.img}" alt="${p.name}">
+
       <div>
         <strong>${p.name}</strong>
-        <span style="color:red;">${Number(p.price).toLocaleString()}đ</span>${oldPrice}
+
+        <span style="color:red;">
+          ${Number(p.price).toLocaleString()}đ
+        </span>
+
+        ${oldPrice}
       </div>
     `;
-    div.onclick=()=>{window.location.href=`detail.html?id=${p.id}`;};
+
+    div.onclick = ()=>{
+
+      const productId = String(p.firebaseId || p.id);
+window.location.href = `logo.html?id=${encodeURIComponent(productId)}`;
+
+    };
+
     results.appendChild(div);
+
   });
+
 }
+
 </script>
-  <script src="app.js"></script>
+
 <script type="module" src="app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+ 
 </body>
 </html>
