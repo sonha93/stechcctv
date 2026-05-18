@@ -166,12 +166,8 @@ export async function addToCart(product) {
     return;
   }
 
-  // dùng firebaseId
-  const productId =
-  String(product.firebaseId);
-
-  if (!productId) {
-    console.error("Thiếu firebaseId");
+  if (!product.id) {
+    console.error("Thiếu product.id");
     return;
   }
 
@@ -182,7 +178,7 @@ export async function addToCart(product) {
       "users",
       currentUser.uid,
       "cart",
-      productId
+      String(product.id)
     );
 
     const snapshot = await getDocs(
@@ -198,7 +194,7 @@ export async function addToCart(product) {
 
     snapshot.forEach(d => {
 
-      if(d.id === productId){
+      if(d.id === String(product.id)){
         oldQty = Number(d.data().qty) || 0;
       }
 
@@ -206,7 +202,7 @@ export async function addToCart(product) {
 
     await setDoc(itemRef, {
 
-      firebaseId: productId,
+      id: product.id,
       name: product.name || "",
       price: Number(product.price) || 0,
       img: product.img || "",
@@ -225,6 +221,8 @@ export async function addToCart(product) {
   }
 
 }
+
+
 // ============================
 // REMOVE ITEM
 // ============================
