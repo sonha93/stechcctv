@@ -49,6 +49,9 @@ const waitProducts = setInterval(()=>{
 ========================= */
 
 function renderFlashSale(){
+   if(!window.allProducts || !window.allProducts.length) return;
+  renderFlashSale();
+}
 
   const allProducts =
     window.allProducts || [];
