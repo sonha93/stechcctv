@@ -141,6 +141,16 @@
 .item{
   position:relative;
 }
+  #loadMoreBtn{
+  display:none;
+  margin:20px auto;
+  padding:12px 20px;
+  border:none;
+  border-radius:10px;
+  background:#111;
+  color:#fff;
+  cursor:pointer;
+}
 </style>
 </head>
 <body>
@@ -169,7 +179,6 @@
     <p id="sidebarUserNamePreview" style="margin:0; font-size:14px; color:#007BFF;">Người dùng</p>
   </div>
 </div>
-
 <!-- HEADER -->
 <header>
   <div onclick="toggleMenu()">☰</div>
@@ -179,12 +188,18 @@
   <input id="search" placeholder="Tìm kiếm sản phẩm...">
 </header>
 
+
 <!-- CONTENT -->
 <div class="product-slider">
   <div class="product-track" id="products"></div>
 </div>
 
+<button id="loadMoreBtn"></button>
+
 <div class="extra-section"></div>
+
+
+
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -198,7 +213,7 @@
   </div>
 </footer>
 
-<div id="productContainer" class="product-grid"></div>
+
 
 <!-- POPUP LOGIN / REGISTER -->
 <div id="authModal">
@@ -223,5 +238,8 @@ function toggleMenu(){
 <script type="module" src="auth.js"></script>
 <script type="module" src="home.js"></script>
 <script src="banner.js"></script>
+
+
+
 </body>
 </html>
