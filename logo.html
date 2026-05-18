@@ -11,7 +11,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:Arial;
+   font-weight:bold;
 }
 
 body{
@@ -46,7 +46,6 @@ header{
   font-size:22px;
   cursor:pointer;
   position:relative;
-  border:none;
 }
 
 .admin-btn{
@@ -147,7 +146,7 @@ header{
 .container{
   max-width:1000px;
   margin:0auto;
-  padding:15px;
+  padding:0px;
   display:flex;
   gap:18px;
   align-items:flex-start;
@@ -327,7 +326,6 @@ header{
 .spec-label{
   width:120px;
   color:#666;
-  font-weight:bold;
 }
 
 .spec-value{
@@ -344,7 +342,6 @@ header{
   margin-top:10px;
   overflow:hidden;
   z-index:999;
-  box-shadow:0 5px 20px rgba(0,0,0,.1);
 }
 
 .search-result-item{
@@ -364,31 +361,76 @@ header{
 
 @media(max-width:768px){
 
+  .menu-btn,
+  .icon-btn{
+    width:42px;
+    height:42px;
+    font-size:20px;
+  }
+
+  .logo{
+    width:39px;
+    height:39px;
+  }
+
   .container{
-    flex-direction:column;
+    flex-direction:row;
+    align-items:flex-start;
+    gap:14px;
+    padding:1px;
   }
 
   .left{
-    width:100%;
+    width:120px;
+    flex-shrink:0;
   }
 
   .left img{
-    height:280px;
+    width:130px;
+    height:178px;
+    border-radius:18px;
+    object-fit:cover;
+  }
+
+  .right{
+    flex:1;
+    gap:10px;
+    padding-top:2px;
   }
 
   .product-name{
-    font-size:22px;
+    font-size:18px;
+    line-height:1.4;
   }
 
   .price{
-    font-size:24px;
+    font-size:22px;
+  }
+
+  .old-price{
+    font-size:14px;
+  }
+
+  .sale{
+    font-size:12px;
+    padding:4px 8px;
+    border-radius:10px;
+  }
+
+  .buy-btn,
+  .spec-open-btn{
+    height:46px;
+    font-size:15px;
+    border-radius:18px;
   }
 
 }
-
 </style>
 </head>
 
+
+
+<!-- FOOTER -->
 <body>
 
 <div id="overlay"></div>
@@ -397,12 +439,11 @@ header{
   <a href="index.html">Trang chủ</a>
   <a href="camera-trong-nha.html">Camera trong nhà</a>
   <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
-  <a href="cart.html">Giỏ hàng</a>
 </div>
 
 <header>
 
-  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
 
   <div class="logo">
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png">
@@ -431,6 +472,7 @@ header{
     </a>
 
   </div>
+
 
 </header>
 
