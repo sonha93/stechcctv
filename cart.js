@@ -38,75 +38,72 @@ async function renderCart() {
     return;
   }
 
-  try {
+  const cartRef = collection(db, "users", currentUser.uid, "cart");
+  const snapshot = await getDocs(cartRef);
 
-    const cartRef = collection(db, "users", currentUser.uid, "cart");
-    const snapshot = await getDocs(cartRef);
+  if (snapshot.empty) {
+    cartBox.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
+    return;
+  }
 
-    if (snapshot.empty) {
-      cartBox.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
-      return;
+  let total = 0;
+
+  for (const docSnap of snapshot.docs) {
+
+    const item = docSnap.data();
+
+    // 🔥 FIX LẤY GIÁ CHUẨN
+    const productRef = doc(db, "products", item.productId || item.id);
+    const productSnap = await getDoc(productRef);
+
+    let price = 0;
+
+    if (productSnap.exists()) {
+      const product = productSnap.data();
+      price = Number(product.price) || 0;
     }
 
-    let total = 0;
+    const qty = Number(item.qty) || 1;
 
-    for (const docSnap of snapshot.docs) {
+    total += price * qty;
 
-      const item = docSnap.data();
+    cartBox.innerHTML += `
+      <div class="item">
 
-      // 🔥 LẤY GIÁ MỚI TỪ PRODUCTS (QUAN TRỌNG)
-      const productSnap = await getDoc(
-        doc(db, "products", item.id)
-      );
+        <img src="${item.img || ''}">
 
-      const product = productSnap.data();
+        <div class="info">
 
-      const price = Number(product?.price) || 0;
-      const qty = Number(item.qty) || 1;
+          <b>${item.name || ''}</b>
 
-      total += price * qty;
-
-      cartBox.innerHTML += `
-        <div class="item">
-
-          <img src="${item.img || ''}">
-
-          <div class="info">
-
-            <b>${item.name || ''}</b>
-
-            <div class="price-row">
-              <div class="price-new">
-                ${price.toLocaleString()}đ
-              </div>
+          <div class="price-row">
+            <div class="price-new">
+              ${price.toLocaleString()}đ
             </div>
-
-            <div class="qty">
-              <button onclick="updateQty('${docSnap.id}', ${qty - 1})">-</button>
-              <span>${qty}</span>
-              <button onclick="updateQty('${docSnap.id}', ${qty + 1})">+</button>
-            </div>
-
           </div>
 
-          <button class="remove" onclick="removeItem('${docSnap.id}')">🗑</button>
+          <div class="qty">
+            <button onclick="updateQty('${docSnap.id}', ${qty - 1})">-</button>
+            <span>${qty}</span>
+            <button onclick="updateQty('${docSnap.id}', ${qty + 1})">+</button>
+          </div>
 
         </div>
-      `;
-    }
 
-    totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
+        <button class="remove" onclick="removeItem('${docSnap.id}')">🗑</button>
 
-    if (actionBox) {
-      actionBox.innerHTML = `
-        <button class="checkout" onclick="checkout()">
-          Đặt hàng
-        </button>
-      `;
-    }
+      </div>
+    `;
+  }
 
-  } catch (err) {
-    console.error("Lỗi renderCart:", err);
+  totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
+
+  if (actionBox) {
+    actionBox.innerHTML = `
+      <button class="checkout" onclick="checkout()">
+        Đặt hàng
+      </button>
+    `;
   }
 }
 
@@ -140,9 +137,8 @@ export async function addToCart(product) {
     }
   });
 
-  // ❗ KHÔNG LƯU PRICE NỮA
   await setDoc(itemRef, {
-    id: product.id,
+    productId: product.id,
     name: product.name || "",
     img: product.img || "",
     qty: oldQty + 1
@@ -158,9 +154,7 @@ window.removeItem = async function(itemId) {
 
   if (!currentUser) return;
 
-  await deleteDoc(
-    doc(db, "users", currentUser.uid, "cart", itemId)
-  );
+  await deleteDoc(doc(db, "users", currentUser.uid, "cart", itemId));
 
   renderCart();
 };
