@@ -5,7 +5,8 @@ import {
   doc,
   deleteDoc,
   setDoc,
-  updateDoc
+  updateDoc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -21,275 +22,172 @@ const db = getFirestore(app);
 let currentUser = null;
 
 // DOM
-let cartBox = null;
-let totalBox = null;
-let actionBox = null;
+let cartBox, totalBox, actionBox;
+
 // ============================
 // RENDER CART
 // ============================
 async function renderCart() {
 
   cartBox = document.getElementById("cartList");
- totalBox = document.getElementById("total");
-actionBox = document.getElementById("cartAction");
+  totalBox = document.getElementById("total");
+  actionBox = document.getElementById("cartAction");
 
-  // Nếu không phải trang cart thì bỏ qua
-  if (!cartBox || !totalBox) {
-    return;
-  }
+  if (!cartBox || !totalBox) return;
 
   cartBox.innerHTML = "";
   totalBox.innerHTML = "";
 
   if (!currentUser) {
-    cartBox.innerHTML =
-      "<div class='empty'>Bạn chưa đăng nhập 🛒</div>";
+    cartBox.innerHTML = "<div class='empty'>Bạn chưa đăng nhập 🛒</div>";
     return;
   }
 
-  try {
+  const cartRef = collection(db, "users", currentUser.uid, "cart");
+  const snapshot = await getDocs(cartRef);
 
-    const cartRef = collection(
-      db,
-      "users",
-      currentUser.uid,
-      "cart"
-    );
-
-    const snapshot = await getDocs(cartRef);
-
-    console.log(
-      "FIREBASE CART:",
-      snapshot.docs.map(d => d.data())
-    );
-
-    if (snapshot.empty) {
-
-  cartBox.innerHTML =
-    "<div class='empty'>Giỏ hàng trống 🛒</div>";
-
-  totalBox.innerHTML = "";
-
-  if(actionBox){
-    actionBox.innerHTML = "";
+  if (snapshot.empty) {
+    cartBox.innerHTML = "<div class='empty'>Giỏ hàng trống 🛒</div>";
+    return;
   }
 
-  return;
-}
+  let total = 0;
+  let html = "";
 
-    let total = 0;
+  snapshot.forEach(docSnap => {
 
-    snapshot.forEach(docSnap => {
+    const p = docSnap.data();
 
-      const p = docSnap.data();
+    const qty = Number(p.qty) || 1;
+    const price = Number(p.price) || 0;
 
-      const qty = Number(p.qty) || 1;
-      const price = Number(p.price) || 0;
+    total += qty * price;
 
-      const subTotal = qty * price;
+    html += `
+      <div class="item">
+        <img src="${p.img || ''}">
 
-      total += subTotal;
+        <div class="info">
+          <b>${p.name || ''}</b>
 
- cartBox.innerHTML += `
-<div class="item">
+          <div class="price-row">
+            <div class="price-new">
+              ${price.toLocaleString()}đ
+            </div>
+          </div>
 
-  <img src="${p.img || ''}">
+          <div class="qty">
+            <button onclick="updateQty('${docSnap.id}', ${qty - 1})">-</button>
+            <span>${qty}</span>
+            <button onclick="updateQty('${docSnap.id}', ${qty + 1})">+</button>
+          </div>
+        </div>
 
-  <div class="info">
-
-    <b>${p.name || ''}</b>
-
-    <div class="price-row">
-      <div class="price-new">
-        ${price.toLocaleString()}đ
+        <button class="remove"
+          onclick="removeItem('${docSnap.id}')">
+          🗑
+        </button>
       </div>
-    </div>
+    `;
+  });
 
-    <div class="qty">
+  cartBox.innerHTML = html;
 
-      <button onclick="updateQty('${docSnap.id}', ${qty - 1})">
-        -
+  totalBox.innerHTML = "Tổng tiền: " + total.toLocaleString() + "đ";
+
+  if (actionBox) {
+    actionBox.innerHTML = `
+      <button class="checkout" onclick="checkout()">
+        Đặt hàng
       </button>
-
-     <span>${qty}</span>
-
-<button onclick="updateQty('${docSnap.id}', ${qty + 1})">
-  +
-</button>
-
-    </div>
-
-  </div>
-
-  <button
-    class="remove"
-    onclick="removeItem('${docSnap.id}')"
-  >
-    🗑
-  </button>
-
-</div>
-`;
-    });
-
-    totalBox.innerHTML =
-      "Tổng tiền: " +
-      total.toLocaleString() +
-      "đ";
-if(actionBox){
-
-  actionBox.innerHTML = `
-    <button
-      class="checkout"
-      onclick="checkout()"
-    >
-      Đặt hàng
-    </button>
-  `;
-
-}
-  } catch (err) {
-
-    console.error("Lỗi renderCart:", err);
-
+    `;
   }
-
 }
 
 // ============================
-// ADD TO CART
+// ADD TO CART (FIX TRÙNG ID)
 // ============================
+let adding = false;
+
 export async function addToCart(product) {
+
+  if (adding) return;
+  adding = true;
 
   if (!currentUser) {
     alert("Bạn cần đăng nhập!");
+    adding = false;
     return;
   }
 
-  if (!product.id) {
-    console.error("Thiếu product.id");
-    return;
-  }
+  const id = String(product.id);
+
+  const itemRef = doc(db, "users", currentUser.uid, "cart", id);
 
   try {
 
-    const itemRef = doc(
-      db,
-      "users",
-      currentUser.uid,
-      "cart",
-      String(product.id)
-    );
-
-    const snapshot = await getDocs(
-      collection(
-        db,
-        "users",
-        currentUser.uid,
-        "cart"
-      )
-    );
+    const snap = await getDoc(itemRef);
 
     let oldQty = 0;
-
-    snapshot.forEach(d => {
-
-      if(d.id === String(product.id)){
-        oldQty = Number(d.data().qty) || 0;
-      }
-
-    });
+    if (snap.exists()) {
+      oldQty = Number(snap.data().qty) || 0;
+    }
 
     await setDoc(itemRef, {
-
-      id: product.id,
+      id,
       name: product.name || "",
       price: Number(product.price) || 0,
       img: product.img || "",
       qty: oldQty + 1
-
     });
-
-    alert("Đã thêm vào giỏ 🛒");
 
     renderCart();
 
   } catch (err) {
-
-    console.error("Lỗi addToCart:", err);
-
+    console.error(err);
   }
 
+  adding = false;
 }
-
 
 // ============================
 // REMOVE ITEM
 // ============================
 window.removeItem = async function(itemId) {
-
   if (!currentUser) return;
 
-  await deleteDoc(
-    doc(
-      db,
-      "users",
-      currentUser.uid,
-      "cart",
-      itemId
-    )
-  );
-
+  await deleteDoc(doc(db, "users", currentUser.uid, "cart", itemId));
   renderCart();
-
 };
+
 // ============================
 // UPDATE QTY
 // ============================
 window.updateQty = async function(itemId, qty) {
-
   if (!currentUser) return;
 
-  qty = Number(qty);
+  qty = Math.max(1, Number(qty));
 
-  if (qty < 1) qty = 1;
-
-  const itemRef = doc(
-    db,
-    "users",
-    currentUser.uid,
-    "cart",
-    itemId
-  );
-
-  await updateDoc(itemRef, {
-    qty: qty
+  await updateDoc(doc(db, "users", currentUser.uid, "cart", itemId), {
+    qty
   });
 
   renderCart();
-
 };
+
 // ============================
 // CHECKOUT
 // ============================
-window.checkout = function(){
-
-
+window.checkout = function() {
   window.location.href = "checkout.html";
-
 };
 
 // ============================
 // AUTH
 // ============================
 onAuthStateChanged(auth, async user => {
-
   currentUser = user;
-
-  console.log("USER:", user);
-
   await renderCart();
-
 });
 
 window.renderCart = renderCart;
