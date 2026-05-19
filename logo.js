@@ -356,3 +356,54 @@ async function updateCartCount() {
     console.error("Lỗi updateCartCount:", err);
   }
 }
+/* =========================
+   LOAD CHI TIẾT SẢN PHẨM + NHIỀU ẢNH
+========================= */
+
+async function loadDetail() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  if (!id) return;
+
+  const snapshot = await getDocs(collection(db, "products"));
+
+  let product = null;
+
+  snapshot.forEach(doc => {
+    if (doc.id === id) {
+      product = { firebaseId: doc.id, ...doc.data() };
+    }
+  });
+
+  if (!product) return;
+
+  // lấy nhiều ảnh (nếu có), không thì fallback img cũ
+  const images = product.images?.length
+    ? product.images
+    : (product.img ? [product.img] : []);
+
+  // MAIN IMAGE
+  const main = document.getElementById("mainImage");
+  if (main) {
+    main.innerHTML = `
+      <img id="bigImg"
+        src="${images[0] || ''}"
+        style="width:100%;max-width:400px;border-radius:10px;">
+    `;
+  }
+
+  // THUMBNAIL
+  const thumbs = document.getElementById("thumbs");
+  if (thumbs) {
+    thumbs.innerHTML = images.map(img => `
+      <img src="${img}"
+        style="width:60px;height:60px;margin:5px;cursor:pointer;border:1px solid #ccc;border-radius:6px"
+        onclick="document.getElementById('bigImg').src='${img}'"
+      >
+    `).join("");
+  }
+}
+
+/* chạy khi load trang */
+document.addEventListener("DOMContentLoaded", loadDetail);
