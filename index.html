@@ -3,6 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
@@ -108,12 +109,12 @@ href="styletrong-nha.css">
   z-index:1000;
 }
 
-/* PRODUCTS */
+/* 2 CỘT SẢN PHẨM */
 
 #products{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
 }
 
 .product-card{
@@ -131,6 +132,16 @@ href="styletrong-nha.css">
   border-bottom:1px solid #ccc;
   border-radius:4px;
   object-fit:cover;
+}
+
+/* MÁY TÍNH 4 CỘT */
+
+@media(min-width:1200px){
+
+  #products{
+    grid-template-columns:repeat(4,1fr);
+  }
+
 }
 
 .product-card .product-info{
@@ -165,6 +176,7 @@ href="styletrong-nha.css">
 }
 
 </style>
+
 </head>
 
 <body>
@@ -174,17 +186,26 @@ onclick="toggleMenu()"></div>
 
 <!-- MENU / SIDEBAR -->
 
-<div class="sidebar" id="sidebar">
+<div class="sidebar"
+id="sidebar">
 
   <h3>Danh mục</h3>
 
-  <a href="index.html">Trang chủ</a>
+  <a href="index.html">
+    Trang chủ
+  </a>
 
-  <a href="admin-panel.html">Admin</a>
+  <a href="admin-panel.html">
+    Admin
+  </a>
 
-  <a href="profile.html">Thông Tin</a>
+  <a href="profile.html">
+    Thông Tin
+  </a>
 
-  <a href="cart.html">Giỏ hàng</a>
+  <a href="cart.html">
+    Giỏ hàng
+  </a>
 
   <a href="camera-trong-nha.html">
     Camera trong nhà
@@ -206,7 +227,8 @@ onclick="toggleMenu()"></div>
 
   <!-- LOGIN / LOGOUT -->
 
-  <a href="#" id="loginLink">
+  <a href="#"
+  id="loginLink">
     Đăng nhập / Đăng ký
   </a>
 
@@ -216,13 +238,36 @@ onclick="toggleMenu()"></div>
     Đăng xuất
   </a>
 
+  <!-- USER INFO PREVIEW -->
+
+  <div id="userInfoPreview">
+
+    <img
+    id="sidebarUserAvatarPreview"
+    src="https://via.placeholder.com/40"
+    alt="Avatar">
+
+    <p id="sidebarUserNamePreview"
+    style="
+    margin:0;
+    font-size:14px;
+    color:#007BFF;">
+
+      Người dùng
+
+    </p>
+
+  </div>
+
 </div>
 
 <!-- HEADER -->
 
 <header>
 
-  <div onclick="toggleMenu()">☰</div>
+  <div onclick="toggleMenu()">
+    ☰
+  </div>
 
   <div class="logo">
 
@@ -238,6 +283,8 @@ onclick="toggleMenu()"></div>
 
 </header>
 
+<!-- CONTENT -->
+
 <!-- PRODUCT LIST -->
 
 <div class="product-slider">
@@ -251,6 +298,8 @@ onclick="toggleMenu()"></div>
 
 <button id="loadMoreBtn"></button>
 
+<div class="extra-section"></div>
+
 <!-- FOOTER -->
 
 <footer class="footer">
@@ -260,13 +309,17 @@ onclick="toggleMenu()"></div>
     <h3>StechCamera</h3>
 
     <p>
-      Website chuyên cung cấp camera
-      an ninh chính hãng
+      Website chuyên cung cấp
+      camera an ninh chính hãng
     </p>
 
-    <p>Hotline: 0985.678.245</p>
+    <p>
+      Hotline: 0985.678.245
+    </p>
 
-    <p>Email: support@stechcamera.vn</p>
+    <p>
+      Email: support@stechcamera.vn
+    </p>
 
     <hr>
 
@@ -285,7 +338,9 @@ onclick="toggleMenu()"></div>
 
   <div class="auth-content">
 
-    <h2>Đăng ký / Đăng nhập</h2>
+    <h2>
+      Đăng ký / Đăng nhập
+    </h2>
 
     <input
     type="email"
