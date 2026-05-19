@@ -4,189 +4,94 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shop Camera Pro</title>
-
 <link rel="stylesheet" href="styletrong-nha.css">
 
 <style>
-
-/* ======================
-   RESET
-====================== */
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-/* ======================
-   HEADER
-====================== */
-header{
-  position:sticky;
-  top:0;
-  z-index:999;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:10px;
-  background:#33A0AB;
-}
-
-/* MENU */
-.menu-btn{
-  width:44px;
-  height:44px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#00acc1;
-  color:#fff;
-  border-radius:10px;
-  font-size:22px;
-  cursor:pointer;
-}
-
-/* LOGO */
+/* LOGO KHÔNG VIỀN */
 .logo img{
   height:38px;
   width:auto;
+  border:0;
+  outline:0;
+  box-shadow:none;
   display:block;
+  background:transparent;
 }
 
-/* SEARCH */
-.search-box{
-  flex:1;
-  position:relative;
+/* POPUP LOGIN/REGISTER */
+#authModal{
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
+  display:none;
+  background:rgba(0,0,0,0.6);
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
 }
-
-.search-box input{
+#authModal .auth-content{
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  max-width:350px;
+  width:90%;
+}
+#authModal h2{
+  text-align:center;
+  margin-bottom:10px;
+}
+#authModal input{
   width:100%;
-  height:44px;
-  border:none;
-  border-radius:10px;
-  padding:0 10px;
-  outline:none;
-}
-
-/* ICON */
-.icon-group{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-
-.icon-btn{
-  width:44px;
-  height:44px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:10px;
-  background:#00acc1;
-  color:#fff;
-  text-decoration:none;
-  position:relative;
-}
-
-.admin-btn{
-  background:#6a5acd;
-}
-
-/* CART COUNT */
-.cart-count{
-  position:absolute;
-  top:-5px;
-  right:-5px;
-  background:red;
-  color:#fff;
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  font-size:11px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-/* ======================
-   SEARCH DROPDOWN
-====================== */
-.search-results{
-  position:absolute;
-  top:48px;
-  left:0;
-  right:0;
-  background:#fff;
-  border-radius:10px;
-  overflow:auto;
-  max-height:300px;
-  z-index:2000;
-  box-shadow:0 10px 20px rgba(0,0,0,0.15);
-}
-
-.search-result-item{
-  display:flex;
-  gap:10px;
   padding:8px;
-  border-bottom:1px solid #eee;
+  margin:6px 0;
+  border-radius:4px;
+  border:1px solid #aaa;
+}
+#authModal button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  background:#007BFF;
+  color:white;
+  font-weight:bold;
   cursor:pointer;
-  align-items:center;
+  border-radius:4px;
+}
+#authModal #closeAuth{
+  background:#f44336;
+  margin-top:5px;
+}
+#authModal #authMessage{
+  text-align:center;
+  margin-top:8px;
+  color:red;
 }
 
-.search-result-item img{
-  width:45px;
-  height:45px;
+/* SIDEBAR USER INFO */
+#userInfoPreview{
+  display:none;
+  margin-top:10px;
+  text-align:center;
+  cursor:pointer;
+}
+#userInfoPreview img{
+  width:40px; height:40px;
+  border-radius:50%;
   object-fit:cover;
-  border-radius:6px;
+  margin-bottom:5px;
 }
 
-/* ======================
-   SIDEBAR + OVERLAY
-====================== */
-.sidebar{
-  position:fixed;
-  top:0;
-  left:-260px;
-  width:240px;
-  height:100vh;
-  background:#fff;
-  z-index:1000;
-  padding:15px;
-  transition:.25s;
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  z-index: 1000; /* fix click bị overlay chặn */
 }
 
-.sidebar.active{
-  left:0;
-}
-
-#overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.4);
-  opacity:0;
-  visibility:hidden;
-  transition:.25s;
-  z-index:999;
-}
-
-#overlay.active{
-  opacity:1;
-  visibility:visible;
-}
-
-/* ======================
-   PRODUCT GRID
-====================== */
+/* 2 CỘT SẢN PHẨM */
 #products{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:6px;
-}
-
-@media(min-width:1200px){
-  #products{
-    grid-template-columns:repeat(4,1fr);
-  }
 }
 
 .product-card{
@@ -195,126 +100,152 @@ header{
   border-radius:8px;
   overflow:hidden;
   text-align:center;
+  padding:0px;
 }
 
+.product-card img{
+  width:100%;
+  height:auto;
+  border-bottom:1px solid #ccc;
+  border-radius:4px;
+  object-fit:cover;
+}
+
+/* MÁY TÍNH 3 CỘT */
+@media(min-width:1200px){
+
+  #products{
+    grid-template-columns:repeat(4,1fr);
+  }
+
+}
+
+.product-card .product-info{
+  margin-top:8px;
+}
+.discount-text{
+  position:absolute;
+  top:3px;
+  left:0px;
+
+  font-size:11px;
+  padding:2px 5px;
+
+  background:red;
+  color:white;
+
+  border-radius:6px;
+  z-index:10;
+}
+
+.item{
+  position:relative;
+}
+ #loadMoreBtn{
+  display:block;
+  margin:20px auto;
+  padding:12px 20px;
+  border:none;
+  border-radius:10px;
+  background:#111;
+  color:#fff;
+  cursor:pointer;
+}
 </style>
 </head>
-
 <body>
 
-<!-- OVERLAY -->
-<div id="overlay"></div>
+<div id="overlay" onclick="toggleMenu()"></div>
 
-<!-- SIDEBAR -->
+<!-- MENU / SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
   <a href="index.html">Trang chủ</a>
+  <a href="admin-panel.html">Admin</a>
+  <a href="profile.html">Thông Tin</a>
   <a href="cart.html">Giỏ hàng</a>
   <a href="camera-trong-nha.html">Camera trong nhà</a>
   <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
-</div>
+  <a href="the-nho.html">Thẻ nhớ</a>
+  <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
+  <hr>
+  <!-- LOGIN / LOGOUT -->
+  <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
+  <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
 
+  <!-- USER INFO PREVIEW -->
+  <div id="userInfoPreview">
+    <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/40" alt="Avatar">
+    <p id="sidebarUserNamePreview" style="margin:0; font-size:14px; color:#007BFF;">Người dùng</p>
+  </div>
+</div>
 <!-- HEADER -->
 <header>
-
-  <div class="menu-btn" onclick="toggleMenu()">☰</div>
-
+  <div onclick="toggleMenu()">☰</div>
   <div class="logo">
-    <img src="https://i.ibb.co/Z1kv9nJj/logo.png">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
-
-  <div class="search-box">
-    <input id="search" placeholder="Tìm kiếm sản phẩm..." oninput="searchProduct()">
-    <div id="searchResults" class="search-results"></div>
-  </div>
-
-  <div class="icon-group">
-
-    <a href="admin-panel.html" class="icon-btn admin-btn">🔐</a>
-
-    <a href="cart.html" class="icon-btn">
-      🛒
-      <span class="cart-count" id="cartCount">0</span>
-    </a>
-
-  </div>
-
+  <input id="search" placeholder="Tìm kiếm sản phẩm...">
 </header>
 
+
 <!-- CONTENT -->
-<div id="products"></div>
 
-<!-- SCRIPTS -->
-<script type="module">
 
-let products = [];
 
-window.products = products;
+<!-- PRODUCT LIST -->
+<div class="product-slider">
+  <div class="product-track" id="products"></div>
+</div>
 
-/* ======================
-   MENU FIX
-====================== */
+<!-- LOAD MORE -->
+<button id="loadMoreBtn"></button>
+
+<div class="extra-section"></div>
+
+
+
+
+
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-container">
+    <h3>StechCamera</h3>
+    <p>Website chuyên cung cấp camera an ninh chính hãng</p>
+    <p>Hotline: 0985.678.245</p>
+    <p>Email: support@stechcamera.vn</p>
+    <hr>
+    <p>© 2026 StechCamera. All rights reserved.</p>
+  </div>
+</footer>
+
+
+
+<!-- POPUP LOGIN / REGISTER -->
+<div id="authModal">
+  <div class="auth-content">
+    <h2>Đăng ký / Đăng nhập</h2>
+    <input type="email" id="authEmail" placeholder="Email">
+    <input type="password" id="authPassword" placeholder="Mật khẩu">
+    <button id="authRegisterBtn">Đăng ký</button>
+    <button id="authLoginBtn">Đăng nhập</button>
+    <button id="closeAuth">Đóng</button>
+    <p id="authMessage"></p>
+  </div>
+</div>
+<script>
 function toggleMenu(){
-  document.getElementById("sidebar").classList.toggle("active");
-  document.getElementById("overlay").classList.toggle("active");
+  document.getElementById("sidebar").classList.toggle("active"); 
+  document.getElementById("overlay").classList.toggle("active"); 
 }
-
-document.getElementById("overlay").onclick = function(){
-  document.getElementById("sidebar").classList.remove("active");
-  document.getElementById("overlay").classList.remove("active");
-};
-
-window.toggleMenu = toggleMenu;
-
-/* ======================
-   SEARCH FIX
-====================== */
-function searchProduct(){
-
-  const term = document.getElementById("search").value.toLowerCase();
-  const box = document.getElementById("searchResults");
-
-  box.innerHTML = "";
-
-  if(!term) return;
-
-  const result = products
-    .filter(p => p.name?.toLowerCase().includes(term))
-    .slice(0,10);
-
-  result.forEach(p => {
-
-    const div = document.createElement("div");
-    div.className = "search-result-item";
-
-    div.innerHTML = `
-      <img src="${p.img}">
-      <div>
-        <div>${p.name}</div>
-        <b style="color:red">${Number(p.price).toLocaleString()}đ</b>
-      </div>
-    `;
-
-    div.onclick = () => {
-      window.location.href = "logo.html?id=" + p.id;
-    };
-
-    box.appendChild(div);
-
-  });
-
-}
-
-window.searchProduct = searchProduct;
-
-/* ======================
-   FIREBASE LOAD (GIỮ NGUYÊN HOẶC GẮN SAU)
-====================== */
-// bạn gắn home.js hoặc firebase vào đây
 
 </script>
-
+<script type="module" src="user.js"></script>
+<script type="module" src="auth.js"></script>
 <script type="module" src="home.js"></script>
+<script src="banner.js"></script>
+
 
 </body>
 </html>
