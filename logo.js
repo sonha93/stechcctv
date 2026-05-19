@@ -172,7 +172,7 @@ String(p.firebaseId);
         <div class="img-box">
 
           <img
-          src="${p.gallery?.[0] || p.img || ''}"
+            src="${p.img || ''}"
             alt="${p.name || ''}"
            onclick="goDetail('${p.firebaseId}')"
             style="cursor:pointer;"
