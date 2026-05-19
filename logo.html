@@ -423,7 +423,13 @@ header{
     font-size:15px;
     border-radius:18px;
   }
-
+#thumbs img{
+  transition:.2s;
+}
+#thumbs img:hover{
+  transform:scale(1.1);
+  border-color:#00acc1;
+}
 }
 </style>
 </head>
@@ -478,13 +484,22 @@ header{
 
 <div class="container">
 
-  <div class="left">
-    <img
-      id="detailImg"
-      src=""
-      onerror="this.src='https://via.placeholder.com/300'"
-    >
+ <div class="left">
+
+  <!-- ẢNH CHÍNH -->
+  <img
+    id="detailImg"
+    src=""
+    onerror="this.src='https://via.placeholder.com/300'"
+  >
+
+  <!-- THUMBNAILS -->
+  <div
+    id="thumbs"
+    style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
   </div>
+
+</div>
 
   <div class="right">
 
@@ -513,7 +528,6 @@ header{
   </div>
 
 </div>
-
 <div id="panelOverlay"></div>
 
 <div id="specPanel">
@@ -716,11 +730,35 @@ async function loadProduct(){
   };
 
   // IMAGE
-  document.getElementById("detailImg").src =
-    product.img || "";
+ // IMAGE MULTI SUPPORT
+const images = product.images?.length
+  ? product.images
+  : (product.img ? [product.img] : []);
 
-  document.getElementById("panelProductImg").src =
-    product.img || "";
+// ảnh chính
+document.getElementById("detailImg").src = images[0] || "";
+
+// panel image
+document.getElementById("panelProductImg").src = images[0] || "";
+
+// thumbnails
+const thumbs = document.getElementById("thumbs");
+
+if (thumbs) {
+  thumbs.innerHTML = images.map(img => `
+    <img src="${img}"
+      style="
+        width:60px;
+        height:60px;
+        object-fit:cover;
+        border-radius:8px;
+        cursor:pointer;
+        border:2px solid #ddd;
+      "
+      onclick="document.getElementById('detailImg').src='${img}'"
+    >
+  `).join("");
+}
 
   // NAME
   document.getElementById("detailName").innerText =
