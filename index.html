@@ -7,157 +7,86 @@
 <link rel="stylesheet" href="styletrong-nha.css">
 
 <style>
-/* LOGO KHÔNG VIỀN */
-.logo img{
-  height:38px;
-  width:auto;
-  border:0;
-  outline:0;
-  box-shadow:none;
-  display:block;
-  background:transparent;
+*{margin:0;padding:0;box-sizing:border-box;font-weight:bold;}
+body{background:#f5f5f5;color:#111;font-family:Arial,sans-serif;}
+/* HEADER */
+header{
+  position:sticky;top:0;z-index:999;
+  display:flex;align-items:center;gap:5px;
+  padding:12px;background:#33A0AB;
 }
-
-/* POPUP LOGIN/REGISTER */
-#authModal{
-  position:fixed;
-  top:0; left:0; right:0; bottom:0;
-  display:none;
-  background:rgba(0,0,0,0.6);
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
+.menu-btn, .icon-btn{
+  width:46px;height:46px;border-radius:14px;
+  background:#00acc1;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;cursor:pointer;position:relative;text-decoration:none;
 }
-#authModal .auth-content{
-  background:#fff;
-  padding:20px;
-  border-radius:8px;
-  max-width:350px;
-  width:90%;
+.logo{width:46px;height:46px;border-radius:14px;overflow:hidden;background:#fff;}
+.logo img{width:100%;height:100%;object-fit:cover;}
+.search-box{flex:1;position:relative;}
+.search-box input{
+  width:100%;height:46px;border:none;border-radius:14px;
+  padding:0 14px;outline:none;font-size:16px;
 }
-#authModal h2{
-  text-align:center;
-  margin-bottom:10px;
-}
-#authModal input{
-  width:100%;
-  padding:8px;
-  margin:6px 0;
-  border-radius:4px;
-  border:1px solid #aaa;
-}
-#authModal button{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border:none;
-  background:#007BFF;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-  border-radius:4px;
-}
-#authModal #closeAuth{
-  background:#f44336;
-  margin-top:5px;
-}
-#authModal #authMessage{
-  text-align:center;
-  margin-top:8px;
-  color:red;
-}
-
-/* SIDEBAR USER INFO */
-#userInfoPreview{
-  display:none;
-  margin-top:10px;
-  text-align:center;
-  cursor:pointer;
-}
-#userInfoPreview img{
-  width:40px; height:40px;
-  border-radius:50%;
-  object-fit:cover;
-  margin-bottom:5px;
+.cart-count{
+  position:absolute;top:-5px;right:-5px;
+  background:red;color:#fff;
+  min-width:20px;height:20px;border-radius:50%;
+  font-size:11px;display:flex;align-items:center;justify-content:center;
 }
 
 /* SIDEBAR */
-.sidebar {
-  position: fixed;
-  z-index: 1000; /* fix click bị overlay chặn */
+.sidebar{
+  position:fixed;top:0;left:-280px;width:260px;height:100vh;
+  background:#fff;z-index:9999;transition:.3s;padding:20px;overflow:auto;
 }
+.sidebar.active{left:0;}
+.sidebar a{display:block;padding:14px;margin-bottom:10px;border-radius:12px;background:#f5f5f5;text-decoration:none;color:#111;font-weight:bold;}
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);opacity:0;visibility:hidden;transition:.3s;z-index:9998;}
+#overlay.active{opacity:1;visibility:visible;}
 
-/* 2 CỘT SẢN PHẨM */
-#products{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
+/* PRODUCT LIST */
+.product-slider{padding:10px;}
+.product-track{max-height:720px;overflow-y:auto;padding-right:5px;}
+.product-track::-webkit-scrollbar{width:5px;}
+.product-track::-webkit-scrollbar-thumb{background:#888;border-radius:10px;}
+#products{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(min-width:1200px){#products{grid-template-columns:repeat(4,1fr);}}
+.product-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:.2s;position:relative;}
+.product-card:hover{transform:translateY(-2px);}
+.product-card img{width:100%;aspect-ratio:1/1;object-fit:cover;}
+.product-info{padding:10px;text-align:left;}
+.product-name{font-size:16px;font-weight:700;margin-bottom:8px;color:#111;}
+.price{color:red;font-size:22px;font-weight:bold;}
+.old-price{color:#777;text-decoration:line-through;margin-top:3px;font-size:14px;}
+.discount-text{position:absolute;top:8px;left:8px;background:red;color:white;padding:3px 7px;border-radius:7px;font-size:11px;font-weight:bold;}
+.item{position:relative;}
+
+/* POPUP LOGIN */
+#authModal{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  display:none;background:rgba(0,0,0,0.6);
+  align-items:center;justify-content:center;z-index:9999;
 }
-
-.product-card{
-  background:#fff;
-  border:1px solid #ccc;
-  border-radius:8px;
-  overflow:hidden;
-  text-align:center;
-  padding:0px;
+#authModal .auth-content{
+  background:#fff;padding:20px;border-radius:8px;
+  max-width:350px;width:90%;
 }
+#authModal h2{text-align:center;margin-bottom:10px;}
+#authModal input{width:100%;padding:8px;margin:6px 0;border-radius:4px;border:1px solid #aaa;}
+#authModal button{width:100%;padding:10px;margin-top:10px;border:none;background:#007BFF;color:white;font-weight:bold;cursor:pointer;border-radius:4px;}
+#authModal #closeAuth{background:#f44336;margin-top:5px;}
+#authModal #authMessage{text-align:center;margin-top:8px;color:red;}
 
-.product-card img{
-  width:100%;
-  height:auto;
-  border-bottom:1px solid #ccc;
-  border-radius:4px;
-  object-fit:cover;
-}
-
-/* MÁY TÍNH 3 CỘT */
-@media(min-width:1200px){
-
-  #products{
-    grid-template-columns:repeat(4,1fr);
-  }
-
-}
-
-.product-card .product-info{
-  margin-top:8px;
-}
-.discount-text{
-  position:absolute;
-  top:3px;
-  left:0px;
-
-  font-size:11px;
-  padding:2px 5px;
-
-  background:red;
-  color:white;
-
-  border-radius:6px;
-  z-index:10;
-}
-
-.item{
-  position:relative;
-}
- #loadMoreBtn{
-  display:block;
-  margin:20px auto;
-  padding:12px 20px;
-  border:none;
-  border-radius:10px;
-  background:#111;
-  color:#fff;
-  cursor:pointer;
-}
+/* FOOTER */
+.footer{margin-top:20px;background:#111;color:white;padding:25px;text-align:center;}
 </style>
 </head>
 <body>
 
 <div id="overlay" onclick="toggleMenu()"></div>
 
-<!-- MENU / SIDEBAR -->
+<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
   <a href="index.html">Trang chủ</a>
@@ -169,44 +98,32 @@
   <a href="the-nho.html">Thẻ nhớ</a>
   <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
   <hr>
-  <!-- LOGIN / LOGOUT -->
   <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
   <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
-
-  <!-- USER INFO PREVIEW -->
   <div id="userInfoPreview">
     <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/40" alt="Avatar">
     <p id="sidebarUserNamePreview" style="margin:0; font-size:14px; color:#007BFF;">Người dùng</p>
   </div>
 </div>
+
 <!-- HEADER -->
 <header>
-  <div onclick="toggleMenu()">☰</div>
-  <div class="logo">
-    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  <div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo"></div>
+  <div class="search-box">
+    <input id="searchInput" placeholder="Tìm kiếm sản phẩm..." oninput="searchProduct()">
+    <div id="searchResults" class="search-results"></div>
   </div>
-  <input id="search" placeholder="Tìm kiếm sản phẩm...">
+  <div style="display:flex;gap:10px;">
+    <a href="admin.html" class="icon-btn admin-btn">🔐</a>
+    <a href="cart.html" class="icon-btn">🛒<span class="cart-count" id="cartCount">0</span></a>
+  </div>
 </header>
-
-
-<!-- CONTENT -->
-
-
 
 <!-- PRODUCT LIST -->
 <div class="product-slider">
   <div class="product-track" id="products"></div>
 </div>
-
-<!-- LOAD MORE -->
-<button id="loadMoreBtn"></button>
-
-<div class="extra-section"></div>
-
-
-
-
-
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -220,8 +137,6 @@
   </div>
 </footer>
 
-
-
 <!-- POPUP LOGIN / REGISTER -->
 <div id="authModal">
   <div class="auth-content">
@@ -234,18 +149,93 @@
     <p id="authMessage"></p>
   </div>
 </div>
-<script>
-function toggleMenu(){
-  document.getElementById("sidebar").classList.toggle("active"); 
-  document.getElementById("overlay").classList.toggle("active"); 
+
+<script type="module">
+import { app } from "./auth.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { addToCart as addToCartFirebase } from "./cart.js";
+
+const db = getFirestore(app);
+let products = [];
+
+// LOAD PRODUCTS
+async function loadProducts(){
+  const querySnapshot = await getDocs(collection(db,"products"));
+  products = [];
+  querySnapshot.forEach(docSnap=>{
+    products.push({id: docSnap.id, ...docSnap.data()});
+  });
+  renderProducts();
 }
 
+// RENDER PRODUCTS
+function renderProducts(){
+  const container = document.getElementById("products");
+  container.innerHTML = "";
+  products.slice(0,5).forEach(p=>{
+    const div = document.createElement("div");
+    div.className = "product-card item";
+    div.innerHTML = `
+      <span class="discount-text">${p.oldPrice && p.oldPrice>p.price ? "-" + Math.round((p.oldPrice-p.price)/p.oldPrice*100) + "%" : ""}</span>
+      <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150'">
+      <div class="product-info">
+        <div class="product-name">${p.name}</div>
+        <div class="price">${Number(p.price).toLocaleString()}đ</div>
+        <div class="old-price">${p.oldPrice ? Number(p.oldPrice).toLocaleString()+"đ" : ""}</div>
+      </div>
+    `;
+    div.onclick = ()=> window.location.href="product-detail.html?id="+p.id;
+    container.appendChild(div);
+  });
+}
+
+// CART COUNT
+function updateCartCount(){
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let total = 0;
+  cart.forEach(item=>{total+=item.qty||1;});
+  document.getElementById("cartCount").innerText = total;
+}
+
+// SEARCH
+function searchProduct(){
+  const term = document.getElementById("searchInput").value.toLowerCase();
+  const resultBox = document.getElementById("searchResults");
+  resultBox.innerHTML = "";
+  if(!term) return;
+  const filtered = products.filter(p=>p.name.toLowerCase().includes(term)).slice(0,10);
+  filtered.forEach(p=>{
+    const div = document.createElement("div");
+    div.className="search-result-item";
+    div.innerHTML = `
+      <img src="${p.img}" onerror="this.src='https://via.placeholder.com/50'">
+      <div><strong>${p.name}</strong><div style="color:red;font-weight:bold;">${Number(p.price).toLocaleString()}đ</div></div>
+    `;
+    div.onclick = ()=> window.location.href="product-detail.html?id="+p.id;
+    resultBox.appendChild(div);
+  });
+}
+
+// MENU
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
+}
+document.getElementById("overlay").onclick = toggleMenu;
+
+// INIT
+loadProducts();
+updateCartCount();
+
+window.toggleMenu = toggleMenu;
+window.searchProduct = searchProduct;
+
 </script>
+
 <script type="module" src="user.js"></script>
 <script type="module" src="auth.js"></script>
 <script type="module" src="home.js"></script>
 <script src="banner.js"></script>
-
 
 </body>
 </html>
