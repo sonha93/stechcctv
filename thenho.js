@@ -1,5 +1,5 @@
 /* =========================
-   🔥 SD PAGE JS
+   🔥 THE NHO PAGE JS
 ========================= */
 
 /* =========================
@@ -132,7 +132,7 @@ function renderHome() {
 
   }
 
-  /* LOAD 20 SẢN PHẨM */
+  /* LOAD 10 SẢN PHẨM */
 
   const nextProducts =
     featured.slice(
