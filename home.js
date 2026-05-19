@@ -22,7 +22,7 @@ const db = getFirestore(app);
 ========================= */
 
 let showing = 0;
-const PER_LOAD = 10;
+const PER_LOAD = 20;
 
 /* =========================
    GET PRODUCTS FROM FIRESTORE
