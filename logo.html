@@ -520,7 +520,25 @@ header{
     font-size:15px;
     line-height:1.6;
   }
+#imageViewer{
+  opacity:0;
+  transition:.25s;
+}
 
+#imageViewer.active{
+  display:flex;
+  opacity:1;
+}
+
+#viewerImg{
+  transition:.25s;
+  touch-action:none;
+  cursor:zoom-in;
+}
+
+.thumb-list::-webkit-scrollbar{
+  display:none;
+}
 }
 </style>
 </head>
@@ -747,6 +765,8 @@ const id = params.get("id");
 let products = [];
 let product = null;
 
+let currentIndex = 0;
+let images = [];
 // MENU
 function toggleMenu(){
 
@@ -836,12 +856,14 @@ const thumbList =
   document.getElementById("thumbList");
 
 // danh sách ảnh
-const images = [
+images = [
   product.img,
   ...(product.images || []).filter(
     img => img !== product.img
   )
 ];
+
+currentIndex = 0;
 mainImg.src = images[0] || "";
 
 thumbList.innerHTML = "";
@@ -856,7 +878,9 @@ images.forEach((img,index)=>{
     thumb.classList.add("active");
   }
 
-  thumb.onclick = ()=>{
+thumb.onclick = ()=>{
+
+  currentIndex = index;
 
   // đổi ảnh chính
   mainImg.src = img;
@@ -868,13 +892,10 @@ images.forEach((img,index)=>{
   thumb.classList.add("active");
 
   // mở popup ảnh
-  document
-    .getElementById("viewerImg")
-    .src = img;
+  viewerImg.src = img;
 
-  document
-    .getElementById("imageViewer")
-    .classList.add("active");
+  viewer.classList.add("active");
+
 
 };
   thumbList.appendChild(thumb);
@@ -1131,8 +1152,168 @@ window.closePanel = closePanel;
 window.showTab = showTab;
 window.addToCart = addToCart;
 window.searchProduct = searchProduct;
+// ======================
+// ======================
+// IMAGE VIEWER + SWIPE
+// ======================
 
-</script>
+const viewer =
+  document.getElementById("imageViewer");
+
+const viewerImg =
+  document.getElementById("viewerImg");
+
+
+
+let zoomed = false;
+
+
+// DOUBLE CLICK ZOOM
+
+viewerImg.addEventListener("dblclick",()=>{
+
+  zoomed = !zoomed;
+
+  if(zoomed){
+
+    viewerImg.style.transform = "scale(2)";
+    viewerImg.style.cursor = "zoom-out";
+
+  }else{
+
+    viewerImg.style.transform = "scale(1)";
+    viewerImg.style.cursor = "zoom-in";
+
+  }
+
+});
+
+
+// SWIPE
+
+let startX = 0;
+
+viewer.addEventListener("touchstart",(e)=>{
+
+  startX = e.touches[0].clientX;
+
+});
+
+viewer.addEventListener("touchend",(e)=>{
+
+  const endX = e.changedTouches[0].clientX;
+
+  const diff = startX - endX;
+
+  if(Math.abs(diff) < 40) return;
+
+  // swipe trái
+  if(diff > 0){
+
+    currentIndex++;
+
+    if(currentIndex >= images.length){
+
+      currentIndex = 0;
+
+    }
+
+  }
+
+  // swipe phải
+  else{
+
+    currentIndex--;
+
+    if(currentIndex < 0){
+
+      currentIndex = images.length - 1;
+
+    }
+
+  }
+
+  zoomed = false;
+
+  viewerImg.style.transform = "scale(1)";
+
+  viewerImg.src = images[currentIndex];
+
+  document.getElementById("detailImg").src =
+    images[currentIndex];
+
+  document
+    .querySelectorAll(".thumb-list img")
+    .forEach((el,i)=>{
+
+      el.classList.toggle(
+        "active",
+        i === currentIndex
+      );
+
+    });
+
+});
+	// DESKTOP SWIPE
+
+let isDown = false;
+
+viewer.addEventListener("mousedown",(e)=>{
+
+  isDown = true;
+
+  startX = e.clientX;
+
+});
+
+viewer.addEventListener("mouseup",(e)=>{
+
+  if(!isDown) return;
+
+  isDown = false;
+
+  const endX = e.clientX;
+
+  const diff = startX - endX;
+
+  if(Math.abs(diff) < 40) return;
+
+  if(diff > 0){
+
+    currentIndex++;
+
+    if(currentIndex >= images.length){
+      currentIndex = 0;
+    }
+
+  }else{
+
+    currentIndex--;
+
+    if(currentIndex < 0){
+      currentIndex = images.length - 1;
+    }
+
+  }
+
+  viewerImg.src = images[currentIndex];
+
+  document.getElementById("detailImg").src =
+    images[currentIndex];
+
+  document
+    .querySelectorAll(".thumb-list img")
+    .forEach((el,i)=>{
+
+      el.classList.toggle(
+        "active",
+        i === currentIndex
+      );
+
+    });
+
+});
+	</script>
 
 </body>
 </html>
