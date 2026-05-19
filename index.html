@@ -5,88 +5,214 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shop Camera Pro</title>
 <link rel="stylesheet" href="styletrong-nha.css">
-
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-weight:bold;}
-body{background:#f5f5f5;color:#111;font-family:Arial,sans-serif;}
-/* HEADER */
-header{
-  position:sticky;top:0;z-index:999;
-  display:flex;align-items:center;gap:5px;
-  padding:12px;background:#33A0AB;
+/* LOGO KHÔNG VIỀN */
+.logo img{
+  height:38px;
+  width:auto;
+  border:0;
+  outline:0;
+  box-shadow:none;
+  display:block;
+  background:transparent;
 }
-.menu-btn, .icon-btn{
-  width:46px;height:46px;border-radius:14px;
-  background:#00acc1;color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;cursor:pointer;position:relative;text-decoration:none;
+
+/* POPUP LOGIN/REGISTER */
+#authModal{
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
+  display:none;
+  background:rgba(0,0,0,0.6);
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
 }
-.logo{width:46px;height:46px;border-radius:14px;overflow:hidden;background:#fff;}
-.logo img{width:100%;height:100%;object-fit:cover;}
-.search-box{flex:1;position:relative;}
-.search-box input{
-  width:100%;height:46px;border:none;border-radius:14px;
-  padding:0 14px;outline:none;font-size:16px;
+#authModal .auth-content{
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  max-width:350px;
+  width:90%;
 }
-.cart-count{
-  position:absolute;top:-5px;right:-5px;
-  background:red;color:#fff;
-  min-width:20px;height:20px;border-radius:50%;
-  font-size:11px;display:flex;align-items:center;justify-content:center;
+#authModal h2{
+  text-align:center;
+  margin-bottom:10px;
+}
+#authModal input{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border-radius:4px;
+  border:1px solid #aaa;
+}
+#authModal button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  background:#007BFF;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:4px;
+}
+#authModal #closeAuth{
+  background:#f44336;
+  margin-top:5px;
+}
+#authModal #authMessage{
+  text-align:center;
+  margin-top:8px;
+  color:red;
+}
+
+/* SIDEBAR USER INFO */
+#userInfoPreview{
+  display:none;
+  margin-top:10px;
+  text-align:center;
+  cursor:pointer;
+}
+#userInfoPreview img{
+  width:40px; height:40px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:5px;
 }
 
 /* SIDEBAR */
-.sidebar{
-  position:fixed;top:0;left:-280px;width:260px;height:100vh;
-  background:#fff;z-index:9999;transition:.3s;padding:20px;overflow:auto;
+.sidebar {
+  position: fixed;
+  z-index: 1000;
 }
-.sidebar.active{left:0;}
-.sidebar a{display:block;padding:14px;margin-bottom:10px;border-radius:12px;background:#f5f5f5;text-decoration:none;color:#111;font-weight:bold;}
-#overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);opacity:0;visibility:hidden;transition:.3s;z-index:9998;}
-#overlay.active{opacity:1;visibility:visible;}
 
 /* PRODUCT LIST */
-.product-slider{padding:10px;}
-.product-track{max-height:720px;overflow-y:auto;padding-right:5px;}
-.product-track::-webkit-scrollbar{width:5px;}
-.product-track::-webkit-scrollbar-thumb{background:#888;border-radius:10px;}
-#products{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-@media(min-width:1200px){#products{grid-template-columns:repeat(4,1fr);}}
-.product-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:.2s;position:relative;}
-.product-card:hover{transform:translateY(-2px);}
-.product-card img{width:100%;aspect-ratio:1/1;object-fit:cover;}
-.product-info{padding:10px;text-align:left;}
-.product-name{font-size:16px;font-weight:700;margin-bottom:8px;color:#111;}
-.price{color:red;font-size:22px;font-weight:bold;}
-.old-price{color:#777;text-decoration:line-through;margin-top:3px;font-size:14px;}
-.discount-text{position:absolute;top:8px;left:8px;background:red;color:white;padding:3px 7px;border-radius:7px;font-size:11px;font-weight:bold;}
-.item{position:relative;}
-
-/* POPUP LOGIN */
-#authModal{
-  position:fixed;top:0;left:0;right:0;bottom:0;
-  display:none;background:rgba(0,0,0,0.6);
-  align-items:center;justify-content:center;z-index:9999;
+.product-track{
+  max-height:720px;
+  overflow-y:auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
 }
-#authModal .auth-content{
-  background:#fff;padding:20px;border-radius:8px;
-  max-width:350px;width:90%;
+@media(min-width:1200px){
+  .product-track{
+    grid-template-columns:repeat(4,1fr);
+  }
 }
-#authModal h2{text-align:center;margin-bottom:10px;}
-#authModal input{width:100%;padding:8px;margin:6px 0;border-radius:4px;border:1px solid #aaa;}
-#authModal button{width:100%;padding:10px;margin-top:10px;border:none;background:#007BFF;color:white;font-weight:bold;cursor:pointer;border-radius:4px;}
-#authModal #closeAuth{background:#f44336;margin-top:5px;}
-#authModal #authMessage{text-align:center;margin-top:8px;color:red;}
 
-/* FOOTER */
-.footer{margin-top:20px;background:#111;color:white;padding:25px;text-align:center;}
+.product-card{
+  background:#fff;
+  border:1px solid #ccc;
+  border-radius:8px;
+  overflow:hidden;
+  text-align:center;
+  padding:0px;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  height:350px;
+}
+.product-card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-bottom:1px solid #ccc;
+  border-radius:4px;
+}
+.product-card .product-info{
+  padding:10px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.product-name{
+  font-size:16px;
+  font-weight:700;
+  margin-bottom:8px;
+  color:#111;
+}
+.price{
+  color:red;
+  font-weight:bold;
+  font-size:20px;
+}
+.old-price{
+  color:#777;
+  text-decoration:line-through;
+  font-size:14px;
+  margin-top:3px;
+}
+.discount-text{
+  position:absolute;
+  top:8px;
+  left:8px;
+  background:red;
+  color:white;
+  padding:3px 6px;
+  font-size:12px;
+  border-radius:6px;
+  z-index:10;
+}
+
+/* LOAD MORE BUTTON */
+#loadMoreBtn{
+  display:block;
+  margin:20px auto;
+  padding:12px 20px;
+  border:none;
+  border-radius:10px;
+  background:#111;
+  color:#fff;
+  cursor:pointer;
+}
+
+/* SEARCH RESULTS */
+.search-results{
+  position:absolute;
+  width:100%;
+  background:#fff;
+  border-radius:12px;
+  margin-top:10px;
+  overflow:hidden;
+  z-index:999;
+}
+.search-result-item{
+  display:flex;
+  gap:8px;
+  padding:8px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+  align-items:center;
+}
+.search-result-item img{
+  width:60px;
+  height:60px;
+  object-fit:cover;
+  border-radius:6px;
+}
+.search-result-item .product-info{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.search-result-item .price{
+  color:red;
+  font-weight:bold;
+  font-size:16px;
+}
+.search-result-item .old-price{
+  color:#777;
+  font-size:14px;
+  text-decoration:line-through;
+}
 </style>
 </head>
 <body>
 
 <div id="overlay" onclick="toggleMenu()"></div>
 
-<!-- SIDEBAR -->
+<!-- MENU / SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <h3>Danh mục</h3>
   <a href="index.html">Trang chủ</a>
@@ -108,22 +234,23 @@ header{
 
 <!-- HEADER -->
 <header>
-  <div class="menu-btn" onclick="toggleMenu()">☰</div>
-  <div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo"></div>
-  <div class="search-box">
-    <input id="searchInput" placeholder="Tìm kiếm sản phẩm..." oninput="searchProduct()">
-    <div id="searchResults" class="search-results"></div>
+  <div onclick="toggleMenu()">☰</div>
+  <div class="logo">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
-  <div style="display:flex;gap:10px;">
-    <a href="admin.html" class="icon-btn admin-btn">🔐</a>
-    <a href="cart.html" class="icon-btn">🛒<span class="cart-count" id="cartCount">0</span></a>
-  </div>
+  <input id="searchInput" placeholder="Tìm kiếm sản phẩm..." oninput="searchProduct()">
+  <div id="searchResults" class="search-results"></div>
 </header>
 
 <!-- PRODUCT LIST -->
 <div class="product-slider">
   <div class="product-track" id="products"></div>
 </div>
+
+<!-- LOAD MORE -->
+<button id="loadMoreBtn">Xem thêm</button>
+
+<div class="extra-section"></div>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -157,6 +284,8 @@ import { addToCart as addToCartFirebase } from "./cart.js";
 
 const db = getFirestore(app);
 let products = [];
+let currentIndex = 0;
+const pageSize = 5;
 
 // LOAD PRODUCTS
 async function loadProducts(){
@@ -169,10 +298,12 @@ async function loadProducts(){
 }
 
 // RENDER PRODUCTS
-function renderProducts(){
+function renderProducts(loadMore=false){
   const container = document.getElementById("products");
-  container.innerHTML = "";
-  products.slice(0,5).forEach(p=>{
+  if(!loadMore) container.innerHTML = "";
+  const end = Math.min(currentIndex + pageSize, products.length);
+  for(let i=currentIndex; i<end; i++){
+    const p = products[i];
     const div = document.createElement("div");
     div.className = "product-card item";
     div.innerHTML = `
@@ -186,15 +317,9 @@ function renderProducts(){
     `;
     div.onclick = ()=> window.location.href="product-detail.html?id="+p.id;
     container.appendChild(div);
-  });
-}
-
-// CART COUNT
-function updateCartCount(){
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  let total = 0;
-  cart.forEach(item=>{total+=item.qty||1;});
-  document.getElementById("cartCount").innerText = total;
+  }
+  currentIndex = end;
+  document.getElementById("loadMoreBtn").style.display = (currentIndex<products.length)?'block':'none';
 }
 
 // SEARCH
@@ -203,13 +328,17 @@ function searchProduct(){
   const resultBox = document.getElementById("searchResults");
   resultBox.innerHTML = "";
   if(!term) return;
-  const filtered = products.filter(p=>p.name.toLowerCase().includes(term)).slice(0,10);
+  const filtered = products.filter(p=>p.name && p.name.toLowerCase().includes(term)).slice(0,10);
   filtered.forEach(p=>{
     const div = document.createElement("div");
     div.className="search-result-item";
     div.innerHTML = `
-      <img src="${p.img}" onerror="this.src='https://via.placeholder.com/50'">
-      <div><strong>${p.name}</strong><div style="color:red;font-weight:bold;">${Number(p.price).toLocaleString()}đ</div></div>
+      <img src="${p.img}" onerror="this.src='https://via.placeholder.com/60'">
+      <div class="product-info">
+        <strong>${p.name}</strong>
+        <div class="price">${Number(p.price).toLocaleString()}đ</div>
+        ${p.oldPrice ? `<div class="old-price">${Number(p.oldPrice).toLocaleString()}đ</div>` : ""}
+      </div>
     `;
     div.onclick = ()=> window.location.href="product-detail.html?id="+p.id;
     resultBox.appendChild(div);
@@ -223,13 +352,11 @@ function toggleMenu(){
 }
 document.getElementById("overlay").onclick = toggleMenu;
 
+// LOAD MORE CLICK
+document.getElementById("loadMoreBtn").onclick = ()=>renderProducts(true);
+
 // INIT
 loadProducts();
-updateCartCount();
-
-window.toggleMenu = toggleMenu;
-window.searchProduct = searchProduct;
-
 </script>
 
 <script type="module" src="user.js"></script>
