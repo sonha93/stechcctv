@@ -1,4 +1,3 @@
-
 window.goDetail = function(id){
 
   window.location.href =
@@ -46,7 +45,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 /* =========================
-   LOAD DỮ LIỆU CHO logo
+    CHỈ LOAD DỮ LIỆU CHO COMBO
 ========================= */
 
 let allProducts = [];
@@ -68,10 +67,10 @@ async function getProducts(){
 
     querySnapshot.forEach(doc => {
 
-arr.push({
+  arr.push({
 
-  ...doc.data(),
-  id: doc.id
+  firebaseId: doc.id,
+  ...doc.data()
 
 });
     });
@@ -136,8 +135,8 @@ list = list.filter(
 
   list.forEach(p => {
 
-const id =
-String(p.id);
+   const id =
+String(p.firebaseId);
 
     const price =
       Number(p.price) || 0;
@@ -173,7 +172,7 @@ String(p.id);
           <img
             src="${p.img || ''}"
             alt="${p.name || ''}"
-           onclick="goDetail('${p.id}')"
+           onclick="goDetail('${p.firebaseId}')"
             style="cursor:pointer;"
           >
 
@@ -206,9 +205,16 @@ String(p.id);
 
         </div>
 
+   <button
+  class="cart-btn"
+  onclick="addToCart('${p.id || p.firebaseId}')"
+>
+  🛒 Thêm vào giỏ
+</button>
+
 <button
   class="cart-btn"
-  onclick="addToCart('${p.id}')"
+  onclick="addToCart('${p.firebaseId}')"
 >
   🛒 Thêm vào giỏ
 </button>
@@ -225,34 +231,25 @@ String(p.id);
 ========================= */
 
 window.addToCart = async function(id) {
-
   if (!allProducts || allProducts.length === 0) {
-
-    alert("Sản phẩm chưa load xong!");
+    alert("Sản phẩm chưa load xong, thử lại sau!");
     return;
-
   }
 
-  const product = allProducts.find(
-    p => String(p.id) === String(id)
-  );
-
+  // Thêm || p.id để tránh trường hợp dữ liệu cũ
+ const product = allProducts.find(p => String(p.firebaseId || p.id) === String(id));
   if (!product) {
-
-    console.log("Không tìm thấy product", id);
-    console.log(allProducts);
-
+    console.log("Không tìm thấy product", id, allProducts); // debug dữ liệu
     alert("Không tìm thấy sản phẩm!");
     return;
-
   }
 
-  await firebaseAddToCart(product);
+  product.id = product.firebaseId || product.id;
 
+  await firebaseAddToCart(product); // gọi cart.js
   await updateCartCount();
 
   alert("Đã thêm vào giỏ 🛒");
-
 };
 /* =========================
    SEARCH
