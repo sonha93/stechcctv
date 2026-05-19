@@ -745,21 +745,19 @@ document.getElementById("panelProductImg").src = images[0] || "";
 const thumbs = document.getElementById("thumbs");
 
 if (thumbs) {
-  thumbs.innerHTML = images.map(img => `
-    <img src="${img}"
-      style="
-        width:60px;
-        height:60px;
-        object-fit:cover;
-        border-radius:8px;
-        cursor:pointer;
-        border:2px solid #ddd;
-      "
-      onclick="document.getElementById('detailImg').src='${img}'"
-    >
-  `).join("");
-}
+ thumbs.innerHTML = "";
 
+images.forEach(img => {
+  const el = document.createElement("img");
+  el.src = img;
+
+  el.onclick = () => {
+    document.getElementById("detailImg").src = img;
+  };
+
+  thumbs.appendChild(el);
+});
+}
   // NAME
   document.getElementById("detailName").innerText =
     product.name || "";
@@ -969,8 +967,7 @@ function searchProduct(){
 }
 
 // INIT
-loadProducts();
-loadProduct();
+loadProducts().then(loadProduct);
 updateCartCount();
 
 // GLOBAL
