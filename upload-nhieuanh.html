@@ -1,0 +1,521 @@
+<!-- upload-gallery.html -->
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Upload nhiều ảnh sản phẩm</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-weight:bold;
+}
+
+body{
+  background:#f5f5f5;
+  color:#111;
+  font-family:Arial;
+}
+
+/* HEADER */
+
+header{
+  position:sticky;
+  top:0;
+  z-index:999;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:12px;
+  background:#33A0AB;
+}
+
+.menu-btn,
+.icon-btn{
+  width:46px;
+  height:46px;
+  border-radius:14px;
+  background:#00acc1;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.logo{
+  width:46px;
+  height:46px;
+  border-radius:14px;
+  overflow:hidden;
+  background:#fff;
+}
+
+.logo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.search-box{
+  flex:1;
+}
+
+.search-box input{
+  width:100%;
+  height:46px;
+  border:none;
+  border-radius:14px;
+  padding:0 14px;
+  outline:none;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  position:fixed;
+  top:0;
+  left:-280px;
+  width:260px;
+  height:100vh;
+  background:#fff;
+  z-index:9999;
+  transition:.3s;
+  padding:20px;
+}
+
+.sidebar.active{
+  left:0;
+}
+
+.sidebar a{
+  display:block;
+  padding:14px;
+  margin-bottom:10px;
+  border-radius:12px;
+  background:#f5f5f5;
+  text-decoration:none;
+  color:#111;
+}
+
+#overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.4);
+  opacity:0;
+  visibility:hidden;
+  transition:.3s;
+  z-index:9998;
+}
+
+#overlay.active{
+  opacity:1;
+  visibility:visible;
+}
+
+/* CONTENT */
+
+.container{
+  max-width:700px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:#fff;
+  border-radius:20px;
+  padding:20px;
+}
+
+.title{
+  font-size:24px;
+  margin-bottom:20px;
+}
+
+.input-box{
+  margin-bottom:16px;
+}
+
+.input-box label{
+  display:block;
+  margin-bottom:8px;
+}
+
+.input-box input{
+  width:100%;
+  height:48px;
+  border:none;
+  background:#f1f1f1;
+  border-radius:14px;
+  padding:0 14px;
+  outline:none;
+}
+
+.upload-btn{
+  width:100%;
+  height:52px;
+  border:none;
+  border-radius:16px;
+  background:#00acc1;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.preview{
+  margin-top:20px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.preview img{
+  width:90px;
+  height:90px;
+  border-radius:12px;
+  object-fit:cover;
+  border:2px solid #eee;
+}
+
+.status{
+  margin-top:16px;
+  color:#00acc1;
+}
+
+@media(max-width:768px){
+
+  .menu-btn,
+  .icon-btn{
+    width:42px;
+    height:42px;
+    font-size:20px;
+  }
+
+  .logo{
+    width:40px;
+    height:40px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="overlay"></div>
+
+<div class="sidebar" id="sidebar">
+
+  <a href="index.html">Trang chủ</a>
+
+  <a href="admin.html">Admin</a>
+
+  <a href="upload.html">Upload sản phẩm</a>
+
+</div>
+
+<header>
+
+  <div class="menu-btn" onclick="toggleMenu()">
+    ☰
+  </div>
+
+  <div class="logo">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png">
+  </div>
+
+  <div class="search-box">
+    <input
+      type="text"
+      placeholder="Upload gallery sản phẩm..."
+    >
+  </div>
+
+  <a href="admin.html" class="icon-btn">
+    🔐
+  </a>
+
+</header>
+
+<div class="container">
+
+  <div class="card">
+
+    <div class="title">
+      Upload nhiều ảnh Gallery
+    </div>
+
+    <div class="input-box">
+
+      <label>ID sản phẩm</label>
+
+      <input
+        type="text"
+        id="productId"
+        placeholder="Ví dụ: abc123"
+      >
+
+    </div>
+
+    <div class="input-box">
+
+      <label>Chọn nhiều ảnh</label>
+
+      <input
+        type="file"
+        id="galleryImages"
+        multiple
+        accept="image/*"
+      >
+
+    </div>
+
+    <button
+      class="upload-btn"
+      id="uploadBtn"
+    >
+      Upload Gallery
+    </button>
+
+    <div
+      class="preview"
+      id="preview"
+    ></div>
+
+    <div
+      class="status"
+      id="status"
+    ></div>
+
+  </div>
+
+</div>
+
+<script type="module">
+
+/* =========================
+   FIREBASE
+========================= */
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getFirestore,
+  doc,
+  updateDoc,
+  arrayUnion
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+/* =========================
+   CONFIG
+========================= */
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+
+  authDomain: "stech-73b89.firebaseapp.com",
+
+  projectId: "stech-73b89",
+
+  storageBucket: "stech-73b89.firebasestorage.app",
+
+  messagingSenderId: "873739162979",
+
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+const storage = getStorage(app);
+
+/* =========================
+   MENU
+========================= */
+
+function toggleMenu(){
+
+  document
+    .getElementById("sidebar")
+    .classList.toggle("active");
+
+  document
+    .getElementById("overlay")
+    .classList.toggle("active");
+
+}
+
+document
+.getElementById("overlay")
+.onclick = ()=>{
+
+  document
+    .getElementById("sidebar")
+    .classList.remove("active");
+
+  document
+    .getElementById("overlay")
+    .classList.remove("active");
+
+};
+
+/* =========================
+   PREVIEW
+========================= */
+
+const input =
+document.getElementById("galleryImages");
+
+const preview =
+document.getElementById("preview");
+
+input.addEventListener("change",()=>{
+
+  preview.innerHTML = "";
+
+  const files = input.files;
+
+  for(const file of files){
+
+    const reader = new FileReader();
+
+    reader.onload = e => {
+
+      preview.innerHTML += `
+        <img src="${e.target.result}">
+      `;
+
+    };
+
+    reader.readAsDataURL(file);
+
+  }
+
+});
+
+/* =========================
+   UPLOAD
+========================= */
+
+document
+.getElementById("uploadBtn")
+.addEventListener("click", async()=>{
+
+  const productId =
+  document.getElementById("productId")
+  .value
+  .trim();
+
+  const status =
+  document.getElementById("status");
+
+  if(!productId){
+
+    alert("Nhập ID sản phẩm");
+
+    return;
+
+  }
+
+  const files = input.files;
+
+  if(files.length === 0){
+
+    alert("Chọn ảnh");
+
+    return;
+
+  }
+
+  try{
+
+    status.innerText =
+    "Đang upload...";
+
+    let urls = [];
+
+    for(const file of files){
+
+      const fileName =
+      Date.now() + "-" + file.name;
+
+      const storageRef = ref(
+        storage,
+        `products/${productId}/gallery/${fileName}`
+      );
+
+      await uploadBytes(
+        storageRef,
+        file
+      );
+
+      const url =
+      await getDownloadURL(storageRef);
+
+      urls.push(url);
+
+    }
+
+    const productRef =
+    doc(db,"products",productId);
+
+    await updateDoc(productRef,{
+
+      gallery: arrayUnion(...urls)
+
+    });
+
+    status.innerText =
+    "Upload thành công ✅";
+
+    alert("Đã thêm gallery");
+
+    preview.innerHTML = "";
+
+    input.value = "";
+
+  }
+
+  catch(err){
+
+    console.log(err);
+
+    status.innerText =
+    "Upload lỗi ❌";
+
+    alert("Có lỗi upload");
+
+  }
+
+});
+
+/* GLOBAL */
+
+window.toggleMenu = toggleMenu;
+
+</script>
+
+</body>
+</html>
