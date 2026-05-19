@@ -1,5 +1,5 @@
 /* =========================
-   🔥 SD PAGE JS
+   🔥 CAMERA TRONG NHÀ PAGE JS
 ========================= */
 
 /* =========================
@@ -132,7 +132,7 @@ function renderHome() {
 
   }
 
-  /* LOAD 10 SẢN PHẨM */
+  /* LOAD 20 SẢN PHẨM */
 
   const nextProducts =
     featured.slice(
