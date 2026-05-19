@@ -159,6 +159,13 @@ function renderHome() {
       percentText = `-${percent}%`;
 
     }
+    featured.forEach(p => {
+    const id = String(p.id);
+    let percentText = "";
+    if (p.oldPrice && p.oldPrice > p.price) {
+      const percent = Math.round((1 - p.price / p.oldPrice) * 100);
+      percentText = `-${percent}%`;
+    }
 
     // Luôn sử dụng link public
     const imgUrl = p.img;
