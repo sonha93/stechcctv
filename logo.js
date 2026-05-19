@@ -226,22 +226,33 @@ String(p.firebaseId);
 ========================= */
 
 window.addToCart = async function(id) {
+
   if (!allProducts || allProducts.length === 0) {
-    alert("Sản phẩm chưa load xong, thử lại sau!");
+    alert("Sản phẩm chưa load xong!");
     return;
   }
 
-  // Thêm || p.id để tránh trường hợp dữ liệu cũ
- const product = allProducts.find(p => String(p.firebaseId || p.id) === String(id));
+  const product = allProducts.find(
+    p => String(p.firebaseId) === String(id)
+  );
+
   if (!product) {
-    console.log("Không tìm thấy product", id, allProducts); // debug dữ liệu
     alert("Không tìm thấy sản phẩm!");
     return;
   }
 
-  product.id = product.firebaseId || product.id;
+  await firebaseAddToCart({
 
-  await firebaseAddToCart(product); // gọi cart.js
+    id: String(product.firebaseId)
+      .trim()
+      .toLowerCase(),
+
+    name: product.name,
+    price: product.price,
+    img: product.img
+
+  });
+
   await updateCartCount();
 
   alert("Đã thêm vào giỏ 🛒");
