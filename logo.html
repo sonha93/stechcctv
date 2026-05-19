@@ -552,6 +552,7 @@ header{
 
 <div class="sidebar" id="sidebar">
   <a href="index.html">Trang chủ</a>
+	  <a href="upload-nhieuanh.html">Upload</a>
   <a href="camera-trong-nha.html">Camera trong nhà</a>
   <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
 </div>
@@ -759,11 +760,10 @@ import {
 const db = getFirestore(app);
 
 const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
 
-const id = params.get("id")
-  ?.trim()
-  .toLowerCase();
-
+let products = [];
+let product = null;
 
 let currentIndex = 0;
 let images = [];
