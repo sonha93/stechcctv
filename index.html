@@ -179,15 +179,28 @@
     <p id="sidebarUserNamePreview" style="margin:0; font-size:14px; color:#007BFF;">Người dùng</p>
   </div>
 </div>
-<!-- HEADER -->
 <header>
-  <div onclick="toggleMenu()">☰</div>
-  <div class="logo">
-    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
-  </div>
-  <input id="search" placeholder="Tìm kiếm sản phẩm...">
-</header>
 
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+  <div class="logo">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png">
+  </div>
+
+  <div class="search-box">
+
+    <input
+      type="text"
+      placeholder="Tìm kiếm sản phẩm..."
+      id="searchInput"
+      oninput="searchProduct()"
+    >
+
+    <div id="searchResults" class="search-results"></div>
+
+  </div>
+
+  <div style="display:flex;gap:10px;">
 
 <!-- CONTENT -->
 
