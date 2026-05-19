@@ -85,7 +85,7 @@ actionBox = document.getElementById("cartAction");
 
       const qty = Number(p.qty) || 1;
       const price = Number(p.price) || 0;
-
+const oldPrice = Number(p.oldPrice) || 0;
       const subTotal = qty * price;
 
       total += subTotal;
@@ -99,10 +99,19 @@ actionBox = document.getElementById("cartAction");
 
     <b>${p.name || ''}</b>
 
-    <div class="price-row">
-      <div class="price-new">
-        ${price.toLocaleString()}đ
-      </div>
+  <div class="price-row">
+
+  <div class="price-new">
+    ${price.toLocaleString()}đ
+  </div>
+
+  ${oldPrice > 0 ? `
+    <div class="price-old">
+      ${oldPrice.toLocaleString()}đ
+    </div>
+  ` : ""}
+
+</div>
     </div>
 
     <div class="qty">
