@@ -173,12 +173,17 @@ export async function addToCart(product) {
 
   try {
 
+    // chuẩn hóa id
+    const productId = String(product.id)
+      .trim()
+      .toLowerCase();
+
     const itemRef = doc(
       db,
       "users",
       currentUser.uid,
       "cart",
-      String(product.id)
+      productId
     );
 
     const snapshot = await getDocs(
@@ -194,7 +199,8 @@ export async function addToCart(product) {
 
     snapshot.forEach(d => {
 
-      if(d.id === String(product.id)){
+      // nếu trùng id thì cộng số lượng
+      if (d.id === productId) {
         oldQty = Number(d.data().qty) || 0;
       }
 
@@ -202,7 +208,7 @@ export async function addToCart(product) {
 
     await setDoc(itemRef, {
 
-      id: product.id,
+      id: productId,
       name: product.name || "",
       price: Number(product.price) || 0,
       img: product.img || "",
@@ -221,7 +227,6 @@ export async function addToCart(product) {
   }
 
 }
-
 
 // ============================
 // REMOVE ITEM
