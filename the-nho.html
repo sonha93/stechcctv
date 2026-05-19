@@ -141,6 +141,20 @@
 .item{
   position:relative;
 }
+
+
+
+/* NÚT XEM THÊM */
+#loadMoreBtn{
+  display:block;
+  margin:20px auto;
+  padding:12px 20px;
+  border:none;
+  border-radius:10px;
+  background:#111;
+  color:#fff;
+  cursor:pointer;
+}
 </style>
 </head>
   
@@ -174,7 +188,10 @@
 <!-- CONTENT -->
 <div class="container">
 
+ 
   <div class="products" id="products"></div>
+
+<button id="loadMoreBtn"></button>
 
   <div class="cart">
     <h3>🛒 Giỏ hàng</h3>
@@ -187,7 +204,7 @@
 </div>
 
 
- <script type="module" src="thenho.js"></script>
+  <script type="module" src="thenho.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -212,7 +229,7 @@
 
   </div>
 </footer>
-</footer>
+
 
 <script>
 function toggleMenu() {
