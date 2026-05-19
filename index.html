@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>Shop Camera Pro</title>
-<link rel="stylesheet" href="styletrong-nha.css">
+
+<link rel="stylesheet"
+href="styletrong-nha.css">
 
 <style>
+
 /* LOGO KHÔNG VIỀN */
+
 .logo img{
   height:38px;
   width:auto;
@@ -19,15 +26,20 @@
 }
 
 /* POPUP LOGIN/REGISTER */
+
 #authModal{
   position:fixed;
-  top:0; left:0; right:0; bottom:0;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
   display:none;
   background:rgba(0,0,0,0.6);
   align-items:center;
   justify-content:center;
   z-index:9999;
 }
+
 #authModal .auth-content{
   background:#fff;
   padding:20px;
@@ -35,10 +47,12 @@
   max-width:350px;
   width:90%;
 }
+
 #authModal h2{
   text-align:center;
   margin-bottom:10px;
 }
+
 #authModal input{
   width:100%;
   padding:8px;
@@ -46,6 +60,7 @@
   border-radius:4px;
   border:1px solid #aaa;
 }
+
 #authModal button{
   width:100%;
   padding:10px;
@@ -57,10 +72,12 @@
   cursor:pointer;
   border-radius:4px;
 }
+
 #authModal #closeAuth{
   background:#f44336;
   margin-top:5px;
 }
+
 #authModal #authMessage{
   text-align:center;
   margin-top:8px;
@@ -68,30 +85,35 @@
 }
 
 /* SIDEBAR USER INFO */
+
 #userInfoPreview{
   display:none;
   margin-top:10px;
   text-align:center;
   cursor:pointer;
 }
+
 #userInfoPreview img{
-  width:40px; height:40px;
+  width:40px;
+  height:40px;
   border-radius:50%;
   object-fit:cover;
   margin-bottom:5px;
 }
 
 /* SIDEBAR */
-.sidebar {
-  position: fixed;
-  z-index: 1000; /* fix click bị overlay chặn */
+
+.sidebar{
+  position:fixed;
+  z-index:1000;
 }
 
-/* 2 CỘT SẢN PHẨM */
+/* PRODUCTS */
+
 #products{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
 .product-card{
@@ -111,29 +133,18 @@
   object-fit:cover;
 }
 
-/* MÁY TÍNH 3 CỘT */
-@media(min-width:1200px){
-
-  #products{
-    grid-template-columns:repeat(4,1fr);
-  }
-
-}
-
 .product-card .product-info{
   margin-top:8px;
 }
+
 .discount-text{
   position:absolute;
   top:3px;
   left:0px;
-
   font-size:11px;
   padding:2px 5px;
-
   background:red;
   color:white;
-
   border-radius:6px;
   z-index:10;
 }
@@ -141,94 +152,195 @@
 .item{
   position:relative;
 }
+
+#loadMoreBtn{
+  display:block;
+  margin:20px auto;
+  padding:12px 20px;
+  border:none;
+  border-radius:10px;
+  background:#111;
+  color:#fff;
+  cursor:pointer;
+}
+
 </style>
 </head>
+
 <body>
 
-<div id="overlay" onclick="toggleMenu()"></div>
+<div id="overlay"
+onclick="toggleMenu()"></div>
 
 <!-- MENU / SIDEBAR -->
-<div class="sidebar" id="sidebar">
-  <h3>Danh mục</h3>
-  <a href="index.html">Trang chủ</a>
-  <a href="profile.html">Thông Tin</a>
-  <a href="cart.html">Giỏ hàng</a>
-  <a href="camera-trong-nha.html">Camera trong nhà</a>
-  <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
-  <a href="the-nho.html">Thẻ nhớ</a>
-  <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
-  <hr>
-  <!-- LOGIN / LOGOUT -->
-  <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
-  <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
 
-  <!-- USER INFO PREVIEW -->
-  <div id="userInfoPreview">
-    <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/40" alt="Avatar">
-    <p id="sidebarUserNamePreview" style="margin:0; font-size:14px; color:#007BFF;">Người dùng</p>
-  </div>
+<div class="sidebar" id="sidebar">
+
+  <h3>Danh mục</h3>
+
+  <a href="index.html">Trang chủ</a>
+
+  <a href="admin-panel.html">Admin</a>
+
+  <a href="profile.html">Thông Tin</a>
+
+  <a href="cart.html">Giỏ hàng</a>
+
+  <a href="camera-trong-nha.html">
+    Camera trong nhà
+  </a>
+
+  <a href="camera-ngoai-troi.html">
+    Camera ngoài trời
+  </a>
+
+  <a href="the-nho.html">
+    Thẻ nhớ
+  </a>
+
+  <a href="combo-khuyenmai.html">
+    Combo khuyến mãi
+  </a>
+
+  <hr>
+
+  <!-- LOGIN / LOGOUT -->
+
+  <a href="#" id="loginLink">
+    Đăng nhập / Đăng ký
+  </a>
+
+  <a href="#"
+  id="logoutLink"
+  style="display:none;">
+    Đăng xuất
+  </a>
+
 </div>
 
 <!-- HEADER -->
+
 <header>
+
   <div onclick="toggleMenu()">☰</div>
+
   <div class="logo">
-    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
+
+    <img
+    src="https://i.ibb.co/Z1kv9nJj/logo.png"
+    alt="logo">
+
   </div>
-  <input id="search" placeholder="Tìm kiếm sản phẩm...">
+
+  <input
+  id="search"
+  placeholder="Tìm kiếm sản phẩm...">
+
 </header>
 
-<!-- CONTENT -->
+<!-- PRODUCT LIST -->
+
 <div class="product-slider">
-  <div class="product-track" id="products"></div>
+
+  <div class="product-track"
+  id="products"></div>
+
 </div>
 
-<div class="extra-section"></div>
+<!-- LOAD MORE -->
+
+<button id="loadMoreBtn"></button>
 
 <!-- FOOTER -->
+
 <footer class="footer">
+
   <div class="footer-container">
+
     <h3>StechCamera</h3>
-    <p>Website chuyên cung cấp camera an ninh chính hãng</p>
+
+    <p>
+      Website chuyên cung cấp camera
+      an ninh chính hãng
+    </p>
+
     <p>Hotline: 0985.678.245</p>
+
     <p>Email: support@stechcamera.vn</p>
+
     <hr>
-    <p>© 2026 StechCamera. All rights reserved.</p>
+
+    <p>
+      © 2026 StechCamera.
+      All rights reserved.
+    </p>
+
   </div>
+
 </footer>
 
-<div id="productContainer" class="product-grid"></div>
-
 <!-- POPUP LOGIN / REGISTER -->
+
 <div id="authModal">
+
   <div class="auth-content">
+
     <h2>Đăng ký / Đăng nhập</h2>
-    <input type="email" id="authEmail" placeholder="Email">
-    <input type="password" id="authPassword" placeholder="Mật khẩu">
-    <button id="authRegisterBtn">Đăng ký</button>
-    <button id="authLoginBtn">Đăng nhập</button>
-    <button id="closeAuth">Đóng</button>
+
+    <input
+    type="email"
+    id="authEmail"
+    placeholder="Email">
+
+    <input
+    type="password"
+    id="authPassword"
+    placeholder="Mật khẩu">
+
+    <button id="authRegisterBtn">
+      Đăng ký
+    </button>
+
+    <button id="authLoginBtn">
+      Đăng nhập
+    </button>
+
+    <button id="closeAuth">
+      Đóng
+    </button>
+
     <p id="authMessage"></p>
+
   </div>
+
 </div>
 
-<!-- SCRIPTS -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="firebase-init.js"></script>
-  <script type="module" src="user.js"></script>
- <script type="module"src="app.js"></script>
-<script src="notify.js"></script>
-<script src="banner.js"></script>
-  <script type="module" src="home.js"></script>
-<script type="module" src="auth.js"></script>
-
 <script>
+
 function toggleMenu(){
-  document.getElementById("sidebar").classList.toggle("active"); 
-  document.getElementById("overlay").classList.toggle("active"); 
+
+  document
+  .getElementById("sidebar")
+  .classList.toggle("active");
+
+  document
+  .getElementById("overlay")
+  .classList.toggle("active");
+
 }
+
 </script>
-<script src="addToCart.js"></script>
+
+<script type="module"
+src="user.js"></script>
+
+<script type="module"
+src="auth.js"></script>
+
+<script type="module"
+src="home.js"></script>
+
+<script src="banner.js"></script>
+
 </body>
 </html>
