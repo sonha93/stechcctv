@@ -69,10 +69,8 @@ async function getProducts(){
     querySnapshot.forEach(doc => {
 
 arr.push({
-
   ...doc.data(),
-  id: doc.id
-
+  id: String(doc.id)   // 🔥 BẮT BUỘC
 });
     });
 
@@ -208,7 +206,7 @@ String(p.id);
 
 <button
   class="cart-btn"
-  onclick="addToCart('${p.id}')"
+ onclick="addToCart('${String(p.id)}')"
 >
   🛒 Thêm vào giỏ
 </button>
@@ -227,10 +225,8 @@ String(p.id);
 window.addToCart = async function(id) {
 
   if (!allProducts || allProducts.length === 0) {
-
     alert("Sản phẩm chưa load xong!");
     return;
-
   }
 
   const product = allProducts.find(
@@ -238,21 +234,19 @@ window.addToCart = async function(id) {
   );
 
   if (!product) {
-
     console.log("Không tìm thấy product", id);
-    console.log(allProducts);
-
-    alert("Không tìm thấy sản phẩm!");
     return;
-
   }
 
-  await firebaseAddToCart(product);
+  // 🔥 FIX CỐT LÕI: chuẩn hóa ID trước khi gửi cart
+  await firebaseAddToCart({
+    ...product,
+    id: String(product.id)
+  });
 
   await updateCartCount();
 
   alert("Đã thêm vào giỏ 🛒");
-
 };
 /* =========================
    SEARCH
