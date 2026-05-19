@@ -145,7 +145,9 @@ function renderHome() {
 
   nextProducts.forEach(p => {
 
-    const id = String(p.id);
+    const id = String(p.firebaseId || p.id)
+  .trim()
+  .toLowerCase();
 
     let percentText = "";
 
@@ -287,15 +289,26 @@ window.goDetail = function(id){
 
 window.addToCart = async function(id){
 
-  const product = allProducts.find(
-    p => String(p.id) === String(id)
-  );
+ const product = allProducts.find(
+  p =>
+    String(p.firebaseId || p.id)
+      .trim()
+      .toLowerCase()
+
+    ===
+
+    String(id)
+      .trim()
+      .toLowerCase()
+);
 
   if (!product) return;
 
   await saveToCart({
 
-    id: product.id,
+id: String(product.firebaseId || product.id)
+  .trim()
+  .toLowerCase(),
     name: product.name,
     price: product.price,
     img: product.img
