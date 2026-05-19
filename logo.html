@@ -752,8 +752,12 @@ const thumbList =
   document.getElementById("thumbList");
 
 // danh sách ảnh
-const images = product.images || [product.img];
-
+const images = [
+  product.img,
+  ...(product.images || []).filter(
+    img => img !== product.img
+  )
+];
 mainImg.src = images[0] || "";
 
 thumbList.innerHTML = "";
