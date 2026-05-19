@@ -166,7 +166,26 @@ header{
   border-radius:18px;
   background:#fff;
 }
+.thumb-list{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+  overflow-x:auto;
+}
 
+.thumb-list img{
+  width:70px;
+  height:70px;
+  object-fit:cover;
+  border-radius:10px;
+  cursor:pointer;
+  border:2px solid transparent;
+  background:#fff;
+}
+
+.thumb-list img.active{
+  border-color:red;
+}
 .right{
   flex:1;
   display:flex;
@@ -480,13 +499,19 @@ header{
 
 <div class="container">
 
-  <div class="left">
-    <img
-      id="detailImg"
-      src=""
-      onerror="this.src='https://via.placeholder.com/300'"
-    >
-  </div>
+ <div class="left">
+
+  <!-- Ảnh lớn -->
+  <img
+    id="detailImg"
+    src=""
+    onerror="this.src='https://via.placeholder.com/300'"
+  >
+
+  <!-- Danh sách ảnh nhỏ -->
+  <div class="thumb-list" id="thumbList"></div>
+
+</div>
 
   <div class="right">
 
@@ -718,9 +743,46 @@ async function loadProduct(){
   };
 
   // IMAGE
-  document.getElementById("detailImg").src =
-    product.img || "";
+ // IMAGE GALLERY
 
+const mainImg =
+  document.getElementById("detailImg");
+
+const thumbList =
+  document.getElementById("thumbList");
+
+// danh sách ảnh
+const images = product.images || [product.img];
+
+mainImg.src = images[0] || "";
+
+thumbList.innerHTML = "";
+
+images.forEach((img,index)=>{
+
+  const thumb = document.createElement("img");
+
+  thumb.src = img;
+
+  if(index === 0){
+    thumb.classList.add("active");
+  }
+
+  thumb.onclick = ()=>{
+
+    mainImg.src = img;
+
+    document
+      .querySelectorAll(".thumb-list img")
+      .forEach(el=>el.classList.remove("active"));
+
+    thumb.classList.add("active");
+
+  };
+
+  thumbList.appendChild(thumb);
+
+});
   document.getElementById("panelProductImg").src =
     product.img || "";
 
