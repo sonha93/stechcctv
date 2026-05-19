@@ -1,5 +1,5 @@
 /* =========================
-   🔥 COMBO PAGE JS
+   🔥 HOME PAGE JS
 ========================= */
 
 /* =========================
@@ -22,7 +22,7 @@ const db = getFirestore(app);
 ========================= */
 
 let showing = 0;
-const PER_LOAD = 20;
+const PER_LOAD = 10;
 
 /* =========================
    GET PRODUCTS FROM FIRESTORE
@@ -111,7 +111,11 @@ function renderHome() {
     document.getElementById("products");
 
   if (!box) return;
- const featured = allProducts.filter(   p => p.category === "home" || p.featured === true );
+
+const featured = allProducts.filter(
+  p => p.category === "home" || p.featured === true
+);
+
   /* CHỈ CLEAR LẦN ĐẦU */
 
   if(showing === 0){
