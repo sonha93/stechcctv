@@ -1,3 +1,5 @@
+	
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -437,7 +439,6 @@ header{
 
 <div class="sidebar" id="sidebar">
   <a href="index.html">Trang chủ</a>
-   <a href="upload-nhieuanh.html">Trang chủ</a>
   <a href="camera-trong-nha.html">Camera trong nhà</a>
   <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
 </div>
@@ -612,7 +613,6 @@ header{
 
 </div>
 
-
 <script type="module">
 
 import { app } from "./auth.js";
@@ -637,51 +637,79 @@ const id = params.get("id");
 let products = [];
 let product = null;
 
-/* =========================
-   MENU (GIỮ NGUYÊN)
-========================= */
-window.toggleMenu = function(){
+// MENU
+function toggleMenu(){
 
-  document.getElementById("sidebar").classList.toggle("active");
-  document.getElementById("overlay").classList.toggle("active");
+  document
+    .getElementById("sidebar")
+    .classList.toggle("active");
+
+  document
+    .getElementById("overlay")
+    .classList.toggle("active");
+
+}
+
+document.getElementById("overlay").onclick = function(){
+
+  document
+    .getElementById("sidebar")
+    .classList.remove("active");
+
+  document
+    .getElementById("overlay")
+    .classList.remove("active");
 
 };
 
-/* =========================
-   LOAD PRODUCTS
-========================= */
+// LOAD PRODUCTS
 async function loadProducts(){
 
-  const querySnapshot = await getDocs(collection(db,"products"));
+  const querySnapshot =
+    await getDocs(collection(db,"products"));
 
   products = [];
 
   querySnapshot.forEach(docSnap=>{
+
     products.push({
       id: docSnap.id,
       ...docSnap.data()
     });
+
   });
 
 }
 
-/* =========================
-   LOAD PRODUCT DETAIL
-   +++ UPGRADE MULTI IMAGE +++
-========================= */
+// LOAD PRODUCT DETAIL
 async function loadProduct(){
 
   if(!id){
-    document.body.innerHTML = `<h2 style="padding:40px;text-align:center">ID sản phẩm không hợp lệ</h2>`;
+
+    document.body.innerHTML = `
+      <h2 style="padding:40px;text-align:center">
+        ID sản phẩm không hợp lệ
+      </h2>
+    `;
+
     return;
+
   }
 
   const docRef = doc(db,"products",id);
+
   const docSnap = await getDoc(docRef);
 
   if(!docSnap.exists()){
-    document.body.innerHTML = `<h2 style="padding:40px;text-align:center">Không tìm thấy sản phẩm</h2>`;
+
+    document.body.innerHTML = `
+      <h2 style="padding:40px;text-align:center">
+        Không tìm thấy sản phẩm
+      </h2>
+    `;
+
     return;
+
   }
 
   product = {
@@ -689,64 +717,21 @@ async function loadProduct(){
     ...docSnap.data()
   };
 
-  /* =========================
-     🟢 UPGRADE: MULTI IMAGE SAFE
-  ========================= */
+  // IMAGE
+  document.getElementById("detailImg").src =
+    product.img || "";
 
-  const images =
-    (Array.isArray(product.images) && product.images.length > 0)
-      ? product.images
-      : (product.img ? [product.img] : []);
+  document.getElementById("panelProductImg").src =
+    product.img || "";
 
-  const mainImg = document.getElementById("detailImg");
-
-  if(mainImg && images.length > 0){
-    mainImg.src = images[0];
-  }
-
-  /* =========================
-     🟢 THÊM THUMBNAIL (KHÔNG CÓ THÌ BỎ QUA)
-  ========================= */
-
-  let thumbBox = document.getElementById("thumbList");
-
-  if(!thumbBox){
-    // nếu HTML chưa có thì tự tạo (KHÔNG PHÁ UI)
-    thumbBox = document.createElement("div");
-    thumbBox.id = "thumbList";
-    thumbBox.style.display = "flex";
-    thumbBox.style.gap = "6px";
-    thumbBox.style.marginTop = "10px";
-    document.querySelector(".left")?.appendChild(thumbBox);
-  }
-
-  thumbBox.innerHTML = "";
-
-  images.forEach(img=>{
-    const el = document.createElement("img");
-    el.src = img;
-
-    el.style.width = "60px";
-    el.style.height = "60px";
-    el.style.objectFit = "cover";
-    el.style.borderRadius = "8px";
-    el.style.cursor = "pointer";
-    el.style.border = "1px solid #ddd";
-
-    el.onclick = ()=>{
-      if(mainImg) mainImg.src = img;
-    };
-
-    thumbBox.appendChild(el);
-  });
-
-  /* =========================
-     GIỮ NGUYÊN PHẦN CŨ
-  ========================= */
-
+  // NAME
   document.getElementById("detailName").innerText =
     product.name || "";
 
+  document.getElementById("panelProductName").innerText =
+    product.name || "";
+
+  // PRICE
   document.getElementById("detailPrice").innerText =
     Number(product.price || 0).toLocaleString() + "đ";
 
@@ -755,25 +740,111 @@ async function loadProduct(){
       ? Number(product.oldPrice).toLocaleString() + "đ"
       : "";
 
+  // DESC
   document.getElementById("detailDesc").innerText =
     product.desc || "Không có mô tả";
 
-  /* SALE GIỮ NGUYÊN */
+  // INFO
+  document.getElementById("detailModel").innerText =
+    product.model || "Đang cập nhật";
+
+  document.getElementById("detailOrigin").innerText =
+    product.xuatXu || "Đang cập nhật";
+
+  document.getElementById("detailWarranty").innerText =
+    product.baoHanh || "Đang cập nhật";
+
+  // CONFIG
+  document.getElementById("detailResolution").innerText =
+    product.doPhanGiai || "Đang cập nhật";
+
+  document.getElementById("detailViewAngle").innerText =
+    product.gocNhin || "Đang cập nhật";
+
+  document.getElementById("detailConnect").innerText =
+    product.ketNoi || "Đang cập nhật";
+
+  // DESIGN
+  document.getElementById("detailThietKe").innerText =
+    product.thietKe || "Đang cập nhật";
+
+  document.getElementById("detailChatLieu").innerText =
+    product.chatLieu || "Đang cập nhật";
+
+  document.getElementById("detailCongSuat").innerText =
+    product.congSuat || "Đang cập nhật";
+
+  // SALE
   const saleBox = document.getElementById("detailSale");
 
-  if(product.oldPrice && product.oldPrice > product.price){
-    const sale = Math.round((1 - product.price/product.oldPrice)*100);
+  if(
+    product.oldPrice &&
+    Number(product.oldPrice) > Number(product.price)
+  ){
+
+    const sale = Math.round(
+      (
+        (Number(product.oldPrice) - Number(product.price))
+        / Number(product.oldPrice)
+      ) * 100
+    );
+
+    saleBox.style.display = "inline-block";
     saleBox.innerText = "-" + sale + "%";
+
   }else{
+
     saleBox.style.display = "none";
+
   }
 
 }
 
-/* =========================
-   ADD TO CART (GIỮ NGUYÊN)
-========================= */
-window.addToCart = async function(){
+// PANEL
+function openPanel(){
+
+  document
+    .getElementById("specPanel")
+    .classList.add("active");
+
+  document
+    .getElementById("panelOverlay")
+    .classList.add("active");
+
+}
+
+function closePanel(){
+
+  document
+    .getElementById("specPanel")
+    .classList.remove("active");
+
+  document
+    .getElementById("panelOverlay")
+    .classList.remove("active");
+
+}
+
+function showTab(tabId,btn){
+
+  document
+    .querySelectorAll(".spec-content")
+    .forEach(el=>el.classList.remove("active"));
+
+  document
+    .querySelectorAll(".spec-tab")
+    .forEach(el=>el.classList.remove("active"));
+
+  document
+    .getElementById(tabId)
+    .classList.add("active");
+
+  btn.classList.add("active");
+
+}
+
+// ADD TO CART
+async function addToCart(){
 
   if(!product) return;
 
@@ -781,12 +852,9 @@ window.addToCart = async function(){
 
   updateCartCount();
 
-  alert("Đã thêm giỏ 🛒");
-};
+}
 
-/* =========================
-   CART COUNT (GIỮ NGUYÊN LOGIC CŨ)
-========================= */
+// CART COUNT
 function updateCartCount(){
 
   const cart =
@@ -798,52 +866,86 @@ function updateCartCount(){
     total += item.qty || 1;
   });
 
-  const el = document.getElementById("cartCount");
-  if(el) el.innerText = total;
+  document.getElementById("cartCount").innerText =
+    total;
 
 }
 
-/* =========================
-   SEARCH (GIỮ NGUYÊN)
-========================= */
-window.searchProduct = function(){
+// SEARCH
+function searchProduct(){
 
   const term =
-    document.getElementById("searchInput").value.toLowerCase();
+    document.getElementById("searchInput")
+    .value
+    .toLowerCase();
 
-  const box =
+  const resultBox =
     document.getElementById("searchResults");
 
-  box.innerHTML = "";
-  if(!term) return;
+  resultBox.innerHTML = "";
 
-  products
-    .filter(p=>p.name?.toLowerCase().includes(term))
-    .slice(0,10)
-    .forEach(p=>{
-      const div = document.createElement("div");
-      div.innerHTML = `
+  if(term === "") return;
+
+  const filtered = products
+    .filter(
+      p =>
+        p.name &&
+        p.name.toLowerCase().includes(term)
+    )
+    .sort((a,b)=>
+      a.name.length - b.name.length
+    );
+
+  filtered.slice(0,10).forEach(p=>{
+
+    const div = document.createElement("div");
+
+    div.className = "search-result-item";
+
+    div.innerHTML = `
+      <img
+        src="${p.img}"
+        onerror="this.src='https://via.placeholder.com/50'"
+      >
+
+      <div>
         <strong>${p.name}</strong>
-      `;
 
-      div.onclick = ()=>{
-        location.href = "logo.html?id=" + p.id;
-      };
+        <div style="color:red;font-weight:bold;">
+          ${Number(p.price).toLocaleString()}đ
+        </div>
+      </div>
+    `;
 
-      box.appendChild(div);
-    });
+    div.onclick = ()=>{
 
-};
+      resultBox.innerHTML = "";
 
-/* =========================
-   INIT (GIỮ NGUYÊN)
-========================= */
+      window.location.href =
+        "logo.html?id=" + p.id;
+
+    };
+
+    resultBox.appendChild(div);
+
+  });
+
+}
+
+// INIT
 loadProducts();
 loadProduct();
 updateCartCount();
 
-/* GLOBAL */
+// GLOBAL
 window.toggleMenu = toggleMenu;
+window.openPanel = openPanel;
+window.closePanel = closePanel;
+window.showTab = showTab;
 window.addToCart = addToCart;
+window.searchProduct = searchProduct;
 
 </script>
+
+</body>
+</html>
