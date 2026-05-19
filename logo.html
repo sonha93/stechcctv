@@ -440,72 +440,39 @@ header{
 }
 @media(max-width:768px){
 
-  .menu-btn,
-  .icon-btn{
-    width:42px;
-    height:42px;
-    font-size:20px;
-  }
-
-  .logo{
-    width:39px;
-    height:39px;
-  }
-
-  .container{
-    flex-direction:row;
-    align-items:flex-start;
-    gap:14px;
-    padding:1px;
-  }
-
   .left{
-    width:120px;
+    width:130px;
+    height:178px;
     flex-shrink:0;
+    position:relative;
   }
 
   .left img{
     width:130px;
     height:178px;
-    border-radius:18px;
     object-fit:cover;
-  }
-
-  .right{
-    flex:1;
-    gap:10px;
-    padding-top:2px;
-  }
-
-  .product-name{
-    font-size:18px;
-    line-height:1.4;
-  }
-
-  .price{
-    font-size:22px;
-  }
-
-  .old-price{
-    font-size:14px;
-  }
-
-  .sale{
-    font-size:12px;
-    padding:4px 8px;
-    border-radius:10px;
-  }
-
-  .buy-btn,
-  .spec-open-btn{
-    height:46px;
-    font-size:15px;
     border-radius:18px;
   }
 
+  .thumb-list{
+    position:absolute;
+    bottom:6px;
+    left:6px;
 
+    gap:6px;
+    padding:4px;
 
+    max-width:95%;
+  }
 
+  .thumb-list img{
+    width:42px;
+    height:42px;
+    border-radius:8px;
+  }
+.left{
+  overflow:hidden;
+}
 }
 </style>
 </head>
