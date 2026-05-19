@@ -1,5 +1,3 @@
-
-
 window.goDetail = function(id){
 
   window.location.href =
@@ -207,6 +205,13 @@ String(p.firebaseId);
 
         </div>
 
+   <button
+  class="cart-btn"
+  onclick="addToCart('${p.id || p.firebaseId}')"
+>
+  🛒 Thêm vào giỏ
+</button>
+
 <button
   class="cart-btn"
   onclick="addToCart('${p.firebaseId}')"
@@ -224,39 +229,27 @@ String(p.firebaseId);
 /* =========================
    DETAIL
 ========================= */
-window.addToCart = async function(id){
 
-  const product = allProducts.find(
-    p =>
-      String(p.firebaseId || p.id)
-      .trim()
-      .toLowerCase()
+window.addToCart = async function(id) {
+  if (!allProducts || allProducts.length === 0) {
+    alert("Sản phẩm chưa load xong, thử lại sau!");
+    return;
+  }
 
-      ===
+  // Thêm || p.id để tránh trường hợp dữ liệu cũ
+ const product = allProducts.find(p => String(p.firebaseId || p.id) === String(id));
+  if (!product) {
+    console.log("Không tìm thấy product", id, allProducts); // debug dữ liệu
+    alert("Không tìm thấy sản phẩm!");
+    return;
+  }
 
-      String(id)
-      .trim()
-      .toLowerCase()
-  );
+  product.id = product.firebaseId || product.id;
 
-  if (!product) return;
-
-  await firebaseAddToCart({
-
-    id: String(product.firebaseId || product.id)
-      .trim()
-      .toLowerCase(),
-
-    name: product.name,
-    price: product.price,
-    img: product.img
-
-  });
-
+  await firebaseAddToCart(product); // gọi cart.js
   await updateCartCount();
 
   alert("Đã thêm vào giỏ 🛒");
-
 };
 /* =========================
    SEARCH
