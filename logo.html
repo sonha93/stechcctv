@@ -425,7 +425,27 @@ header{
     font-size:15px;
     border-radius:18px;
   }
+.gallery-box{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
 
+.thumb-img{
+  width:60px;
+  height:60px;
+  object-fit:cover;
+  border-radius:8px;
+  cursor:pointer;
+  border:2px solid transparent;
+  transition:.2s;
+}
+
+.thumb-img:hover{
+  border:2px solid #00acc1;
+  transform:scale(1.05);
+}
 }
 </style>
 </head>
@@ -496,6 +516,7 @@ header{
       <div class="price" id="detailPrice"></div>
       <div class="old-price" id="detailOldPrice"></div>
       <div class="sale" id="detailSale"></div>
+
     </div>
 
     <div class="action-wrap">
@@ -637,315 +658,189 @@ const id = params.get("id");
 let products = [];
 let product = null;
 
-// MENU
-function toggleMenu(){
-
-  document
-    .getElementById("sidebar")
-    .classList.toggle("active");
-
-  document
-    .getElementById("overlay")
-    .classList.toggle("active");
-
+/* ================= MENU ================= */
+function toggleMenu() {
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
 }
 
-document.getElementById("overlay").onclick = function(){
-
-  document
-    .getElementById("sidebar")
-    .classList.remove("active");
-
-  document
-    .getElementById("overlay")
-    .classList.remove("active");
-
+document.getElementById("overlay").onclick = () => {
+  document.getElementById("sidebar").classList.remove("active");
+  document.getElementById("overlay").classList.remove("active");
 };
 
-// LOAD PRODUCTS
-async function loadProducts(){
+/* ================= LOAD PRODUCTS ================= */
+async function loadProducts() {
+  const snap = await getDocs(collection(db, "products"));
 
-  const querySnapshot =
-    await getDocs(collection(db,"products"));
-
-  products = [];
-
-  querySnapshot.forEach(docSnap=>{
-
-    products.push({
-      id: docSnap.id,
-      ...docSnap.data()
-    });
-
-  });
-
+  products = snap.docs.map(d => ({
+    id: d.id,
+    ...d.data()
+  }));
 }
 
-// LOAD PRODUCT DETAIL
-async function loadProduct(){
-
-  if(!id){
-
-    document.body.innerHTML = `
-      <h2 style="padding:40px;text-align:center">
-        ID sản phẩm không hợp lệ
-      </h2>
-    `;
-
+/* ================= LOAD PRODUCT DETAIL ================= */
+async function loadProduct() {
+  if (!id) {
+    document.body.innerHTML = "<h2 style='padding:40px;text-align:center'>ID sản phẩm không hợp lệ</h2>";
     return;
-
   }
 
-  const docRef = doc(db,"products",id);
+  const ref = doc(db, "products", id);
+  const snap = await getDoc(ref);
 
-  const docSnap = await getDoc(docRef);
-
-  if(!docSnap.exists()){
-
-    document.body.innerHTML = `
-      <h2 style="padding:40px;text-align:center">
-        Không tìm thấy sản phẩm
-      </h2>
-    `;
-
+  if (!snap.exists()) {
+    document.body.innerHTML = "<h2 style='padding:40px;text-align:center'>Không tìm thấy sản phẩm</h2>";
     return;
-
   }
 
-  product = {
-    id: docSnap.id,
-    ...docSnap.data()
-  };
+  product = { id: snap.id, ...snap.data() };
 
-  // IMAGE
-  document.getElementById("detailImg").src =
-    product.img || "";
+  /* IMAGE */
+  const mainImg = document.getElementById("detailImg");
+  mainImg.src = product.gallery?.[0] || product.img || "";
+
+  document.querySelectorAll(".gallery-box").forEach(e => e.remove());
+
+  if (product.gallery?.length) {
+    const box = document.createElement("div");
+    box.className = "gallery-box";
+
+    product.gallery.forEach(url => {
+      const img = document.createElement("img");
+      img.src = url;
+      img.className = "thumb-img";
+      img.onclick = () => mainImg.src = url;
+      box.appendChild(img);
+    });
+
+    mainImg.insertAdjacentElement("afterend", box);
+  }
 
   document.getElementById("panelProductImg").src =
-    product.img || "";
+    product.gallery?.[0] || product.img || "";
 
-  // NAME
-  document.getElementById("detailName").innerText =
-    product.name || "";
+  /* TEXT */
+  document.getElementById("detailName").innerText = product.name || "";
+  document.getElementById("panelProductName").innerText = product.name || "";
 
-  document.getElementById("panelProductName").innerText =
-    product.name || "";
-
-  // PRICE
   document.getElementById("detailPrice").innerText =
     Number(product.price || 0).toLocaleString() + "đ";
 
   document.getElementById("detailOldPrice").innerText =
-    product.oldPrice
-      ? Number(product.oldPrice).toLocaleString() + "đ"
-      : "";
+    product.oldPrice ? Number(product.oldPrice).toLocaleString() + "đ" : "";
 
-  // DESC
   document.getElementById("detailDesc").innerText =
     product.desc || "Không có mô tả";
 
-  // INFO
-  document.getElementById("detailModel").innerText =
-    product.model || "Đang cập nhật";
+  /* INFO */
+  document.getElementById("detailModel").innerText = product.model || "Đang cập nhật";
+  document.getElementById("detailOrigin").innerText = product.xuatXu || "Đang cập nhật";
+  document.getElementById("detailWarranty").innerText = product.baoHanh || "Đang cập nhật";
 
-  document.getElementById("detailOrigin").innerText =
-    product.xuatXu || "Đang cập nhật";
+  /* CONFIG */
+  document.getElementById("detailResolution").innerText = product.doPhanGiai || "Đang cập nhật";
+  document.getElementById("detailViewAngle").innerText = product.gocNhin || "Đang cập nhật";
+  document.getElementById("detailConnect").innerText = product.ketNoi || "Đang cập nhật";
 
-  document.getElementById("detailWarranty").innerText =
-    product.baoHanh || "Đang cập nhật";
+  /* DESIGN */
+  document.getElementById("detailThietKe").innerText = product.thietKe || "Đang cập nhật";
+  document.getElementById("detailChatLieu").innerText = product.chatLieu || "Đang cập nhật";
+  document.getElementById("detailCongSuat").innerText = product.congSuat || "Đang cập nhật";
 
-  // CONFIG
-  document.getElementById("detailResolution").innerText =
-    product.doPhanGiai || "Đang cập nhật";
-
-  document.getElementById("detailViewAngle").innerText =
-    product.gocNhin || "Đang cập nhật";
-
-  document.getElementById("detailConnect").innerText =
-    product.ketNoi || "Đang cập nhật";
-
-  // DESIGN
-  document.getElementById("detailThietKe").innerText =
-    product.thietKe || "Đang cập nhật";
-
-  document.getElementById("detailChatLieu").innerText =
-    product.chatLieu || "Đang cập nhật";
-
-  document.getElementById("detailCongSuat").innerText =
-    product.congSuat || "Đang cập nhật";
-
-  // SALE
+  /* SALE (CHỈ 1 LẦN DUY NHẤT) */
   const saleBox = document.getElementById("detailSale");
 
-  if(
-    product.oldPrice &&
-    Number(product.oldPrice) > Number(product.price)
-  ){
-
+  if (saleBox && product.oldPrice && product.oldPrice > product.price) {
     const sale = Math.round(
-      (
-        (Number(product.oldPrice) - Number(product.price))
-        / Number(product.oldPrice)
-      ) * 100
+      ((product.oldPrice - product.price) / product.oldPrice) * 100
     );
 
     saleBox.style.display = "inline-block";
     saleBox.innerText = "-" + sale + "%";
-
-  }else{
-
+  } else if (saleBox) {
     saleBox.style.display = "none";
-
   }
-
 }
 
-// PANEL
-function openPanel(){
-
-  document
-    .getElementById("specPanel")
-    .classList.add("active");
-
-  document
-    .getElementById("panelOverlay")
-    .classList.add("active");
-
+/* ================= PANEL ================= */
+function openPanel() {
+  document.getElementById("specPanel").classList.add("active");
+  document.getElementById("panelOverlay").classList.add("active");
 }
 
-function closePanel(){
-
-  document
-    .getElementById("specPanel")
-    .classList.remove("active");
-
-  document
-    .getElementById("panelOverlay")
-    .classList.remove("active");
-
+function closePanel() {
+  document.getElementById("specPanel").classList.remove("active");
+  document.getElementById("panelOverlay").classList.remove("active");
 }
 
-function showTab(tabId,btn){
+function showTab(id, btn) {
+  document.querySelectorAll(".spec-content").forEach(e => e.classList.remove("active"));
+  document.querySelectorAll(".spec-tab").forEach(e => e.classList.remove("active"));
 
-  document
-    .querySelectorAll(".spec-content")
-    .forEach(el=>el.classList.remove("active"));
-
-  document
-    .querySelectorAll(".spec-tab")
-    .forEach(el=>el.classList.remove("active"));
-
-  document
-    .getElementById(tabId)
-    .classList.add("active");
-
+  document.getElementById(id).classList.add("active");
   btn.classList.add("active");
-
 }
 
-// ADD TO CART
-async function addToCart(){
-
-  if(!product) return;
-
+/* ================= CART ================= */
+async function addToCart() {
+  if (!product) return;
   await addToCartFirebase(product);
-
   updateCartCount();
-
 }
 
-// CART COUNT
-function updateCartCount(){
-
-  const cart =
-    JSON.parse(localStorage.getItem("cart")) || [];
-
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
   let total = 0;
-
-  cart.forEach(item=>{
-    total += item.qty || 1;
-  });
-
-  document.getElementById("cartCount").innerText =
-    total;
-
+  cart.forEach(i => total += i.qty || 1);
+  document.getElementById("cartCount").innerText = total;
 }
 
-// SEARCH
-function searchProduct(){
+/* ================= SEARCH ================= */
+function searchProduct() {
+  const term = document.getElementById("searchInput").value.toLowerCase();
+  const box = document.getElementById("searchResults");
 
-  const term =
-    document.getElementById("searchInput")
-    .value
-    .toLowerCase();
-
-  const resultBox =
-    document.getElementById("searchResults");
-
-  resultBox.innerHTML = "";
-
-  if(term === "") return;
+  box.innerHTML = "";
+  if (!term) return;
 
   const filtered = products
-    .filter(
-      p =>
-        p.name &&
-        p.name.toLowerCase().includes(term)
-    )
-    .sort((a,b)=>
-      a.name.length - b.name.length
-    );
+    .filter(p => p.name?.toLowerCase().includes(term))
+    .slice(0, 10);
 
-  filtered.slice(0,10).forEach(p=>{
-
+  filtered.forEach(p => {
     const div = document.createElement("div");
-
     div.className = "search-result-item";
 
     div.innerHTML = `
-      <img
-        src="${p.img}"
-        onerror="this.src='https://via.placeholder.com/50'"
-      >
-
+      <img src="${p.img}">
       <div>
         <strong>${p.name}</strong>
-
-        <div style="color:red;font-weight:bold;">
-          ${Number(p.price).toLocaleString()}đ
-        </div>
+        <div style="color:red">${Number(p.price).toLocaleString()}đ</div>
       </div>
     `;
 
-    div.onclick = ()=>{
-
-      resultBox.innerHTML = "";
-
-      window.location.href =
-        "logo.html?id=" + p.id;
-
+    div.onclick = () => {
+      window.location.href = "product.html?id=" + p.id;
     };
 
-    resultBox.appendChild(div);
-
+    box.appendChild(div);
   });
-
 }
 
-// INIT
-loadProducts();
-loadProduct();
-updateCartCount();
+/* ================= INIT (CHỈ 1 LUỒNG) ================= */
+async function init() {
+  await loadProducts();
+  await loadProduct();
+  updateCartCount();
+}
 
-// GLOBAL
+init();
+
+/* ================= GLOBAL ================= */
 window.toggleMenu = toggleMenu;
 window.openPanel = openPanel;
 window.closePanel = closePanel;
 window.showTab = showTab;
 window.addToCart = addToCart;
 window.searchProduct = searchProduct;
-
-</script>
-
-</body>
-</html>
