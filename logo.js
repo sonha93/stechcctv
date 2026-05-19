@@ -224,26 +224,26 @@ String(p.firebaseId);
 /* =========================
    DETAIL
 ========================= */
-
-window.addToCart = async function(id) {
-
-  if (!allProducts || allProducts.length === 0) {
-    alert("Sản phẩm chưa load xong!");
-    return;
-  }
+window.addToCart = async function(id){
 
   const product = allProducts.find(
-    p => String(p.firebaseId) === String(id)
+    p =>
+      String(p.firebaseId || p.id)
+      .trim()
+      .toLowerCase()
+
+      ===
+
+      String(id)
+      .trim()
+      .toLowerCase()
   );
 
-  if (!product) {
-    alert("Không tìm thấy sản phẩm!");
-    return;
-  }
+  if (!product) return;
 
   await firebaseAddToCart({
 
-    id: String(product.firebaseId)
+    id: String(product.firebaseId || product.id)
       .trim()
       .toLowerCase(),
 
@@ -256,6 +256,7 @@ window.addToCart = async function(id) {
   await updateCartCount();
 
   alert("Đã thêm vào giỏ 🛒");
+
 };
 /* =========================
    SEARCH
