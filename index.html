@@ -1,161 +1,70 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shop Camera Pro</title>
-<link rel="stylesheet" href="styletrong-nha.css">
 <style>
-/* LOGO KHÔNG VIỀN */
-.logo img{
-  height:38px;
-  width:auto;
-  border:0;
-  outline:0;
-  box-shadow:none;
-  display:block;
-  background:transparent;
-}
-
-/* POPUP LOGIN/REGISTER */
-#authModal{
-  position:fixed;
-  top:0; left:0; right:0; bottom:0;
-  display:none;
-  background:rgba(0,0,0,0.6);
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-#authModal .auth-content{
-  background:#fff;
-  padding:20px;
-  border-radius:8px;
-  max-width:350px;
-  width:90%;
-}
-#authModal h2{
-  text-align:center;
-  margin-bottom:10px;
-}
-#authModal input{
-  width:100%;
-  padding:8px;
-  margin:6px 0;
-  border-radius:4px;
-  border:1px solid #aaa;
-}
-#authModal button{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border:none;
-  background:#007BFF;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-  border-radius:4px;
-}
-#authModal #closeAuth{
-  background:#f44336;
-  margin-top:5px;
-}
-#authModal #authMessage{
-  text-align:center;
-  margin-top:8px;
-  color:red;
-}
-
-/* SIDEBAR USER INFO */
-#userInfoPreview{
-  display:none;
-  margin-top:10px;
-  text-align:center;
-  cursor:pointer;
-}
-#userInfoPreview img{
-  width:40px; height:40px;
-  border-radius:50%;
-  object-fit:cover;
-  margin-bottom:5px;
-}
-
-/* SIDEBAR */
-.sidebar {
-  position: fixed;
-  z-index: 1000;
-}
-
-/* PRODUCT LIST */
+/* Product list & Load More */
 .product-track{
-  max-height:720px;
-  overflow-y:auto;
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:6px;
-}
-@media(min-width:1200px){
-  .product-track{
-    grid-template-columns:repeat(4,1fr);
-  }
+  max-height:720px;
+  overflow-y:auto;
 }
 
 .product-card{
   background:#fff;
-  border:1px solid #ccc;
   border-radius:8px;
   overflow:hidden;
-  text-align:center;
-  padding:0px;
-  position:relative;
   display:flex;
   flex-direction:column;
   height:350px;
+  position:relative;
 }
+
 .product-card img{
   width:100%;
   height:180px;
   object-fit:cover;
-  border-bottom:1px solid #ccc;
   border-radius:4px;
+  border-bottom:1px solid #ccc;
 }
-.product-card .product-info{
+
+.product-info{
   padding:10px;
   flex:1;
   display:flex;
   flex-direction:column;
   justify-content:space-between;
 }
+
 .product-name{
+  font-weight:bold;
   font-size:16px;
-  font-weight:700;
-  margin-bottom:8px;
   color:#111;
 }
+
 .price{
   color:red;
   font-weight:bold;
   font-size:20px;
 }
+
 .old-price{
   color:#777;
   text-decoration:line-through;
   font-size:14px;
   margin-top:3px;
 }
+
 .discount-text{
   position:absolute;
   top:8px;
   left:8px;
   background:red;
-  color:white;
+  color:#fff;
   padding:3px 6px;
   font-size:12px;
   border-radius:6px;
   z-index:10;
 }
 
-/* LOAD MORE BUTTON */
 #loadMoreBtn{
   display:block;
   margin:20px auto;
@@ -166,138 +75,24 @@
   color:#fff;
   cursor:pointer;
 }
-
-/* SEARCH RESULTS */
-.search-results{
-  position:absolute;
-  width:100%;
-  background:#fff;
-  border-radius:12px;
-  margin-top:10px;
-  overflow:hidden;
-  z-index:999;
-}
-.search-result-item{
-  display:flex;
-  gap:8px;
-  padding:8px;
-  border-bottom:1px solid #eee;
-  cursor:pointer;
-  align-items:center;
-}
-.search-result-item img{
-  width:60px;
-  height:60px;
-  object-fit:cover;
-  border-radius:6px;
-}
-.search-result-item .product-info{
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-}
-.search-result-item .price{
-  color:red;
-  font-weight:bold;
-  font-size:16px;
-}
-.search-result-item .old-price{
-  color:#777;
-  font-size:14px;
-  text-decoration:line-through;
-}
 </style>
-</head>
-<body>
-
-<div id="overlay" onclick="toggleMenu()"></div>
-
-<!-- MENU / SIDEBAR -->
-<div class="sidebar" id="sidebar">
-  <h3>Danh mục</h3>
-  <a href="index.html">Trang chủ</a>
-  <a href="admin-panel.html">Admin</a>
-  <a href="profile.html">Thông Tin</a>
-  <a href="cart.html">Giỏ hàng</a>
-  <a href="camera-trong-nha.html">Camera trong nhà</a>
-  <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
-  <a href="the-nho.html">Thẻ nhớ</a>
-  <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
-  <hr>
-  <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
-  <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
-  <div id="userInfoPreview">
-    <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/40" alt="Avatar">
-    <p id="sidebarUserNamePreview" style="margin:0; font-size:14px; color:#007BFF;">Người dùng</p>
-  </div>
-</div>
-
-<!-- HEADER -->
-<header>
-  <div onclick="toggleMenu()">☰</div>
-  <div class="logo">
-    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
-  </div>
-  <input id="searchInput" placeholder="Tìm kiếm sản phẩm..." oninput="searchProduct()">
-  <div id="searchResults" class="search-results"></div>
-</header>
-
-<!-- PRODUCT LIST -->
-<div class="product-slider">
-  <div class="product-track" id="products"></div>
-</div>
-
-<!-- LOAD MORE -->
-<button id="loadMoreBtn">Xem thêm</button>
-
-<div class="extra-section"></div>
-
-<!-- FOOTER -->
-<footer class="footer">
-  <div class="footer-container">
-    <h3>StechCamera</h3>
-    <p>Website chuyên cung cấp camera an ninh chính hãng</p>
-    <p>Hotline: 0985.678.245</p>
-    <p>Email: support@stechcamera.vn</p>
-    <hr>
-    <p>© 2026 StechCamera. All rights reserved.</p>
-  </div>
-</footer>
-
-<!-- POPUP LOGIN / REGISTER -->
-<div id="authModal">
-  <div class="auth-content">
-    <h2>Đăng ký / Đăng nhập</h2>
-    <input type="email" id="authEmail" placeholder="Email">
-    <input type="password" id="authPassword" placeholder="Mật khẩu">
-    <button id="authRegisterBtn">Đăng ký</button>
-    <button id="authLoginBtn">Đăng nhập</button>
-    <button id="closeAuth">Đóng</button>
-    <p id="authMessage"></p>
-  </div>
-</div>
 
 <script type="module">
 import { app } from "./auth.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { addToCart as addToCartFirebase } from "./cart.js";
 
 const db = getFirestore(app);
 let products = [];
 let currentIndex = 0;
 const pageSize = 5;
 
-// LOAD PRODUCTS
 async function loadProducts(){
   const querySnapshot = await getDocs(collection(db,"products"));
   products = [];
-  querySnapshot.forEach(docSnap=>{
-    products.push({id: docSnap.id, ...docSnap.data()});
-  });
+  querySnapshot.forEach(docSnap => products.push({id:docSnap.id, ...docSnap.data()}));
   renderProducts();
 }
 
-// RENDER PRODUCTS
 function renderProducts(loadMore=false){
   const container = document.getElementById("products");
   if(!loadMore) container.innerHTML = "";
@@ -305,7 +100,7 @@ function renderProducts(loadMore=false){
   for(let i=currentIndex; i<end; i++){
     const p = products[i];
     const div = document.createElement("div");
-    div.className = "product-card item";
+    div.className = "product-card";
     div.innerHTML = `
       <span class="discount-text">${p.oldPrice && p.oldPrice>p.price ? "-" + Math.round((p.oldPrice-p.price)/p.oldPrice*100) + "%" : ""}</span>
       <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150'">
@@ -315,54 +110,41 @@ function renderProducts(loadMore=false){
         <div class="old-price">${p.oldPrice ? Number(p.oldPrice).toLocaleString()+"đ" : ""}</div>
       </div>
     `;
-    div.onclick = ()=> window.location.href="product-detail.html?id="+p.id;
+    div.onclick = ()=> window.location.href = "product-detail.html?id=" + p.id;
     container.appendChild(div);
   }
   currentIndex = end;
-  document.getElementById("loadMoreBtn").style.display = (currentIndex<products.length)?'block':'none';
+  document.getElementById("loadMoreBtn").style.display = (currentIndex < products.length) ? 'block' : 'none';
 }
 
-// SEARCH
+// Load More button
+document.getElementById("loadMoreBtn").onclick = ()=> renderProducts(true);
+
+// Search
 function searchProduct(){
   const term = document.getElementById("searchInput").value.toLowerCase();
   const resultBox = document.getElementById("searchResults");
   resultBox.innerHTML = "";
   if(!term) return;
-  const filtered = products.filter(p=>p.name && p.name.toLowerCase().includes(term)).slice(0,10);
+  const filtered = products.filter(p => p.name && p.name.toLowerCase().includes(term)).slice(0,10);
   filtered.forEach(p=>{
     const div = document.createElement("div");
     div.className="search-result-item";
     div.innerHTML = `
-      <img src="${p.img}" onerror="this.src='https://via.placeholder.com/60'">
+      <img src="${p.img}" onerror="this.src='https://via.placeholder.com/50'">
       <div class="product-info">
         <strong>${p.name}</strong>
         <div class="price">${Number(p.price).toLocaleString()}đ</div>
         ${p.oldPrice ? `<div class="old-price">${Number(p.oldPrice).toLocaleString()}đ</div>` : ""}
       </div>
     `;
-    div.onclick = ()=> window.location.href="product-detail.html?id="+p.id;
+    div.onclick = ()=> { resultBox.innerHTML=""; window.location.href="product-detail.html?id="+p.id; };
     resultBox.appendChild(div);
   });
 }
 
-// MENU
-function toggleMenu(){
-  document.getElementById("sidebar").classList.toggle("active");
-  document.getElementById("overlay").classList.toggle("active");
-}
-document.getElementById("overlay").onclick = toggleMenu;
-
-// LOAD MORE CLICK
-document.getElementById("loadMoreBtn").onclick = ()=>renderProducts(true);
-
 // INIT
 loadProducts();
+
+window.searchProduct = searchProduct;
 </script>
-
-<script type="module" src="user.js"></script>
-<script type="module" src="auth.js"></script>
-<script type="module" src="home.js"></script>
-<script src="banner.js"></script>
-
-</body>
-</html>
