@@ -1,3 +1,5 @@
+	
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -423,13 +425,7 @@ header{
     font-size:15px;
     border-radius:18px;
   }
-#thumbs img{
-  transition:.2s;
-}
-#thumbs img:hover{
-  transform:scale(1.1);
-  border-color:#00acc1;
-}
+
 }
 </style>
 </head>
@@ -484,22 +480,13 @@ header{
 
 <div class="container">
 
- <div class="left">
-
-  <!-- ẢNH CHÍNH -->
-  <img
-    id="detailImg"
-    src=""
-    onerror="this.src='https://via.placeholder.com/300'"
-  >
-
-  <!-- THUMBNAILS -->
-  <div
-    id="thumbs"
-    style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+  <div class="left">
+    <img
+      id="detailImg"
+      src=""
+      onerror="this.src='https://via.placeholder.com/300'"
+    >
   </div>
-
-</div>
 
   <div class="right">
 
@@ -528,6 +515,7 @@ header{
   </div>
 
 </div>
+
 <div id="panelOverlay"></div>
 
 <div id="specPanel">
@@ -730,34 +718,12 @@ async function loadProduct(){
   };
 
   // IMAGE
- // IMAGE MULTI SUPPORT
-const images = product.images?.length
-  ? product.images
-  : (product.img ? [product.img] : []);
+  document.getElementById("detailImg").src =
+    product.img || "";
 
-// ảnh chính
-document.getElementById("detailImg").src = images[0] || "";
+  document.getElementById("panelProductImg").src =
+    product.img || "";
 
-// panel image
-document.getElementById("panelProductImg").src = images[0] || "";
-
-// thumbnails
-const thumbs = document.getElementById("thumbs");
-
-if (thumbs) {
- thumbs.innerHTML = "";
-
-images.forEach(img => {
-  const el = document.createElement("img");
-  el.src = img;
-
-  el.onclick = () => {
-    document.getElementById("detailImg").src = img;
-  };
-
-  thumbs.appendChild(el);
-});
-}
   // NAME
   document.getElementById("detailName").innerText =
     product.name || "";
@@ -967,7 +933,8 @@ function searchProduct(){
 }
 
 // INIT
-loadProducts().then(loadProduct);
+loadProducts();
+loadProduct();
 updateCartCount();
 
 // GLOBAL
