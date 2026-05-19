@@ -151,157 +151,42 @@
   color:#fff;
   cursor:pointer;
 }
-    .logo{
-    width:39px;
-    height:39px;
-  }
-
-  .container{
-    flex-direction:row;
-    align-items:flex-start;
-    gap:14px;
-    padding:1px;
-  }
-
-  .left{
-    width:120px;
-    flex-shrink:0;
-  }
-
-  .left img{
-    width:130px;
-    height:178px;
-    border-radius:18px;
-    object-fit:cover;
-  }
-
-  .right{
-    flex:1;
-    gap:10px;
-    padding-top:2px;
-  }
-
-  .product-name{
-    font-size:18px;
-    line-height:1.4;
-  }
-
-  .price{
-    font-size:22px;
-  }
-
-  .old-price{
-    font-size:14px;
-  }
-
-  .sale{
-    font-size:12px;
-    padding:4px 8px;
-    border-radius:10px;
-  }
-
-  .buy-btn,
-  .spec-open-btn{
-    height:46px;
-    font-size:15px;
-    border-radius:18px;
-  }
-  /* SEARCH */
-
-.search-results{
-  position:absolute;
-  width:100%;
-  background:#fff;
-  border-radius:12px;
-  margin-top:10px;
-  overflow:hidden;
-  z-index:999;
-}
-
-.search-result-item{
-  display:flex;
-  gap:8px;
-  padding:8px;
-  border-bottom:1px solid #eee;
-  cursor:pointer;
-}
-
-.search-result-item img{
-  width:50px;
-  height:50px;
-  object-fit:cover;
-  border-radius:8px;
-}
 </style>
 </head>
 <body>
 
-<div id="overlay"></div>
+<div id="overlay" onclick="toggleMenu()"></div>
 
+<!-- MENU / SIDEBAR -->
 <div class="sidebar" id="sidebar">
+  <h3>Danh mục</h3>
   <a href="index.html">Trang chủ</a>
+  <a href="admin-panel.html">Admin</a>
+  <a href="profile.html">Thông Tin</a>
+  <a href="cart.html">Giỏ hàng</a>
   <a href="camera-trong-nha.html">Camera trong nhà</a>
   <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
+  <a href="the-nho.html">Thẻ nhớ</a>
+  <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
+  <hr>
+  <!-- LOGIN / LOGOUT -->
+  <a href="#" id="loginLink">Đăng nhập / Đăng ký</a>
+  <a href="#" id="logoutLink" style="display:none;">Đăng xuất</a>
+
+  <!-- USER INFO PREVIEW -->
+  <div id="userInfoPreview">
+    <img id="sidebarUserAvatarPreview" src="https://via.placeholder.com/40" alt="Avatar">
+    <p id="sidebarUserNamePreview" style="margin:0; font-size:14px; color:#007BFF;">Người dùng</p>
+  </div>
 </div>
-
+<!-- HEADER -->
 <header>
-
-<!-- FOOTER -->
-<body>
-
-<div id="overlay"></div>
-
-<div class="sidebar" id="sidebar">
-  <a href="index.html">Trang chủ</a>
-  <a href="camera-trong-nha.html">Camera trong nhà</a>
-  <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
-</div>
-
-<header>
-
-  <div class="menu-btn" onclick="toggleMenu()">☰</div>
-
+  <div onclick="toggleMenu()">☰</div>
   <div class="logo">
-    <img src="https://i.ibb.co/Z1kv9nJj/logo.png">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
-
-  <div class="search-box">
-
-    <input
-      type="text"
-      placeholder="Tìm kiếm sản phẩm..."
-      id="searchInput"
-      oninput="searchProduct()"
-    >
-
-    <div id="searchResults" class="search-results"></div>
-
-  </div>
-
-  <div style="display:flex;gap:10px;">
-
-    <a href="admin.html" class="icon-btn admin-btn">🔐</a>
-
-    <a href="cart.html" class="icon-btn">
-      🛒
-      <span class="cart-count" id="cartCount">0</span>
-    </a>
-
-  </div>
-
-
+  <input id="search" placeholder="Tìm kiếm sản phẩm...">
 </header>
-
-<div class="container">
-
-  <div class="left">
-    <img
-      id="detailImg"
-      src=""
-      onerror="this.src='https://via.placeholder.com/300'"
-    >
-  </div>
-
 
 
 <!-- CONTENT -->
