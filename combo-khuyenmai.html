@@ -37,24 +37,22 @@ body{
 }
 
 /* =========================
-   HEADER
+   HEADER FIX FINAL
 ========================= */
 
 .top-header{
   position:sticky;
   top:0;
-  z-index:999;
+  z-index:9999;
 
   display:flex;
   align-items:center;
 
-  gap:8px;
+  gap:10px;
 
   padding:8px;
 
   background:#33A0AB;
-
-  overflow:hidden;
 }
 
 /* MENU + ICON */
@@ -68,7 +66,7 @@ body{
 
   border-radius:18px;
 
-  background:#27a8bb;
+  background:#1fb4c7;
   color:#fff;
 
   display:flex;
@@ -76,17 +74,15 @@ body{
   justify-content:center;
 
   font-size:24px;
+
   cursor:pointer;
 
-  flex-shrink:0;
   position:relative;
 
-  transition:.2s;
-}
+  flex-shrink:0;
 
-.menu-btn:hover,
-.icon-btn:hover{
-  opacity:.9;
+  text-decoration:none;
+  border:none;
 }
 
 /* ADMIN */
@@ -95,7 +91,7 @@ body{
   background:#6c55e0;
 }
 
-/* LOGO BOX */
+/* LOGO */
 
 .logo{
   width:58px;
@@ -116,6 +112,25 @@ body{
   flex-shrink:0;
 }
 
+/* FIX LOGO */
+
+.logo img{
+  width:100% !important;
+  height:100% !important;
+
+  object-fit:contain;
+
+  padding:2px;
+
+  display:block;
+
+  border:none !important;
+  outline:none !important;
+  box-shadow:none !important;
+
+  background:#fff;
+}
+
 /* SEARCH */
 
 .search-box{
@@ -134,19 +149,13 @@ body{
 
   padding:0 18px;
 
-  background:#f2f2f2;
+  background:#f1f1f1;
 
   font-size:15px;
   font-weight:bold;
-
-  color:#111;
 }
 
-.search-box input::placeholder{
-  color:#666;
-}
-
-/* RIGHT ICONS */
+/* RIGHT */
 
 .header-icons{
   display:flex;
@@ -156,7 +165,7 @@ body{
   flex-shrink:0;
 }
 
-/* CART BADGE */
+/* BADGE */
 
 .cart-badge{
   position:absolute;
@@ -180,214 +189,52 @@ body{
   justify-content:center;
 }
 
-/* =========================
-   POPUP LOGIN/REGISTER
-========================= */
+/* OVERLAY FIX */
 
-#authModal{
+#overlay{
   position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
+  inset:0;
 
-  display:none;
+  background:rgba(0,0,0,.4);
 
-  background:rgba(0,0,0,0.6);
+  opacity:0;
+  visibility:hidden;
 
-  align-items:center;
-  justify-content:center;
+  transition:.2s;
 
-  z-index:9999;
+  z-index:9998;
 }
 
-#authModal .auth-content{
-  background:#fff;
-
-  padding:20px;
-
-  border-radius:14px;
-
-  max-width:350px;
-  width:90%;
+#overlay.active{
+  opacity:1;
+  visibility:visible;
 }
 
-#authModal h2{
-  text-align:center;
-  margin-bottom:10px;
-}
-
-#authModal input{
-  width:100%;
-
-  padding:10px;
-
-  margin:6px 0;
-
-  border-radius:8px;
-  border:1px solid #aaa;
-}
-
-#authModal button{
-  width:100%;
-
-  padding:10px;
-
-  margin-top:10px;
-
-  border:none;
-
-  background:#007BFF;
-  color:white;
-
-  font-weight:bold;
-
-  cursor:pointer;
-
-  border-radius:8px;
-}
-
-#authModal #closeAuth{
-  background:#f44336;
-}
-
-#authModal #authMessage{
-  text-align:center;
-  margin-top:8px;
-  color:red;
-}
-
-/* =========================
-   SIDEBAR
-========================= */
+/* SIDEBAR */
 
 .sidebar{
   position:fixed;
-  z-index:1000;
-}
 
-/* =========================
-   USER INFO
-========================= */
+  top:0;
+  left:-280px;
 
-#userInfoPreview{
-  display:none;
+  width:260px;
+  height:100vh;
 
-  margin-top:10px;
-
-  text-align:center;
-
-  cursor:pointer;
-}
-
-#userInfoPreview img{
-  width:40px;
-  height:40px;
-
-  border-radius:50%;
-
-  object-fit:cover;
-
-  margin-bottom:5px;
-}
-
-/* =========================
-   PRODUCTS
-========================= */
-
-#products{
-  display:grid;
-
-  grid-template-columns:1fr 1fr;
-
-  gap:6px;
-}
-
-.product-card{
   background:#fff;
 
-  border:1px solid #ccc;
+  z-index:99999;
 
-  border-radius:10px;
+  transition:.25s;
 
-  overflow:hidden;
-
-  text-align:center;
-
-  padding:0;
+  padding:20px;
 }
 
-.product-card img{
-  width:100%;
-  height:auto;
-
-  border-bottom:1px solid #ccc;
-
-  object-fit:cover;
-}
-
-.product-card .product-info{
-  margin-top:8px;
-}
-
-/* DISCOUNT */
-
-.discount-text{
-  position:absolute;
-
-  top:3px;
+.sidebar.active{
   left:0;
-
-  font-size:11px;
-
-  padding:2px 5px;
-
-  background:red;
-  color:white;
-
-  border-radius:6px;
-
-  z-index:10;
 }
 
-.item{
-  position:relative;
-}
-
-/* LOAD MORE */
-
-#loadMoreBtn{
-  display:block;
-
-  margin:20px auto;
-
-  padding:12px 20px;
-
-  border:none;
-
-  border-radius:10px;
-
-  background:#111;
-  color:#fff;
-
-  cursor:pointer;
-}
-
-/* =========================
-   DESKTOP
-========================= */
-
-@media(min-width:1200px){
-
-  #products{
-    grid-template-columns:repeat(4,1fr);
-  }
-
-}
-
-/* =========================
-   MOBILE
-========================= */
+/* MOBILE */
 
 @media(max-width:768px){
 
@@ -423,12 +270,9 @@ body{
     border-radius:14px;
 
     font-size:14px;
-
-    padding:0 14px;
   }
 
 }
-
 </style>
 </head>
   
@@ -456,25 +300,20 @@ body{
     ☰
   </div>
 
-  <!-- LOGO -->
   <div class="logo">
     <img
       src="https://i.ibb.co/Z1kv9nJj/logo.png"
-      alt="Stech Logo"
+      alt="logo"
     >
   </div>
 
-  <!-- SEARCH -->
   <div class="search-box">
-
     <input
       id="search"
       placeholder="Tìm kiếm sản phẩm..."
     >
-
   </div>
 
-  <!-- RIGHT -->
   <div class="header-icons">
 
     <a href="admin.html"
@@ -495,8 +334,8 @@ body{
 
   </div>
 
-
 </header>
+
 <!-- CONTENT -->
 <div class="container">
 
