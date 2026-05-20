@@ -801,12 +801,10 @@ async function loadProducts(){
 
   querySnapshot.forEach(docSnap=>{
 
-   products.push({
-    id: docSnap.id,
-    ...docSnap.data()
-  });
-
-});
+    products.push({
+      id: docSnap.id,
+      ...docSnap.data()
+    });
 
   });
 
@@ -816,83 +814,104 @@ async function loadProducts(){
 async function loadProduct(){
 
   if(!id){
+
     document.body.innerHTML = `
       <h2 style="padding:40px;text-align:center">
         ID sản phẩm không hợp lệ
       </h2>
     `;
+
     return;
+
   }
 
-  const found = products.find(
-    p => String(p.id) === String(id)
-  );
+  const docRef = doc(db,"products",id);
 
-  if(!found){
+  const docSnap = await getDoc(docRef);
+
+  if(!docSnap.exists()){
+
     document.body.innerHTML = `
       <h2 style="padding:40px;text-align:center">
         Không tìm thấy sản phẩm
       </h2>
     `;
+
     return;
+
   }
 
-  product = found;
+  product = {
+    id: docSnap.id,
+    ...docSnap.data()
+  };
 
   // IMAGE
-  const mainImg =
-    document.getElementById("detailImg");
+ // IMAGE GALLERY
 
-  const thumbList =
-    document.getElementById("thumbList");
+const mainImg =
+  document.getElementById("detailImg");
 
-  images = [
-    product.img,
-    ...(product.images || []).filter(
-      img => img !== product.img
-    )
-  ];
+const thumbList =
+  document.getElementById("thumbList");
 
-  currentIndex = 0;
-  mainImg.src = images[0] || "";
+// danh sách ảnh
+images = [
+  product.img,
+  ...(product.images || []).filter(
+    img => img !== product.img
+  )
+];
 
-  thumbList.innerHTML = "";
+currentIndex = 0;
+mainImg.src = images[0] || "";
 
-  images.forEach((img,index)=>{
+thumbList.innerHTML = "";
 
-    const thumb = document.createElement("img");
-    thumb.src = img;
+images.forEach((img,index)=>{
 
-    if(index === 0){
-      thumb.classList.add("active");
-    }
+  const thumb = document.createElement("img");
 
-    thumb.onclick = ()=>{
-      currentIndex = index;
-      mainImg.src = img;
+  thumb.src = img;
 
-      document
-        .querySelectorAll(".thumb-list img")
-        .forEach(el=>el.classList.remove("active"));
+  if(index === 0){
+    thumb.classList.add("active");
+  }
 
-      thumb.classList.add("active");
+thumb.onclick = ()=>{
 
-      viewerImg.src = img;
-      viewer.classList.add("active");
-    };
+  currentIndex = index;
 
-    thumbList.appendChild(thumb);
-  });
+  // đổi ảnh chính
+  mainImg.src = img;
 
+  document
+    .querySelectorAll(".thumb-list img")
+    .forEach(el=>el.classList.remove("active"));
+
+  thumb.classList.add("active");
+
+  // mở popup ảnh
+  viewerImg.src = img;
+
+  viewer.classList.add("active");
+
+
+};
+  thumbList.appendChild(thumb);
+
+});
   document.getElementById("panelProductImg").src =
     product.img || "";
 
+  // NAME
   document.getElementById("detailName").innerText =
     product.name || "";
 
   document.getElementById("panelProductName").innerText =
     product.name || "";
 
+  // PRICE
   document.getElementById("detailPrice").innerText =
     Number(product.price || 0).toLocaleString() + "đ";
 
@@ -901,9 +920,9 @@ async function loadProduct(){
       ? Number(product.oldPrice).toLocaleString() + "đ"
       : "";
 
+  // DESC
   document.getElementById("detailDesc").innerText =
     product.desc || "Không có mô tả";
-
 
   // INFO
   document.getElementById("detailModel").innerText =
@@ -1081,8 +1100,9 @@ function searchProduct(){
     div.onclick = ()=>{
 
       resultBox.innerHTML = "";
-window.location.href =
-  "logo.html?id=" + (p.id || p.firebaseId);
+
+      window.location.href =
+        "logo.html?id=" + p.id;
 
     };
 
@@ -1094,17 +1114,9 @@ window.location.href =
 
 
 // INIT
-async function init(){
-
-  await loadProducts();
-
-  await loadProduct();
-
-  updateCartCount();
-
-}
-
-init();
+loadProducts();
+loadProduct();
+updateCartCount();
 
 // ĐÓNG POPUP ẢNH
 
