@@ -825,19 +825,21 @@ async function loadProduct(){
 
   }
 
-  const docRef = doc(db,"products",id);
+ const found = products.find(
+  p => String(p.id) === String(id)
+);
 
-  const docSnap = await getDoc(docRef);
+if(!found){
 
-  if(!docSnap.exists()){
+  document.body.innerHTML = `
+    <h2 style="padding:40px;text-align:center">
+      Không tìm thấy sản phẩm
+    </h2>
+  `;
+  return;
+}
 
-    document.body.innerHTML = `
-      <h2 style="padding:40px;text-align:center">
-        Không tìm thấy sản phẩm
-      </h2>
-    `;
-
-    return;
+product = found;
 
   }
 
@@ -1100,9 +1102,8 @@ function searchProduct(){
     div.onclick = ()=>{
 
       resultBox.innerHTML = "";
-
-      window.location.href =
-        "logo.html?id=" + p.id;
+window.location.href =
+  "logo.html?id=" + (p.id || p.firebaseId);
 
     };
 
