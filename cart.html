@@ -71,9 +71,12 @@ body{
 .top-header{
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  gap:8px;
+
+  justify-content:flex-start; /* 👈 QUAN TRỌNG NHẤT */
+
+  gap:10px;
   padding:8px 12px;
+
   background:linear-gradient(90deg,#1fb4c7,#159aaa);
 }
 /* MENU BUTTON */
@@ -95,16 +98,15 @@ body{
   align-items:center;
   justify-content:center;
 
-  margin-right:4px; /* 👈 kéo sát menu */
+  margin-right:0px; /* 👈 kéo sát menu */
 }
 
 
-/* SEARCH GIỮA CHUẨN */
 .search-box{
   flex:1;
   display:flex;
-  justify-content:center; /* 👈 căn giữa thật */
-  max-width:520px;
+  justify-content:center;
+  margin:0 10px; /* 👈 tạo khoảng thở 2 bên */
 }
 .search-box input{
   width:100%;
