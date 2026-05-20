@@ -135,8 +135,7 @@ list = list.filter(
 
   list.forEach(p => {
 
-   const id =
-String(p.firebaseId);
+  
 
     const price =
       Number(p.price) || 0;
@@ -172,7 +171,7 @@ String(p.firebaseId);
           <img
             src="${p.img || ''}"
             alt="${p.name || ''}"
-           onclick="goDetail('${p.firebaseId}')"
+          onclick="goDetail('${p.id}')"
             style="cursor:pointer;"
           >
 
@@ -207,17 +206,11 @@ String(p.firebaseId);
 
    <button
   class="cart-btn"
-  onclick="addToCart('${p.id || p.firebaseId}')"
+ onclick="addToCart('${p.id}')"
 >
   🛒 Thêm vào giỏ
 </button>
 
-<button
-  class="cart-btn"
-  onclick="addToCart('${p.firebaseId}')"
->
-  🛒 Thêm vào giỏ
-</button>
       </div>
 
     `;
@@ -237,14 +230,16 @@ window.addToCart = async function(id) {
   }
 
   // Thêm || p.id để tránh trường hợp dữ liệu cũ
- const product = allProducts.find(p => String(p.firebaseId || p.id) === String(id));
+ const product = allProducts.find(
+  p => String(p.id || p.firebaseId) === String(id)
+);
   if (!product) {
     console.log("Không tìm thấy product", id, allProducts); // debug dữ liệu
     alert("Không tìm thấy sản phẩm!");
     return;
   }
 
-  product.id = product.firebaseId || product.id;
+
 
   await firebaseAddToCart(product); // gọi cart.js
   await updateCartCount();
