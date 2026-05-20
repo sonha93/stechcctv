@@ -14,18 +14,477 @@ content="width=device-width, initial-scale=1.0">
 href="styletrong-nha.css">
 
 <style>
+/* =========================
+   RESET
+========================= */
 
-/* LOGO KHÔNG VIỀN */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:#f5f5f5;
+  font-family:Arial,sans-serif;
+}
+
+/* =========================
+   HEADER FIX FINAL
+========================= */
+
+.top-header{
+  position:sticky;
+  top:0;
+  z-index:9999;
+
+  display:flex;
+  align-items:center;
+
+  gap:10px;
+
+  padding:8px;
+
+  background:#33A0AB;
+}
+
+/* MENU + ICON */
+
+.menu-btn,
+.icon-btn{
+  width:54px;
+  height:54px;
+
+  min-width:54px;
+
+  border-radius:18px;
+
+  background:#1fb4c7;
+  color:#fff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:24px;
+
+  cursor:pointer;
+
+  position:relative;
+
+  flex-shrink:0;
+
+  text-decoration:none;
+  border:none;
+}
+
+/* ADMIN */
+
+.admin-btn{
+  background:#6c55e0;
+}
+
+/* LOGO */
+
+.logo{
+  width:58px;
+  height:58px;
+
+  min-width:58px;
+
+  border-radius:18px;
+
+  overflow:hidden;
+
+  background:#fff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  flex-shrink:0;
+}
+
+/* FIX LOGO */
 
 .logo img{
-  height:38px;
-  width:auto;
-  border:0;
-  outline:0;
-  box-shadow:none;
+  width:100% !important;
+  height:100% !important;
+
+  object-fit:contain;
+
+  padding:2px;
+
   display:block;
-  background:transparent;
+
+  border:none !important;
+  outline:none !important;
+  box-shadow:none !important;
+
+  background:#fff;
 }
+
+/* SEARCH */
+
+.search-box{
+  flex:1;
+  min-width:0;
+}
+
+.search-box input{
+  width:100%;
+  height:48px;
+
+  border:none;
+  outline:none;
+
+  border-radius:18px;
+
+  padding:0 18px;
+
+  background:#f1f1f1;
+
+  font-size:15px;
+  font-weight:bold;
+}
+
+/* RIGHT */
+
+.header-icons{
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  flex-shrink:0;
+}
+
+/* BADGE */
+
+.cart-badge{
+  position:absolute;
+
+  top:2px;
+  right:2px;
+
+  min-width:20px;
+  height:20px;
+  border-radius:50%;
+
+  background:red;
+  color:#fff;
+
+  font-size:11px;
+  font-weight:bold;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* OVERLAY FIX */
+
+#overlay{
+  position:fixed;
+  inset:0;
+
+  background:rgba(0,0,0,.4);
+
+  opacity:0;
+  visibility:hidden;
+
+  transition:.2s;
+
+  z-index:9998;
+}
+
+#overlay.active{
+  opacity:1;
+  visibility:visible;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  position:fixed;
+
+  top:0;
+  left:-280px;
+
+  width:260px;
+  height:100vh;
+
+  background:#fff;
+
+  z-index:99999;
+
+  transition:.25s;
+
+  padding:20px;
+}
+
+.sidebar.active{
+  left:0;
+}
+
+/* =========================
+   FORCE FIX HEADER
+========================= */
+
+.top-header{
+  overflow:visible !important;
+}
+
+/* FORCE LOGO */
+
+.top-header .logo{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  overflow:hidden !important;
+
+  background:#fff !important;
+}
+
+.top-header .logo img{
+  width:100% !important;
+  height:100% !important;
+
+  display:block !important;
+
+  object-fit:contain !important;
+
+  visibility:visible !important;
+  opacity:1 !important;
+}
+
+/* FIX ICON */
+
+.top-header .icon-btn,
+.top-header .menu-btn{
+  font-family:Arial !important;
+
+  line-height:1 !important;
+
+  text-decoration:none !important;
+
+  overflow:hidden !important;
+}
+
+/* SIDEBAR LINK */
+
+.sidebar a{
+  display:block;
+
+  padding:14px;
+
+  margin-bottom:10px;
+
+  border-radius:12px;
+
+  background:#f5f5f5;
+
+  text-decoration:none;
+
+  color:#111;
+
+  font-weight:bold;
+}/* FIX FLEX HEADER */
+
+.top-header{
+  display:flex !important;
+  align-items:center !important;
+  flex-wrap:nowrap !important;
+}
+
+.top-header .search-box{
+  flex:1 1 auto !important;
+  width:auto !important;
+  min-width:0 !important;
+}
+
+.top-header .header-icons{
+  display:flex !important;
+  flex-direction:row !important;
+}
+
+/* FIX INPUT */
+
+.top-header input{
+  width:100% !important;
+  min-width:0 !important;
+}
+
+
+
+
+.header-icons{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-shrink:0;
+}
+
+.icon-btn{
+  flex-shrink:0;
+}
+.cart-icon{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  width:100%;
+  height:100%;
+
+  font-size:18px;
+  line-height:1;
+
+  transform:translateY(-1px);
+}
+
+/* =========================
+   MOBILE HEADER FINAL FIX
+========================= */
+
+@media(max-width:768px){
+
+  .top-header{
+    gap:6px;
+    padding:6px;
+    align-items:center;
+  }
+.cart-icon{
+    font-size:17px;
+    transform:translateY(-1px);
+  }
+
+
+  /* MENU + ICON */
+  .menu-btn,
+  .icon-btn,
+  .logo{
+    width:44px !important;
+    height:44px !important;
+    min-width:44px !important;
+
+    border-radius:14px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+
+    box-sizing:border-box;
+  }
+
+  /* SEARCH */
+  .search-box input{
+    height:44px !important;
+    border-radius:14px;
+  }
+
+  /* ICON */
+  .icon-btn{
+    font-size:18px !important;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:0 !important;
+  }
+
+  .menu-btn{
+    font-size:22px !important;
+  }
+
+  /* BADGE */
+  .cart-badge{
+    top:-2px !important;
+    right:-2px !important;
+
+    min-width:18px !important;
+    height:18px !important;
+
+    font-size:10px !important;
+
+    border:2px solid #1fb4c7;
+
+    box-sizing:border-box;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    line-height:1;
+  }
+
+  /* FIX ICON */
+  .icon-btn span{
+    line-height:1;
+  }
+}
+
+/* FINAL PERFECT MOBILE ALIGN */
+
+.icon-btn,
+.menu-btn,
+.logo{
+  box-sizing:border-box;
+}
+
+.icon-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0 !important;
+}
+
+.cart-badge{
+  box-sizing:border-box;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  line-height:1;
+}
+
+/* =========================
+   LOAD MORE BUTTON
+========================= */
+
+#loadMoreBtn{
+  display:block;
+
+  margin:18px auto;
+
+  padding:10px 18px;
+
+  border:none;
+  border-radius:10px;
+
+  background:#111;
+  color:#fff;
+
+  font-size:14px;
+  font-weight:bold;
+
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+#loadMoreBtn:hover{
+  opacity:.9;
+}
+
+#loadMoreBtn:active{
+  transform:scale(.97);
+}
+
 
 /* POPUP LOGIN/REGISTER */
 
@@ -259,25 +718,45 @@ id="sidebar">
 </div>
 
 <!-- HEADER -->
+<div class="top-header">
 
-<header>
-
-  <div onclick="toggleMenu()">
+  <div class="menu-btn" onclick="toggleMenu()">
     ☰
   </div>
 
   <div class="logo">
-
     <img
     src="https://i.ibb.co/Z1kv9nJj/logo.png"
-    alt="logo">
+    alt="Stech">
+  </div>
+
+  <div class="search-box">
+    <input
+      id="search"
+      placeholder="Tìm kiếm sản phẩm...">
+  </div>
+
+  <div class="header-icons">
+
+    <a href="admin.html"
+    class="icon-btn admin-btn">
+      🔐
+    </a>
+
+    <a href="cart.html"
+    class="icon-btn">
+
+      <span class="cart-icon">🛒</span>
+
+      <span class="cart-badge">
+        0
+      </span>
+
+    </a>
 
   </div>
 
-  <input
-  id="search"
-  placeholder="Tìm kiếm sản phẩm...">
-
+</div>
 </header>
 
 <!-- CONTENT -->
