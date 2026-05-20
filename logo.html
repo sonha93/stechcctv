@@ -1115,9 +1115,17 @@ window.location.href =
 
 
 // INIT
-loadProducts();
-loadProduct();
-updateCartCount();
+async function init(){
+
+  await loadProducts();
+
+  await loadProduct();
+
+  updateCartCount();
+
+}
+
+init();
 
 // ĐÓNG POPUP ẢNH
 
