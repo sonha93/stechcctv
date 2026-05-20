@@ -135,7 +135,7 @@ list = list.filter(
 
   list.forEach(p => {
 
-  
+  console.log("ID đang dùng:", p.id, "firebaseId:", p.firebaseId, "name:", p.name);
 
     const price =
       Number(p.price) || 0;
