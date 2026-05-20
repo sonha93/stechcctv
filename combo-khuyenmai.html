@@ -121,8 +121,10 @@ body{
 /* SEARCH */
 
 .search-box{
-  flex:1;
-  min-width:0;
+  position: relative;
+  width: 100%;
+  max-width: 450px;   /* 👈 chỉnh độ rộng khung search */
+  margin: 0 auto;     /* 👈 căn giữa màn hình */
 }
 
 .search-box input{
@@ -478,14 +480,20 @@ body{
 #loadMoreBtn:active{
   transform:scale(.97);
 }
-   .search-results{
-  position:absolute;
-  width:100%;
-  background:#fff;
-  border:1px solid #ddd;
-  max-height:400px;
-  overflow-y:auto;
-  z-index:999;
+ .search-results{
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+
+  width: 100%;        /* 👈 ăn theo search-box */
+  background: #fff;
+  border: 1px solid #ddd;
+
+  max-height: 350px;
+  overflow-y: auto;
+
+  z-index: 9999;
 }
 
 .search-item{
