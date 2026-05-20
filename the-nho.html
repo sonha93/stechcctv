@@ -7,154 +7,447 @@
 <link rel="stylesheet" href="styletrong-nha.css">
 
 <style>
-/* LOGO KHÔNG VIỀN */
-.logo img{
-  height:38px;
-  width:auto;
-  border:0;
-  outline:0;
-  box-shadow:none;
-  display:block;
-  background:transparent;
+
+/* =========================
+   RESET
+========================= */
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-/* POPUP LOGIN/REGISTER */
-#authModal{
-  position:fixed;
-  top:0; left:0; right:0; bottom:0;
-  display:none;
-  background:rgba(0,0,0,0.6);
+body{
+  background:#f5f5f5;
+  font-family:Arial,sans-serif;
+}
+
+/* =========================
+   HEADER FIX FINAL
+========================= */
+
+.top-header{
+  position:sticky;
+  top:0;
+  z-index:9999;
+
+  display:flex;
+  align-items:center;
+
+  gap:10px;
+
+  padding:8px;
+
+  background:#33A0AB;
+}
+
+/* MENU + ICON */
+
+.menu-btn,
+.icon-btn{
+  width:54px;
+  height:54px;
+
+  min-width:54px;
+
+  border-radius:18px;
+
+  background:#1fb4c7;
+  color:#fff;
+
+  display:flex;
   align-items:center;
   justify-content:center;
-  z-index:9999;
-}
-#authModal .auth-content{
-  background:#fff;
-  padding:20px;
-  border-radius:8px;
-  max-width:350px;
-  width:90%;
-}
-#authModal h2{
-  text-align:center;
-  margin-bottom:10px;
-}
-#authModal input{
-  width:100%;
-  padding:8px;
-  margin:6px 0;
-  border-radius:4px;
-  border:1px solid #aaa;
-}
-#authModal button{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border:none;
-  background:#007BFF;
-  color:white;
-  font-weight:bold;
+
+  font-size:24px;
+
   cursor:pointer;
-  border-radius:4px;
-}
-#authModal #closeAuth{
-  background:#f44336;
-  margin-top:5px;
-}
-#authModal #authMessage{
-  text-align:center;
-  margin-top:8px;
-  color:red;
+
+  position:relative;
+
+  flex-shrink:0;
+
+  text-decoration:none;
+  border:none;
 }
 
-/* SIDEBAR USER INFO */
-#userInfoPreview{
-  display:none;
-  margin-top:10px;
-  text-align:center;
-  cursor:pointer;
+/* ADMIN */
+
+.admin-btn{
+  background:#6c55e0;
 }
-#userInfoPreview img{
-  width:40px; height:40px;
+
+/* LOGO */
+
+.logo{
+  width:58px;
+  height:58px;
+
+  min-width:58px;
+
+  border-radius:18px;
+
+  overflow:hidden;
+
+  background:#fff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  flex-shrink:0;
+}
+
+/* FIX LOGO */
+
+.logo img{
+  width:100% !important;
+  height:100% !important;
+
+  object-fit:contain;
+
+  padding:2px;
+
+  display:block;
+
+  border:none !important;
+  outline:none !important;
+  box-shadow:none !important;
+
+  background:#fff;
+}
+
+/* SEARCH */
+
+.search-box{
+  flex:1;
+  min-width:0;
+}
+
+.search-box input{
+  width:100%;
+  height:48px;
+
+  border:none;
+  outline:none;
+
+  border-radius:18px;
+
+  padding:0 18px;
+
+  background:#f1f1f1;
+
+  font-size:15px;
+  font-weight:bold;
+}
+
+/* RIGHT */
+
+.header-icons{
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  flex-shrink:0;
+}
+
+/* BADGE */
+
+.cart-badge{
+  position:absolute;
+
+  top:-5px;
+  right:-5px;
+
+  min-width:20px;
+  height:20px;
+
   border-radius:50%;
-  object-fit:cover;
-  margin-bottom:5px;
+
+  background:red;
+  color:#fff;
+
+  font-size:11px;
+  font-weight:bold;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* OVERLAY FIX */
+
+#overlay{
+  position:fixed;
+  inset:0;
+
+  background:rgba(0,0,0,.4);
+
+  opacity:0;
+  visibility:hidden;
+
+  transition:.2s;
+
+  z-index:9998;
+}
+
+#overlay.active{
+  opacity:1;
+  visibility:visible;
 }
 
 /* SIDEBAR */
-.sidebar {
-  position: fixed;
-  z-index: 1000; /* fix click bị overlay chặn */
-}
 
-/* 2 CỘT SẢN PHẨM */
-#products{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
-}
+.sidebar{
+  position:fixed;
 
-.product-card{
+  top:0;
+  left:-280px;
+
+  width:260px;
+  height:100vh;
+
   background:#fff;
-  border:1px solid #ccc;
-  border-radius:8px;
-  overflow:hidden;
-  text-align:center;
-  padding:0px;
+
+  z-index:99999;
+
+  transition:.25s;
+
+  padding:20px;
 }
 
-.product-card img{
+.sidebar.active{
+  left:0;
+}
+
+/* =========================
+   FORCE FIX HEADER
+========================= */
+
+.top-header{
+  overflow:visible !important;
+}
+
+/* FORCE LOGO */
+
+.top-header .logo{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  overflow:hidden !important;
+
+  background:#fff !important;
+}
+
+.top-header .logo img{
+  width:100% !important;
+  height:100% !important;
+
+  display:block !important;
+
+  object-fit:contain !important;
+
+  visibility:visible !important;
+  opacity:1 !important;
+}
+
+/* FIX ICON */
+
+.top-header .icon-btn,
+.top-header .menu-btn{
+  font-family:Arial !important;
+
+  line-height:1 !important;
+
+  text-decoration:none !important;
+
+  overflow:hidden !important;
+}
+
+/* SIDEBAR LINK */
+
+.sidebar a{
+  display:block;
+
+  padding:14px;
+
+  margin-bottom:10px;
+
+  border-radius:12px;
+
+  background:#f5f5f5;
+
+  text-decoration:none;
+
+  color:#111;
+
+  font-weight:bold;
+}/* FIX FLEX HEADER */
+
+.top-header{
+  display:flex !important;
+  align-items:center !important;
+  flex-wrap:nowrap !important;
+}
+
+.top-header .search-box{
+  flex:1 1 auto !important;
+  width:auto !important;
+  min-width:0 !important;
+}
+
+.top-header .header-icons{
+  display:flex !important;
+  flex-direction:row !important;
+}
+
+/* FIX INPUT */
+
+.top-header input{
+  width:100% !important;
+  min-width:0 !important;
+}
+
+
+
+
+.header-icons{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-shrink:0;
+}
+
+.icon-btn{
+  flex-shrink:0;
+}
+.cart-icon{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
   width:100%;
-  height:auto;
-  border-bottom:1px solid #ccc;
-  border-radius:4px;
-  object-fit:cover;
+  height:100%;
+
+  font-size:18px;
+  line-height:1;
+
+  transform:translateY(-1px);
 }
 
-/* MÁY TÍNH 3 CỘT */
-@media(min-width:1200px){
+/* =========================
+   MOBILE HEADER FINAL FIX
+========================= */
 
-  #products{
-    grid-template-columns:repeat(4,1fr);
+@media(max-width:768px){
+
+  .top-header{
+    gap:6px;
+    padding:6px;
+    align-items:center;
+  }
+.cart-icon{
+    font-size:17px;
+    transform:translateY(-1px);
   }
 
+
+  /* MENU + ICON */
+  .menu-btn,
+  .icon-btn,
+  .logo{
+    width:44px !important;
+    height:44px !important;
+    min-width:44px !important;
+
+    border-radius:14px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+
+    box-sizing:border-box;
+  }
+
+  /* SEARCH */
+  .search-box input{
+    height:44px !important;
+    border-radius:14px;
+  }
+
+  /* ICON */
+  .icon-btn{
+    font-size:18px !important;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:0 !important;
+  }
+
+  .menu-btn{
+    font-size:22px !important;
+  }
+
+  /* BADGE */
+  .cart-badge{
+    top:-2px !important;
+    right:-2px !important;
+
+    min-width:18px !important;
+    height:18px !important;
+
+    font-size:10px !important;
+
+    border:2px solid #1fb4c7;
+
+    box-sizing:border-box;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    line-height:1;
+  }
+
+  /* FIX ICON */
+  .icon-btn span{
+    line-height:1;
+  }
 }
 
-.product-card .product-info{
-  margin-top:8px;
-}
-.discount-text{
-  position:absolute;
-  top:3px;
-  left:0px;
+/* FINAL PERFECT MOBILE ALIGN */
 
-  font-size:11px;
-  padding:2px 5px;
-
-  background:red;
-  color:white;
-
-  border-radius:6px;
-  z-index:10;
+.icon-btn,
+.menu-btn,
+.logo{
+  box-sizing:border-box;
 }
 
-.item{
-  position:relative;
+.icon-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0 !important;
+}
+
+.cart-badge{
+  box-sizing:border-box;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  line-height:1;
 }
 
 
-
-/* NÚT XEM THÊM */
-#loadMoreBtn{
-  display:block;
-  margin:20px auto;
-  padding:12px 20px;
-  border:none;
-  border-radius:10px;
-  background:#111;
-  color:#fff;
-  cursor:pointer;
-}
 </style>
 </head>
   
@@ -174,16 +467,49 @@
   <a href="combo-khuyenmai.html">Combo khuyến mãi</a>
 </div>
 
-<!-- HEADER -->
-<header>
-  <div onclick="toggleMenu()">☰</div>
 
-  <div class="logo">
-    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
+<!-- HEADER -->
+<div class="top-header">
+
+  <div class="menu-btn" onclick="toggleMenu()">
+    ☰
   </div>
 
-  <input id="search" placeholder="Tìm kiếm sản phẩm...">
-</header>
+  <div class="logo">
+
+  <img
+  src="https://i.ibb.co/Z1kv9nJj/logo.png"
+  alt="Stech"
+>
+</div>
+
+  <div class="search-box">
+    <input
+      id="search"
+      placeholder="Tìm kiếm sản phẩm..."
+    >
+  </div>
+
+  <div class="header-icons">
+
+    <a href="admin.html"
+       class="icon-btn admin-btn">
+      🔐
+    </a>
+
+   <a href="cart.html"
+   class="icon-btn">
+
+  <span class="cart-icon">🛒</span>
+
+  <span class="cart-badge">
+    0
+  </span>
+
+</a>
+  </div>
+
+</div>
 
 <!-- CONTENT -->
 <div class="container">
