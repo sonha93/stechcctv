@@ -23,8 +23,6 @@ body{
   font-family:Arial,sans-serif;
 }
 
-
-
 /* =========================
    HEADER FIX FINAL
 ========================= */
@@ -223,45 +221,6 @@ body{
   left:0;
 }
 
-/* MOBILE */
-
-@media(max-width:768px){
-
-  .top-header{
-    gap:6px;
-    padding:6px;
-  }
-
-  .menu-btn,
-  .icon-btn{
-    width:42px;
-    height:42px;
-
-    min-width:42px;
-
-    border-radius:14px;
-
-    font-size:20px;
-  }
-
-  .logo{
-    width:42px;
-    height:42px;
-
-    min-width:42px;
-
-    border-radius:14px;
-  }
-
-  .search-box input{
-    height:42px;
-
-    border-radius:14px;
-
-    font-size:14px;
-  }
-   
-}
 /* =========================
    FORCE FIX HEADER
 ========================= */
@@ -351,25 +310,9 @@ body{
   min-width:0 !important;
 }
 
-/* FIX LOGO */
 
-.top-header .logo{
-  width:52px !important;
-  height:52px !important;
 
-  min-width:52px !important;
 
-  display:flex !important;
-}
-
-/* FIX ICON */
-
-.top-header .icon-btn{
-  width:52px !important;
-  height:52px !important;
-
-  min-width:52px !important;
-}
 .header-icons{
   display:flex;
   align-items:center;
@@ -380,69 +323,131 @@ body{
 .icon-btn{
   flex-shrink:0;
 }
-   /* =========================
-   MOBILE HEADER PERFECT
+.cart-icon{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  width:100%;
+  height:100%;
+
+  font-size:18px;
+  line-height:1;
+
+  transform:translateY(-1px);
+}
+
+/* =========================
+   MOBILE HEADER FINAL FIX
 ========================= */
 
 @media(max-width:768px){
 
   .top-header{
-    height:58px;
-
-    padding:6px;
     gap:6px;
-
-    display:flex;
+    padding:6px;
     align-items:center;
   }
+.cart-icon{
+    font-size:17px;
+    transform:translateY(-1px);
+  }
+
 
   /* MENU + ICON */
-
   .menu-btn,
   .icon-btn,
   .logo{
-    width:46px !important;
-    height:46px !important;
-
-    min-width:46px !important;
+    width:44px !important;
+    height:44px !important;
+    min-width:44px !important;
 
     border-radius:14px;
 
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
     flex-shrink:0;
+
+    box-sizing:border-box;
   }
 
   /* SEARCH */
-
-  .search-box{
-    flex:1;
-    height:46px;
-  }
-
   .search-box input{
-    width:100%;
-    height:46px !important;
-
+    height:44px !important;
     border-radius:14px;
-
-    font-size:14px;
-  }
-
-  /* LOGO */
-
-  .logo img{
-    width:100%;
-    height:100%;
-    object-fit:contain;
   }
 
   /* ICON */
-
-  .menu-btn,
   .icon-btn{
-    font-size:18px;
+    font-size:18px !important;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:0 !important;
   }
 
+  .menu-btn{
+    font-size:22px !important;
+  }
+
+  /* BADGE */
+  .cart-badge{
+    top:-2px !important;
+    right:-2px !important;
+
+    min-width:18px !important;
+    height:18px !important;
+
+    font-size:10px !important;
+
+    border:2px solid #1fb4c7;
+
+    box-sizing:border-box;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    line-height:1;
+  }
+
+  /* FIX ICON */
+  .icon-btn span{
+    line-height:1;
+  }
 }
+
+/* FINAL PERFECT MOBILE ALIGN */
+
+.icon-btn,
+.menu-btn,
+.logo{
+  box-sizing:border-box;
+}
+
+.icon-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0 !important;
+}
+
+.cart-badge{
+  box-sizing:border-box;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  line-height:1;
+}
+
+
 </style>
 </head>
   
@@ -492,17 +497,16 @@ body{
       🔐
     </a>
 
-    <a href="cart.html"
-       class="icon-btn">
+   <a href="cart.html"
+   class="icon-btn">
 
-      🛒
+  <span class="cart-icon">🛒</span>
 
-      <span class="cart-badge">
-        0
-      </span>
+  <span class="cart-badge">
+    0
+  </span>
 
-    </a>
-
+</a>
   </div>
 
 </div>
