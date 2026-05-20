@@ -6,169 +6,92 @@
 <title>Shop Camera Pro</title>
 <link rel="stylesheet" href="styletrong-nha.css">
 
-
-/* ================== RESET ================== */
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial;
-}
-
-/* ================== TOPBAR ================== */
-.topbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:8px 10px;
-  background:#00acc1;
-  position:sticky;
-  top:0;
-  z-index:999;
-  gap:10px;
-}
-
-/* MENU */
-.menu-btn{
-  font-size:22px;
-  cursor:pointer;
-  padding:6px 10px;
-  color:#fff;
-  border-radius:10px;
-}
-
-.menu-btn:active{
-  background:rgba(255,255,255,0.2);
-}
-
-/* LOGO */
-.logo{
-  background:#fff;
-  padding:4px 10px;
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-}
-
+<style>
+/* LOGO KHÔNG VIỀN */
 .logo img{
-  height:34px;
-  width:auto;
-  display:block;
-}
-
-/* SEARCH */
-.search-box{
-  flex:1;
-}
-
-.search-box input{
-  width:100%;
-  padding:8px 10px;
-  border:none;
-  border-radius:20px;
-  outline:none;
-}
-
-/* RIGHT ICONS */
-.right-icons{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.icon{
-  font-size:20px;
-  color:#fff;
-  cursor:pointer;
-
-  width:38px;
   height:38px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  border-radius:12px;
-  position:relative;
-}
-
-.icon:active{
-  background:rgba(255,255,255,0.2);
-}
-
-/* BADGE CART */
-.badge{
-  position:absolute;
-  top:-5px;
-  right:-6px;
-  background:red;
-  color:#fff;
-  font-size:11px;
-  width:16px;
-  height:16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:50%;
-}
-
-/* ================== SIDEBAR ================== */
-.sidebar{
-  position:fixed;
-  top:0;
-  left:-260px;
-  width:240px;
-  height:100vh;
-  background:#fff;
-  padding:15px;
-  transition:0.3s;
-  z-index:1000;
-}
-
-.sidebar.active{
-  left:0;
-}
-
-.sidebar a{
+  width:auto;
+  border:0;
+  outline:0;
+  box-shadow:none;
   display:block;
-  padding:12px;
-  margin:6px 0;
-  border-radius:10px;
-  text-decoration:none;
-  color:#111;
-  font-weight:bold;
+  background:transparent;
 }
 
-.sidebar a:hover{
-  background:#f2f2f2;
-}
-
-/* OVERLAY */
-#overlay{
+/* POPUP LOGIN/REGISTER */
+#authModal{
   position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.4);
-  opacity:0;
-  visibility:hidden;
-  transition:0.3s;
-  z-index:999;
+  top:0; left:0; right:0; bottom:0;
+  display:none;
+  background:rgba(0,0,0,0.6);
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+#authModal .auth-content{
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  max-width:350px;
+  width:90%;
+}
+#authModal h2{
+  text-align:center;
+  margin-bottom:10px;
+}
+#authModal input{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border-radius:4px;
+  border:1px solid #aaa;
+}
+#authModal button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  background:#007BFF;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:4px;
+}
+#authModal #closeAuth{
+  background:#f44336;
+  margin-top:5px;
+}
+#authModal #authMessage{
+  text-align:center;
+  margin-top:8px;
+  color:red;
 }
 
-#overlay.active{
-  opacity:1;
-  visibility:visible;
+/* SIDEBAR USER INFO */
+#userInfoPreview{
+  display:none;
+  margin-top:10px;
+  text-align:center;
+  cursor:pointer;
+}
+#userInfoPreview img{
+  width:40px; height:40px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:5px;
 }
 
-/* ================== PRODUCTS ================== */
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  z-index: 1000; /* fix click bị overlay chặn */
+}
+
+/* 2 CỘT SẢN PHẨM */
 #products{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:6px;
-}
-
-@media(min-width:1200px){
-  #products{
-    grid-template-columns:repeat(4,1fr);
-  }
 }
 
 .product-card{
@@ -177,29 +100,51 @@
   border-radius:8px;
   overflow:hidden;
   text-align:center;
+  padding:0px;
 }
 
 .product-card img{
   width:100%;
+  height:auto;
+  border-bottom:1px solid #ccc;
+  border-radius:4px;
   object-fit:cover;
+}
+
+/* MÁY TÍNH 3 CỘT */
+@media(min-width:1200px){
+
+  #products{
+    grid-template-columns:repeat(4,1fr);
+  }
+
+}
+
+.product-card .product-info{
+  margin-top:8px;
+}
+.discount-text{
+  position:absolute;
+  top:3px;
+  left:0px;
+
+  font-size:11px;
+  padding:2px 5px;
+
+  background:red;
+  color:white;
+
+  border-radius:6px;
+  z-index:10;
 }
 
 .item{
   position:relative;
 }
 
-.discount-text{
-  position:absolute;
-  top:3px;
-  left:0;
-  font-size:11px;
-  padding:2px 5px;
-  background:red;
-  color:#fff;
-  border-radius:6px;
-}
 
-/* ================== BUTTON ================== */
+
+/* NÚT XEM THÊM */
 #loadMoreBtn{
   display:block;
   margin:20px auto;
@@ -230,39 +175,16 @@
 </div>
 
 <!-- HEADER -->
-<!-- HEADER -->
-<header class="topbar">
+<header>
+  <div onclick="toggleMenu()">☰</div>
 
-  <!-- MENU -->
-  <div class="menu-btn" onclick="toggleMenu()">☰</div>
-
-  <!-- LOGO -->
   <div class="logo">
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
 
-  <!-- SEARCH -->
-  <div class="search-box">
-    <input id="search" placeholder="Tìm kiếm sản phẩm...">
-  </div>
-
-  <!-- RIGHT ICONS -->
-  <div class="right-icons">
-
-    <!-- LOGIN / LOCK -->
-    <div class="icon">
-      🔒
-    </div>
-
-    <!-- CART -->
-    <div class="icon cart-icon">
-      🛒
-      <span class="badge">0</span>
-    </div>
-
-  </div>
-
+  <input id="search" placeholder="Tìm kiếm sản phẩm...">
 </header>
+
 <!-- CONTENT -->
 <div class="container">
 
@@ -311,15 +233,12 @@
 
 <script>
 function toggleMenu() {
-  document.getElementById("sidebar").classList.toggle("active");
-  document.getElementById("overlay").classList.toggle("active");
-}
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
 
-// click overlay để đóng
-document.getElementById("overlay").onclick = function () {
-  document.getElementById("sidebar").classList.remove("active");
-  this.classList.remove("active");
-};
+    sidebar.classList.toggle("active");
+    overlay.classList.toggle("active");
+}
 </script>
 
 </body>
