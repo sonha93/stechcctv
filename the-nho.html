@@ -121,8 +121,10 @@ body{
 /* SEARCH */
 
 .search-box{
-  flex:1;
-  min-width:0;
+  position: relative;
+  width: 100%;
+  max-width: 450px;   /* 👈 chỉnh độ rộng khung search */
+  margin: 0 auto;     /* 👈 căn giữa màn hình */
 }
 
 .search-box input{
@@ -162,7 +164,6 @@ body{
 
   min-width:20px;
   height:20px;
-
   border-radius:50%;
 
   background:red;
@@ -479,6 +480,56 @@ body{
 #loadMoreBtn:active{
   transform:scale(.97);
 }
+ .search-results{
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+
+  width: 100%;        /* 👈 ăn theo search-box */
+  background: #fff;
+  border: 1px solid #ddd;
+
+  max-height: 350px;
+  overflow-y: auto;
+
+  z-index: 9999;
+}
+
+.search-item{
+  display:flex;
+  gap:10px;
+  padding:10px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+}
+
+.search-item img{
+  width:60px;
+  height:60px;
+  object-fit:cover;
+  border-radius:6px;
+}
+
+.search-info{
+  display:flex;
+  flex-direction:column;
+}
+
+.search-name{
+  font-weight:bold;
+}
+
+.search-price{
+  color:red;
+  font-weight:bold;
+}
+
+.search-oldprice{
+  font-size:12px;
+  color:#888;
+  text-decoration:line-through;
+}
 </style>
 </head>
   
@@ -513,12 +564,10 @@ body{
 >
 </div>
 
-  <div class="search-box">
-    <input
-      id="search"
-      placeholder="Tìm kiếm sản phẩm..."
-    >
-  </div>
+<div class="search-box">
+  <input type="text" id="searchInput" placeholder="Tìm sản phẩm...">
+  <div id="searchResults" class="search-results"></div>
+</div>
 
   <div class="header-icons">
 
