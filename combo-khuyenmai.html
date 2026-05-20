@@ -7,156 +7,37 @@
 <link rel="stylesheet" href="styletrong-nha.css">
 
 <style>
-/* LOGO KHÔNG VIỀN */
+
+/* =========================
+   RESET
+========================= */
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:#f5f5f5;
+  font-family:Arial,sans-serif;
+}
+
+/* =========================
+   LOGO
+========================= */
+
 .logo img{
-  height:38px;
-  width:auto;
-  border:0;
-  outline:0;
-  box-shadow:none;
+  width:100%;
+  height:100%;
+  object-fit:contain;
   display:block;
-  background:transparent;
-}
-
-/* POPUP LOGIN/REGISTER */
-#authModal{
-  position:fixed;
-  top:0; left:0; right:0; bottom:0;
-  display:none;
-  background:rgba(0,0,0,0.6);
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-#authModal .auth-content{
+  padding:2px;
   background:#fff;
-  padding:20px;
-  border-radius:8px;
-  max-width:350px;
-  width:90%;
-}
-#authModal h2{
-  text-align:center;
-  margin-bottom:10px;
-}
-#authModal input{
-  width:100%;
-  padding:8px;
-  margin:6px 0;
-  border-radius:4px;
-  border:1px solid #aaa;
-}
-#authModal button{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border:none;
-  background:#007BFF;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-  border-radius:4px;
-}
-#authModal #closeAuth{
-  background:#f44336;
-  margin-top:5px;
-}
-#authModal #authMessage{
-  text-align:center;
-  margin-top:8px;
-  color:red;
 }
 
-/* SIDEBAR USER INFO */
-#userInfoPreview{
-  display:none;
-  margin-top:10px;
-  text-align:center;
-  cursor:pointer;
-}
-#userInfoPreview img{
-  width:40px; height:40px;
-  border-radius:50%;
-  object-fit:cover;
-  margin-bottom:5px;
-}
-
-/* SIDEBAR */
-.sidebar {
-  position: fixed;
-  z-index: 1000; /* fix click bị overlay chặn */
-}
-
-/* 2 CỘT SẢN PHẨM */
-#products{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
-}
-
-.product-card{
-  background:#fff;
-  border:1px solid #ccc;
-  border-radius:8px;
-  overflow:hidden;
-  text-align:center;
-  padding:0px;
-}
-
-.product-card img{
-  width:100%;
-  height:auto;
-  border-bottom:1px solid #ccc;
-  border-radius:4px;
-  object-fit:cover;
-}
-
-/* MÁY TÍNH 3 CỘT */
-@media(min-width:1200px){
-
-  #products{
-    grid-template-columns:repeat(4,1fr);
-  }
-
-}
-
-.product-card .product-info{
-  margin-top:8px;
-}
-.discount-text{
-  position:absolute;
-  top:3px;
-  left:0px;
-
-  font-size:11px;
-  padding:2px 5px;
-
-  background:red;
-  color:white;
-
-  border-radius:6px;
-  z-index:10;
-}
-
-.item{
-  position:relative;
-}
-
-
-
-/* NÚT XEM THÊM */
-#loadMoreBtn{
-  display:block;
-  margin:20px auto;
-  padding:12px 20px;
-  border:none;
-  border-radius:10px;
-  background:#111;
-  color:#fff;
-  cursor:pointer;
-}
-  /* =========================
-   HEADER NEW
+/* =========================
+   HEADER
 ========================= */
 
 .top-header{
@@ -166,16 +47,14 @@
 
   display:flex;
   align-items:center;
+
   gap:8px;
 
-  padding:10px 8px;
+  padding:8px;
 
-  background:
-  linear-gradient(
-    90deg,
-    #1f7fb8,
-    #33A0AB
-  );
+  background:#33A0AB;
+
+  overflow:hidden;
 }
 
 /* MENU + ICON */
@@ -185,9 +64,11 @@
   width:54px;
   height:54px;
 
+  min-width:54px;
+
   border-radius:18px;
 
-  background:#00acc1;
+  background:#27a8bb;
   color:#fff;
 
   display:flex;
@@ -199,44 +80,47 @@
 
   flex-shrink:0;
   position:relative;
+
+  transition:.2s;
 }
+
+.menu-btn:hover,
+.icon-btn:hover{
+  opacity:.9;
+}
+
+/* ADMIN */
 
 .admin-btn{
   background:#6c55e0;
 }
 
-/* LOGO */
+/* LOGO BOX */
 
 .logo{
   width:58px;
   height:58px;
 
+  min-width:58px;
+
   border-radius:18px;
 
   overflow:hidden;
-  background:#fff;
 
-  flex-shrink:0;
+  background:#fff;
 
   display:flex;
   align-items:center;
   justify-content:center;
-}
 
-.logo img{
-  width:100%;
-  height:100%;
-
-  object-fit:contain;
-
-  padding:2px;
-  background:#fff;
+  flex-shrink:0;
 }
 
 /* SEARCH */
 
 .search-box{
   flex:1;
+  min-width:0;
 }
 
 .search-box input{
@@ -250,15 +134,26 @@
 
   padding:0 18px;
 
+  background:#f2f2f2;
+
   font-size:15px;
   font-weight:bold;
+
+  color:#111;
+}
+
+.search-box input::placeholder{
+  color:#666;
 }
 
 /* RIGHT ICONS */
 
 .header-icons{
   display:flex;
+  align-items:center;
   gap:8px;
+
+  flex-shrink:0;
 }
 
 /* CART BADGE */
@@ -278,42 +173,262 @@
   color:#fff;
 
   font-size:11px;
+  font-weight:bold;
 
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
-/* MOBILE */
+/* =========================
+   POPUP LOGIN/REGISTER
+========================= */
+
+#authModal{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+
+  display:none;
+
+  background:rgba(0,0,0,0.6);
+
+  align-items:center;
+  justify-content:center;
+
+  z-index:9999;
+}
+
+#authModal .auth-content{
+  background:#fff;
+
+  padding:20px;
+
+  border-radius:14px;
+
+  max-width:350px;
+  width:90%;
+}
+
+#authModal h2{
+  text-align:center;
+  margin-bottom:10px;
+}
+
+#authModal input{
+  width:100%;
+
+  padding:10px;
+
+  margin:6px 0;
+
+  border-radius:8px;
+  border:1px solid #aaa;
+}
+
+#authModal button{
+  width:100%;
+
+  padding:10px;
+
+  margin-top:10px;
+
+  border:none;
+
+  background:#007BFF;
+  color:white;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  border-radius:8px;
+}
+
+#authModal #closeAuth{
+  background:#f44336;
+}
+
+#authModal #authMessage{
+  text-align:center;
+  margin-top:8px;
+  color:red;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar{
+  position:fixed;
+  z-index:1000;
+}
+
+/* =========================
+   USER INFO
+========================= */
+
+#userInfoPreview{
+  display:none;
+
+  margin-top:10px;
+
+  text-align:center;
+
+  cursor:pointer;
+}
+
+#userInfoPreview img{
+  width:40px;
+  height:40px;
+
+  border-radius:50%;
+
+  object-fit:cover;
+
+  margin-bottom:5px;
+}
+
+/* =========================
+   PRODUCTS
+========================= */
+
+#products{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:6px;
+}
+
+.product-card{
+  background:#fff;
+
+  border:1px solid #ccc;
+
+  border-radius:10px;
+
+  overflow:hidden;
+
+  text-align:center;
+
+  padding:0;
+}
+
+.product-card img{
+  width:100%;
+  height:auto;
+
+  border-bottom:1px solid #ccc;
+
+  object-fit:cover;
+}
+
+.product-card .product-info{
+  margin-top:8px;
+}
+
+/* DISCOUNT */
+
+.discount-text{
+  position:absolute;
+
+  top:3px;
+  left:0;
+
+  font-size:11px;
+
+  padding:2px 5px;
+
+  background:red;
+  color:white;
+
+  border-radius:6px;
+
+  z-index:10;
+}
+
+.item{
+  position:relative;
+}
+
+/* LOAD MORE */
+
+#loadMoreBtn{
+  display:block;
+
+  margin:20px auto;
+
+  padding:12px 20px;
+
+  border:none;
+
+  border-radius:10px;
+
+  background:#111;
+  color:#fff;
+
+  cursor:pointer;
+}
+
+/* =========================
+   DESKTOP
+========================= */
+
+@media(min-width:1200px){
+
+  #products{
+    grid-template-columns:repeat(4,1fr);
+  }
+
+}
+
+/* =========================
+   MOBILE
+========================= */
 
 @media(max-width:768px){
 
   .top-header{
-    padding:8px 6px;
     gap:6px;
+    padding:6px;
   }
 
   .menu-btn,
   .icon-btn{
-    width:46px;
-    height:46px;
+    width:42px;
+    height:42px;
+
+    min-width:42px;
+
+    border-radius:14px;
+
     font-size:20px;
-    border-radius:15px;
   }
 
   .logo{
-    width:46px;
-    height:46px;
-    border-radius:15px;
+    width:42px;
+    height:42px;
+
+    min-width:42px;
+
+    border-radius:14px;
   }
 
   .search-box input{
     height:42px;
-    border-radius:15px;
+
+    border-radius:14px;
+
     font-size:14px;
+
+    padding:0 14px;
   }
 
 }
+
 </style>
 </head>
   
