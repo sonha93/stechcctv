@@ -20,7 +20,7 @@ body{
   background:#f5f5f5;
   color:#333;
 }
-}
+
 
 /* =========================
    OVERLAY + SIDEBAR
@@ -64,83 +64,57 @@ body{
   font-weight:bold;
 }
 
+
 /* =========================
-   HEADER
+   HEADER (FIX PRO)
 ========================= */
 .top-header{
   display:flex;
   align-items:center;
-  justify-content:space-between; /* 👈 quan trọng */
-  gap:10px;
+  justify-content:space-between;
+  gap:8px;
+  padding:8px 12px;
+  background:linear-gradient(90deg,#1fb4c7,#159aaa);
+}
+/* MENU BUTTON */
+.menu-btn{
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  background:#159aaa;
 }
 
-/* MENU + ICON */
-.menu-btn,
-.icon-btn{
-  width:54px;
-  height:54px;
-  min-width:54px;
-  border-radius:18px;
-  background:#1fb4c7;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:24px;
-  cursor:pointer;
-  flex-shrink:0;
-  border:none;
-}
-
-/* LOGO */
+/* LOGO (đẩy sát trái hơn) */
 .logo{
-  width:58px;
-  height:58px;
-  min-width:58px;
-  border-radius:18px;
-  overflow:hidden;
+  width:52px;
+  height:52px;
+  min-width:52px;
+  border-radius:14px;
   background:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
-  flex-shrink:0;
-}
-.logo img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  display:block;
-  padding:2px;
+
+  margin-right:4px; /* 👈 kéo sát menu */
 }
 
-/* SEARCH */
+
+/* SEARCH GIỮA CHUẨN */
 .search-box{
-  position:relative;
   flex:1;
-  max-width:450px;
+  display:flex;
+  justify-content:center; /* 👈 căn giữa thật */
+  max-width:520px;
 }
 .search-box input{
   width:100%;
-  height:48px;
+  height:46px;
   border:none;
   outline:none;
-  border-radius:18px;
-  padding:0 18px;
-  background:#f1f1f1;
-  font-weight:bold;
-}
-
-/* SEARCH RESULTS */
-.search-results{
-  position:absolute;
-  top:100%;
-  left:0;
-  right:0;
-  background:#fff;
-  border:1px solid #ddd;
-  max-height:350px;
-  overflow-y:auto;
-  z-index:9999;
+  border-radius:14px;
+  padding:0 16px;
+  background:#ffffff;
+  font-weight:600;
 }
 .search-item{
   display:flex;
@@ -162,13 +136,24 @@ body{
   color:#888;
   text-decoration:line-through;
 }
-
-/* nhóm icon */
+/* ICON GROUP */
 .header-icons{
   display:flex;
   align-items:center;
-  gap:10px;
-  flex-shrink:0;
+  gap:8px;
+}
+/* ICON */
+.icon-btn{
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  background:#159aaa;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  border:none;
 }
 
 * badge */
