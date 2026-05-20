@@ -1,5 +1,5 @@
 /* =========================
-   🔥 SD PAGE JS
+   🔥 THẺ NHỚ PAGE JS
 ========================= */
 
 /* =========================
@@ -132,7 +132,7 @@ function renderHome() {
 
   }
 
-  /* LOAD 10 SẢN PHẨM */
+  /* LOAD 20 SẢN PHẨM */
 
   const nextProducts =
     featured.slice(
@@ -311,25 +311,113 @@ document.addEventListener(
   "DOMContentLoaded",
   async () => {
 
-    allProducts =
-      await getProducts();
+    allProducts = await getProducts();
 
     renderHome();
 
-    /* LOAD MORE CLICK */
+    initSearch(); // 👈 THÊM DÒNG NÀY
 
-    const btn =
-      document.getElementById("loadMoreBtn");
+    const btn = document.getElementById("loadMoreBtn");
 
     if(btn){
-
       btn.onclick = () => {
-
         renderHome();
-
       };
-
     }
 
   }
 );
+/* =========================
+   🔍 SEARCH PRODUCTS UI
+========================= */
+
+function formatPrice(n){
+  return Number(n || 0).toLocaleString() + "đ";
+}
+
+function renderSearchResults(list){
+
+  const box = document.getElementById("searchResults");
+  if(!box) return;
+
+  box.innerHTML = "";
+
+  if(list.length === 0){
+    box.innerHTML = `<div style="padding:10px;">Không tìm thấy sản phẩm</div>`;
+    return;
+  }
+
+  list.forEach(p => {
+
+    const div = document.createElement("div");
+    div.className = "search-item";
+
+    div.innerHTML = `
+      <img src="${p.img}" onerror="this.src='https://via.placeholder.com/100'">
+
+      <div class="search-info">
+
+        <div class="search-name">${p.name}</div>
+
+        <div class="search-price">
+          ${formatPrice(p.price)}
+        </div>
+
+        ${
+          p.oldPrice > p.price
+          ? `<div class="search-oldprice">
+              ${formatPrice(p.oldPrice)}
+            </div>`
+          : ""
+        }
+
+      </div>
+    `;
+
+    div.onclick = () => {
+      window.location.href = `logo.html?id=${p.id}`;
+    };
+
+    box.appendChild(div);
+
+  });
+}
+
+/* =========================
+   SEARCH INPUT EVENT
+========================= */
+
+function initSearch(){
+
+  const input = document.getElementById("searchInput");
+  const box = document.getElementById("searchResults");
+
+  if(!input || !box) return;
+
+  input.addEventListener("input", (e) => {
+
+    const key = e.target.value.trim().toLowerCase();
+
+    if(!key){
+      box.innerHTML = "";
+      return;
+    }
+
+    const result = allProducts.filter(p =>
+      p.name.toLowerCase().includes(key)
+    );
+
+    renderSearchResults(result);
+
+  });
+
+  /* click outside hide */
+  document.addEventListener("click", (e) => {
+
+    if(!e.target.closest(".search-box")){
+      box.innerHTML = "";
+    }
+
+  });
+
+}
