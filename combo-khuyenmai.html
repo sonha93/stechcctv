@@ -155,6 +155,74 @@
   color:#fff;
   cursor:pointer;
 }
+  /* TOPBAR */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 10px;
+  background:#fff;
+  position:sticky;
+  top:0;
+  z-index:999;
+  gap:10px;
+}
+
+/* MENU */
+.menu-btn{
+  font-size:22px;
+  cursor:pointer;
+  padding:6px 10px;
+}
+
+/* LOGO */
+.logo img{
+  height:38px;
+  width:auto;
+  display:block;
+}
+
+/* SEARCH */
+.search-box{
+  flex:1;
+}
+
+.search-box input{
+  width:100%;
+  padding:8px 10px;
+  border:1px solid #ddd;
+  border-radius:20px;
+  outline:none;
+}
+
+/* RIGHT ICONS */
+.right-icons{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.icon{
+  font-size:20px;
+  cursor:pointer;
+  position:relative;
+}
+
+/* BADGE CART */
+.badge{
+  position:absolute;
+  top:-6px;
+  right:-8px;
+  background:red;
+  color:#fff;
+  font-size:11px;
+  width:16px;
+  height:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+}
 </style>
 </head>
   
@@ -175,16 +243,39 @@
 </div>
 
 <!-- HEADER -->
-<header>
-  <div onclick="toggleMenu()">☰</div>
+<!-- HEADER -->
+<header class="topbar">
 
+  <!-- MENU -->
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+  <!-- LOGO -->
   <div class="logo">
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
 
-  <input id="search" placeholder="Tìm kiếm sản phẩm...">
-</header>
+  <!-- SEARCH -->
+  <div class="search-box">
+    <input id="search" placeholder="Tìm kiếm sản phẩm...">
+  </div>
 
+  <!-- RIGHT ICONS -->
+  <div class="right-icons">
+
+    <!-- LOGIN / LOCK -->
+    <div class="icon">
+      🔒
+    </div>
+
+    <!-- CART -->
+    <div class="icon cart-icon">
+      🛒
+      <span class="badge">0</span>
+    </div>
+
+  </div>
+
+</header>
 <!-- CONTENT -->
 <div class="container">
 
