@@ -83,6 +83,115 @@ header input{flex:1;padding:10px;border:none;border-radius:20px;background:#e0e0
   color:#888;
   text-decoration:line-through;
 }
+  /* =========================
+   MOBILE HEADER FINAL FIX
+========================= */
+
+@media(max-width:768px){
+
+  .top-header{
+    gap:6px;
+    padding:6px;
+    align-items:center;
+  }
+.cart-icon{
+    font-size:17px;
+    transform:translateY(-1px);
+  }
+
+
+  /* MENU + ICON */
+  .menu-btn,
+  .icon-btn,
+  .logo{
+    width:44px !important;
+    height:44px !important;
+    min-width:44px !important;
+
+    border-radius:14px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+
+    box-sizing:border-box;
+  }
+
+  /* SEARCH */
+  .search-box input{
+    height:44px !important;
+    border-radius:14px;
+  }
+
+  /* ICON */
+  .icon-btn{
+    font-size:18px !important;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:0 !important;
+  }
+
+  .menu-btn{
+    font-size:22px !important;
+  }
+
+  /* BADGE */
+  .cart-badge{
+    top:-2px !important;
+    right:-2px !important;
+
+    min-width:18px !important;
+    height:18px !important;
+
+    font-size:10px !important;
+
+    border:2px solid #1fb4c7;
+
+    box-sizing:border-box;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    line-height:1;
+  }
+
+  /* FIX ICON */
+  .icon-btn span{
+    line-height:1;
+  }
+}
+
+/* FINAL PERFECT MOBILE ALIGN */
+
+.icon-btn,
+.menu-btn,
+.logo{
+  box-sizing:border-box;
+}
+
+.icon-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0 !important;
+}
+
+.cart-badge{
+  box-sizing:border-box;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  line-height:1;
+}
 </style>
 </head>
 <body>
