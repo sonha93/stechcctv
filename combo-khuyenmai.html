@@ -155,6 +155,165 @@
   color:#fff;
   cursor:pointer;
 }
+  /* =========================
+   HEADER NEW
+========================= */
+
+.top-header{
+  position:sticky;
+  top:0;
+  z-index:999;
+
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  padding:10px 8px;
+
+  background:
+  linear-gradient(
+    90deg,
+    #1f7fb8,
+    #33A0AB
+  );
+}
+
+/* MENU + ICON */
+
+.menu-btn,
+.icon-btn{
+  width:54px;
+  height:54px;
+
+  border-radius:18px;
+
+  background:#00acc1;
+  color:#fff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:24px;
+  cursor:pointer;
+
+  flex-shrink:0;
+  position:relative;
+}
+
+.admin-btn{
+  background:#6c55e0;
+}
+
+/* LOGO */
+
+.logo{
+  width:58px;
+  height:58px;
+
+  border-radius:18px;
+
+  overflow:hidden;
+  background:#fff;
+
+  flex-shrink:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.logo img{
+  width:100%;
+  height:100%;
+
+  object-fit:contain;
+
+  padding:2px;
+  background:#fff;
+}
+
+/* SEARCH */
+
+.search-box{
+  flex:1;
+}
+
+.search-box input{
+  width:100%;
+  height:48px;
+
+  border:none;
+  outline:none;
+
+  border-radius:18px;
+
+  padding:0 18px;
+
+  font-size:15px;
+  font-weight:bold;
+}
+
+/* RIGHT ICONS */
+
+.header-icons{
+  display:flex;
+  gap:8px;
+}
+
+/* CART BADGE */
+
+.cart-badge{
+  position:absolute;
+
+  top:-5px;
+  right:-5px;
+
+  min-width:20px;
+  height:20px;
+
+  border-radius:50%;
+
+  background:red;
+  color:#fff;
+
+  font-size:11px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+  .top-header{
+    padding:8px 6px;
+    gap:6px;
+  }
+
+  .menu-btn,
+  .icon-btn{
+    width:46px;
+    height:46px;
+    font-size:20px;
+    border-radius:15px;
+  }
+
+  .logo{
+    width:46px;
+    height:46px;
+    border-radius:15px;
+  }
+
+  .search-box input{
+    height:42px;
+    border-radius:15px;
+    font-size:14px;
+  }
+
+}
 </style>
 </head>
   
@@ -175,16 +334,44 @@
 </div>
 
 <!-- HEADER -->
-<header>
-  <div onclick="toggleMenu()">☰</div>
+<header class="top-header">
+
+  <div class="menu-btn" onclick="toggleMenu()">
+    ☰
+  </div>
 
   <div class="logo">
     <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo">
   </div>
 
-  <input id="search" placeholder="Tìm kiếm sản phẩm...">
-</header>
+  <div class="search-box">
 
+    <input
+      id="search"
+      placeholder="Tìm kiếm sản phẩm..."
+    >
+
+  </div>
+
+  <div class="header-icons">
+
+    <a href="admin.html" class="icon-btn admin-btn">
+      🔐
+    </a>
+
+    <a href="cart.html" class="icon-btn cart-btn">
+
+      🛒
+
+      <span class="cart-badge">
+        0
+      </span>
+
+    </a>
+
+  </div>
+
+</header>
 <!-- CONTENT -->
 <div class="container">
 
