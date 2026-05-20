@@ -735,6 +735,28 @@ body{
   font-size:18px;
 
 }
+   .header-icons{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+/* đẩy nút đèn ra cuối */
+.btn-dark{
+  margin-left:10px;
+  padding:6px 10px;
+  border:none;
+  border-radius:20px;
+  cursor:pointer;
+  background:#222;
+  color:#fff;
+  transition:0.3s;
+}
+
+.btn-dark:hover{
+  background:#444;
+}
+   
 </style>
 
 </head>
@@ -840,6 +862,11 @@ body{
   </span>
 
 </a>
+     <button class="btn-dark" onclick="toggleDarkMode()">
+    🌙
+  </button>
+
+</div>
   </div>
 
 </div>
