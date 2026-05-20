@@ -335,28 +335,25 @@ body{
 
 <div class="top-header">
 
-  <div class="menu-btn" onclick="toggleMenu()">
-    ☰
-  </div>
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
 
   <div class="logo">
+    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="Stech">
+  </div>
 
-  <img
-  src="https://i.ibb.co/Z1kv9nJj/logo.png"
-  alt="Stech"
->
-</div>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Tìm sản phẩm...">
+    <div id="searchResults" class="search-results"></div>
+  </div>
 
-<div class="search-box">
-  <input type="text" id="searchInput" placeholder="Tìm sản phẩm...">
-  <div id="searchResults" class="search-results"></div>
-</div>
+</div> <!-- ❗ PHẢI ĐÓNG HEADER Ở ĐÂY -->
 
+<!-- GIỎ HÀNG PHẢI RA NGOÀI -->
 <div class="container">
   <h2>🛒 Giỏ hàng</h2>
   <div id="cartList"></div>
   <div class="total" id="total"></div>
-<div id="cartAction"></div>
+  <div id="cartAction"></div>
 </div>
     <script type="module" src="./cart.js"></script>
 <script>
