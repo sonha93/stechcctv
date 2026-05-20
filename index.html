@@ -634,6 +634,19 @@ body{
   color:#fff;
   cursor:pointer;
 }
+   /* FIX OVERLAY BLOCK CLICK */
+#overlay{
+  pointer-events:none;
+}
+
+#overlay.active{
+  pointer-events:auto;
+}
+
+/* OPTIONAL: tránh click xuyên lỗi sidebar */
+.sidebar{
+  pointer-events:auto;
+}
 </style>
 
 </head>
