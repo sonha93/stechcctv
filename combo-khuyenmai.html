@@ -271,7 +271,70 @@ body{
 
     font-size:14px;
   }
+/* =========================
+   FORCE FIX HEADER
+========================= */
 
+.top-header{
+  overflow:hidden !important;
+}
+
+/* FORCE LOGO */
+
+.top-header .logo{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  overflow:hidden !important;
+
+  background:#fff !important;
+}
+
+.top-header .logo img{
+  width:100% !important;
+  height:100% !important;
+
+  display:block !important;
+
+  object-fit:contain !important;
+
+  visibility:visible !important;
+  opacity:1 !important;
+}
+
+/* FIX ICON */
+
+.top-header .icon-btn,
+.top-header .menu-btn{
+  font-family:Arial !important;
+
+  line-height:1 !important;
+
+  text-decoration:none !important;
+
+  overflow:hidden !important;
+}
+
+/* SIDEBAR LINK */
+
+.sidebar a{
+  display:block;
+
+  padding:14px;
+
+  margin-bottom:10px;
+
+  border-radius:12px;
+
+  background:#f5f5f5;
+
+  text-decoration:none;
+
+  color:#111;
+
+  font-weight:bold;
+}
 }
 </style>
 </head>
@@ -301,11 +364,12 @@ body{
   </div>
 
   <div class="logo">
-    <img
-      src="https://i.ibb.co/Z1kv9nJj/logo.png"
-      alt="logo"
-    >
-  </div>
+
+  <img
+    src="https://i.imgur.com/7maJ8VN.png"
+    alt="Stech">
+
+</div>
 
   <div class="search-box">
     <input
