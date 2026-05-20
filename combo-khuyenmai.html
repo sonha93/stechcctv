@@ -223,6 +223,81 @@
   justify-content:center;
   border-radius:50%;
 }
+  /* SIDEBAR mặc định */
+.sidebar{
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 240px;
+  height: 100vh;
+  background: #fff;
+  transition: 0.3s;
+  z-index: 1000;
+  padding: 15px;
+}
+
+/* mở sidebar */
+.sidebar.active{
+  left: 0;
+}
+
+/* overlay */
+#overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+  z-index: 999;
+}
+
+/* overlay khi bật */
+#overlay.active{
+  opacity: 1;
+  visibility: visible;
+}
+  .topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 10px;
+  background:#00acc1; /* màu xanh đồng bộ */
+  position:sticky;
+  top:0;
+  z-index:999;
+  gap:10px;
+}
+
+/* menu + icon */
+.menu-btn{
+  font-size:22px;
+  cursor:pointer;
+  padding:6px 10px;
+  color:#fff;
+}
+
+/* logo */
+.logo{
+  background:#fff;
+  padding:4px 8px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+}
+
+.logo img{
+  height:34px;
+  width:auto;
+  display:block;
+}
+
+/* icon phải */
+.right-icons .icon{
+  font-size:20px;
+  cursor:pointer;
+  color:#fff;
+}
 </style>
 </head>
   
@@ -324,12 +399,15 @@
 
 <script>
 function toggleMenu() {
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-
-    sidebar.classList.toggle("active");
-    overlay.classList.toggle("active");
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
 }
+
+// click overlay để đóng
+document.getElementById("overlay").onclick = function () {
+  document.getElementById("sidebar").classList.remove("active");
+  this.classList.remove("active");
+};
 </script>
 
 </body>
