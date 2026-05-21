@@ -39,13 +39,14 @@ header{
     z-index:999;
 }
 
+/* MENU + LOGO + ICON */
 .menu-btn,
 .logo,
 .icon-btn{
-    width:48px;
-    height:48px;
+    width:48px !important;
+    height:48px !important;
 
-    min-width:48px;
+    min-width:48px !important;
 
     border-radius:14px;
 
@@ -54,6 +55,13 @@ header{
     justify-content:center;
 
     flex-shrink:0;
+}
+
+/* MENU */
+.menu-btn{
+    background:#159aaa;
+    color:#fff;
+    font-size:22px;
 }
 
 /* LOGO */
@@ -68,34 +76,16 @@ header{
     object-fit:contain;
 }
 
+/* ICON */
+.icon-btn{
+    background:#159aaa;
+    color:#fff;
 
-/* Search */
-.search-box{
-    flex:1;
-    min-width:0;
-}
+    text-decoration:none;
+    position:relative;
 
-.search-box input{
-    width:100%;
-    height:36px;
-    border:none;
-    border-radius:12px;
-    padding:0 10px;
-    font-size:14px;
-}
-
-/* Header icons */
-.header-icons{
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
-.header-icons{
-    display:flex;
-    align-items:center;
-    gap:8px;
-
-    margin-left:auto;
+    font-size:20px;
+    line-height:1;
 }
 /* Buttons */
 .icon-btn{
