@@ -50,12 +50,16 @@ body{
 .icon-btn{
   width:54px;
   height:54px;
-
   min-width:54px;
 
   border-radius:18px;
 
-  background:#111;
+  background:linear-gradient(
+    145deg,
+    #1c1c1c,
+    #0e0e0e
+  );
+
   color:#fff;
 
   display:flex;
@@ -72,6 +76,38 @@ body{
 
   text-decoration:none;
   border:none;
+
+  /* 3D EFFECT */
+  box-shadow:
+    6px 6px 12px rgba(0,0,0,.45),
+    -3px -3px 8px rgba(255,255,255,.05),
+    inset 1px 1px 1px rgba(255,255,255,.04);
+
+  transition:.2s ease;
+}
+   .menu-btn:active,
+.icon-btn:active{
+  transform:scale(.96);
+
+  box-shadow:
+    inset 4px 4px 8px rgba(0,0,0,.5),
+    inset -2px -2px 4px rgba(255,255,255,.03);
+}
+   .icon-btn::before,
+.menu-btn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  border-radius:18px;
+
+  background:linear-gradient(
+    to bottom,
+    rgba(255,255,255,.08),
+    transparent
+  );
+
+  pointer-events:none;
 }
 
 /* ADMIN */
