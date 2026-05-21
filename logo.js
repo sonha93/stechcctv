@@ -207,7 +207,7 @@ String(p.firebaseId);
 
 <button
   class="cart-btn"
-  onclick="addToCart('${p.id}')"
+  onclick="addToCart('${p.firebaseId}')"
 >
   🛒 Thêm vào giỏ
 </button>
@@ -238,19 +238,12 @@ window.addToCart = async function(id) {
   }
 
   product.id = product.firebaseId || product.id;
-  console.log("PRODUCT GỬI QUA CART:", product);
- try {
-  await firebaseAddToCart(product);
-  console.log("ADD OK");
-} catch(err) {
-  console.error("Lỗi add:", err);
-}
 
-await updateCartCount();
+  await firebaseAddToCart(product); // gọi cart.js
+  await updateCartCount();
 
-alert("Đã thêm vào giỏ 🛒");
+  alert("Đã thêm vào giỏ 🛒");
 };
-
 /* =========================
    SEARCH
 ========================= */
