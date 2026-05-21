@@ -102,7 +102,7 @@ function renderSpec(p) {
 }
 
 /* =========================
-   RENDER HOME
+   RENDER COMBO
 ========================= */
 
 function renderHome() {
