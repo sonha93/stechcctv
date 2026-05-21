@@ -378,10 +378,6 @@ body{
     padding:6px;
     align-items:center;
   }
-   .header-icons{
-  gap:14px;
-  padding-right:10px;
-}
 .cart-icon{
     font-size:17px;
     transform:translateY(-1px);
@@ -438,28 +434,24 @@ body{
 
   /* BADGE */
   .cart-badge{
-  position:absolute;
+    top:-2px !important;
+    right:-2px !important;
 
-  top:-6px !important;
-  right:-6px !important;
+    min-width:18px !important;
+    height:18px !important;
 
-  min-width:18px !important;
-  height:18px !important;
+    font-size:10px !important;
 
-  font-size:10px !important;
+    border:2px solid #1fb4c7;
 
-  border:2px solid #1fb4c7;
+    box-sizing:border-box;
 
-  box-sizing:border-box;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  line-height:1;
-
-  border-radius:999px;
-}
+    line-height:1;
+  }
 
   /* FIX ICON */
   .icon-btn span{
