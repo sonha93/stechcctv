@@ -1,17 +1,6 @@
-<!DOCTYPE html>
-<html lang="vi">
-<body>
-
 <script type="module">
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-  getFirestore,
-  doc,
-  updateDoc
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -25,21 +14,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ID sản phẩm của bro:
-const productId =
-"0SQGKg0TX53IvpDXXIIl";
+try {
 
-// đổi giá gốc tại đây:
-await updateDoc(
-  doc(db, "products", productId),
-  {
-    oldPrice: 999999
-  }
-);
+  await updateDoc(
+    doc(db, "products", "0SQGKg0TX53IvpDXXIIl"),
+    {
+      oldPrice: 999999
+    }
+  );
 
-alert("Đã sửa oldPrice xong!");
+  alert("Đã sửa thành công!");
 
+} catch(err){
+
+  console.log(err);
+  alert("Lỗi: " + err.message);
+
+}
 </script>
-
-</body>
-</html>
