@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -14,10 +14,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const orderId = "aaaa";
-
 const orderData = {
-  id: orderId,
   customer: "Sơn",
   phone: "0123456789",
   items: [
@@ -29,9 +26,12 @@ const orderData = {
 };
 
 function saveOrder() {
-  set(ref(db, "orders/" + orderId), orderData)
+  // 👉 Tạo ID tự động (KHÔNG bị đè đơn cũ)
+  const newOrderRef = push(ref(db, "orders"));
+
+  set(newOrderRef, orderData)
     .then(() => {
-      console.log("✅ Lưu đơn hàng thành công:", orderId);
+      console.log("✅ Lưu đơn hàng thành công:", newOrderRef.key);
     })
     .catch((error) => {
       console.error("❌ Lỗi lưu đơn:", error);
