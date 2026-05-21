@@ -27,18 +27,26 @@ body{
 header{
     display:flex;
     align-items:center;
-    justify-content:space-between;
 
     gap:8px;
     padding:8px 10px;
 
     background:#33A0AB;
-   height:80px;
+    height:80px;
+
     position:sticky;
     top:0;
     z-index:999;
 }
 
+/* Đẩy icon qua phải */
+.header-icons{
+    margin-left:auto;
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
 /* MENU + LOGO + ICON */
 .menu-btn,
 .logo,
@@ -87,23 +95,7 @@ header{
     font-size:20px;
     line-height:1;
 }
-/* Buttons */
-.icon-btn{
-    width:40px;
-    height:40px;
-    border-radius:12px;
-    background:#00acc1;
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-decoration:none;
-    font-size:18px;
-    line-height:1;
-    position:relative;
-    cursor:pointer;
-    flex-shrink:0;
-}
+
 
 /* Cart badge */
 .cart-count{
@@ -330,37 +322,12 @@ button:hover{
         padding:6px 8px;
         gap:6px;
     }
-
-    .menu-btn{
-        width:36px;
-        height:36px;
-        font-size:18px;
-    }
-
     #logoutArrow{
         font-size:22px !important;
         font-weight:bold;
     }
-
-    .logo{
-        width:36px;
-        height:36px;
-    }
-
-    .search-box input{
-        height:32px;
-        font-size:13px;
-        padding:0 8px;
-    }
-
-    .header-icons{
+   .header-icons{
         gap:5px;
-    }
-
-    .icon-btn{
-        width:32px;
-        height:32px;
-        font-size:14px;
     }
 
     .cart-count{
