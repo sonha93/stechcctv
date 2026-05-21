@@ -1,4 +1,4 @@
-logo.js 21/5
+
 window.goDetail = function(id){
 
   window.location.href =
