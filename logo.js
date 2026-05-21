@@ -245,7 +245,7 @@ window.addToCart = async function(id) {
   }
 
   product.id = product.firebaseId || product.id;
-
+  console.log("PRODUCT ADD:", product);
   await firebaseAddToCart(product); // gọi cart.js
   await updateCartCount();
 
