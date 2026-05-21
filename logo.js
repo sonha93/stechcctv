@@ -65,15 +65,21 @@ async function getProducts(){
 
     let arr = [];
 
-    querySnapshot.forEach(doc => {
+   querySnapshot.forEach(doc => {
+
+  const data = doc.data();
+
+  // ép sửa test cho đúng sản phẩm
+  if (doc.id === "0SQGKg0TX53IvpDXXIIl") {
+    data.oldPrice = 999999;
+  }
 
   arr.push({
-
-  firebaseId: doc.id,
-  ...doc.data()
+    firebaseId: doc.id,
+    ...data
+  });
 
 });
-    });
 
     return arr;
 
