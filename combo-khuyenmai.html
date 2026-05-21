@@ -610,6 +610,28 @@ body{
     transform .18s cubic-bezier(.34,1.56,.64,1),
     box-shadow .18s ease;
 }
+   .product-card{
+  position:relative;
+}
+
+.product-card::before{
+  content:"-91%";
+
+  position:absolute;
+  top:10px;
+  left:10px;
+
+  background:red;
+  color:#fff;
+
+  padding:4px 8px;
+  border-radius:10px;
+
+  font-size:13px;
+  font-weight:bold;
+
+  z-index:999;
+}
 </style>
 </head>
   
