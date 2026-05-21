@@ -1,5 +1,4 @@
 window.goDetail = function(id){
-  div.onclick = () => {
   window.location.href =
   `logo.html?id=${id}`;
 
