@@ -539,37 +539,6 @@ header{
 .thumb-list::-webkit-scrollbar{
   display:none;
 }
-	.desc-title {
-  text-align: center;
-  margin-bottom: 10px;
-  font-size: 18px;
-  font-weight: bold;
-}
-	.desc-title{
-  text-align:center;
-  width:100%;
-  display:block;
-  font-size:18px;
-  font-weight:800;
-  margin-bottom:10px;
-}
-	.price-row{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.price-old{
-  color:#999;
-  text-decoration: line-through;
-  font-size:14px;
-}
-
-.price-new{
-  color:red;
-  font-weight:bold;
-  font-size:16px;
-}
 }
 </style>
 </head>
@@ -583,6 +552,7 @@ header{
 
 <div class="sidebar" id="sidebar">
   <a href="index.html">Trang chủ</a>
+	  <a href="upload-nhieuanh.html">Upload</a>
   <a href="camera-trong-nha.html">Camera trong nhà</a>
   <a href="camera-ngoai-troi.html">Camera ngoài trời</a>
 </div>
@@ -668,10 +638,7 @@ header{
 
     </div>
 
-    <div class="desc">
-  <h3 class="desc-title">Mô tả sản phẩm</h3>
-  <div id="detailDesc"></div>
-</div>
+    <div class="desc" id="detailDesc"></div>
 
   </div>
 
@@ -690,14 +657,13 @@ header{
       >
       <h3 id="panelProductName"></h3>
     </div>
-		 <hr>
+
     <button class="close-panel" onclick="closePanel()">✕</button>
 
   </div>
 
   <div class="spec-tabs">
 
-   
     <button class="spec-tab active" onclick="showTab('infoTab',this)">
       Thông tin
     </button>
@@ -774,7 +740,8 @@ header{
   </div>
 
 </div>
- <script type="module"
+
+<script type="module">
 
 import { app } from "./auth.js";
 
@@ -1347,6 +1314,6 @@ viewer.addEventListener("mouseup",(e)=>{
 
 });
 	</script>
- <script type="module" src="logo.js"></script>
+
 </body>
 </html>
