@@ -58,11 +58,7 @@ actionBox = document.getElementById("cartAction");
 
     const snapshot = await getDocs(cartRef);
 
-    console.log(
-      "FIREBASE CART:",
-      snapshot.docs.map(d => d.data())
-    );
-
+   
     if (snapshot.empty) {
 
   cartBox.innerHTML =
@@ -221,7 +217,7 @@ export async function addToCart(product) {
 
     });
 
-    alert("Đã thêm vào giỏ 🛒");
+
 
     renderCart();
 
@@ -297,7 +293,7 @@ onAuthStateChanged(auth, async user => {
 
   currentUser = user;
 
-  console.log("USER:", user);
+
 
   await renderCart();
 
