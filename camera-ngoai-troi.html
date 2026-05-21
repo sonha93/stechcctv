@@ -530,6 +530,18 @@ body{
   color:#888;
   text-decoration:line-through;
 }
+.fade-in {
+  opacity: 0;
+  transform: translateY(15px);
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 </style>
 </head>
   
