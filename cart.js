@@ -99,11 +99,21 @@ actionBox = document.getElementById("cartAction");
 
     <b>${p.name || ''}</b>
 
-    <div class="price-row">
-      <div class="price-new">
-        ${price.toLocaleString()}đ
-      </div>
-    </div>
+   <div class="price-row">
+
+  ${
+    p.oldPrice
+      ? `<div class="price-old">
+           ${Number(p.oldPrice).toLocaleString()}đ
+         </div>`
+      : ""
+  }
+
+  <div class="price-new">
+    ${price.toLocaleString()}đ
+  </div>
+
+</div>
 
     <div class="qty">
 
@@ -205,6 +215,7 @@ export async function addToCart(product) {
       id: product.id,
       name: product.name || "",
       price: Number(product.price) || 0,
+      oldPrice: Number(product.oldPrice) || 0,
       img: product.img || "",
       qty: oldQty + 1
 
