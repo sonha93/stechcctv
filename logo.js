@@ -246,9 +246,16 @@ window.addToCart = async function(id) {
 
   product.id = product.firebaseId || product.id;
   console.log("PRODUCT GỬI QUA CART:", product);
-  await firebaseAddToCart(product); // gọi cart.js
-  await updateCartCount();
-  alert("Đã thêm vào giỏ 🛒");
+ try {
+  await firebaseAddToCart(product);
+  console.log("ADD OK");
+} catch(err) {
+  console.error("Lỗi add:", err);
+}
+
+await updateCartCount();
+
+alert("Đã thêm vào giỏ 🛒");
 };
 
 /* =========================
