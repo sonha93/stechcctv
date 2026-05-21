@@ -295,6 +295,7 @@ window.addToCart = async function(id){
     id: product.id,
     name: product.name,
     price: product.price,
+     oldPrice: product.oldPrice,
     img: product.img
 
   });
