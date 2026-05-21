@@ -59,22 +59,22 @@ async function getProducts(){
   try{
 
     const querySnapshot =
-    await getDocs(
-      collection(db,"products")
-    );
+      await getDocs(
+        collection(db,"products")
+      );
 
     let arr = [];
 
-   querySnapshot.forEach(doc => {
+    querySnapshot.forEach(doc => {
 
-  const data = doc.data();
+      const data = doc.data();
 
- 
+      arr.push({
+        id: doc.id,
+        ...data
+      });
 
-arr.push({
-  id: doc.id,
-  ...data
-});
+    });
 
     return arr;
 
