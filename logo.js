@@ -1,5 +1,5 @@
 window.goDetail = function(id){
-
+  div.onclick = () => {
   window.location.href =
   `logo.html?id=${id}`;
 
@@ -66,11 +66,12 @@ async function getProducts(){
     let arr = [];
 
     querySnapshot.forEach(doc => {
-
+      const data = doc.data();
   arr.push({
 
-  firebaseId: doc.id,
-  ...doc.data()
+ id: doc.id,
+    ...data
+  });
 
 });
     });
