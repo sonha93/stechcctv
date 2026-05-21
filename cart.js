@@ -25,6 +25,42 @@ let cartBox = null;
 let totalBox = null;
 let actionBox = null;
 // ============================
+// UPDATE CART COUNT
+// ============================
+async function updateCartCount() {
+
+  const badge = document.getElementById("cartCount");
+
+  if (!badge) return;
+
+  if (!currentUser) {
+
+    badge.innerText = "0";
+    return;
+
+  }
+
+  const snapshot = await getDocs(
+    collection(
+      db,
+      "users",
+      currentUser.uid,
+      "cart"
+    )
+  );
+
+  let totalQty = 0;
+
+  snapshot.forEach(doc => {
+
+    totalQty += Number(doc.data().qty) || 0;
+
+  });
+
+  badge.innerText = totalQty;
+
+}
+// ============================
 // RENDER CART
 // ============================
 async function renderCart() {
@@ -219,7 +255,8 @@ export async function addToCart(product) {
 
 
 
-    renderCart();
+  await renderCart();
+await updateCartCount();
 
   } catch (err) {
 
@@ -247,7 +284,8 @@ window.removeItem = async function(itemId) {
     )
   );
 
-  renderCart();
+await renderCart();
+await updateCartCount();
 
 };
 // ============================
@@ -273,8 +311,8 @@ window.updateQty = async function(itemId, qty) {
     qty: qty
   });
 
-  renderCart();
-
+await renderCart();
+await updateCartCount();
 };
 // ============================
 // CHECKOUT
@@ -295,7 +333,8 @@ onAuthStateChanged(auth, async user => {
 
 
 
-  await renderCart();
+ await renderCart();
+await updateCartCount();
 
 });
 
