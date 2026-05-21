@@ -135,8 +135,24 @@ body{
   justify-content:center;
 
   flex-shrink:0;
-}
 
+  position:relative;
+
+  /* 3D EFFECT */
+  box-shadow:
+    6px 6px 12px rgba(0,0,0,.35),
+    -3px -3px 8px rgba(255,255,255,.18),
+    inset 1px 1px 1px rgba(255,255,255,.7);
+
+  transition:.2s ease;
+}
+   .logo:active{
+  transform:scale(.96);
+
+  box-shadow:
+    inset 4px 4px 8px rgba(0,0,0,.15),
+    inset -2px -2px 4px rgba(255,255,255,.8);
+}
 /* FIX LOGO */
 
 .logo img{
