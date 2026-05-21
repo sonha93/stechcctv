@@ -248,7 +248,9 @@ window.addToCart = async function(id) {
   console.log("PRODUCT GỬI QUA CART:", product);
   await firebaseAddToCart(product); // gọi cart.js
   await updateCartCount();
+  alert("Đã thêm vào giỏ 🛒");
 };
+
 /* =========================
    SEARCH
 ========================= */
