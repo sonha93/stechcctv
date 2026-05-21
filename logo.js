@@ -248,8 +248,6 @@ window.addToCart = async function(id) {
 
   await firebaseAddToCart(product); // gọi cart.js
   await updateCartCount();
-
-  alert("Đã thêm vào giỏ 🛒");
 };
 /* =========================
    SEARCH
