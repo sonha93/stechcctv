@@ -125,7 +125,7 @@ header{
     color:#fff;
     font-size:11px;
     font-weight:bold;
-  display:none;
+    display:flex;
     align-items:center;
     justify-content:center;
 }
@@ -610,7 +610,7 @@ auth.onAuthStateChanged(user=>{
         }
     });
 
-db.ref('carts/' + currentUser.uid).on('value', snapshot => {
+  db.ref('carts/' + currentUser.uid).on('value', snapshot => {
 
     const cart = snapshot.val() || [];
 
@@ -620,15 +620,21 @@ db.ref('carts/' + currentUser.uid).on('value', snapshot => {
         count += Number(item.quantity || 1);
     });
 
-    console.log("COUNT =", count);
+    cartCountEl.innerText = count;
 
-    cartCountEl.textContent = count;
     cartCountEl.style.display =
         count > 0 ? "flex" : "none";
 
 });
-
+   
 });
+
+    console.log("COUNT =", count);
+
+    cartCountEl.textContent = count;
+    cartCountEl.style.display = "flex";
+});
+
 updateInfoBtn.addEventListener("click", async () => {
 
     if (!currentUser) return;
@@ -846,7 +852,7 @@ function loadOrders(){
 }
 
 </script>
-
+  
 </script>
 </body>
 </html>
