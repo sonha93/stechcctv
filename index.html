@@ -193,10 +193,10 @@ body{
 /* BADGE */
 
 .cart-badge{
-  position:absolute;
+  position:absolute !important;
 
-  top:2px;
-  right:2px;
+  top:-6px !important;
+  right:-6px !important;
 
   min-width:20px;
   height:20px;
@@ -211,6 +211,8 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
+ line-height:1;
+  z-index:9999;
 }
 
 /* OVERLAY FIX */
@@ -431,28 +433,6 @@ body{
     color:#fff;
     font-size:22px;
 }
-
-  /* BADGE */
-  .cart-badge{
-   top:-6px !important;
-right:-6px !important;
-
-    min-width:18px !important;
-    height:18px !important;
-
-    font-size:10px !important;
-
-    border:2px solid #1fb4c7;
-
-    box-sizing:border-box;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    line-height:1;
-  }
-
   /* FIX ICON */
   .icon-btn span{
     line-height:1;
@@ -482,15 +462,6 @@ right:-6px !important;
     line-height:1;
 }
 
-.cart-badge{
-  box-sizing:border-box;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  line-height:1;
-}
 
 /* =========================
    LOAD MORE BUTTON
@@ -813,7 +784,7 @@ right:-6px !important;
 
   display:block;
 }
-}
+
 </style>
 
 </head>
@@ -908,7 +879,7 @@ right:-6px !important;
 <a href="profile.html" class="icon-btn">
   <i class="fa-solid fa-user"></i>
 </a>
-</a>
+
    <a href="cart.html"
    class="icon-btn">
 
