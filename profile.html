@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -402,6 +400,9 @@ button:hover{
     inset 4px 4px 8px rgba(0,0,0,.25),
     inset -2px -2px 4px rgba(255,255,255,.08);
 }
+   .icon-btn{
+  position:relative !important;
+
 }
 
 </style>
@@ -609,12 +610,30 @@ auth.onAuthStateChanged(user=>{
         }
     });
 
-    db.ref('carts/'+currentUser.uid).on('value',snapshot=>{
-        let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); 
-        cartCountEl.innerText=count;
+  db.ref('carts/' + currentUser.uid).on('value', snapshot => {
+
+    const cart = snapshot.val() || [];
+
+    let count = 0;
+
+    cart.forEach(item => {
+        count += Number(item.quantity || 1);
     });
+
+    cartCountEl.innerText = count;
+
+    cartCountEl.style.display =
+        count > 0 ? "flex" : "none";
+
+});
+   
 });
 
+    console.log("COUNT =", count);
+
+    cartCountEl.textContent = count;
+    cartCountEl.style.display = "flex";
+});
 
 updateInfoBtn.addEventListener("click", async () => {
 
@@ -831,6 +850,8 @@ function loadOrders(){
     });
 
 }
+
+</script>
 
 </script>
 </body>
