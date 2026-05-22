@@ -138,10 +138,29 @@ async function clearCart(){
 // ============================
 async function checkout(){
   if(!currentUser) return;
+
+  const itemsToOrder = currentCart.filter(i => i.checked);
+
+  if(itemsToOrder.length === 0){
+    alert("Chưa chọn sản phẩm");
+    return;
+  }
+
+  const total = itemsToOrder.reduce((sum, item) => {
+    return sum + (item.qty || 1) * (item.price || 0);
+  }, 0);
+
+  await db.collection("orders").add({
+    uid: currentUser.uid,
+    items: itemsToOrder,
+    total: total,
+    time: new Date().toLocaleString()
+  });
+
   await clearCart();
+
   window.location.href = "checkout.html";
 }
-
 // ============================
 // AUTH STATE
 // ============================
