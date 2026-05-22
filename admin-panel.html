@@ -184,32 +184,7 @@ button{
   <button id="btnAdd" class="full">
     ➕ Thêm sản phẩm
   </button>
-<!-- =========================
-     SEARCH BY ID
-========================= -->
-<input
-  id="searchId"
-  class="full"
-  placeholder="🔎 Nhập ID sản phẩm cần tìm..."
->
 
-<div class="full" style="display:flex;gap:10px;">
-
-  <button
-    id="btnSearch"
-    style="flex:1"
-  >
-    🔍 Tìm sản phẩm
-  </button>
-
-  <button
-    id="btnResetSearch"
-    style="flex:1;background:#777"
-  >
-    ↩ Reset
-  </button>
-
-</div>
 </div>
 
 <hr>
@@ -252,8 +227,7 @@ const db = getFirestore(app);
 window.addEventListener("load", function(){
 
 let products = [];
-originalProducts = [];
-  originalProducts = [...products];
+
 const nameMap = {
 
   sd:"Thẻ nhớ",
@@ -452,21 +426,7 @@ alert("✔ Thêm sản phẩm thành công");
 await loadProducts();
 
 }
-document.getElementById("btnSearch").addEventListener("click", function () {
 
-  const id = document.getElementById("searchId").value.trim();
-
-  if (!id) return;
-
-  const result = originalProducts.filter(p =>
-    String(p.docId).includes(id) ||
-    String(p.id).includes(id)
-  );
-
-  products = result;
-  currentPage = 1;
-  render();
-});
 
   /* =========================
      LINK CLOUDINARY
@@ -713,23 +673,7 @@ function render() {
       loadProducts();
 
     });
-    loadProducts();
 
-categoryEl.dispatchEvent(
-  new Event("change")
-);
-
-/* =========================
-   SEARCH RESET (BƯỚC 4)
-========================= */
-
-document.getElementById("btnResetSearch").addEventListener("click", function () {
-
-  document.getElementById("searchId").value = "";
-
-  products = [...originalProducts];
-  currentPage = 1;
-  render();
   });
 
   /* =========================
