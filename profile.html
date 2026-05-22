@@ -125,7 +125,7 @@ header{
     color:#fff;
     font-size:11px;
     font-weight:bold;
-    display:flex;
+  display:none;
     align-items:center;
     justify-content:center;
 }
@@ -610,7 +610,7 @@ auth.onAuthStateChanged(user=>{
         }
     });
 
-  db.ref('carts/' + currentUser.uid).on('value', snapshot => {
+db.ref('carts/' + currentUser.uid).on('value', snapshot => {
 
     const cart = snapshot.val() || [];
 
@@ -620,19 +620,12 @@ auth.onAuthStateChanged(user=>{
         count += Number(item.quantity || 1);
     });
 
-    cartCountEl.innerText = count;
-
-    cartCountEl.style.display =
-        count > 0 ? "flex" : "none";
-
-});
-   
-});
-
     console.log("COUNT =", count);
 
     cartCountEl.textContent = count;
-    cartCountEl.style.display = "flex";
+    cartCountEl.style.display =
+        count > 0 ? "flex" : "none";
+
 });
 
 });
