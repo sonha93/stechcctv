@@ -1,13 +1,11 @@
-// flash-sale.js
 (function(){
 
   function startFlashSale() {
 
-    if(!allProducts || allProducts.length === 0) return;
+    if(!window.allProducts || window.allProducts.length === 0) return;
 
-    const dealProducts = allProducts.filter(p => p.featured === "home");
+    const dealProducts = window.allProducts.filter(p => p.featured === "home");
     if(dealProducts.length === 0) return;
-
     const product = dealProducts[Math.floor(Math.random() * dealProducts.length)];
 
     const banner = document.createElement("div");
