@@ -852,5 +852,19 @@ function loadOrders(){
 }
 
 </script>
+   <script>
+setTimeout(() => {
+  console.log("UID:", currentUser?.uid);
+
+  firebase.database()
+    .ref("carts/" + currentUser?.uid)
+    .once("value")
+    .then(snap => {
+      console.log("DATA CART:", snap.val());
+    });
+
+  console.log("Badge element:", document.getElementById("cartCount"));
+}, 3000);
+</script>
 </body>
 </html>
