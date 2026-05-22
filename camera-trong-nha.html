@@ -194,23 +194,25 @@ body{
 
 .cart-badge{
   position:absolute;
+  top:-3px;
+  right:-3px;
 
-  top:2px;
-  right:2px;
-
-  min-width:20px;
-  height:20px;
+  min-width:18px;
+  height:18px;
   border-radius:50%;
 
   background:red;
   color:#fff;
 
-  font-size:11px;
+  font-size:10px;
   font-weight:bold;
 
   display:flex;
   align-items:center;
   justify-content:center;
+
+  line-height:1;
+  z-index:999;
 }
 
 /* OVERLAY FIX */
@@ -288,12 +290,10 @@ body{
 .top-header .icon-btn,
 .top-header .menu-btn{
   font-family:Arial !important;
-
   line-height:1 !important;
-
   text-decoration:none !important;
 
-  overflow:hidden !important;
+  overflow:visible !important;
 }
 
 /* SIDEBAR LINK */
@@ -339,10 +339,6 @@ body{
   width:100% !important;
   min-width:0 !important;
 }
-
-
-
-
 .header-icons{
   display:flex;
   align-items:center;
@@ -363,7 +359,7 @@ body{
 
   font-size:18px;
   line-height:1;
-
+ position:relative;
   transform:translateY(-1px);
 }
 
@@ -424,7 +420,7 @@ body{
    .menu-btn{
     background:linear-gradient(
         145deg,
-         #1c1c1c,
+        #1c1c1c,
         #0d0d0d
     );
 
@@ -433,26 +429,28 @@ body{
 }
 
   /* BADGE */
-  .cart-badge{
-    top:-2px !important;
-    right:-2px !important;
+ .cart-badge{
+  position:absolute;
+top:-6px !important;
+right:-6px !important;
 
-    min-width:18px !important;
-    height:18px !important;
+  min-width:18px;
+  height:18px;
+  border-radius:50%;
 
-    font-size:10px !important;
+  background:red;
+  color:#fff;
 
-    border:2px solid #1fb4c7;
+  font-size:10px;
+  font-weight:bold;
 
-    box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    line-height:1;
-  }
-
+  line-height:1;
+  z-index:999;
+}
   /* FIX ICON */
   .icon-btn span{
     line-height:1;
@@ -813,6 +811,27 @@ body{
 
   display:block;
 }
+   .cart-badge{
+  position:absolute !important;
+  top:-4px !important;
+  right:-4px !important;
+  min-width:18px !important;
+  height:18px !important;
+  border-radius:50% !important;
+  z-index:9999 !important;
+}
+/* MENU BUTTON: nền đen + 3 gạch trắng */
+.menu-btn{
+  background:#000 !important;   /* nền đen */
+  color:#fff !important;        /* 3 gạch trắng */
+  font-weight:900 !important;   /* đậm */
+  font-size:24px !important;
+}
+
+/* nếu dấu ☰ nằm trong span */
+.menu-btn span{
+  color:#fff !important;
+  font-weight:900 !important;
 }
 </style>
 </head>
@@ -874,13 +893,11 @@ body{
 
 <span id="cartCount" class="cart-badge">
   0
-
   </span>
-
 </a>
   </div>
 
-</div>
+
 
 <!-- CONTENT -->
 <div class="container">
