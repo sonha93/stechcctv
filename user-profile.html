@@ -610,18 +610,30 @@ auth.onAuthStateChanged(user=>{
         }
     });
 
-  db.ref('cart/'+currentUser.uid).on('value', snapshot => {
+  db.ref('cart/' + currentUser.uid).on('value', snapshot => {
+    console.log("CART DATA:", snapshot.val()); // debug
+
     let count = 0;
 
-    snapshot.forEach(item => {
-        count += Number(item.val().quantity || 1);
-    });
+    if(snapshot.exists()){
+        snapshot.forEach(item => {
+            const data = item.val();
 
-    cartCountEl.innerText = count;
+            // nếu có quantity thì cộng quantity
+            if(data.quantity){
+                count += Number(data.quantity);
+            } 
+            // không có thì mỗi item tính 1
+            else{
+                count += 1;
+            }
+        });
+    }
 
-    cartCountEl.style.display =
-        count > 0 ? "flex" : "none";
-});
+    console.log("COUNT =", count);
+
+    cartCountEl.textContent = count;
+    cartCountEl.style.display = "flex";
 });
 
 updateInfoBtn.addEventListener("click", async () => {
