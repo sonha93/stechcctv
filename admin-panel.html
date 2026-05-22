@@ -502,84 +502,203 @@ await loadProducts();
 /* =========================
    RENDER PRODUCTS 2 DÒNG GIÁ
 ========================= */
+/* =========================
+   PAGINATION
+========================= */
+
+let currentPage = 1;
+const itemsPerPage = 5;
+
+/* =========================
+   RENDER PRODUCTS
+========================= */
+
 function render() {
 
-  if(products.length===0){
+  if(products.length === 0){
     list.innerHTML = "<p>Chưa có sản phẩm</p>";
     return;
   }
 
-  list.innerHTML = products.map(p => `
+  // tổng số trang
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+
+  // vị trí cắt mảng
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+
+  // dữ liệu trang hiện tại
+  const currentProducts = products.slice(start, end);
+
+  // render sản phẩm
+  list.innerHTML = currentProducts.map(p => `
     <div class="item" data-id="${p.docId}">
       <img src="${p.img || ''}">
+
       <div>
         <b>${p.name}</b><br>
-        <span style="color:#00acc1;font-size:12px;">📁 ${p.categoryName || p.category}</span><br>
 
-        <!-- Giá hiện tại (bán ra) -->
-        <div style="color:red; font-weight:bold; margin-top:4px;">
-          Giá hiện tại: ${Number(p.price).toLocaleString()}đ
+        <span style="color:#00acc1;font-size:12px;">
+          📁 ${p.categoryName || p.category}
+        </span><br>
+
+        <div style="color:red;font-weight:bold;margin-top:4px;">
+          Giá hiện tại:
+          ${Number(p.price).toLocaleString()}đ
         </div>
 
-        <!-- Giá gốc / cũ -->
-        <div style="color:black; font-weight:normal; margin-top:2px;">
-          Giá gốc: ${p.oldPrice ? Number(p.oldPrice).toLocaleString() + 'đ' : '---'}
+        <div style="margin-top:2px;">
+          Giá gốc:
+          ${p.oldPrice
+            ? Number(p.oldPrice).toLocaleString() + 'đ'
+            : '---'}
         </div>
 
-        <!-- Input sửa giá -->
-        <input type="text" class="priceInput" value="${p.price}" placeholder="Giá mới" style="width:150px; font-weight:bold; color:red; margin-top:4px;">
-        <input type="text" class="oldPriceInput" value="${p.oldPrice || ''}" placeholder="Giá cũ" style="width:150px; margin-top:2px;">
+        <input
+          type="text"
+          class="priceInput"
+          value="${p.price}"
+          placeholder="Giá mới"
+          style="width:150px;margin-top:4px;"
+        >
 
-        <!-- Nút cập nhật -->
-        <button class="updateBtn" style="background:#00acc1; margin-top:6px;">Cập nhật</button>
-        <!-- Nút xóa -->
-        <button class="deleteBtn" style="background:red; margin-top:6px;">Xóa</button>
+        <input
+          type="text"
+          class="oldPriceInput"
+          value="${p.oldPrice || ''}"
+          placeholder="Giá cũ"
+          style="width:150px;margin-top:2px;"
+        >
+
+        <button class="updateBtn" style="margin-top:6px;">
+          Cập nhật
+        </button>
+
+        <button class="deleteBtn"
+          style="background:red;margin-top:6px;">
+          Xóa
+        </button>
+
       </div>
     </div>
   `).join("");
 
-  // Gắn sự kiện Cập nhật
- document.querySelectorAll('.updateBtn').forEach(btn => {
-  btn.addEventListener('click', async e => {
+  /* =========================
+     PAGINATION BUTTONS
+  ========================= */
 
-    const item = e.target.closest('.item');
-    const id = item.dataset.id;
+  let pageHTML = `
+    <div style="
+      margin-top:20px;
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    ">
+  `;
 
-    const newPrice = Number(
-      item.querySelector('.priceInput').value.replace(/\D/g,'')
-    );
+  for(let i = 1; i <= totalPages; i++){
 
-    const oldPrice = Number(
-      item.querySelector('.oldPriceInput').value.replace(/\D/g,'') || 0
-    );
+    pageHTML += `
+      <button
+        class="pageBtn"
+        data-page="${i}"
+        style="
+          width:40px;
+          padding:8px;
+          background:${i === currentPage ? '#007c91' : '#00acc1'};
+        "
+      >
+        ${i}
+      </button>
+    `;
+  }
 
-    if(!newPrice){
-      return alert("Giá không hợp lệ");
-    }
+  pageHTML += `</div>`;
 
-    await updateDoc(doc(db,"products",id), {
-      price:newPrice,
-      oldPrice:oldPrice
+  list.innerHTML += pageHTML;
+
+  /* =========================
+     CLICK PAGE
+  ========================= */
+
+  document.querySelectorAll(".pageBtn").forEach(btn => {
+
+    btn.addEventListener("click", () => {
+
+      currentPage = Number(btn.dataset.page);
+
+      render();
+
+      window.scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
+
     });
 
-    alert("Cập nhật thành công");
-
-    loadProducts();
-
   });
-});
 
-  // Gắn sự kiện Xóa
-  document.querySelectorAll('.deleteBtn').forEach(btn => {
+  /* =========================
+     UPDATE
+  ========================= */
+
+  document.querySelectorAll('.updateBtn').forEach(btn => {
+
     btn.addEventListener('click', async e => {
+
       const item = e.target.closest('.item');
       const id = item.dataset.id;
-      if(confirm("Xóa sản phẩm này?")){
-        await deleteDoc(doc(db,"products",id));
-        item.remove();
+
+      const newPrice = Number(
+        item.querySelector('.priceInput')
+        .value.replace(/\D/g,'')
+      );
+
+      const oldPrice = Number(
+        item.querySelector('.oldPriceInput')
+        .value.replace(/\D/g,'') || 0
+      );
+
+      if(!newPrice){
+        return alert("Giá không hợp lệ");
       }
+
+      await updateDoc(doc(db,"products",id), {
+        price:newPrice,
+        oldPrice:oldPrice
+      });
+
+      alert("Cập nhật thành công");
+
+      loadProducts();
+
     });
+
   });
+
+  /* =========================
+     DELETE
+  ========================= */
+
+  document.querySelectorAll('.deleteBtn').forEach(btn => {
+
+    btn.addEventListener('click', async e => {
+
+      const item = e.target.closest('.item');
+      const id = item.dataset.id;
+
+      if(confirm("Xóa sản phẩm này?")){
+
+        await deleteDoc(doc(db,"products",id));
+
+        loadProducts();
+
+      }
+
+    });
+
+  });
+
 }
 /* =========================
    INIT
