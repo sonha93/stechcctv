@@ -610,12 +610,18 @@ auth.onAuthStateChanged(user=>{
         }
     });
 
-    db.ref('carts/'+currentUser.uid).on('value',snapshot=>{
-        let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); 
-        cartCountEl.innerText=count;
-    });
-});
+  db.ref('cart/'+currentUser.uid).on('value', snapshot => {
+    let count = 0;
 
+    snapshot.forEach(item => {
+        count += Number(item.val().quantity || 1);
+    });
+
+    cartCountEl.innerText = count;
+
+    cartCountEl.style.display =
+        count > 0 ? "flex" : "none";
+});
 
 updateInfoBtn.addEventListener("click", async () => {
 
