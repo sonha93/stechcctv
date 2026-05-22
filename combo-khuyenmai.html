@@ -194,22 +194,25 @@ body{
 
 .cart-badge{
   position:absolute;
+  top:-3px;
+  right:-3px;
 
- top:-6px;
-  right:-6px;
-  min-width:20px;
-  height:20px;
+  min-width:18px;
+  height:18px;
   border-radius:50%;
 
   background:red;
   color:#fff;
 
-  font-size:11px;
+  font-size:10px;
   font-weight:bold;
 
   display:flex;
   align-items:center;
   justify-content:center;
+
+  line-height:1;
+  z-index:999;
 }
 
 /* OVERLAY FIX */
@@ -287,12 +290,10 @@ body{
 .top-header .icon-btn,
 .top-header .menu-btn{
   font-family:Arial !important;
-
   line-height:1 !important;
-
   text-decoration:none !important;
 
-  overflow:hidden !important;
+  overflow:visible !important;
 }
 
 /* SIDEBAR LINK */
@@ -428,26 +429,28 @@ body{
 }
 
   /* BADGE */
-  .cart-badge{
-    top:-2px !important;
-    right:-2px !important;
+ .cart-badge{
+  position:absolute;
+  top:-3px;
+  right:-3px;
 
-    min-width:18px !important;
-    height:18px !important;
+  min-width:18px;
+  height:18px;
+  border-radius:50%;
 
-    font-size:10px !important;
+  background:red;
+  color:#fff;
 
-    border:2px solid #1fb4c7;
+  font-size:10px;
+  font-weight:bold;
 
-    box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    line-height:1;
-  }
-
+  line-height:1;
+  z-index:999;
+}
   /* FIX ICON */
   .icon-btn span{
     line-height:1;
@@ -808,6 +811,15 @@ body{
 
   display:block;
 }
+   .cart-badge{
+  position:absolute !important;
+  top:-4px !important;
+  right:-4px !important;
+  min-width:18px !important;
+  height:18px !important;
+  border-radius:50% !important;
+  z-index:9999 !important;
+}
 </style>
 </head>
   
@@ -868,13 +880,11 @@ body{
 
 <span id="cartCount" class="cart-badge">
   0
-
   </span>
-
 </a>
   </div>
 
-</div>
+
 
 <!-- CONTENT -->
 <div class="container">
