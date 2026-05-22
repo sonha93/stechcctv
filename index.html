@@ -145,7 +145,7 @@ body{
   background: #fff;
   border: 1px solid #ddd;
 
-  max-height: 350px;
+
   overflow-y: auto;
 
   z-index: 9999;
@@ -199,7 +199,6 @@ body{
 
   min-width:20px;
   height:20px;
-
   border-radius:50%;
 
   background:red;
@@ -212,8 +211,8 @@ body{
   align-items:center;
   justify-content:center;
 
-  line-height:20px !important;
-  padding-top:1px;
+  line-height:1 !important;
+  padding-top:0 !important;
 
   z-index:9999;
 }
@@ -343,15 +342,6 @@ body{
 }
 
 
-
-
-.header-icons{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-shrink:0;
-}
-
 .icon-btn{
   flex-shrink:0;
 }
@@ -423,15 +413,17 @@ body{
   }
 
 
-   .menu-btn{
-    background:linear-gradient(
-        145deg,
-        #1c1c1c,
-        #0d0d0d
-    );
+ .menu-btn{
+  background:linear-gradient(
+    145deg,
+    #111,   /* đen hơn */
+    #000
+  ) !important;
 
-    color:#fff;
-    font-size:22px;
+  color:#fff !important;   /* dấu 3 gạch trắng */
+
+  font-size:22px;
+  font-weight:bold;        /* gạch đậm hơn */
 }
   /* FIX ICON */
   .icon-btn span{
@@ -573,12 +565,6 @@ body{
   margin-bottom:5px;
 }
 
-/* SIDEBAR */
-
-.sidebar{
-  position:fixed;
-  z-index:1000;
-}
 
 /* 2 CỘT SẢN PHẨM */
 
@@ -645,9 +631,7 @@ body{
   color:#fff;
   cursor:pointer;
 }
-   .sidebar{
-  padding-top:70px;
-}
+  
    .search-results{
   position:absolute;
   width:100%;
@@ -756,10 +740,7 @@ body{
     inset 4px 4px 8px rgba(0,0,0,.25),
     inset -2px -2px 4px rgba(255,255,255,.08);
 }
-   .sidebar{
-  top:60px;
-  height:calc(100vh - 60px);
-}
+
    .logo{
   width:48px !important;
   height:48px !important;
@@ -784,7 +765,9 @@ body{
 
   display:block;
 }
-
+   .menu-btn{
+  text-shadow:0 0 2px rgba(255,255,255,.5);
+}
 </style>
 
 </head>
