@@ -781,6 +781,308 @@ body{
     color:#fff !important;
     font-weight:900 !important;
   }
+   /* =========================
+   PRODUCTS GRID
+========================= */
+
+.products-grid{
+  display:grid;
+  grid-template-columns:
+  repeat(auto-fill,minmax(220px,1fr));
+
+  gap:16px;
+
+  padding:16px;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.product-card{
+
+  background:#fff;
+
+  border-radius:14px;
+
+  overflow:hidden;
+
+  border:1px solid #eee;
+
+  transition:.25s;
+
+  position:relative;
+
+}
+
+.product-card:hover{
+
+  transform:translateY(-4px);
+
+  box-shadow:
+  0 8px 25px rgba(0,0,0,.08);
+
+}
+
+/* =========================
+   TAG
+========================= */
+
+.top-tag{
+
+  position:absolute;
+
+  top:10px;
+  left:10px;
+
+  background:#fff3cd;
+
+  color:#856404;
+
+  font-size:12px;
+
+  padding:4px 8px;
+
+  border-radius:999px;
+
+  z-index:2;
+
+}
+
+/* =========================
+   IMAGE
+========================= */
+
+.img-wrap{
+
+  width:100%;
+
+  aspect-ratio:1/1;
+
+  overflow:hidden;
+
+  background:#fff;
+
+}
+
+.img-wrap img{
+
+  width:100%;
+  height:100%;
+
+  object-fit:contain;
+
+  padding:14px;
+
+  transition:.3s;
+
+  cursor:pointer;
+
+}
+
+.product-card:hover img{
+
+  transform:scale(1.05);
+
+}
+
+/* =========================
+   INFO
+========================= */
+
+.product-info{
+
+  padding:14px;
+
+}
+
+.product-name{
+
+  font-size:15px;
+
+  line-height:1.4;
+
+  height:42px;
+
+  overflow:hidden;
+
+  margin-bottom:10px;
+
+}
+
+/* =========================
+   PRICE
+========================= */
+
+.price-box{
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  align-items:center;
+
+  gap:8px;
+
+  margin-bottom:12px;
+
+}
+
+.price{
+
+  color:#e60023;
+
+  font-size:22px;
+
+  font-weight:700;
+
+}
+
+.old-price{
+
+  color:#999;
+
+  text-decoration:line-through;
+
+  font-size:14px;
+
+}
+
+.discount{
+
+  color:#e60023;
+
+  font-size:13px;
+
+  font-weight:700;
+
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.btn-group{
+
+  display:flex;
+
+  gap:10px;
+
+}
+
+.spec-btn,
+.buy-btn{
+
+  flex:1;
+
+  border:none;
+
+  border-radius:10px;
+
+  padding:10px;
+
+  cursor:pointer;
+
+  font-weight:600;
+
+}
+
+.spec-btn{
+
+  background:#f1f1f1;
+
+}
+
+.buy-btn{
+
+  background:#ffd500;
+
+}
+
+.buy-btn:hover{
+
+  background:#ffcc00;
+
+}
+
+/* =========================
+   SPEC BOX
+========================= */
+
+.spec-box{
+
+  margin-top:12px;
+
+  display:none;
+
+  background:#fafafa;
+
+  border-radius:10px;
+
+  padding:12px;
+
+  font-size:14px;
+
+  line-height:1.6;
+
+}
+
+.spec-box.active{
+
+  display:block;
+
+}
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty{
+
+  text-align:center;
+
+  padding:40px;
+
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:768px){
+
+  .products-grid{
+
+    grid-template-columns:
+    repeat(2,1fr);
+
+    gap:10px;
+
+    padding:10px;
+
+  }
+
+  .product-name{
+
+    font-size:14px;
+
+    height:40px;
+
+  }
+
+  .price{
+
+    font-size:18px;
+
+  }
+
+  .btn-group{
+
+    flex-direction:column;
+
+  }
+
+}
 }
 </style>
 
@@ -893,7 +1195,10 @@ body{
 
 
 <!-- CONTENT -->
-
+<div
+  id="products"
+  class="products-grid"
+></div>
 <!-- PRODUCT LIST -->
 
 <div class="product-slider">
