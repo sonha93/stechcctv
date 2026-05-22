@@ -439,7 +439,6 @@ button:hover{
     <div class="camera-btn" id="avatarBox">
         📷
     </div>
-
 </div>
 
 <input type="file" id="avatarUpload" accept="image/*" hidden>
@@ -610,30 +609,12 @@ auth.onAuthStateChanged(user=>{
         }
     });
 
-  db.ref('carts/' + currentUser.uid).on('value', snapshot => {
-
-    const cart = snapshot.val() || [];
-
-    let count = 0;
-
-    cart.forEach(item => {
-        count += Number(item.quantity || 1);
+    db.ref('carts/'+currentUser.uid).on('value',snapshot=>{
+        let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); 
+        cartCountEl.innerText=count;
     });
-
-    cartCountEl.innerText = count;
-
-    cartCountEl.style.display =
-        count > 0 ? "flex" : "none";
-
-});
-   
 });
 
-    console.log("COUNT =", count);
-
-    cartCountEl.textContent = count;
-    cartCountEl.style.display = "flex";
-});
 
 updateInfoBtn.addEventListener("click", async () => {
 
@@ -852,7 +833,6 @@ function loadOrders(){
 }
 
 </script>
-  
-</script>
 </body>
 </html>
+
