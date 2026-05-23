@@ -1,31 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getDatabase,
-  ref,
-  onValue
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { auth, db } from "./firebase-init.js";
 
-import {
-  getAuth,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-/* =========================
-   FIREBASE
-========================= */
-const firebaseConfig = {
-  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
-  databaseURL:
-    "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "stech-73b89",
-  storageBucket: "stech-73b89.appspot.com",
-  messagingSenderId: "873739162979",
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
 /* =========================
    CONFIG
 ========================= */
@@ -44,96 +18,110 @@ function format(n) {
 /* =========================
    LOAD ORDERS
 ========================= */
-function loadOrders(user) {
+async function loadOrders(user) {
 
   const box = document.getElementById("orders");
 
   if (!box) return;
 
-  onValue(ref(db, `orders/${user.uid}`), (snapshot) => {
+  const snapshot = await db
+    .collection("orders")
+    .where("uid", "==", user.uid)
+    .get();
 
-    const data = snapshot.val();
+  if (snapshot.empty) {
 
-    if (!data) {
+    box.innerHTML = `
+      <p style="padding:20px;text-align:center;">
+        Chưa có đơn hàng
+      </p>
+    `;
 
-      box.innerHTML = `
-        <p style="padding:20px;text-align:center;">
-          Chưa có đơn hàng
-        </p>
-      `;
+    return;
+  }
 
-      return;
-    }
+  allOrders = snapshot.docs
+    .map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+    .sort((a, b) => b.createdAt - a.createdAt);
 
-    allOrders = Object.values(data).reverse();
-   currentPage = 1;
+  currentPage = 1;
 
   renderOrders();
-   
-  });
 }
 
 /* =========================
    RENDER ORDERS
 ========================= */
 function renderOrders() {
+
   const box = document.getElementById("orders");
+
   if (!box) return;
 
   box.innerHTML = "";
 
-  let start = (currentPage - 1) * perPage;
-  let end = start + perPage;
+  const start = (currentPage - 1) * perPage;
+  const end = start + perPage;
 
-  let pageOrders = allOrders.slice(start, end);
+  const pageOrders = allOrders.slice(start, end);
 
   pageOrders.forEach(order => {
-    let totalOld = 0;
-    let totalFinal = 0;
+
     let itemsHTML = "";
 
     (order.items || []).forEach(p => {
-      let qty = p.qty || 1;
-      let price = Number(p.price) || 0;
-      let old = Number(p.oldPrice) || price;
 
-      let subFinal = price * qty;
-      let subOld = old * qty;
-
-      totalFinal += subFinal;
-      totalOld += subOld;
+      const qty = p.qty || 1;
+      const price = Number(p.price) || 0;
+      const subTotal = qty * price;
 
       itemsHTML += `
         <div class="item">
-      <img src="${p.img || 'no-image.png'}" />
+          <img src="${p.img || 'no-image.png'}" />
+
           <div>
-            <b>${p.name}</b>
+            <b>${p.name || "Sản phẩm"}</b>
+
             <div>
-              <div>${format(price)}</div>
-              ${old > price ? `<div>${format(old)}</div>` : ""}
-              <div>${qty} × ${format(price)} = ${format(subFinal)}</div>
+              ${qty} × ${format(price)}
+            </div>
+
+            <div>
+              = ${format(subTotal)}
             </div>
           </div>
         </div>
       `;
     });
 
-    let discount = totalOld - totalFinal;
-
     box.innerHTML += `
       <div class="order-box">
-        <h3>🧾 Đơn #${order.id || "N/A"}</h3>
+
+        <h3>🧾 Đơn #${order.id}</h3>
 
         <p>👤 ${order.customer || ""}</p>
-        <p>📞 ${order.phone || ""}</p>
-        <p>📍 ${order.address || ""}</p>
+
+        <p>📧 ${order.email || ""}</p>
+
         <p>🕒 ${order.time || ""}</p>
+
+        <p>
+          📦 Trạng thái:
+          <b>${order.status || "Đang xử lý"}</b>
+        </p>
 
         <hr>
 
         ${itemsHTML}
 
-        <p><b>Tổng:</b> ${format(totalFinal)}</p>
+        <p>
+          <b>Tổng:</b>
+          ${format(order.total || 0)}
+        </p>
+
       </div>
     `;
   });
@@ -145,22 +133,38 @@ function renderOrders() {
    PAGINATION
 ========================= */
 function renderPagination() {
+
   const box = document.getElementById("orders");
-let totalPages = Math.max(
-  1,
-  Math.ceil(allOrders.length / perPage)
-);
- 
-  let html = `<div style="text-align:center;margin-top:15px;">`;
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(allOrders.length / perPage)
+  );
+
+  let html = `
+    <div style="text-align:center;margin-top:15px;">
+  `;
 
   if (currentPage > 1) {
-    html += `<button onclick="changePage(${currentPage - 1})">←</button>`;
+
+    html += `
+      <button onclick="changePage(${currentPage - 1})">
+        ←
+      </button>
+    `;
   }
 
-  html += ` Trang ${currentPage}/${totalPages} `;
+  html += `
+    Trang ${currentPage}/${totalPages}
+  `;
 
   if (currentPage < totalPages) {
-    html += `<button onclick="changePage(${currentPage + 1})">→</button>`;
+
+    html += `
+      <button onclick="changePage(${currentPage + 1})">
+        →
+      </button>
+    `;
   }
 
   html += `</div>`;
@@ -171,7 +175,7 @@ let totalPages = Math.max(
 /* =========================
    CHANGE PAGE
 ========================= */
-window.changePage = function (page) {
+window.changePage = function(page) {
 
   currentPage = page;
 
@@ -179,9 +183,9 @@ window.changePage = function (page) {
 };
 
 /* =========================
-   INIT
+   AUTH
 ========================= */
-onAuthStateChanged(auth, (user) => {
+auth.onAuthStateChanged(user => {
 
   const box = document.getElementById("orders");
 
