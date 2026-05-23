@@ -1,10 +1,4 @@
-import "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js";
 
-import "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js";
-
-import "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js";
-
-import "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js";
 // ==========================
 // FIREBASE INIT
 // ==========================
