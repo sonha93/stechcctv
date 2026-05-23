@@ -194,7 +194,7 @@ button{
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* =========================
    FIREBASE
@@ -382,6 +382,14 @@ btnAdd.addEventListener("click", async function(){
 
   }
 
+  const slug = name
+  .toLowerCase()
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g,"")
+  .replace(/đ/g,"d")
+  .replace(/\s+/g,"-")
+  .replace(/[^a-z0-9-]/g,"");
+   + "-" + Date.now();
   async function addProduct(img){
 
     const productData = {
@@ -417,10 +425,10 @@ btnAdd.addEventListener("click", async function(){
 
     };
 
-    await addDoc(
-      collection(db,"products"),
-      productData
-    );
+   await setDoc(
+  doc(db,"products",slug),
+  productData
+);
 alert("✔ Thêm sản phẩm thành công");
 
 await loadProducts();
