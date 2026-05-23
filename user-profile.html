@@ -445,7 +445,6 @@ button:hover{
 
 <div class="info-fields">
 <p>Email: <b id="userEmail"></b></p>
-<p>ID: <b id="userUsername">@loading...</b></p>
 <p>Ngày đăng ký: <span id="userCreatedAt"></span></p>
 <label for="name">Họ và tên:</label><input type="text" id="name">
 <label for="address">Địa chỉ:</label><input type="text" id="address">
@@ -504,8 +503,6 @@ const db = firebase.database();
 
 const userEmail = document.getElementById("userEmail");
 const userCreatedAt = document.getElementById("userCreatedAt");
-const userUsername =
-document.getElementById("userUsername");
 const nameInput = document.getElementById("name");
 const phoneInput = document.getElementById("phone");
 const addressInput = document.getElementById("address");
@@ -599,8 +596,6 @@ auth.onAuthStateChanged(user=>{
 
     db.ref('users/'+uidToLoad).once('value').then(snapshot=>{
         if(snapshot.exists()){
-           userUsername.innerText =
-"@" + (data.username || "unknown");
             const data = snapshot.val();
             nameInput.value = data.name||"";
             phoneInput.value = data.phone||"";
@@ -840,3 +835,4 @@ function loadOrders(){
 </script>
 </body>
 </html>
+                    
