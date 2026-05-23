@@ -3,15 +3,7 @@
 // ==========================
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore,
-  doc,
-  setDoc
-  getDatabase,
-ref,
-set
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -45,13 +37,10 @@ const firebaseConfig = {
 // ==========================
 export const app =
   initializeApp(firebaseConfig);
+
 export const auth =
   getAuth(app);
 
-export const db =
-  getFirestore(app);
-export const rtdb =
-  getDatabase(app);
 // ==========================
 // AUTH FUNCTIONS
 // ==========================
@@ -59,8 +48,7 @@ export const rtdb =
 // Đăng ký
 export const registerUser = async (
   email,
-  password,
-  username
+  password
 ) => {
 
   const userCredential =
@@ -70,31 +58,9 @@ export const registerUser = async (
       password
     );
 
-  const user = userCredential.user;
-
-  await setDoc(
-    doc(db,"users",user.uid),
-    await set(
-  ref(rtdb,"users/"+user.uid),
-  {
-    uid:user.uid,
-    email:user.email,
-    username:username
-      .toLowerCase()
-      .replace(/\s+/g,"")
-  }
-);
-    {
-      uid:user.uid,
-      email:user.email,
-      username:username
-        .toLowerCase()
-        .replace(/\s+/g,"")
-    }
-  );
-
-  return user;
+  return userCredential.user;
 };
+
 // Đăng nhập
 export const loginUser = async (
   email,
