@@ -150,7 +150,7 @@ async function checkout(){
     return sum + (item.qty || 1) * (item.price || 0);
   }, 0);
 
-await db.collection("orders").add({
+await db.ref("orders").push({
 
   uid: currentUser.uid,
 
