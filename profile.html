@@ -445,7 +445,6 @@ button:hover{
 
 <div class="info-fields">
 <p>Email: <b id="userEmail"></b></p>
-<p>ID: <b id="userUsername">@loading...</b></p>
 <p>Ngày đăng ký: <span id="userCreatedAt"></span></p>
 <label for="name">Họ và tên:</label><input type="text" id="name">
 <label for="address">Địa chỉ:</label><input type="text" id="address">
@@ -504,8 +503,6 @@ const db = firebase.database();
 
 const userEmail = document.getElementById("userEmail");
 const userCreatedAt = document.getElementById("userCreatedAt");
-const userUsername =
-document.getElementById("userUsername");
 const nameInput = document.getElementById("name");
 const phoneInput = document.getElementById("phone");
 const addressInput = document.getElementById("address");
@@ -597,78 +594,20 @@ auth.onAuthStateChanged(user=>{
     userEmail.innerText = currentUser.email;
     userCreatedAt.innerText = new Date(currentUser.metadata.creationTime).toLocaleDateString();
 
-   db.ref('users/' + uidToLoad)
-.once('value')
-.then(async snapshot => {
-
-    let data = {};
-
-    // nếu chưa có data user
-    if(!snapshot.exists()){
-
-        // tạo luôn
-        const username =
-            currentUser.email
-            .split("@")[0]
-            .toLowerCase()
-            .replace(/\s+/g,"");
-
-        data = {
-            username: username
-        };
-
-        await db.ref("users/" + uidToLoad)
-        .update(data);
-
-    } else {
-
-        data = snapshot.val();
-
-        // acc cũ chưa có username
-        if(!data.username){
-
-            data.username =
-                currentUser.email
-                .split("@")[0]
-                .toLowerCase()
-                .replace(/\s+/g,"");
-
-            await db.ref("users/" + uidToLoad)
-            .update({
-                username:data.username
-            });
-
+    db.ref('users/'+uidToLoad).once('value').then(snapshot=>{
+        if(snapshot.exists()){
+            const data = snapshot.val();
+            nameInput.value = data.name||"";
+            phoneInput.value = data.phone||"";
+            addressInput.value = data.address||"";
+            birthdayInput.value = data.birthday||"";
+            avatarImg.src = data.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
+            currentName.innerText = data.name||"Chưa cập nhật";
+            currentPhone.innerText = data.phone||"Chưa cập nhật";
+            currentAddress.innerText = data.address||"Chưa cập nhật";
+            currentBirthday.innerText = data.birthday||"Chưa cập nhật";
         }
-
-    }
-
-    // hiện ID
-    document.getElementById("userId").innerText =
-        "@" + data.username;
-
-    // load info
-    nameInput.value = data.name || "";
-    phoneInput.value = data.phone || "";
-    addressInput.value = data.address || "";
-    birthdayInput.value = data.birthday || "";
-
-    avatarImg.src =
-        data.avatar ||
-        "https://i.ibb.co/Z1kv9nJj/logo.png";
-
-    currentName.innerText =
-        data.name || "Chưa cập nhật";
-
-    currentPhone.innerText =
-        data.phone || "Chưa cập nhật";
-
-    currentAddress.innerText =
-        data.address || "Chưa cập nhật";
-
-    currentBirthday.innerText =
-        data.birthday || "Chưa cập nhật";
-
-});
+    });
 
     db.ref('carts/'+currentUser.uid).on('value',snapshot=>{
         let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); 
@@ -896,4 +835,4 @@ function loadOrders(){
 </script>
 </body>
 </html>
-
+                    
