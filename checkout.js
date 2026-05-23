@@ -58,7 +58,7 @@ function renderCheckout(){
     cartBox.innerHTML += `
       <div class="cart-item">
         <input type="checkbox" ${item.checked?"checked":""} onclick="toggleItem(${index})">
-        <img src="${item.img}">
+       <img src="${item.img || 'no-image.png'}">
         <div>
           <h4>${item.name}</h4>
           <div>${qty} × ${formatPrice(price)} = ${formatPrice(subTotal)}</div>
@@ -150,17 +150,31 @@ async function checkout(){
     return sum + (item.qty || 1) * (item.price || 0);
   }, 0);
 
-  await db.collection("orders").add({
-    uid: currentUser.uid,
-    items: itemsToOrder,
-    total: total,
-    time: new Date().toLocaleString()
-  });
+await db.collection("orders").add({
 
-  await clearCart();
+  uid: currentUser.uid,
 
-  window.location.href = "checkout.html";
-}
+  customer: currentUser.displayName || "",
+
+  email: currentUser.email || "",
+
+  items: itemsToOrder,
+
+  total: total,
+
+  status: "Đang xử lý",
+
+  time: new Date().toLocaleString("vi-VN"),
+createdAt: Date.now()
+});
+
+await clearCart();
+
+alert("Đặt hàng thành công 😎");
+
+
+window.location.href = "orders.html";
+  }
 // ============================
 // AUTH STATE
 // ============================
