@@ -5,6 +5,10 @@ import {
   onValue
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 /* =========================
    FIREBASE
 ========================= */
@@ -21,7 +25,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-
+const auth = getAuth(app);
 /* =========================
    CONFIG
 ========================= */
@@ -40,20 +44,32 @@ function format(n) {
 /* =========================
    LOAD ORDERS
 ========================= */
-function loadOrders() {
+function loadOrders(user) {
+
   const box = document.getElementById("orders");
+
   if (!box) return;
 
-  onValue(ref(db, "orders"), (snapshot) => {
+  onValue(ref(db, `orders/${user.uid}`), (snapshot) => {
+
     const data = snapshot.val();
 
     if (!data) {
-      box.innerHTML = "<p>Chưa có đơn hàng</p>";
+
+      box.innerHTML = `
+        <p style="padding:20px;text-align:center;">
+          Chưa có đơn hàng
+        </p>
+      `;
+
       return;
     }
 
     allOrders = Object.values(data).reverse();
-    renderOrders();
+   currentPage = 1;
+
+  renderOrders();
+   
   });
 }
 
@@ -89,7 +105,7 @@ function renderOrders() {
 
       itemsHTML += `
         <div class="item">
-          <img src="${p.img}" />
+      <img src="${p.img || 'no-image.png'}" />
           <div>
             <b>${p.name}</b>
             <div>
@@ -130,9 +146,11 @@ function renderOrders() {
 ========================= */
 function renderPagination() {
   const box = document.getElementById("orders");
-
-  let totalPages = Math.ceil(allOrders.length / perPage);
-
+let totalPages = Math.max(
+  1,
+  Math.ceil(allOrders.length / perPage)
+);
+ 
   let html = `<div style="text-align:center;margin-top:15px;">`;
 
   if (currentPage > 1) {
@@ -154,11 +172,31 @@ function renderPagination() {
    CHANGE PAGE
 ========================= */
 window.changePage = function (page) {
+
   currentPage = page;
+
   renderOrders();
 };
 
 /* =========================
    INIT
 ========================= */
-document.addEventListener("DOMContentLoaded", loadOrders);
+onAuthStateChanged(auth, (user) => {
+
+  const box = document.getElementById("orders");
+
+  if (!box) return;
+
+  if (user) {
+
+    loadOrders(user);
+
+  } else {
+
+    box.innerHTML = `
+      <p style="padding:20px;text-align:center;">
+        Vui lòng đăng nhập
+      </p>
+    `;
+  }
+});
