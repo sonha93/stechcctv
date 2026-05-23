@@ -759,7 +759,7 @@ const db = getFirestore(app);
 
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
-
+console.log("ID:", id);
 let products = [];
 let product = null;
 
@@ -800,10 +800,9 @@ async function loadProducts(){
   querySnapshot.forEach(docSnap=>{
 
     products.push({
-      id: docSnap.id,
-      ...docSnap.data()
-    });
-
+  firestoreId: docSnap.id,
+  ...docSnap.data()
+	});
   });
 
 }
@@ -1052,23 +1051,25 @@ function updateCartCount(){
 // SEARCH
 function searchProduct(){
 
+  const input =
+    document.getElementById("searchInput");
+
   const term =
-    document.getElementById("searchInput")
-    .value
-    .toLowerCase();
+    input.value.trim().toLowerCase();
 
   const resultBox =
     document.getElementById("searchResults");
 
   resultBox.innerHTML = "";
 
-  if(term === "") return;
+  if(term === ""){
+    return;
+  }
 
   const filtered = products
-    .filter(
-      p =>
-        p.name &&
-        p.name.toLowerCase().includes(term)
+    .filter(p =>
+      p.name &&
+      p.name.toLowerCase().includes(term)
     )
     .sort((a,b)=>
       a.name.length - b.name.length
@@ -1097,10 +1098,9 @@ function searchProduct(){
 
     div.onclick = ()=>{
 
-      resultBox.innerHTML = "";
-
-      window.location.href =
-        "logo.html?id=" + p.id;
+      // reset hoàn toàn URL cũ
+     window.location.href =
+  "logo.html?id=" + p.firestoreId;
 
     };
 
