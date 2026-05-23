@@ -224,48 +224,29 @@ body{
 /* OVERLAY FIX */
 
 #overlay{
-  pointer-events:none;
-}
-
-#overlay.active{
-  pointer-events:auto;
-}
-#overlay.active{
-  opacity:1;
-  visibility:visible;
-}
-
-/* SIDEBAR */
-
-.sidebar{
   position:fixed;
+  inset:0;
 
-  top:80px;
-  left:-280px;
+  background:rgba(0,0,0,.45);
 
-  width:260px;
-  height:100vh;
-
-  background:#fff;
-
-  z-index:99999;
+  opacity:0;
+  visibility:hidden;
 
   transition:.25s;
 
-  padding:20px;
+  z-index:1500;
+}
+
+#overlay.active{
+  opacity:1;
+  visibility:visible;
 }
 
 .sidebar.active{
   left:0;
 }
 
-/* =========================
-   FORCE FIX HEADER
-========================= */
 
-.top-header{
-  overflow:visible !important;
-}
 
 /* FORCE LOGO */
 
@@ -320,23 +301,53 @@ body{
 
   font-weight:bold;
 }/* FIX FLEX HEADER */
-
 .top-header{
-  display:flex !important;
-  align-items:center !important;
-  flex-wrap:nowrap !important;
+  position:sticky;
+  top:0;
+  z-index:1000;
+
+  height:80px;
+
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  padding:8px;
+
+  background:#33A0AB;
 }
 
-.top-header .search-box{
-  flex:1 1 auto !important;
-  width:auto !important;
-  min-width:0 !important;
+/* SEARCH FLEX */
+
+.search-box{
+  flex:1;
+  min-width:0;
 }
 
-.top-header .header-icons{
-  display:flex !important;
-  flex-direction:row !important;
+/* INPUT */
+
+.search-box input{
+  width:100%;
+  height:44px;
+
+  border-radius:14px;
+  border:1px solid #ddd;
+
+  padding:0 14px;
+
+  outline:none;
 }
+
+/* RIGHT ICON */
+
+.header-icons{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+
+
 
 /* FIX INPUT */
 
