@@ -1,180 +1,255 @@
-/* =========================
-   📦 GET ORDERS
-========================= */
-function getOrders(){
-  return JSON.parse(localStorage.getItem("orders")) || [];
-}
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getDatabase,
+ref,
+onValue
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 /* =========================
-   ➕ ADD ORDER
+FIREBASE
 ========================= */
-function addOrder(order){
-  let list = getOrders();
-  list.unshift(order);
-  localStorage.setItem("orders", JSON.stringify(list));
-  return true;
-}
+const firebaseConfig = {
+apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+authDomain: "stech-73b89.firebaseapp.com",
+databaseURL:
+"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId: "stech-73b89",
+storageBucket: "stech-73b89.appspot.com",
+messagingSenderId: "873739162979",
+appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
 
 /* =========================
-   💰 FORMAT TIỀN
-========================= */
-function format(n){
-  return Number(n || 0).toLocaleString("vi-VN") + "đ";
-}
-
-/* =========================
-   🔢 PAGINATION
+CONFIG
 ========================= */
 let currentPage = 1;
+
 const perPage = 10;
 
+let allOrders = [];
+
 /* =========================
-   🖥️ RENDER ORDERS
+FORMAT
 ========================= */
-function renderOrders(){
-  const box = document.getElementById("orders");
-  if(!box) return;
+function format(n) {
 
-  const orders = getOrders();
+return Number(n || 0).toLocaleString("vi-VN") + "đ";
+}
 
-  if(orders.length === 0){
-    box.innerHTML = "<p>Chưa có đơn hàng</p>";
-    return;
-  }
+/* =========================
+LOAD ORDERS
+========================= */
+function loadOrders() {
 
-  box.innerHTML = "";
+const box = document.getElementById("orders");
 
-  // 👉 chia trang
-  let start = (currentPage - 1) * perPage;
-  let end = start + perPage;
-  let pageOrders = orders.slice(start, end);
+if (!box) return;
 
-  pageOrders.forEach(order => {
+onValue(ref(db, "orders"), (snapshot) => {
 
-    let totalOld = 0;
-    let totalFinal = 0;
+```
+const data = snapshot.val();
 
-    let itemsHTML = "";
+if (!data) {
 
-    order.cart.forEach(p => {
+  box.innerHTML = `
+    <p>Chưa có đơn hàng</p>
+  `;
 
-      let qty = p.qty || 1;
-      let price = Number(p.price) || 0;
-      let old = Number(p.oldPrice) || price;
+  return;
+}
 
-      let subFinal = price * qty;
-      let subOld = old * qty;
+allOrders = Object.values(data).reverse();
 
-      totalFinal += subFinal;
-      totalOld += subOld;
+renderOrders();
+```
 
-      itemsHTML += `
-        <div class="item">
-          <img src="${p.img}" />
+});
+}
+
+/* =========================
+RENDER ORDERS
+========================= */
+function renderOrders() {
+
+const box = document.getElementById("orders");
+
+if (!box) return;
+
+box.innerHTML = "";
+
+let start = (currentPage - 1) * perPage;
+
+let end = start + perPage;
+
+let pageOrders = allOrders.slice(start, end);
+
+pageOrders.forEach(order => {
+
+```
+let totalOld = 0;
+
+let totalFinal = 0;
+
+let itemsHTML = "";
+
+(order.items || []).forEach(p => {
+
+  let qty = p.qty || 1;
+
+  let price = Number(p.price) || 0;
+
+  let old = Number(p.oldPrice) || price;
+
+  let subFinal = price * qty;
+
+  let subOld = old * qty;
+
+  totalFinal += subFinal;
+
+  totalOld += subOld;
+
+  itemsHTML += `
+    <div class="item">
+
+      <img src="${p.img || 'no-image.png'}" />
+
+      <div>
+
+        <b>${p.name}</b>
+
+        <div>
+
+          <div>${format(price)}</div>
+
+          ${old > price
+            ? `<div>${format(old)}</div>`
+            : ""
+          }
 
           <div>
-            <b>${p.name}</b>
-
-            <div style="margin-top:5px;">
-              <div class="price-new">
-                ${format(price)}
-              </div>
-
-              ${
-                old > price
-                ? `<div class="price-old">${format(old)}</div>`
-                : ""
-              }
-
-              <div class="calc">
-                ${qty} × ${format(price)} = ${format(subFinal)}
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    });
-
-    let discount = totalOld - totalFinal;
-
-    box.innerHTML += `
-      <div class="order-box">
-
-        <div class="order-header-wrap">
-          <div style="width:70px;"></div>
-
-          <div class="order-header">
-            <h3>🧾 Đơn #${order.id}</h3>
-
-            <p>👤 ${order.name || "Không có tên"}</p>
-            <p>📞 ${order.phone || ""}</p>
-            <p>📍 ${order.address || ""}</p>
-
-            <p style="font-size:12px;color:#888;">
-              🕒 ${order.time}
-            </p>
-          </div>
-        </div>
-
-        <hr>
-
-        ${itemsHTML}
-
-        <div class="total-box">
-          <div class="row">
-            <span>Tổng giá gốc</span>
-            <b>${format(totalOld)}</b>
+            ${qty} × ${format(price)}
+            =
+            ${format(subFinal)}
           </div>
 
-          <div class="row discount">
-            <span>Giảm giá</span>
-            <b>-${format(discount)}</b>
-          </div>
-
-          <div class="row final">
-            <span>Thanh toán</span>
-            <b>${format(totalFinal)}</b>
-          </div>
         </div>
 
       </div>
-    `;
-  });
 
-  renderPagination(orders.length);
+    </div>
+  `;
+});
+
+let discount = totalOld - totalFinal;
+
+box.innerHTML += `
+  <div class="order-box">
+
+    <h3>
+      🧾 Đơn #${order.id || "N/A"}
+    </h3>
+
+    <p>
+      👤 ${order.customer || ""}
+    </p>
+
+    <p>
+      📞 ${order.phone || ""}
+    </p>
+
+    <p>
+      📍 ${order.address || ""}
+    </p>
+
+    <p>
+      🕒 ${order.time || ""}
+    </p>
+
+    <hr>
+
+    ${itemsHTML}
+
+    <p>
+      <b>Tổng:</b>
+      ${format(totalFinal)}
+    </p>
+
+  </div>
+`;
+```
+
+});
+
+renderPagination();
 }
 
 /* =========================
-   🔘 PAGINATION UI
+PAGINATION
 ========================= */
-function renderPagination(total){
-  let totalPages = Math.ceil(total / perPage);
-  let html = `<div style="text-align:center;margin-top:15px;">`;
+function renderPagination() {
 
-  if(currentPage > 1){
-    html += `<button onclick="changePage(${currentPage - 1})">←</button>`;
-  }
+const box = document.getElementById("orders");
 
-  html += ` Trang ${currentPage}/${totalPages} `;
+let totalPages = Math.ceil(
+allOrders.length / perPage
+);
 
-  if(currentPage < totalPages){
-    html += `<button onclick="changePage(${currentPage + 1})">→</button>`;
-  }
+let html = `     <div style="text-align:center;margin-top:15px;">
+  `;
 
-  html += `</div>`;
+if (currentPage > 1) {
 
-  document.getElementById("orders").innerHTML += html;
+```
+html += `
+  <button onclick="changePage(${currentPage - 1})">
+    ←
+  </button>
+`;
+```
+
+}
+
+html += `     Trang ${currentPage}/${totalPages}
+  `;
+
+if (currentPage < totalPages) {
+
+```
+html += `
+  <button onclick="changePage(${currentPage + 1})">
+    →
+  </button>
+`;
+```
+
+}
+
+html += `     </div>
+  `;
+
+box.innerHTML += html;
 }
 
 /* =========================
-   🔁 CHANGE PAGE
+CHANGE PAGE
 ========================= */
-function changePage(page){
-  currentPage = page;
-  renderOrders();
-}
+window.changePage = function(page) {
+
+currentPage = page;
+
+renderOrders();
+};
 
 /* =========================
-   🚀 INIT
+INIT
 ========================= */
-document.addEventListener("DOMContentLoaded", renderOrders);
+document.addEventListener(
+"DOMContentLoaded",
+loadOrders
+);
