@@ -255,7 +255,7 @@ const featured = allProducts.filter(
       btn.style.display = "block";
 
       btn.innerHTML =
-        `Xem thêm ${remain} sản phẩm`;
+        `Xem thêm ${remain} sản phẩm...`;
 
     }else{
 
