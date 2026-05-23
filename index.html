@@ -151,8 +151,11 @@ body{
 
   overflow-y: auto;
 
-  z-index: 9999;
+ z-index:5000;
+   body.menu-open{
+  overflow:hidden;
 }
+
 .search-item{
   display:flex;
   gap:10px;
@@ -233,25 +236,33 @@ body{
   opacity:1;
   visibility:visible;
 }
+#overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.45);
 
+  opacity:0;
+  visibility:hidden;
+
+  transition:.25s;
+
+ z-index:99999;
+}
 /* SIDEBAR */
 
 .sidebar{
   position:fixed;
-
   top:80px;
   left:-280px;
 
   width:260px;
-  height:100vh;
+  height:calc(100vh - 80px);
 
   background:#fff;
 
-  z-index:99999;
+   z-index:100000;
 
   transition:.25s;
-
-  padding:20px;
 }
 
 .sidebar.active{
@@ -504,7 +515,7 @@ body{
   background:rgba(0,0,0,0.6);
   align-items:center;
   justify-content:center;
-  z-index:9999;
+  z-index:200000;
 }
 
 #authModal .auth-content{
@@ -778,6 +789,10 @@ body{
     color:#fff !important;
     font-weight:900 !important;
     font-size:24px !important;
+}
+   .sidebar{
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 }
 </style>
