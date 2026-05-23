@@ -26,32 +26,44 @@ async function loadOrders(user) {
 
   if (!box) return;
 
-  const snapshot = await db
-    .collection("orders")
-    .where("uid", "==", user.uid)
-    .get();
+  db.ref("orders").once("value", (snapshot) => {
 
-  if (snapshot.empty) {
+    if (!snapshot.exists()) {
 
-    box.innerHTML = `
-      <p style="padding:20px;text-align:center;">
-        Chưa có đơn hàng
-      </p>
-    `;
+      box.innerHTML = `
+        <p style="padding:20px;text-align:center;">
+          Chưa có đơn hàng
+        </p>
+      `;
 
-    return;
-  }
+      return;
+    }
 
-  allOrders = snapshot.docs
-    .map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }))
-    .sort((a, b) => b.createdAt - a.createdAt);
+    const data = snapshot.val();
 
-  currentPage = 1;
+    allOrders = Object.keys(data)
+      .map(key => ({
+        id: key,
+        ...data[key]
+      }))
+      .filter(order => order.uid === user.uid)
+      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-  renderOrders();
+    if (allOrders.length === 0) {
+
+      box.innerHTML = `
+        <p style="padding:20px;text-align:center;">
+          Chưa có đơn hàng
+        </p>
+      `;
+
+      return;
+    }
+
+    currentPage = 1;
+
+    renderOrders();
+  });
 }
 
 /* =========================
