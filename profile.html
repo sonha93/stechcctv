@@ -584,102 +584,17 @@ auth.onAuthStateChanged(user=>{
     currentUser = user;
     updateInfoBtn.disabled = false;
 
-  // ==========================
-// LOAD USER PROFILE
-// ==========================
+    // Thêm UID vào URL nếu chưa có
+    const urlParams = new URLSearchParams(window.location.search);
+    let uidToLoad = urlParams.get('uid') || currentUser.uid;
+    if(!window.location.search.includes("uid=")){
+        window.history.replaceState({}, "", `${window.location.pathname}?uid=${currentUser.uid}`);
+    }
 
-const urlParams =
-new URLSearchParams(window.location.search);
+    userEmail.innerText = currentUser.email;
+    userCreatedAt.innerText = new Date(currentUser.metadata.creationTime).toLocaleDateString();
 
-const username =
-urlParams.get("u");
-
-if(username){
-
-    // load bằng username
-    db.ref("users")
-    .once("value")
-    .then(snapshot => {
-
-        snapshot.forEach(child => {
-
-            const data = child.val();
-
-            if(data.username === username){
-
-                loadUser(data);
-
-            }
-
-        });
-
-    });
-
-}else{
-
-    // load acc hiện tại
-    db.ref("users/" + currentUser.uid)
-    .once("value")
-    .then(snapshot => {
-
-        if(snapshot.exists()){
-
-            const data = snapshot.val();
-
-            loadUser(data);
-
-            // tự đổi link thành /?u=username
-            if(data.username){
-
-                window.history.replaceState(
-                    {},
-                    "",
-                    `${window.location.pathname}?u=${data.username}`
-                );
-
-            }
-
-        }
-
-    });
-
-}
-
-// ==========================
-// HIỂN THỊ USER
-// ==========================
-
-function loadUser(data){
-
-    nameInput.value =
-    data.name || "";
-
-    phoneInput.value =
-    data.phone || "";
-
-    addressInput.value =
-    data.address || "";
-
-    birthdayInput.value =
-    data.birthday || "";
-
-    avatarImg.src =
-    data.avatar ||
-    "https://i.ibb.co/Z1kv9nJj/logo.png";
-
-    currentName.innerText =
-    data.name || "Chưa cập nhật";
-
-    currentPhone.innerText =
-    data.phone || "Chưa cập nhật";
-
-    currentAddress.innerText =
-    data.address || "Chưa cập nhật";
-
-    currentBirthday.innerText =
-    data.birthday || "Chưa cập nhật";
-
-}
+    db.ref('users/'+uidToLoad).once('value').then(snapshot=>{
         if(snapshot.exists()){
             const data = snapshot.val();
             nameInput.value = data.name||"";
