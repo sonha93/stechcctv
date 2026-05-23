@@ -7,6 +7,9 @@ import {
   getFirestore,
   doc,
   setDoc
+  getDatabase,
+ref,
+set
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
@@ -47,6 +50,8 @@ export const auth =
 
 export const db =
   getFirestore(app);
+export const rtdb =
+  getDatabase(app);
 // ==========================
 // AUTH FUNCTIONS
 // ==========================
@@ -69,6 +74,16 @@ export const registerUser = async (
 
   await setDoc(
     doc(db,"users",user.uid),
+    await set(
+  ref(rtdb,"users/"+user.uid),
+  {
+    uid:user.uid,
+    email:user.email,
+    username:username
+      .toLowerCase()
+      .replace(/\s+/g,"")
+  }
+);
     {
       uid:user.uid,
       email:user.email,
