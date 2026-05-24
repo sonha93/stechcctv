@@ -1,3 +1,12 @@
+import "./firebase.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const db = getFirestore();
 import {
   getFirestore,
   collection,
