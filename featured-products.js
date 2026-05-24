@@ -31,12 +31,12 @@ document.getElementById("featuredPrev").onclick = () => {
 
         let products = [];
 
-        snap.forEach(doc => {
-            products.push({
-                id: doc.id,
-                ...doc.data()
-            });
-        });
+     snap.forEach(doc => {
+    products.push({
+        ...doc.data(),
+        docId: doc.id
+    });
+});
 
         // lấy 6 sản phẩm đầu
         products = products.slice(0,10);
@@ -69,7 +69,7 @@ document.getElementById("featuredPrev").onclick = () => {
     }
 
     const html = `
-        <a href="logo.html?id=${p.id}" class="featured-card">
+       <a href="logo.html?id=${p.docId}" class="featured-card">
 
             <div class="featured-thumb">
                 <img 
