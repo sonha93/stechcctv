@@ -905,45 +905,84 @@ body{
 }
 
 
-/* =========================
-   MOBILE
-========================= */
+@media (max-width: 768px) {
 
-@media(max-width:768px){
+  .featured-section {
+    padding: 12px 8px;
+  }
 
-    .featured-section{
-        padding:15px 10px;
-    }
+  .featured-header h2 {
+    font-size: 18px;
+  }
 
-    .featured-header h2{
-        font-size:18px;
-    }
+  /* QUAN TRỌNG: khung scroll ngang */
+  .featured-slider {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 10px;
+    padding-bottom: 8px;
+  }
 
-    .featured-nav button{
-        width:32px;
-        height:32px;
-        font-size:14px;
-    }
+  /* ẩn scrollbar cho đẹp */
+  .featured-slider::-webkit-scrollbar {
+    display: none;
+  }
 
-    .featured-card{
-        min-width:150px;
-        max-width:150px;
-        padding:10px;
-    }
+  .featured-slider {
+    scrollbar-width: none;
+  }
 
-    .featured-card img{
-        height:120px;
-    }
+  /* CARD */
+  .featured-card {
+    flex: 0 0 auto;
+    width: 140px;
+    scroll-snap-align: start;
+    border-radius: 10px;
+    padding: 10px;
+  }
 
-    .featured-name{
-        font-size:13px;
-        height:38px;
-    }
+  .featured-card img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
 
-    .featured-price{
-        font-size:15px;
-    }
+  .featured-name {
+    font-size: 13px;
+    line-height: 1.3;
+    height: 36px;
+    overflow: hidden;
+  }
 
+  .featured-price {
+    font-size: 14px;
+  }
+
+  /* nút next/prev trên mobile (overlay cho gọn) */
+  .featured-nav button {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+  }
+
+  #featuredPrev {
+    left: 5px;
+  }
+
+  #featuredNext {
+    right: 5px;
+  }
 }
 </style>
 
