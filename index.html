@@ -849,9 +849,12 @@ body{
 
     cursor: pointer;
 }
+#featuredPrev{
+    left:10px;
+}
 
 #featuredNext{
-    right: 10px;
+    right:10px;
 }
 
 /* hàng ngang */
@@ -862,8 +865,9 @@ body{
     scroll-behavior:smooth;
     scrollbar-width:none;
     padding-bottom:10px;
-}
 
+
+}
 .featured-wrap::-webkit-scrollbar{
     display:none;
 }
@@ -1035,8 +1039,11 @@ body{
     gap:10px;
     scroll-snap-type:x mandatory;
     -webkit-overflow-scrolling:touch;
+.featured-wrap{
+        padding-left:50px;
+        padding-right:50px;
 }
-}
+   }
 </style>
 
 </head>
