@@ -44,46 +44,34 @@ return Number(n || 0).toLocaleString("vi-VN") + "đ";
 /* =========================
 LOAD ORDERS
 ========================= */
+function loadOrders() {
+
+const box = document.getElementById("orders");
+
+if (!box) return;
+
 onValue(ref(db, "orders"), (snapshot) => {
 
-const data = snapshot.val();
+  const data = snapshot.val();
 
-console.log("DATA FIREBASE:", data);
+  console.log("DATA FIREBASE:", data);
 
-if (!data) {
+  if (!data) {
 
-  box.innerHTML = `
-    <p>Chưa có đơn hàng</p>
-  `;
+    box.innerHTML = `
+      <p>Chưa có đơn hàng</p>
+    `;
 
-  return;
+    return;
+  }
+
+  allOrders = Object.values(data).reverse();
+
+  renderOrders();
+
+});
+
 }
-
-allOrders = [];
-
-Object.values(data).forEach(userOrders => {
-
-  console.log("USER ORDERS:", userOrders);
-
-  Object.values(userOrders).forEach(order => {
-
-    console.log("ORDER:", order);
-
-    allOrders.push(order);
-
-  });
-
-});
-
-console.log("FINAL:", allOrders);
-
-allOrders.reverse();
-
-renderOrders();
-
-});
-
-/* =========================
 RENDER ORDERS
 ========================= */
 function renderOrders() {
