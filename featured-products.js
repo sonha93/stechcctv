@@ -44,13 +44,21 @@ document.getElementById("featuredPrev").onclick = () => {
         wrap.innerHTML = "";
 
        products.forEach(p => {
-  const price = Number(
-    String(p.price || 0).replace(/\D/g,'')
-);
 
-const originalPrice = Number(
-    String(p.originalPrice || 0).replace(/\D/g,'')
-);
+    console.log("PRODUCT:", p);
+
+    console.log("PRICE:", p.price);
+    console.log("ORIGINAL:", p.originalPrice);
+
+    const price = Number(
+        String(p.price || 0).replace(/\D/g,'')
+    );
+
+    const originalPrice = Number(
+        String(p.originalPrice || 0).replace(/\D/g,'')
+    );
+
+    console.log("AFTER PARSE:", price, originalPrice);
 
     // tính % giảm
     let discount = 0;
