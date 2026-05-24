@@ -37,32 +37,45 @@ function generateOrderId() {
 
 // Hàm lưu đơn
 function saveOrder() {
+
   const cart =
   JSON.parse(localStorage.getItem("cart")) || [];
+
   if(cart.length === 0){
 
-  alert("Giỏ hàng trống");
+    alert("Giỏ hàng trống");
 
-  return;
-}
+    return;
+  }
+
+  const customer =
+  document.getElementById("name").value;
+
+  const phone =
+  document.getElementById("phone").value;
+
   const orderId = generateOrderId();
 
   const orderData = {
+
     orderId: orderId,
-    customer: "Sơn",
-    phone: "0123456789",
 
-   items: cart,
+    customer: customer,
 
-total: cart.reduce(
-  (sum, p) =>
-    sum + ((p.price || 0) * (p.qty || 1)),
-  0
-),
+    phone: phone,
+
+    items: cart,
+
+    total: cart.reduce(
+      (sum, p) =>
+        sum + ((p.price || 0) * (p.qty || 1)),
+      0
+    ),
+
     status: "success",
+
     time: new Date().toISOString()
   };
-
   set(ref(db, `orders/${orderId}`), orderData)
     .then(() => {
       console.log("✅ Lưu đơn thành công:", orderId);
