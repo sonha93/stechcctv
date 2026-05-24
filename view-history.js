@@ -1,27 +1,25 @@
-// ===== SAVE VIEW HISTORY =====
+// ===== IMAGE =====
 
-window.addEventListener("DOMContentLoaded", () => {
+function getImage(p) {
 
-    const historyWrap =
-        document.getElementById("historyProducts");
+    let img = p.image || p.img || p.imageUrl || "";
 
-    document.getElementById("historyNext").onclick = () => {
+    if (Array.isArray(img)) {
+        img = img[0];
+    }
 
-        historyWrap.scrollBy({
-            left:300,
-            behavior:"smooth"
-        });
-    };
+    if (!img || img.trim() === "") {
+        return "./images/default.jpg";
+    }
 
-    document.getElementById("historyPrev").onclick = () => {
+    if (img.startsWith("//")) {
+        img = "https:" + img;
+    }
 
-        historyWrap.scrollBy({
-            left:-300,
-            behavior:"smooth"
-        });
-    };
-});
-// ===== LOAD VIEW HISTORY =====
+    return img;
+}
+
+// ===== LOAD HISTORY =====
 
 async function loadViewedProducts() {
 
@@ -31,20 +29,33 @@ async function loadViewedProducts() {
 
     const uid = user.uid;
 
-    const ref = db.ref(`view_history/${uid}`);
+    const historyRef = db.ref(`view_history/${uid}`);
 
-    ref.on("value", (snapshot) => {
+    historyRef.on("value", (snapshot) => {
 
         const data = snapshot.val();
 
-        if (!data) return;
+        const wrapper =
+            document.getElementById("historyProducts");
+
+        if (!wrapper) return;
+
+        if (!data) {
+
+            wrapper.innerHTML =
+                "<p>Chưa có sản phẩm đã xem</p>";
+
+            return;
+        }
 
         let products = Object.values(data);
 
-        // sort newest
-        products.sort((a, b) => b.viewedAt - a.viewedAt);
+        // newest first
+        products.sort(
+            (a, b) => b.viewedAt - a.viewedAt
+        );
 
-        // limit 20
+        // limit
         products = products.slice(0, 20);
 
         renderViewedProducts(products);
@@ -53,41 +64,81 @@ async function loadViewedProducts() {
 
 // ===== RENDER =====
 
-function renderViewedProducts(products){
+function renderViewedProducts(products) {
 
-    const wrapper = document.getElementById("viewedWrapper");
+    const wrapper =
+        document.getElementById("historyProducts");
+
+    if (!wrapper) return;
 
     wrapper.innerHTML = "";
 
     products.forEach(product => {
 
+        const price = Number(
+            String(product.price || 0)
+            .replace(/\D/g, '')
+        );
+
+        const oldPrice = Number(
+            String(product.oldPrice || 0)
+            .replace(/\D/g, '')
+        );
+
+        let discount = 0;
+
+        if (oldPrice > price) {
+
+            discount = Math.round(
+                ((oldPrice - price) / oldPrice) * 100
+            );
+        }
+
         wrapper.innerHTML += `
 
-            <a href="${product.url || '#'}" class="viewed-card">
+            <a href="${product.url || '#'}"
+               class="featured-card">
 
-                <img src="${product.image}" alt="">
+                <div class="featured-thumb">
 
-                <div class="viewed-info">
+                    <img
+                        src="${getImage(product)}"
+                        alt="${product.name}"
+                        loading="lazy"
+                        onerror="this.onerror=null;this.src='./images/default.jpg'"
+                    >
 
-                    <div class="viewed-name">
-                        ${product.name}
+                    ${
+                        discount > 0
+                        ? `
+                        <div class="discount-badge">
+                            -${discount}%
+                        </div>
+                        `
+                        : ""
+                    }
+
+                </div>
+
+                <div class="featured-name">
+                    ${product.name || ""}
+                </div>
+
+                <div class="featured-price-wrap">
+
+                    <div class="featured-price">
+                        ${price.toLocaleString()}đ
                     </div>
 
-                    <div>
-
-                        <span class="viewed-price">
-                            ${product.price}
-                        </span>
-
-                        <span class="viewed-old-price">
-                            ${product.oldPrice || ''}
-                        </span>
-
-                        <span class="viewed-discount">
-                            ${product.discount || ''}
-                        </span>
-
-                    </div>
+                    ${
+                        oldPrice > price
+                        ? `
+                        <div class="featured-original-price">
+                            ${oldPrice.toLocaleString()}đ
+                        </div>
+                        `
+                        : ""
+                    }
 
                 </div>
 
@@ -96,27 +147,49 @@ function renderViewedProducts(products){
     });
 }
 
-// ===== SLIDER BUTTON =====
+// ===== SLIDER =====
 
-const viewedWrapper = document.getElementById("viewedWrapper");
+window.addEventListener("DOMContentLoaded", () => {
 
-document.getElementById("viewPrev")
-.addEventListener("click", () => {
+    const historyWrap =
+        document.getElementById("historyProducts");
 
-    viewedWrapper.scrollLeft -= 400;
-});
+    const nextBtn =
+        document.getElementById("historyNext");
 
-document.getElementById("viewNext")
-.addEventListener("click", () => {
+    const prevBtn =
+        document.getElementById("historyPrev");
 
-    viewedWrapper.scrollLeft += 400;
+    if(nextBtn){
+
+        nextBtn.onclick = () => {
+
+            historyWrap.scrollBy({
+                left: 300,
+                behavior: "smooth"
+            });
+        };
+    }
+
+    if(prevBtn){
+
+        prevBtn.onclick = () => {
+
+            historyWrap.scrollBy({
+                left: -300,
+                behavior: "smooth"
+            });
+        };
+    }
 });
 
 // ===== AUTO LOAD =====
 
 auth.onAuthStateChanged((user) => {
 
-    if(user){
+    console.log("USER:", user);
+
+    if (user) {
 
         loadViewedProducts();
     }
