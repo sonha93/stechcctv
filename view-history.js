@@ -1,21 +1,26 @@
 // ===== SAVE VIEW HISTORY =====
 
-async function saveViewedProduct(product) {
+window.addEventListener("DOMContentLoaded", () => {
 
-    const user = auth.currentUser;
+    const historyWrap =
+        document.getElementById("historyProducts");
 
-    if (!user) return;
+    document.getElementById("historyNext").onclick = () => {
 
-    const uid = user.uid;
+        historyWrap.scrollBy({
+            left:300,
+            behavior:"smooth"
+        });
+    };
 
-    const ref = db.ref(`view_history/${uid}/${product.id}`);
+    document.getElementById("historyPrev").onclick = () => {
 
-    await ref.set({
-        ...product,
-        viewedAt: Date.now()
-    });
-}
-
+        historyWrap.scrollBy({
+            left:-300,
+            behavior:"smooth"
+        });
+    };
+});
 // ===== LOAD VIEW HISTORY =====
 
 async function loadViewedProducts() {
