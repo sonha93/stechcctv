@@ -32,7 +32,7 @@ async function renderFeaturedProducts() {
         products.forEach(p => {
             const html = `
                 <a href="logo.html?id=${p.id}" class="featured-card">
-                    <img src="${p.image}" alt="${p.name}">
+                   <img src="/images/${p.image}" alt="${p.name}">
                     <div class="featured-name">${p.name}</div>
                     <div class="featured-price">
                         ${Number(p.price).toLocaleString()}đ
