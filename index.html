@@ -796,6 +796,158 @@ body{
     color:#fff !important;
     font-weight:900 !important;
  }
+   /* ===== KHUNG NGOÀI ===== */
+#featuredProducts{
+  position:relative;
+  background:#fff;
+  border-radius:20px;
+  padding:20px 50px;
+  overflow:hidden;
+}
+
+/* ===== THANH CHỨA SẢN PHẨM ===== */
+.fp-track{
+  display:flex;
+  gap:20px;
+  overflow-x:auto;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+}
+
+.fp-track::-webkit-scrollbar{
+  display:none;
+}
+
+/* ===== CARD SẢN PHẨM ===== */
+.featured-card{
+  flex:0 0 calc(20% - 16px); /* PC hiện 5 sp */
+  min-width:220px;
+  background:#fff;
+  border-radius:16px;
+  padding:15px;
+  text-decoration:none;
+  color:#222;
+  transition:.25s;
+}
+
+.featured-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 5px 18px rgba(0,0,0,.08);
+}
+
+/* ẢNH */
+.featured-card img{
+  width:100%;
+  height:180px;
+  object-fit:contain;
+  display:block;
+}
+
+/* TÊN */
+.featured-name{
+  font-size:16px;
+  line-height:1.4;
+  margin-top:10px;
+  min-height:45px;
+}
+
+/* GIÁ CŨ */
+.featured-old{
+  color:#888;
+  text-decoration:line-through;
+  margin-top:8px;
+  font-size:14px;
+}
+
+/* HÀNG GIÁ */
+.featured-price-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:6px;
+}
+
+/* GIÁ MỚI */
+.featured-price{
+  color:#d70018;
+  font-size:24px;
+  font-weight:700;
+}
+
+/* % GIẢM */
+.featured-sale{
+  color:#d70018;
+  font-size:15px;
+  font-weight:700;
+}
+
+/* ===== NÚT MŨI TÊN ===== */
+.fp-arrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
+  cursor:pointer;
+  z-index:20;
+  font-size:22px;
+}
+
+.fp-arrow:hover{
+  background:#f5f5f5;
+}
+
+.fp-arrow.left{
+  left:5px;
+}
+
+.fp-arrow.right{
+  right:5px;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width:768px){
+
+  #featuredProducts{
+    padding:12px 8px;
+  }
+
+  .featured-card{
+    flex:0 0 calc(50% - 8px); /* mobile hiện 2 sp */
+    min-width:160px;
+    padding:10px;
+  }
+
+  .featured-card img{
+    height:120px;
+  }
+
+  .featured-name{
+    font-size:14px;
+    min-height:40px;
+  }
+
+  .featured-price{
+    font-size:18px;
+  }
+
+  .featured-old{
+    font-size:12px;
+  }
+
+  .featured-sale{
+    font-size:13px;
+  }
+
+  .fp-arrow{
+    width:34px;
+    height:34px;
+    font-size:16px;
+  }
 }
 </style>
 
@@ -920,7 +1072,7 @@ body{
 <!-- LOAD MORE -->
 
 <button id="loadMoreBtn"></button>
-
+<div id="featuredProducts"></div>
 <div class="extra-section"></div>
 
 <!-- FOOTER -->
