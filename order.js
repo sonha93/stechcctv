@@ -64,13 +64,21 @@ if (!data) {
   return;
 }
 
-allOrders = Object.values(data).reverse();
+allOrders = [];
 
-renderOrders();
-```
+Object.values(data).forEach(userOrders => {
+
+  Object.values(userOrders).forEach(order => {
+
+    allOrders.push(order);
+
+  });
 
 });
-}
+
+allOrders.reverse();
+
+renderOrders();
 
 /* =========================
 RENDER ORDERS
@@ -196,10 +204,10 @@ function renderPagination() {
 
 const box = document.getElementById("orders");
 
-let totalPages = Math.ceil(
-allOrders.length / perPage
+let totalPages = Math.max(
+1,
+Math.ceil(allOrders.length / perPage)
 );
-
 let html = `     <div style="text-align:center;margin-top:15px;">
   `;
 
