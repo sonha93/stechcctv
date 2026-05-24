@@ -55,9 +55,8 @@ document.getElementById("featuredPrev").onclick = () => {
     );
 
     const originalPrice = Number(
-        String(p.originalPrice || 0).replace(/\D/g,'')
-    );
-
+    String(p.oldPrice || 0).replace(/\D/g,'')
+);
     console.log("AFTER PARSE:", price, originalPrice);
 
     // tính % giảm
