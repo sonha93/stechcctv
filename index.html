@@ -845,8 +845,22 @@ body{
 
 /* khung ngoài */
 .featured-slider{
-    overflow:hidden;
-    width:100%;
+    position: relative;
+}
+
+.featured-nav button{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+
+    background: rgba(255,255,255,0.9);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 /* hàng ngang */
@@ -862,7 +876,13 @@ body{
 .featured-wrap::-webkit-scrollbar{
     display:none;
 }
+#featuredPrev{
+    left: 10px;
+}
 
+#featuredNext{
+    right: 10px;
+}
 
 /* từng card */
 .featured-card{
