@@ -39,7 +39,7 @@ document.getElementById("featuredPrev").onclick = () => {
         });
 
         // lấy 6 sản phẩm đầu
-        products = products.slice(0,6);
+        products = products.slice(0,10);
 
         wrap.innerHTML = "";
 
