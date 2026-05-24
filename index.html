@@ -783,7 +783,6 @@ body{
    .menu-btn{
   text-shadow:0 0 2px rgba(255,255,255,.5);
 }
-}
    /* FIX MENU BUTTON PC */
 @media(min-width:769px){
   .menu-btn{
@@ -797,191 +796,6 @@ body{
     color:#fff !important;
     font-weight:900 !important;
  }
-/* ===== FEATURED PRODUCTS ===== */
-
-.featured-wrap{
-  width:100%;
-  margin:20px 0;
-  padding:12px;
-  background:#f3f4f6;
-  border-radius:16px;
-  box-sizing:border-box;
-  overflow:hidden;
-}
-
-.featured-wrap h2{
-  font-size:24px;
-  margin:0 0 12px;
-  line-height:1.3;
-}
-
-#featuredProducts{
-  position:relative;
-  width:100%;
-  overflow:hidden;
-  box-sizing:border-box;
-}
-
-/* slider */
-.fp-track{
-  display:flex;
-  gap:12px;
-  width:100%;
-  overflow-x:auto;
-  overflow-y:hidden;
-  scroll-behavior:smooth;
-  scrollbar-width:none;
-  -webkit-overflow-scrolling:touch;
-  padding:2px;
-  box-sizing:border-box;
-}
-
-.fp-track::-webkit-scrollbar{
-  display:none;
-}
-
-/* card */
-.featured-card{
-  flex:0 0 220px;
-  width:220px;
-  min-width:220px;
-  max-width:220px;
-  background:#fff;
-  border-radius:14px;
-  padding:12px;
-  text-decoration:none;
-  color:#111;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
-  box-sizing:border-box;
-}
-
-.featured-card img{
-  width:100%;
-  height:160px;
-  object-fit:contain;
-  display:block;
-}
-
-.featured-name{
-  margin-top:8px;
-  font-size:14px;
-  line-height:1.3;
-  min-height:36px;
-  max-height:36px;
-  overflow:hidden;
-  word-break:break-word;
-
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
-}
-
-.featured-old{
-  margin-top:4px;
-  color:#888;
-  text-decoration:line-through;
-  font-size:12px;
-}
-
-.featured-price-row{
-  display:block;
-  margin-top:4px;
-}
-
-.featured-price{
-  color:#d70018;
-  font-size:20px;
-  font-weight:700;
-  line-height:1.2;
-  word-break:break-word;
-}
-
-.featured-sale{
-  display:block;
-  margin-top:2px;
-  color:#d70018;
-  font-size:12px;
-  font-weight:700;
-}
-
-/* arrows */
-.fp-arrow{
-  position:absolute;
-  top:38%;
-  transform:translateY(-50%);
-  width:32px;
-  height:32px;
-  border:none;
-  border-radius:50%;
-  background:#fff;
-  box-shadow:0 2px 8px rgba(0,0,0,.15);
-  cursor:pointer;
-  z-index:5;
-  font-size:14px;
-}
-
-.fp-arrow.left{ left:4px; }
-.fp-arrow.right{ right:4px; }
-
-/* ===== MOBILE ===== */
-@media (max-width:768px){
-
-  html, body{
-    overflow-x:hidden;
-    max-width:100%;
-  }
-
-  .featured-wrap{
-    width:100%;
-    padding:10px;
-    margin:12px 0;
-    border-radius:10px;
-  }
-
-  .featured-wrap h2{
-    font-size:18px;
-    margin-bottom:8px;
-  }
-
-  .fp-track{
-    gap:8px;
-    padding:0 2px 4px;
-  }
-
-  .featured-card{
-    flex:0 0 140px;
-    width:140px;
-    min-width:140px;
-    max-width:140px;
-    padding:8px;
-    border-radius:10px;
-  }
-
-  .featured-card img{
-    height:100px;
-  }
-
-  .featured-name{
-    font-size:12px;
-    min-height:32px;
-    max-height:32px;
-  }
-
-  .featured-old{
-    font-size:10px;
-  }
-
-  .featured-price{
-    font-size:14px;
-  }
-
-  .featured-sale{
-    font-size:10px;
-  }
-
-  .fp-arrow{
-    display:none;
-  }
 }
 </style>
 
@@ -1108,11 +922,6 @@ body{
 <button id="loadMoreBtn"></button>
 
 <div class="extra-section"></div>
-<!-- CHÈN NGAY DƯỚI ĐÂY -->
-<section class="featured-wrap">
-  <h2>Bứt phá hiệu suất, PC cân tất</h2>
-<div id="featuredProducts" class="featured-slider"></div>
-</section>
 
 <!-- FOOTER -->
 
@@ -1208,8 +1017,6 @@ src="auth.js"></script>
 
 <script type="module"
 src="home.js"></script>
- <script type="module"
-src="featured-products.js"></script>
 <script src="./js/banner.js"></script>
 
 </body>
