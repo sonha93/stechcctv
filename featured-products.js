@@ -7,7 +7,21 @@ import {
 const db = getFirestore();
 
 async function renderFeaturedProducts() {
-    const wrap = document.getElementById("featuredProducts");
+   const wrap = document.getElementById("featuredProducts");
+
+document.getElementById("featuredNext").onclick = () => {
+    wrap.scrollBy({
+        left:300,
+        behavior:"smooth"
+    });
+};
+
+document.getElementById("featuredPrev").onclick = () => {
+    wrap.scrollBy({
+        left:-300,
+        behavior:"smooth"
+    });
+};
     if (!wrap) return;
 
     wrap.innerHTML = "Đang tải...";
@@ -31,7 +45,7 @@ async function renderFeaturedProducts() {
 
        products.forEach(p => {
 
-   const price = Number(
+  const price = Number(
     String(p.price || 0).replace(/\D/g,'')
 );
 
