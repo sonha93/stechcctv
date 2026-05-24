@@ -29,25 +29,63 @@ async function renderFeaturedProducts() {
 
         wrap.innerHTML = "";
 
-        products.forEach(p => {
-            const html = `
-                <a href="logo.html?id=${p.id}" class="featured-card">
-              <img 
-  src="${getImage(p)}"
-  alt="${p.name || 'product'}"
-  loading="lazy"
-  onerror="this.onerror=null;this.src='./images/default.jpg'"
->
+       products.forEach(p => {
 
-                    <div class="featured-name">${p.name}</div>
-                    <div class="featured-price">
-                        ${Number(p.price).toLocaleString()}đ
+    const price = Number(p.price || 0);
+    const originalPrice = Number(p.originalPrice || 0);
+
+    // tính % giảm
+    let discount = 0;
+
+    if (originalPrice > price) {
+        discount = Math.round(
+            ((originalPrice - price) / originalPrice) * 100
+        );
+    }
+
+    const html = `
+        <a href="logo.html?id=${p.id}" class="featured-card">
+
+            <div class="featured-thumb">
+                <img 
+                    src="${getImage(p)}"
+                    alt="${p.name || 'product'}"
+                    loading="lazy"
+                    onerror="this.onerror=null;this.src='./images/default.jpg'"
+                >
+
+                ${
+                    discount > 0
+                    ? `<div class="discount-badge">-${discount}%</div>`
+                    : ""
+                }
+            </div>
+
+            <div class="featured-name">${p.name}</div>
+
+            <div class="featured-price-wrap">
+
+                <div class="featured-price">
+                    ${price.toLocaleString()}đ
+                </div>
+
+                ${
+                    originalPrice > price
+                    ? `
+                    <div class="featured-original-price">
+                        ${originalPrice.toLocaleString()}đ
                     </div>
-                </a>
-            `;
+                    `
+                    : ""
+                }
 
-            wrap.innerHTML += html;
-        });
+            </div>
+
+        </a>
+    `;
+
+    wrap.innerHTML += html;
+});
 
     } catch(err){
         console.log(err);
