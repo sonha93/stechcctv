@@ -1,18 +1,9 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Thanh toán</title>
-
-<link rel="icon" type="image/png" href="favicon-96x96.png?v=20260523" sizes="96x96" /> 
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260523" /> 
-<link rel="shortcut icon" href="favicon.ico?v=20260523" /> 
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260523" /> 
-<meta name="apple-mobile-web-app-title" content="Stech" />
-<link rel="manifest" href="site.webmanifest?v=20260523" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{font-family:Arial;background:#f5f5f5;margin:0;}
@@ -101,33 +92,18 @@ function sendTelegramNotification(orderNumber, customerName, phone, address, car
     .catch(err => console.error("Lỗi fetch Telegram:", err));
 }
 </script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
 <script type="module">
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-  getDatabase,
-  ref,
-  set
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 import { auth, db } from "./firebase-init.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
-  databaseURL:
-    "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "stech-73b89",
-  storageBucket: "stech-73b89.appspot.com",
-  messagingSenderId: "873739162979",
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-};
-
-const app = initializeApp(firebaseConfig);
-
-const rtdb = getDatabase(app);
 let cart = [];
 
 auth.onAuthStateChanged(async user => {
@@ -298,34 +274,7 @@ function placeOrder(){
 
   const total = cart.reduce((sum,p)=>
     sum + p.price * (p.qty || 1),0
-                            
   );
-const orderData = {
-
-  orderId,
-
-  customer: name,
-
-  phone,
-
-  address,
-
-  items: cart,
-
-  total,
-
-  status: "success",
-
-  time: new Date().toISOString()
-};
-
-set(
-  ref(rtdb, `orders/${orderId}`),
-  orderData
-)
-.then(() => {
-
-  console.log("✅ Đã lưu đơn hàng");
 
   // TELEGRAM
   sendTelegramNotification(
@@ -342,6 +291,7 @@ set(
 
   document.querySelector(".btn").disabled = true;
 
+  // XÓA FIREBASE CART
   auth.onAuthStateChanged(async user => {
 
     if(user){
@@ -364,19 +314,11 @@ set(
 
   });
 
-})
-.catch((err) => {
-
-  console.error("❌ Lỗi lưu đơn:", err);
-
-  alert("Lỗi lưu đơn hàng!");
-
-});
-
 }
-
+  
 window.placeOrder = placeOrder;
 </script>
+
 </body>
 </html>
 
