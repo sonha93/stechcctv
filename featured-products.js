@@ -32,12 +32,13 @@ async function renderFeaturedProducts() {
         products.forEach(p => {
             const html = `
                 <a href="logo.html?id=${p.id}" class="featured-card">
-               <img 
-  src="${p.image ? p.image : './images/default.jpg'}" 
-  alt="${p.name}" 
+              <img 
+  src="${getImage(p)}"
+  alt="${p.name || 'product'}"
   loading="lazy"
-  onerror="this.src='./images/default.jpg'"
+  onerror="this.onerror=null;this.src='./images/default.jpg'"
 >
+
                     <div class="featured-name">${p.name}</div>
                     <div class="featured-price">
                         ${Number(p.price).toLocaleString()}đ
@@ -53,5 +54,19 @@ async function renderFeaturedProducts() {
         wrap.innerHTML = "Lỗi tải sản phẩm";
     }
 }
+function getImage(p) {
+    let img = p.image || p.img || p.imageUrl || "";
 
+    if (Array.isArray(img)) img = img[0];
+
+    if (!img || img.trim() === "") {
+        return "./images/default.jpg";
+    }
+
+    if (img.startsWith("//")) {
+        img = "https:" + img;
+    }
+
+    return img;
+}
 renderFeaturedProducts();
