@@ -6,6 +6,16 @@ import {
 
 const db = getFirestore();
 
+function makeSlug(text){
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 async function renderFeaturedProducts() {
   const wrap = document.getElementById("featuredProducts");
   if (!wrap) return;
@@ -28,9 +38,7 @@ async function renderFeaturedProducts() {
 
     wrap.innerHTML = `
       <button class="fp-arrow left" id="fpPrev">❮</button>
-
       <div class="fp-track" id="fpTrack"></div>
-
       <button class="fp-arrow right" id="fpNext">❯</button>
     `;
 
@@ -39,19 +47,19 @@ async function renderFeaturedProducts() {
     products.forEach(p => {
 
       const price = Number(p.price || 0);
-
-      const oldPrice =
-        Number(p.oldPrice || p.originalPrice || 0);
+      const oldPrice = Number(
+        p.oldPrice || p.originalPrice || 0
+      );
 
       const discount =
         oldPrice > price
-        ? Math.round(
-            ((oldPrice - price) / oldPrice) * 100
-          )
-        : 0;
+          ? Math.round(
+              ((oldPrice - price) / oldPrice) * 100
+            )
+          : 0;
 
       track.innerHTML += `
-        <a href="logo.html?id=${p.id}"
+        <a href="logo.html?id=${makeSlug(p.name)}"
            class="featured-card">
 
           <img
@@ -65,25 +73,23 @@ async function renderFeaturedProducts() {
           <div class="featured-old">
             ${
               oldPrice
-              ? oldPrice.toLocaleString() + "đ"
-              : ""
+                ? oldPrice.toLocaleString() + "đ"
+                : ""
             }
           </div>
 
           <div class="featured-price-row">
-
             <div class="featured-price">
               ${price.toLocaleString()}đ
             </div>
 
             ${
               discount
-              ? `<span class="featured-sale">
-                   -${discount}%
-                 </span>`
-              : ""
+                ? `<span class="featured-sale">
+                     -${discount}%
+                   </span>`
+                : ""
             }
-
           </div>
 
         </a>
