@@ -1,63 +1,22 @@
-import {
-  getFirestore,
-  collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<!-- LOAD MORE -->
 
-const db = getFirestore();
+<button id="loadMoreBtn"></button>
+<section class="featured-section">
 
-async function renderFeaturedProducts() {
-    const wrap = document.getElementById("featuredProducts");
-    if (!wrap) return;
+    <div class="featured-header">
+        <h2>Sản phẩm nổi bật</h2>
 
-    wrap.innerHTML = "Đang tải...";
+        <div class="featured-nav">
+            <button id="featuredPrev">&#10094;</button>
+            <button id="featuredNext">&#10095;</button>
+        </div>
+    </div>
 
-    try {
-        const snap = await getDocs(collection(db, "products"));
+    <div class="featured-slider">
+        <div id="featuredProducts" class="featured-wrap"></div>
+    </div>
 
-        let products = [];
+</section>
+<div class="extra-section"></div>
 
-        snap.forEach(doc => {
-            products.push({
-                id: doc.id,
-                ...doc.data()
-            });
-        });
-
-        products = products.slice(0, 6);
-
-        wrap.innerHTML = "";
-
-        products.forEach(p => {
-
-            // 🔥 FIX CHẮC ĂN ĐƯỜNG DẪN ẢNH
-            let img = (p.image || "").trim();
-
-            // bỏ / hoặc images/ nếu Firestore lưu sai
-            img = img.replace(/^\/+/, "");
-            img = img.replace(/^images\//, "");
-
-            const imgSrc = `images/${img}`;
-
-            wrap.innerHTML += `
-                <a href="logo.html?id=${p.id}" class="featured-card">
-                    <img 
-                        src="${imgSrc}" 
-                        alt="${p.name}"
-                        onerror="this.src='images/no-image.png'"
-                    >
-                    <div class="featured-name">${p.name}</div>
-                    <div class="featured-price">
-                        ${Number(p.price || 0).toLocaleString()}đ
-                    </div>
-                </a>
-            `;
-        });
-
-    } catch (err) {
-        console.log(err);
-        wrap.innerHTML = "Lỗi tải sản phẩm";
-    }
-}
-
-renderFeaturedProducts();
+<!-- FOOTER -->
