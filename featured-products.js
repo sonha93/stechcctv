@@ -31,8 +31,13 @@ async function renderFeaturedProducts() {
 
        products.forEach(p => {
 
-    const price = Number(p.price || 0);
-    const originalPrice = Number(p.originalPrice || 0);
+   const price = Number(
+    String(p.price || 0).replace(/\D/g,'')
+);
+
+const originalPrice = Number(
+    String(p.originalPrice || 0).replace(/\D/g,'')
+);
 
     // tính % giảm
     let discount = 0;
