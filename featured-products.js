@@ -44,7 +44,6 @@ document.getElementById("featuredPrev").onclick = () => {
         wrap.innerHTML = "";
 
        products.forEach(p => {
-  console.log(p);
   const price = Number(
     String(p.price || 0).replace(/\D/g,'')
 );
