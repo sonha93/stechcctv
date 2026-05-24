@@ -1,29 +1,4 @@
-// ===== SAVE VIEW HISTORY =====
 
-async function saveViewedProduct(product) {
-
-    const user = auth.currentUser;
-
-    if (!user) {
-        console.log("Chưa login");
-        return;
-    }
-
-    const uid = user.uid;
-
-    console.log("SAVE PRODUCT:", product);
-
-    await db.ref(
-        `view_history/${uid}/${product.id}`
-    ).set({
-        ...product,
-        viewedAt: Date.now()
-    });
-
-    console.log("Đã lưu history");
-}
-
-window.saveViewedProduct = saveViewedProduct;
 // ===== IMAGE =====
 
 function getImage(p) {
