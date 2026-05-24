@@ -11,10 +11,13 @@ let autoSlide;
 function startAutoSlide(wrap) {
     clearInterval(autoSlide);
 
+    // nếu không đủ item để scroll thì không chạy
+    if (!wrap || wrap.scrollWidth <= wrap.clientWidth) return;
+
     autoSlide = setInterval(() => {
         const maxScroll = wrap.scrollWidth - wrap.clientWidth;
 
-        if (wrap.scrollLeft >= maxScroll) {
+        if (wrap.scrollLeft >= maxScroll - 5) {
             wrap.scrollTo({ left: 0, behavior: "smooth" });
         } else {
             wrap.scrollBy({ left: 300, behavior: "smooth" });
@@ -22,15 +25,27 @@ function startAutoSlide(wrap) {
     }, 3000);
 }
 
+function getImage(p) {
+    let img = p.image || p.img || p.imageUrl || "";
+
+    if (Array.isArray(img)) img = img[0];
+
+    if (!img || img.trim() === "") return "./images/default.jpg";
+
+    if (img.startsWith("//")) img = "https:" + img;
+
+    return img;
+}
+
 async function renderFeaturedProducts() {
 
-const wrap = document.querySelector(".featured-wrap");
+    const wrap = document.querySelector(".featured-wrap");
     const next = document.getElementById("featuredNext");
     const prev = document.getElementById("featuredPrev");
 
     if (!wrap || !next || !prev) return;
 
-    // CLICK NEXT/PREV
+    // NEXT / PREV
     next.onclick = () => {
         wrap.scrollBy({ left: 300, behavior: "smooth" });
     };
@@ -59,8 +74,8 @@ const wrap = document.querySelector(".featured-wrap");
 
         products.forEach(p => {
 
-            const price = Number(String(p.price || 0).replace(/\D/g,''));
-            const originalPrice = Number(String(p.oldPrice || 0).replace(/\D/g,''));
+            const price = Number(String(p.price || 0).replace(/\D/g, ''));
+            const originalPrice = Number(String(p.oldPrice || 0).replace(/\D/g, ''));
 
             let discount = 0;
             if (originalPrice > price) {
@@ -73,9 +88,8 @@ const wrap = document.querySelector(".featured-wrap");
                     <div class="featured-thumb">
                         <img 
                             src="${getImage(p)}"
-                            alt="${p.name || 'product'}"
                             loading="lazy"
-                            onerror="this.onerror=null;this.src='./images/default.jpg'"
+                            onerror="this.src='./images/default.jpg'"
                         >
 
                         ${discount > 0
@@ -84,7 +98,7 @@ const wrap = document.querySelector(".featured-wrap");
                         }
                     </div>
 
-                    <div class="featured-name">${p.name}</div>
+                    <div class="featured-name">${p.name || ""}</div>
 
                     <div class="featured-price-wrap">
 
@@ -107,9 +121,12 @@ const wrap = document.querySelector(".featured-wrap");
             wrap.innerHTML += html;
         });
 
-        // ⭐ AUTO SLIDE + HOVER STOP (ĐÚNG CHỖ)
-        startAutoSlide(wrap);
+        // 🔥 AUTO SLIDE SAU KHI RENDER XONG
+        setTimeout(() => {
+            startAutoSlide(wrap);
+        }, 300);
 
+        // pause khi hover
         wrap.addEventListener("mouseenter", () => {
             clearInterval(autoSlide);
         });
@@ -122,22 +139,6 @@ const wrap = document.querySelector(".featured-wrap");
         console.log(err);
         wrap.innerHTML = "Lỗi tải sản phẩm";
     }
-}
-
-function getImage(p) {
-    let img = p.image || p.img || p.imageUrl || "";
-
-    if (Array.isArray(img)) img = img[0];
-
-    if (!img || img.trim() === "") {
-        return "./images/default.jpg";
-    }
-
-    if (img.startsWith("//")) {
-        img = "https:" + img;
-    }
-
-    return img;
 }
 
 renderFeaturedProducts();
