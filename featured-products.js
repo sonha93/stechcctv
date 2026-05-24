@@ -18,24 +18,39 @@ async function renderFeaturedProducts() {
         let products = [];
 
         snap.forEach(doc => {
+            const data = doc.data();
+
             products.push({
                 id: doc.id,
-                ...doc.data()
+                ...data
             });
         });
 
-        // lấy 6 sản phẩm đầu
-        products = products.slice(0,6);
+        products = products.slice(0, 6);
 
         wrap.innerHTML = "";
 
         products.forEach(p => {
+
+            // 🔥 FIX QUAN TRỌNG: xử lý đường dẫn ảnh an toàn
+            let imgSrc = p.image || "";
+
+            // nếu Firestore lỡ lưu full path thì cắt bỏ
+            imgSrc = imgSrc.replace(/^\/+/, "");
+            imgSrc = imgSrc.replace(/^images\//, "");
+
+            imgSrc = `images/${imgSrc}`;
+
             const html = `
                 <a href="logo.html?id=${p.id}" class="featured-card">
-               <img src="images/${p.image}" alt="${p.name}">
+                    <img 
+                        src="${imgSrc}" 
+                        alt="${p.name}"
+                        onerror="this.src='images/no-image.png'"
+                    >
                     <div class="featured-name">${p.name}</div>
                     <div class="featured-price">
-                        ${Number(p.price).toLocaleString()}đ
+                        ${Number(p.price || 0).toLocaleString()}đ
                     </div>
                 </a>
             `;
@@ -43,7 +58,7 @@ async function renderFeaturedProducts() {
             wrap.innerHTML += html;
         });
 
-    } catch(err){
+    } catch (err) {
         console.log(err);
         wrap.innerHTML = "Lỗi tải sản phẩm";
     }
