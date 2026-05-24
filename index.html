@@ -822,45 +822,36 @@ body{
     color:#111;
 }
 
-.featured-nav{
-    display:flex;
-    gap:8px;
-}
-
-.featured-nav button{
-    width:38px;
-    height:38px;
-    border:none;
-    border-radius:50%;
-    background:#f1f1f1;
-    cursor:pointer;
-    font-size:18px;
-    transition:0.2s;
-}
-
-.featured-nav button:hover{
-    background:#ddd;
-}
-
 
 /* khung ngoài */
 .featured-slider{
     position: relative;
-}
+     overflow: hidden;
 
-.featured-nav button{
+}
+ 
+  
+
+#featuredPrev,
+#featuredNext{
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 10;
+    z-index: 50;
 
     width: 42px;
     height: 42px;
-    border-radius: 50%;
     border: none;
+    border-radius: 50%;
 
-    background: rgba(255,255,255,0.9);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,.15);
+
+    cursor: pointer;
+}
+
+#featuredNext{
+    right: 10px;
 }
 
 /* hàng ngang */
@@ -926,33 +917,33 @@ body{
 }
 
 
-@media (max-width: 768px) {
+@media (max-width:768px){
 
-  .featured-section {
-    padding: 12px 8px;
-  }
+    #featuredPrev,
+    #featuredNext{
+        width:34px;
+        height:34px;
+        font-size:14px;
+    }
 
-  .featured-header h2 {
-    font-size: 18px;
-  }
+    #featuredPrev{
+        left:5px;
+    }
 
-  /* QUAN TRỌNG: khung scroll ngang */
-  .featured-slider {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    gap: 10px;
-    padding-bottom: 8px;
-  }
+    #featuredNext{
+        right:5px;
+    }
+
+
 
   /* ẩn scrollbar cho đẹp */
   .featured-slider::-webkit-scrollbar {
     display: none;
   }
 
-  .featured-slider {
-    scrollbar-width: none;
+  .featured-slider{
+    overflow:hidden;
+
   }
 
   /* CARD */
@@ -982,28 +973,11 @@ body{
     font-size: 14px;
   }
 
-  /* nút next/prev trên mobile (overlay cho gọn) */
-  .featured-nav button {
-    width: 34px;
-    height: 34px;
-    font-size: 14px;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 5;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-  }
-
-  #featuredPrev {
+#featuredPrev {
     left: 5px;
   }
 
-  #featuredNext {
-    right: 5px;
-  }
+ 
    .featured-card{
     text-decoration: none;
     color: inherit;
@@ -1056,6 +1030,11 @@ body{
     color: #999;
     text-decoration: line-through;
     font-size: 13px;
+}
+   .featured-wrap{
+    gap:10px;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
 }
 }
 </style>
@@ -1185,15 +1164,16 @@ body{
 
     <div class="featured-header">
         <h2>Sản phẩm nổi bật</h2>
-
-        <div class="featured-nav">
-            <button id="featuredPrev">&#10094;</button>
-            <button id="featuredNext">&#10095;</button>
-        </div>
     </div>
 
     <div class="featured-slider">
+
+        <button id="featuredPrev">&#10094;</button>
+
         <div id="featuredProducts" class="featured-wrap"></div>
+
+        <button id="featuredNext">&#10095;</button>
+
     </div>
 
 </section>
