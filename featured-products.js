@@ -24,7 +24,7 @@ function startAutoSlide(wrap) {
 
 async function renderFeaturedProducts() {
 
-    const wrap = document.getElementById("featuredProducts");
+const wrap = document.querySelector(".featured-wrap");
     const next = document.getElementById("featuredNext");
     const prev = document.getElementById("featuredPrev");
 
