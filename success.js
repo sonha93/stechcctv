@@ -37,6 +37,14 @@ function generateOrderId() {
 
 // Hàm lưu đơn
 function saveOrder() {
+  const cart =
+  JSON.parse(localStorage.getItem("cart")) || [];
+  if(cart.length === 0){
+
+  alert("Giỏ hàng trống");
+
+  return;
+}
   const orderId = generateOrderId();
 
   const orderData = {
@@ -44,15 +52,13 @@ function saveOrder() {
     customer: "Sơn",
     phone: "0123456789",
 
-    items: [
-      {
-        name: "Camera A",
-        price: 1200000,
-        qty: 1
-      }
-    ],
+   items: cart,
 
-    total: 1200000,
+total: cart.reduce(
+  (sum, p) =>
+    sum + ((p.price || 0) * (p.qty || 1)),
+  0
+),
     status: "success",
     time: new Date().toISOString()
   };
@@ -60,13 +66,14 @@ function saveOrder() {
   set(ref(db, `orders/${orderId}`), orderData)
     .then(() => {
       console.log("✅ Lưu đơn thành công:", orderId);
+      localStorage.removeItem("cart");
+       window.location.href = "success.html";
     })
     .catch((error) => {
       console.error("❌ Lỗi lưu đơn:", error);
     });
 }
 
-// Chạy thử
-window.addEventListener("load", () => {
-  saveOrder();
-});
+document
+.getElementById("checkoutBtn")
+.addEventListener("click", saveOrder);
