@@ -6,23 +6,38 @@ import {
 
 const db = getFirestore();
 
+let autoSlide;
+
+function startAutoSlide(wrap) {
+    clearInterval(autoSlide);
+
+    autoSlide = setInterval(() => {
+        const maxScroll = wrap.scrollWidth - wrap.clientWidth;
+
+        if (wrap.scrollLeft >= maxScroll) {
+            wrap.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+            wrap.scrollBy({ left: 300, behavior: "smooth" });
+        }
+    }, 3000);
+}
+
 async function renderFeaturedProducts() {
-   const wrap = document.getElementById("featuredProducts");
 
-document.getElementById("featuredNext").onclick = () => {
-    wrap.scrollBy({
-        left:300,
-        behavior:"smooth"
-    });
-};
+    const wrap = document.getElementById("featuredProducts");
+    const next = document.getElementById("featuredNext");
+    const prev = document.getElementById("featuredPrev");
 
-document.getElementById("featuredPrev").onclick = () => {
-    wrap.scrollBy({
-        left:-300,
-        behavior:"smooth"
-    });
-};
-    if (!wrap) return;
+    if (!wrap || !next || !prev) return;
+
+    // CLICK NEXT/PREV
+    next.onclick = () => {
+        wrap.scrollBy({ left: 300, behavior: "smooth" });
+    };
+
+    prev.onclick = () => {
+        wrap.scrollBy({ left: -300, behavior: "smooth" });
+    };
 
     wrap.innerHTML = "Đang tải...";
 
@@ -31,92 +46,84 @@ document.getElementById("featuredPrev").onclick = () => {
 
         let products = [];
 
-     snap.forEach(doc => {
-    products.push({
-        ...doc.data(),
-        docId: doc.id
-    });
-});
+        snap.forEach(doc => {
+            products.push({
+                ...doc.data(),
+                docId: doc.id
+            });
+        });
 
-        // lấy 6 sản phẩm đầu
-        products = products.slice(0,10);
+        products = products.slice(0, 10);
 
         wrap.innerHTML = "";
 
-       products.forEach(p => {
+        products.forEach(p => {
 
-    console.log("PRODUCT:", p);
+            const price = Number(String(p.price || 0).replace(/\D/g,''));
+            const originalPrice = Number(String(p.oldPrice || 0).replace(/\D/g,''));
 
-    console.log("PRICE:", p.price);
-    console.log("ORIGINAL:", p.originalPrice);
+            let discount = 0;
+            if (originalPrice > price) {
+                discount = Math.round(((originalPrice - price) / originalPrice) * 100);
+            }
 
-    const price = Number(
-        String(p.price || 0).replace(/\D/g,'')
-    );
+            const html = `
+                <a href="logo.html?id=${p.docId}" class="featured-card">
 
-    const originalPrice = Number(
-    String(p.oldPrice || 0).replace(/\D/g,'')
-);
-    console.log("AFTER PARSE:", price, originalPrice);
+                    <div class="featured-thumb">
+                        <img 
+                            src="${getImage(p)}"
+                            alt="${p.name || 'product'}"
+                            loading="lazy"
+                            onerror="this.onerror=null;this.src='./images/default.jpg'"
+                        >
 
-    // tính % giảm
-    let discount = 0;
-
-    if (originalPrice > price) {
-        discount = Math.round(
-            ((originalPrice - price) / originalPrice) * 100
-        );
-    }
-
-    const html = `
-       <a href="logo.html?id=${p.docId}" class="featured-card">
-
-            <div class="featured-thumb">
-                <img 
-                    src="${getImage(p)}"
-                    alt="${p.name || 'product'}"
-                    loading="lazy"
-                    onerror="this.onerror=null;this.src='./images/default.jpg'"
-                >
-
-                ${
-                    discount > 0
-                    ? `<div class="discount-badge">-${discount}%</div>`
-                    : ""
-                }
-            </div>
-
-            <div class="featured-name">${p.name}</div>
-
-            <div class="featured-price-wrap">
-
-                <div class="featured-price">
-                    ${price.toLocaleString()}đ
-                </div>
-
-                ${
-                    originalPrice > price
-                    ? `
-                    <div class="featured-original-price">
-                        ${originalPrice.toLocaleString()}đ
+                        ${discount > 0
+                            ? `<div class="discount-badge">-${discount}%</div>`
+                            : ""
+                        }
                     </div>
-                    `
-                    : ""
-                }
 
-            </div>
+                    <div class="featured-name">${p.name}</div>
 
-        </a>
-    `;
+                    <div class="featured-price-wrap">
 
-    wrap.innerHTML += html;
-});
+                        <div class="featured-price">
+                            ${price.toLocaleString()}đ
+                        </div>
 
-    } catch(err){
+                        ${originalPrice > price
+                            ? `<div class="featured-original-price">
+                                ${originalPrice.toLocaleString()}đ
+                               </div>`
+                            : ""
+                        }
+
+                    </div>
+
+                </a>
+            `;
+
+            wrap.innerHTML += html;
+        });
+
+        // ⭐ AUTO SLIDE + HOVER STOP (ĐÚNG CHỖ)
+        startAutoSlide(wrap);
+
+        wrap.addEventListener("mouseenter", () => {
+            clearInterval(autoSlide);
+        });
+
+        wrap.addEventListener("mouseleave", () => {
+            startAutoSlide(wrap);
+        });
+
+    } catch (err) {
         console.log(err);
         wrap.innerHTML = "Lỗi tải sản phẩm";
     }
 }
+
 function getImage(p) {
     let img = p.image || p.img || p.imageUrl || "";
 
@@ -132,4 +139,5 @@ function getImage(p) {
 
     return img;
 }
+
 renderFeaturedProducts();
