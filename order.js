@@ -94,7 +94,7 @@ function renderOrders() {
       itemsHTML += `
         <div class="item">
 
-          <img src="${p.img || 'no-image.png'}" />
+        <img src="${p.img || ''}" />
 
           <div>
 
