@@ -113,6 +113,12 @@ function sendTelegramNotification(orderNumber, customerName, phone, address, car
 
 import { auth, db } from "./firebase-init.js";
 
+import {
+  getDatabase,
+  ref,
+  set
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+const rtdb = getDatabase();
 let cart = [];
 
 auth.onAuthStateChanged(async user => {
@@ -283,7 +289,34 @@ function placeOrder(){
 
   const total = cart.reduce((sum,p)=>
     sum + p.price * (p.qty || 1),0
+                            
   );
+const orderData = {
+
+  orderId,
+
+  customer: name,
+
+  phone,
+
+  address,
+
+  items: cart,
+
+  total,
+
+  status: "success",
+
+  time: new Date().toISOString()
+};
+
+set(
+  ref(rtdb, `orders/${orderId}`),
+  orderData
+)
+.then(() => {
+
+  console.log("✅ Đã lưu đơn hàng");
 
   // TELEGRAM
   sendTelegramNotification(
@@ -300,7 +333,6 @@ function placeOrder(){
 
   document.querySelector(".btn").disabled = true;
 
-  // XÓA FIREBASE CART
   auth.onAuthStateChanged(async user => {
 
     if(user){
@@ -323,6 +355,14 @@ function placeOrder(){
 
   });
 
+})
+.catch((err) => {
+
+  console.error("❌ Lỗi lưu đơn:", err);
+
+  alert("Lỗi lưu đơn hàng!");
+
+});
 }
   
 window.placeOrder = placeOrder;
