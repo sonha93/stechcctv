@@ -1,22 +1,52 @@
-<!-- LOAD MORE -->
+import {
+  getFirestore,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<button id="loadMoreBtn"></button>
-<section class="featured-section">
+const db = getFirestore();
 
-    <div class="featured-header">
-        <h2>Sản phẩm nổi bật</h2>
+async function renderFeaturedProducts() {
+    const wrap = document.getElementById("featuredProducts");
+    if (!wrap) return;
 
-        <div class="featured-nav">
-            <button id="featuredPrev">&#10094;</button>
-            <button id="featuredNext">&#10095;</button>
-        </div>
-    </div>
+    wrap.innerHTML = "Đang tải...";
 
-    <div class="featured-slider">
-        <div id="featuredProducts" class="featured-wrap"></div>
-    </div>
+    try {
+        const snap = await getDocs(collection(db, "products"));
 
-</section>
-<div class="extra-section"></div>
+        let products = [];
 
-<!-- FOOTER -->
+        snap.forEach(doc => {
+            products.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+
+        // lấy 6 sản phẩm đầu
+        products = products.slice(0,6);
+
+        wrap.innerHTML = "";
+
+        products.forEach(p => {
+            const html = `
+                <a href="logo.html?id=${p.id}" class="featured-card">
+                    <img src="${p.image}" alt="${p.name}">
+                    <div class="featured-name">${p.name}</div>
+                    <div class="featured-price">
+                        ${Number(p.price).toLocaleString()}đ
+                    </div>
+                </a>
+            `;
+
+            wrap.innerHTML += html;
+        });
+
+    } catch(err){
+        console.log(err);
+        wrap.innerHTML = "Lỗi tải sản phẩm";
+    }
+}
+
+renderFeaturedProducts();
