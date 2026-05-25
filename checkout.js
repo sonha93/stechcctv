@@ -222,7 +222,13 @@ async function checkout(){
 
     uid: currentUser.uid,
 
-    items: itemsToOrder,
+   items: itemsToOrder.map(item => ({
+  name: item.name,
+  price: item.price,
+  qty: item.qty,
+  img: item.img,
+  checked: item.checked
+})),
 
     total: total,
 
