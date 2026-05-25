@@ -67,12 +67,6 @@ function renderCheckout(){
 
     const subTotal = qty * price;
 
-    // FIX IMAGE
-    const imageUrl =
-      item.img ||
-      item.image ||
-      "no-image.png";
-
     if(item.checked){
       total += subTotal;
     }
@@ -86,10 +80,7 @@ function renderCheckout(){
           onclick="toggleItem(${index})"
         >
 
-        <img
-          src="${imageUrl}"
-          onerror="this.src='no-image.png'"
-        >
+        <img src="${item.img}">
 
         <div>
           <h4>${item.name}</h4>
@@ -231,20 +222,7 @@ async function checkout(){
 
     uid: currentUser.uid,
 
-    items: itemsToOrder.map(item => ({
-
-      name: item.name,
-
-      price: item.price,
-
-      qty: item.qty || 1,
-
-      img:
-        item.img ||
-        item.image ||
-        "no-image.png"
-
-    })),
+    items: itemsToOrder,
 
     total: total,
 
