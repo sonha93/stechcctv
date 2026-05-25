@@ -182,14 +182,12 @@ async function placeOrder(){
 
   try{
 
-    // SAVE ORDER
-    await db.collection("orders").add({
+    // SAVE FIRESTORE
+    await db.collection("orders").doc(String(orderId)).set({
 
       uid: user.uid,
 
-      orderId: orderId,
-
-      customerName: name,
+      customer: name,
 
       phone: phone,
 
@@ -197,15 +195,27 @@ async function placeOrder(){
 
       payment: document.getElementById("payment").value,
 
+      orderId: String(orderId),
+
+      status: "success",
+
       total: total,
 
-      createdAt: new Date().toISOString(),
+      time: new Date().toISOString(),
 
       items: cart.map(item => ({
+
         name: item.name,
+
         price: item.price,
+
         qty: item.qty || 1,
-        img: item.img || ""
+
+        img:
+          item.img ||
+          item.image ||
+          "no-image.png"
+
       }))
 
     });
@@ -244,7 +254,7 @@ async function placeOrder(){
 
     console.error(err);
 
-    alert("❌ Có lỗi khi đặt hàng!");
+    alert("❌ Lỗi đặt hàng!");
 
     document.getElementById("loading").style.display = "none";
 
@@ -253,7 +263,6 @@ async function placeOrder(){
   }
 
 }
-
 window.placeOrder = placeOrder;
 </script>
 
