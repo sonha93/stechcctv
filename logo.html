@@ -547,6 +547,15 @@ header{
 .thumb-list::-webkit-scrollbar{
   display:none;
 }
+	@media (max-width:768px){
+  .product-detail{
+    flex-direction:column;
+  }
+
+  .product-gallery,
+  .product-info{
+    width:100%;
+  }
 }
 </style>
 </head>
@@ -635,7 +644,7 @@ header{
     <div class="action-wrap">
 
       <button class="spec-open-btn" onclick="openPanel()">
-        ⚙️ Xem chi tiết
+        ⚙️ Chi tiết sản phẩm
       </button>
 
       <button class="buy-btn" onclick="addToCart()">
