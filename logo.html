@@ -480,24 +480,32 @@ header{
     object-fit:cover;
   }
 
- .thumb-list{
+.thumb-list{
   position:static !important;
   transform:none !important;
 
   display:flex;
-  justify-content:center;
+  justify-content:flex-start; /* canh trái */
   gap:8px;
 
-  margin-top:12px;   /* cách ảnh lớn */
-  padding:6px;
+  margin-top:10px;
+  padding:0;
 
   background:none;
   backdrop-filter:none;
 
-  max-width:100%;
+  max-width:330px;   /* bằng ảnh lớn */
   overflow-x:auto;
 }
 
+/* giữ ảnh nhỏ y như cũ */
+.thumb-list img{
+  width:58px !important;
+  height:58px !important;
+  min-width:58px !important;
+  object-fit:cover;
+  border-radius:10px;
+}
  .left img{
   width:100%;
   height:auto !important;
