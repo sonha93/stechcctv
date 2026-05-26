@@ -165,6 +165,8 @@ header{
 .left{
   width:330px;
   flex-shrink:0;
+  position:relative;
+  padding-bottom:80px; /* chừa chỗ ảnh nhỏ */
 }
 
 .left img{
@@ -182,7 +184,7 @@ header{
 
 .thumb-list{
   position:absolute;
-  bottom:10px;
+  bottom:-75px;   /* lùi xuống dưới */
   left:10px;
 
   display:flex;
@@ -196,9 +198,7 @@ header{
 
   overflow-x:auto;
   max-width:90%;
-
 }
-
 .thumb-list img{
   width:58px;
   height:58px;
