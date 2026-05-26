@@ -1032,8 +1032,8 @@ thumb.onclick = ()=>{
 	document.getElementById("detailLoaiCamera").innerText =
   product.loaiCamera || "Đang cập nhật";
 
-document.getElementById("detaildienAp").innerText =
-  product.dienAp|| "Đang cập nhật";
+document.getElementById("detailDienAp").innerText =
+  product?.dienAp?.trim() || "Đang cập nhật";
 
 document.getElementById("detailgocOngKinh").innerText =
   product.gocOngKinh || "Đang cập nhật";
