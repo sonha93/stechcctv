@@ -304,8 +304,8 @@ categoryEl.addEventListener("change", function(){
      <input id="hongNgoai" placeholder="Tầm nhìn xa hồng ngoại">
       <input id="kieuKetNoi" placeholder="Kiểu kết nối">
       <input id="ungDungKetNoi" placeholder="Ứng dụng kết nối">
-      <input id="MicroSDtoida" placeholder="Hỗ trợ thẻ nhớ tối đa">
-      <input id="MicroSD" placeholder="Thẻ nhớ ngoài">`;
+      <input id="theNhotoida" placeholder="Hỗ trợ thẻ nhớ tối đa">
+      <input id="theNhongoai" placeholder="Thẻ nhớ ngoài">`;
   }
 
   else if(type==="sd"){
@@ -443,8 +443,8 @@ btnAdd.addEventListener("click", async function(){
       hongNgoai:getVal("hongNgoai"),
       kieuKetNoi:getVal("kieuKetNoi"),
       ungDungKetNoi:getVal("ungDungKetNoi")
-      MicroSDtoida:getVal("MicroSDtoida"),
-     MicroSD:getVal("MicroSD"),
+     theNhotoida:getVal("theNhotoida"),
+    theNhotoida:getVal("theNhotoida"),
     };
 
    await setDoc(
