@@ -757,9 +757,9 @@ header{
       </div>
 
 		<div class="spec-row">
-        <div class="spec-label">Hướng dẫn sử dụng</div>
-        <div class="spec-value" id="detailWarranty"></div>
-      </div>
+  <div class="spec-label">Hướng dẫn sử dụng</div>
+  <div class="spec-value" id="detailHdsd"></div>
+</div>
 
 		<div class="spec-row">
         <div class="spec-label">Màu sắc</div>
@@ -1005,7 +1005,10 @@ thumb.onclick = ()=>{
   document.getElementById("detailWarranty").innerText =
     product.baoHanh || "Đang cập nhật";
 
-  // CONFIG
+	document.getElementById("detailHdsd").innerText =
+  product.Hdsd || "Đang cập nhật";
+ 
+	// CONFIG
   document.getElementById("detailResolution").innerText =
     product.doPhanGiai || "Đang cập nhật";
 
