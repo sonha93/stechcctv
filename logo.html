@@ -968,11 +968,14 @@ thumb.onclick = ()=>{
   document.getElementById("detailPrice").innerText =
     Number(product.price || 0).toLocaleString() + "đ";
 
-  document.getElementById("detailOldPrice").innerText =
-    product.oldPrice
-      ? Number(product.oldPrice).toLocaleString() + "đ"
-      : "";
+  const oldPrice = String(product.oldPrice || 0)
+  .replace(/\./g,"")
+  .replace(/,/g,"");
 
+document.getElementById("detailOldPrice").innerText =
+  Number(oldPrice) > 0
+    ? Number(oldPrice).toLocaleString() + "đ"
+    : "";
   // DESC
   document.getElementById("detailDesc").innerText =
     product.desc || "Không có mô tả";
@@ -1010,15 +1013,23 @@ thumb.onclick = ()=>{
   // SALE
   const saleBox = document.getElementById("detailSale");
 
-  if(
-    product.oldPrice &&
-    Number(product.oldPrice) > Number(product.price)
-  ){
+  const oldP = Number(
+  String(product.oldPrice || 0)
+    .replace(/\./g,"")
+    .replace(/,/g,"")
+);
+
+const newP = Number(
+  String(product.price || 0)
+    .replace(/\./g,"")
+    .replace(/,/g,"")
+);
+
+if(oldP > newP)
 
     const sale = Math.round(
       (
-        (Number(product.oldPrice) - Number(product.price))
-        / Number(product.oldPrice)
+      (oldP - newP) / oldP
       ) * 100
     );
 
