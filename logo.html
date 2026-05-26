@@ -480,17 +480,32 @@ header{
     object-fit:cover;
   }
 
-  .thumb-list{
-    bottom:8px;
-    left:50%;
-    transform:translateX(-50%);
-    max-width:95%;
-  }
+ .thumb-list{
+  position:static !important;
+  transform:none !important;
 
-  .thumb-list img{
-    width:52px;
-    height:52px;
-  }
+  display:flex;
+  justify-content:center;
+  gap:8px;
+
+  margin-top:12px;   /* cách ảnh lớn */
+  padding:6px;
+
+  background:none;
+  backdrop-filter:none;
+
+  max-width:100%;
+  overflow-x:auto;
+}
+
+ .left img{
+  width:100%;
+  height:auto !important;
+  max-height:320px;
+  object-fit:contain;
+  border-radius:18px;
+  background:#fff;
+}
 
   .right{
     flex:1;
