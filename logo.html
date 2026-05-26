@@ -460,18 +460,18 @@ header{
     height:39px;
   }
 
-  .container{
-    flex-direction:row;
-    align-items:flex-start;
-    gap:14px;
-    padding:8px;
-  }
+ .container{
+  flex-direction:column !important;
+  align-items:center !important;
+  gap:14px;
+  padding:8px;
+}
 
-  .left{
-    width:42%;
-    flex-shrink:0;
-    position:relative;
-  }
+.right{
+  width:100% !important;
+  padding:0 8px;
+  gap:10px;
+}
 
   .left img{
     width:100%;
@@ -556,6 +556,10 @@ header{
   .product-info{
     width:100%;
   }
+		.desc{
+  width:100%;
+  text-align:left;
+}
 	}
 </style>
 </head>
