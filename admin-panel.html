@@ -303,6 +303,8 @@ categoryEl.addEventListener("change", function(){
       <input id="gocOngKinh" placeholder="Góc ống kính">
      <input id="hongNgoai" placeholder="Tầm nhìn xa hồng ngoại">
       <input id="kieuKetNoi" placeholder="Kiểu kết nối">
+       <input id="sDngoai" placeholder="Thẻ nhớ ngoài">
+        <input id="sDtoida" placeholder="Hỗ trợ thẻ nhớ tối đa">
       <input id="ungDungKetNoi" placeholder="Ứng dụng kết nối">`;
     
   }
@@ -442,7 +444,8 @@ btnAdd.addEventListener("click", async function(){
       hongNgoai:getVal("hongNgoai"),
       kieuKetNoi:getVal("kieuKetNoi"),
       ungDungKetNoi:getVal("ungDungKetNoi")
-
+     sDngoai:getVal("sDngoai")
+      sDtoida:getVal("sDtoida")
     };
 
    await setDoc(
