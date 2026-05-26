@@ -790,7 +790,10 @@ header{
     <div class="spec-label">Loại camera</div>
     <div class="spec-value" id="detailLoaiCamera"></div>
   </div>
-
+<div class="spec-row">
+    <div class="spec-label">Độ phân giải</div>
+    <div class="spec-value" id="detaildoPhanGiai"></div>
+  </div>
   <div class="spec-row">
     <div class="spec-label">Điện áp</div>
     <div class="spec-value" id="detaildienAp"></div>
@@ -1027,9 +1030,10 @@ thumb.onclick = ()=>{
 
   document.getElementById("detailchatLieu").innerText =
     product.chatLieu || "Đang cập nhật";
-
   // DESIGN
 	document.getElementById("detailLoaiCamera").innerText =
+  product.loaiCamera || "Đang cập nhật";
+document.getElementById("detaildoPhanGiai").innerText =
   product.loaiCamera || "Đang cập nhật";
 
 document.getElementById("detaildienAp").innerText =
