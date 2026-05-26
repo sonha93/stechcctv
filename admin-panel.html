@@ -1,3 +1,5 @@
+admin-panel
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -303,9 +305,8 @@ categoryEl.addEventListener("change", function(){
       <input id="gocOngKinh" placeholder="Góc ống kính">
      <input id="hongNgoai" placeholder="Tầm nhìn xa hồng ngoại">
       <input id="kieuKetNoi" placeholder="Kiểu kết nối">
-      <input id="ungDungKetNoi" placeholder="Ứng dụng kết nối">
-      <input id="theNhotoida" placeholder="Hỗ trợ thẻ nhớ tối đa">
-    <input id="theNhongoai" placeholder="Thẻ nhớ ngoài">`;
+      <input id="ungDungKetNoi" placeholder="Ứng dụng kết nối">`;
+    
   }
 
   else if(type==="sd"){
@@ -443,8 +444,7 @@ btnAdd.addEventListener("click", async function(){
       hongNgoai:getVal("hongNgoai"),
       kieuKetNoi:getVal("kieuKetNoi"),
       ungDungKetNoi:getVal("ungDungKetNoi")
-      theNhongoai:getVal("theNhongoai")
-      theNhotoida:getVal("theNhotoida")
+
     };
 
    await setDoc(
