@@ -583,36 +583,7 @@ header{
   width:100%;
   text-align:left;
 }
-.viewer-arrow{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  width:52px;
-  height:52px;
-  border-radius:50%;
-  background:rgba(255,255,255,.9);
-  color:#111;
-  font-size:30px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  user-select:none;
-  z-index:999999;
-}
-
-#viewerPrev{
-  left:20px;
-}
-
-#viewerNext{
-  right:20px;
-}
-
-.viewer-arrow:hover{
-  background:#fff;
-}
-	}	
+	}
 </style>
 </head>
 
@@ -681,9 +652,6 @@ header{
 <div id="imageViewer">
 
   <span id="closeViewer">✕</span>
-
-  <div id="viewerPrev" class="viewer-arrow">❮</div>
-  <div id="viewerNext" class="viewer-arrow">❯</div>
 
   <img id="viewerImg">
 
@@ -1226,7 +1194,7 @@ window.closePanel = closePanel;
 window.showTab = showTab;
 window.addToCart = addToCart;
 window.searchProduct = searchProduct;
-
+// ======================
 // ======================
 // IMAGE VIEWER + SWIPE
 // ======================
@@ -1236,57 +1204,7 @@ const viewer =
 
 const viewerImg =
   document.getElementById("viewerImg");
-const prevBtn =
-  document.getElementById("viewerPrev");
 
-const nextBtn =
-  document.getElementById("viewerNext");
-
-prevBtn.onclick = (e)=>{
-  e.stopPropagation();
-
-  currentIndex--;
-
-  if(currentIndex < 0){
-    currentIndex = images.length - 1;
-  }
-
-  viewerImg.src = images[currentIndex];
-  document.getElementById("detailImg").src =
-    images[currentIndex];
-
-  document
-    .querySelectorAll(".thumb-list img")
-    .forEach((el,i)=>{
-      el.classList.toggle(
-        "active",
-        i === currentIndex
-      );
-    });
-};
-
-nextBtn.onclick = (e)=>{
-  e.stopPropagation();
-
-  currentIndex++;
-
-  if(currentIndex >= images.length){
-    currentIndex = 0;
-  }
-
-  viewerImg.src = images[currentIndex];
-  document.getElementById("detailImg").src =
-    images[currentIndex];
-
-  document
-    .querySelectorAll(".thumb-list img")
-    .forEach((el,i)=>{
-      el.classList.toggle(
-        "active",
-        i === currentIndex
-      );
-    });
-};
 
 
 let zoomed = false;
