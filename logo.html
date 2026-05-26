@@ -784,40 +784,39 @@ header{
         <div class="spec-value" id="detailchatLieu"></div>
 		   </div>
 		 </div>
-      <div class="spec-row">
-        <div class="spec-label">Loại camera</div>
-        <div class="spec-value" id="detailChatLieu"></div>
-      </div>
+     <div class="spec-content" id="designTab">
 
-      <div class="spec-row">
-        <div class="spec-label">Điện áp</div>
-        <div class="spec-value" id="detailCongSuat"></div>
-      </div>
+  <div class="spec-row">
+    <div class="spec-label">Loại camera</div>
+    <div class="spec-value" id="detailLoaiCamera"></div>
+  </div>
 
-		<div class="spec-row">
-        <div class="spec-label">Góc ống kính</div>
-        <div class="spec-value" id="detailCongSuat"></div>
-   </div>
-		<div class="spec-row">
-        <div class="spec-label">Tầm nhìn xa hồng ngoại</div>
-        <div class="spec-value" id="detailCongSuat"></div>
-   </div>
-		<div class="spec-row">
-        <div class="spec-label">Kiểu kết nối</div>
-        <div class="spec-value" id="detailCongSuat"></div>
-   </div>
-		<div class="spec-row">
-        <div class="spec-label">Ứng dụng kết nối</div>
-        <div class="spec-value" id="detailCongSuat"></div>
-      
-		</div>
+  <div class="spec-row">
+    <div class="spec-label">Điện áp</div>
+    <div class="spec-value" id="detailDienAp"></div>
+  </div>
 
-    </div>
+  <div class="spec-row">
+    <div class="spec-label">Góc ống kính</div>
+    <div class="spec-value" id="detailGocOngKinh"></div>
+  </div>
 
+  <div class="spec-row">
+    <div class="spec-label">Tầm nhìn xa hồng ngoại</div>
+    <div class="spec-value" id="detailHongNgoai"></div>
+  </div>
+
+  <div class="spec-row">
+    <div class="spec-label">Kiểu kết nối</div>
+    <div class="spec-value" id="detailKetNoi"></div>
+  </div>
+
+  <div class="spec-row">
+    <div class="spec-label">Ứng dụng kết nối</div>
+    <div class="spec-value" id="detailUngDung"></div>
   </div>
 
 </div>
-
 <script type="module">
 
 import { app } from "./auth.js";
@@ -1039,6 +1038,23 @@ thumb.onclick = ()=>{
   document.getElementById("detailCongSuat").innerText =
     product.congSuat || "Đang cập nhật";
 
+	document.getElementById("detailLoaiCamera").innerText =
+  product.loaiCamera || "Đang cập nhật";
+
+document.getElementById("detailDienAp").innerText =
+  product.dienAp || "Đang cập nhật";
+
+document.getElementById("detailGocOngKinh").innerText =
+  product.gocOngKinh || "Đang cập nhật";
+
+document.getElementById("detailHongNgoai").innerText =
+  product.hongNgoai || "Đang cập nhật";
+
+document.getElementById("detailKetNoi").innerText =
+  product.kieuKetNoi || "Đang cập nhật";
+
+document.getElementById("detailUngDung").innerText =
+  product.ungDungKetNoi || "Đang cập nhật";
   // SALE
   const saleBox = document.getElementById("detailSale");
 
