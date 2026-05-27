@@ -1,7 +1,8 @@
 // admin-orders.js
 
+
+import { db } from "./firebase-init.js";
 import {
-    getFirestore,
     collection,
     getDocs,
     doc,
@@ -9,11 +10,6 @@ import {
     updateDoc,
     increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import { app } from "./firebase-init.js";
-
-const db = getFirestore(app);
-
 const ordersTable = document.getElementById("ordersTable");
 
 /* =========================
