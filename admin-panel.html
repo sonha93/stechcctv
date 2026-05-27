@@ -410,7 +410,6 @@ const stock = Number(
   .replace(/đ/g,"d")
   .replace(/\s+/g,"-")
   .replace(/[^a-z0-9-]/g,"")
-  + "-" + Date.now();
   async function addProduct(img){
 
     const productData = {
