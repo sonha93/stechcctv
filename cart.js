@@ -208,7 +208,7 @@ export async function addToCart(product) {
     return;
   }
 
-if (!product.docId) {
+  if (!product.id) {
     console.error("Thiếu product.id");
     return;
   }
@@ -220,7 +220,7 @@ if (!product.docId) {
       "users",
       currentUser.uid,
       "cart",
-     String(product.docId)
+      String(product.id)
     );
 
     const snapshot = await getDocs(
@@ -236,27 +236,23 @@ if (!product.docId) {
 
     snapshot.forEach(d => {
 
-    if(d.id === String(product.docId)){
+      if(d.id === String(product.id)){
         oldQty = Number(d.data().qty) || 0;
       }
 
     });
 
-   await setDoc(itemRef, {
+    await setDoc(itemRef, {
 
-  productId: product.docId,
+      id: product.id,
+      name: product.name || "",
+      price: Number(product.price) || 0,
+      oldPrice: Number(product.oldPrice) || 0,
+      img: product.img || "",
+      qty: oldQty + 1
 
-  name: product.name || "",
+    });
 
-  price: Number(product.price) || 0,
-
-  oldPrice: Number(product.oldPrice) || 0,
-
-  img: product.img || "",
-
-  qty: oldQty + 1
-
-});
 
 
   await renderCart();
