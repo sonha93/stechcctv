@@ -315,7 +315,7 @@ categoryEl.addEventListener("change", function(){
       <input id="xuatXu" placeholder="Xuất xứ">
       <input id="baoHanh" placeholder="Bảo hành">
        <input id="hdbq" placeholder="Hướng dẫn bảo quản">
-         <input id="hdsd" placeholder="Hướng dẫn sử dụng">
+         <input id="hdsudung" placeholder="Hướng dẫn sử dụng">
       <input id="dungLuong" placeholder="Dung lượng bộ nhớ">
       <input id="tocDo" placeholder="Tốc độ ghi">
       <input id="kichthuoc" placeholder="Kích thước">
@@ -449,7 +449,14 @@ const stock = Number(
       kieuKetNoi:getVal("kieuKetNoi"),
       sDtoiDa:getVal("sDtoiDa"),
        sDNgoai:getVal("sDNgoai"),
-      ungDungKetNoi:getVal("ungDungKetNoi")
+      ungDungKetNoi:getVal("ungDungKetNoi"),
+      // THẺ NHỚ
+      hdbq:getVal("hdbq"),
+      hdsudung:getVal("hdsudung"),
+      dungLuong:getVal("dungLuong"),
+      tocDo:getVal("tocDo"),
+      kichthuoc:getVal("kichthuoc"),
+      Tlsp:getVal("Tlsp")
     };
    await setDoc(
   doc(db,"products",slug),
