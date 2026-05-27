@@ -125,11 +125,7 @@ actionBox = document.getElementById("cartAction");
  cartBox.innerHTML += `
 <div class="item">
 
-<img
-  src="${p.img || ''}"
-  class="cart-img"
-  onclick="toggleBranch('${docSnap.id}')"
-/>
+  <img src="${p.img || ''}">
 
   <div class="info">
 
@@ -167,35 +163,15 @@ actionBox = document.getElementById("cartAction");
 
   </div>
 
-<button
-  class="remove"
-  onclick="removeItem('${docSnap.id}')"
->
-  🗑
-</button>
-
-<div
-  id="branch-${docSnap.id}"
-  class="cart-branch"
->
-
-  <div class="branch-content">
-
-    <p>ID: ${p.id}</p>
-
-    <p>Sản phẩm: ${p.name}</p>
-
-    <p>Giá: ${price.toLocaleString()}đ</p>
-
-    <p>Số lượng: ${qty}</p>
-
-  </div>
-
-</div>
+  <button
+    class="remove"
+    onclick="removeItem('${docSnap.id}')"
+  >
+    🗑
+  </button>
 
 </div>
 `;
-
     });
 
     totalBox.innerHTML =
@@ -337,20 +313,6 @@ window.updateQty = async function(itemId, qty) {
 
 await renderCart();
 await updateCartCount();
-};
-// ============================
-// TOGGLE CART BRANCH
-// ============================
-window.toggleBranch = async function(itemId){
-
-  const branch = document.getElementById(
-    `branch-${itemId}`
-  );
-
-  if(!branch) return;
-
-  branch.classList.toggle("active");
-
 };
 // ============================
 // CHECKOUT
