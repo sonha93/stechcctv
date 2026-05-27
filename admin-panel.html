@@ -442,9 +442,9 @@ btnAdd.addEventListener("click", async function(){
       gocOngKinh:getVal("gocOngKinh"),
       hongNgoai:getVal("hongNgoai"),
       kieuKetNoi:getVal("kieuKetNoi"),
+      sDtoiDa:getVal("sDtoiDa"),
       ungDungKetNoi:getVal("ungDungKetNoi")
     };
-
    await setDoc(
   doc(db,"products",slug),
   productData
