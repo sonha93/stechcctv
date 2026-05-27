@@ -152,7 +152,7 @@ button{
   <input id="price" placeholder="Giá">
 
   <input id="oldPrice" placeholder="Giá cũ">
-
+  <input id="stock" placeholder="Số lượng tồn kho">
   <textarea id="desc" placeholder="Mô tả" class="full"></textarea>
 
   <input id="imgUrl" placeholder="Link ảnh Cloudinary" class="full">
@@ -372,7 +372,9 @@ btnAdd.addEventListener("click", async function(){
   const oldPrice=Number(
     getVal("oldPrice").replace(/\D/g,"") || 0
   );
-
+const stock = Number(
+  getVal("stock").replace(/\D/g,"") || 0
+);
   const desc=getVal("desc");
 
   const category=categoryEl.value;
@@ -400,14 +402,14 @@ btnAdd.addEventListener("click", async function(){
 
   }
 
-  const slug = name
+ const slug = name
   .toLowerCase()
   .normalize("NFD")
   .replace(/[\u0300-\u036f]/g,"")
   .replace(/đ/g,"d")
   .replace(/\s+/g,"-")
-  .replace(/[^a-z0-9-]/g,"");
-   + "-" + Date.now();
+  .replace(/[^a-z0-9-]/g,"")
+  + "-" + Date.now();
   async function addProduct(img){
 
     const productData = {
@@ -417,6 +419,7 @@ btnAdd.addEventListener("click", async function(){
       name,
       price,
       oldPrice,
+     stock,
       desc,
 
       category,
@@ -569,7 +572,16 @@ function render() {
         <span style="color:#00acc1;font-size:12px;">
           📁 ${p.categoryName || p.category}
         </span><br>
-
+        <div style="margin-top:4px;font-weight:bold;color:green;">
+      📦 Kho: ${p.stock ?? 0}
+      <input
+  type="text"
+  class="stockInput"
+  value="${p.stock ?? 0}"
+  placeholder="Kho"
+  style="width:150px;margin-top:2px;"
+>
+    </div>
         <div style="color:red;font-weight:bold;margin-top:4px;">
           Giá hiện tại:
           ${Number(p.price).toLocaleString()}đ
@@ -691,10 +703,13 @@ function render() {
         return alert("Giá không hợp lệ");
       }
 
-      await updateDoc(doc(db,"products",id), {
-        price:newPrice,
-        oldPrice:oldPrice
-      });
+     const stockInput = item.querySelector('.stockInput');
+
+await updateDoc(doc(db,"products",id), {
+  price: newPrice,
+  oldPrice: oldPrice,
+  stock: stockInput ? Number(stockInput.value) : 0
+});
 
       alert("Cập nhật thành công");
 
