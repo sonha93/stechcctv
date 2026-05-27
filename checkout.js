@@ -218,23 +218,56 @@ async function checkout(){
 
   },0);
 
+  /* =========================
+     FORMAT ITEMS
+  ========================= */
+
+  const orderItems = itemsToOrder.map(item => ({
+
+    id: item.productId || item.id,
+
+    name: item.name || "",
+
+    img: item.img || "",
+
+    price: Number(item.price) || 0,
+
+    quantity: item.qty || 1
+
+  }));
+
+  /* =========================
+     CREATE ORDER
+  ========================= */
+
   await db.collection("orders").add({
 
     uid: currentUser.uid,
 
-    items: itemsToOrder,
+    items: orderItems,
 
     total: total,
 
-    time: new Date().toLocaleString()
+    status: "pending",
+
+    createdAt: new Date().toLocaleString("vi-VN")
 
   });
 
+  /* =========================
+     CLEAR CART
+  ========================= */
+
   await clearCart();
 
-  window.location.href = "checkout.html";
-}
+  /* =========================
+     SUCCESS
+  ========================= */
 
+  alert("Đặt hàng thành công 😹");
+
+  window.location.href = "index.html";
+}
 // ============================
 // AUTH STATE
 // ============================
