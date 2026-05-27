@@ -198,7 +198,12 @@ async function confirmOrder(orderId){
         }
 
         const order = orderSnap.data();
+if(order.status !== "pending"){
 
+    alert("Đơn đã xử lý");
+
+    return;
+}
         /* =========================
            CHECK + TRỪ STOCK
         ========================= */
