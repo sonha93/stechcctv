@@ -1,12 +1,10 @@
 // admin-orders.js
 
 import { rtdb } from "./firebase-init.js";
+
 const ordersTable =
 document.getElementById("ordersTable");
 
-/* =========================
-   LOAD ORDERS
-========================= */
 async function loadOrders(){
 
     ordersTable.innerHTML = `
@@ -46,18 +44,6 @@ async function loadOrders(){
         .reverse()
         .forEach(([orderId, order]) => {
 
-            const status =
-            order.status || "pending";
-
-            const itemsHtml =
-            Array.isArray(order.items)
-
-            ? order.items.map(item => `
-                ${item.name} x${item.quantity}
-            `).join("<br>")
-
-            : "Không có sản phẩm";
-
             const tr =
             document.createElement("tr");
 
@@ -70,17 +56,15 @@ async function loadOrders(){
                     ${order.phone || ""}
                 </td>
 
-                <td>${itemsHtml}</td>
-
                 <td>
-                    ${(order.total || 0)
-                    .toLocaleString()}đ
+                    ${Array.isArray(order.items)
+                    ? order.items.length
+                    : 0}
+                    sản phẩm
                 </td>
 
                 <td>
-                    <span class="status ${status}">
-                        ${status}
-                    </span>
+                    ${order.status || ""}
                 </td>
 
                 <td>
@@ -107,273 +91,5 @@ async function loadOrders(){
         `;
     }
 }
-
-ordersTable.appendChild(tr);
-
-        });
-
-        bindButtons();
-
-    }catch(error){
-
-        console.error(error);
-
-        ordersTable.innerHTML = `
-            <tr>
-                <td colspan="7" class="empty">
-                    Lỗi tải đơn hàng
-                </td>
-            </tr>
-        `;
-    }
-}
-
-/* =========================
-   BIND BUTTONS
-========================= */
-
-function bindButtons(){
-
-    /* CONFIRM */
-
-    document
-    .querySelectorAll(".confirm-btn")
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            async ()=>{
-
-                button.disabled = true;
-
-                button.innerText =
-                "Đang xử lý...";
-
-                const orderId =
-                button.dataset.id;
-
-                await confirmOrder(orderId);
-
-            }
-        );
-
-    });
-
-    /* CANCEL */
-
-    document
-    .querySelectorAll(".cancel-btn")
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            async ()=>{
-
-                const orderId =
-                button.dataset.id;
-
-                await cancelOrder(orderId);
-
-            }
-        );
-
-    });
-
-}
-
-/* =========================
-   CONFIRM ORDER
-========================= */
-
-async function confirmOrder(orderId){
-
-    try{
-
-        const orderRef = db
-        .collection("orders")
-        .doc(orderId);
-
-        await db.runTransaction(
-            async(transaction)=>{
-
-                const orderSnap =
-                await transaction.get(orderRef);
-
-                if(!orderSnap.exists){
-
-                    throw new Error(
-                        "Không tìm thấy đơn"
-                    );
-                }
-
-                const order =
-                orderSnap.data();
-
-                /* CHẶN DOUBLE */
-
-                if(
-                    order.status !== "pending"
-                ){
-
-                    throw new Error(
-                        "Đơn đã xử lý"
-                    );
-                }
-
-                /* CHECK STOCK */
-
-                for(
-                    const item of order.items
-                ){
-
-                    const productRef = db
-                    .collection("products")
-                    .doc(item.id);
-
-                    const productSnap =
-                    await transaction.get(
-                        productRef
-                    );
-
-                    if(!productSnap.exists){
-
-                        throw new Error(
-                            `Không tìm thấy sản phẩm "${item.name}"`
-                        );
-                    }
-
-                    const product =
-                    productSnap.data();
-
-                    const currentStock =
-                    product.stock || 0;
-
-                    /* HẾT HÀNG */
-
-                    if(
-                        currentStock
-                        < item.quantity
-                    ){
-
-                        throw new Error(
-                            `"${item.name}" không đủ tồn kho`
-                        );
-                    }
-
-                    /* UPDATE STOCK */
-
-                    transaction.update(
-                        productRef,
-                        {
-
-                            stock:
-                                currentStock
-                                - item.quantity,
-
-                            sold:
-                                firebase
-                                .firestore
-                                .FieldValue
-                                .increment(
-                                    item.quantity
-                                )
-
-                        }
-                    );
-
-                }
-
-                /* UPDATE ORDER */
-
-                transaction.update(
-                    orderRef,
-                    {
-
-                        status:"confirmed"
-
-                    }
-                );
-
-            }
-        );
-
-        alert("Đã xác nhận đơn");
-
-        loadOrders();
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            error.message
-            || "Lỗi xác nhận đơn"
-        );
-    }
-}
-
-/* =========================
-   CANCEL ORDER
-========================= */
-
-async function cancelOrder(orderId){
-
-    const ok = confirm(
-        "Bạn có chắc muốn huỷ đơn này ?"
-    );
-
-    if(!ok) return;
-
-    try{
-
-        const orderRef = db
-        .collection("orders")
-        .doc(orderId);
-
-        const orderSnap =
-        await orderRef.get();
-
-        if(!orderSnap.exists){
-
-            alert("Không tìm thấy đơn");
-
-            return;
-        }
-
-        const order =
-        orderSnap.data();
-
-        if(
-            order.status !== "pending"
-        ){
-
-            alert(
-                "Không thể huỷ đơn này"
-            );
-
-            return;
-        }
-
-        await orderRef.update({
-
-            status:"cancelled"
-
-        });
-
-        alert("Đã huỷ đơn");
-
-        loadOrders();
-
-    }catch(error){
-
-        console.error(error);
-
-        alert("Lỗi huỷ đơn");
-    }
-}
-
-/* =========================
-   START
-========================= */
 
 loadOrders();
