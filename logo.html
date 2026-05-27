@@ -341,23 +341,36 @@ header{
   border-radius:10px;
   cursor:pointer;
 }
-
+/* TAB MENU */
 .spec-tabs{
-  display:flex;
-  border-bottom:1px solid #eee;
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+
+.spec-tabs::-webkit-scrollbar{
+  display: none;
 }
 
 .spec-tab{
-  border:none;
-  background:none;
-  padding:14px;
-  cursor:pointer;
-  font-weight:bold;
+  flex: 0 0 auto;
+  border: none;
+  background: none;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 8px;
 }
 
 .spec-tab.active{
-  color:red;
-  border-bottom:3px solid red;
+  color: red;
+  border-bottom: 3px solid red;
 }
 
 .panel-body{
@@ -833,6 +846,7 @@ Lưu trữ
     <div class="spec-label">Thẻ nhớ ngoài</div>
     <div class="spec-value" id="detailsDNgoai"></div>
   </div>
+ </div>
  </div>
 <script type="module">
 
