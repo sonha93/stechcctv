@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Quản lý đơn hàng</title>
+
+<style>
+
+/* =========================
+   RESET
+========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f5f5f5;
+    padding:20px;
+}
+
+/* =========================
+   TITLE
+========================= */
+
+h1{
+    margin-bottom:20px;
+    color:#222;
+}
+
+/* =========================
+   TABLE
+========================= */
+
+.table-wrap{
+    overflow-x:auto;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:900px;
+}
+
+th,td{
+    padding:14px;
+    border-bottom:1px solid #eee;
+    text-align:left;
+    font-size:14px;
+}
+
+th{
+    background:#111;
+    color:#fff;
+}
+
+tr:hover{
+    background:#fafafa;
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status{
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+    display:inline-block;
+}
+
+.pending{
+    background:#fff3cd;
+    color:#856404;
+}
+
+.confirmed{
+    background:#d4edda;
+    color:#155724;
+}
+
+.cancelled{
+    background:#f8d7da;
+    color:#721c24;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+button{
+    border:none;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:13px;
+    transition:.2s;
+}
+
+.confirm-btn{
+    background:#28a745;
+    color:#fff;
+}
+
+.confirm-btn:hover{
+    background:#218838;
+}
+
+.cancel-btn{
+    background:#dc3545;
+    color:#fff;
+}
+
+.cancel-btn:hover{
+    background:#c82333;
+}
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty{
+    padding:40px;
+    text-align:center;
+    color:#777;
+}
+
+</style>
+</head>
+<body>
+
+<h1>Quản lý đơn hàng</h1>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+    <th>Mã đơn</th>
+    <th>Khách hàng</th>
+    <th>Sản phẩm</th>
+    <th>Tổng tiền</th>
+    <th>Trạng thái</th>
+    <th>Ngày tạo</th>
+    <th>Hành động</th>
+</tr>
+</thead>
+
+<tbody id="ordersTable">
+
+<tr>
+<td colspan="7" class="empty">Đang tải đơn hàng...</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<script type="module">
+
+import {
+    getFirestore,
+    collection,
+    getDocs,
+    doc,
+    updateDoc,
+    getDoc,
+    increment
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import { app } from "./firebase-init.js";
+
+const db = getFirestore(app);
+
+const ordersTable = document.getElementById("ordersTable");
+
+/* =========================
+   LOAD ORDERS
+========================= */
+
+async function loadOrders(){
+
+    ordersTable.innerHTML = `
+        <tr>
+            <td colspan="7" class="empty">
+                Đang tải đơn hàng...
+            </td>
+        </tr>
+    `;
+
+    try{
+
+        const snapshot = await getDocs(collection(db,"orders"));
+
+        if(snapshot.empty){
+
+            ordersTable.innerHTML = `
+                <tr>
+                    <td colspan="7" class="empty">
+                        Chưa có đơn hàng
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        ordersTable.innerHTML = "";
+
+        snapshot.forEach(docSnap => {
+
+            const order = docSnap.data();
+            const orderId = docSnap.id;
+
+            const productsHtml = (order.items || [])
+                .map(item => `
+                    ${item.name} x${item.quantity}
+                `)
+                .join("<br>");
+
+            const status = order.status || "pending";
+
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+                <td>${orderId}</td>
+
+                <td>
+                    ${order.name || "Không có tên"}<br>
+                    ${order.phone || ""}
+                </td>
+
+                <td>${productsHtml}</td>
+
+                <td>
+                    ${(order.total || 0).toLocaleString()}đ
+                </td>
+
+                <td>
+                    <span class="status ${status}">
+                        ${status}
+                    </span>
+                </td>
+
+                <td>
+                    ${order.createdAt || ""}
+                </td>
+
+                <td>
+                    <div class="actions">
+
+                        ${
+                            status === "pending"
+                            ? `
+                                <button 
+                                    class="confirm-btn"
+                                    onclick="confirmOrder('${orderId}')"
+                                >
+                                    Xác nhận
+                                </button>
+
+                                <button 
+                                    class="cancel-btn"
+                                    onclick="cancelOrder('${orderId}')"
+                                >
+                                    Huỷ
+                                </button>
+                            `
+                            : "-"
+                        }
+
+                    </div>
+                </td>
+            `;
+
+            ordersTable.appendChild(tr);
+
+        });
+
+    }catch(error){
+
+        console.error(error);
+
+        ordersTable.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty">
+                    Lỗi tải đơn hàng
+                </td>
+            </tr>
+        `;
+    }
+}
+
+/* =========================
+   CONFIRM ORDER
+========================= */
+
+window.confirmOrder = async function(orderId){
+
+    try{
+
+        const orderRef = doc(db,"orders",orderId);
+
+        const orderSnap = await getDoc(orderRef);
+
+        if(!orderSnap.exists()){
+            alert("Không tìm thấy đơn");
+            return;
+        }
+
+        const order = orderSnap.data();
+
+        /* =========================
+           TRỪ TỒN KHO
+        ========================= */
+
+        for(const item of order.items){
+
+            const productRef = doc(db,"products",item.id);
+
+            const productSnap = await getDoc(productRef);
+
+            if(!productSnap.exists()) continue;
+
+            const product = productSnap.data();
+
+            const currentStock = product.stock || 0;
+
+            if(currentStock < item.quantity){
+
+                alert(
+                    `Sản phẩm ${item.name} không đủ tồn kho`
+                );
+
+                return;
+            }
+
+            await updateDoc(productRef,{
+                stock: currentStock - item.quantity,
+                sold: increment(item.quantity)
+            });
+
+        }
+
+        /* =========================
+           UPDATE STATUS
+        ========================= */
+
+        await updateDoc(orderRef,{
+            status:"confirmed"
+        });
+
+        alert("Đã xác nhận đơn");
+
+        loadOrders();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert("Lỗi xác nhận đơn");
+
+    }
+
+}
+
+/* =========================
+   CANCEL ORDER
+========================= */
+
+window.cancelOrder = async function(orderId){
+
+    const ok = confirm("Huỷ đơn hàng này ?");
+
+    if(!ok) return;
+
+    try{
+
+        const orderRef = doc(db,"orders",orderId);
+
+        await updateDoc(orderRef,{
+            status:"cancelled"
+        });
+
+        alert("Đã huỷ đơn");
+
+        loadOrders();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert("Lỗi huỷ đơn");
+
+    }
+
+}
+
+/* =========================
+   START
+========================= */
+
+loadOrders();
+
+</script>
+
+</body>
+</html>
