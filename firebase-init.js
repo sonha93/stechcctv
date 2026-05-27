@@ -2,69 +2,33 @@
 // FIREBASE INIT
 // ==========================
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-    getAuth
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-    getFirestore
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-    getStorage
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-/* =========================
-   FIREBASE CONFIG
-========================= */
-
+// Cấu hình Firebase của bạn
 const firebaseConfig = {
-
-    apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-
-    authDomain:
-        "stech-73b89.firebaseapp.com",
-
-    databaseURL:
-        "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-
-    projectId: "stech-73b89",
-
-    storageBucket:
-        "stech-73b89.appspot.com",
-
-    messagingSenderId:
-        "873739162979",
-
-    appId:
-        "1:873739162979:web:978f1a4043f025b1cdaf56"
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain: "stech-73b89.firebaseapp.com",
+  databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "stech-73b89",
+  storageBucket: "stech-73b89.appspot.com",
+  messagingSenderId: "873739162979",
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 
-/* =========================
-   INIT APP
-========================= */
 
-const app = initializeApp(firebaseConfig);
+// Kiểm tra nếu Firebase chưa init thì init
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
-/* =========================
-   SERVICES
-========================= */
+// Lấy auth và database dùng chung
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage(); // nếu cần upload hình ảnh
 
-const auth = getAuth(app);
+// Biến trạng thái Firebase sẵn sàng
+let firebaseReady = false;
 
-const db = getFirestore(app);
-
-const storage = getStorage(app);
-
-/* =========================
-   EXPORT
-========================= */
-
-export {
-    auth,
-    db,
-    storage
-};
+// Đặt firebaseReady = true khi auth state check xong
+auth.onAuthStateChanged(user => {
+  firebaseReady = true;
+});
+export { auth, db, storage };
