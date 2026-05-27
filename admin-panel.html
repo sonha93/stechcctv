@@ -4,7 +4,6 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Admin Sản Phẩm</title>
 
 <link rel="icon" type="image/png" href="favicon-96x96.png?v=20260523" sizes="96x96" /> 
@@ -703,14 +702,23 @@ function render() {
         return alert("Giá không hợp lệ");
       }
 
-     const stockInput = item.querySelector('.stockInput');
+   const stockInput =
+  item.querySelector('.stockInput');
 
-await updateDoc(doc(db,"products",id), {
-  price: newPrice,
-  oldPrice: oldPrice,
-  stock: stockValue
-});
-  Number(stockInput.value.replace(/\D/g,'')) || 0
+const stockValue = Math.max(
+  0,
+  Number(
+    stockInput.value.replace(/\D/g,'')
+  ) || 0
+);
+
+await updateDoc(
+  doc(db,"products",id),
+  {
+    price: newPrice,
+    oldPrice: oldPrice,
+    stock: stockValue
+  }
 );
 
       alert("Cập nhật thành công");
