@@ -378,11 +378,12 @@ header{
 }
 
 .spec-content{
-  display:block;
-  padding-top:16px;
-  scroll-margin-top:70px;
+  display:none;
 }
 
+.spec-content.active{
+  display:block;
+}
 .spec-row{
   display:flex;
   gap:10px;
@@ -1134,17 +1135,6 @@ function closePanel(){
 
 }
 
-function showTab(tabId, btn){
-
-  document
-    .getElementById(tabId)
-    .scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-
-}
-
 // ADD TO CART
 async function addToCart(){
 
@@ -1493,42 +1483,23 @@ viewer.addEventListener("mouseup",(e)=>{
     });
 
 });
-	const sections =
-  document.querySelectorAll(".spec-content");
+	function showTab(tabId,btn){
 
-const tabs =
-  document.querySelectorAll(".spec-tab");
+  document
+    .querySelectorAll(".spec-content")
+    .forEach(el=>el.classList.remove("active"));
 
-window.addEventListener("scroll", ()=>{
+  document
+    .querySelectorAll(".spec-tab")
+    .forEach(el=>el.classList.remove("active"));
 
-  let current = "";
+  document
+    .getElementById(tabId)
+    .classList.add("active");
 
-  sections.forEach(section=>{
+  btn.classList.add("active");
 
-    const top =
-      section.getBoundingClientRect().top;
-
-    if(top <= 120){
-      current = section.id;
-    }
-
-  });
-
-  tabs.forEach(tab=>{
-
-    tab.classList.remove("active");
-
-    if(
-      tab
-      .getAttribute("onclick")
-      .includes(current)
-    ){
-      tab.classList.add("active");
-    }
-
-  });
-
-});
+}
 	</script>
 
 </body>
