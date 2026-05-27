@@ -24,10 +24,10 @@ async function loadProducts() {
 
     querySnapshot.forEach(doc => {
 
-     allProducts.push({
-  docId: doc.id,
-  ...doc.data()
-});
+      allProducts.push({
+        id: doc.id,
+        ...doc.data()
+      });
 
     });
 
@@ -70,7 +70,7 @@ function renderHome() {
 
   productsToShow.forEach(p => {
 
-const id = String(p.docId);
+    const id = String(p.id);
 
     let percentText = "";
 
@@ -154,7 +154,7 @@ const id = String(p.docId);
 window.addToCartById = function(id) {
 
   const product = allProducts.find(
-p => String(p.docId) === String(id)
+    p => String(p.id) === String(id)
   );
 
   if (!product) {
