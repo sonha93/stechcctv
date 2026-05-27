@@ -1,7 +1,6 @@
 // admin-orders.js
 
-import { db } from "./firebase-init.js";
-
+import { rtdb } from "./firebase-init.js";
 const ordersTable =
 document.getElementById("ordersTable");
 
@@ -21,12 +20,13 @@ async function loadOrders(){
 
     try{
 
-        const snapshot = await db
-        .collection("orders")
-        .orderBy("createdAt","desc")
-        .get();
+        const snapshot =
+        await rtdb.ref("orders")
+        .once("value");
 
-        if(snapshot.empty){
+        const orders = snapshot.val();
+
+        if(!orders){
 
             ordersTable.innerHTML = `
                 <tr>
@@ -41,16 +41,12 @@ async function loadOrders(){
 
         ordersTable.innerHTML = "";
 
-        snapshot.forEach(docSnap => {
-
-            const order = docSnap.data();
-
-            const orderId = docSnap.id;
+        Object.entries(orders)
+        .reverse()
+        .forEach(([orderId,order])=>{
 
             const status =
             order.status || "pending";
-
-            /* ITEMS */
 
             const itemsHtml =
             (order.items || [])
@@ -59,28 +55,6 @@ async function loadOrders(){
             `)
             .join("<br>");
 
-            /* DATE */
-
-            let createdAt = "";
-
-            if(
-                order.createdAt &&
-                order.createdAt.toDate
-            ){
-
-                createdAt =
-                order.createdAt
-                .toDate()
-                .toLocaleString("vi-VN");
-
-            }else{
-
-                createdAt =
-                order.createdAt || "";
-            }
-
-            /* ROW */
-
             const tr =
             document.createElement("tr");
 
@@ -88,7 +62,7 @@ async function loadOrders(){
                 <td>${orderId}</td>
 
                 <td>
-                    ${order.name || "Không có tên"}
+                    ${order.customer || ""}
                     <br>
                     ${order.phone || ""}
                 </td>
@@ -106,40 +80,30 @@ async function loadOrders(){
                     </span>
                 </td>
 
-                <td>${createdAt}</td>
-
                 <td>
-
-                    <div class="actions">
-
-                        ${
-                            status === "pending"
-
-                            ? `
-
-                                <button
-                                    class="confirm-btn"
-                                    data-id="${orderId}"
-                                >
-                                    Xác nhận
-                                </button>
-
-                                <button
-                                    class="cancel-btn"
-                                    data-id="${orderId}"
-                                >
-                                    Huỷ
-                                </button>
-
-                            `
-
-                            : "-"
-                        }
-
-                    </div>
-
+                    ${order.time || ""}
                 </td>
+
+                <td>-</td>
             `;
+
+            ordersTable.appendChild(tr);
+
+        });
+
+    }catch(error){
+
+        console.error(error);
+
+        ordersTable.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty">
+                    Lỗi tải đơn hàng
+                </td>
+            </tr>
+        `;
+    }
+}
 
             ordersTable.appendChild(tr);
 
