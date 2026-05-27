@@ -32,3 +32,4 @@ auth.onAuthStateChanged(user => {
   firebaseReady = true;
 });
 export { auth, db, storage };
+export default firebase;
