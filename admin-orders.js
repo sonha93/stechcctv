@@ -7,7 +7,6 @@ document.getElementById("ordersTable");
 /* =========================
    LOAD ORDERS
 ========================= */
-
 async function loadOrders(){
 
     ordersTable.innerHTML = `
@@ -26,6 +25,8 @@ async function loadOrders(){
 
         const orders = snapshot.val();
 
+        console.log(orders);
+
         if(!orders){
 
             ordersTable.innerHTML = `
@@ -43,17 +44,19 @@ async function loadOrders(){
 
         Object.entries(orders)
         .reverse()
-        .forEach(([orderId,order])=>{
+        .forEach(([orderId, order]) => {
 
             const status =
             order.status || "pending";
 
             const itemsHtml =
-            (order.items || [])
-            .map(item => `
+            Array.isArray(order.items)
+
+            ? order.items.map(item => `
                 ${item.name} x${item.quantity}
-            `)
-            .join("<br>");
+            `).join("<br>")
+
+            : "Không có sản phẩm";
 
             const tr =
             document.createElement("tr");
@@ -105,7 +108,7 @@ async function loadOrders(){
     }
 }
 
-            ordersTable.appendChild(tr);
+ordersTable.appendChild(tr);
 
         });
 
