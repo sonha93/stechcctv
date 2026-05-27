@@ -1,6 +1,6 @@
 // admin-orders.js
 
-import { rtdb } from "./firebase-init.js";
+const rtdb = firebase.database();
 
 const ordersTable =
 document.getElementById("ordersTable");
