@@ -781,6 +781,24 @@ Lưu trữ
         <div class="spec-label">Màu sắc</div>
         <div class="spec-value" id="detailColor"></div>
       </div>
+		<div class="spec-row">
+  <div class="spec-label">Hướng dẫn bảo quản</div>
+  <div class="spec-value" id="detailhdbq"></div>
+</div>
+
+<div class="spec-row">
+  <div class="spec-label">Dung lượng bộ nhớ</div>
+  <div class="spec-value" id="detaildungLuong"></div>
+</div>
+		<div class="spec-row">
+  <div class="spec-label">Kích thước</div>
+  <div class="spec-value" id="detailkichthuoc"></div>
+</div>
+
+<div class="spec-row">
+  <div class="spec-label">Trọng lượng sản phẩm</div>
+  <div class="spec-value" id="detailTlsp"></div>
+</div>
    </div>
     <div class="spec-content" id="configTab">
 
@@ -800,7 +818,11 @@ Lưu trữ
 		   </div>
 		 </div>
      <div class="spec-content" id="designTab">
+<div class="spec-row">
+  <div class="spec-label">Tốc độ đọc/ghi</div>
 
+  <div class="spec-value" id="detailtocDo"></div>
+</div>
   <div class="spec-row">
     <div class="spec-label">Loại camera</div>
     <div class="spec-value" id="detailLoaiCamera"></div>
@@ -1046,7 +1068,11 @@ thumb.onclick = ()=>{
 
 	document.getElementById("detailColor").innerText =
   product.mauSac || "Đang cập nhật";
- 
+ document.getElementById("detailhdbq").innerText =
+  product.hdbq || "Đang cập nhật";
+
+document.getElementById("detaildungLuong").innerText =
+  product.dungLuong || "Đang cập nhật";
 	// CONFIG
   document.getElementById("detailKichthuoc").innerText =
     product.Kichthuoc || "Đang cập nhật";
@@ -1056,6 +1082,11 @@ thumb.onclick = ()=>{
 
   document.getElementById("detailchatLieu").innerText =
     product.chatLieu || "Đang cập nhật";
+	document.getElementById("detailkichthuoc").innerText =
+  product.kichthuoc || "Đang cập nhật";
+
+document.getElementById("detailTlsp").innerText =
+  product.Tlsp || "Đang cập nhật";
   // DESIGN
 	document.getElementById("detailLoaiCamera").innerText =
   product.loaiCamera || "Đang cập nhật";
@@ -1082,7 +1113,8 @@ document.getElementById("detailsDtoiDa").innerText =
 
 document.getElementById("detailsDNgoai").innerText =
   product.sDNgoai || "Đang cập nhật";	
-
+document.getElementById("detailtocDo").innerText =
+  product.tocDo || "Đang cập nhật";
   // SALE
   const saleBox = document.getElementById("detailSale");
 
