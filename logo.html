@@ -378,11 +378,9 @@ header{
 }
 
 .spec-content{
-  display:none;
-}
-
-.spec-content.active{
   display:block;
+  padding-top:16px;
+  scroll-margin-top:70px;
 }
 
 .spec-row{
@@ -1136,21 +1134,14 @@ function closePanel(){
 
 }
 
-function showTab(tabId,btn){
-
-  document
-    .querySelectorAll(".spec-content")
-    .forEach(el=>el.classList.remove("active"));
-
-  document
-    .querySelectorAll(".spec-tab")
-    .forEach(el=>el.classList.remove("active"));
+function showTab(tabId, btn){
 
   document
     .getElementById(tabId)
-    .classList.add("active");
-
-  btn.classList.add("active");
+    .scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
 
 }
 
@@ -1500,6 +1491,42 @@ viewer.addEventListener("mouseup",(e)=>{
       );
 
     });
+
+});
+	const sections =
+  document.querySelectorAll(".spec-content");
+
+const tabs =
+  document.querySelectorAll(".spec-tab");
+
+window.addEventListener("scroll", ()=>{
+
+  let current = "";
+
+  sections.forEach(section=>{
+
+    const top =
+      section.getBoundingClientRect().top;
+
+    if(top <= 120){
+      current = section.id;
+    }
+
+  });
+
+  tabs.forEach(tab=>{
+
+    tab.classList.remove("active");
+
+    if(
+      tab
+      .getAttribute("onclick")
+      .includes(current)
+    ){
+      tab.classList.add("active");
+    }
+
+  });
 
 });
 	</script>
