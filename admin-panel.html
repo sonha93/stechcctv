@@ -441,7 +441,7 @@ const stock = Number(
       trongLuongsp:getVal("trongLuongsp"),
      chatLieu:getVal("chatLieu"),
      loaiCamera:getVal("loaiCamera"),
-     doPhanGiai:getVal("doPhanGiai"),
+     doPhanGiai:getVal("detaildoPhanGiai"),
       dienAp:getVal("dienAp"),
       gocOngKinh:getVal("gocOngKinh"),
       hongNgoai:getVal("hongNgoai"),
@@ -708,8 +708,10 @@ function render() {
 await updateDoc(doc(db,"products",id), {
   price: newPrice,
   oldPrice: oldPrice,
-  stock: stockInput ? Number(stockInput.value) : 0
+  stock: stockValue
 });
+  Number(stockInput.value.replace(/\D/g,'')) || 0
+);
 
       alert("Cập nhật thành công");
 
