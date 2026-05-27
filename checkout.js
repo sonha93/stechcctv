@@ -1,3 +1,4 @@
+import firebase from "./firebase-init.js";
 import { auth, db } from "./firebase-init.js";
 
 const cartBox = document.getElementById("cart");
@@ -143,7 +144,7 @@ async function changeQty(index, delta){
     .collection("users")
     .doc(currentUser.uid)
     .collection("cart")
-    .doc(item.id)
+.doc(item.id)
     .update({
       qty: item.qty
     });
@@ -164,7 +165,7 @@ async function removeItem(index){
     .collection("users")
     .doc(currentUser.uid)
     .collection("cart")
-    .doc(item.id)
+  .doc(item.id)
     .delete();
 
   currentCart.splice(index,1);
@@ -193,9 +194,7 @@ async function clearCart(){
   renderCheckout();
 }
 
-// ============================
-// CHECKOUT
-// ============================
+
 async function checkout(){
 
   if(!currentUser) return;
@@ -210,13 +209,61 @@ async function checkout(){
     return;
   }
 
-  const total = itemsToOrder.reduce((sum,item)=>{
+  // ============================
+  // CHECK STOCK
+  // ============================
 
-    return sum +
-      (item.qty || 1) *
-      (item.price || 0);
+  for(const item of itemsToOrder){
 
-  },0);
+    const productRef = db
+      .collection("products")
+      .doc(item.productId);
+
+    const productSnap =
+      await productRef.get();
+
+    if(!productSnap.exists){
+
+      alert(
+        `${item.name} không tồn tại`
+      );
+
+      return;
+    }
+
+    const productData =
+      productSnap.data();
+
+    const currentStock =
+      productData.stock || 0;
+
+    if((item.qty || 1) > currentStock){
+
+      alert(
+        `${item.name} chỉ còn ${currentStock} sản phẩm`
+      );
+
+      return;
+    }
+
+  }
+
+  // ============================
+  // TOTAL
+  // ============================
+
+  const total =
+    itemsToOrder.reduce((sum,item)=>{
+
+      return sum +
+        (item.qty || 1) *
+        (item.price || 0);
+
+    },0);
+
+  // ============================
+  // CREATE ORDER
+  // ============================
 
   await db.collection("orders").add({
 
@@ -230,9 +277,34 @@ async function checkout(){
 
   });
 
+  // ============================
+  // MINUS STOCK
+  // ============================
+
+  for(const item of itemsToOrder){
+
+    await db
+      .collection("products")
+      .doc(item.productId)
+      .update({
+
+        stock:
+          firebase.firestore.FieldValue.increment(
+            -(item.qty || 1)
+          )
+
+      });
+
+  }
+
+  // ============================
+  // CLEAR CART
+  // ============================
+
   await clearCart();
 
-  window.location.href = "checkout.html";
+  window.location.href =
+    "checkout.html";
 }
 
 // ============================
