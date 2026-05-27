@@ -258,7 +258,16 @@ async function checkout(){
      CLEAR CART
   ========================= */
 
-  await clearCart();
+ for(const item of itemsToOrder){
+
+  await db
+    .collection("users")
+    .doc(currentUser.uid)
+    .collection("cart")
+    .doc(item.id)
+    .delete();
+
+}
 
   /* =========================
      SUCCESS
