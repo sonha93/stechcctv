@@ -1,356 +1,395 @@
-```js
-import { auth, db } from "./firebase-init.js";
+import {
+  collection,
+  query,
+  where,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const cartBox = document.getElementById("cart");
-const totalBox = document.getElementById("total");
+import {
+  auth,
+  db
+} from "./firebase-init.js";
 
-let currentUser = null;
-let currentCart = [];
+/* =========================
+STATE
+========================= */
 
-function formatPrice(n){
-  return Number(n || 0).toLocaleString("vi-VN") + "đ";
+let currentPage = 1;
+
+const perPage = 10;
+
+let allOrders = [];
+
+/* =========================
+FORMAT
+========================= */
+
+function format(n){
+
+  return Number(n || 0)
+    .toLocaleString("vi-VN") + "đ";
 }
 
-// ============================
-// LOAD CART
-// ============================
-async function loadCart(){
+function formatDate(createdAt){
 
   try{
 
-    if(!currentUser) return;
+    if(!createdAt) return "";
 
-    const snapshot = await db
-      .collection("users")
-      .doc(currentUser.uid)
-      .collection("cart")
-      .get();
+    // NUMBER TIMESTAMP
+    if(typeof createdAt === "number"){
 
-    currentCart = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+      return new Date(createdAt)
+        .toLocaleString("vi-VN");
+    }
 
-    currentCart.forEach(item => {
+    // FIRESTORE TIMESTAMP
+    if(createdAt.toDate){
 
-      if(item.checked === undefined){
-        item.checked = true;
-      }
+      return createdAt
+        .toDate()
+        .toLocaleString("vi-VN");
+    }
+
+    return "";
+
+  }catch{
+
+    return "";
+  }
+}
+
+/* =========================
+LOAD ORDERS
+========================= */
+
+async function loadOrders(userUid){
+
+  const box =
+    document.getElementById("orders");
+
+  if(!box) return;
+
+  box.innerHTML = `
+    <p>Đang tải đơn hàng...</p>
+  `;
+
+  try{
+
+    const q = query(
+
+      collection(db, "orders"),
+
+      where("uid", "==", userUid)
+
+    );
+
+    const snapshot =
+      await getDocs(q);
+
+    allOrders =
+      snapshot.docs.map(doc => ({
+
+        id: doc.id,
+
+        ...doc.data()
+
+      }));
+
+    // SORT NEWEST
+    allOrders.sort((a,b)=>{
+
+      return (
+        Number(b.createdAt || 0)
+        -
+        Number(a.createdAt || 0)
+      );
 
     });
 
-    renderCheckout();
+    console.log(allOrders);
+
+    if(allOrders.length === 0){
+
+      box.innerHTML = `
+        <p>Chưa có đơn hàng</p>
+      `;
+
+      return;
+    }
+
+    currentPage = 1;
+
+    renderOrders();
 
   }catch(err){
 
     console.error(err);
 
-    if(cartBox){
-      cartBox.innerHTML = `
-        <p>Lỗi tải giỏ hàng</p>
-      `;
-    }
+    box.innerHTML = `
+      <p>Lỗi tải đơn hàng</p>
+    `;
   }
 }
 
-// ============================
-// RENDER CHECKOUT
-// ============================
-function renderCheckout(){
+/* =========================
+RENDER
+========================= */
 
-  if(!cartBox || !totalBox) return;
+function renderOrders(){
 
-  cartBox.innerHTML = "";
+  const box =
+    document.getElementById("orders");
 
-  if(currentCart.length === 0){
+  if(!box) return;
 
-    cartBox.innerHTML = `
-      <p>Giỏ hàng trống 🛒</p>
-    `;
+  box.innerHTML = "";
 
-    totalBox.innerText = formatPrice(0);
+  const start =
+    (currentPage - 1) * perPage;
 
-    return;
-  }
+  const end =
+    start + perPage;
 
-  let total = 0;
+  const pageOrders =
+    allOrders.slice(start, end);
 
-  currentCart.forEach((item,index)=>{
+  pageOrders.forEach(order => {
 
-    const qty = Number(item.qty || 1);
+    let total = 0;
 
-    const price = Number(item.price || 0);
+    let itemsHTML = "";
 
-    const subTotal = qty * price;
+    const items =
+      Array.isArray(order.items)
+      ? order.items
+      : [];
 
-    if(item.checked){
-      total += subTotal;
-    }
+    items.forEach(p => {
 
-    cartBox.innerHTML += `
-      <div class="cart-item">
+      const qty =
+        Number(p.qty || 1);
 
-        <input
-          type="checkbox"
-          ${item.checked ? "checked" : ""}
-          onclick="toggleItem(${index})"
-        >
+      const price =
+        Number(p.price || 0);
 
-        <img
-          src="${item.img || "no-image.png"}"
-          onerror="this.src='no-image.png'"
-        >
+      const sub =
+        qty * price;
 
-        <div>
+      total += sub;
 
-          <h4>${item.name || ""}</h4>
+      itemsHTML += `
+
+        <div class="item" style="
+          display:flex;
+          gap:12px;
+          margin-bottom:14px;
+          padding-bottom:14px;
+          border-bottom:1px solid #eee;
+        ">
+
+          <img
+            src="${p.img || "no-image.png"}"
+            onerror="this.src='no-image.png'"
+            width="72"
+            height="72"
+            style="
+              object-fit:cover;
+              border-radius:10px;
+              border:1px solid #ddd;
+            "
+          >
 
           <div>
-            ${qty} × ${formatPrice(price)}
-            = ${formatPrice(subTotal)}
+
+            <b style="
+              display:block;
+              margin-bottom:6px;
+            ">
+              ${p.name || ""}
+            </b>
+
+            <div>
+              ${qty} × ${format(price)}
+            </div>
+
+            <div style="
+              color:#d70018;
+              font-weight:700;
+              margin-top:4px;
+            ">
+              ${format(sub)}
+            </div>
+
           </div>
 
         </div>
 
-        <button onclick="removeItem(${index})">
-          🗑
-        </button>
+      `;
+    });
+
+    box.innerHTML += `
+
+      <div class="order-box" style="
+        background:#fff;
+        border-radius:14px;
+        padding:20px;
+        margin-bottom:20px;
+        border:1px solid #ddd;
+      ">
+
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:18px;
+          flex-wrap:wrap;
+          gap:10px;
+        ">
+
+          <div>
+
+            <h3 style="
+              margin-bottom:6px;
+            ">
+              🧾 Đơn #${order.id}
+            </h3>
+
+            <p style="
+              color:#666;
+              font-size:14px;
+            ">
+              🕒 ${formatDate(order.createdAt)}
+            </p>
+
+          </div>
+
+          <div style="
+            background:#fff3cd;
+            color:#856404;
+            padding:8px 14px;
+            border-radius:999px;
+            font-size:13px;
+            font-weight:700;
+          ">
+            ${order.status || "pending"}
+          </div>
+
+        </div>
+
+        ${itemsHTML}
+
+        <div style="
+          margin-top:18px;
+          text-align:right;
+          font-size:24px;
+          font-weight:800;
+          color:#d70018;
+        ">
+          ${format(total)}
+        </div>
 
       </div>
+
     `;
   });
 
-  totalBox.innerText = formatPrice(total);
+  renderPagination();
 }
 
-// ============================
-// TOGGLE ITEM
-// ============================
-async function toggleItem(index){
+/* =========================
+PAGINATION
+========================= */
 
-  try{
+function renderPagination(){
 
-    if(!currentCart[index]) return;
+  const box =
+    document.getElementById("orders");
 
-    currentCart[index].checked =
-      !currentCart[index].checked;
+  if(!box) return;
 
-    await db
-      .collection("users")
-      .doc(currentUser.uid)
-      .collection("cart")
-      .doc(currentCart[index].id)
-      .update({
-        checked: currentCart[index].checked
-      });
+  const totalPages =
+    Math.ceil(
+      allOrders.length / perPage
+    );
 
-    renderCheckout();
+  if(totalPages <= 1) return;
 
-  }catch(err){
+  let html = `
+    <div style="
+      text-align:center;
+      margin-top:20px;
+    ">
+  `;
 
-    console.error(err);
+  if(currentPage > 1){
 
-    alert("Lỗi cập nhật giỏ hàng");
+    html += `
+      <button
+        onclick="changePage(${currentPage - 1})"
+      >
+        ←
+      </button>
+    `;
   }
+
+  html += `
+    <span style="
+      margin:0 12px;
+      font-weight:700;
+    ">
+      Trang
+      ${currentPage}/${totalPages}
+    </span>
+  `;
+
+  if(currentPage < totalPages){
+
+    html += `
+      <button
+        onclick="changePage(${currentPage + 1})"
+      >
+        →
+      </button>
+    `;
+  }
+
+  html += `</div>`;
+
+  box.innerHTML += html;
 }
 
-// ============================
-// CHANGE QUANTITY
-// ============================
-async function changeQty(index, delta){
+/* =========================
+CHANGE PAGE
+========================= */
 
-  try{
+window.changePage = function(page){
 
-    if(!currentCart[index]) return;
+  currentPage = page;
 
-    const item = currentCart[index];
+  renderOrders();
+};
 
-    item.qty = (item.qty || 1) + delta;
+/* =========================
+AUTH
+========================= */
 
-    if(item.qty < 1){
-      item.qty = 1;
-    }
+auth.onAuthStateChanged(user => {
 
-    await db
-      .collection("users")
-      .doc(currentUser.uid)
-      .collection("cart")
-      .doc(item.id)
-      .update({
-        qty: item.qty
-      });
+  const box =
+    document.getElementById("orders");
 
-    renderCheckout();
+  if(!box) return;
 
-  }catch(err){
+  if(!user){
 
-    console.error(err);
+    box.innerHTML = `
+      <p>Vui lòng đăng nhập</p>
+    `;
 
-    alert("Lỗi cập nhật số lượng");
+    return;
   }
-}
 
-// ============================
-// REMOVE ITEM
-// ============================
-async function removeItem(index){
+  loadOrders(user.uid);
 
-  try{
-
-    if(!currentCart[index]) return;
-
-    const item = currentCart[index];
-
-    await db
-      .collection("users")
-      .doc(currentUser.uid)
-      .collection("cart")
-      .doc(item.id)
-      .delete();
-
-    currentCart.splice(index,1);
-
-    renderCheckout();
-
-  }catch(err){
-
-    console.error(err);
-
-    alert("Lỗi xoá sản phẩm");
-  }
-}
-
-// ============================
-// CLEAR CART
-// ============================
-async function clearCart(){
-
-  try{
-
-    if(!currentUser) return;
-
-    const cartRef = db
-      .collection("users")
-      .doc(currentUser.uid)
-      .collection("cart");
-
-    const snapshot = await cartRef.get();
-
-    for(const doc of snapshot.docs){
-      await doc.ref.delete();
-    }
-
-    currentCart = [];
-
-    renderCheckout();
-
-  }catch(err){
-
-    console.error(err);
-
-    alert("Lỗi xoá giỏ hàng");
-  }
-}
-
-// ============================
-// CHECKOUT
-// ============================
-async function checkout(){
-
-  try{
-
-    if(!currentUser){
-
-      alert("Vui lòng đăng nhập");
-
-      return;
-    }
-
-    const itemsToOrder =
-      currentCart.filter(i => i.checked);
-
-    if(itemsToOrder.length === 0){
-
-      alert("Chưa chọn sản phẩm");
-
-      return;
-    }
-
-    const total = itemsToOrder.reduce((sum,item)=>{
-
-      return sum +
-        (Number(item.qty || 1) *
-        Number(item.price || 0));
-
-    },0);
-
-    await db.collection("orders").add({
-
-      uid: currentUser.uid,
-
-      items: itemsToOrder,
-
-      total: total,
-
-      status: "pending",
-
-      createdAt: Date.now()
-
-    });
-
-    for(const item of itemsToOrder){
-
-      await db
-        .collection("users")
-        .doc(currentUser.uid)
-        .collection("cart")
-        .doc(item.id)
-        .delete();
-    }
-
-    currentCart =
-      currentCart.filter(i => !i.checked);
-
-    renderCheckout();
-
-    alert("Đặt hàng thành công");
-
-    window.location.href = "orders.html";
-
-  }catch(err){
-
-    console.error(err);
-
-    alert("Lỗi đặt hàng");
-  }
-}
-
-// ============================
-// AUTH STATE
-// ============================
-auth.onAuthStateChanged(user=>{
-
-  currentUser = user;
-
-  if(user){
-
-    loadCart();
-
-  }else{
-
-    currentCart = [];
-
-    renderCheckout();
-  }
 });
-
-// ============================
-// GLOBAL
-// ============================
-window.removeItem = removeItem;
-window.toggleItem = toggleItem;
-window.changeQty = changeQty;
-window.clearCart = clearCart;
-window.checkout = checkout;
-window.renderCheckout = renderCheckout;
-```
