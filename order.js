@@ -1,25 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-import {
-  getDatabase,
-  ref,
-  onValue
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-/* FIREBASE */
-const firebaseConfig = {
-  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-  authDomain: "stech-73b89.firebaseapp.com",
-  databaseURL:
-    "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "stech-73b89",
-  storageBucket: "stech-73b89.appspot.com",
-  messagingSenderId: "873739162979",
-  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+import { db } from "./firebase-init.js";
 
 /* CONFIG */
 let currentPage = 1;
@@ -32,33 +12,23 @@ function format(n) {
 }
 
 /* LOAD ORDERS */
-function loadOrders() {
+async function loadOrders(){
 
   const box = document.getElementById("orders");
 
-  if (!box) return;
+  if(!box) return;
 
-  onValue(ref(db, "orders"), (snapshot) => {
+  const snapshot = await db
+    .collection("orders")
+    .orderBy("createdAt", "desc")
+    .get();
 
-    const data = snapshot.val();
+  allOrders = snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
 
-    console.log("DATA FIREBASE:", data);
-
-    if (!data) {
-
-      box.innerHTML = `
-        <p>Chưa có đơn hàng</p>
-      `;
-
-      return;
-    }
-
-    allOrders = Object.values(data).reverse();
-
-    renderOrders();
-
-  });
-
+  renderOrders();
 }
 
 /* RENDER ORDERS */
@@ -82,8 +52,7 @@ pageOrders.forEach(order => {
 
   (order.items || []).forEach(p => {
 
-    let qty = p.qty || 1;
-
+   let qty = p.quantity || 1;
     let price = Number(p.price) || 0;
 
     let subFinal = price * qty;
@@ -130,10 +99,10 @@ pageOrders.forEach(order => {
 
       <p>
         🕒 ${
-          order.time
-            ? new Date(order.time).toLocaleString("vi-VN")
-            : ""
-        }
+  order.createdAt?.toDate
+    ? order.createdAt.toDate().toLocaleString("vi-VN")
+    : ""
+}
       </p>
 
       <hr>
