@@ -1,6 +1,9 @@
 // admin-orders.js
+
 import { rtdb } from "./firebase-init.js";
+
 console.log(rtdb);
+
 const ordersTable =
 document.getElementById("ordersTable");
 
@@ -46,36 +49,55 @@ async function loadOrders(){
             const tr =
             document.createElement("tr");
 
-    tr.innerHTML = `
-    <td>${orderId}</td>
+            tr.innerHTML = `
+                <td>${orderId}</td>
 
-    <td>
-        ${order.customer || ""}
-        <br>
-        ${order.phone || ""}
-    </td>
+                <td>
+                    ${order.customer || ""}
+                    <br>
+                    ${order.phone || ""}
+                </td>
 
-    <td>
-        ${Array.isArray(order.items)
-        ? order.items.length
-        : 0}
-        sản phẩm
-    </td>
+                <td>
+                    ${Array.isArray(order.items)
+                    ? order.items.length
+                    : 0}
+                    sản phẩm
+                </td>
 
-    <td>
-        ${(order.total || 0).toLocaleString("vi-VN")}đ
-    </td>
+                <td>
+                    ${(order.total || 0)
+                    .toLocaleString("vi-VN")}đ
+                </td>
 
-    <td>
-        ${order.status || ""}
-    </td>
+                <td>
+                    ${order.status || ""}
+                </td>
 
-    <td>
-        ${new Date(order.time).toLocaleString("vi-VN")}
-    </td>
+                <td>
+                    ${new Date(order.time)
+                    .toLocaleString("vi-VN")}
+                </td>
 
-    <td>
-        -
-    </td>
-`;
+                <td>-</td>
+            `;
+
+            ordersTable.appendChild(tr);
+
+        });
+
+    }catch(error){
+
+        console.error(error);
+
+        ordersTable.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty">
+                    Lỗi tải đơn hàng
+                </td>
+            </tr>
+        `;
+    }
+}
+
 loadOrders();
