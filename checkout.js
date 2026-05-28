@@ -218,71 +218,23 @@ async function checkout(){
 
   },0);
 
-  /* =========================
-     FORMAT ITEMS
-  ========================= */
+  await db.collection("orders").add({
 
-  const orderItems = itemsToOrder.map(item => ({
+    uid: currentUser.uid,
 
-    id: item.productId || item.id,
+    items: itemsToOrder,
 
-    name: item.name || "",
+    total: total,
 
-    img: item.img || "",
+    time: new Date().toLocaleString()
 
-    price: Number(item.price) || 0,
+  });
 
-    quantity: item.qty || 1
+  await clearCart();
 
-  }));
-
-  /* =========================
-     CREATE ORDER
-  ========================= */
-
- await db.collection("orders").add({
-
-  orderId: Date.now(),
-
-  uid: currentUser.uid,
-
-  customer: currentUser.displayName || "Khách hàng",
-
-  phone: currentUser.phoneNumber || "",
-
-  items: orderItems,
-
-  total: total,
-
-  status: "pending",
-
-  createdAt: new Date()
-
-});
-
-  /* =========================
-     CLEAR CART
-  ========================= */
-
- for(const item of itemsToOrder){
-
-  await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .doc(item.id)
-    .delete();
-
+  window.location.href = "checkout.html";
 }
 
-  /* =========================
-     SUCCESS
-  ========================= */
-
-  alert("Đặt hàng thành công 😹");
-
-  window.location.href = "index.html";
-}
 // ============================
 // AUTH STATE
 // ============================
