@@ -1,265 +1,284 @@
-import { auth, db } from "./firebase-init.js";
+import {
+  auth,
+  db
+} from "./firebase-init.js";
 
-const cartBox = document.getElementById("cart");
-const totalBox = document.getElementById("total");
+let currentPage = 1;
 
-let currentUser = null;
-let currentCart = [];
+const perPage = 10;
 
-function formatPrice(n){
-  return Number(n).toLocaleString("vi-VN") + "đ";
+let allOrders = [];
+
+/* =========================
+FORMAT PRICE
+========================= */
+function format(n){
+
+  return Number(n || 0)
+    .toLocaleString("vi-VN") + "đ";
 }
 
-// ============================
-// LOAD CART
-// ============================
-async function loadCart(){
+/* =========================
+LOAD ORDERS
+========================= */
+async function loadOrders(userUid){
 
-  if(!currentUser) return;
+  const box =
+    document.getElementById("orders");
 
-  const snapshot = await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .get();
+  if(!box) return;
 
-  currentCart = snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+  box.innerHTML = `
+    <p>Đang tải...</p>
+  `;
 
-  currentCart.forEach(item => {
+  try{
 
-    if(item.checked === undefined){
-      item.checked = true;
+    const snapshot = await db
+      .collection("orders")
+      .where("uid","==",userUid)
+      .get();
+
+    allOrders = snapshot.docs.map(doc => ({
+
+      id: doc.id,
+      ...doc.data()
+
+    }));
+
+    allOrders.sort((a,b)=>{
+
+      return new Date(b.time) -
+             new Date(a.time);
+
+    });
+
+    console.log("ORDERS:", allOrders);
+
+    if(allOrders.length === 0){
+
+      box.innerHTML = `
+        <p>Bạn chưa có đơn hàng</p>
+      `;
+
+      return;
     }
 
-  });
+    currentPage = 1;
 
-  renderCheckout();
-}
+    renderOrders();
 
-// ============================
-// RENDER CHECKOUT
-// ============================
-function renderCheckout(){
+  }catch(err){
 
-  if(!cartBox || !totalBox) return;
+    console.error(err);
 
-  cartBox.innerHTML = "";
-
-  if(currentCart.length === 0){
-
-    cartBox.innerHTML = "<p>Giỏ hàng trống 🛒</p>";
-
-    totalBox.innerText = formatPrice(0);
-
-    return;
+    box.innerHTML = `
+      <p>Lỗi tải đơn hàng</p>
+    `;
   }
+}
 
-  let total = 0;
+/* =========================
+RENDER
+========================= */
+function renderOrders(){
 
-  currentCart.forEach((item,index)=>{
+  const box =
+    document.getElementById("orders");
 
-    const qty = item.qty || 1;
+  if(!box) return;
 
-    const price = Number(item.price) || 0;
+  box.innerHTML = "";
 
-    const subTotal = qty * price;
+  const start =
+    (currentPage - 1) * perPage;
 
-    if(item.checked){
-      total += subTotal;
-    }
+  const end =
+    start + perPage;
 
-    cartBox.innerHTML += `
-      <div class="cart-item">
+  const pageOrders =
+    allOrders.slice(start,end);
 
-        <input
-          type="checkbox"
-          ${item.checked ? "checked" : ""}
-          onclick="toggleItem(${index})"
-        >
+  pageOrders.forEach(order=>{
 
-        <img src="${item.img}">
+    let total = 0;
 
-        <div>
-          <h4>${item.name}</h4>
+    let itemsHTML = "";
+
+    const items =
+      Array.isArray(order.items)
+      ? order.items
+      : [];
+
+    items.forEach(item=>{
+
+      const qty =
+        Number(item.qty || 1);
+
+      const price =
+        Number(item.price || 0);
+
+      const sub =
+        qty * price;
+
+      total += sub;
+
+      itemsHTML += `
+        <div style="
+          display:flex;
+          gap:10px;
+          margin-bottom:10px;
+        ">
+
+          <img
+            src="${item.img || ''}"
+            width="70"
+            height="70"
+            style="
+              object-fit:cover;
+              border-radius:6px;
+            "
+          >
 
           <div>
-            ${qty} × ${formatPrice(price)}
-            = ${formatPrice(subTotal)}
+
+            <b>
+              ${item.name || ''}
+            </b>
+
+            <div>
+              ${qty} × ${format(price)}
+            </div>
+
+            <div>
+              = ${format(sub)}
+            </div>
+
           </div>
+
         </div>
 
-        <button onclick="removeItem(${index})">
-          🗑
-        </button>
+        <hr>
+      `;
+    });
+
+    box.innerHTML += `
+      <div class="order-box" style="
+        border:1px solid #ddd;
+        padding:15px;
+        margin-bottom:20px;
+        border-radius:10px;
+        background:#fff;
+      ">
+
+        <h3>
+          🧾 Đơn hàng #${order.id}
+        </h3>
+
+        <p>
+          🕒 ${order.time || ""}
+        </p>
+
+        ${itemsHTML}
+
+        <h4>
+          Tổng:
+          ${format(total)}
+        </h4>
 
       </div>
     `;
   });
 
-  totalBox.innerText = formatPrice(total);
+  renderPagination();
 }
 
-// ============================
-// TOGGLE ITEM
-// ============================
-async function toggleItem(index){
+/* =========================
+PAGINATION
+========================= */
+function renderPagination(){
 
-  if(!currentCart[index]) return;
+  const box =
+    document.getElementById("orders");
 
-  currentCart[index].checked =
-    !currentCart[index].checked;
+  const totalPages =
+    Math.ceil(
+      allOrders.length / perPage
+    );
 
-  await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .doc(currentCart[index].id)
-    .update({
-      checked: currentCart[index].checked
-    });
+  if(totalPages <= 1) return;
 
-  renderCheckout();
-}
+  let html = `
+    <div style="
+      margin-top:20px;
+      text-align:center;
+    ">
+  `;
 
-// ============================
-// CHANGE QUANTITY
-// ============================
-async function changeQty(index, delta){
+  if(currentPage > 1){
 
-  if(!currentCart[index]) return;
-
-  const item = currentCart[index];
-
-  item.qty = (item.qty || 1) + delta;
-
-  if(item.qty < 1){
-    item.qty = 1;
+    html += `
+      <button
+        onclick="changePage(${currentPage - 1})"
+      >
+        ←
+      </button>
+    `;
   }
 
-  await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .doc(item.id)
-    .update({
-      qty: item.qty
-    });
+  html += `
+    <span style="
+      margin:0 10px;
+    ">
+      Trang ${currentPage}/${totalPages}
+    </span>
+  `;
 
-  renderCheckout();
+  if(currentPage < totalPages){
+
+    html += `
+      <button
+        onclick="changePage(${currentPage + 1})"
+      >
+        →
+      </button>
+    `;
+  }
+
+  html += `</div>`;
+
+  box.innerHTML += html;
 }
 
-// ============================
-// REMOVE ITEM
-// ============================
-async function removeItem(index){
+/* =========================
+CHANGE PAGE
+========================= */
+window.changePage = function(page){
 
-  if(!currentCart[index]) return;
+  currentPage = page;
 
-  const item = currentCart[index];
+  renderOrders();
+};
 
-  await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .doc(item.id)
-    .delete();
+/* =========================
+AUTH
+========================= */
+auth.onAuthStateChanged(user=>{
 
-  currentCart.splice(index,1);
+  const box =
+    document.getElementById("orders");
 
-  renderCheckout();
-}
+  if(!box) return;
 
-// ============================
-// CLEAR CART
-// ============================
-async function clearCart(){
+  if(!user){
 
-  if(!currentUser) return;
-
-  const cartRef = db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart");
-
-  const snapshot = await cartRef.get();
-
-  snapshot.forEach(doc => doc.ref.delete());
-
-  currentCart = [];
-
-  renderCheckout();
-}
-
-// ============================
-// CHECKOUT
-// ============================
-async function checkout(){
-
-  if(!currentUser) return;
-
-  const itemsToOrder =
-    currentCart.filter(i => i.checked);
-
-  if(itemsToOrder.length === 0){
-
-    alert("Chưa chọn sản phẩm");
+    box.innerHTML = `
+      <p>Vui lòng đăng nhập</p>
+    `;
 
     return;
   }
 
-  const total = itemsToOrder.reduce((sum,item)=>{
+  loadOrders(user.uid);
 
-    return sum +
-      (item.qty || 1) *
-      (item.price || 0);
-
-  },0);
-
-  await db.collection("orders").add({
-
-    uid: currentUser.uid,
-
-    items: itemsToOrder,
-
-    total: total,
-
-    time: new Date().toLocaleString()
-
-  });
-
-  await clearCart();
-
-  window.location.href = "checkout.html";
-}
-
-// ============================
-// AUTH STATE
-// ============================
-auth.onAuthStateChanged(user=>{
-
-  currentUser = user;
-
-  if(user){
-
-    loadCart();
-
-  }else{
-
-    currentCart = [];
-
-    renderCheckout();
-  }
 });
-
-// ============================
-// GLOBAL
-// ============================
-window.removeItem = removeItem;
-window.toggleItem = toggleItem;
-window.changeQty = changeQty;
-window.clearCart = clearCart;
-window.checkout = checkout;
-window.renderCheckout = renderCheckout;
