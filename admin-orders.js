@@ -79,9 +79,13 @@ async function loadOrders() {
         </tr>
       `;
 
-      totalOrders.textContent = 0;
-      totalRevenue.textContent = formatPrice(0);
+      if(totalOrders){
+    totalOrders.textContent = 0;
+}
 
+if(totalRevenue){
+    totalRevenue.textContent = formatPrice(0);
+}
       return;
     }
 
@@ -139,9 +143,13 @@ async function loadOrders() {
 
     ordersTable.innerHTML = html;
 
+   if(totalOrders){
     totalOrders.textContent = snapshot.size;
-    totalRevenue.textContent = formatPrice(revenue);
+}
 
+if(totalRevenue){
+    totalRevenue.textContent = formatPrice(revenue);
+}
     bindEvents();
 
   } catch (error) {
