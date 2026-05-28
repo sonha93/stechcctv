@@ -46,49 +46,36 @@ async function loadOrders(){
             const tr =
             document.createElement("tr");
 
-            tr.innerHTML = `
-                <td>${orderId}</td>
+    tr.innerHTML = `
+    <td>${orderId}</td>
 
-                <td>
-                    ${order.customer || ""}
-                    <br>
-                    ${order.phone || ""}
-                </td>
+    <td>
+        ${order.customer || ""}
+        <br>
+        ${order.phone || ""}
+    </td>
 
-                <td>
-                    ${Array.isArray(order.items)
-                    ? order.items.length
-                    : 0}
-                    sản phẩm
-                </td>
+    <td>
+        ${Array.isArray(order.items)
+        ? order.items.length
+        : 0}
+        sản phẩm
+    </td>
 
-                <td>
-                    ${order.status || ""}
-                </td>
+    <td>
+        ${(order.total || 0).toLocaleString("vi-VN")}đ
+    </td>
 
-                <td>
-                    ${order.time || ""}
-                </td>
+    <td>
+        ${order.status || ""}
+    </td>
 
-                <td>-</td>
-            `;
+    <td>
+        ${new Date(order.time).toLocaleString("vi-VN")}
+    </td>
 
-            ordersTable.appendChild(tr);
-
-        });
-
-    }catch(error){
-
-        console.error(error);
-
-        ordersTable.innerHTML = `
-            <tr>
-                <td colspan="7" class="empty">
-                    Lỗi tải đơn hàng
-                </td>
-            </tr>
-        `;
-    }
-}
-
+    <td>
+        -
+    </td>
+`;
 loadOrders();
