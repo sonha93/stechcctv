@@ -1,11 +1,14 @@
 import {
-  get,
-  ref
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
   auth,
-  rtdb
+  db
 } from "./firebase-init.js";
 
 let currentPage = 1;
@@ -15,7 +18,7 @@ const perPage = 10;
 let allOrders = [];
 
 /* =========================
-FORMAT MONEY
+FORMAT
 ========================= */
 function format(n){
 
@@ -39,62 +42,34 @@ async function loadOrders(userUid){
 
   try{
 
-    const snapshot = await get(
-      ref(rtdb, "orders")
+    const q = query(
+
+      collection(db, "orders"),
+
+      where("uid", "==", userUid),
+
+      orderBy("createdAt", "desc")
+
     );
 
-    if(!snapshot.exists()){
+    const snapshot =
+      await getDocs(q);
 
-      box.innerHTML = `
-        <p>Chưa có đơn hàng</p>
-      `;
+    allOrders =
+      snapshot.docs.map(doc => ({
 
-      return;
-    }
+        id: doc.id,
 
-    const data = snapshot.val() || {};
+        ...doc.data()
 
-    console.log("ALL ORDERS:", data);
+      }));
 
-    allOrders = Object.keys(data)
-      .map(key => {
-
-        return {
-          id: key,
-          ...data[key]
-        };
-
-      })
-      .filter(order => {
-
-        return (
-
-          order.uid === userUid ||
-
-          order.userUid === userUid ||
-
-          order.userId === userUid ||
-
-          order?.user?.uid === userUid
-
-        );
-
-      })
-      .sort((a,b) => {
-
-        return (
-          Number(b.createdAt || 0) -
-          Number(a.createdAt || 0)
-        );
-
-      });
-
-    console.log("FILTERED:", allOrders);
+    console.log(allOrders);
 
     if(allOrders.length === 0){
 
       box.innerHTML = `
-        <p>Bạn chưa có đơn hàng</p>
+        <p>Chưa có đơn hàng</p>
       `;
 
       return;
@@ -106,7 +81,7 @@ async function loadOrders(userUid){
 
   }catch(err){
 
-    console.error("LOAD ORDER ERROR:", err);
+    console.error(err);
 
     box.innerHTML = `
       <p>Lỗi tải đơn hàng</p>
@@ -115,7 +90,7 @@ async function loadOrders(userUid){
 }
 
 /* =========================
-RENDER ORDERS
+RENDER
 ========================= */
 function renderOrders(){
 
@@ -141,16 +116,10 @@ function renderOrders(){
 
     let itemsHTML = "";
 
-    const items = Array.isArray(order.items)
+    const items =
+      Array.isArray(order.items)
       ? order.items
-      : Object.values(order.items || {});
-
-    if(items.length === 0){
-
-      itemsHTML = `
-        <p>Không có sản phẩm</p>
-      `;
-    }
+      : [];
 
     items.forEach(p => {
 
@@ -166,11 +135,11 @@ function renderOrders(){
       total += sub;
 
       itemsHTML += `
+
         <div class="item" style="
           display:flex;
           gap:10px;
           margin-bottom:10px;
-          align-items:flex-start;
         ">
 
           <img
@@ -179,17 +148,15 @@ function renderOrders(){
             height="70"
             style="
               object-fit:cover;
-              border-radius:6px;
+              border-radius:8px;
               border:1px solid #ddd;
-              background:#fff;
             "
-            onerror="this.src='no-image.png'"
           >
 
           <div>
 
             <b>
-              ${p.name || "Sản phẩm"}
+              ${p.name || ""}
             </b>
 
             <div>
@@ -204,34 +171,35 @@ function renderOrders(){
 
         </div>
 
-        <hr>
       `;
     });
 
     box.innerHTML += `
+
       <div class="order-box" style="
-        border:1px solid #ddd;
+        background:#fff;
+        border-radius:10px;
         padding:15px;
         margin-bottom:20px;
-        border-radius:10px;
-        background:#fff;
+        border:1px solid #ddd;
       ">
 
-        <h3 style="
-          margin-top:0;
-        ">
-          🧾 Đơn hàng #${order.id}
+        <h3>
+          🧾 Đơn #${order.id}
         </h3>
 
         <p>
           🕒 ${
-            order.time ||
-            (
-              order.createdAt
-              ? new Date(order.createdAt)
-                .toLocaleString("vi-VN")
-              : ""
-            )
+            order.createdAt
+            ? new Date(order.createdAt)
+              .toLocaleString("vi-VN")
+            : ""
+          }
+        </p>
+
+        <p>
+          📦 ${
+            order.status || "pending"
           }
         </p>
 
@@ -243,6 +211,7 @@ function renderOrders(){
         </h4>
 
       </div>
+
     `;
   });
 
@@ -266,8 +235,8 @@ function renderPagination(){
 
   let html = `
     <div style="
-      margin-top:20px;
       text-align:center;
+      margin-top:20px;
     ">
   `;
 
@@ -286,7 +255,8 @@ function renderPagination(){
     <span style="
       margin:0 10px;
     ">
-      Trang ${currentPage}/${totalPages}
+      Trang
+      ${currentPage}/${totalPages}
     </span>
   `;
 
@@ -334,11 +304,6 @@ auth.onAuthStateChanged(user => {
 
     return;
   }
-
-  console.log(
-    "LOGGED UID:",
-    user.uid
-  );
 
   loadOrders(user.uid);
 
