@@ -1,5 +1,4 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
 import {
   getDatabase,
   ref,
@@ -17,7 +16,7 @@ const firebaseConfig = {
   appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 
-// Khởi tạo Firebase
+// Firebase init
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
@@ -29,64 +28,86 @@ function generateOrderId() {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const year = String(now.getFullYear()).slice(-2);
 
-  // Random 4 số
   const random = Math.floor(1000 + Math.random() * 9000);
 
   return `${day}${month}${year}${random}`;
 }
 
-// Hàm lưu đơn
-function saveOrder() {
+// Lưu đơn hàng
+async function saveOrder() {
+  try {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  const cart =
-  JSON.parse(localStorage.getItem("cart")) || [];
+    console.log("🛒 Cart:", cart);
 
-  if(cart.length === 0){
+    if (!cart || cart.length === 0) {
+      alert("Giỏ hàng trống");
+      return;
+    }
 
-    alert("Giỏ hàng trống");
+    const nameInput = document.getElementById("name");
+    const phoneInput = document.getElementById("phone");
+    const checkoutBtn = document.getElementById("checkoutBtn");
 
+    if (!nameInput || !phoneInput) {
+      alert("Thiếu form khách hàng (name/phone)");
+      return;
+    }
+
+    if (!checkoutBtn) {
+      console.error("❌ Không tìm thấy nút checkoutBtn");
+      return;
+    }
+
+    const customer = nameInput.value.trim();
+    const phone = phoneInput.value.trim();
+
+    if (!customer || !phone) {
+      alert("Vui lòng nhập đầy đủ thông tin");
+      return;
+    }
+
+    const orderId = generateOrderId();
+
+    const orderData = {
+      orderId,
+      customer,
+      phone,
+      items: cart,
+      total: cart.reduce(
+        (sum, p) => sum + ((p.price || 0) * (p.qty || 1)),
+        0
+      ),
+      status: "success",
+      time: new Date().toISOString()
+    };
+
+    console.log("📦 OrderData:", orderData);
+
+    await set(ref(db, `orders/${orderId}`), orderData);
+
+    console.log("✅ Lưu đơn thành công:", orderId);
+
+    localStorage.removeItem("cart");
+
+    alert("Đặt hàng thành công!");
+
+    window.location.href = "success.html";
+
+  } catch (error) {
+    console.error("❌ Firebase error:", error.code, error.message);
+    alert("Lỗi khi lưu đơn: " + error.message);
+  }
+}
+
+// Gắn event sau khi DOM load
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("checkoutBtn");
+
+  if (!btn) {
+    console.error("❌ checkoutBtn không tồn tại trong DOM");
     return;
   }
 
-  const customer =
-  document.getElementById("name").value;
-
-  const phone =
-  document.getElementById("phone").value;
-
-  const orderId = generateOrderId();
-
-  const orderData = {
-
-    orderId: orderId,
-
-    customer: customer,
-
-    phone: phone,
-
-    items: cart,
-
-    total: cart.reduce(
-      (sum, p) =>
-        sum + ((p.price || 0) * (p.qty || 1)),
-      0
-    ),
-
-    status: "success",
-
-    time: new Date().toISOString()
-  };
-  set(ref(db, `orders/${orderId}`), orderData)
-    .then(() => {
-      console.log("✅ Lưu đơn thành công:", orderId);
-      localStorage.removeItem("cart");
-       window.location.href = "success.html";
-    })
-    .catch((error) => {
-      console.error("❌ Lỗi lưu đơn:", error);
-    });
-}
-
-document
-.getElementById("checkoutBtn")
-.addEventListener("click", saveOrder);
+  btn.addEventListener("click", saveOrder);
+});
