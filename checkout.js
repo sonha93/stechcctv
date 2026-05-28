@@ -3,7 +3,7 @@ import {
   ref,
   set
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { auth, db } from "./firebase-init.js";
+import { auth, db, rtdb } from "./firebase-init.js";
 
 const cartBox = document.getElementById("cart");
 const totalBox = document.getElementById("total");
