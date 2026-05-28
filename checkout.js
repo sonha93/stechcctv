@@ -80,7 +80,10 @@ function renderCheckout(){
           onclick="toggleItem(${index})"
         >
 
-        <img src="${item.img}">
+     <img
+  src="${item.img}"
+  onerror="this.src='no-image.png'"
+>
 
         <div>
           <h4>${item.name}</h4>
@@ -214,25 +217,39 @@ async function checkout(){
 
     return sum +
       (item.qty || 1) *
-      (item.price || 0);
-
+      (Number(item.price) || 0);
   },0);
 
   await db.collection("orders").add({
 
-    uid: currentUser.uid,
+  uid: currentUser.uid,
 
-    items: itemsToOrder,
+  items: itemsToOrder,
 
-    total: total,
+  total: total,
 
-    time: new Date().toLocaleString()
+  status: "pending",
 
-  });
+  createdAt: Date.now()
 
-  await clearCart();
+});
 
-  window.location.href = "checkout.html";
+ for(const item of itemsToOrder){
+
+  await db
+    .collection("users")
+    .doc(currentUser.uid)
+    .collection("cart")
+    .doc(item.id)
+    .delete();
+}
+
+currentCart =
+  currentCart.filter(i => !i.checked);
+
+renderCheckout();
+
+ window.location.href = "orders.html";
 }
 
 // ============================
