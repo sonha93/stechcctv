@@ -19,9 +19,7 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-const rtdb = firebase.database
-  ? firebase.database()
-  : null; // THÊM DÒNG NÀY
+const rtdb = firebase.database();
 
 const storage = firebase.storage();
 
