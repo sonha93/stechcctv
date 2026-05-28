@@ -1,8 +1,13 @@
+import {
+  getDatabase,
+  ref,
+  set
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { auth, db } from "./firebase-init.js";
 
 const cartBox = document.getElementById("cart");
 const totalBox = document.getElementById("total");
-
+const rtdb = getDatabase();
 let currentUser = null;
 let currentCart = [];
 
@@ -218,24 +223,27 @@ async function checkout(){
 
   },0);
 
- firebase.database().ref(
-  "orders/" + Date.now()
-).set({
+  const orderId = Date.now();
 
-  uid: currentUser.uid,
+  await set(
+    ref(rtdb, "orders/" + orderId),
+    {
 
-  items: itemsToOrder,
+      uid: currentUser.uid,
 
-  total: total,
+      items: itemsToOrder,
 
-  time: new Date().toLocaleString()
+      total: total,
 
-});
+      time: new Date().toLocaleString()
+
+    }
+  );
+
   await clearCart();
 
-  window.location.href = "checkout.html";
+  window.location.href = "orders.html";
 }
-
 // ============================
 // AUTH STATE
 // ============================
