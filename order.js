@@ -42,15 +42,13 @@ async function loadOrders(userUid){
 
   try{
 
-    const q = query(
+  const q = query(
 
-      collection(db, "orders"),
+  collection(db, "orders"),
 
-      where("uid", "==", userUid),
+  where("uid", "==", userUid)
 
-      orderBy("createdAt", "desc")
-
-    );
+);
 
     const snapshot =
       await getDocs(q);
