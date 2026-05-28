@@ -1,3 +1,4 @@
+```js
 import { auth, db } from "./firebase-init.js";
 
 const cartBox = document.getElementById("cart");
@@ -7,7 +8,7 @@ let currentUser = null;
 let currentCart = [];
 
 function formatPrice(n){
-  return Number(n).toLocaleString("vi-VN") + "đ";
+  return Number(n || 0).toLocaleString("vi-VN") + "đ";
 }
 
 // ============================
@@ -15,28 +16,41 @@ function formatPrice(n){
 // ============================
 async function loadCart(){
 
-  if(!currentUser) return;
+  try{
 
-  const snapshot = await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .get();
+    if(!currentUser) return;
 
-  currentCart = snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+    const snapshot = await db
+      .collection("users")
+      .doc(currentUser.uid)
+      .collection("cart")
+      .get();
 
-  currentCart.forEach(item => {
+    currentCart = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
 
-    if(item.checked === undefined){
-      item.checked = true;
+    currentCart.forEach(item => {
+
+      if(item.checked === undefined){
+        item.checked = true;
+      }
+
+    });
+
+    renderCheckout();
+
+  }catch(err){
+
+    console.error(err);
+
+    if(cartBox){
+      cartBox.innerHTML = `
+        <p>Lỗi tải giỏ hàng</p>
+      `;
     }
-
-  });
-
-  renderCheckout();
+  }
 }
 
 // ============================
@@ -50,7 +64,9 @@ function renderCheckout(){
 
   if(currentCart.length === 0){
 
-    cartBox.innerHTML = "<p>Giỏ hàng trống 🛒</p>";
+    cartBox.innerHTML = `
+      <p>Giỏ hàng trống 🛒</p>
+    `;
 
     totalBox.innerText = formatPrice(0);
 
@@ -61,9 +77,9 @@ function renderCheckout(){
 
   currentCart.forEach((item,index)=>{
 
-    const qty = item.qty || 1;
+    const qty = Number(item.qty || 1);
 
-    const price = Number(item.price) || 0;
+    const price = Number(item.price || 0);
 
     const subTotal = qty * price;
 
@@ -80,18 +96,20 @@ function renderCheckout(){
           onclick="toggleItem(${index})"
         >
 
-     <img
-  src="${item.img}"
-  onerror="this.src='no-image.png'"
->
+        <img
+          src="${item.img || "no-image.png"}"
+          onerror="this.src='no-image.png'"
+        >
 
         <div>
-          <h4>${item.name}</h4>
+
+          <h4>${item.name || ""}</h4>
 
           <div>
             ${qty} × ${formatPrice(price)}
             = ${formatPrice(subTotal)}
           </div>
+
         </div>
 
         <button onclick="removeItem(${index})">
@@ -110,21 +128,30 @@ function renderCheckout(){
 // ============================
 async function toggleItem(index){
 
-  if(!currentCart[index]) return;
+  try{
 
-  currentCart[index].checked =
-    !currentCart[index].checked;
+    if(!currentCart[index]) return;
 
-  await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .doc(currentCart[index].id)
-    .update({
-      checked: currentCart[index].checked
-    });
+    currentCart[index].checked =
+      !currentCart[index].checked;
 
-  renderCheckout();
+    await db
+      .collection("users")
+      .doc(currentUser.uid)
+      .collection("cart")
+      .doc(currentCart[index].id)
+      .update({
+        checked: currentCart[index].checked
+      });
+
+    renderCheckout();
+
+  }catch(err){
+
+    console.error(err);
+
+    alert("Lỗi cập nhật giỏ hàng");
+  }
 }
 
 // ============================
@@ -132,26 +159,35 @@ async function toggleItem(index){
 // ============================
 async function changeQty(index, delta){
 
-  if(!currentCart[index]) return;
+  try{
 
-  const item = currentCart[index];
+    if(!currentCart[index]) return;
 
-  item.qty = (item.qty || 1) + delta;
+    const item = currentCart[index];
 
-  if(item.qty < 1){
-    item.qty = 1;
+    item.qty = (item.qty || 1) + delta;
+
+    if(item.qty < 1){
+      item.qty = 1;
+    }
+
+    await db
+      .collection("users")
+      .doc(currentUser.uid)
+      .collection("cart")
+      .doc(item.id)
+      .update({
+        qty: item.qty
+      });
+
+    renderCheckout();
+
+  }catch(err){
+
+    console.error(err);
+
+    alert("Lỗi cập nhật số lượng");
   }
-
-  await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .doc(item.id)
-    .update({
-      qty: item.qty
-    });
-
-  renderCheckout();
 }
 
 // ============================
@@ -159,20 +195,29 @@ async function changeQty(index, delta){
 // ============================
 async function removeItem(index){
 
-  if(!currentCart[index]) return;
+  try{
 
-  const item = currentCart[index];
+    if(!currentCart[index]) return;
 
-  await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .doc(item.id)
-    .delete();
+    const item = currentCart[index];
 
-  currentCart.splice(index,1);
+    await db
+      .collection("users")
+      .doc(currentUser.uid)
+      .collection("cart")
+      .doc(item.id)
+      .delete();
 
-  renderCheckout();
+    currentCart.splice(index,1);
+
+    renderCheckout();
+
+  }catch(err){
+
+    console.error(err);
+
+    alert("Lỗi xoá sản phẩm");
+  }
 }
 
 // ============================
@@ -180,20 +225,31 @@ async function removeItem(index){
 // ============================
 async function clearCart(){
 
-  if(!currentUser) return;
+  try{
 
-  const cartRef = db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart");
+    if(!currentUser) return;
 
-  const snapshot = await cartRef.get();
+    const cartRef = db
+      .collection("users")
+      .doc(currentUser.uid)
+      .collection("cart");
 
-  snapshot.forEach(doc => doc.ref.delete());
+    const snapshot = await cartRef.get();
 
-  currentCart = [];
+    for(const doc of snapshot.docs){
+      await doc.ref.delete();
+    }
 
-  renderCheckout();
+    currentCart = [];
+
+    renderCheckout();
+
+  }catch(err){
+
+    console.error(err);
+
+    alert("Lỗi xoá giỏ hàng");
+  }
 }
 
 // ============================
@@ -201,55 +257,72 @@ async function clearCart(){
 // ============================
 async function checkout(){
 
-  if(!currentUser) return;
+  try{
 
-  const itemsToOrder =
-    currentCart.filter(i => i.checked);
+    if(!currentUser){
 
-  if(itemsToOrder.length === 0){
+      alert("Vui lòng đăng nhập");
 
-    alert("Chưa chọn sản phẩm");
+      return;
+    }
 
-    return;
+    const itemsToOrder =
+      currentCart.filter(i => i.checked);
+
+    if(itemsToOrder.length === 0){
+
+      alert("Chưa chọn sản phẩm");
+
+      return;
+    }
+
+    const total = itemsToOrder.reduce((sum,item)=>{
+
+      return sum +
+        (Number(item.qty || 1) *
+        Number(item.price || 0));
+
+    },0);
+
+    await db.collection("orders").add({
+
+      uid: currentUser.uid,
+
+      items: itemsToOrder,
+
+      total: total,
+
+      status: "pending",
+
+      createdAt: Date.now()
+
+    });
+
+    for(const item of itemsToOrder){
+
+      await db
+        .collection("users")
+        .doc(currentUser.uid)
+        .collection("cart")
+        .doc(item.id)
+        .delete();
+    }
+
+    currentCart =
+      currentCart.filter(i => !i.checked);
+
+    renderCheckout();
+
+    alert("Đặt hàng thành công");
+
+    window.location.href = "orders.html";
+
+  }catch(err){
+
+    console.error(err);
+
+    alert("Lỗi đặt hàng");
   }
-
-  const total = itemsToOrder.reduce((sum,item)=>{
-
-    return sum +
-      (item.qty || 1) *
-      (Number(item.price) || 0);
-  },0);
-
-  await db.collection("orders").add({
-
-  uid: currentUser.uid,
-
-  items: itemsToOrder,
-
-  total: total,
-
-  status: "pending",
-
-  createdAt: Date.now()
-
-});
-
- for(const item of itemsToOrder){
-
-  await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .doc(item.id)
-    .delete();
-}
-
-currentCart =
-  currentCart.filter(i => !i.checked);
-
-renderCheckout();
-
- window.location.href = "orders.html";
 }
 
 // ============================
@@ -280,3 +353,4 @@ window.changeQty = changeQty;
 window.clearCart = clearCart;
 window.checkout = checkout;
 window.renderCheckout = renderCheckout;
+```
