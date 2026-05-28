@@ -9,7 +9,9 @@ import {
 } from "./firebase-init.js";
 
 let currentPage = 1;
+
 const perPage = 10;
+
 let allOrders = [];
 
 /* =========================
@@ -26,11 +28,14 @@ LOAD ORDERS
 ========================= */
 async function loadOrders(userUid){
 
-  const box = document.getElementById("orders");
+  const box =
+    document.getElementById("orders");
 
   if(!box) return;
 
-  box.innerHTML = "<p>Đang tải...</p>";
+  box.innerHTML = `
+    <p>Đang tải...</p>
+  `;
 
   try{
 
@@ -47,23 +52,31 @@ async function loadOrders(userUid){
       return;
     }
 
-    const data = snapshot.val();
+    const data = snapshot.val() || {};
 
-    console.log("Orders:", data);
-    console.log("User UID:", userUid);
+    console.log("ALL ORDERS:", data);
 
-    allOrders = Object.keys(data || {})
-      .map(key => ({
+    allOrders = Object.keys(data)
+      .map(key => {
 
-        id: key,
-        ...data[key]
+        return {
+          id: key,
+          ...data[key]
+        };
 
-      }))
+      })
       .filter(order => {
 
         return (
+
           order.uid === userUid ||
-          order.userUid === userUid
+
+          order.userUid === userUid ||
+
+          order.userId === userUid ||
+
+          order?.user?.uid === userUid
+
         );
 
       })
@@ -76,7 +89,7 @@ async function loadOrders(userUid){
 
       });
 
-    console.log("Filtered Orders:", allOrders);
+    console.log("FILTERED:", allOrders);
 
     if(allOrders.length === 0){
 
@@ -87,11 +100,13 @@ async function loadOrders(userUid){
       return;
     }
 
+    currentPage = 1;
+
     renderOrders();
 
   }catch(err){
 
-    console.error(err);
+    console.error("LOAD ORDER ERROR:", err);
 
     box.innerHTML = `
       <p>Lỗi tải đơn hàng</p>
@@ -104,7 +119,8 @@ RENDER ORDERS
 ========================= */
 function renderOrders(){
 
-  const box = document.getElementById("orders");
+  const box =
+    document.getElementById("orders");
 
   if(!box) return;
 
@@ -117,7 +133,7 @@ function renderOrders(){
     start + perPage;
 
   const pageOrders =
-    allOrders.slice(start,end);
+    allOrders.slice(start, end);
 
   pageOrders.forEach(order => {
 
@@ -128,6 +144,13 @@ function renderOrders(){
     const items = Array.isArray(order.items)
       ? order.items
       : Object.values(order.items || {});
+
+    if(items.length === 0){
+
+      itemsHTML = `
+        <p>Không có sản phẩm</p>
+      `;
+    }
 
     items.forEach(p => {
 
@@ -147,22 +170,26 @@ function renderOrders(){
           display:flex;
           gap:10px;
           margin-bottom:10px;
+          align-items:flex-start;
         ">
 
           <img
-            src="${p.img || ''}"
+            src="${p.img || "no-image.png"}"
             width="70"
             height="70"
             style="
               object-fit:cover;
               border-radius:6px;
+              border:1px solid #ddd;
+              background:#fff;
             "
+            onerror="this.src='no-image.png'"
           >
 
           <div>
 
             <b>
-              ${p.name || ''}
+              ${p.name || "Sản phẩm"}
             </b>
 
             <div>
@@ -187,14 +214,25 @@ function renderOrders(){
         padding:15px;
         margin-bottom:20px;
         border-radius:10px;
+        background:#fff;
       ">
 
-        <h3>
+        <h3 style="
+          margin-top:0;
+        ">
           🧾 Đơn hàng #${order.id}
         </h3>
 
         <p>
-          🕒 ${order.time || ''}
+          🕒 ${
+            order.time ||
+            (
+              order.createdAt
+              ? new Date(order.createdAt)
+                .toLocaleString("vi-VN")
+              : ""
+            )
+          }
         </p>
 
         ${itemsHTML}
@@ -245,7 +283,9 @@ function renderPagination(){
   }
 
   html += `
-    <span style="margin:0 10px;">
+    <span style="
+      margin:0 10px;
+    ">
       Trang ${currentPage}/${totalPages}
     </span>
   `;
@@ -295,7 +335,10 @@ auth.onAuthStateChanged(user => {
     return;
   }
 
-  console.log("Logged in:", user.uid);
+  console.log(
+    "LOGGED UID:",
+    user.uid
+  );
 
   loadOrders(user.uid);
 
