@@ -1,52 +1,65 @@
 import {
-  getDatabase,
-  ref,
-  set
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { auth, db, rtdb } from "./firebase-init.js";
+  auth,
+  db,
+  rtdb
+} from "./firebase-init.js";
 
 const cartBox = document.getElementById("cart");
 const totalBox = document.getElementById("total");
-const rtdb = getDatabase();
+
 let currentUser = null;
 let currentCart = [];
 
+/* =========================
+FORMAT PRICE
+========================= */
 function formatPrice(n){
-  return Number(n).toLocaleString("vi-VN") + "đ";
+
+  return Number(n || 0)
+    .toLocaleString("vi-VN") + "đ";
 }
 
-// ============================
-// LOAD CART
-// ============================
+/* =========================
+LOAD CART
+========================= */
 async function loadCart(){
 
   if(!currentUser) return;
 
-  const snapshot = await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .get();
+  try{
 
-  currentCart = snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+    const snapshot = await db
+      .collection("users")
+      .doc(currentUser.uid)
+      .collection("cart")
+      .get();
 
-  currentCart.forEach(item => {
+    currentCart = snapshot.docs.map(doc => ({
 
-    if(item.checked === undefined){
-      item.checked = true;
-    }
+      id: doc.id,
+      ...doc.data()
 
-  });
+    }));
 
-  renderCheckout();
+    currentCart.forEach(item => {
+
+      if(item.checked === undefined){
+
+        item.checked = true;
+      }
+    });
+
+    renderCheckout();
+
+  }catch(err){
+
+    console.error("Load cart error:", err);
+  }
 }
 
-// ============================
-// RENDER CHECKOUT
-// ============================
+/* =========================
+RENDER CHECKOUT
+========================= */
 function renderCheckout(){
 
   if(!cartBox || !totalBox) return;
@@ -55,9 +68,11 @@ function renderCheckout(){
 
   if(currentCart.length === 0){
 
-    cartBox.innerHTML = "<p>Giỏ hàng trống 🛒</p>";
+    cartBox.innerHTML =
+      "<p>Giỏ hàng trống 🛒</p>";
 
-    totalBox.innerText = formatPrice(0);
+    totalBox.innerText =
+      formatPrice(0);
 
     return;
   }
@@ -66,13 +81,17 @@ function renderCheckout(){
 
   currentCart.forEach((item,index)=>{
 
-    const qty = item.qty || 1;
+    const qty =
+      Number(item.qty || 1);
 
-    const price = Number(item.price) || 0;
+    const price =
+      Number(item.price || 0);
 
-    const subTotal = qty * price;
+    const subTotal =
+      qty * price;
 
     if(item.checked){
+
       total += subTotal;
     }
 
@@ -85,15 +104,25 @@ function renderCheckout(){
           onclick="toggleItem(${index})"
         >
 
-        <img src="${item.img}">
+        <img
+          src="${item.img || ""}"
+          alt="${item.name || ""}"
+        >
 
         <div>
-          <h4>${item.name}</h4>
+
+          <h4>
+            ${item.name || ""}
+          </h4>
 
           <div>
             ${qty} × ${formatPrice(price)}
+          </div>
+
+          <div>
             = ${formatPrice(subTotal)}
           </div>
+
         </div>
 
         <button onclick="removeItem(${index})">
@@ -104,106 +133,158 @@ function renderCheckout(){
     `;
   });
 
-  totalBox.innerText = formatPrice(total);
+  totalBox.innerText =
+    formatPrice(total);
 }
 
-// ============================
-// TOGGLE ITEM
-// ============================
+/* =========================
+TOGGLE ITEM
+========================= */
 async function toggleItem(index){
 
   if(!currentCart[index]) return;
 
-  currentCart[index].checked =
-    !currentCart[index].checked;
+  try{
 
-  await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .doc(currentCart[index].id)
-    .update({
-      checked: currentCart[index].checked
-    });
+    currentCart[index].checked =
+      !currentCart[index].checked;
 
-  renderCheckout();
+    await db
+      .collection("users")
+      .doc(currentUser.uid)
+      .collection("cart")
+      .doc(currentCart[index].id)
+      .update({
+
+        checked:
+          currentCart[index].checked
+
+      });
+
+    renderCheckout();
+
+  }catch(err){
+
+    console.error(err);
+  }
 }
 
-// ============================
-// CHANGE QUANTITY
-// ============================
+/* =========================
+CHANGE QUANTITY
+========================= */
 async function changeQty(index, delta){
 
   if(!currentCart[index]) return;
 
-  const item = currentCart[index];
+  try{
 
-  item.qty = (item.qty || 1) + delta;
+    const item = currentCart[index];
 
-  if(item.qty < 1){
-    item.qty = 1;
+    item.qty =
+      (item.qty || 1) + delta;
+
+    if(item.qty < 1){
+
+      item.qty = 1;
+    }
+
+    await db
+      .collection("users")
+      .doc(currentUser.uid)
+      .collection("cart")
+      .doc(item.id)
+      .update({
+
+        qty: item.qty
+
+      });
+
+    renderCheckout();
+
+  }catch(err){
+
+    console.error(err);
   }
-
-  await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .doc(item.id)
-    .update({
-      qty: item.qty
-    });
-
-  renderCheckout();
 }
 
-// ============================
-// REMOVE ITEM
-// ============================
+/* =========================
+REMOVE ITEM
+========================= */
 async function removeItem(index){
 
   if(!currentCart[index]) return;
 
-  const item = currentCart[index];
+  try{
 
-  await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .doc(item.id)
-    .delete();
+    const item =
+      currentCart[index];
 
-  currentCart.splice(index,1);
+    await db
+      .collection("users")
+      .doc(currentUser.uid)
+      .collection("cart")
+      .doc(item.id)
+      .delete();
 
-  renderCheckout();
+    currentCart.splice(index,1);
+
+    renderCheckout();
+
+  }catch(err){
+
+    console.error(err);
+  }
 }
 
-// ============================
-// CLEAR CART
-// ============================
+/* =========================
+CLEAR CART
+========================= */
 async function clearCart(){
 
   if(!currentUser) return;
 
-  const cartRef = db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart");
+  try{
 
-  const snapshot = await cartRef.get();
+    const cartRef = db
+      .collection("users")
+      .doc(currentUser.uid)
+      .collection("cart");
 
-  snapshot.forEach(doc => doc.ref.delete());
+    const snapshot =
+      await cartRef.get();
 
-  currentCart = [];
+    const promises = [];
 
-  renderCheckout();
+    snapshot.forEach(doc => {
+
+      promises.push(
+        doc.ref.delete()
+      );
+
+    });
+
+    await Promise.all(promises);
+
+    currentCart = [];
+
+    renderCheckout();
+
+  }catch(err){
+
+    console.error(err);
+  }
 }
 
-// ============================
-// CHECKOUT
-// ============================
+/* =========================
+CHECKOUT
+========================= */
 async function checkout(){
 
-  if(!currentUser) return;
+  if(!currentUser){
+
+    alert("Vui lòng đăng nhập");
+    return;
+  }
 
   const itemsToOrder =
     currentCart.filter(i => i.checked);
@@ -211,42 +292,63 @@ async function checkout(){
   if(itemsToOrder.length === 0){
 
     alert("Chưa chọn sản phẩm");
-
     return;
   }
 
-  const total = itemsToOrder.reduce((sum,item)=>{
+  const total =
+    itemsToOrder.reduce((sum,item)=>{
 
-    return sum +
-      (item.qty || 1) *
-      (item.price || 0);
+      return sum +
+        (Number(item.qty || 1) *
+        Number(item.price || 0));
 
-  },0);
+    },0);
 
-  const orderId = Date.now();
+  const orderId =
+    Date.now().toString();
 
-  await set(
-    ref(rtdb, "orders/" + orderId),
-    {
+  try{
 
-      uid: currentUser.uid,
+    await rtdb
+      .ref("orders/" + orderId)
+      .set({
 
-      items: itemsToOrder,
+        uid: currentUser.uid,
 
-      total: total,
+        items: itemsToOrder,
 
-      time: new Date().toLocaleString()
+        total: total,
 
-    }
-  );
+        time: new Date()
+          .toLocaleString("vi-VN"),
 
-  await clearCart();
+        createdAt: Date.now()
 
-  window.location.href = "orders.html";
+      });
+
+    console.log(
+      "Đặt hàng thành công"
+    );
+
+    await clearCart();
+
+    window.location.href =
+      "orders.html";
+
+  }catch(err){
+
+    console.error(
+      "Checkout error:",
+      err
+    );
+
+    alert("Lỗi đặt hàng");
+  }
 }
-// ============================
-// AUTH STATE
-// ============================
+
+/* =========================
+AUTH STATE
+========================= */
 auth.onAuthStateChanged(user=>{
 
   currentUser = user;
@@ -263,12 +365,23 @@ auth.onAuthStateChanged(user=>{
   }
 });
 
-// ============================
-// GLOBAL
-// ============================
-window.removeItem = removeItem;
-window.toggleItem = toggleItem;
-window.changeQty = changeQty;
-window.clearCart = clearCart;
-window.checkout = checkout;
-window.renderCheckout = renderCheckout;
+/* =========================
+GLOBAL
+========================= */
+window.removeItem =
+  removeItem;
+
+window.toggleItem =
+  toggleItem;
+
+window.changeQty =
+  changeQty;
+
+window.clearCart =
+  clearCart;
+
+window.checkout =
+  checkout;
+
+window.renderCheckout =
+  renderCheckout;
