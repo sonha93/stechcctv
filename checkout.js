@@ -218,18 +218,19 @@ async function checkout(){
 
   },0);
 
-  await db.collection("orders").add({
+ firebase.database().ref(
+  "orders/" + Date.now()
+).set({
 
-    uid: currentUser.uid,
+  uid: currentUser.uid,
 
-    items: itemsToOrder,
+  items: itemsToOrder,
 
-    total: total,
+  total: total,
 
-    time: new Date().toLocaleString()
+  time: new Date().toLocaleString()
 
-  });
-
+});
   await clearCart();
 
   window.location.href = "checkout.html";
