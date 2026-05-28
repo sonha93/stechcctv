@@ -74,76 +74,80 @@ function renderOrders() {
   let end = start + perPage;
 
   let pageOrders = allOrders.slice(start, end);
+pageOrders.forEach(order => {
 
-  pageOrders.forEach(order => {
+  let totalFinal = 0;
 
-    let totalFinal = 0;
+  let itemsHTML = "";
 
-    let itemsHTML = "";
+  (order.items || []).forEach(p => {
 
-    (order.items || []).forEach(p => {
+    let qty = p.qty || 1;
 
-      let qty = p.qty || 1;
+    let price = Number(p.price) || 0;
 
-      let price = Number(p.price) || 0;
+    let subFinal = price * qty;
 
-      let subFinal = price * qty;
+    totalFinal += subFinal;
 
-      totalFinal += subFinal;
+    itemsHTML += `
+      <div class="item">
 
-      itemsHTML += `
-        <div class="item">
+        <img 
+          src="${p.img || p.image || p.imageUrl || 'no-image.png'}"
+        />
 
-        <img src="${p.img || ''}" />
+        <div>
+
+          <b>${p.name || "Sản phẩm"}</b>
 
           <div>
-
-            <b>${p.name}</b>
-
-            <div>
-              ${qty} × ${format(price)}
-              =
-              ${format(subFinal)}
-            </div>
-
+            ${qty} × ${format(price)}
+            =
+            ${format(subFinal)}
           </div>
 
         </div>
-      `;
-    });
-
-    box.innerHTML += `
-      <div class="order-box">
-
-        <h3>
-          🧾 Đơn #${order.orderId || "N/A"}
-        </h3>
-
-        <p>
-          👤 ${order.customer || ""}
-        </p>
-
-        <p>
-          📞 ${order.phone || ""}
-        </p>
-
-        <p>
-          🕒 ${order.time || ""}
-        </p>
-
-        <hr>
-
-        ${itemsHTML}
-
-        <p>
-          <b>Tổng:</b>
-          ${format(totalFinal)}
-        </p>
 
       </div>
     `;
-
   });
+
+  box.innerHTML += `
+    <div class="order-box">
+
+      <h3>
+        🧾 Đơn #${order.orderId || "N/A"}
+      </h3>
+
+      <p>
+        👤 ${order.customer || ""}
+      </p>
+
+      <p>
+        📞 ${order.phone || ""}
+      </p>
+
+      <p>
+        🕒 ${
+          order.time
+            ? new Date(order.time).toLocaleString("vi-VN")
+            : ""
+        }
+      </p>
+
+      <hr>
+
+      ${itemsHTML}
+
+      <p>
+        <b>Tổng:</b>
+        ${format(totalFinal)}
+      </p>
+
+    </div>
+  `;
+});
 
   renderPagination();
 
