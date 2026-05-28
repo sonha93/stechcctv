@@ -1,15 +1,19 @@
-
 import {
   collection,
   query,
   where,
-  getDocs
+  getDocs,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
   auth,
   db
 } from "./firebase-init.js";
+
+/* =========================
+STATE
+========================= */
 
 let currentPage = 1;
 
@@ -18,8 +22,9 @@ const perPage = 10;
 let allOrders = [];
 
 /* =========================
-FORMAT
+FORMAT PRICE
 ========================= */
+
 function format(n){
 
   return Number(n || 0)
@@ -27,8 +32,37 @@ function format(n){
 }
 
 /* =========================
+FORMAT DATE
+========================= */
+
+function formatDate(createdAt){
+
+  try{
+
+    if(!createdAt) return "";
+
+    // FIREBASE TIMESTAMP
+    if(createdAt.toDate){
+
+      return createdAt
+        .toDate()
+        .toLocaleString("vi-VN");
+    }
+
+    // NUMBER / STRING
+    return new Date(createdAt)
+      .toLocaleString("vi-VN");
+
+  }catch{
+
+    return "";
+  }
+}
+
+/* =========================
 LOAD ORDERS
 ========================= */
+
 async function loadOrders(userUid){
 
   const box =
@@ -37,16 +71,28 @@ async function loadOrders(userUid){
   if(!box) return;
 
   box.innerHTML = `
-    <p>Đang tải...</p>
+    <div style="
+      padding:30px;
+      text-align:center;
+      color:#666;
+    ">
+      Đang tải đơn hàng...
+    </div>
   `;
 
   try{
+
+    /* =========================
+    FIX FIELD UID
+    ========================= */
 
     const q = query(
 
       collection(db, "orders"),
 
-      where("uid", "==", userUid)
+      where("userId", "==", userUid),
+
+      orderBy("createdAt", "desc")
 
     );
 
@@ -62,20 +108,18 @@ async function loadOrders(userUid){
 
       }));
 
-    // SORT MỚI NHẤT
-    allOrders.sort((a,b)=>{
-
-      return (b.createdAt || 0)
-        - (a.createdAt || 0);
-
-    });
-
-    console.log(allOrders);
+    console.log("ORDERS:", allOrders);
 
     if(allOrders.length === 0){
 
       box.innerHTML = `
-        <p>Chưa có đơn hàng</p>
+        <div style="
+          padding:40px;
+          text-align:center;
+          color:#666;
+        ">
+          🧾 Chưa có đơn hàng
+        </div>
       `;
 
       return;
@@ -87,17 +131,24 @@ async function loadOrders(userUid){
 
   }catch(err){
 
-    console.error(err);
+    console.error("LOAD ORDER ERROR:", err);
 
     box.innerHTML = `
-      <p>Lỗi tải đơn hàng</p>
+      <div style="
+        padding:40px;
+        text-align:center;
+        color:red;
+      ">
+        ❌ Lỗi tải đơn hàng
+      </div>
     `;
   }
 }
 
 /* =========================
-RENDER
+RENDER ORDERS
 ========================= */
+
 function renderOrders(){
 
   const box =
@@ -127,13 +178,13 @@ function renderOrders(){
       ? order.items
       : [];
 
-    items.forEach(p => {
+    items.forEach(item => {
 
       const qty =
-        Number(p.qty || 1);
+        Number(item.qty || 1);
 
       const price =
-        Number(p.price || 0);
+        Number(item.price || 0);
 
       const sub =
         qty * price;
@@ -142,36 +193,51 @@ function renderOrders(){
 
       itemsHTML += `
 
-        <div class="item" style="
+        <div style="
           display:flex;
-          gap:10px;
-          margin-bottom:10px;
+          gap:14px;
+          padding:12px 0;
+          border-bottom:1px solid #eee;
         ">
 
           <img
-            src="${p.img || "no-image.png"}"
+            src="${item.img || "no-image.png"}"
             onerror="this.src='no-image.png'"
-            width="70"
-            height="70"
+            width="72"
+            height="72"
             style="
               object-fit:cover;
-              border-radius:8px;
+              border-radius:10px;
               border:1px solid #ddd;
+              flex-shrink:0;
             "
           >
 
-          <div>
+          <div style="
+            flex:1;
+          ">
 
-            <b>
-              ${p.name || ""}
-            </b>
+            <div style="
+              font-weight:700;
+              margin-bottom:6px;
+              line-height:1.5;
+            ">
+              ${item.name || ""}
+            </div>
 
-            <div>
+            <div style="
+              color:#666;
+              font-size:14px;
+            ">
               ${qty} × ${format(price)}
             </div>
 
-            <div>
-              = ${format(sub)}
+            <div style="
+              color:#d70018;
+              font-weight:700;
+              margin-top:4px;
+            ">
+              ${format(sub)}
             </div>
 
           </div>
@@ -183,39 +249,81 @@ function renderOrders(){
 
     box.innerHTML += `
 
-      <div class="order-box" style="
+      <div style="
         background:#fff;
-        border-radius:10px;
-        padding:15px;
-        margin-bottom:20px;
-        border:1px solid #ddd;
+        border-radius:18px;
+        padding:22px;
+        margin-bottom:22px;
+        border:1px solid #e5e7eb;
+        box-shadow:0 2px 10px rgba(0,0,0,.03);
       ">
 
-        <h3>
-          🧾 Đơn #${order.id}
-        </h3>
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:18px;
+          flex-wrap:wrap;
+          gap:10px;
+        ">
 
-        <p>
-          🕒 ${
-            order.createdAt
-            ? new Date(order.createdAt)
-              .toLocaleString("vi-VN")
-            : ""
-          }
-        </p>
+          <div>
 
-        <p>
-          📦 ${
-            order.status || "pending"
-          }
-        </p>
+            <div style="
+              font-size:18px;
+              font-weight:800;
+              margin-bottom:6px;
+            ">
+              🧾 Đơn #${order.id}
+            </div>
+
+            <div style="
+              color:#666;
+              font-size:14px;
+            ">
+              🕒 ${formatDate(order.createdAt)}
+            </div>
+
+          </div>
+
+          <div style="
+            padding:8px 14px;
+            border-radius:999px;
+            background:#fff3cd;
+            color:#856404;
+            font-size:13px;
+            font-weight:700;
+          ">
+            ${order.status || "pending"}
+          </div>
+
+        </div>
 
         ${itemsHTML}
 
-        <h4>
-          Tổng:
-          ${format(total)}
-        </h4>
+        <div style="
+          margin-top:18px;
+          display:flex;
+          justify-content:flex-end;
+          align-items:center;
+          gap:10px;
+        ">
+
+          <span style="
+            color:#666;
+          ">
+            Tổng:
+          </span>
+
+          <span style="
+            font-size:24px;
+            font-weight:800;
+            color:#d70018;
+          ">
+            ${format(total)}
+          </span>
+
+        </div>
 
       </div>
 
@@ -228,6 +336,7 @@ function renderOrders(){
 /* =========================
 PAGINATION
 ========================= */
+
 function renderPagination(){
 
   const box =
@@ -243,40 +352,66 @@ function renderPagination(){
   if(totalPages <= 1) return;
 
   let html = `
+
     <div style="
-      text-align:center;
-      margin-top:20px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:10px;
+      margin-top:30px;
     ">
+
   `;
 
   if(currentPage > 1){
 
     html += `
+
       <button
         onclick="changePage(${currentPage - 1})"
+        style="
+          height:42px;
+          padding:0 18px;
+          border:none;
+          border-radius:12px;
+          cursor:pointer;
+          font-weight:700;
+        "
       >
         ←
       </button>
+
     `;
   }
 
   html += `
-    <span style="
-      margin:0 10px;
+
+    <div style="
+      font-weight:700;
     ">
-      Trang
-      ${currentPage}/${totalPages}
-    </span>
+      Trang ${currentPage}/${totalPages}
+    </div>
+
   `;
 
   if(currentPage < totalPages){
 
     html += `
+
       <button
         onclick="changePage(${currentPage + 1})"
+        style="
+          height:42px;
+          padding:0 18px;
+          border:none;
+          border-radius:12px;
+          cursor:pointer;
+          font-weight:700;
+        "
       >
         →
       </button>
+
     `;
   }
 
@@ -288,6 +423,7 @@ function renderPagination(){
 /* =========================
 CHANGE PAGE
 ========================= */
+
 window.changePage = function(page){
 
   currentPage = page;
@@ -298,6 +434,7 @@ window.changePage = function(page){
 /* =========================
 AUTH
 ========================= */
+
 auth.onAuthStateChanged(user => {
 
   const box =
@@ -308,7 +445,15 @@ auth.onAuthStateChanged(user => {
   if(!user){
 
     box.innerHTML = `
-      <p>Vui lòng đăng nhập</p>
+
+      <div style="
+        padding:40px;
+        text-align:center;
+        color:#666;
+      ">
+        🔐 Vui lòng đăng nhập
+      </div>
+
     `;
 
     return;
@@ -317,4 +462,3 @@ auth.onAuthStateChanged(user => {
   loadOrders(user.uid);
 
 });
-```
