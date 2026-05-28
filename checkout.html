@@ -99,10 +99,10 @@ function sendTelegramNotification(orderNumber, customerName, phone, address, car
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
 <script type="module">
 
-import { auth, db, rtdb } from "./firebase-init.js";
+import { auth, db } from "./firebase-init.js";
 
 let cart = [];
 
@@ -242,7 +242,7 @@ function updateBank(){
   }
 }
 
-async function placeOrder(){
+function placeOrder(){
 
   if(cart.length === 0){
     alert("🛒 Giỏ hàng trống!");
@@ -285,62 +285,33 @@ async function placeOrder(){
     cart,
     total.toLocaleString() + "đ"
   );
-await rtdb
-  .ref("orders/" + orderId)
-  .set({
 
-    uid: auth.currentUser.uid,
-
-    name: name,
-
-    phone: phone,
-
-    address: address,
-
-    items: cart,
-
-    total: total,
-
-    payment:
-      document.getElementById("payment").value,
-
-    time: new Date()
-      .toLocaleString("vi-VN"),
-
-    createdAt: Date.now()
-
-  });
   // LOADING
   document.getElementById("loading").style.display = "flex";
 
   document.querySelector(".btn").disabled = true;
 
- // XÓA FIREBASE CART
+  // XÓA FIREBASE CART
+  auth.onAuthStateChanged(async user => {
 
-const snapshot = await db
-  .collection("users")
-  .doc(auth.currentUser.uid)
-  .collection("cart")
-  .get();
+    if(user){
 
-const promises = [];
+      const snapshot = await db
+        .collection("users")
+        .doc(user.uid)
+        .collection("cart")
+        .get();
 
-snapshot.forEach(doc => {
+      snapshot.forEach(doc => {
+        doc.ref.delete();
+      });
 
-  promises.push(
-    doc.ref.delete()
-  );
+    }
 
-});
+    setTimeout(()=>{
+      window.location.href = "success.html";
+    },1000);
 
-await Promise.all(promises);
-
-setTimeout(()=>{
-
-  window.location.href =
-    "success.html";
-
-},1000);
   });
 
 }
