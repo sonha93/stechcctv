@@ -1,4 +1,9 @@
-import { auth, db } from "./firebase-init.js";
+import {
+  get,
+  ref
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+import { auth, rtdb } from "./firebase-init.js";
 
 let currentPage = 1;
 const perPage = 10;
@@ -11,33 +16,33 @@ function format(n){
 /* =========================
 LOAD ORDERS
 ========================= */
-function loadOrders(userUid){
+async function loadOrders(userUid){
 
   const box = document.getElementById("orders");
 
   if(!box) return;
 
-  db.collection("orders")
-    .where("uid", "==", userUid)
-    .onSnapshot(snapshot => {
+  const snapshot = await get(
+    ref(rtdb, "orders")
+  );
 
-      if(snapshot.empty){
+  if(!snapshot.exists()){
 
-        box.innerHTML = `
-          <p>Chưa có đơn hàng</p>
-        `;
+    box.innerHTML = "<p>Chưa có đơn hàng</p>";
+    return;
+  }
 
-        return;
-      }
+  const data = snapshot.val();
 
-      allOrders = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })).reverse();
+  allOrders = Object.keys(data)
+    .map(key => ({
+      id: key,
+      ...data[key]
+    }))
+    .filter(order => order.uid === userUid)
+    .reverse();
 
-      renderOrders();
-
-    });
+  renderOrders();
 }
 
 /* =========================
