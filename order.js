@@ -1,9 +1,9 @@
+```js id="zv3x2q"
 import {
   collection,
   query,
   where,
-  getDocs,
-  orderBy
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -42,13 +42,13 @@ async function loadOrders(userUid){
 
   try{
 
-  const q = query(
+    const q = query(
 
-  collection(db, "orders"),
+      collection(db, "orders"),
 
-  where("uid", "==", userUid)
+      where("uid", "==", userUid)
 
-);
+    );
 
     const snapshot =
       await getDocs(q);
@@ -61,6 +61,14 @@ async function loadOrders(userUid){
         ...doc.data()
 
       }));
+
+    // SORT MỚI NHẤT
+    allOrders.sort((a,b)=>{
+
+      return (b.createdAt || 0)
+        - (a.createdAt || 0);
+
+    });
 
     console.log(allOrders);
 
@@ -142,6 +150,7 @@ function renderOrders(){
 
           <img
             src="${p.img || "no-image.png"}"
+            onerror="this.src='no-image.png'"
             width="70"
             height="70"
             style="
@@ -223,6 +232,8 @@ function renderPagination(){
 
   const box =
     document.getElementById("orders");
+
+  if(!box) return;
 
   const totalPages =
     Math.ceil(
@@ -306,3 +317,4 @@ auth.onAuthStateChanged(user => {
   loadOrders(user.uid);
 
 });
+```
