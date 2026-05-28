@@ -5,10 +5,12 @@ onAuthStateChanged
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
-getDatabase,
-ref,
-onValue
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+getFirestore,
+collection,
+query,
+where,
+onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* =========================
 FIREBASE
@@ -26,7 +28,7 @@ appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 
 const app = initializeApp(firebaseConfig);
 
-const db = getDatabase(app);
+const db = getFirestore(app);
 const auth = getAuth(app);
 /* =========================
 CONFIG
@@ -54,11 +56,14 @@ const box = document.getElementById("orders");
 
 if (!box) return;
 
-onValue(ref(db, "orders"), (snapshot) => {
+const q = query(
+    collection(db, "orders"),
+    where("uid", "==", userUid)
+);
 
-    const data = snapshot.val();
+onSnapshot(q, (snapshot) => {
 
-    if (!data) {
+    if(snapshot.empty){
 
         box.innerHTML = `
             <p>Chưa có đơn hàng</p>
@@ -67,19 +72,10 @@ onValue(ref(db, "orders"), (snapshot) => {
         return;
     }
 
-    // lọc theo uid account
-    allOrders = Object.values(data)
-        .filter(order => order.uid === userUid)
-        .reverse();
-
-    if(allOrders.length === 0){
-
-        box.innerHTML = `
-            <p>Bạn chưa có đơn hàng nào</p>
-        `;
-
-        return;
-    }
+    allOrders = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    })).reverse();
 
     renderOrders();
 
@@ -183,7 +179,6 @@ box.innerHTML += `
     <p>
       🕒 ${order.time || ""}
     </p>
-
     <hr>
 
     ${itemsHTML}
