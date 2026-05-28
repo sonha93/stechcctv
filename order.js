@@ -1,3 +1,7 @@
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
@@ -23,7 +27,7 @@ appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 const app = initializeApp(firebaseConfig);
 
 const db = getDatabase(app);
-
+const auth = getAuth(app);
 /* =========================
 CONFIG
 ========================= */
@@ -44,7 +48,7 @@ return Number(n || 0).toLocaleString("vi-VN") + "đ";
 /* =========================
 LOAD ORDERS
 ========================= */
-function loadOrders() {
+function loadOrders(userUid) {
 
 const box = document.getElementById("orders");
 
@@ -52,26 +56,35 @@ if (!box) return;
 
 onValue(ref(db, "orders"), (snapshot) => {
 
-```
-const data = snapshot.val();
+    const data = snapshot.val();
 
-if (!data) {
+    if (!data) {
 
-  box.innerHTML = `
-    <p>Chưa có đơn hàng</p>
-  `;
+        box.innerHTML = `
+            <p>Chưa có đơn hàng</p>
+        `;
 
-  return;
-}
+        return;
+    }
 
-allOrders = Object.values(data).reverse();
+    // lọc theo uid account
+    allOrders = Object.values(data)
+        .filter(order => order.uid === userUid)
+        .reverse();
 
-renderOrders();
-```
+    if(allOrders.length === 0){
+
+        box.innerHTML = `
+            <p>Bạn chưa có đơn hàng nào</p>
+        `;
+
+        return;
+    }
+
+    renderOrders();
 
 });
 }
-
 /* =========================
 RENDER ORDERS
 ========================= */
@@ -249,7 +262,25 @@ renderOrders();
 /* =========================
 INIT
 ========================= */
-document.addEventListener(
-"DOMContentLoaded",
-loadOrders
-);
+document.addEventListener("DOMContentLoaded", () => {
+
+onAuthStateChanged(auth, (user) => {
+
+    const box = document.getElementById("orders");
+
+    if(!user){
+
+        if(box){
+            box.innerHTML = `
+                <p>Vui lòng đăng nhập để xem đơn hàng</p>
+            `;
+        }
+
+        return;
+    }
+
+    loadOrders(user.uid);
+
+});
+
+});
