@@ -1,196 +1,196 @@
-import {
-getAuth,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { auth, db } from "./firebase-init.js";
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+let currentPage = 1;
+const perPage = 10;
+let allOrders = [];
 
-import {
-getDatabase,
-ref,
-onValue
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-/* =========================
-FIREBASE
-========================= */
-const firebaseConfig = {
-apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-authDomain: "stech-73b89.firebaseapp.com",
-databaseURL:
-"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-projectId: "stech-73b89",
-storageBucket: "stech-73b89.appspot.com",
-messagingSenderId: "873739162979",
-appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-};
-
-const app = initializeApp(firebaseConfig);
-
-const db = getDatabase(app);
-
-const auth = getAuth(app);
-
-/* =========================
-FORMAT
-========================= */
 function format(n){
-
-return Number(n || 0)
-.toLocaleString("vi-VN") + "đ";
-
+  return Number(n || 0).toLocaleString("vi-VN") + "đ";
 }
 
 /* =========================
 LOAD ORDERS
 ========================= */
-function loadOrders(uid){
+function loadOrders(userUid){
 
-const box = document.getElementById("orders");
+  const box = document.getElementById("orders");
 
-if(!box) return;
+  if(!box) return;
 
-onValue(ref(db,"orders"), snapshot => {
+  db.collection("orders")
+    .where("uid", "==", userUid)
+    .onSnapshot(snapshot => {
 
-const data = snapshot.val();
+      if(snapshot.empty){
 
-if(!data){
+        box.innerHTML = `
+          <p>Chưa có đơn hàng</p>
+        `;
 
-box.innerHTML = `
-<p>Chưa có đơn hàng</p>
-`;
+        return;
+      }
 
-return;
+      allOrders = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })).reverse();
 
-}
+      renderOrders();
 
-const orders = Object.values(data)
-.filter(order => order.uid === uid)
-.reverse();
-
-if(orders.length === 0){
-
-box.innerHTML = `
-<p>Chưa có đơn hàng</p>
-`;
-
-return;
-
-}
-
-renderOrders(orders);
-
-});
-
+    });
 }
 
 /* =========================
 RENDER
 ========================= */
-function renderOrders(orders){
+function renderOrders(){
 
-const box = document.getElementById("orders");
+  const box = document.getElementById("orders");
 
-box.innerHTML = "";
+  if(!box) return;
 
-orders.forEach(order => {
+  box.innerHTML = "";
 
-let itemsHTML = "";
+  let start = (currentPage - 1) * perPage;
+  let end = start + perPage;
 
-(order.items || []).forEach(item => {
+  let pageOrders = allOrders.slice(start,end);
 
-itemsHTML += `
-<div style="
-display:flex;
-gap:10px;
-margin:10px 0;
-align-items:center;
-">
+  pageOrders.forEach(order => {
 
-<img
-src="${item.img || ""}"
-style="
-width:70px;
-height:70px;
-object-fit:cover;
-border-radius:10px;
-"
->
+    let total = 0;
 
-<div>
-<div>
-<b>${item.name || ""}</b>
-</div>
+    let itemsHTML = "";
 
-<div>
-${item.qty || 1}
-×
-${format(item.price || 0)}
-</div>
-</div>
+    (order.items || []).forEach(p => {
 
-</div>
-`;
+      const qty = p.qty || 1;
 
-});
+      const price = Number(p.price) || 0;
 
-box.innerHTML += `
-<div class="order-box"
-style="
-background:#fff;
-padding:20px;
-border-radius:14px;
-margin-bottom:20px;
-">
+      const sub = qty * price;
 
-<h3>
-🧾 Đơn hàng
-</h3>
+      total += sub;
 
-<p>
-🕒 ${order.time || ""}
-</p>
+      itemsHTML += `
+        <div class="item">
 
-${itemsHTML}
+          <img src="${p.img || ''}" width="70">
 
-<h4>
-Tổng:
-${format(order.total || 0)}
-</h4>
+          <div>
 
-</div>
-`;
+            <b>${p.name || ''}</b>
 
-});
+            <div>
+              ${qty} × ${format(price)}
+            </div>
 
+            <div>
+              = ${format(sub)}
+            </div>
+
+          </div>
+
+        </div>
+
+        <hr>
+      `;
+    });
+
+    box.innerHTML += `
+      <div class="order-box">
+
+        <h3>
+          🧾 Đơn hàng
+        </h3>
+
+        <p>
+          🕒 ${order.time || ""}
+        </p>
+
+        ${itemsHTML}
+
+        <h4>
+          Tổng:
+          ${format(total)}
+        </h4>
+
+      </div>
+    `;
+  });
+
+  renderPagination();
 }
 
 /* =========================
-INIT
+PAGINATION
 ========================= */
-document.addEventListener(
-"DOMContentLoaded",
-() => {
+function renderPagination(){
 
-onAuthStateChanged(auth, user => {
+  const box = document.getElementById("orders");
 
-const box =
-document.getElementById("orders");
+  let totalPages =
+    Math.ceil(allOrders.length / perPage);
 
-if(!user){
+  if(totalPages <= 1) return;
 
-box.innerHTML = `
-<p>Vui lòng đăng nhập</p>
-`;
+  let html = `
+    <div style="margin-top:20px;text-align:center;">
+  `;
 
-return;
+  if(currentPage > 1){
 
+    html += `
+      <button onclick="changePage(${currentPage - 1})">
+        ←
+      </button>
+    `;
+  }
+
+  html += `
+    Trang ${currentPage}/${totalPages}
+  `;
+
+  if(currentPage < totalPages){
+
+    html += `
+      <button onclick="changePage(${currentPage + 1})">
+        →
+      </button>
+    `;
+  }
+
+  html += `</div>`;
+
+  box.innerHTML += html;
 }
 
-loadOrders(user.uid);
+/* =========================
+CHANGE PAGE
+========================= */
+window.changePage = function(page){
+
+  currentPage = page;
+
+  renderOrders();
+};
+
+/* =========================
+AUTH
+========================= */
+auth.onAuthStateChanged(user => {
+
+  const box = document.getElementById("orders");
+
+  if(!user){
+
+    box.innerHTML = `
+      <p>Vui lòng đăng nhập</p>
+    `;
+
+    return;
+  }
+
+  loadOrders(user.uid);
 
 });
-
-}
-);
