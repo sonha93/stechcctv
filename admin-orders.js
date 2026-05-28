@@ -20,8 +20,7 @@ async function loadOrders(){
     try{
 
         const snapshot =
-        await rtdb.ref("orders")
-        .once("value");
+        await rtdb.ref("orders").once("value");
 
         const orders = snapshot.val();
 
