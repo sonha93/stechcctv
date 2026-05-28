@@ -240,19 +240,25 @@ async function checkout(){
      CREATE ORDER
   ========================= */
 
-  await db.collection("orders").add({
+ await db.collection("orders").add({
 
-    uid: currentUser.uid,
+  orderId: Date.now(),
 
-    items: orderItems,
+  uid: currentUser.uid,
 
-    total: total,
+  customer: currentUser.displayName || "Khách hàng",
 
-    status: "pending",
+  phone: currentUser.phoneNumber || "",
 
-    createdAt: new Date().toLocaleString("vi-VN")
+  items: orderItems,
 
-  });
+  total: total,
+
+  status: "pending",
+
+  createdAt: new Date()
+
+});
 
   /* =========================
      CLEAR CART
