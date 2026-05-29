@@ -133,7 +133,7 @@ function renderOrders(){
       ? order.items
       : [];
 
-    items.forEach(item => {
+items.slice(0,2).forEach(item => {
 
       const qty =
         Number(item.qty || 1);
@@ -185,7 +185,67 @@ function renderOrders(){
 
       `;
     });
+let hiddenHTML = "";
 
+if(items.length > 2){
+
+  items.slice(2).forEach(item => {
+
+    const qty =
+      Number(item.qty || 1);
+
+    const price =
+      Number(item.price || 0);
+
+    const sub = qty * price;
+
+    hiddenHTML += `
+
+      <div style="
+        display:flex;
+        gap:14px;
+        padding:12px 0;
+        border-bottom:1px solid #eee;
+      ">
+
+        <img
+          src="${item.img || "no-image.png"}"
+          width="72"
+          height="72"
+          style="
+            object-fit:cover;
+            border-radius:10px;
+            border:1px solid #ddd;
+          "
+        >
+
+        <div>
+
+          <div style="
+            font-weight:700;
+          ">
+            ${item.name || ""}
+          </div>
+
+          <div>
+            ${qty} × ${format(price)}
+          </div>
+
+          <div style="
+            color:#d70018;
+            font-weight:700;
+          ">
+            ${format(sub)}
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+  });
+
+}
     box.innerHTML += `
 
       <div class="order-box">
@@ -203,7 +263,30 @@ function renderOrders(){
         </div>
 
         ${itemsHTML}
+        ${
+  items.length > 2
+  ? `
+    <div
+      onclick="toggleItems('${order.id}')"
+      style="
+        margin-top:10px;
+        cursor:pointer;
+        color:#0ea5e9;
+        font-weight:700;
+      "
+    >
+      và ${items.length - 2} sản phẩm khác ▼
+    </div>
 
+    <div
+      id="more-${order.id}"
+      style="display:none;"
+    >
+      ${hiddenHTML}
+    </div>
+  `
+  : ""
+}
         <div class="total-box">
 
           <div class="row final">
@@ -247,3 +330,20 @@ auth.onAuthStateChanged(user => {
   loadOrders(user.uid);
 
 });
+window.toggleItems = function(id){
+
+  const box =
+    document.getElementById(`more-${id}`);
+
+  if(!box) return;
+
+  if(box.style.display === "none"){
+
+    box.style.display = "block";
+
+  }else{
+
+    box.style.display = "none";
+
+  }
+};
