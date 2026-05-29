@@ -176,7 +176,7 @@ function renderOrders(){
   ${format(price)}
 </div>
 
-${item.originalPrice && item.originalPrice > price ? `
+${Number(item.originalPrice) > Number(price) ? `
   <div style="
     text-decoration: line-through;
     color:#999;
