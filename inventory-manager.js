@@ -341,13 +341,13 @@ function bindInventoryEvents(){
           loadImportPrices();
           loadStockMovements();
 
-        }catch(err){
+      }catch(err){
 
-          console.log(err);
+  console.error(err);
 
-          alert("Lỗi lưu");
+  alert(err.message);
 
-        }
+}
 
       });
 
