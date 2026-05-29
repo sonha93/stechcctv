@@ -26,16 +26,11 @@ function formatDate(timestamp) {
   try {
     let date;
 
-    // Firestore Timestamp
     if (typeof timestamp.toDate === "function") {
       date = timestamp.toDate();
-    }
-    // number (Date.now)
-    else if (typeof timestamp === "number") {
+    } else if (typeof timestamp === "number") {
       date = new Date(timestamp);
-    }
-    // string
-    else {
+    } else {
       date = new Date(timestamp);
     }
 
@@ -58,6 +53,7 @@ function formatDate(timestamp) {
 // CHECK ADMIN
 // ============================
 auth.onAuthStateChanged(async (user) => {
+
   if (!user) {
     window.location.href = "login.html";
     return;
@@ -72,7 +68,9 @@ auth.onAuthStateChanged(async (user) => {
 // LOAD ORDERS
 // ============================
 async function loadOrders() {
+
   try {
+
     ordersTable.innerHTML = `
       <tr>
         <td colspan="8" style="text-align:center;padding:20px;">
@@ -87,6 +85,7 @@ async function loadOrders() {
       .get();
 
     if (snapshot.empty) {
+
       ordersTable.innerHTML = `
         <tr>
           <td colspan="8" style="text-align:center;padding:20px;">
@@ -95,30 +94,45 @@ async function loadOrders() {
         </tr>
       `;
 
-      if(totalOrders){
-    totalOrders.textContent = 0;
-}
+      if (totalOrders) {
+        totalOrders.textContent = 0;
+      }
 
-if(totalRevenue){
-    totalRevenue.textContent = formatPrice(0);
-}
+      if (totalRevenue) {
+        totalRevenue.textContent = formatPrice(0);
+      }
+
       return;
     }
 
     let html = "";
+
+    // ============================
+    // CHỈ TÍNH DOANH THU ĐƠN HOÀN THÀNH
+    // ============================
     let revenue = 0;
 
     snapshot.forEach(doc => {
+
       const order = doc.data();
 
-      revenue += Number(order.total || 0);
+      // chỉ cộng doanh thu khi hoàn thành
+      if (order.status === "completed") {
+        revenue += Number(order.total || 0);
+      }
+
+      // ============================
+      // KHÓA STATUS KHI HOÀN THÀNH
+      // ============================
+      const isCompleted = order.status === "completed";
 
       html += `
         <tr>
+
           <td>${doc.id}</td>
 
           <td>
-       ${order.customerName || "-"}<br>
+            ${order.customerName || "-"}<br>
             <small>${order.phone || ""}</small>
           </td>
 
@@ -134,41 +148,81 @@ if(totalRevenue){
             ${formatPrice(order.total)}
           </td>
 
+          <!-- STATUS ADMIN -->
           <td>
-            <select class="order-status" data-id="${doc.id}">
-              <option value="pending" ${order.status === "pending" ? "selected" : ""}>Chờ xử lý</option>
-              <option value="confirmed" ${order.status === "confirmed" ? "selected" : ""}>Đã xác nhận</option>
-              <option value="shipping" ${order.status === "shipping" ? "selected" : ""}>Đang giao</option>
-              <option value="completed" ${order.status === "completed" ? "selected" : ""}>Hoàn thành</option>
-              <option value="cancelled" ${order.status === "cancelled" ? "selected" : ""}>Đã hủy</option>
+
+            <select 
+              class="order-status" 
+              data-id="${doc.id}"
+              ${isCompleted ? "disabled" : ""}
+            >
+
+              <option value="pending" ${order.status === "pending" ? "selected" : ""}>
+                Chờ xử lý
+              </option>
+
+              <option value="confirmed" ${order.status === "confirmed" ? "selected" : ""}>
+                Đã xác nhận
+              </option>
+
+              <option value="shipping" ${order.status === "shipping" ? "selected" : ""}>
+                Đang giao
+              </option>
+
+              <option value="completed" ${order.status === "completed" ? "selected" : ""}>
+                Đã giao thành công
+              </option>
+
             </select>
+
+            ${isCompleted ? `
+              <div style="color:green;font-size:12px;margin-top:4px;">
+                Đã khóa trạng thái
+              </div>
+            ` : ""}
+
           </td>
 
+          <!-- NGÀY TẠO -->
           <td>
             ${formatDate(order.createdAt)}
           </td>
 
+          <!-- TRẠNG THÁI KHÁCH -->
           <td>
-            <button class="delete-btn" data-id="${doc.id}">
-              Xóa
-            </button>
+
+            ${order.customerCancelled ? `
+              <span style="color:red;font-weight:bold;">
+                Khách đã hủy
+              </span>
+            ` : ""}
+
           </td>
+
         </tr>
       `;
     });
 
     ordersTable.innerHTML = html;
 
-   if(totalOrders){
-    totalOrders.textContent = snapshot.size;
-}
+    // ============================
+    // TOTAL ORDERS
+    // ============================
+    if (totalOrders) {
+      totalOrders.textContent = snapshot.size;
+    }
 
-if(totalRevenue){
-    totalRevenue.textContent = formatPrice(revenue);
-}
+    // ============================
+    // TOTAL REVENUE
+    // ============================
+    if (totalRevenue) {
+      totalRevenue.textContent = formatPrice(revenue);
+    }
+
     bindEvents();
 
   } catch (error) {
+
     console.error(error);
 
     ordersTable.innerHTML = `
@@ -185,15 +239,17 @@ if(totalRevenue){
 // RENDER PRODUCTS
 // ============================
 function renderProducts(items) {
+
   if (!items.length) return "-";
 
   return items.map(item => {
+
     return `
       <div style="margin-bottom:6px;">
-        ${item.name || "Sản phẩm"}
-   x${item.qty || 1}
+        ${item.name || "Sản phẩm"} x${item.qty || 1}
       </div>
     `;
+
   }).join("");
 }
 
@@ -202,7 +258,9 @@ function renderProducts(items) {
 // ============================
 function bindEvents() {
 
+  // ============================
   // UPDATE STATUS
+  // ============================
   document.querySelectorAll(".order-status").forEach(select => {
 
     select.addEventListener("change", async () => {
@@ -218,39 +276,17 @@ function bindEvents() {
             status
           });
 
+        // nếu completed -> khóa select
+        if (status === "completed") {
+          select.disabled = true;
+        }
+
         alert("Cập nhật trạng thái thành công");
 
       } catch (error) {
+
         console.error(error);
         alert("Lỗi cập nhật trạng thái");
-      }
-    });
-  });
-
-  // DELETE ORDER
-  document.querySelectorAll(".delete-btn").forEach(btn => {
-
-    btn.addEventListener("click", async () => {
-
-      const id = btn.dataset.id;
-
-      const confirmDelete = confirm("Bạn có chắc muốn xóa đơn này?");
-
-      if (!confirmDelete) return;
-
-      try {
-
-        await db.collection("orders")
-          .doc(id)
-          .delete();
-
-        alert("Đã xóa đơn hàng");
-
-        loadOrders();
-
-      } catch (error) {
-        console.error(error);
-        alert("Lỗi xóa đơn hàng");
       }
     });
   });
@@ -262,7 +298,9 @@ function bindEvents() {
 db.collection("orders")
   .orderBy("createdAt", "desc")
   .onSnapshot(() => {
+
     if (currentAdmin) {
       loadOrders();
     }
+
   });
