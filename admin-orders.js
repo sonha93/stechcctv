@@ -52,7 +52,7 @@ function getStatusText(status){
       return "Đã giao thành công";
 
     case "cancelled":
-      return "Đã hủy";
+      return "Hủy đơn";
 
     default:
       return "-";
