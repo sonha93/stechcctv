@@ -241,8 +241,7 @@ function updateBank(){
 
   }
 }
-
-function placeOrder(){
+async function placeOrder(){
 
   if(cart.length === 0){
     alert("🛒 Giỏ hàng trống!");
@@ -275,7 +274,30 @@ function placeOrder(){
   const total = cart.reduce((sum,p)=>
     sum + p.price * (p.qty || 1),0
   );
+const user = auth.currentUser;
 
+await db.collection("orders").add({
+
+  uid: user.uid,
+
+  customerName: name,
+
+  phone: phone,
+
+  address: address,
+
+  payment:
+    document.getElementById("payment").value,
+
+  items: cart,
+
+  total: total,
+
+  status: "pending",
+
+  createdAt: Date.now()
+
+});
   // TELEGRAM
   sendTelegramNotification(
     orderId,
