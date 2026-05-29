@@ -93,10 +93,80 @@ async function loadOrders(userUid){
       .orderBy("createdAt", "desc")
       .get();
 
-    allOrders = snapshot.docs.map(doc => ({
+   allOrders = await Promise.all(
+
+  snapshot.docs.map(async doc => {
+
+    const data = doc.data();
+
+    // load thêm giá gốc
+    if(Array.isArray(data.items)){
+
+      data.items = await Promise.all(
+
+        data.items.map(async item => {
+
+          // nếu đã có originalPrice
+          // thì giữ nguyên
+          if(item.originalPrice){
+
+            return item;
+          }
+
+          try{
+
+            // lấy product từ collection products
+            const productDoc = await db
+              .collection("products")
+            .doc(item.productId || item.id)
+              .get();
+
+            if(productDoc.exists){
+
+              const product =
+                productDoc.data();
+
+              return {
+
+                ...item,
+
+                originalPrice:
+                  Number(
+                    product.originalPrice ||
+                    product.oldPrice ||
+                    product.price ||
+                    item.price
+                  )
+              };
+            }
+
+          }catch(err){
+
+            console.error(
+              "Lỗi load giá gốc:",
+              err
+            );
+          }
+
+          // fallback nếu lỗi
+          return {
+
+            ...item,
+            originalPrice: item.price
+          };
+
+        })
+      );
+    }
+
+    return {
+
       id: doc.id,
-      ...doc.data()
-    }));
+      ...data
+    };
+
+  })
+);
 
     console.log(allOrders);
 
