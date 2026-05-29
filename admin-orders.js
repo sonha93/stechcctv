@@ -90,7 +90,40 @@ auth.onAuthStateChanged(async (user) => {
 
   loadOrders();
 });
+// ============================
+// FILTER DATE EVENT
+// ============================
 
+const filterDate =
+  document.getElementById("filterDate");
+
+const clearDate =
+  document.getElementById("clearDate");
+
+if(filterDate){
+
+  filterDate.addEventListener("change", () => {
+
+    currentPage = 1;
+    loadOrders();
+
+  });
+
+}
+
+if(clearDate){
+
+  clearDate.addEventListener("click", () => {
+
+    filterDate.value = "";
+
+    currentPage = 1;
+
+    loadOrders();
+
+  });
+
+}
 // ============================
 // LOAD ORDERS
 // ============================
@@ -140,22 +173,70 @@ async function loadOrders() {
 // ============================
 // SEARCH
 // ============================
+// ============================
+// SEARCH + FILTER DATE
+// ============================
+
 const searchKeyword =
   searchInput
     ? searchInput.value.trim().toLowerCase()
     : "";
 
+const selectedDate =
+  filterDate?.value || "";
+
 // lưu toàn bộ orders
 allOrders = snapshot.docs.filter(doc => {
 
-  if (!searchKeyword) return true;
+  const order = doc.data();
 
-  return doc.id
-    .toLowerCase()
-    .includes(searchKeyword);
+  // SEARCH ID
+  const matchSearch =
+    !searchKeyword ||
+    doc.id
+      .toLowerCase()
+      .includes(searchKeyword);
+
+  // FILTER DATE
+  let matchDate = true;
+
+  if(selectedDate){
+
+    try{
+
+      const dateObj =
+        typeof order.createdAt?.toDate === "function"
+          ? order.createdAt.toDate()
+          : new Date(order.createdAt);
+
+      const yyyy =
+        dateObj.getFullYear();
+
+      const mm = String(
+        dateObj.getMonth() + 1
+      ).padStart(2,"0");
+
+      const dd = String(
+        dateObj.getDate()
+      ).padStart(2,"0");
+
+      const orderDate =
+        `${yyyy}-${mm}-${dd}`;
+
+      matchDate =
+        orderDate === selectedDate;
+
+    }catch{
+
+      matchDate = false;
+
+    }
+
+  }
+
+  return matchSearch && matchDate;
 
 });
-
 // ============================
 // PAGINATION
 // ============================
