@@ -512,7 +512,7 @@ function renderOrders(){
             ${order.status === "cancelled"
   ? "Đơn đã hủy"
   : disableCancel
-    ? "Không thể hủy đơn"
+    ? ""
     : "Hủy đơn hàng"
 }
           </button>
