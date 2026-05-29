@@ -130,15 +130,27 @@ async function loadOrders() {
       const order = doc.data();
 
       // chỉ cộng doanh thu completed
-      if (order.status === "completed") {
+     if (
+  order.status === "completed" &&
+  !order.customerCancelled
+) {
         revenue += Number(order.total || 0);
       }
 
       // ============================
       // KHÓA KHI COMPLETED
       // ============================
-      const isCompleted = order.status === "completed";
+    const isCompleted =
+  order.status === "completed";
 
+const isCustomerCancelled =
+  order.customerCancelled === true;
+
+// khóa select nếu:
+// - completed
+// - hoặc khách đã hủy
+const lockStatus =
+  isCompleted || isCustomerCancelled;
       html += `
         <tr>
 
@@ -188,7 +200,7 @@ async function loadOrders() {
             <select
               class="order-status"
               data-id="${doc.id}"
-              ${isCompleted ? "disabled" : ""}
+             ${lockStatus ? "disabled" : ""}
             >
 
               <option value="pending"
@@ -218,16 +230,20 @@ async function loadOrders() {
 
             </select>
 
-            ${isCompleted ? `
-              <div style="
-                color:green;
-                font-size:12px;
-                margin-top:5px;
-                font-weight:bold;
-              ">
-                Đã khóa trạng thái
-              </div>
-            ` : ""}
+           ${lockStatus ? `
+  <div style="
+    color:${isCustomerCancelled ? "red" : "green"};
+    font-size:12px;
+    margin-top:5px;
+    font-weight:bold;
+  ">
+    ${
+      isCustomerCancelled
+        ? "Khách đã hủy đơn"
+        : "Đã khóa trạng thái"
+    }
+  </div>
+` : ""}
 
           </td>
 
@@ -294,25 +310,70 @@ function bindEvents() {
   // UPDATE STATUS
   document.querySelectorAll(".order-status").forEach(select => {
 
-    select.addEventListener("change", async () => {
+  // chống bind trùng
+  if(select.dataset.bound === "true"){
+    return;
+  }
+
+  select.dataset.bound = "true";
+
+  select.addEventListener("change", async () => {
 
       const id = select.dataset.id;
       const status = select.value;
 
       try {
 
-        await db
-          .collection("orders")
-          .doc(id)
-          .update({
-            status
-          });
+      const orderDoc = await db
+  .collection("orders")
+  .doc(id)
+  .get();
 
+if(!orderDoc.exists){
+
+  alert("Đơn hàng không tồn tại");
+  return;
+}
+
+const orderData = orderDoc.data();
+
+// khách đã hủy
+if(orderData.customerCancelled){
+
+  alert(
+    "Khách đã hủy đơn, không thể cập nhật trạng thái."
+  );
+
+  // reset select về cancelled
+  select.value = "cancelled";
+
+  // khóa luôn select
+  select.disabled = true;
+
+  return;
+}
+const updateData = {
+  status: status
+};
+
+// nếu chuyển sang cancelled
+// thì khóa luôn
+if(status === "cancelled"){
+  updateData.customerCancelled = true;
+}
+
+await db
+  .collection("orders")
+  .doc(id)
+  .update(updateData);
         // completed => khóa
-        if (status === "completed") {
-          select.disabled = true;
-        }
+     if (
+  status === "completed" ||
+  status === "cancelled"
+) {
 
+  select.disabled = true;
+}
         alert("Cập nhật trạng thái thành công");
 
       } catch (error) {
