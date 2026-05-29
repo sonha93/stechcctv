@@ -255,7 +255,7 @@ function renderOrders(){
         break;
 
       case "completed":
-        statusText = "Đã giao thành công";
+        statusText = "Đơn hàng đã giao";
         statusColor = "#16a34a";
         break;
 
