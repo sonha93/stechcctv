@@ -554,25 +554,34 @@ if(inventorySearch){
 // ============================
 // SWITCH MODULE
 // ============================
-const ordersTableWrap =
-  document.getElementById(
-    "ordersSection"
-  );
+
+const ordersSection =
+  document.getElementById("ordersSection");
 
 const inventorySection =
-  document.getElementById(
-    "inventorySection"
-  );
+  document.getElementById("inventorySection");
 
 const importSection =
-  document.getElementById(
-    "importSection"
-  );
+  document.getElementById("importSection");
 
 const movementsSection =
-  document.getElementById(
-    "movementsSection"
-  );
+  document.getElementById("movementsSection");
+
+function hideAllSections(){
+
+  if(ordersSection)
+    ordersSection.style.display = "none";
+
+  if(inventorySection)
+    inventorySection.style.display = "none";
+
+  if(importSection)
+    importSection.style.display = "none";
+
+  if(movementsSection)
+    movementsSection.style.display = "none";
+
+}
 
 document
   .querySelectorAll(
@@ -584,59 +593,43 @@ document
       "change",
       () => {
 
+        hideAllSections();
+
         const value = radio.value;
 
-        // hide all
-        if(ordersTableWrap)
-          ordersTableWrap.style.display =
-            "none";
-
-        if(inventorySection)
-          inventorySection.style.display =
-            "none";
-
-        if(importSection)
-          importSection.style.display =
-            "none";
-
-        if(movementsSection)
-          movementsSection.style.display =
-            "none";
-
-        // show selected
+        // ORDERS
         if(value === "orders"){
 
-          if(ordersTableWrap)
-            ordersTableWrap.style.display =
-              "block";
+          ordersSection.style.display =
+            "block";
 
         }
 
+        // INVENTORY
         if(value === "inventory"){
 
-          if(inventorySection)
-            inventorySection.style.display =
-              "block";
+          inventorySection.style.display =
+            "block";
 
           loadInventory();
 
         }
 
+        // IMPORT
         if(value === "import"){
 
-          if(importSection)
-            importSection.style.display =
-              "block";
+          importSection.style.display =
+            "block";
 
           loadImportPrices();
 
         }
 
+        // MOVEMENTS
         if(value === "movements"){
 
-          if(movementsSection)
-            movementsSection.style.display =
-              "block";
+          movementsSection.style.display =
+            "block";
 
           loadStockMovements();
 
@@ -646,6 +639,12 @@ document
     );
 
   });
+
+// mặc định
+hideAllSections();
+
+ordersSection.style.display =
+  "block";
 // ============================
 // INIT
 // ============================
