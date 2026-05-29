@@ -636,7 +636,7 @@ ${
 
           <option value="cancelled"
             ${order.status === "cancelled" ? "selected" : ""}>
-            Đã hủy
+            Hủy đơn
           </option>
 
         </select>
