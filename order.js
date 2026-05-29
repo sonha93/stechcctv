@@ -1,3 +1,25 @@
+function calcOrder(items){
+
+  let total = 0;
+  let originalTotal = 0;
+
+  items.forEach(item => {
+
+    const qty = Number(item.qty || 1);
+    const price = Number(item.price || 0);
+
+    const original = Number(item.originalPrice || price);
+
+    total += price * qty;
+    originalTotal += original * qty;
+  });
+
+  return {
+    total,
+    originalTotal,
+    savings: originalTotal - total
+  };
+}
 import { auth, db } from "./firebase-init.js";
 
 /* =========================
@@ -122,69 +144,51 @@ function renderOrders(){
   const pageOrders =
     allOrders.slice(start, end);
 
-  pageOrders.forEach(order => {
+ pageOrders.forEach(order => {
 
-    let total = 0;
+  const items = Array.isArray(order.items)
+    ? order.items
+    : [];
 
-    let itemsHTML = "";
+  const { total, originalTotal, savings } =
+    calcOrder(items);
 
-    const items =
-      Array.isArray(order.items)
-      ? order.items
-      : [];
+  let itemsHTML = "";
 
-items.slice(0,2).forEach(item => {
+  items.slice(0,2).forEach(item => {
 
-      const qty =
-        Number(item.qty || 1);
+    const qty = Number(item.qty || 1);
+    const price = Number(item.price || 0);
+    const sub = qty * price;
 
-      const price =
-        Number(item.price || 0);
+    itemsHTML += `
+      <div class="item">
 
-      const sub =
-        qty * price;
+        <img src="${item.img || ''}">
 
-      total += sub;
+        <div style="flex:1;">
 
-      itemsHTML += `
+          <div style="font-weight:bold;margin-bottom:5px;">
+            ${item.name || ""}
+          </div>
 
-        <div class="item">
+          <div class="sale-price">
+            ${format(price)}
+          </div>
 
-          <img
-            src="${item.img || ''}"
-          >
+          <div class="calc">
+            ${qty} × ${format(price)}
+          </div>
 
-          <div style="flex:1;">
-
-            <div style="
-              font-weight:bold;
-              margin-bottom:5px;
-            ">
-              ${item.name || ""}
-            </div>
-
-            <div class="sale-price">
-              ${format(price)}
-            </div>
-
-            <div class="calc">
-              ${qty} × ${format(price)}
-            </div>
-
-            <div style="
-              color:#e53935;
-              font-weight:bold;
-              margin-top:4px;
-            ">
-              ${format(sub)}
-            </div>
-
+          <div style="color:#e53935;font-weight:bold;margin-top:4px;">
+            ${format(sub)}
           </div>
 
         </div>
 
-      `;
-    });
+      </div>
+    `;
+  });
 let hiddenHTML = "";
 
 if(items.length > 2){
