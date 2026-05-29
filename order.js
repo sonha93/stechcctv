@@ -86,15 +86,15 @@ async function loadOrders(userUid){
     FIX FIELD UID
     ========================= */
 
-    const q = query(
+   const q = query(
 
-      collection(db, "orders"),
+  collection(db, "orders"),
 
-      where("userId", "==", userUid),
+  where("uid", "==", userUid),
 
-      orderBy("createdAt", "desc")
+  orderBy("createdAt", "desc")
 
-    );
+);
 
     const snapshot =
       await getDocs(q);
