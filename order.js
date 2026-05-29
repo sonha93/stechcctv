@@ -291,17 +291,24 @@ if(items.length > 2){
   `
   : ""
 }
-        <div class="total-box">
+       <div class="total-box">
 
-          <div class="row final">
-            <span>Tổng tiền</span>
-            <b>${format(total)}</b>
-          </div>
+  <div class="row">
+    <span>Tổng giá gốc</span>
+    <b>${format(originalTotal)}</b>
+  </div>
 
-        </div>
+  <div class="row discount">
+    <span>Tiết kiệm</span>
+    <b>-${format(savings)}</b>
+  </div>
 
-      </div>
+  <div class="row final">
+    <span>Cần thanh toán</span>
+    <b>${format(total)}</b>
+  </div>
 
+</div>
     `;
   });
 
