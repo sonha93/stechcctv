@@ -1,5 +1,8 @@
 import { auth, db } from "./firebase-init.js";
 
+let allOrders = [];
+let currentPage = 1;
+const perPage = 10;
 // ============================
 // ADMIN ORDERS
 // ============================
@@ -9,7 +12,22 @@ const totalOrders = document.getElementById("totalOrders");
 const totalRevenue = document.getElementById("totalRevenue");
 
 let currentAdmin = null;
+// ============================
+// SEARCH EVENT
+// ============================
+const searchInput =
+  document.getElementById("searchOrder");
 
+if (searchInput) {
+
+  searchInput.addEventListener("input", () => {
+
+    currentPage = 1;
+    loadOrders();
+
+  });
+
+}
 // ============================
 // FORMAT PRICE
 // ============================
@@ -117,147 +135,207 @@ async function loadOrders() {
       return;
     }
 
-    let html = "";
+  let html = "";
 
-    // ============================
-    // TOTAL REVENUE
-    // CHỈ TÍNH ĐƠN HOÀN THÀNH
-    // ============================
-    let revenue = 0;
+// ============================
+// SEARCH
+// ============================
+const searchKeyword =
+  searchInput
+    ? searchInput.value.trim().toLowerCase()
+    : "";
 
-    snapshot.forEach(doc => {
+// lưu toàn bộ orders
+allOrders = snapshot.docs.filter(doc => {
 
-      const order = doc.data();
+  if (!searchKeyword) return true;
 
-      // chỉ cộng doanh thu completed
-     if (
-  order.status === "completed" &&
-  !order.customerCancelled
-) {
-        revenue += Number(order.total || 0);
-      }
+  return doc.id
+    .toLowerCase()
+    .includes(searchKeyword);
 
-      // ============================
-      // KHÓA KHI COMPLETED
-      // ============================
-    const isCompleted =
-  order.status === "completed";
+});
 
-const isCustomerCancelled =
-  order.customerCancelled === true;
+// ============================
+// PAGINATION
+// ============================
+const start =
+  (currentPage - 1) * perPage;
 
-// khóa select nếu:
-// - completed
-// - hoặc khách đã hủy
-const lockStatus =
-  isCompleted || isCustomerCancelled;
-      html += `
-        <tr>
+const end = start + perPage;
 
-          <!-- ID -->
-          <td>${doc.id}</td>
+const pageOrders =
+  allOrders.slice(start, end);
 
-          <!-- KHÁCH -->
-          <td>
-            ${order.customerName || "-"}<br>
-            <small>${order.phone || ""}</small>
-          </td>
+// ============================
+// REVENUE
+// ============================
+let revenue = 0;
 
-          <!-- ĐỊA CHỈ -->
-          <td>
-            ${order.address || "-"}
-          </td>
+const revenueByDate = {};
 
-          <!-- SẢN PHẨM -->
-          <td>
-            ${renderProducts(order.items || [])}
-          </td>
+// tính doanh thu toàn bộ
+snapshot.forEach(doc => {
 
-          <!-- TỔNG TIỀN -->
-          <td>
-            ${formatPrice(order.total)}
-          </td>
+  const order = doc.data();
 
-          <!-- TRẠNG THÁI KHÁCH -->
-          <td>
+  if (
+    order.status === "completed" &&
+    !order.customerCancelled
+  ) {
 
-            ${order.customerCancelled ? `
-              <span style="color:red;font-weight:bold;">
-                Khách đã hủy
-              </span>
-            ` : ""}
+    revenue += Number(order.total || 0);
 
-          </td>
+    let dateKey = "-";
 
-          <!-- NGÀY TẠO -->
-          <td>
-            ${formatDate(order.createdAt)}
-          </td>
+    try {
 
-          <!-- HÀNH ĐỘNG ADMIN -->
-          <td>
+      const dateObj =
+        typeof order.createdAt?.toDate === "function"
+          ? order.createdAt.toDate()
+          : new Date(order.createdAt);
 
-            <select
-              class="order-status"
-              data-id="${doc.id}"
-             ${lockStatus ? "disabled" : ""}
-            >
+      dateKey = dateObj.toLocaleDateString("vi-VN");
 
-              <option value="pending"
-                ${order.status === "pending" ? "selected" : ""}>
-                Chờ xử lý
-              </option>
+    } catch {}
 
-              <option value="confirmed"
-                ${order.status === "confirmed" ? "selected" : ""}>
-                Đã xác nhận
-              </option>
-
-              <option value="shipping"
-                ${order.status === "shipping" ? "selected" : ""}>
-                Đang giao
-              </option>
-
-              <option value="completed"
-                ${order.status === "completed" ? "selected" : ""}>
-                Đã giao thành công
-              </option>
-
-              <option value="cancelled"
-                ${order.status === "cancelled" ? "selected" : ""}>
-                Đã hủy
-              </option>
-
-            </select>
-
-           ${lockStatus ? `
-  <div style="
-    color:${isCustomerCancelled ? "red" : "green"};
-    font-size:12px;
-    margin-top:5px;
-    font-weight:bold;
-  ">
-    ${
-      isCustomerCancelled
-        ? "Khách đã hủy đơn"
-        : "Đã khóa trạng thái"
+    if (!revenueByDate[dateKey]) {
+      revenueByDate[dateKey] = 0;
     }
-  </div>
-` : ""}
 
-          </td>
+    revenueByDate[dateKey] +=
+      Number(order.total || 0);
+  }
 
-        </tr>
-      `;
-    });
+});
 
+// ============================
+// RENDER TABLE
+// ============================
+pageOrders.forEach(doc => {
+
+  const order = doc.data();
+
+  const isCompleted =
+    order.status === "completed";
+
+  const isCustomerCancelled =
+    order.customerCancelled === true;
+
+  const lockStatus =
+    isCompleted || isCustomerCancelled;
+
+  html += `
+    <tr>
+
+      <td>${doc.id}</td>
+
+      <td>
+        ${order.customerName || "-"}<br>
+        <small>${order.phone || ""}</small>
+      </td>
+
+      <td>
+        ${order.address || "-"}
+      </td>
+
+      <td>
+        ${renderProducts(order.items || [])}
+      </td>
+
+      <td>
+        ${formatPrice(order.total)}
+      </td>
+
+      <td>
+
+        ${order.customerCancelled ? `
+          <span style="color:red;font-weight:bold;">
+            Khách đã hủy
+          </span>
+        ` : ""}
+
+      </td>
+
+      <td>
+        ${formatDate(order.createdAt)}
+      </td>
+
+      <td>
+
+        <select
+          class="order-status"
+          data-id="${doc.id}"
+          ${lockStatus ? "disabled" : ""}
+        >
+
+          <option value="pending"
+            ${order.status === "pending" ? "selected" : ""}>
+            Chờ xử lý
+          </option>
+
+          <option value="confirmed"
+            ${order.status === "confirmed" ? "selected" : ""}>
+            Đã xác nhận
+          </option>
+
+          <option value="shipping"
+            ${order.status === "shipping" ? "selected" : ""}>
+            Đang giao
+          </option>
+
+          <option value="completed"
+            ${order.status === "completed" ? "selected" : ""}>
+            Đã giao thành công
+          </option>
+
+          <option value="cancelled"
+            ${order.status === "cancelled" ? "selected" : ""}>
+            Đã hủy
+          </option>
+
+        </select>
+
+        ${lockStatus ? `
+          <div style="
+            color:${isCustomerCancelled ? "red" : "green"};
+            font-size:12px;
+            margin-top:5px;
+            font-weight:bold;
+          ">
+            ${
+              isCustomerCancelled
+                ? "Khách đã hủy đơn"
+                : "Đã khóa trạng thái"
+            }
+          </div>
+        ` : ""}
+
+      </td>
+
+    </tr>
+  `;
+});
+
+// empty search
+if (!html) {
+
+  html = `
+    <tr>
+      <td colspan="8"
+        style="text-align:center;padding:20px;">
+        Không tìm thấy đơn hàng
+      </td>
+    </tr>
+  `;
+}
     ordersTable.innerHTML = html;
-
+    renderPagination();
     // ============================
     // TOTAL ORDERS
     // ============================
     if (totalOrders) {
-      totalOrders.textContent = snapshot.size;
+   totalOrders.textContent = allOrders.length;
     }
 
     // ============================
@@ -266,7 +344,36 @@ const lockStatus =
     if (totalRevenue) {
       totalRevenue.textContent = formatPrice(revenue);
     }
+    
+const revenueBox =
+  document.getElementById("revenueByDate");
 
+if(revenueBox){
+
+  let revenueHTML = "";
+
+  Object.entries(revenueByDate)
+    .sort((a,b) => {
+
+      return new Date(b[0]) - new Date(a[0]);
+
+    })
+    .forEach(([date,total]) => {
+
+      revenueHTML += `
+        <div style="
+          padding:8px 0;
+          border-bottom:1px solid #eee;
+        ">
+          <b>${date}</b>:
+          ${formatPrice(total)}
+        </div>
+      `;
+    });
+
+  revenueBox.innerHTML = revenueHTML;
+
+}
     bindEvents();
 
   } catch (error) {
@@ -397,3 +504,55 @@ db.collection("orders")
     }
 
   });
+// ============================
+// PAGINATION
+// ============================
+function renderPagination() {
+
+  const pagination =
+    document.getElementById("pagination");
+
+  if (!pagination) return;
+
+  const totalPages =
+    Math.ceil(allOrders.length / perPage);
+
+  let html = "";
+
+  for (let i = 1; i <= totalPages; i++) {
+
+    html += `
+      <button
+        class="page-btn"
+        data-page="${i}"
+        style="
+          margin:0 4px;
+          padding:6px 10px;
+          cursor:pointer;
+          ${i === currentPage
+            ? "background:black;color:white;"
+            : ""}
+        "
+      >
+        ${i}
+      </button>
+    `;
+  }
+
+  pagination.innerHTML = html;
+
+  document
+    .querySelectorAll(".page-btn")
+    .forEach(btn => {
+
+      btn.addEventListener("click", () => {
+
+        currentPage =
+          Number(btn.dataset.page);
+
+        loadOrders();
+
+      });
+
+    });
+}
