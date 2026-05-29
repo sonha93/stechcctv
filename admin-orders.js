@@ -102,7 +102,7 @@ if(totalRevenue){
           <td>${doc.id}</td>
 
           <td>
-            ${order.name || "-"}<br>
+       ${order.customerName || "-"}<br>
             <small>${order.phone || ""}</small>
           </td>
 
@@ -175,7 +175,7 @@ function renderProducts(items) {
     return `
       <div style="margin-bottom:6px;">
         ${item.name || "Sản phẩm"}
-        x${item.quantity || 1}
+   x${item.qty || 1}
       </div>
     `;
   }).join("");
