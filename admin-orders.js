@@ -34,7 +34,29 @@ if (searchInput) {
 function formatPrice(number) {
   return Number(number || 0).toLocaleString("vi-VN") + "đ";
 }
+function getStatusText(status){
 
+  switch(status){
+
+    case "pending":
+      return "Chờ xử lý";
+
+    case "confirmed":
+      return "Đã xác nhận";
+
+    case "shipping":
+      return "Đang giao";
+
+    case "completed":
+      return "Đã giao thành công";
+
+    case "cancelled":
+      return "Đã hủy";
+
+    default:
+      return "-";
+  }
+}
 // ============================
 // FORMAT DATE
 // ============================
@@ -187,7 +209,6 @@ const selectedDate =
 
 // lưu toàn bộ orders
 allOrders = snapshot.docs.filter(doc => {
-
   const order = doc.data();
 
   // SEARCH ID
@@ -237,6 +258,12 @@ allOrders = snapshot.docs.filter(doc => {
   return matchSearch && matchDate;
 
 });
+ const totalPages =
+  Math.ceil(allOrders.length / perPage) || 1;
+
+if(currentPage > totalPages){
+  currentPage = 1;
+}
 // ============================
 // PAGINATION
 // ============================
@@ -259,11 +286,34 @@ const revenueByDate = {};
 snapshot.forEach(doc => {
 
   const order = doc.data();
+if(selectedDate){
 
-  if (
-    order.status === "completed" &&
-    !order.customerCancelled
-  ) {
+  try{
+
+    const dateObj =
+      typeof order.createdAt?.toDate === "function"
+        ? order.createdAt.toDate()
+        : new Date(order.createdAt);
+
+    const yyyy = dateObj.getFullYear();
+    const mm = String(dateObj.getMonth() + 1).padStart(2,"0");
+    const dd = String(dateObj.getDate()).padStart(2,"0");
+
+    const orderDate = `${yyyy}-${mm}-${dd}`;
+
+    if(orderDate !== selectedDate){
+      return;
+    }
+
+  }catch{
+    return;
+  }
+}
+ if (
+  order.status === "completed" &&
+  !order.customerCancelled &&
+  !order.adminCancelled
+) {
 
     revenue += Number(order.total || 0);
 
@@ -276,7 +326,11 @@ snapshot.forEach(doc => {
           ? order.createdAt.toDate()
           : new Date(order.createdAt);
 
-      dateKey = dateObj.toLocaleDateString("vi-VN");
+   const yyyy = dateObj.getFullYear();
+const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+const dd = String(dateObj.getDate()).padStart(2, "0");
+
+dateKey = `${yyyy}-${mm}-${dd}`;
 
     } catch {}
 
@@ -301,11 +355,16 @@ pageOrders.forEach(doc => {
     order.status === "completed";
 
   const isCustomerCancelled =
-    order.customerCancelled === true;
+  order.customerCancelled === true;
 
-  const lockStatus =
-    isCompleted || isCustomerCancelled;
+const isAdminCancelled =
+  order.adminCancelled === true;
 
+const lockStatus =
+  isCompleted ||
+  isCustomerCancelled ||
+  isAdminCancelled;
+ 
   html += `
     <tr>
 
@@ -330,11 +389,50 @@ pageOrders.forEach(doc => {
 
       <td>
 
-        ${order.customerCancelled ? `
-          <span style="color:red;font-weight:bold;">
-            Khách đã hủy
-          </span>
-        ` : ""}
+    
+${
+  order.customerCancelled
+  ? `
+    <span style="
+      background:#ffebee;
+      color:#d32f2f;
+      padding:5px 10px;
+      border-radius:20px;
+      font-size:12px;
+      font-weight:bold;
+      display:inline-block;
+    ">
+      Khách tự hủy
+    </span>
+  `
+  : order.adminCancelled
+  ? `
+    <span style="
+      background:#fff3e0;
+      color:#ef6c00;
+      padding:5px 10px;
+      border-radius:20px;
+      font-size:12px;
+      font-weight:bold;
+      display:inline-block;
+    ">
+      Admin đã hủy
+    </span>
+  `
+  : `
+    <span style="
+      background:#e8f5e9;
+      color:#2e7d32;
+      padding:5px 10px;
+      border-radius:20px;
+      font-size:12px;
+      font-weight:bold;
+      display:inline-block;
+    ">
+   ${getStatusText(order.status)}
+    </span>
+  `
+}
 
       </td>
 
@@ -377,20 +475,28 @@ pageOrders.forEach(doc => {
 
         </select>
 
-        ${lockStatus ? `
-          <div style="
-            color:${isCustomerCancelled ? "red" : "green"};
-            font-size:12px;
-            margin-top:5px;
-            font-weight:bold;
-          ">
-            ${
-              isCustomerCancelled
-                ? "Khách đã hủy đơn"
-                : "Đã khóa trạng thái"
-            }
-          </div>
-        ` : ""}
+   ${lockStatus ? `
+  <div style="
+    color:${
+      isCustomerCancelled
+        ? "red"
+        : isAdminCancelled
+        ? "#ff9800"
+        : "green"
+    };
+    font-size:12px;
+    margin-top:5px;
+    font-weight:bold;
+  ">
+    ${
+      isCustomerCancelled
+        ? "Khách tự hủy đơn"
+        : isAdminCancelled
+        ? "Admin đã hủy đơn"
+        : "Đã khóa trạng thái"
+    }
+  </div>
+` : ""}
 
       </td>
 
@@ -439,18 +545,20 @@ if(revenueBox){
       return new Date(b[0]) - new Date(a[0]);
 
     })
-    .forEach(([date,total]) => {
+  .forEach(([date,total]) => {
 
-      revenueHTML += `
-        <div style="
-          padding:8px 0;
-          border-bottom:1px solid #eee;
-        ">
-          <b>${date}</b>:
-          ${formatPrice(total)}
-        </div>
-      `;
-    });
+  revenueHTML += `
+    <div style="
+      padding:8px 0;
+      border-bottom:1px solid #eee;
+    ">
+      <b>
+        ${new Date(date).toLocaleDateString("vi-VN")}
+      </b>:
+      ${formatPrice(total)}
+    </div>
+  `;
+});
 
   revenueBox.innerHTML = revenueHTML;
 
@@ -547,7 +655,7 @@ const updateData = {
 // nếu chuyển sang cancelled
 // thì khóa luôn
 if(status === "cancelled"){
-  updateData.customerCancelled = true;
+  updateData.adminCancelled = true;
 }
 
 await db
