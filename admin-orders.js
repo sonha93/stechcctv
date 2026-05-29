@@ -12,6 +12,7 @@ const totalOrders = document.getElementById("totalOrders");
 const totalRevenue = document.getElementById("totalRevenue");
 
 let currentAdmin = null;
+
 // ============================
 // SEARCH EVENT
 // ============================
@@ -121,88 +122,6 @@ const filterDate =
 
 const clearDate =
   document.getElementById("clearDate");
-
-// ============================
-// FILTER REVENUE RANGE
-// ============================
-
-const startDate =
-  document.getElementById("startDate");
-
-const endDate =
-  document.getElementById("endDate");
-
-const filterRangeBtn =
-  document.getElementById("filterRangeBtn");
-
-if(filterRangeBtn){
-
-  filterRangeBtn.addEventListener("click", () => {
-
-    let total = 0;
-
-    const start =
-      startDate?.value
-        ? new Date(startDate.value)
-        : null;
-
-    const end =
-      endDate?.value
-        ? new Date(endDate.value)
-        : null;
-
-    // set cuối ngày
-    if(end){
-      end.setHours(23,59,59,999);
-    }
-
-    allOrders.forEach(doc => {
-
-      const order = doc.data();
-
-      // chỉ tính completed
-      if(
-        order.status !== "completed" ||
-        order.customerCancelled ||
-        order.adminCancelled
-      ){
-        return;
-      }
-
-      try{
-
-        const dateObj =
-          typeof order.createdAt?.toDate === "function"
-            ? order.createdAt.toDate()
-            : new Date(order.createdAt);
-
-        // lọc từ ngày
-        if(start && dateObj < start){
-          return;
-        }
-
-        // lọc đến ngày
-        if(end && dateObj > end){
-          return;
-        }
-
-        total += Number(order.total || 0);
-
-      }catch(err){}
-    });
-
-    const rangeRevenue =
-      document.getElementById("rangeRevenue");
-
-    if(rangeRevenue){
-      rangeRevenue.textContent =
-        formatPrice(total);
-    }
-
-  });
-
-}
-
 if(filterDate){
 
   filterDate.addEventListener("change", () => {
@@ -218,18 +137,148 @@ if(clearDate){
 
   clearDate.addEventListener("click", () => {
 
-    if(filterDate){
-      filterDate.value = "";
-    }
+    filterDate.value = "";
 
     currentPage = 1;
-
     loadOrders();
 
   });
 
 }
+// ============================
+// FILTER REVENUE RANGE
+// ============================
 
+const startDate =
+  document.getElementById("startDate");
+
+const endDate =
+  document.getElementById("endDate");
+
+const filterRangeBtn =
+  document.getElementById("filterRangeBtn");
+
+if(filterRangeBtn){
+filterRangeBtn.addEventListener("click", () => {
+
+  const start =
+    startDate?.value
+      ? new Date(startDate.value)
+      : null;
+
+  const end =
+    endDate?.value
+      ? new Date(endDate.value)
+      : null;
+
+  if(end){
+    end.setHours(23,59,59,999);
+  }
+
+  let revenue = 0;
+
+  let pendingCount = 0;
+  let shippingCount = 0;
+  let completedCount = 0;
+  let cancelledCount = 0;
+
+  // orders sau khi lọc ngày
+  const rangeOrders = allOrders.filter(doc => {
+
+    const order = doc.data();
+
+    try{
+
+      const dateObj =
+        typeof order.createdAt?.toDate === "function"
+          ? order.createdAt.toDate()
+          : new Date(order.createdAt);
+
+      if(start && dateObj < start){
+        return false;
+      }
+
+      if(end && dateObj > end){
+        return false;
+      }
+
+      return true;
+
+    }catch{
+      return false;
+    }
+
+  });
+
+  // tính thống kê
+  rangeOrders.forEach(doc => {
+
+    const order = doc.data();
+
+    if(order.status === "pending"){
+      pendingCount++;
+    }
+
+    if(order.status === "shipping"){
+      shippingCount++;
+    }
+
+    if(
+      order.status === "completed" &&
+      !order.customerCancelled &&
+      !order.adminCancelled
+    ){
+      completedCount++;
+
+      revenue += Number(order.total || 0);
+    }
+
+    if(
+      order.status === "cancelled" ||
+      order.customerCancelled ||
+      order.adminCancelled
+    ){
+      cancelledCount++;
+    }
+
+  });
+
+  // revenue
+  const rangeRevenue =
+    document.getElementById("rangeRevenue");
+
+  if(rangeRevenue){
+    rangeRevenue.textContent =
+      formatPrice(revenue);
+  }
+
+  // total revenue
+  if(totalRevenue){
+    totalRevenue.textContent =
+      formatPrice(revenue);
+  }
+
+  // total orders
+  if(totalOrders){
+    totalOrders.textContent =
+      rangeOrders.length;
+  }
+
+  // status count
+  document.getElementById("pendingCount").textContent =
+    pendingCount;
+
+  document.getElementById("shippingCount").textContent =
+    shippingCount;
+
+  document.getElementById("completedCount").textContent =
+    completedCount;
+
+  document.getElementById("cancelledCount").textContent =
+    cancelledCount;
+
+});
+  }
 // ============================
 // LOAD ORDERS
 // ============================
@@ -254,6 +303,7 @@ async function loadOrders() {
     // EMPTY
     // ============================
     if (snapshot.empty) {
+        allOrders = [];
 renderPagination();
       ordersTable.innerHTML = `
         <tr>
