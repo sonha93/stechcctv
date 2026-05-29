@@ -329,59 +329,78 @@ function renderOrders(){
 
       items.slice(2).forEach(item => {
 
-        const qty =
-          Number(item.qty || 1);
+  const qty =
+    Number(item.qty || 1);
 
-        const price =
-          Number(item.price || 0);
+  const price =
+    Number(item.price || 0);
 
-        const sub = qty * price;
+  const original =
+    Number(item.originalPrice || price);
 
-        hiddenHTML += `
+  const sub = qty * price;
 
+  hiddenHTML += `
+
+    <div style="
+      display:flex;
+      gap:14px;
+      padding:12px 0;
+      border-bottom:1px solid #eee;
+    ">
+
+      <img
+        src="${item.img || "no-image.png"}"
+        width="72"
+        height="72"
+        style="
+          object-fit:cover;
+          border-radius:10px;
+          border:1px solid #ddd;
+        "
+      >
+
+      <div>
+
+        <div style="font-weight:700;">
+          ${item.name || ""}
+        </div>
+
+        <div style="
+          color:#d70018;
+          font-weight:700;
+        ">
+          ${format(price)}
+        </div>
+
+        ${original > price ? `
           <div style="
-            display:flex;
-            gap:14px;
-            padding:12px 0;
-            border-bottom:1px solid #eee;
+            text-decoration:line-through;
+            color:#999;
+            font-size:13px;
           ">
-
-            <img
-              src="${item.img || "no-image.png"}"
-              width="72"
-              height="72"
-              style="
-                object-fit:cover;
-                border-radius:10px;
-                border:1px solid #ddd;
-              "
-            >
-
-            <div>
-
-              <div style="font-weight:700;">
-                ${item.name || ""}
-              </div>
-
-              <div>
-                ${qty} × ${format(price)}
-              </div>
-
-              <div style="
-                color:#d70018;
-                font-weight:700;
-              ">
-                ${format(sub)}
-              </div>
-
-            </div>
-
+            ${format(original)}
           </div>
+        ` : ""}
 
-        `;
-      });
-    }
+        <div>
+          ${qty} × ${format(price)}
+        </div>
 
+        <div style="
+          color:#d70018;
+          font-weight:700;
+        ">
+          ${format(sub)}
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+});
+}
     // =========================
     // DISABLE CANCEL
     // =========================
