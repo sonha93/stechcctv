@@ -21,16 +21,25 @@ function formatPrice(number) {
 // FORMAT DATE
 // ============================
 function formatDate(timestamp) {
+
   if (!timestamp) return "-";
 
   try {
+
     let date;
 
+    // firestore timestamp
     if (typeof timestamp.toDate === "function") {
       date = timestamp.toDate();
-    } else if (typeof timestamp === "number") {
+    }
+
+    // timestamp number
+    else if (typeof timestamp === "number") {
       date = new Date(timestamp);
-    } else {
+    }
+
+    // string
+    else {
       date = new Date(timestamp);
     }
 
@@ -84,6 +93,9 @@ async function loadOrders() {
       .orderBy("createdAt", "desc")
       .get();
 
+    // ============================
+    // EMPTY
+    // ============================
     if (snapshot.empty) {
 
       ordersTable.innerHTML = `
@@ -108,7 +120,8 @@ async function loadOrders() {
     let html = "";
 
     // ============================
-    // CHỈ TÍNH DOANH THU ĐƠN HOÀN THÀNH
+    // TOTAL REVENUE
+    // CHỈ TÍNH ĐƠN HOÀN THÀNH
     // ============================
     let revenue = 0;
 
@@ -116,76 +129,41 @@ async function loadOrders() {
 
       const order = doc.data();
 
-      // chỉ cộng doanh thu khi hoàn thành
+      // chỉ cộng doanh thu completed
       if (order.status === "completed") {
         revenue += Number(order.total || 0);
       }
 
       // ============================
-      // KHÓA STATUS KHI HOÀN THÀNH
+      // KHÓA KHI COMPLETED
       // ============================
       const isCompleted = order.status === "completed";
 
       html += `
         <tr>
 
+          <!-- ID -->
           <td>${doc.id}</td>
 
+          <!-- KHÁCH -->
           <td>
             ${order.customerName || "-"}<br>
             <small>${order.phone || ""}</small>
           </td>
 
+          <!-- ĐỊA CHỈ -->
           <td>
             ${order.address || "-"}
           </td>
 
+          <!-- SẢN PHẨM -->
           <td>
             ${renderProducts(order.items || [])}
           </td>
 
+          <!-- TỔNG TIỀN -->
           <td>
             ${formatPrice(order.total)}
-          </td>
-
-          <!-- STATUS ADMIN -->
-          <td>
-
-            <select 
-              class="order-status" 
-              data-id="${doc.id}"
-              ${isCompleted ? "disabled" : ""}
-            >
-
-              <option value="pending" ${order.status === "pending" ? "selected" : ""}>
-                Chờ xử lý
-              </option>
-
-              <option value="confirmed" ${order.status === "confirmed" ? "selected" : ""}>
-                Đã xác nhận
-              </option>
-
-              <option value="shipping" ${order.status === "shipping" ? "selected" : ""}>
-                Đang giao
-              </option>
-
-              <option value="completed" ${order.status === "completed" ? "selected" : ""}>
-                Đã giao thành công
-              </option>
-
-            </select>
-
-            ${isCompleted ? `
-              <div style="color:green;font-size:12px;margin-top:4px;">
-                Đã khóa trạng thái
-              </div>
-            ` : ""}
-
-          </td>
-
-          <!-- NGÀY TẠO -->
-          <td>
-            ${formatDate(order.createdAt)}
           </td>
 
           <!-- TRẠNG THÁI KHÁCH -->
@@ -195,6 +173,60 @@ async function loadOrders() {
               <span style="color:red;font-weight:bold;">
                 Khách đã hủy
               </span>
+            ` : ""}
+
+          </td>
+
+          <!-- NGÀY TẠO -->
+          <td>
+            ${formatDate(order.createdAt)}
+          </td>
+
+          <!-- HÀNH ĐỘNG ADMIN -->
+          <td>
+
+            <select
+              class="order-status"
+              data-id="${doc.id}"
+              ${isCompleted ? "disabled" : ""}
+            >
+
+              <option value="pending"
+                ${order.status === "pending" ? "selected" : ""}>
+                Chờ xử lý
+              </option>
+
+              <option value="confirmed"
+                ${order.status === "confirmed" ? "selected" : ""}>
+                Đã xác nhận
+              </option>
+
+              <option value="shipping"
+                ${order.status === "shipping" ? "selected" : ""}>
+                Đang giao
+              </option>
+
+              <option value="completed"
+                ${order.status === "completed" ? "selected" : ""}>
+                Đã giao thành công
+              </option>
+
+              <option value="cancelled"
+                ${order.status === "cancelled" ? "selected" : ""}>
+                Đã hủy
+              </option>
+
+            </select>
+
+            ${isCompleted ? `
+              <div style="
+                color:green;
+                font-size:12px;
+                margin-top:5px;
+                font-weight:bold;
+              ">
+                Đã khóa trạng thái
+              </div>
             ` : ""}
 
           </td>
@@ -227,7 +259,8 @@ async function loadOrders() {
 
     ordersTable.innerHTML = `
       <tr>
-        <td colspan="8" style="text-align:center;padding:20px;color:red;">
+        <td colspan="8"
+          style="text-align:center;padding:20px;color:red;">
           Lỗi tải đơn hàng
         </td>
       </tr>
@@ -258,9 +291,7 @@ function renderProducts(items) {
 // ============================
 function bindEvents() {
 
-  // ============================
   // UPDATE STATUS
-  // ============================
   document.querySelectorAll(".order-status").forEach(select => {
 
     select.addEventListener("change", async () => {
@@ -270,13 +301,14 @@ function bindEvents() {
 
       try {
 
-        await db.collection("orders")
+        await db
+          .collection("orders")
           .doc(id)
           .update({
             status
           });
 
-        // nếu completed -> khóa select
+        // completed => khóa
         if (status === "completed") {
           select.disabled = true;
         }
