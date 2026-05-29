@@ -150,17 +150,17 @@ async function loadInventory(){
             >
           </td>
 
-          <td>
-            ${formatVND(price)}
-          </td>
+        <td>
+  ${
+    oldPrice
+      ? formatVND(oldPrice)
+      : "---"
+  }
+</td>
 
-          <td>
-            ${
-              oldPrice
-                ? formatVND(oldPrice)
-                : "---"
-            }
-          </td>
+<td>
+  ${formatVND(price)}
+</td>
 
           <td>
             ${stock}
