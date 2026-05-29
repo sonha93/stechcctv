@@ -45,14 +45,25 @@ function formatDate(createdAt){
 
     if(!createdAt) return "";
 
-    return new Date(createdAt)
-      .toLocaleString("vi-VN");
+    let date;
+
+    // firestore timestamp
+    if(typeof createdAt.toDate === "function"){
+
+      date = createdAt.toDate();
+
+    }else{
+
+      date = new Date(createdAt);
+    }
+
+    return date.toLocaleString("vi-VN");
 
   }catch{
+
     return "";
   }
 }
-
 /* =========================
 LOAD ORDERS
 ========================= */
@@ -127,7 +138,6 @@ async function loadOrders(userUid){
 /* =========================
 RENDER
 ========================= */
-
 function renderOrders(){
 
   const box =
@@ -144,122 +154,174 @@ function renderOrders(){
   const pageOrders =
     allOrders.slice(start, end);
 
- pageOrders.forEach(order => {
+  pageOrders.forEach(order => {
 
-  const items = Array.isArray(order.items)
-    ? order.items
-    : [];
+    const items = Array.isArray(order.items)
+      ? order.items
+      : [];
 
-  const { total, originalTotal, savings } =
-    calcOrder(items);
+    const {
+      total,
+      originalTotal,
+      savings
+    } = calcOrder(items);
 
-  let itemsHTML = "";
+    // =========================
+    // ORDER STATUS TEXT
+    // =========================
+    let statusText = "Chờ xử lý";
+    let statusColor = "#f59e0b";
 
-  items.slice(0,2).forEach(item => {
+    switch(order.status){
 
-    const qty = Number(item.qty || 1);
-    const price = Number(item.price || 0);
-    const sub = qty * price;
+      case "confirmed":
+        statusText = "Đã xác nhận";
+        statusColor = "#0ea5e9";
+        break;
 
-    itemsHTML += `
-      <div class="item">
+      case "shipping":
+        statusText = "Đang giao";
+        statusColor = "#8b5cf6";
+        break;
 
-        <img src="${item.img || ''}">
+      case "completed":
+        statusText = "Đã giao thành công";
+        statusColor = "#16a34a";
+        break;
 
-        <div style="flex:1;">
+      case "cancelled":
+        statusText = "Đã hủy";
+        statusColor = "#dc2626";
+        break;
+    }
 
-          <div style="font-weight:bold;margin-bottom:5px;">
-            ${item.name || ""}
-          </div>
+    let itemsHTML = "";
 
-         <div class="sale-price">
-  ${format(price)}
-</div>
+    items.slice(0,2).forEach(item => {
 
-${Number(item.originalPrice) > Number(price) ? `
-  <div style="
-    text-decoration: line-through;
-    color:#999;
-    font-size:13px;
-  ">
-    ${format(item.originalPrice)}
-  </div>
-` : ""}
+      const qty = Number(item.qty || 1);
+      const price = Number(item.price || 0);
+      const sub = qty * price;
 
-          <div class="calc">
-            ${qty} × ${format(price)}
-          </div>
+      itemsHTML += `
 
-          <div style="color:#e53935;font-weight:bold;margin-top:4px;">
-            ${format(sub)}
-          </div>
+        <div class="item">
 
-        </div>
+          <img src="${item.img || ''}">
 
-      </div>
-    `;
-  });
-let hiddenHTML = "";
+          <div style="flex:1;">
 
-if(items.length > 2){
+            <div style="
+              font-weight:bold;
+              margin-bottom:5px;
+            ">
+              ${item.name || ""}
+            </div>
 
-  items.slice(2).forEach(item => {
+            <div class="sale-price">
+              ${format(price)}
+            </div>
 
-    const qty =
-      Number(item.qty || 1);
+            ${Number(item.originalPrice) > Number(price) ? `
+              <div style="
+                text-decoration: line-through;
+                color:#999;
+                font-size:13px;
+              ">
+                ${format(item.originalPrice)}
+              </div>
+            ` : ""}
 
-    const price =
-      Number(item.price || 0);
+            <div class="calc">
+              ${qty} × ${format(price)}
+            </div>
 
-    const sub = qty * price;
+            <div style="
+              color:#e53935;
+              font-weight:bold;
+              margin-top:4px;
+            ">
+              ${format(sub)}
+            </div>
 
-    hiddenHTML += `
-
-      <div style="
-        display:flex;
-        gap:14px;
-        padding:12px 0;
-        border-bottom:1px solid #eee;
-      ">
-
-        <img
-          src="${item.img || "no-image.png"}"
-          width="72"
-          height="72"
-          style="
-            object-fit:cover;
-            border-radius:10px;
-            border:1px solid #ddd;
-          "
-        >
-
-        <div>
-
-          <div style="
-            font-weight:700;
-          ">
-            ${item.name || ""}
-          </div>
-
-          <div>
-            ${qty} × ${format(price)}
-          </div>
-
-          <div style="
-            color:#d70018;
-            font-weight:700;
-          ">
-            ${format(sub)}
           </div>
 
         </div>
+      `;
+    });
 
-      </div>
+    // =========================
+    // HIDDEN ITEMS
+    // =========================
+    let hiddenHTML = "";
 
-    `;
-  });
+    if(items.length > 2){
 
-}
+      items.slice(2).forEach(item => {
+
+        const qty =
+          Number(item.qty || 1);
+
+        const price =
+          Number(item.price || 0);
+
+        const sub = qty * price;
+
+        hiddenHTML += `
+
+          <div style="
+            display:flex;
+            gap:14px;
+            padding:12px 0;
+            border-bottom:1px solid #eee;
+          ">
+
+            <img
+              src="${item.img || "no-image.png"}"
+              width="72"
+              height="72"
+              style="
+                object-fit:cover;
+                border-radius:10px;
+                border:1px solid #ddd;
+              "
+            >
+
+            <div>
+
+              <div style="font-weight:700;">
+                ${item.name || ""}
+              </div>
+
+              <div>
+                ${qty} × ${format(price)}
+              </div>
+
+              <div style="
+                color:#d70018;
+                font-weight:700;
+              ">
+                ${format(sub)}
+              </div>
+
+            </div>
+
+          </div>
+
+        `;
+      });
+    }
+
+    // =========================
+    // DISABLE CANCEL
+    // =========================
+   const disableCancel =
+  order.customerCancelled ||
+  order.status !== "pending";
+
+    // =========================
+    // HTML
+    // =========================
     box.innerHTML += `
 
       <div class="order-box">
@@ -276,54 +338,172 @@ if(items.length > 2){
           ${formatDate(order.createdAt)}
         </div>
 
+        <!-- STATUS -->
+        <div style="
+          margin-bottom:15px;
+        ">
+
+          <span style="
+            background:${statusColor};
+            color:#fff;
+            padding:7px 14px;
+            border-radius:999px;
+            font-size:13px;
+            font-weight:bold;
+          ">
+            ${statusText}
+          </span>
+
+        </div>
+
         ${itemsHTML}
+
         ${
-  items.length > 2
-  ? `
-    <div
-      onclick="toggleItems('${order.id}')"
-      style="
-        margin-top:10px;
-        cursor:pointer;
-        color:#0ea5e9;
-        font-weight:700;
-      "
-    >
-      và ${items.length - 2} sản phẩm khác ▼
-    </div>
+          items.length > 2
+          ? `
+          <div
+ id="toggle-${order.id}"
+ onclick="toggleItems('${order.id}', ${items.length - 2})"
+              style="
+                margin-top:10px;
+                cursor:pointer;
+                color:#0ea5e9;
+                font-weight:700;
+              "
+            >
+              và ${items.length - 2} sản phẩm khác ▼
+            </div>
 
-    <div
-      id="more-${order.id}"
-      style="display:none;"
-    >
-      ${hiddenHTML}
-    </div>
-  `
-  : ""
+            <div
+              id="more-${order.id}"
+              style="display:none;"
+            >
+              ${hiddenHTML}
+            </div>
+          `
+          : ""
+        }
+
+        <div class="total-box">
+
+          <div class="row">
+            <span>Tổng giá gốc</span>
+            <b>${format(originalTotal)}</b>
+          </div>
+
+          <div class="row discount">
+            <span>Tiết kiệm</span>
+            <b>-${format(savings)}</b>
+          </div>
+
+          <div class="row final">
+            <span>Cần thanh toán</span>
+            <b>${format(total)}</b>
+          </div>
+
+        </div>
+
+        <!-- CANCEL BUTTON -->
+        <div style="margin-top:18px;">
+
+          <button
+            class="cancel-order-btn"
+            data-id="${order.id}"
+            ${disableCancel ? "disabled" : ""}
+            style="
+              background:${disableCancel ? "#ccc" : "#ef4444"};
+              color:#fff;
+              border:none;
+              padding:10px 18px;
+              border-radius:8px;
+              cursor:${disableCancel ? "not-allowed" : "pointer"};
+              font-weight:bold;
+            "
+          >
+            ${order.status === "cancelled"
+  ? "Đơn đã hủy"
+  : disableCancel
+    ? "Không thể hủy đơn"
+    : "Hủy đơn hàng"
 }
-       <div class="total-box">
+          </button>
 
-  <div class="row">
-    <span>Tổng giá gốc</span>
-    <b>${format(originalTotal)}</b>
-  </div>
+        </div>
 
-  <div class="row discount">
-    <span>Tiết kiệm</span>
-    <b>-${format(savings)}</b>
-  </div>
-
-  <div class="row final">
-    <span>Cần thanh toán</span>
-    <b>${format(total)}</b>
-  </div>
-
-</div>
+      </div>
     `;
   });
-
+  bindCancelEvents();
 }
+// =========================
+// CANCEL ORDER
+// =========================
+function bindCancelEvents(){
 
+  document
+    .querySelectorAll(".cancel-order-btn")
+    .forEach(btn => {
+
+     btn.addEventListener("click", async () => {
+
+  if(btn.disabled) return;
+        const id = btn.dataset.id;
+
+        const confirmCancel = confirm(
+          "Bạn có chắc muốn hủy đơn hàng này?"
+        );
+
+if(!confirmCancel) return;
+
+// khóa nút tránh spam click
+btn.disabled = true;
+btn.innerText = "Đang hủy...";
+
+try{
+        await db
+  .collection("orders")
+  .doc(id)
+  .update({
+
+    customerCancelled: true,
+    status: "cancelled"
+
+  });
+
+alert("Đã hủy đơn hàng");
+
+// update local UI luôn
+allOrders = allOrders.map(order => {
+
+  if(order.id === id){
+
+    return {
+      ...order,
+      status: "cancelled",
+      customerCancelled: true
+    };
+  }
+
+  return order;
+});
+
+// render lại
+renderOrders();
+
+
+       }catch(err){
+
+  console.error(err);
+
+  alert("Lỗi hủy đơn hàng");
+
+  // mở lại nút nếu lỗi
+  btn.disabled = false;
+  btn.innerText = "Hủy đơn hàng";
+}
+      });
+    });
+}
 /* =========================
 AUTH
 ========================= */
@@ -351,10 +531,13 @@ auth.onAuthStateChanged(user => {
   loadOrders(user.uid);
 
 });
-window.toggleItems = function(id){
+window.toggleItems = function(id, itemsCount){
 
   const box =
     document.getElementById(`more-${id}`);
+
+  const btn =
+    document.getElementById(`toggle-${id}`);
 
   if(!box) return;
 
@@ -362,9 +545,18 @@ window.toggleItems = function(id){
 
     box.style.display = "block";
 
+    if(btn){
+      btn.innerHTML =
+        `và ${itemsCount} sản phẩm khác ▲`;
+    }
+
   }else{
 
     box.style.display = "none";
 
+    if(btn){
+      btn.innerHTML =
+        `và ${itemsCount} sản phẩm khác ▼`;
+    }
   }
 };
