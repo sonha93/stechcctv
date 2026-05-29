@@ -282,6 +282,11 @@ let revenue = 0;
 
 const revenueByDate = {};
 
+let pendingCount = 0;
+let shippingCount = 0;
+let completedCount = 0;
+let cancelledCount = 0;
+    
 // tính doanh thu toàn bộ
 snapshot.forEach(doc => {
 
@@ -308,6 +313,33 @@ if(selectedDate){
   }catch{
     return;
   }
+}
+  // ============================
+// COUNT STATUS
+// ============================
+
+if(order.status === "pending"){
+  pendingCount++;
+}
+
+if(order.status === "shipping"){
+  shippingCount++;
+}
+
+if(
+  order.status === "completed" &&
+  !order.customerCancelled &&
+  !order.adminCancelled
+){
+  completedCount++;
+}
+
+if(
+  order.status === "cancelled" ||
+  order.customerCancelled ||
+  order.adminCancelled
+){
+  cancelledCount++;
 }
  if (
   order.status === "completed" &&
@@ -531,7 +563,33 @@ if (!html) {
     if (totalRevenue) {
       totalRevenue.textContent = formatPrice(revenue);
     }
-    
+    const pendingBox =
+  document.getElementById("pendingCount");
+
+const shippingBox =
+  document.getElementById("shippingCount");
+
+const completedBox =
+  document.getElementById("completedCount");
+
+const cancelledBox =
+  document.getElementById("cancelledCount");
+
+if(pendingBox){
+  pendingBox.textContent = pendingCount;
+}
+
+if(shippingBox){
+  shippingBox.textContent = shippingCount;
+}
+
+if(completedBox){
+  completedBox.textContent = completedCount;
+}
+
+if(cancelledBox){
+  cancelledBox.textContent = cancelledCount;
+}
 const revenueBox =
   document.getElementById("revenueByDate");
 
