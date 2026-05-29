@@ -212,7 +212,8 @@ export async function addToCart(product) {
     console.error("Thiếu product.id");
     return;
   }
-
+const productId =
+  String(product.id || product.slug);
   try {
 
     const itemRef = doc(
@@ -220,7 +221,7 @@ export async function addToCart(product) {
       "users",
       currentUser.uid,
       "cart",
-      String(product.id)
+      productId
     );
 
     const snapshot = await getDocs(
@@ -236,7 +237,7 @@ export async function addToCart(product) {
 
     snapshot.forEach(d => {
 
-      if(d.id === String(product.id)){
+      if(d.id === productId){
         oldQty = Number(d.data().qty) || 0;
       }
 
