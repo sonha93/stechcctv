@@ -1,39 +1,21 @@
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  orderBy
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-  auth,
-  db
-} from "./firebase-init.js";
+import { auth, db } from "./firebase-init.js";
 
 /* =========================
 STATE
 ========================= */
 
 let currentPage = 1;
-
 const perPage = 10;
-
 let allOrders = [];
 
 /* =========================
-FORMAT PRICE
+FORMAT
 ========================= */
 
 function format(n){
-
   return Number(n || 0)
     .toLocaleString("vi-VN") + "đ";
 }
-
-/* =========================
-FORMAT DATE
-========================= */
 
 function formatDate(createdAt){
 
@@ -41,20 +23,10 @@ function formatDate(createdAt){
 
     if(!createdAt) return "";
 
-    // FIREBASE TIMESTAMP
-    if(createdAt.toDate){
-
-      return createdAt
-        .toDate()
-        .toLocaleString("vi-VN");
-    }
-
-    // NUMBER / STRING
     return new Date(createdAt)
       .toLocaleString("vi-VN");
 
   }catch{
-
     return "";
   }
 }
@@ -82,33 +54,18 @@ async function loadOrders(userUid){
 
   try{
 
-    /* =========================
-    FIX FIELD UID
-    ========================= */
+    const snapshot = await db
+      .collection("orders")
+      .where("uid", "==", userUid)
+      .orderBy("createdAt", "desc")
+      .get();
 
-   const q = query(
+    allOrders = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
 
-  collection(db, "orders"),
-
-  where("uid", "==", userUid),
-
-  orderBy("createdAt", "desc")
-
-);
-
-    const snapshot =
-      await getDocs(q);
-
-    allOrders =
-      snapshot.docs.map(doc => ({
-
-        id: doc.id,
-
-        ...doc.data()
-
-      }));
-
-    console.log("ORDERS:", allOrders);
+    console.log(allOrders);
 
     if(allOrders.length === 0){
 
@@ -131,7 +88,7 @@ async function loadOrders(userUid){
 
   }catch(err){
 
-    console.error("LOAD ORDER ERROR:", err);
+    console.error(err);
 
     box.innerHTML = `
       <div style="
@@ -146,15 +103,13 @@ async function loadOrders(userUid){
 }
 
 /* =========================
-RENDER ORDERS
+RENDER
 ========================= */
 
 function renderOrders(){
 
   const box =
     document.getElementById("orders");
-
-  if(!box) return;
 
   box.innerHTML = "";
 
@@ -193,48 +148,32 @@ function renderOrders(){
 
       itemsHTML += `
 
-        <div style="
-          display:flex;
-          gap:14px;
-          padding:12px 0;
-          border-bottom:1px solid #eee;
-        ">
+        <div class="item">
 
           <img
-            src="${item.img || "no-image.png"}"
-            onerror="this.src='no-image.png'"
-            width="72"
-            height="72"
-            style="
-              object-fit:cover;
-              border-radius:10px;
-              border:1px solid #ddd;
-              flex-shrink:0;
-            "
+            src="${item.img || ''}"
           >
 
-          <div style="
-            flex:1;
-          ">
+          <div style="flex:1;">
 
             <div style="
-              font-weight:700;
-              margin-bottom:6px;
-              line-height:1.5;
+              font-weight:bold;
+              margin-bottom:5px;
             ">
               ${item.name || ""}
             </div>
 
-            <div style="
-              color:#666;
-              font-size:14px;
-            ">
+            <div class="sale-price">
+              ${format(price)}
+            </div>
+
+            <div class="calc">
               ${qty} × ${format(price)}
             </div>
 
             <div style="
-              color:#d70018;
-              font-weight:700;
+              color:#e53935;
+              font-weight:bold;
               margin-top:4px;
             ">
               ${format(sub)}
@@ -249,79 +188,28 @@ function renderOrders(){
 
     box.innerHTML += `
 
-      <div style="
-        background:#fff;
-        border-radius:18px;
-        padding:22px;
-        margin-bottom:22px;
-        border:1px solid #e5e7eb;
-        box-shadow:0 2px 10px rgba(0,0,0,.03);
-      ">
+      <div class="order-box">
+
+        <div class="order-title">
+          🧾 Đơn #${order.id}
+        </div>
 
         <div style="
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-          margin-bottom:18px;
-          flex-wrap:wrap;
-          gap:10px;
+          color:#666;
+          font-size:13px;
+          margin-bottom:10px;
         ">
-
-          <div>
-
-            <div style="
-              font-size:18px;
-              font-weight:800;
-              margin-bottom:6px;
-            ">
-              🧾 Đơn #${order.id}
-            </div>
-
-            <div style="
-              color:#666;
-              font-size:14px;
-            ">
-              🕒 ${formatDate(order.createdAt)}
-            </div>
-
-          </div>
-
-          <div style="
-            padding:8px 14px;
-            border-radius:999px;
-            background:#fff3cd;
-            color:#856404;
-            font-size:13px;
-            font-weight:700;
-          ">
-            ${order.status || "pending"}
-          </div>
-
+          ${formatDate(order.createdAt)}
         </div>
 
         ${itemsHTML}
 
-        <div style="
-          margin-top:18px;
-          display:flex;
-          justify-content:flex-end;
-          align-items:center;
-          gap:10px;
-        ">
+        <div class="total-box">
 
-          <span style="
-            color:#666;
-          ">
-            Tổng:
-          </span>
-
-          <span style="
-            font-size:24px;
-            font-weight:800;
-            color:#d70018;
-          ">
-            ${format(total)}
-          </span>
+          <div class="row final">
+            <span>Tổng tiền</span>
+            <b>${format(total)}</b>
+          </div>
 
         </div>
 
@@ -330,106 +218,7 @@ function renderOrders(){
     `;
   });
 
-  renderPagination();
 }
-
-/* =========================
-PAGINATION
-========================= */
-
-function renderPagination(){
-
-  const box =
-    document.getElementById("orders");
-
-  if(!box) return;
-
-  const totalPages =
-    Math.ceil(
-      allOrders.length / perPage
-    );
-
-  if(totalPages <= 1) return;
-
-  let html = `
-
-    <div style="
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      gap:10px;
-      margin-top:30px;
-    ">
-
-  `;
-
-  if(currentPage > 1){
-
-    html += `
-
-      <button
-        onclick="changePage(${currentPage - 1})"
-        style="
-          height:42px;
-          padding:0 18px;
-          border:none;
-          border-radius:12px;
-          cursor:pointer;
-          font-weight:700;
-        "
-      >
-        ←
-      </button>
-
-    `;
-  }
-
-  html += `
-
-    <div style="
-      font-weight:700;
-    ">
-      Trang ${currentPage}/${totalPages}
-    </div>
-
-  `;
-
-  if(currentPage < totalPages){
-
-    html += `
-
-      <button
-        onclick="changePage(${currentPage + 1})"
-        style="
-          height:42px;
-          padding:0 18px;
-          border:none;
-          border-radius:12px;
-          cursor:pointer;
-          font-weight:700;
-        "
-      >
-        →
-      </button>
-
-    `;
-  }
-
-  html += `</div>`;
-
-  box.innerHTML += html;
-}
-
-/* =========================
-CHANGE PAGE
-========================= */
-
-window.changePage = function(page){
-
-  currentPage = page;
-
-  renderOrders();
-};
 
 /* =========================
 AUTH
@@ -440,12 +229,9 @@ auth.onAuthStateChanged(user => {
   const box =
     document.getElementById("orders");
 
-  if(!box) return;
-
   if(!user){
 
     box.innerHTML = `
-
       <div style="
         padding:40px;
         text-align:center;
@@ -453,7 +239,6 @@ auth.onAuthStateChanged(user => {
       ">
         🔐 Vui lòng đăng nhập
       </div>
-
     `;
 
     return;
