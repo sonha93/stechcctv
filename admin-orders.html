@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -60,6 +61,36 @@ h1{
 
 .top-bar button{
     background:#111;
+    color:#fff;
+    border:none;
+    cursor:pointer;
+}
+
+/* =========================
+   RANGE FILTER
+========================= */
+
+.range-filter{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+}
+
+.range-filter input,
+.range-filter button{
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    font-size:14px;
+}
+
+.range-filter input{
+    background:#fff;
+}
+
+.range-filter button{
+    background:#00acc1;
     color:#fff;
     border:none;
     cursor:pointer;
@@ -208,12 +239,15 @@ tr:hover{
         font-size:18px;
     }
 
-    .top-bar{
+    .top-bar,
+    .range-filter{
         flex-direction:column;
     }
 
     .top-bar input,
-    .top-bar button{
+    .top-bar button,
+    .range-filter input,
+    .range-filter button{
         width:100%;
     }
 
@@ -261,6 +295,25 @@ tr:hover{
 
 </div>
 
+<!-- RANGE FILTER -->
+<div class="range-filter">
+
+    <input
+        type="date"
+        id="startDate"
+    >
+
+    <input
+        type="date"
+        id="endDate"
+    >
+
+    <button id="filterRangeBtn">
+        Lọc doanh thu
+    </button>
+
+</div>
+
 <!-- STATS -->
 <div class="stats-wrap">
 
@@ -272,6 +325,11 @@ tr:hover{
     <div class="stat-box">
         <h3>Doanh thu</h3>
         <span id="totalRevenue">0đ</span>
+    </div>
+
+    <div class="stat-box">
+        <h3>Doanh thu khoảng thời gian</h3>
+        <span id="rangeRevenue">0đ</span>
     </div>
 
     <div class="stat-box">
@@ -356,3 +414,4 @@ tr:hover{
 
 </body>
 </html>
+```
