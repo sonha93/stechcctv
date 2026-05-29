@@ -97,15 +97,21 @@ async function loadOrders(userUid){
       }));
 
     // SORT NEWEST
-    allOrders.sort((a,b)=>{
+  allOrders.sort((a,b)=>{
 
-      return (
-        Number(b.createdAt || 0)
-        -
-        Number(a.createdAt || 0)
-      );
+  const timeA =
+    a.createdAt?.toDate
+      ? a.createdAt.toDate().getTime()
+      : Number(a.createdAt || 0);
 
-    });
+  const timeB =
+    b.createdAt?.toDate
+      ? b.createdAt.toDate().getTime()
+      : Number(b.createdAt || 0);
+
+  return timeB - timeA;
+
+});
 
     console.log(allOrders);
 
