@@ -122,6 +122,87 @@ const filterDate =
 const clearDate =
   document.getElementById("clearDate");
 
+// ============================
+// FILTER REVENUE RANGE
+// ============================
+
+const startDate =
+  document.getElementById("startDate");
+
+const endDate =
+  document.getElementById("endDate");
+
+const filterRangeBtn =
+  document.getElementById("filterRangeBtn");
+
+if(filterRangeBtn){
+
+  filterRangeBtn.addEventListener("click", () => {
+
+    let total = 0;
+
+    const start =
+      startDate?.value
+        ? new Date(startDate.value)
+        : null;
+
+    const end =
+      endDate?.value
+        ? new Date(endDate.value)
+        : null;
+
+    // set cuối ngày
+    if(end){
+      end.setHours(23,59,59,999);
+    }
+
+    allOrders.forEach(doc => {
+
+      const order = doc.data();
+
+      // chỉ tính completed
+      if(
+        order.status !== "completed" ||
+        order.customerCancelled ||
+        order.adminCancelled
+      ){
+        return;
+      }
+
+      try{
+
+        const dateObj =
+          typeof order.createdAt?.toDate === "function"
+            ? order.createdAt.toDate()
+            : new Date(order.createdAt);
+
+        // lọc từ ngày
+        if(start && dateObj < start){
+          return;
+        }
+
+        // lọc đến ngày
+        if(end && dateObj > end){
+          return;
+        }
+
+        total += Number(order.total || 0);
+
+      }catch(err){}
+    });
+
+    const rangeRevenue =
+      document.getElementById("rangeRevenue");
+
+    if(rangeRevenue){
+      rangeRevenue.textContent =
+        formatPrice(total);
+    }
+
+  });
+
+}
+
 if(filterDate){
 
   filterDate.addEventListener("change", () => {
