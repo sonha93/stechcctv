@@ -137,7 +137,9 @@ if(clearDate){
 
   clearDate.addEventListener("click", () => {
 
-    filterDate.value = "";
+    if(filterDate){
+      filterDate.value = "";
+    }
 
     currentPage = 1;
 
@@ -146,6 +148,7 @@ if(clearDate){
   });
 
 }
+
 // ============================
 // LOAD ORDERS
 // ============================
@@ -170,7 +173,7 @@ async function loadOrders() {
     // EMPTY
     // ============================
     if (snapshot.empty) {
-
+renderPagination();
       ordersTable.innerHTML = `
         <tr>
           <td colspan="8" style="text-align:center;padding:20px;">
@@ -761,8 +764,8 @@ function renderPagination() {
 
   if (!pagination) return;
 
-  const totalPages =
-    Math.ceil(allOrders.length / perPage);
+ const totalPages =
+  Math.ceil(allOrders.length / perPage) || 1;
 
   let html = "";
 
