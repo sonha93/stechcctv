@@ -659,7 +659,7 @@ ${
         ? "Khách tự hủy đơn"
         : isAdminCancelled
         ? "Admin đã hủy đơn"
-        : "Đã khóa trạng thái"
+      
     }
   </div>
 ` : ""}
