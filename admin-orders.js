@@ -372,7 +372,7 @@ let completedCount = 0;
 let cancelledCount = 0;
     
 // tính doanh thu toàn bộ
-snapshot.forEach(doc => {
+allOrders.forEach(doc => {
 
   const order = doc.data();
 if(selectedDate){
