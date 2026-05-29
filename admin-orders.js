@@ -24,7 +24,22 @@ function formatDate(timestamp) {
   if (!timestamp) return "-";
 
   try {
-    const date = timestamp.toDate();
+    let date;
+
+    // Firestore Timestamp
+    if (typeof timestamp.toDate === "function") {
+      date = timestamp.toDate();
+    }
+    // number (Date.now)
+    else if (typeof timestamp === "number") {
+      date = new Date(timestamp);
+    }
+    // string
+    else {
+      date = new Date(timestamp);
+    }
+
+    if (isNaN(date.getTime())) return "-";
 
     return date.toLocaleString("vi-VN", {
       day: "2-digit",
@@ -33,6 +48,7 @@ function formatDate(timestamp) {
       hour: "2-digit",
       minute: "2-digit"
     });
+
   } catch (err) {
     return "-";
   }
