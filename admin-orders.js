@@ -568,7 +568,7 @@ ${
       font-weight:bold;
       display:inline-block;
     ">
-      Khách tự hủy
+      Khách hủy đơn
     </span>
   `
   : order.adminCancelled
