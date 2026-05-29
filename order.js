@@ -172,9 +172,19 @@ function renderOrders(){
             ${item.name || ""}
           </div>
 
-          <div class="sale-price">
-            ${format(price)}
-          </div>
+         <div class="sale-price">
+  ${format(price)}
+</div>
+
+${item.originalPrice && item.originalPrice > price ? `
+  <div style="
+    text-decoration: line-through;
+    color:#999;
+    font-size:13px;
+  ">
+    ${format(item.originalPrice)}
+  </div>
+` : ""}
 
           <div class="calc">
             ${qty} × ${format(price)}
