@@ -656,9 +656,9 @@ ${
   ">
     ${
       isCustomerCancelled
-        ? "Khách tự hủy đơn"
+        ? ""
         : isAdminCancelled
-        ? "Admin đã hủy đơn"
+        ? ""
         : ""
     }
   </div>
