@@ -500,7 +500,7 @@ function renderOrders(){
             data-id="${order.id}"
             ${disableCancel ? "disabled" : ""}
             style="
-              background:${disableCancel ? "#ccc" : "#ef4444"};
+              background:${disableCancel ? "#fff" : "#ef4444"};
               color:#fff;
               border:none;
               padding:10px 18px;
@@ -512,7 +512,7 @@ function renderOrders(){
             ${order.status === "cancelled"
   ? "Đơn đã hủy"
   : disableCancel
-    ? "Không thể hủy đơn"
+    ? ""
     : "Hủy đơn hàng"
 }
           </button>
