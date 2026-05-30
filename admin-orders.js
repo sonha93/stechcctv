@@ -518,7 +518,7 @@ ${
       font-weight:bold;
       display:inline-block;
     ">
-      Khách tự hủy
+      Khách hủy đơn
     </span>
   `
   : order.adminCancelled
@@ -532,7 +532,7 @@ ${
       font-weight:bold;
       display:inline-block;
     ">
-      Admin đã hủy
+      Admin hủy đơn
     </span>
   `
   : `
