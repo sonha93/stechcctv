@@ -424,12 +424,12 @@ tr:hover{
     <table>
 
       <thead>
-       <tr>
+    <tr>
   <th>ID</th>
   <th>Sản phẩm</th>
   <th>Giá nhập</th>
-  <th>Giá bán</th>
   <th>Giá khuyến mãi</th>
+  <th>Giá bán</th>
   <th>Tồn</th>
   <th>Đã bán</th>
   <th>Còn lại</th>
@@ -442,7 +442,34 @@ tr:hover{
       <tbody id="inventoryBody"></tbody>
 
     </table>
+<div class="stats-wrap" style="margin-bottom:16px;">
 
+  <div class="stat-box">
+    <h3>Vốn tồn kho</h3>
+    <span id="totalCapital">0đ</span>
+  </div>
+
+  <div class="stat-box">
+    <h3>Giá trị tồn kho</h3>
+    <span id="totalStockValue">0đ</span>
+  </div>
+
+  <div class="stat-box">
+    <h3>Lợi nhuận</h3>
+    <span id="totalProfit">0đ</span>
+  </div>
+
+  <div class="stat-box">
+    <h3>Lợi nhuận KM</h3>
+    <span id="totalSaleProfit">0đ</span>
+  </div>
+
+  <div class="stat-box">
+    <h3>% Lợi nhuận</h3>
+    <span id="profitPercent">0%</span>
+  </div>
+
+</div>
   </div>
 
 </div>
