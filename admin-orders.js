@@ -119,9 +119,34 @@ auth.onAuthStateChanged(async (user) => {
 const filterDate =
   document.getElementById("filterDate");
 
+// mặc định ngày hôm nay
+if(filterDate){
+
+  const today = new Date();
+
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1)
+    .padStart(2,"0");
+  const dd = String(today.getDate())
+    .padStart(2,"0");
+
+  filterDate.value =
+    `${yyyy}-${mm}-${dd}`;
+
+}
+
 const clearDate =
   document.getElementById("clearDate");
+if(filterDate){
 
+  filterDate.addEventListener("change", () => {
+
+    currentPage = 1;
+    loadOrders();
+
+  });
+
+}
 // ============================
 // FILTER REVENUE RANGE
 // ============================
@@ -203,16 +228,6 @@ if(filterRangeBtn){
 
 }
 
-if(filterDate){
-
-  filterDate.addEventListener("change", () => {
-
-    currentPage = 1;
-    loadOrders();
-
-  });
-
-}
 
 if(clearDate){
 
