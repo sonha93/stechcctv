@@ -316,38 +316,7 @@ tr:hover{
 
 <!-- STATS -->
 <div class="stats-wrap">
-<!-- SWITCH MODULE -->
-<div class="stat-box" style="margin-bottom:16px;">
 
-  <div style="
-    display:flex;
-    gap:12px;
-    flex-wrap:wrap;
-  ">
-
-    <label>
-      <input type="radio" name="adminView" value="orders" checked>
-      📦 Đơn hàng
-    </label>
-
-    <label>
-      <input type="radio" name="adminView" value="inventory">
-      🏪 Inventory
-    </label>
-
-    <label>
-      <input type="radio" name="adminView" value="import">
-      💰 Import Price
-    </label>
-
-    <label>
-      <input type="radio" name="adminView" value="movements">
-      🔄 Stock Movements
-    </label>
-
-  </div>
-
-</div>
     <div class="stat-box">
         <h3>Tổng đơn</h3>
         <span id="totalOrders">0</span>
@@ -395,145 +364,9 @@ tr:hover{
     </div>
 
 </div>
-<!-- INVENTORY MODULE -->
-<div
-  id="inventorySection"
-  class="table-wrap"
-  style="display:none;margin-bottom:16px;"
->
 
-  <div style="padding:16px;">
-
-    <h2 style="margin-bottom:15px;">
-      🏪 Quản lý kho
-    </h2>
-
-    <input
-      type="text"
-      id="inventorySearch"
-      placeholder="Tìm sản phẩm..."
-      style="
-        width:100%;
-        padding:12px;
-        margin-bottom:15px;
-        border-radius:10px;
-        border:1px solid #ddd;
-      "
-    >
-
-    <table>
-
-      <thead>
-    <tr>
-  <th>ID</th>
-  <th>Sản phẩm</th>
-  <th>Giá nhập</th>
-  <th>Giá khuyến mãi</th>
-  <th>Giá bán</th>
-  <th>Tồn</th>
-  <th>Đã bán</th>
-  <th>Còn lại</th>
-  <th>Profit</th>
-  <th>Trạng thái</th>
-  <th>Action</th>
-</tr>
-      </thead>
-
-      <tbody id="inventoryBody"></tbody>
-
-    </table>
-<div class="stats-wrap" style="margin-bottom:16px;">
-
-  <div class="stat-box">
-    <h3>Vốn tồn kho</h3>
-    <span id="totalCapital">0đ</span>
-  </div>
-
-  <div class="stat-box">
-    <h3>Giá trị tồn kho</h3>
-    <span id="totalStockValue">0đ</span>
-  </div>
-
-  <div class="stat-box">
-    <h3>Lợi nhuận</h3>
-    <span id="totalProfit">0đ</span>
-  </div>
-
-  <div class="stat-box">
-    <h3>Lợi nhuận KM</h3>
-    <span id="totalSaleProfit">0đ</span>
-  </div>
-
-  <div class="stat-box">
-    <h3>% Lợi nhuận</h3>
-    <span id="profitPercent">0%</span>
-  </div>
-
-</div>
-  </div>
-
-</div>
-
-<!-- IMPORT PRICE -->
-<div
-  id="importSection"
-  class="table-wrap"
-  style="display:none;margin-bottom:16px;"
->
-
-  <div style="padding:16px;">
-
-    <h2>💰 Import Price</h2>
-
-    <table>
-
-      <thead>
-        <tr>
-          <th>Sản phẩm</th>
-          <th>Giá nhập</th>
-          <th>Ngày nhập</th>
-        </tr>
-      </thead>
-
-      <tbody id="importBody"></tbody>
-
-    </table>
-
-  </div>
-
-</div>
-
-<!-- STOCK MOVEMENTS -->
-<div
-  id="movementsSection"
-  class="table-wrap"
-  style="display:none;margin-bottom:16px;"
->
-
-  <div style="padding:16px;">
-
-    <h2>🔄 Stock Movements</h2>
-
-    <table>
-
-      <thead>
-        <tr>
-          <th>Sản phẩm</th>
-          <th>Loại</th>
-          <th>Số lượng</th>
-          <th>Ngày</th>
-        </tr>
-      </thead>
-
-      <tbody id="movementsBody"></tbody>
-
-    </table>
-
-  </div>
-
-</div>
 <!-- TABLE -->
-<div class="table-wrap" id="ordersSection">
+<div class="table-wrap">
 
 <table>
 
@@ -578,6 +411,7 @@ tr:hover{
 
 <!-- ADMIN JS -->
 <script type="module" src="admin-orders.js"></script>
-<script type="module" src="inventory-manager.js"></script>
+
 </body>
 </html>
+
