@@ -1,905 +1,655 @@
-import { auth, db } from "./firebase-init.js";
-let rawOrders = [];
-let allOrders = [];
-let currentPage = 1;
-const perPage = 10;
-// ============================
-// ADMIN ORDERS
-// ============================
-
-const ordersTable = document.getElementById("ordersTable");
-const totalOrders = document.getElementById("totalOrders");
-const totalRevenue = document.getElementById("totalRevenue");
-
-let currentAdmin = null;
 
 // ============================
-// SEARCH EVENT
+// INVENTORY MANAGER V8
 // ============================
-const searchInput =
-  document.getElementById("searchOrder");
 
-if (searchInput) {
+const inventoryBody =
+  document.getElementById("inventoryBody");
+const db = firebase.firestore();
+const importBody =
+  document.getElementById("importBody");
 
-  searchInput.addEventListener("input", () => {
+const movementsBody =
+  document.getElementById("movementsBody");
 
-    currentPage = 1;
-    loadOrders();
+const inventorySearch =
+  document.getElementById("inventorySearch");
 
-  });
-
-}
 // ============================
 // FORMAT PRICE
 // ============================
-function formatPrice(number) {
-  return Number(number || 0).toLocaleString("vi-VN") + "đ";
-}
-function getStatusText(status){
 
-  switch(status){
+function formatVND(number){
 
-    case "pending":
-      return "Chờ xử lý";
-
-    case "confirmed":
-      return "Đã xác nhận";
-
-    case "shipping":
-      return "Đang giao";
-
-    case "completed":
-      return "Đã giao thành công";
-
-    case "cancelled":
-      return "Hủy đơn";
-
-    default:
-      return "-";
-  }
-}
-// ============================
-// FORMAT DATE
-// ============================
-function formatDate(timestamp) {
-
-  if (!timestamp) return "-";
-
-  try {
-
-    let date;
-
-    // firestore timestamp
-    if (typeof timestamp.toDate === "function") {
-      date = timestamp.toDate();
-    }
-
-    // timestamp number
-    else if (typeof timestamp === "number") {
-      date = new Date(timestamp);
-    }
-
-    // string
-    else {
-      date = new Date(timestamp);
-    }
-
-    if (isNaN(date.getTime())) return "-";
-
-    return date.toLocaleString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-
-  } catch (err) {
-    return "-";
-  }
-}
-
-// ============================
-// CHECK ADMIN
-// ============================
-auth.onAuthStateChanged(async (user) => {
-
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  currentAdmin = user;
-
-  loadOrders();
-});
-// ============================
-// FILTER DATE EVENT
-// ============================
-
-const filterDate =
-  document.getElementById("filterDate");
-
-const clearDate =
-  document.getElementById("clearDate");
-if(filterDate){
-
-  filterDate.addEventListener("change", () => {
-
-    currentPage = 1;
-    loadOrders();
-
-  });
+  return Number(number || 0)
+    .toLocaleString("vi-VN") + "đ";
 
 }
 
-if(clearDate){
-
-  clearDate.addEventListener("click", () => {
-
-    filterDate.value = "";
-
-    currentPage = 1;
-    loadOrders();
-
-  });
-
-}
 // ============================
-// FILTER REVENUE RANGE
+// LOAD INVENTORY
 // ============================
 
-const startDate =
-  document.getElementById("startDate");
+async function loadInventory(){
 
-const endDate =
-  document.getElementById("endDate");
+  if(!inventoryBody) return;
 
-const filterRangeBtn =
-  document.getElementById("filterRangeBtn");
+  try{
 
-if(filterRangeBtn){
-filterRangeBtn.addEventListener("click", () => {
-
-  const start =
-    startDate?.value
-      ? new Date(startDate.value)
-      : null;
-
-  const end =
-    endDate?.value
-      ? new Date(endDate.value)
-      : null;
-
-  if(end){
-    end.setHours(23,59,59,999);
-  }
-
-  let revenue = 0;
-
-  let pendingCount = 0;
-  let shippingCount = 0;
-  let completedCount = 0;
-  let cancelledCount = 0;
-
-  // orders sau khi lọc ngày
-  const rangeOrders = allOrders.filter(doc => {
-
-    const order = doc.data();
-
-    try{
-
-      const dateObj =
-        typeof order.createdAt?.toDate === "function"
-          ? order.createdAt.toDate()
-          : new Date(order.createdAt);
-
-      if(start && dateObj < start){
-        return false;
-      }
-
-      if(end && dateObj > end){
-        return false;
-      }
-
-      return true;
-
-    }catch{
-      return false;
-    }
-
-  });
-
-  // tính thống kê
-  rangeOrders.forEach(doc => {
-
-    const order = doc.data();
-
-    if(order.status === "pending"){
-      pendingCount++;
-    }
-
-    if(order.status === "shipping"){
-      shippingCount++;
-    }
-
-    if(
-      order.status === "completed" &&
-      !order.customerCancelled &&
-      !order.adminCancelled
-    ){
-      completedCount++;
-
-      revenue += Number(order.total || 0);
-    }
-
-    if(
-      order.status === "cancelled" ||
-      order.customerCancelled ||
-      order.adminCancelled
-    ){
-      cancelledCount++;
-    }
-
-  });
-
-  // revenue
-  const rangeRevenue =
-    document.getElementById("rangeRevenue");
-
-  if(rangeRevenue){
-    rangeRevenue.textContent =
-      formatPrice(revenue);
-  }
-
-  // total revenue
-  if(totalRevenue){
-    totalRevenue.textContent =
-      formatPrice(revenue);
-  }
-
-  // total orders
-  if(totalOrders){
-    totalOrders.textContent =
-      rangeOrders.length;
-  }
-
-  // status count
-  document.getElementById("pendingCount").textContent =
-    pendingCount;
-
-  document.getElementById("shippingCount").textContent =
-    shippingCount;
-
-  document.getElementById("completedCount").textContent =
-    completedCount;
-
-  document.getElementById("cancelledCount").textContent =
-    cancelledCount;
-
-});
-  }
-// ============================
-// LOAD ORDERS
-// ============================
-async function loadOrders() {
-
-  try {
-
-    ordersTable.innerHTML = `
+    inventoryBody.innerHTML = `
       <tr>
-        <td colspan="8" style="text-align:center;padding:20px;">
-          Đang tải đơn hàng...
+        <td colspan="10"
+          style="text-align:center;padding:20px;">
+          Đang tải kho...
         </td>
       </tr>
     `;
 
-    const snapshot = await db
-      .collection("orders")
-      .orderBy("createdAt", "desc")
+    const keyword =
+      inventorySearch
+        ? inventorySearch.value
+            .trim()
+            .toLowerCase()
+        : "";
+
+    const productSnap = await db
+      .collection("products")
       .get();
-rawOrders = snapshot.docs;    
-    // ============================
-    // EMPTY
-    // ============================
-    if (snapshot.empty) {
-        allOrders = [];
-renderPagination();
-      ordersTable.innerHTML = `
+
+    const orderSnap = await db
+      .collection("orders")
+      .get();
+
+    let html = "";
+
+    productSnap.forEach(doc => {
+
+      const p = doc.data();
+
+      // search
+      if(
+        keyword &&
+        !String(p.name || "")
+          .toLowerCase()
+          .includes(keyword)
+      ){
+        return;
+      }
+
+      const stock =
+        Number(p.stock || 0);
+
+      const importPrice =
+        Number(p.importPrice || 0);
+
+      const price =
+        Number(p.price || 0);
+
+      const oldPrice =
+        Number(p.oldPrice || 0);
+
+      // ============================
+      // SOLD
+      // ============================
+
+      let sold = 0;
+
+      orderSnap.forEach(orderDoc => {
+
+        const order = orderDoc.data();
+
+        if(order.status !== "completed"){
+          return;
+        }
+
+        (order.items || []).forEach(item => {
+
+          if(item.name === p.name){
+
+            sold += Number(item.qty || 0);
+
+          }
+
+        });
+
+      });
+
+      // ============================
+      // PROFIT
+      // ============================
+
+      const profit =
+        (price - importPrice) * sold;
+
+      // ============================
+      // NEGATIVE STOCK
+      // ============================
+
+      const negative =
+        sold > stock;
+
+      html += `
         <tr>
-          <td colspan="8" style="text-align:center;padding:20px;">
-            Chưa có đơn hàng nào
+
+          <td>${doc.id}</td>
+
+          <td>
+            ${p.name || "-"}
+          </td>
+
+          <td>
+            <input
+              type="number"
+              class="importPriceInput"
+              data-id="${doc.id}"
+              value="${importPrice}"
+              style="
+                width:120px;
+                padding:8px;
+              "
+            >
+          </td>
+
+        <td>
+  ${
+    oldPrice
+      ? formatVND(oldPrice)
+      : "---"
+  }
+</td>
+
+<td>
+  ${formatVND(price)}
+</td>
+
+          <td>
+            ${stock}
+          </td>
+
+          <td>
+            ${sold}
+          </td>
+
+          <td style="
+            color:${profit < 0 ? "red" : "green"};
+            font-weight:bold;
+          ">
+            ${formatVND(profit)}
+          </td>
+
+          <td>
+            ${
+              negative
+              ? `
+                <span style="
+                  color:red;
+                  font-weight:bold;
+                ">
+                  Âm kho
+                </span>
+              `
+              : `
+                <span style="
+                  color:green;
+                  font-weight:bold;
+                ">
+                  OK
+                </span>
+              `
+            }
+          </td>
+
+          <td>
+
+            <button
+              class="saveImportBtn"
+              data-id="${doc.id}"
+              style="
+                padding:8px 12px;
+                border:none;
+                border-radius:8px;
+                background:#00acc1;
+                color:white;
+                cursor:pointer;
+              "
+            >
+              Lưu
+            </button>
+
+          </td>
+
+        </tr>
+      `;
+
+    });
+
+    if(!html){
+
+      html = `
+        <tr>
+          <td colspan="10"
+            style="
+              text-align:center;
+              padding:20px;
+            ">
+            Không có dữ liệu
           </td>
         </tr>
       `;
 
-      if (totalOrders) {
-        totalOrders.textContent = 0;
-      }
-
-      if (totalRevenue) {
-        totalRevenue.textContent = formatPrice(0);
-      }
-
-      return;
     }
 
-  let html = "";
+    inventoryBody.innerHTML = html;
 
-// ============================
-// SEARCH
-// ============================
-// ============================
-// SEARCH + FILTER DATE
-// ============================
+    bindInventoryEvents();
 
-const searchKeyword =
-  searchInput
-    ? searchInput.value.trim().toLowerCase()
-    : "";
+  }catch(err){
 
-const selectedDate =
-  filterDate?.value || "";
+    console.log(err);
 
-// lưu toàn bộ orders
-allOrders = snapshot.docs.filter(doc => {
-  const order = doc.data();
-
-  // SEARCH ID
-  const matchSearch =
-    !searchKeyword ||
-    doc.id
-      .toLowerCase()
-      .includes(searchKeyword);
-
-  // FILTER DATE
-  let matchDate = true;
-
-  if(selectedDate){
-
-    try{
-
-      const dateObj =
-        typeof order.createdAt?.toDate === "function"
-          ? order.createdAt.toDate()
-          : new Date(order.createdAt);
-
-      const yyyy =
-        dateObj.getFullYear();
-
-      const mm = String(
-        dateObj.getMonth() + 1
-      ).padStart(2,"0");
-
-      const dd = String(
-        dateObj.getDate()
-      ).padStart(2,"0");
-
-      const orderDate =
-        `${yyyy}-${mm}-${dd}`;
-
-      matchDate =
-        orderDate === selectedDate;
-
-    }catch{
-
-      matchDate = false;
-
-    }
-
-  }
-
-  return matchSearch && matchDate;
-
-});
- const totalPages =
-  Math.ceil(allOrders.length / perPage) || 1;
-
-if(currentPage > totalPages){
-  currentPage = 1;
-}
-// ============================
-// PAGINATION
-// ============================
-const start =
-  (currentPage - 1) * perPage;
-
-const end = start + perPage;
-
-const pageOrders =
-  allOrders.slice(start, end);
-
-// ============================
-// REVENUE + STATUS
-// ============================
-let revenue = 0;
-
-const revenueByDate = {};
-
-let pendingCount = 0;
-let shippingCount = 0;
-let completedCount = 0;
-let cancelledCount = 0;
-
-allOrders.forEach(doc => {
-
-  const order = doc.data();
-
-  // đếm trạng thái
-  if(order.status === "pending"){
-    pendingCount++;
-  }
-
-  if(order.status === "shipping"){
-    shippingCount++;
-  }
-
-  if(
-    order.status === "completed" &&
-    !order.customerCancelled &&
-    !order.adminCancelled
-  ){
-    completedCount++;
-  }
-
-  if(
-    order.status === "cancelled" ||
-    order.customerCancelled ||
-    order.adminCancelled
-  ){
-    cancelledCount++;
-  }
-
-  // doanh thu
-  if(
-    order.status === "completed" &&
-    !order.customerCancelled &&
-    !order.adminCancelled
-  ){
-
-    revenue += Number(order.total || 0);
-
-    const dateObj =
-      typeof order.createdAt?.toDate === "function"
-        ? order.createdAt.toDate()
-        : new Date(order.createdAt);
-
-    const yyyy = dateObj.getFullYear();
-    const mm = String(dateObj.getMonth() + 1).padStart(2,"0");
-    const dd = String(dateObj.getDate()).padStart(2,"0");
-
-    const dateKey = `${yyyy}-${mm}-${dd}`;
-
-    revenueByDate[dateKey] =
-      (revenueByDate[dateKey] || 0)
-      + Number(order.total || 0);
-  }
-
-});
-// ============================
-// RENDER TABLE
-// ============================
-pageOrders.forEach(doc => {
-
-  const order = doc.data();
-
-  const isCompleted =
-    order.status === "completed";
-
-  const isCustomerCancelled =
-  order.customerCancelled === true;
-
-const isAdminCancelled =
-  order.adminCancelled === true;
-
-const lockStatus =
-  isCompleted ||
-  isCustomerCancelled ||
-  isAdminCancelled;
- 
-  html += `
-    <tr>
-
-      <td>${doc.id}</td>
-
-      <td>
-        ${order.customerName || "-"}<br>
-        <small>${order.phone || ""}</small>
-      </td>
-
-      <td>
-        ${order.address || "-"}
-      </td>
-
-      <td>
-        ${renderProducts(order.items || [])}
-      </td>
-
-      <td>
-        ${formatPrice(order.total)}
-      </td>
-
-      <td>
-
-    
-${
-  order.customerCancelled
-  ? `
-    <span style="
-      background:#ffebee;
-      color:#d32f2f;
-      padding:5px 10px;
-      border-radius:20px;
-      font-size:12px;
-      font-weight:bold;
-      display:inline-block;
-    ">
-      Khách hủy đơn
-    </span>
-  `
-  : order.adminCancelled
-  ? `
-    <span style="
-      background:#fff3e0;
-      color:#ef6c00;
-      padding:5px 10px;
-      border-radius:20px;
-      font-size:12px;
-      font-weight:bold;
-      display:inline-block;
-    ">
-      Admin đã hủy
-    </span>
-  `
-  : `
-    <span style="
-      background:#e8f5e9;
-      color:#2e7d32;
-      padding:5px 10px;
-      border-radius:20px;
-      font-size:12px;
-      font-weight:bold;
-      display:inline-block;
-    ">
-   ${getStatusText(order.status)}
-    </span>
-  `
-}
-
-      </td>
-
-      <td>
-        ${formatDate(order.createdAt)}
-      </td>
-
-      <td>
-
-        <select
-          class="order-status"
-          data-id="${doc.id}"
-          ${lockStatus ? "disabled" : ""}
-        >
-
-          <option value="pending"
-            ${order.status === "pending" ? "selected" : ""}>
-            Chờ xử lý
-          </option>
-
-          <option value="confirmed"
-            ${order.status === "confirmed" ? "selected" : ""}>
-            Đã xác nhận
-          </option>
-
-          <option value="shipping"
-            ${order.status === "shipping" ? "selected" : ""}>
-            Đang giao
-          </option>
-
-          <option value="completed"
-            ${order.status === "completed" ? "selected" : ""}>
-            Đã giao thành công
-          </option>
-
-          <option value="cancelled"
-            ${order.status === "cancelled" ? "selected" : ""}>
-            Hủy đơn
-          </option>
-
-        </select>
-
-   ${lockStatus ? `
-  <div style="
-    color:${
-      isCustomerCancelled
-        ? "red"
-        : isAdminCancelled
-        ? "#ff9800"
-        : "green"
-    };
-    font-size:12px;
-    margin-top:5px;
-    font-weight:bold;
-  ">
-    ${
-      isCustomerCancelled
-        ? ""
-        : isAdminCancelled
-        ? ""
-        : ""
-    }
-  </div>
-` : ""}
-
-      </td>
-
-    </tr>
-  `;
-});
-
-// empty search
-if (!html) {
-
-  html = `
-    <tr>
-      <td colspan="8"
-        style="text-align:center;padding:20px;">
-        Không tìm thấy đơn hàng
-      </td>
-    </tr>
-  `;
-}
-    ordersTable.innerHTML = html;
-    renderPagination();
-    // ============================
-    // TOTAL ORDERS
-    // ============================
-    if (totalOrders) {
-   totalOrders.textContent = allOrders.length;
-    }
-
-    // ============================
-    // TOTAL REVENUE
-    // ============================
-    if (totalRevenue) {
-      totalRevenue.textContent = formatPrice(revenue);
-    }
-    const pendingBox =
-  document.getElementById("pendingCount");
-
-const shippingBox =
-  document.getElementById("shippingCount");
-
-const completedBox =
-  document.getElementById("completedCount");
-
-const cancelledBox =
-  document.getElementById("cancelledCount");
-
-if(pendingBox){
-  pendingBox.textContent = pendingCount;
-}
-
-if(shippingBox){
-  shippingBox.textContent = shippingCount;
-}
-
-if(completedBox){
-  completedBox.textContent = completedCount;
-}
-
-if(cancelledBox){
-  cancelledBox.textContent = cancelledCount;
-}
-const revenueBox =
-  document.getElementById("revenueByDate");
-
-if(revenueBox){
-
-  let revenueHTML = "";
-
-  Object.entries(revenueByDate)
-    .sort((a,b) => {
-
-      return new Date(b[0]) - new Date(a[0]);
-
-    })
-  .forEach(([date,total]) => {
-
-  revenueHTML += `
-    <div style="
-      padding:8px 0;
-      border-bottom:1px solid #eee;
-    ">
-      <b>
-${date.split("-").reverse().join("/")}
-      </b>:
-      ${formatPrice(total)}
-    </div>
-  `;
-});
-
-  revenueBox.innerHTML = revenueHTML;
-
-}
-    bindEvents();
-
-  } catch (error) {
-
-    console.error(error);
-
-    ordersTable.innerHTML = `
+    inventoryBody.innerHTML = `
       <tr>
-        <td colspan="8"
-          style="text-align:center;padding:20px;color:red;">
-          Lỗi tải đơn hàng
+        <td colspan="10"
+          style="
+            text-align:center;
+            color:red;
+            padding:20px;
+          ">
+          Lỗi tải inventory
         </td>
       </tr>
     `;
-  }
-}
 
-// ============================
-// RENDER PRODUCTS
-// ============================
-function renderProducts(items) {
-
-  if (!items.length) return "-";
-
-  return items.map(item => {
-
-    return `
-      <div style="margin-bottom:6px;">
-        ${item.name || "Sản phẩm"} x${item.qty || 1}
-      </div>
-    `;
-
-  }).join("");
-}
-
-// ============================
-// BIND EVENTS
-// ============================
-function bindEvents() {
-
-  // UPDATE STATUS
-  document.querySelectorAll(".order-status").forEach(select => {
-
-  // chống bind trùng
-  if(select.dataset.bound === "true"){
-    return;
   }
 
-  select.dataset.bound = "true";
-
-  select.addEventListener("change", async () => {
-
-      const id = select.dataset.id;
-      const status = select.value;
-
-      try {
-
-      const orderDoc = await db
-  .collection("orders")
-  .doc(id)
-  .get();
-
-if(!orderDoc.exists){
-
-  alert("Đơn hàng không tồn tại");
-  return;
-}
-
-const orderData = orderDoc.data();
-
-// khách đã hủy
-if(orderData.customerCancelled){
-
-  alert(
-    "Khách đã hủy đơn, không thể cập nhật trạng thái."
-  );
-
-  // reset select về cancelled
-  select.value = "cancelled";
-
-  // khóa luôn select
-  select.disabled = true;
-
-  return;
-}
-const updateData = {
-  status: status
-};
-
-// nếu chuyển sang cancelled
-// thì khóa luôn
-if(status === "cancelled"){
-  updateData.adminCancelled = true;
-}
-
-await db
-  .collection("orders")
-  .doc(id)
-  .update(updateData);
-        // completed => khóa
-     if (
-  status === "completed" ||
-  status === "cancelled"
-) {
-
-  select.disabled = true;
-}
-        alert("Cập nhật trạng thái thành công");
-
-      } catch (error) {
-
-        console.error(error);
-        alert("Lỗi cập nhật trạng thái");
-      }
-    });
-  });
 }
 
 // ============================
-// REALTIME UPDATE
+// SAVE IMPORT PRICE
 // ============================
-db.collection("orders")
-  .orderBy("createdAt", "desc")
-  .onSnapshot(() => {
 
-    if (currentAdmin) {
-      loadOrders();
-    }
-
-  });
-// ============================
-// PAGINATION
-// ============================
-function renderPagination() {
-
-  const pagination =
-    document.getElementById("pagination");
-
-  if (!pagination) return;
-
- const totalPages =
-  Math.ceil(allOrders.length / perPage) || 1;
-
-  let html = "";
-
-  for (let i = 1; i <= totalPages; i++) {
-
-    html += `
-      <button
-        class="page-btn"
-        data-page="${i}"
-        style="
-          margin:0 4px;
-          padding:6px 10px;
-          cursor:pointer;
-          ${i === currentPage
-            ? "background:black;color:white;"
-            : ""}
-        "
-      >
-        ${i}
-      </button>
-    `;
-  }
-
-  pagination.innerHTML = html;
+function bindInventoryEvents(){
 
   document
-    .querySelectorAll(".page-btn")
+    .querySelectorAll(".saveImportBtn")
     .forEach(btn => {
 
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
 
-        currentPage =
-          Number(btn.dataset.page);
+        try{
 
-        loadOrders();
+          const id =
+            btn.dataset.id;
+
+          const row =
+            btn.closest("tr");
+
+          const importInput =
+            row.querySelector(
+              ".importPriceInput"
+            );
+
+          const importPrice =
+            Number(importInput.value || 0);
+
+          // update products
+          await db
+            .collection("products")
+            .doc(id)
+            .update({
+              importPrice
+            });
+
+          // save import history
+          await db
+            .collection("import_prices")
+            .add({
+
+              productId:id,
+
+              importPrice,
+
+              createdAt:
+                firebase.firestore
+                  .FieldValue
+                  .serverTimestamp()
+
+            });
+
+          // save stock movement
+          await db
+            .collection("stock_movements")
+            .add({
+
+              productId:id,
+
+              type:"import_price_update",
+
+              qty:0,
+
+              createdAt:
+                firebase.firestore
+                  .FieldValue
+                  .serverTimestamp()
+
+            });
+
+          alert(
+            "Lưu giá nhập thành công"
+          );
+
+          loadImportPrices();
+          loadStockMovements();
+
+      }catch(err){
+
+  console.error(err);
+
+  alert(err.message);
+
+}
 
       });
 
     });
+
 }
+
+// ============================
+// LOAD IMPORT PRICES
+// ============================
+
+async function loadImportPrices(){
+
+  if(!importBody) return;
+
+  try{
+
+    const snap = await db
+      .collection("import_prices")
+      .orderBy("createdAt","desc")
+      .limit(50)
+      .get();
+
+    let html = "";
+
+    for(const doc of snap.docs){
+
+      const data = doc.data();
+
+      let productName = "-";
+
+      try{
+
+        const productDoc = await db
+          .collection("products")
+          .doc(data.productId)
+          .get();
+
+        if(productDoc.exists){
+
+          productName =
+            productDoc.data().name;
+
+        }
+
+      }catch{}
+
+      html += `
+        <tr>
+
+          <td>${productName}</td>
+
+          <td>
+            ${formatVND(
+              data.importPrice
+            )}
+          </td>
+
+          <td>
+            ${
+              data.createdAt
+              ? data.createdAt
+                  .toDate()
+                  .toLocaleString("vi-VN")
+              : "-"
+            }
+          </td>
+
+        </tr>
+      `;
+
+    }
+
+    if(!html){
+
+      html = `
+        <tr>
+          <td colspan="3"
+            style="
+              text-align:center;
+              padding:20px;
+            ">
+            Chưa có dữ liệu
+          </td>
+        </tr>
+      `;
+
+    }
+
+    importBody.innerHTML = html;
+
+  }catch(err){
+
+    console.log(err);
+
+  }
+
+}
+
+// ============================
+// LOAD STOCK MOVEMENTS
+// ============================
+
+async function loadStockMovements(){
+
+  if(!movementsBody) return;
+
+  try{
+
+    const snap = await db
+      .collection("stock_movements")
+      .orderBy("createdAt","desc")
+      .limit(100)
+      .get();
+
+    let html = "";
+
+    for(const doc of snap.docs){
+
+      const data = doc.data();
+
+      let productName = "-";
+
+      try{
+
+        const productDoc = await db
+          .collection("products")
+          .doc(data.productId)
+          .get();
+
+        if(productDoc.exists){
+
+          productName =
+            productDoc.data().name;
+
+        }
+
+      }catch{}
+
+      html += `
+        <tr>
+
+          <td>${productName}</td>
+
+          <td>${data.type || "-"}</td>
+
+          <td>${data.qty || 0}</td>
+
+          <td>
+            ${
+              data.createdAt
+              ? data.createdAt
+                  .toDate()
+                  .toLocaleString("vi-VN")
+              : "-"
+            }
+          </td>
+
+        </tr>
+      `;
+
+    }
+
+    if(!html){
+
+      html = `
+        <tr>
+          <td colspan="4"
+            style="
+              text-align:center;
+              padding:20px;
+            ">
+            Chưa có dữ liệu
+          </td>
+        </tr>
+      `;
+
+    }
+
+    movementsBody.innerHTML = html;
+
+  }catch(err){
+
+    console.log(err);
+
+  }
+
+}
+
+// ============================
+// SEARCH
+// ============================
+
+if(inventorySearch){
+
+  inventorySearch
+    .addEventListener("input", () => {
+
+      loadInventory();
+
+    });
+
+}
+
+// ============================
+// SWITCH MODULE
+// ============================
+
+const ordersSection =
+  document.getElementById("ordersSection");
+
+const inventorySection =
+  document.getElementById("inventorySection");
+
+const importSection =
+  document.getElementById("importSection");
+
+const movementsSection =
+  document.getElementById("movementsSection");
+
+function hideAllSections(){
+
+  if(ordersSection)
+    ordersSection.style.display = "none";
+
+  if(inventorySection)
+    inventorySection.style.display = "none";
+
+  if(importSection)
+    importSection.style.display = "none";
+
+  if(movementsSection)
+    movementsSection.style.display = "none";
+
+}
+
+document
+  .querySelectorAll(
+    'input[name="adminView"]'
+  )
+  .forEach(radio => {
+
+    radio.addEventListener(
+      "change",
+      () => {
+
+        hideAllSections();
+
+        const value = radio.value;
+
+        // ORDERS
+        if(value === "orders"){
+
+          ordersSection.style.display =
+            "block";
+
+        }
+
+        // INVENTORY
+        if(value === "inventory"){
+
+          inventorySection.style.display =
+            "block";
+
+          loadInventory();
+
+        }
+
+        // IMPORT
+        if(value === "import"){
+
+          importSection.style.display =
+            "block";
+
+          loadImportPrices();
+
+        }
+
+        // MOVEMENTS
+        if(value === "movements"){
+
+          movementsSection.style.display =
+            "block";
+
+          loadStockMovements();
+
+        }
+
+      }
+    );
+
+  });
+
+// mặc định
+hideAllSections();
+
+ordersSection.style.display =
+  "block";
+// ============================
+// INIT
+// ============================
+
+loadInventory();
+loadImportPrices();
+loadStockMovements();
