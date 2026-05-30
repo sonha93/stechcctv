@@ -61,11 +61,7 @@ async function loadInventory(){
       .get();
 
     let html = "";
-let totalCapital = 0;
-let totalStockValue = 0;
 
-let totalProfit = 0;
-let totalSaleProfit = 0;
     productSnap.forEach(doc => {
 
       const p = doc.data();
@@ -91,8 +87,7 @@ let totalSaleProfit = 0;
 
       const oldPrice =
         Number(p.oldPrice || 0);
-const salePrice =
-  oldPrice || price;
+
       // ============================
       // SOLD
       // ============================
@@ -118,13 +113,15 @@ const salePrice =
 }
 
         });
-    });
-   
+
+      });
 
       // ============================
       // PROFIT
       // ============================
-const remain = stock - sold;
+
+  const remain =
+  stock - sold;
 
 const revenue =
   price * sold;
@@ -134,24 +131,7 @@ const capital =
 
 const profit =
   revenue - capital;
-const saleRevenue =
-  salePrice * sold;
 
-const saleProfit =
-  saleRevenue - capital;
-
-const remainCapital =
-  Math.max(remain,0) * importPrice;
-
-const remainValue =
-  Math.max(remain,0) * price;
-totalCapital += remainCapital;
-
-totalStockValue += remainValue;
-
-totalProfit += profit;
-
-totalSaleProfit += saleProfit;
 const negative =
   remain < 0;
 
@@ -267,54 +247,9 @@ const lowStock =
       `;
 
     }
-const profitPercent =
-  totalCapital > 0
-    ? (
-        totalProfit /
-        totalCapital *
-        100
-      ).toFixed(1)
-    : 0;
+
     inventoryBody.innerHTML = html;
-const totalCapitalBox =
-  document.getElementById("totalCapital");
 
-const totalStockValueBox =
-  document.getElementById("totalStockValue");
-
-const totalProfitBox =
-  document.getElementById("totalProfit");
-
-const totalSaleProfitBox =
-  document.getElementById("totalSaleProfit");
-
-const profitPercentBox =
-  document.getElementById("profitPercent");
-
-if(totalCapitalBox){
-  totalCapitalBox.textContent =
-    formatVND(totalCapital);
-}
-
-if(totalStockValueBox){
-  totalStockValueBox.textContent =
-    formatVND(totalStockValue);
-}
-
-if(totalProfitBox){
-  totalProfitBox.textContent =
-    formatVND(totalProfit);
-}
-
-if(totalSaleProfitBox){
-  totalSaleProfitBox.textContent =
-    formatVND(totalSaleProfit);
-}
-
-if(profitPercentBox){
-  profitPercentBox.textContent =
-    profitPercent + "%";
-}
     bindInventoryEvents();
 
   }catch(err){
@@ -362,8 +297,9 @@ function bindInventoryEvents(){
             row.querySelector(
               ".importPriceInput"
             );
+
           const importPrice =
-  Number(importInput.value || 0);
+            Number(importInput.value || 0);
 
           // update products
           await db
