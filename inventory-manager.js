@@ -38,7 +38,7 @@ async function loadInventory(){
 
     inventoryBody.innerHTML = `
       <tr>
-        <td colspan="10"
+        <td colspan="11"
           style="text-align:center;padding:20px;">
           Đang tải kho...
         </td>
@@ -98,17 +98,19 @@ async function loadInventory(){
 
         const order = orderDoc.data();
 
-        if(order.status !== "completed"){
-          return;
-        }
+       if(
+  order.status !== "completed" ||
+  order.customerCancelled ||
+  order.adminCancelled
+){
+  return;
+}
 
         (order.items || []).forEach(item => {
 
-          if(item.name === p.name){
-
-            sold += Number(item.qty || 0);
-
-          }
+         if(item.id === doc.id){
+  sold += Number(item.qty || 0);
+}
 
         });
 
@@ -118,15 +120,24 @@ async function loadInventory(){
       // PROFIT
       // ============================
 
-      const profit =
-        (price - importPrice) * sold;
+  const remain =
+  stock - sold;
 
-      // ============================
-      // NEGATIVE STOCK
-      // ============================
+const revenue =
+  price * sold;
 
-      const negative =
-        sold > stock;
+const capital =
+  importPrice * sold;
+
+const profit =
+  revenue - capital;
+
+const negative =
+  remain < 0;
+
+const lowStock =
+  remain > 0 && remain <= 5;
+
 
       html += `
         <tr>
@@ -162,42 +173,40 @@ async function loadInventory(){
   ${formatVND(price)}
 </td>
 
-          <td>
-            ${stock}
-          </td>
+        <td>
+  ${stock}
+</td>
 
-          <td>
-            ${sold}
-          </td>
+<td>
+  ${sold}
+</td>
 
-          <td style="
-            color:${profit < 0 ? "red" : "green"};
-            font-weight:bold;
-          ">
-            ${formatVND(profit)}
-          </td>
+<td>
+  ${remain}
+</td>
 
-          <td>
-            ${
-              negative
-              ? `
-                <span style="
-                  color:red;
-                  font-weight:bold;
-                ">
-                  Âm kho
-                </span>
-              `
-              : `
-                <span style="
-                  color:green;
-                  font-weight:bold;
-                ">
-                  OK
-                </span>
-              `
-            }
-          </td>
+<td style="
+  color:${profit < 0 ? "red" : "green"};
+  font-weight:bold;
+">
+  ${formatVND(profit)}
+</td>
+
+<td>
+  ${
+    negative
+    ? `<span style="color:red;font-weight:bold;">
+         Âm kho
+       </span>`
+    : lowStock
+    ? `<span style="color:#ff9800;font-weight:bold;">
+         Sắp hết
+       </span>`
+    : `<span style="color:green;font-weight:bold;">
+         OK
+       </span>`
+  }
+</td>
 
           <td>
 
@@ -227,7 +236,7 @@ async function loadInventory(){
 
       html = `
         <tr>
-          <td colspan="10"
+          <td colspan="11"
             style="
               text-align:center;
               padding:20px;
@@ -249,7 +258,7 @@ async function loadInventory(){
 
     inventoryBody.innerHTML = `
       <tr>
-        <td colspan="10"
+        <td colspan="11"
           style="
             text-align:center;
             color:red;
@@ -334,12 +343,11 @@ function bindInventoryEvents(){
 
             });
 
-          alert(
-            "Lưu giá nhập thành công"
-          );
+        alert("Lưu giá nhập thành công");
 
-          loadImportPrices();
-          loadStockMovements();
+loadInventory();
+loadImportPrices();
+loadStockMovements();
 
       }catch(err){
 
