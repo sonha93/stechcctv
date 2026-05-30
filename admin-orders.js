@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-init.js";
-
+let rawOrders = [];
 let allOrders = [];
 let currentPage = 1;
 const perPage = 10;
@@ -298,7 +298,7 @@ async function loadOrders() {
       .collection("orders")
       .orderBy("createdAt", "desc")
       .get();
-
+rawOrders = snapshot.docs;    
     // ============================
     // EMPTY
     // ============================
@@ -410,7 +410,7 @@ const pageOrders =
   allOrders.slice(start, end);
 
 // ============================
-// REVENUE
+// REVENUE + STATUS
 // ============================
 let revenue = 0;
 
@@ -420,14 +420,44 @@ let pendingCount = 0;
 let shippingCount = 0;
 let completedCount = 0;
 let cancelledCount = 0;
-    
-// tính doanh thu toàn bộ
+
 allOrders.forEach(doc => {
 
   const order = doc.data();
-if(selectedDate){
 
-  try{
+  // đếm trạng thái
+  if(order.status === "pending"){
+    pendingCount++;
+  }
+
+  if(order.status === "shipping"){
+    shippingCount++;
+  }
+
+  if(
+    order.status === "completed" &&
+    !order.customerCancelled &&
+    !order.adminCancelled
+  ){
+    completedCount++;
+  }
+
+  if(
+    order.status === "cancelled" ||
+    order.customerCancelled ||
+    order.adminCancelled
+  ){
+    cancelledCount++;
+  }
+
+  // doanh thu
+  if(
+    order.status === "completed" &&
+    !order.customerCancelled &&
+    !order.adminCancelled
+  ){
+
+    revenue += Number(order.total || 0);
 
     const dateObj =
       typeof order.createdAt?.toDate === "function"
@@ -438,78 +468,14 @@ if(selectedDate){
     const mm = String(dateObj.getMonth() + 1).padStart(2,"0");
     const dd = String(dateObj.getDate()).padStart(2,"0");
 
-    const orderDate = `${yyyy}-${mm}-${dd}`;
+    const dateKey = `${yyyy}-${mm}-${dd}`;
 
-    if(orderDate !== selectedDate){
-      return;
-    }
-
-  }catch{
-    return;
-  }
-}
-  // ============================
-// COUNT STATUS
-// ============================
-
-if(order.status === "pending"){
-  pendingCount++;
-}
-
-if(order.status === "shipping"){
-  shippingCount++;
-}
-
-if(
-  order.status === "completed" &&
-  !order.customerCancelled &&
-  !order.adminCancelled
-){
-  completedCount++;
-}
-
-if(
-  order.status === "cancelled" ||
-  order.customerCancelled ||
-  order.adminCancelled
-){
-  cancelledCount++;
-}
- if (
-  order.status === "completed" &&
-  !order.customerCancelled &&
-  !order.adminCancelled
-) {
-
-    revenue += Number(order.total || 0);
-
-    let dateKey = "-";
-
-    try {
-
-      const dateObj =
-        typeof order.createdAt?.toDate === "function"
-          ? order.createdAt.toDate()
-          : new Date(order.createdAt);
-
-   const yyyy = dateObj.getFullYear();
-const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
-const dd = String(dateObj.getDate()).padStart(2, "0");
-
-dateKey = `${yyyy}-${mm}-${dd}`;
-
-    } catch {}
-
-    if (!revenueByDate[dateKey]) {
-      revenueByDate[dateKey] = 0;
-    }
-
-    revenueByDate[dateKey] +=
-      Number(order.total || 0);
+    revenueByDate[dateKey] =
+      (revenueByDate[dateKey] || 0)
+      + Number(order.total || 0);
   }
 
 });
-
 // ============================
 // RENDER TABLE
 // ============================
@@ -745,7 +711,7 @@ if(revenueBox){
       border-bottom:1px solid #eee;
     ">
       <b>
-        ${new Date(date).toLocaleDateString("vi-VN")}
+${date.split("-").reverse().join("/")}
       </b>:
       ${formatPrice(total)}
     </div>
