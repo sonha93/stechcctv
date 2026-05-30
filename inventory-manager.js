@@ -1,12 +1,4 @@
-const inventoryDashboard =
-  document.getElementById(
-    "inventoryDashboard"
-  );
 
-const inventoryAlerts =
-  document.getElementById(
-    "inventoryAlerts"
-  );
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -46,7 +38,7 @@ async function loadInventory(){
 
     inventoryBody.innerHTML = `
       <tr>
-        <td colspan="14"
+        <td colspan="10"
           style="text-align:center;padding:20px;">
           Đang tải kho...
         </td>
@@ -67,41 +59,8 @@ async function loadInventory(){
     const orderSnap = await db
       .collection("orders")
       .get();
-const soldMap = {};
 
-orderSnap.forEach(orderDoc => {
-
-  const order = orderDoc.data();
-
-  if(order.status !== "completed")
-    return;
-
-  (order.items || []).forEach(item => {
-
-    soldMap[item.name] =
-      (soldMap[item.name] || 0)
-      + Number(item.qty || 0);
-
-  });
-
-});
-let html = "";
-
-let totalProducts = 0;
-let totalStock = 0;
-let totalSold = 0;
-
-let totalRevenue = 0;
-let totalCost = 0;
-let totalProfit = 0;
-
-let totalInventoryValue = 0;
-
-let negativeCount = 0;
-let lowStockCount = 0;
-
-const topSelling = [];
-const topStock = [];
+    let html = "";
 
     productSnap.forEach(doc => {
 
@@ -128,95 +87,48 @@ const topStock = [];
 
       const oldPrice =
         Number(p.oldPrice || 0);
-    totalProducts++;
 
-      totalStock += stock;
       // ============================
       // SOLD
       // ============================
 
-     const sold =
-  soldMap[p.name] || 0;
+      let sold = 0;
+
+      orderSnap.forEach(orderDoc => {
+
+        const order = orderDoc.data();
+
+        if(order.status !== "completed"){
+          return;
+        }
+
+        (order.items || []).forEach(item => {
+
+          if(item.name === p.name){
+
+            sold += Number(item.qty || 0);
+
+          }
+
+        });
+
+      });
 
       // ============================
       // PROFIT
       // ============================
 
-      const revenue =
-  sold * price;
-
-const cost =
-  sold * importPrice;
-
-const profit =
-  revenue - cost;
-
-const inventoryValue =
-  stock * importPrice;
-
-const margin =
-  revenue > 0
-  ? (
-      profit /
-      revenue
-    ) * 100
-  : 0;
+      const profit =
+        (price - importPrice) * sold;
 
       // ============================
       // NEGATIVE STOCK
       // ============================
 
+      const negative =
+        sold > stock;
 
-      totalSold += sold;
-
-totalRevenue += revenue;
-
-totalCost += cost;
-
-totalProfit += profit;
-
-totalInventoryValue +=
-  inventoryValue;
-
-if(stock < 0)
-  negativeCount++;
-
-if(stock <= 5)
-  lowStockCount++;
-
-topSelling.push({
-  name:p.name,
-  sold
-});
-
-topStock.push({
-  name:p.name,
-  stock
-});
-
-let warning = `
-<span style="color:green;font-weight:bold">
-OK
-</span>
-`;
-
-if(stock <= 5){
-  warning = `
-  <span style="color:#ff9800;font-weight:bold">
-  Sắp hết
-  </span>
-  `;
-}
-
-if(stock <= 0){
-  warning = `
-  <span style="color:red;font-weight:bold">
-  Hết hàng
-  </span>
-  `;
-}
-
-html += `
+      html += `
         <tr>
 
           <td>${doc.id}</td>
@@ -254,34 +166,38 @@ html += `
             ${stock}
           </td>
 
-         <td>${sold}</td>
+          <td>
+            ${sold}
+          </td>
 
-<td>
-  ${formatVND(revenue)}
-</td>
+          <td style="
+            color:${profit < 0 ? "red" : "green"};
+            font-weight:bold;
+          ">
+            ${formatVND(profit)}
+          </td>
 
-<td>
-  ${formatVND(cost)}
-</td>
-
-<td style="
-  color:${profit < 0 ? "red":"green"};
-  font-weight:bold;
-">
-  ${formatVND(profit)}
-</td>
-
-<td>
-  ${margin.toFixed(1)}%
-</td>
-
-<td>
-  ${formatVND(inventoryValue)}
-</td>
-
-     <td>
-  ${warning}
-</td>
+          <td>
+            ${
+              negative
+              ? `
+                <span style="
+                  color:red;
+                  font-weight:bold;
+                ">
+                  Âm kho
+                </span>
+              `
+              : `
+                <span style="
+                  color:green;
+                  font-weight:bold;
+                ">
+                  OK
+                </span>
+              `
+            }
+          </td>
 
           <td>
 
@@ -311,7 +227,7 @@ html += `
 
       html = `
         <tr>
-          <td colspan="14"
+          <td colspan="10"
             style="
               text-align:center;
               padding:20px;
@@ -322,106 +238,7 @@ html += `
       `;
 
     }
-const totalMargin =
-  totalRevenue > 0
-  ? (
-      totalProfit /
-      totalRevenue
-    ) * 100
-  : 0;
 
-if(inventoryDashboard){
-
-  inventoryDashboard.innerHTML = `
-
-<div class="stat-box">
-<h3>Tổng SKU</h3>
-<span>${totalProducts}</span>
-</div>
-
-<div class="stat-box">
-<h3>Tồn kho</h3>
-<span>${totalStock}</span>
-</div>
-
-<div class="stat-box">
-<h3>Đã bán</h3>
-<span>${totalSold}</span>
-</div>
-
-<div class="stat-box">
-<h3>Doanh thu</h3>
-<span>${formatVND(totalRevenue)}</span>
-</div>
-
-<div class="stat-box">
-<h3>Giá vốn</h3>
-<span>${formatVND(totalCost)}</span>
-</div>
-
-<div class="stat-box">
-<h3>Lợi nhuận</h3>
-<span>${formatVND(totalProfit)}</span>
-</div>
-
-<div class="stat-box">
-<h3>Margin</h3>
-<span>${totalMargin.toFixed(1)}%</span>
-</div>
-
-<div class="stat-box">
-<h3>Giá trị tồn</h3>
-<span>${formatVND(totalInventoryValue)}</span>
-</div>
-
-<div class="stat-box">
-<h3>Sắp hết hàng</h3>
-<span>${lowStockCount}</span>
-</div>
-
-`;
-
-}
-    const bestSelling =
-  topSelling
-    .sort((a,b)=>b.sold-a.sold)
-    .slice(0,5);
-
-const highestStock =
-  topStock
-    .sort((a,b)=>b.stock-a.stock)
-    .slice(0,5);
-
-if(inventoryAlerts){
-
-inventoryAlerts.innerHTML = `
-
-<h3 style="margin-bottom:10px;">
-📈 TOP BÁN CHẠY
-</h3>
-
-${bestSelling.map((x,i)=>`
-<div>
-${i+1}. ${x.name}
-- ${x.sold}
-</div>
-`).join("")}
-
-<hr style="margin:15px 0;">
-
-<h3 style="margin-bottom:10px;">
-📦 TỒN KHO CAO
-</h3>
-
-${highestStock.map((x,i)=>`
-<div>
-${i+1}. ${x.name}
-- ${x.stock}
-</div>
-`).join("")}
-
-`;
-  }
     inventoryBody.innerHTML = html;
 
     bindInventoryEvents();
@@ -432,7 +249,7 @@ ${i+1}. ${x.name}
 
     inventoryBody.innerHTML = `
       <tr>
-        <td colspan="14"
+        <td colspan="10"
           style="
             text-align:center;
             color:red;
@@ -517,11 +334,12 @@ function bindInventoryEvents(){
 
             });
 
-         alert("Lưu giá nhập thành công");
+          alert(
+            "Lưu giá nhập thành công"
+          );
 
-loadInventory();
-loadImportPrices();
-loadStockMovements();
+          loadImportPrices();
+          loadStockMovements();
 
       }catch(err){
 
@@ -826,13 +644,12 @@ document
 // mặc định
 hideAllSections();
 
-if(ordersSection){
-  ordersSection.style.display = "block";
-}
+ordersSection.style.display =
+  "block";
 // ============================
 // INIT
 // ============================
 
+loadInventory();
 loadImportPrices();
 loadStockMovements();
-loadInventory();
