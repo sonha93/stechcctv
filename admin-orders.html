@@ -407,21 +407,7 @@ tr:hover{
     <h2 style="margin-bottom:15px;">
       🏪 Quản lý kho
     </h2>
-<div
-  id="inventoryDashboard"
-  class="stats-wrap"
-  style="margin-bottom:20px;"
-></div>
 
-<div
-  id="inventoryAlerts"
-  class="table-wrap"
-  style="
-    margin-bottom:20px;
-    padding:15px;
-    background:#fff8e1;
-  "
-></div>
     <input
       type="text"
       id="inventorySearch"
@@ -438,22 +424,18 @@ tr:hover{
     <table>
 
       <thead>
-       <tr>
-  <th>ID</th>
-  <th>Sản phẩm</th>
-  <th>Giá nhập</th>
-  <th>Giá KM</th>
-  <th>Giá bán</th>
-  <th>Tồn</th>
-  <th>Đã bán</th>
-  <th>Doanh thu</th>
-  <th>Giá vốn</th>
-  <th>Lợi nhuận</th>
-  <th>Margin</th>
-  <th>Giá trị tồn</th>
-  <th>Cảnh báo</th>
-  <th>Action</th>
-</tr>
+        <tr>
+          <th>ID</th>
+          <th>Sản phẩm</th>
+          <th>Giá nhập</th>
+          <th>Giá bán</th>
+          <th>Giá KM</th>
+          <th>Tồn</th>
+          <th>Đã bán</th>
+          <th>Profit</th>
+          <th>Âm kho</th>
+          <th>Action</th>
+        </tr>
       </thead>
 
       <tbody id="inventoryBody"></tbody>
@@ -571,4 +553,3 @@ tr:hover{
 <script type="module" src="inventory-manager.js"></script>
 </body>
 </html>
-
