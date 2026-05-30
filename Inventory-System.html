@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inventory System</title>
+
+<!-- FIREBASE V8 -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<style>
+body{font-family:Arial;background:#f5f5f5;margin:0;padding:20px}
+.card{background:#fff;padding:15px;border-radius:10px;margin-bottom:15px;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+input,select{padding:8px;width:100%}
+button{padding:10px;background:#222;color:#fff;border:none;border-radius:6px;cursor:pointer}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}
+.red{color:red;font-weight:bold}
+.green{color:green;font-weight:bold}
+</style>
+</head>
+<body>
+
+<h1>📦 INVENTORY SYSTEM</h1>
+
+<div class="card">
+  <div class="grid">
+    <input id="procode" placeholder="ProCode" />
+
+    <select id="type">
+      <option value="import">Nhập kho</option>
+      <option value="export">Xuất kho</option>
+      <option value="return">Trả hàng</option>
+      <option value="cancel">Hủy hàng</option>
+    </select>
+
+    <input id="qty" type="number" placeholder="Số lượng" />
+    <input id="price" type="number" placeholder="Giá" />
+
+    <button onclick="addLog()">Lưu</button>
+  </div>
+</div>
+
+<div class="card">
+  <h3>📊 Inventory</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>ProCode</th>
+        <th>Tồn</th>
+        <th>Minus</th>
+        <th>Giá nhập</th>
+        <th>Giá bán</th>
+        <th>Profit</th>
+      </tr>
+    </thead>
+    <tbody id="table"></tbody>
+  </table>
+</div>
+
+<script>
+// Firebase init
+const firebaseConfig = {
+  apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
+  authDomain: "stech-73b89.firebaseapp.com",
+  databaseURL: "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "stech-73b89",
+  storageBucket: "stech-73b89.appspot.com",
+  messagingSenderId: "873739162979",
+  appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
+
+<script src="inventory.js"></script>
+
+</body>
+</html>
