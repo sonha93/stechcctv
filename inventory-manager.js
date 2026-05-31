@@ -218,7 +218,7 @@ const lowStock =
        </span>`
     : lowStock
     ? `<span style="color:#ff9800;font-weight:bold;">
-         Sắp hết
+         Tồn thấp
        </span>`
     : `<span style="color:green;font-weight:bold;">
         __
