@@ -730,6 +730,41 @@ if(movementsDateFilter){
     loadStockMovements
   );
 }
+const clearImportDate =
+  document.getElementById("clearImportDate");
+
+if(clearImportDate){
+
+  clearImportDate.addEventListener(
+    "click",
+    () => {
+
+      importDateFilter.value = "";
+
+      loadImportPrices();
+
+    }
+  );
+
+}
+
+const clearMovementsDate =
+  document.getElementById("clearMovementsDate");
+
+if(clearMovementsDate){
+
+  clearMovementsDate.addEventListener(
+    "click",
+    () => {
+
+      movementsDateFilter.value = "";
+
+      loadStockMovements();
+
+    }
+  );
+
+}
 // Mặc định chọn ngày hôm nay
 const today = new Date();
 today.setMinutes(
