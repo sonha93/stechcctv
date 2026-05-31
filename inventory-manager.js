@@ -59,6 +59,11 @@ async function loadInventory(){
     const orderSnap = await db
       .collection("orders")
       .get();
+    console.log("TOTAL ORDERS:", orderSnap.size);
+
+orderSnap.forEach(doc => {
+  console.log("ORDER DATA:", doc.data());
+});
 const soldMap = {};
 
 orderSnap.forEach(orderDoc => {
