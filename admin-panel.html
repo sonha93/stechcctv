@@ -720,6 +720,12 @@ const stockValue = Math.max(
   ) || 0
 );
 
+const oldStock = Number(
+  products.find(p => p.docId === id)?.stock || 0
+);
+
+const changeQty = stockValue - oldStock;
+
 await updateDoc(
   doc(db,"products",id),
   {
@@ -729,16 +735,17 @@ await updateDoc(
   }
 );
 
-      await addDoc(
-  collection(db,"stock_movements"),
-  {
-    productId:id,
-    qty:stockValue,
-    type:"UPDATE",
-    createdAt:serverTimestamp()
-  }
-);
-      
+if(changeQty !== 0){
+  await addDoc(
+    collection(db,"stock_movements"),
+    {
+      productId:id,
+      qty:changeQty,
+      type: changeQty > 0 ? "IMPORT" : "EXPORT",
+      createdAt:serverTimestamp()
+    }
+  );
+}
       alert("Cập nhật thành công");
 
       loadProducts();
