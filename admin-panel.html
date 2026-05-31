@@ -580,12 +580,13 @@ function render() {
           📁 ${p.categoryName || p.category}
         </span><br>
         <div style="margin-top:4px;font-weight:bold;color:green;">
-      📦 Kho: ${p.stock ?? 0}
-      <input
+   📦 Kho hiện tại: ${p.stock ?? 0}
+
+<input
   type="text"
   class="stockInput"
-  value="${p.stock ?? 0}"
-  placeholder="Kho"
+  value=""
+  placeholder="Nhập thêm số lượng"
   style="width:150px;margin-top:2px;"
 >
     </div>
@@ -713,12 +714,15 @@ function render() {
    const stockInput =
   item.querySelector('.stockInput');
 
-const stockValue = Math.max(
-  0,
-  Number(
-    stockInput.value.replace(/\D/g,'')
-  ) || 0
+const addQty = Number(
+  stockInput.value.replace(/\D/g,'')
+) || 0;
+
+const oldStock = Number(
+  products.find(p => p.docId === id)?.stock || 0
 );
+
+const stockValue = oldStock + addQty;
 
 const oldStock = Number(
   products.find(p => p.docId === id)?.stock || 0
@@ -736,12 +740,13 @@ await updateDoc(
 );
 
 if(changeQty !== 0){
+ if(addQty > 0){
   await addDoc(
     collection(db,"stock_movements"),
     {
       productId:id,
-      qty:changeQty,
-      type: changeQty > 0 ? "IMPORT" : "EXPORT",
+      qty:addQty,
+      type:"IMPORT",
       createdAt:serverTimestamp()
     }
   );
