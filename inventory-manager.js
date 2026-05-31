@@ -221,7 +221,7 @@ const lowStock =
          Sắp hết
        </span>`
     : `<span style="color:green;font-weight:bold;">
-         OK
+        __
        </span>`
   }
 </td>
