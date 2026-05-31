@@ -140,14 +140,13 @@ const sold =
       // PROFIT
       // ============================
 
-const remain = stock;
+const remain = stock - sold;
 
 const revenue =
   price * sold;
 
 const capital =
   importPrice * sold;
-
 const profit =
   revenue - capital;
 const negative =
