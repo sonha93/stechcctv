@@ -405,6 +405,15 @@ async function loadImportPrices(){
 
       const data = doc.data();
 
+      const today = new Date().toLocaleDateString("vi-VN");
+
+if(
+  !data.createdAt ||
+  data.createdAt.toDate().toLocaleDateString("vi-VN") !== today
+){
+  continue;
+}
+      
       let productName = "-";
 
       try{
@@ -498,6 +507,15 @@ async function loadStockMovements(){
     for(const doc of snap.docs){
 
       const data = doc.data();
+      
+      const today = new Date().toLocaleDateString("vi-VN");
+
+if(
+  !data.createdAt ||
+  data.createdAt.toDate().toLocaleDateString("vi-VN") !== today
+){
+  continue;
+}
 
       let productName = "-";
 
