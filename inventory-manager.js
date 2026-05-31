@@ -59,7 +59,32 @@ async function loadInventory(){
     const orderSnap = await db
       .collection("orders")
       .get();
+const soldMap = {};
+    orderSnap.forEach(orderDoc => {
 
+  const order = orderDoc.data();
+
+  if(
+    order.status !== "completed" ||
+    order.customerCancelled ||
+    order.adminCancelled
+  ){
+    return;
+  }
+
+  (order.items || []).forEach(item => {
+
+   const id = String(item.id);
+
+    if(!soldMap[id]){
+      soldMap[id] = 0;
+    }
+
+    soldMap[id] += Number(item.qty || 0);
+
+  });
+
+});
     let html = "";
 
     productSnap.forEach(doc => {
@@ -67,18 +92,23 @@ async function loadInventory(){
       const p = doc.data();
 
       // search
-      if(
-        keyword &&
-        !String(p.name || "")
-          .toLowerCase()
-          .includes(keyword)
-      ){
-        return;
-      }
+    if(
+  keyword &&
+  !String(p.name || "")
+      .toLowerCase()
+      .includes(keyword) &&
+  !String(doc.id)
+      .toLowerCase()
+      .includes(keyword)
+){
+  return;
+}
 
       const stock =
         Number(p.stock || 0);
+    
 
+      
       const importPrice =
         Number(p.importPrice || 0);
 
@@ -91,37 +121,21 @@ async function loadInventory(){
       // ============================
       // SOLD
       // ============================
-
-      let sold = 0;
-
-      orderSnap.forEach(orderDoc => {
-
-        const order = orderDoc.data();
-
-       if(
-  order.status !== "completed" ||
-  order.customerCancelled ||
-  order.adminCancelled
-){
-  return;
-}
-
-        (order.items || []).forEach(item => {
-
-         if(item.id === doc.id){
-  sold += Number(item.qty || 0);
-}
-
-        });
-
-      });
+const sold =
+  Number(soldMap[String(doc.id)] || 0);
+   console.log(
+  "PRODUCT:",
+  doc.id,
+  p.name,
+  "STOCK:", stock,
+  "SOLD:", sold
+);
 
       // ============================
       // PROFIT
       // ============================
 
-  const remain =
-  stock - sold;
+const remain = stock - sold;
 
 const revenue =
   price * sold;
@@ -131,7 +145,6 @@ const capital =
 
 const profit =
   revenue - capital;
-
 const negative =
   remain < 0;
 
@@ -281,7 +294,13 @@ function bindInventoryEvents(){
 
   document
     .querySelectorAll(".saveImportBtn")
-    .forEach(btn => {
+.forEach(btn => {
+
+  if(btn.dataset.bound === "true"){
+    return;
+  }
+
+  btn.dataset.bound = "true";
 
       btn.addEventListener("click", async () => {
 
@@ -415,13 +434,15 @@ async function loadImportPrices(){
           </td>
 
           <td>
-            ${
-              data.createdAt
-              ? data.createdAt
-                  .toDate()
-                  .toLocaleString("vi-VN")
-              : "-"
-            }
+           ${
+data.createdAt &&
+typeof data.createdAt.toDate === "function"
+  ? data.createdAt
+      .toDate()
+      .toLocaleString("vi-VN")
+  : "-"
+}
+            
           </td>
 
         </tr>
@@ -506,12 +527,13 @@ async function loadStockMovements(){
 
           <td>
             ${
-              data.createdAt
-              ? data.createdAt
-                  .toDate()
-                  .toLocaleString("vi-VN")
-              : "-"
-            }
+  data.createdAt &&
+  typeof data.createdAt.toDate === "function"
+    ? data.createdAt
+        .toDate()
+        .toLocaleString("vi-VN")
+    : "-"
+}
           </td>
 
         </tr>
