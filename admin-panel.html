@@ -711,7 +711,7 @@ function render() {
         return alert("Giá không hợp lệ");
       }
 
-   const stockInput =
+ const stockInput =
   item.querySelector('.stockInput');
 
 const addQty = Number(
@@ -724,12 +724,6 @@ const oldStock = Number(
 
 const stockValue = oldStock + addQty;
 
-const oldStock = Number(
-  products.find(p => p.docId === id)?.stock || 0
-);
-
-const changeQty = stockValue - oldStock;
-
 await updateDoc(
   doc(db,"products",id),
   {
@@ -739,8 +733,8 @@ await updateDoc(
   }
 );
 
-if(changeQty !== 0){
- if(addQty > 0){
+if(addQty > 0){
+
   await addDoc(
     collection(db,"stock_movements"),
     {
@@ -750,14 +744,14 @@ if(changeQty !== 0){
       createdAt:serverTimestamp()
     }
   );
+
 }
-      alert("Cập nhật thành công");
 
-      loadProducts();
+alert("Cập nhật thành công");
 
-    });
-
+loadProducts();
   });
+     });
 
   /* =========================
      DELETE
