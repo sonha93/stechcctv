@@ -102,9 +102,10 @@ h1{
 
 .stats-wrap{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    grid-template-columns:repeat(7,minmax(150px,1fr));
     gap:12px;
     margin-bottom:16px;
+    overflow-x:auto;
 }
 
 .stat-box{
@@ -113,14 +114,24 @@ h1{
     border-radius:12px;
     box-shadow:0 2px 8px rgba(0,0,0,.06);
 }
+.module-menu input[type="radio"]{
+    display:none;
+}
 
+.module-menu label{
+    transition:.2s;
+}
+
+.module-menu input[type="radio"]:checked + span{
+    color:#00acc1;
+}
 .stat-box h3{
     font-size:13px;
     color:#777;
     margin-bottom:6px;
 }
 
-.stat-box span{
+.stat-box > span{
     font-size:22px;
     font-weight:bold;
 }
@@ -224,7 +235,24 @@ tr:hover{
     overflow:auto;
     margin-top:10px;
 }
+.module-menu{
+    display:grid !important;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+}
 
+.module-menu label{
+    background:#fff;
+    border-radius:12px;
+    padding:16px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    font-weight:600;
+}
 /* =========================
    MOBILE
 ========================= */
@@ -345,41 +373,38 @@ tr:hover{
     </button>
 
 </div>
-
-<!-- STATS -->
-<div class="stats-wrap">
 <!-- SWITCH MODULE -->
 <div class="stat-box" style="margin-bottom:16px;">
 
-  <div style="
-    display:flex;
-    gap:12px;
-    flex-wrap:wrap;
-  ">
+ <div class="module-menu">
 
-    <label>
-      <input type="radio" name="adminView" value="orders" checked>
-      📦 Đơn hàng
-    </label>
+  <label>
+  <input type="radio" name="adminView" value="orders" checked>
+  <span>📦 Đơn hàng</span>
+</label>
 
-    <label>
-      <input type="radio" name="adminView" value="inventory">
-      🏪 Inventory
-    </label>
 
-    <label>
-      <input type="radio" name="adminView" value="import">
-      💰 Import Price
-    </label>
+  <label>
+  <input type="radio" name="adminView" value="inventory">
+  <span>🏪 Inventory</span>
+</label>
 
-    <label>
-      <input type="radio" name="adminView" value="movements">
-      🔄 Stock Movements
-    </label>
+ <label>
+  <input type="radio" name="adminView" value="import">
+  <span>💰 Import Price</span>
+</label>
+    
 
+   <label>
+  <input type="radio" name="adminView" value="movements">
+  <span>🔄 Stock Movements</span>
+</label> 
   </div>
 
 </div>
+<!-- STATS -->
+<div class="stats-wrap">
+
     <div class="stat-box">
         <h3>Tổng đơn</h3>
         <span id="totalOrders">0</span>
