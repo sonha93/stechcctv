@@ -730,6 +730,22 @@ if(movementsDateFilter){
     loadStockMovements
   );
 }
+// Mặc định chọn ngày hôm nay
+const today = new Date();
+today.setMinutes(
+  today.getMinutes() - today.getTimezoneOffset()
+);
+
+const todayStr =
+  today.toISOString().split("T")[0];
+
+if(importDateFilter){
+  importDateFilter.value = todayStr;
+}
+
+if(movementsDateFilter){
+  movementsDateFilter.value = todayStr;
+}
 // mặc định
 hideAllSections();
 
