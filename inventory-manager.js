@@ -55,7 +55,18 @@ async function loadInventory(){
     const productSnap = await db
       .collection("products")
       .get();
+productSnap.forEach(doc => {
 
+  const p = doc.data();
+
+  console.log(
+    "ID:",
+    doc.id,
+    "STOCK:",
+    p.stock
+  );
+
+});
     const orderSnap = await db
       .collection("orders")
       .get();
