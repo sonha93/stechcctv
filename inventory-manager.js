@@ -60,9 +60,12 @@ async function loadInventory(){
       .collection("orders")
       .get();
 const soldMap = {};
-    orderSnap.forEach(orderDoc => {
+
+orderSnap.forEach(orderDoc => {
 
   const order = orderDoc.data();
+
+  console.log("ORDER:", order);
 
   if(
     order.status !== "completed" ||
@@ -74,7 +77,9 @@ const soldMap = {};
 
   (order.items || []).forEach(item => {
 
-   const id = String(item.id);
+    console.log("ITEM:", item);
+
+    const id = String(item.id);
 
     if(!soldMap[id]){
       soldMap[id] = 0;
@@ -85,6 +90,8 @@ const soldMap = {};
   });
 
 });
+
+console.log("SOLD MAP:", soldMap);
     let html = "";
 
     productSnap.forEach(doc => {
