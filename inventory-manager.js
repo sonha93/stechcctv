@@ -59,18 +59,14 @@ async function loadInventory(){
     const orderSnap = await db
       .collection("orders")
       .get();
-    console.log("TOTAL ORDERS:", orderSnap.size);
+  
 
-orderSnap.forEach(doc => {
-  console.log("ORDER DATA:", doc.data());
-});
 const soldMap = {};
 
 orderSnap.forEach(orderDoc => {
 
   const order = orderDoc.data();
 
-  console.log("ORDER:", order);
 
   if(
     order.status !== "completed" ||
@@ -82,8 +78,7 @@ orderSnap.forEach(orderDoc => {
 
   (order.items || []).forEach(item => {
 
-    console.log("ITEM:", item);
-
+   
     const id = String(item.id);
 
     if(!soldMap[id]){
@@ -96,7 +91,7 @@ orderSnap.forEach(orderDoc => {
 
 });
 
-console.log("SOLD MAP:", soldMap);
+
     let html = "";
 
     productSnap.forEach(doc => {
@@ -135,13 +130,7 @@ console.log("SOLD MAP:", soldMap);
       // ============================
 const sold =
   Number(soldMap[String(doc.id)] || 0);
-   console.log(
-  "PRODUCT:",
-  doc.id,
-  p.name,
-  "STOCK:", stock,
-  "SOLD:", sold
-);
+ 
 
       // ============================
       // PROFIT
