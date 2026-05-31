@@ -718,14 +718,24 @@ const addQty = Number(
   stockInput.value.replace(/\D/g,'')
 ) || 0;
 
-const oldStock = Number(
-  products.find(p => p.docId === id)?.stock || 0
+import {
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const productRef = doc(db,"products",id);
+
+const latestSnap = await getDoc(productRef);
+
+const latestData = latestSnap.data();
+
+const currentStock = Number(
+  latestData?.stock || 0
 );
 
-const stockValue = oldStock + addQty;
+const stockValue = currentStock + addQty;
 
 await updateDoc(
-  doc(db,"products",id),
+  productRef,
   {
     price: newPrice,
     oldPrice: oldPrice,
