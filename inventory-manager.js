@@ -136,7 +136,7 @@ const sold =
       // PROFIT
       // ============================
 
-const remain = stock - sold;
+const remain = stock;
 
 const revenue =
   price * sold;
