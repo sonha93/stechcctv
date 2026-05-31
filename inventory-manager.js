@@ -2,7 +2,11 @@
 // ============================
 // INVENTORY MANAGER V8
 // ============================
+const importDateFilter =
+  document.getElementById("importDateFilter");
 
+const movementsDateFilter =
+  document.getElementById("movementsDateFilter");
 const inventoryBody =
   document.getElementById("inventoryBody");
 const db = firebase.firestore();
@@ -405,13 +409,25 @@ async function loadImportPrices(){
 
       const data = doc.data();
 
-      const today = new Date().toLocaleDateString("vi-VN");
+     const selectedDate =
+  importDateFilter?.value;
 
-if(
-  !data.createdAt ||
-  data.createdAt.toDate().toLocaleDateString("vi-VN") !== today
-){
+if(!data.createdAt){
   continue;
+}
+
+if(selectedDate){
+
+  const itemDate =
+    data.createdAt
+      .toDate()
+      .toISOString()
+      .split("T")[0];
+
+  if(itemDate !== selectedDate){
+    continue;
+  }
+
 }
       
       let productName = "-";
@@ -508,13 +524,25 @@ async function loadStockMovements(){
 
       const data = doc.data();
       
-      const today = new Date().toLocaleDateString("vi-VN");
+    const selectedDate =
+  movementsDateFilter?.value;
 
-if(
-  !data.createdAt ||
-  data.createdAt.toDate().toLocaleDateString("vi-VN") !== today
-){
+if(!data.createdAt){
   continue;
+}
+
+if(selectedDate){
+
+  const itemDate =
+    data.createdAt
+      .toDate()
+      .toISOString()
+      .split("T")[0];
+
+  if(itemDate !== selectedDate){
+    continue;
+  }
+
 }
 
       let productName = "-";
@@ -689,7 +717,19 @@ document
     );
 
   });
+if(importDateFilter){
+  importDateFilter.addEventListener(
+    "change",
+    loadImportPrices
+  );
+}
 
+if(movementsDateFilter){
+  movementsDateFilter.addEventListener(
+    "change",
+    loadStockMovements
+  );
+}
 // mặc định
 hideAllSections();
 
