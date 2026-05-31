@@ -102,10 +102,9 @@ h1{
 
 .stats-wrap{
     display:grid;
-    grid-template-columns:repeat(7,minmax(150px,1fr));
+    grid-template-columns:repeat(6,1fr);
     gap:12px;
     margin-bottom:16px;
-    overflow-x:auto;
 }
 
 .stat-box{
@@ -289,10 +288,29 @@ tr:hover{
         font-size:12px;
     }
 
-    .stat-box span{
-        font-size:18px;
-    }
+   .stats-wrap{
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+}
 
+.stat-box{
+    padding:12px;
+}
+
+.stat-box h3{
+    font-size:12px;
+    line-height:1.4;
+}
+
+.stat-box > span{
+    font-size:18px;
+}
+.stats-wrap{
+    overflow-x:unset;
+}
+   .module-menu{
+    grid-template-columns:repeat(2,1fr);
+}
 }
 
 </style>
