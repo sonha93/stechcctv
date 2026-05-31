@@ -124,19 +124,20 @@ const filterDate =
 const clearDate =
   document.getElementById("clearDate");
 
-const todayLabel =
-  document.getElementById("todayLabel");
 
-if(todayLabel){
-
-  todayLabel.textContent =
-    "Hôm nay: " +
-    new Date().toLocaleDateString("vi-VN");
-
-}
 // mặc định ngày hôm nay
-if(filterDate){
+if (filterDate) {
+
+  const today = new Date();
+
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+
+  filterDate.value = `${yyyy}-${mm}-${dd}`;
+
 }
+
 // ============================
 // FILTER REVENUE RANGE
 // ============================
