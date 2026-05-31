@@ -208,7 +208,7 @@ Object.entries(revenueByDate)
   .sort((a,b)=>new Date(b[0])-new Date(a[0]))
   .forEach(([date,total])=>{
 
-    const currentDate = new Date(date);
+    const currentDate = new Date(date + "T23:59:59");
 
     if(start && currentDate < start){
       return;
@@ -217,7 +217,6 @@ Object.entries(revenueByDate)
     if(end && currentDate > end){
       return;
     }
-
     revenueHTML += `
       <div style="
         padding:8px 0;
@@ -232,7 +231,7 @@ Object.entries(revenueByDate)
     `;
   });
 
-document.getElementById("revenueByDate").innerHTML =
+document.getElementById("rangeRevenueDetail").innerHTML =
   revenueHTML || "Không có doanh thu";
     const rangeRevenue =
       document.getElementById("rangeRevenue");
