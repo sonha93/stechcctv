@@ -298,26 +298,6 @@ await db.collection("orders").add({
   createdAt: Date.now()
 
 });
-  for(const item of cart){
-
-  const productRef =
-    db.collection("products").doc(item.id);
-
-  const productDoc =
-    await productRef.get();
-
-  if(productDoc.exists){
-
-    const stock =
-      Number(productDoc.data().stock || 0);
-
-    await productRef.update({
-      stock: stock - (item.qty || 1)
-    });
-
-  }
-
-}
   // TELEGRAM
   sendTelegramNotification(
     orderId,
