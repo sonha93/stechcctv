@@ -1,6 +1,8 @@
 import { auth, db } from "./firebase-init.js";
-
+let allSnapshotOrders = [];
 let allOrders = [];
+let revenueByDate = {};
+
 let currentPage = 1;
 const perPage = 10;
 // ============================
@@ -167,8 +169,7 @@ if(filterRangeBtn){
       end.setHours(23,59,59,999);
     }
 
-    allOrders.forEach(doc => {
-
+  allSnapshotOrders.forEach(doc => {
       const order = doc.data();
 
       // chỉ tính completed
@@ -201,7 +202,38 @@ if(filterRangeBtn){
 
       }catch(err){}
     });
+let revenueHTML = "";
 
+Object.entries(revenueByDate)
+  .sort((a,b)=>new Date(b[0])-new Date(a[0]))
+  .forEach(([date,total])=>{
+
+    const currentDate = new Date(date);
+
+    if(start && currentDate < start){
+      return;
+    }
+
+    if(end && currentDate > end){
+      return;
+    }
+
+    revenueHTML += `
+      <div style="
+        padding:8px 0;
+        border-bottom:1px solid #eee;
+      ">
+        <b>
+          ${currentDate.toLocaleDateString("vi-VN")}
+        </b>
+        :
+        ${formatPrice(total)}
+      </div>
+    `;
+  });
+
+document.getElementById("revenueByDate").innerHTML =
+  revenueHTML || "Không có doanh thu";
     const rangeRevenue =
       document.getElementById("rangeRevenue");
 
@@ -227,17 +259,21 @@ if(filterDate){
 
 if(clearDate){
 
-  clearDate.addEventListener("click", () => {
+ clearDate.addEventListener("click", () => {
 
-    if(filterDate){
-      filterDate.value = "";
-    }
+  const today = new Date();
 
-    currentPage = 1;
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth()+1).padStart(2,"0");
+  const dd = String(today.getDate()).padStart(2,"0");
 
-    loadOrders();
+  filterDate.value = `${yyyy}-${mm}-${dd}`;
 
-  });
+  currentPage = 1;
+
+  loadOrders();
+
+});
 
 }
 
@@ -260,7 +296,7 @@ async function loadOrders() {
       .collection("orders")
       .orderBy("createdAt", "desc")
       .get();
-
+allSnapshotOrders = snapshot.docs;
     // ============================
     // EMPTY
     // ============================
@@ -375,7 +411,7 @@ const pageOrders =
 // ============================
 let revenue = 0;
 
-const revenueByDate = {};
+revenueByDate = {};
 
 let pendingCount = 0;
 let shippingCount = 0;
@@ -690,56 +726,25 @@ const revenueBox =
 
 if(revenueBox){
 
-  let revenueHTML = "";
+  const todayDate =
+    filterDate?.value ||
+    new Date().toISOString().split("T")[0];
 
- const todayDate =
-  filterDate?.value ||
-  new Date().toISOString().split("T")[0];
+  const todayRevenue =
+    revenueByDate[todayDate] || 0;
 
-let revenueHTML = "";
-
-if(revenueByDate[todayDate]){
-
-  revenueHTML = `
+  revenueBox.innerHTML = `
     <div style="
       padding:8px 0;
       border-bottom:1px solid #eee;
     ">
       <b>
         ${new Date(todayDate).toLocaleDateString("vi-VN")}
-      </b>:
-      ${formatPrice(revenueByDate[todayDate])}
+      </b>
+      :
+      ${formatPrice(todayRevenue)}
     </div>
   `;
-
-}else{
-
-  revenueHTML = `
-    <div style="padding:8px 0">
-      <b>
-        ${new Date(todayDate).toLocaleDateString("vi-VN")}
-      </b>:
-      ${formatPrice(0)}
-    </div>
-  `;
-}
-
-revenueBox.innerHTML = revenueHTML;
-  revenueHTML += `
-    <div style="
-      padding:8px 0;
-      border-bottom:1px solid #eee;
-    ">
-      <b>
-        ${new Date(date).toLocaleDateString("vi-VN")}
-      </b>:
-      ${formatPrice(total)}
-    </div>
-  `;
-});
-
-  revenueBox.innerHTML = revenueHTML;
-
 }
     bindEvents();
 
