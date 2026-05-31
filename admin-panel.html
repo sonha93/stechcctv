@@ -202,7 +202,7 @@ button{
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, setDoc,serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* =========================
    FIREBASE
@@ -729,6 +729,16 @@ await updateDoc(
   }
 );
 
+      await addDoc(
+  collection(db,"stock_movements"),
+  {
+    productId:id,
+    qty:stockValue,
+    type:"UPDATE",
+    createdAt:serverTimestamp()
+  }
+);
+      
       alert("Cập nhật thành công");
 
       loadProducts();
