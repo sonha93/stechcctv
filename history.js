@@ -1,106 +1,129 @@
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
+const historyBody =
+  document.getElementById("historyBody");
 
-    const historyBody =
-      document.getElementById("historyBody");
+const historySearch =
+  document.getElementById("historySearch");
 
-    const historySearch =
-      document.getElementById("historySearch");
+function formatVND(number){
 
-    function formatVND(number){
+  return Number(number || 0)
+    .toLocaleString("vi-VN") + "đ";
 
-      return Number(number || 0)
-        .toLocaleString("vi-VN") + "đ";
+}
 
-    }
+async function loadHistory(){
 
-    async function loadHistory(){
+  if(!historyBody) return;
 
-      if(!historyBody) {
-        console.log("Không tìm thấy historyBody");
+  try{
+
+    const keyword =
+      historySearch.value
+        .trim()
+        .toLowerCase();
+
+    const productSnap = await db
+      .collection("products")
+      .get();
+
+    let html = "";
+
+    productSnap.forEach(doc => {
+
+      const p = doc.data();
+
+      const name =
+        String(p.name || "");
+
+      const id =
+        String(doc.id || "");
+
+      if(
+        keyword &&
+        !name.toLowerCase().includes(keyword) &&
+        !id.toLowerCase().includes(keyword)
+      ){
         return;
       }
 
-      try{
+      const imported =
+        Number(p.totalImportedQty || 0);
 
-        const keyword = historySearch
-          ? historySearch.value.trim().toLowerCase()
-          : "";
+      const sold =
+        Number(p.totalSoldQty || 0);
 
-        const productSnap = await db
-          .collection("products")
-          .get();
+      const stock =
+        Number(p.stock || 0);
 
-        console.log(productSnap.size);
+      const totalImport =
+        Number(p.totalImportValue || 0);
 
-        let html = "";
+      const totalSale =
+        Number(p.totalSaleValue || 0);
 
-        productSnap.forEach(doc => {
+      const profit =
+        Number(p.totalProfit || 0);
 
-          const p = doc.data();
+      html += `
+        <tr>
 
-          const name =
-            String(p.name || "");
+          <td>${name}</td>
 
-          const id =
-            String(doc.id || "");
+          <td>${imported}</td>
 
-          if(
-            keyword &&
-            !name.toLowerCase().includes(keyword) &&
-            !id.toLowerCase().includes(keyword)
-          ){
-            return;
-          }
+          <td>${sold}</td>
 
-          html += `
-            <tr>
-              <td>${name}</td>
-              <td>${p.totalImportedQty || 0}</td>
-              <td>${p.totalSoldQty || 0}</td>
-              <td>${p.stock || 0}</td>
-              <td>${formatVND(p.totalImportValue)}</td>
-              <td>${formatVND(p.totalSaleValue)}</td>
-              <td>${formatVND(p.totalProfit)}</td>
-            </tr>
-          `;
+          <td>${stock}</td>
 
-        });
+          <td style="color:#ff9800;font-weight:bold;">
+            ${formatVND(totalImport)}
+          </td>
 
-        if(!html){
+          <td style="color:#00acc1;font-weight:bold;">
+            ${formatVND(totalSale)}
+          </td>
 
-          html = `
-            <tr>
-              <td colspan="7"
-                style="text-align:center;padding:20px;">
-                Không có dữ liệu
-              </td>
-            </tr>
-          `;
+          <td style="color:green;font-weight:bold;">
+            ${formatVND(profit)}
+          </td>
 
-        }
+        </tr>
+      `;
 
-        historyBody.innerHTML = html;
+    });
 
-      }catch(err){
+    if(!html){
 
-        console.log(err);
-
-      }
+      html = `
+        <tr>
+          <td colspan="7"
+            style="
+              text-align:center;
+              padding:20px;
+            "
+          >
+            Không có dữ liệu
+          </td>
+        </tr>
+      `;
 
     }
 
-    if(historySearch){
+    historyBody.innerHTML = html;
 
-      historySearch.addEventListener(
-        "input",
-        loadHistory
-      );
+  }catch(err){
 
-    }
-
-    loadHistory();
+    console.log(err);
 
   }
-);
+
+}
+
+if(historySearch){
+
+  historySearch.addEventListener(
+    "input",
+    loadHistory
+  );
+
+}
