@@ -483,7 +483,19 @@ function bindInventoryEvents(){
                         + totalImport
 
                 });
+                // SAVE STOCK MOVEMENT
+await db.collection("stock_movements").add({
 
+    productId:id,
+    type:"import_price_update",
+    qty:0,
+
+    createdAt:
+        firebase.firestore
+        .FieldValue
+        .serverTimestamp()
+
+});
                 // SAVE IMPORT HISTORY
 
                 await db.collection("import_prices").add({
@@ -500,19 +512,7 @@ function bindInventoryEvents(){
 
                 // SAVE STOCK MOVEMENT
 
-                await db.collection("stock_movements").add({
-
-                    productId:id,
-                    type:"import_price_update",
-                    qty:0,
-
-                    createdAt:
-                        firebase.firestore
-                        .FieldValue
-                        .serverTimestamp()
-
-                });
-
+              
                 alert("Lưu giá nhập thành công");
 
                 currentPage = 1;
@@ -699,11 +699,11 @@ async function loadStockMovements(){
 html += `
     <tr>
         <td>${productName}</td>
-        <td>${data.type || "---"}</td>        <!-- Loại -->
+        <td>${data.type || "---"}</td>       
         <td style="color:${data.qty < 0 ? "red" : "#00c853"};">
             ${data.qty > 0 ? "+" + data.qty : data.qty}
-        </td>                                  <!-- Số lượng -->
-        <td>${data.reason || "---"}</td>      <!-- Lý do -->
+        </td>                                 
+        <td>${data.reason || "---"}</td>      
         <td>
             ${
                 data.createdAt && typeof data.createdAt.toDate === "function"
@@ -1016,16 +1016,8 @@ if (manualMinusSearch && manualMinusProductInfo && manualMinusQty && manualMinus
             const newStock = currentStock - qty;
 
             // UPDATE STOCK
-            await db.collection("products").doc(foundDoc.id).update({ stock: newStock });
-
-            // SAVE STOCK MOVEMENT
-            await db.collection("stock_movements").add({
-                productId: foundDoc.id,
-                type: "MANUAL_MINUS",
-                qty: qty,
-                reason: reasonValue,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            await db.collection("products").doc(foundDoc.id).update({ stock: newStock })
+            
 
             alert(`Đã trừ ${qty} stock`);
 
