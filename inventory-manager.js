@@ -1139,8 +1139,14 @@ if(manualMinusBtn){
         const currentStock =
           Number(product.stock || 0);
 
-        const newStock =
-          currentStock - qty;
+      const newStock =
+  Number(currentStock) - Number(qty);
+
+console.log({
+  currentStock,
+  qty,
+  newStock
+});
 
         // update stock
         await db
