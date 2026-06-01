@@ -6,19 +6,16 @@ const importDateFilter = document.getElementById("importDateFilter");
 const movementsDateFilter = document.getElementById("movementsDateFilter");
 const inventoryBody = document.getElementById("inventoryBody");
 const inventoryFooter = document.getElementById("inventoryFooter");
-
 const db = firebase.firestore();
-
 const importBody = document.getElementById("importBody");
 const movementsBody = document.getElementById("movementsBody");
-
 const inventorySearch = document.getElementById("inventorySearch");
 
 // ============================
 // FORMAT PRICE
 // ============================
 
-function formatVND(number){
+function formatVND(number) {
     return Number(number || 0).toLocaleString("vi-VN") + "đ";
 }
 
@@ -33,12 +30,10 @@ const rowsPerPage = 15;
 // LOAD INVENTORY
 // ============================
 
-async function loadInventory(){
+async function loadInventory() {
+    if (!inventoryBody) return;
 
-    if(!inventoryBody) return;
-
-    try{
-
+    try {
         inventoryBody.innerHTML = `
             <tr>
                 <td colspan="10" style="text-align:center;padding:20px;">
@@ -47,44 +42,28 @@ async function loadInventory(){
             </tr>
         `;
 
-        const keyword = inventorySearch
-            ? inventorySearch.value.trim().toLowerCase()
-            : "";
+        const keyword = inventorySearch ? inventorySearch.value.trim().toLowerCase() : "";
 
         const productSnap = await db.collection("products").get();
         const orderSnap = await db.collection("orders").get();
 
         const soldMap = {};
-
         orderSnap.forEach(orderDoc => {
-
             const order = orderDoc.data();
-
-            if(
-                order.status !== "completed" ||
-                order.customerCancelled ||
-                order.adminCancelled
-            ){
+            if (order.status !== "completed" || order.customerCancelled || order.adminCancelled) {
                 return;
             }
-
             (order.items || []).forEach(item => {
-
                 const id = String(item.id);
-
-                if(!soldMap[id]){
+                if (!soldMap[id]) {
                     soldMap[id] = 0;
                 }
-
                 soldMap[id] += Number(item.qty || 0);
-
             });
-
         });
 
         let html = "";
         let rows = [];
-
         let totalImportPrice = 0;
         let totalPrice = 0;
         let totalOldPrice = 0;
@@ -93,15 +72,14 @@ async function loadInventory(){
         let totalProfit = 0;
 
         productSnap.forEach(doc => {
-
             const p = doc.data();
 
-            // SEARCH
-            if(
+            // search
+            if (
                 keyword &&
                 !String(p.name || "").toLowerCase().includes(keyword) &&
                 !String(doc.id).toLowerCase().includes(keyword)
-            ){
+            ) {
                 return;
             }
 
@@ -121,10 +99,8 @@ async function loadInventory(){
             // ============================
 
             const remain = stock;
-
             const revenue = price * sold;
             const capital = importPrice * sold;
-
             const profit = revenue - capital;
 
             totalImportPrice += importPrice;
@@ -139,130 +115,51 @@ async function loadInventory(){
 
             rows.push(`
                 <tr>
-
                     <td>${doc.id}</td>
-
+                    <td>${p.name || "-"}</td>
                     <td>
-                        ${p.name || "-"}
+                        <input type="number" class="importPriceInput" data-id="${doc.id}" value="${importPrice}" style="width:120px; padding:8px;">
                     </td>
-
-                    <td>
-                        <input
-                            type="number"
-                            class="importPriceInput"
-                            data-id="${doc.id}"
-                            value="${importPrice}"
-                            style="
-                                width:120px;
-                                padding:8px;
-                            "
-                        >
-                    </td>
-
-                    <td>
-                        ${oldPrice ? formatVND(oldPrice) : "---"}
-                    </td>
-
-                    <td>
-                        ${formatVND(price)}
-                    </td>
-
-                    <td>
-                        ${stock}
-                    </td>
-
-                    <td>
-                        ${sold}
-                    </td>
-
-                    <td
-                        style="
-                            color:${profit < 0 ? "red" : "green"};
-                            font-weight:bold;
-                        "
-                    >
+                    <td>${oldPrice ? formatVND(oldPrice) : "---"}</td>
+                    <td>${formatVND(price)}</td>
+                    <td>${stock}</td>
+                    <td>${sold}</td>
+                    <td style="color:${profit < 0 ? "red" : "green"}; font-weight:bold;">
                         ${formatVND(profit)}
                     </td>
-
                     <td>
-
-                        ${
-                            negative
-                            ? `
-                                <span style="color:red;font-weight:bold;">
-                                    Âm kho
-                                </span>
-                            `
-                            : lowStock
-                            ? `
-                                <span style="color:#ff9800;font-weight:bold;">
-                                    Tồn thấp
-                                </span>
-                            `
-                            : `
-                                <span style="color:green;font-weight:bold;">
-                                    __
-                                </span>
-                            `
-                        }
-
+                        ${negative ? `<span style="color:red;font-weight:bold;">Âm kho</span>` : lowStock ? `<span style="color:#ff9800;font-weight:bold;">Tồn thấp</span>` : `<span style="color:green;font-weight:bold;">__</span>`}
                     </td>
-
                     <td>
-                        <button
-                            class="saveImportBtn"
-                            data-id="${doc.id}"
-                            style="
-                                padding:8px 12px;
-                                border:none;
-                                border-radius:8px;
-                                background:#00acc1;
-                                color:white;
-                                cursor:pointer;
-                            "
-                        >
+                        <button class="saveImportBtn" data-id="${doc.id}" style="padding:8px 12px; border:none; border-radius:8px; background:#00acc1; color:white; cursor:pointer;">
                             Lưu
                         </button>
                     </td>
-
                 </tr>
             `);
-
         });
 
         // ============================
         // PAGINATION
         // ============================
 
-        const totalPages = Math.max(
-            1,
-            Math.ceil(rows.length / rowsPerPage)
-        );
-
-        if(currentPage > totalPages){
+        const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage));
+        if (currentPage > totalPages) {
             currentPage = 1;
         }
-
         const start = (currentPage - 1) * rowsPerPage;
         const end = start + rowsPerPage;
-
         html = rows.slice(start, end).join("");
 
         // EMPTY
-
-        if(!html){
-
+        if (!html) {
             html = `
                 <tr>
-                    <td colspan="10" style="
-                        text-align:center;
-                        padding:20px;
-                    ">
+                    <td colspan="10" style="text-align:center; padding:20px;">
                         Không có dữ liệu
                     </td>
                 </tr>
             `;
-
         }
 
         inventoryBody.innerHTML = html;
@@ -272,270 +169,413 @@ async function loadInventory(){
         // ============================
 
         let pagination = document.getElementById("inventoryPagination");
-
-        if(!pagination){
-
+        if (!pagination) {
             pagination = document.createElement("div");
-
             pagination.id = "inventoryPagination";
-
             pagination.style.marginTop = "15px";
             pagination.style.display = "flex";
             pagination.style.gap = "10px";
             pagination.style.alignItems = "center";
             pagination.style.justifyContent = "center";
-
             inventoryBody.closest("table").after(pagination);
-
         }
 
         pagination.innerHTML = `
-            <button
-                id="prevPageBtn"
-                ${currentPage === 1 ? "disabled" : ""}
-                style="
-                    padding:8px 14px;
-                    cursor:pointer;
-                "
-            >
-                ← Prev
-            </button>
-
-            <span>
-                Trang ${currentPage}/${totalPages || 1}
-            </span>
-
-            <button
-                id="nextPageBtn"
-                ${currentPage >= totalPages ? "disabled" : ""}
-                style="
-                    padding:8px 14px;
-                    cursor:pointer;
-                "
-            >
-                Next →
-            </button>
+            <button id="prevPageBtn" ${currentPage === 1 ? "disabled" : ""} style="padding:8px 14px; cursor:pointer;">← Prev</button>
+            <span>Trang ${currentPage}/${totalPages || 1}</span>
+            <button id="nextPageBtn" ${currentPage >= totalPages ? "disabled" : ""} style="padding:8px 14px; cursor:pointer;">Next →</button>
         `;
 
         const prevBtn = document.getElementById("prevPageBtn");
         const nextBtn = document.getElementById("nextPageBtn");
 
-        if(prevBtn){
-
+        if (prevBtn) {
             prevBtn.onclick = () => {
-
-                if(currentPage > 1){
-
+                if (currentPage > 1) {
                     currentPage--;
                     loadInventory();
-
                 }
-
             };
-
         }
-
-        if(nextBtn){
-
+        if (nextBtn) {
             nextBtn.onclick = () => {
-
-                if(currentPage < totalPages){
-
+                if (currentPage < totalPages) {
                     currentPage++;
                     loadInventory();
-
                 }
-
             };
-
         }
 
-        if(inventoryFooter){
-
+        if (inventoryFooter) {
             inventoryFooter.innerHTML = `
-                <tr style="
-                    background:#111;
-                    color:white;
-                    font-weight:bold;
-                ">
-
-                    <td colspan="2">
-                        TOTAL
-                    </td>
-
-                    <!-- Giá nhập -->
-                    <td>
-                        ${formatVND(totalImportPrice)}
-                    </td>
-
-                    <!-- Giá KM -->
-                    <td>
-                        ${formatVND(totalOldPrice)}
-                    </td>
-
-                    <!-- Giá bán -->
-                    <td>
-                        ${formatVND(totalPrice)}
-                    </td>
-
-                    <!-- Tồn -->
-                    <td style="
-                        color:${totalStock < 0 ? "red" : "#00ff90"};
-                    ">
-                        ${totalStock}
-                    </td>
-
-                    <!-- Đã bán -->
-                    <td>
-                        ${totalSold}
-                    </td>
-
-                    <!-- Lợi nhuận -->
-                    <td style="
-                        color:${totalProfit < 0 ? "red" : "#00ff90"};
-                    ">
-                        ${formatVND(totalProfit)}
-                    </td>
-
-                    <td colspan="2">
-                        ---
-                    </td>
-
+                <tr style="background:#111; color:white; font-weight:bold;">
+                    <td colspan="2">TOTAL</td>
+                    <td>${formatVND(totalImportPrice)}</td>
+                    <td>${formatVND(totalOldPrice)}</td>
+                    <td>${formatVND(totalPrice)}</td>
+                    <td style="color:${totalStock < 0 ? "red" : "#00ff90"};">${totalStock}</td>
+                    <td>${totalSold}</td>
+                    <td style="color:${totalProfit < 0 ? "red" : "#00ff90"};">${formatVND(totalProfit)}</td>
+                    <td colspan="2">---</td>
                 </tr>
             `;
-
         }
 
         bindInventoryEvents();
 
-    }catch(err){
-
+    } catch (err) {
         console.log(err);
-
         inventoryBody.innerHTML = `
             <tr>
-                <td colspan="10" style="
-                    text-align:center;
-                    color:red;
-                    padding:20px;
-                ">
+                <td colspan="10" style="text-align:center; color:red; padding:20px;">
                     Lỗi tải inventory
                 </td>
             </tr>
         `;
-
     }
-
 }
 
 // ============================
 // SAVE IMPORT PRICE
 // ============================
 
-function bindInventoryEvents(){
-
+function bindInventoryEvents() {
     document.querySelectorAll(".saveImportBtn").forEach(btn => {
-
-        if(btn.dataset.bound === "true"){
-            return;
-        }
-
+        if (btn.dataset.bound === "true") return;
         btn.dataset.bound = "true";
 
         btn.addEventListener("click", async () => {
-
-            try{
-
+            try {
                 const id = btn.dataset.id;
-
                 const row = btn.closest("tr");
-
                 const importInput = row.querySelector(".importPriceInput");
-
                 const importPrice = Number(importInput.value || 0);
 
-                // UPDATE PRODUCTS
-
+                // update products
                 const productRef = db.collection("products").doc(id);
-
                 const productDoc = await productRef.get();
-
                 const productData = productDoc.data();
-
-                const qtyImport = Number(
-                    prompt("Nhập số lượng nhập thêm") || 0
-                );
-
+                const qtyImport = Number(prompt("Nhập số lượng nhập thêm") || 0);
                 const currentStock = Number(productData.stock || 0);
-
                 const newStock = currentStock + qtyImport;
-
                 const totalImport = qtyImport * importPrice;
 
                 await productRef.update({
-
                     importPrice,
-
-                    stock:newStock,
-
-                    totalImportedQty:
-                        Number(productData.totalImportedQty || 0) + qtyImport,
-
-                    totalImportValue:
-                        Number(productData.totalImportValue || 0) + totalImport
-
+                    stock: newStock,
+                    totalImportedQty: Number(productData.totalImportedQty || 0) + qtyImport,
+                    totalImportValue: Number(productData.totalImportValue || 0) + totalImport
                 });
 
-                // SAVE IMPORT HISTORY
-
+                // save import history
                 await db.collection("import_prices").add({
-
-                    productId:id,
+                    productId: id,
                     importPrice,
-
-                    createdAt:
-                        firebase.firestore.FieldValue.serverTimestamp()
-
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // SAVE STOCK MOVEMENT
-
+                // save stock movement
                 await db.collection("stock_movements").add({
-
-                    productId:id,
-                    type:"import_price_update",
-                    qty:0,
-
-                    createdAt:
-                        firebase.firestore.FieldValue.serverTimestamp()
-
+                    productId: id,
+                    type: "import_price_update",
+                    qty: 0,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 alert("Lưu giá nhập thành công");
-
                 currentPage = 1;
-
                 loadInventory();
                 loadImportPrices();
                 loadStockMovements();
 
-            }catch(err){
-
+            } catch (err) {
                 console.error(err);
                 alert(err.message);
-
             }
-
         });
-
     });
-
 }
 
 // ============================
-// INIT
+// LOAD IMPORT PRICES
 // ============================
 
-loadInventory();
-loadImportPrices();
-loadStockMovements();
+async function loadImportPrices() {
+    if (!importBody) return;
+
+    try {
+        const snap = await db.collection("import_prices")
+            .orderBy("createdAt", "desc")
+            .limit(50)
+            .get();
+
+        let html = "";
+
+        for (const doc of snap.docs) {
+            const data = doc.data();
+            const selectedDate = importDateFilter?.value;
+
+            if (!data.createdAt) continue;
+
+            if (selectedDate) {
+                const itemDate = data.createdAt.toDate().toISOString().split("T")[0];
+                if (itemDate !== selectedDate) continue;
+            }
+
+            let productName = "-";
+
+            try {
+                const productDoc = await db.collection("products").doc(data.productId).get();
+                if (productDoc.exists) {
+                    productName = productDoc.data().name;
+                }
+            } catch {}
+
+            html += `
+                <tr>
+                    <td>${productName}</td>
+                    <td>${formatVND(data.importPrice)}</td>
+                    <td>${data.createdAt && typeof data.createdAt.toDate === "function" ? data.createdAt.toDate().toLocaleString("vi-VN") : "-"}</td>
+                </tr>
+            `;
+        }
+
+        if (!html) {
+            html = `
+                <tr>
+                    <td colspan="3" style="text-align:center; padding:20px;">Chưa có dữ liệu</td>
+                </tr>
+            `;
+        }
+
+        importBody.innerHTML = html;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+// ============================
+// LOAD STOCK MOVEMENTS
+// ============================
+
+async function loadStockMovements() {
+    if (!movementsBody) return;
+
+    try {
+        const snap = await db.collection("stock_movements")
+            .orderBy("createdAt", "desc")
+            .limit(100)
+            .get();
+
+        let html = "";
+
+        for (const doc of snap.docs) {
+            const data = doc.data();
+            const selectedDate = movementsDateFilter?.value;
+
+            if (!data.createdAt) continue;
+
+            if (selectedDate) {
+                const itemDate = data.createdAt.toDate().toISOString().split("T")[0];
+                if (itemDate !== selectedDate) continue;
+            }
+
+            let productName = "-";
+            try {
+                const productDoc = await db.collection("products").doc(data.productId).get();
+                if (productDoc.exists) {
+                    productName = productDoc.data().name;
+                }
+            } catch {}
+
+            html += `
+                <tr>
+                    <td>${productName}</td>
+                    <td>${data.type || "-"}</td>
+                    <td style="color:${data.type === "MANUAL_MINUS" ? "red" : "#00c853"}; font-weight:bold;">
+                        ${data.type === "MANUAL_MINUS" ? "-" + Number(data.qty || 0) : "+" + Number(data.qty || 0)}
+                    </td>
+                    <td>${data.createdAt && typeof data.createdAt.toDate === "function" ? data.createdAt.toDate().toLocaleString("vi-VN") : "-"}</td>
+                </tr>
+            `;
+        }
+
+        if (!html) {
+            html = `
+                <tr>
+                    <td colspan="4" style="text-align:center; padding:20px;">Chưa có dữ liệu</td>
+                </tr>
+            `;
+        }
+
+        movementsBody.innerHTML = html;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+// ============================
+// SEARCH
+// ============================
+
+if (inventorySearch) {
+    inventorySearch.addEventListener("input", () => {
+        loadInventory();
+    });
+}
+
+// ============================
+// SWITCH MODULE
+// ============================
+
+const ordersSection = document.getElementById("ordersSection");
+const inventorySection = document.getElementById("inventorySection");
+const importSection = document.getElementById("importSection");
+const movementsSection = document.getElementById("movementsSection");
+const historySection = document.getElementById("historySection");
+
+function hideAllSections() {
+    if (historySection) historySection.style.display = "none";
+    if (ordersSection) ordersSection.style.display = "none";
+    if (inventorySection) inventorySection.style.display = "none";
+    if (importSection) importSection.style.display = "none";
+    if (movementsSection) movementsSection.style.display = "none";
+
+    // HIDE INVENTORY PAGINATION
+    const inventoryPagination = document.getElementById("inventoryPagination");
+    if (inventoryPagination) {
+        inventoryPagination.style.display = "none";
+    }
+}
+
+document.querySelectorAll('input[name="adminView"]').forEach(radio => {
+    radio.addEventListener("change", () => {
+        hideAllSections();
+        const value = radio.value;
+
+        if (value === "orders") {
+            ordersSection.style.display = "block";
+        }
+
+        if (value === "inventory") {
+            inventorySection.style.display = "block";
+            const inventoryPagination = document.getElementById("inventoryPagination");
+            if (inventoryPagination) {
+                inventoryPagination.style.display = "flex";
+            }
+            loadInventory();
+        }
+
+        if (value === "import") {
+            importSection.style.display = "block";
+            loadImportPrices();
+        }
+
+        if (value === "movements") {
+            movementsSection.style.display = "block";
+            loadStockMovements();
+        }
+
+        if (value === "history") {
+            historySection.style.display = "block";
+            loadHistory();
+        }
+    });
+});
+
+if (importDateFilter) {
+    importDateFilter.addEventListener("change", loadImportPrices);
+}
+
+if (movementsDateFilter) {
+    movementsDateFilter.addEventListener("change", loadStockMovements);
+}
+
+const clearImportDate = document.getElementById("clearImportDate");
+if (clearImportDate) {
+    clearImportDate.addEventListener("click", () => {
+        importDateFilter.value = "";
+        loadImportPrices();
+    });
+}
+
+const clearMovementsDate = document.getElementById("clearMovementsDate");
+if (clearMovementsDate) {
+    clearMovementsDate.addEventListener("click", () => {
+        movementsDateFilter.value = "";
+        loadStockMovements();
+    });
+}
+
+// Mặc định chọn ngày hôm nay
+const today = new Date();
+today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+const todayStr = today.toISOString().split("T")[0];
+
+if (importDateFilter) importDateFilter.value = todayStr;
+if (movementsDateFilter) movementsDateFilter.value = todayStr;
+
+// mặc định
+hideAllSections();
+ordersSection.style.display = "block";
+
+// ============================
+// MANUAL MINUS PRODUCT INFO
+// ============================
+
+const manualMinusSearch = document.getElementById("manualMinusSearch");
+const manualMinusProductInfo = document.getElementById("manualMinusProductInfo");
+
+if (manualMinusSearch && manualMinusProductInfo) {
+    manualMinusSearch.addEventListener("input", async () => {
+        const keyword = manualMinusSearch.value.trim().toLowerCase();
+        if (!keyword) {
+            manualMinusProductInfo.innerHTML = "Chưa chọn sản phẩm";
+            return;
+        }
+
+        try {
+            const productSnap = await db.collection("products").get();
+            const orderSnap = await db.collection("orders").get();
+
+            // SOLD MAP
+            const soldMap = {};
+            orderSnap.forEach(orderDoc => {
+                const order = orderDoc.data();
+                if (order.status !== "completed" || order.customerCancelled || order.adminCancelled) return;
+                (order.items || []).forEach(item => {
+                    const id = String(item.id);
+                    if (!soldMap[id]) soldMap[id] = 0;
+                    soldMap[id] += Number(item.qty || 0);
+                });
+            });
+
+            let found = null;
+            productSnap.forEach(doc => {
+                const data = doc.data();
+                const name = String(data.name || "").toLowerCase();
+                const productId = String(doc.id).toLowerCase();
+
+                if (name.includes(keyword) || productId.includes(keyword)) {
+                    found = { id: doc.id, ...data };
+                }
+            });
+
+            if (!found) {
+                manualMinusProductInfo.innerHTML = `<span style="color:red;font-weight:bold;">Không tìm thấy sản phẩm</span>`;
+                return;
+            }
+
+            const sold = Number(soldMap[String(found.id)] || 0);
+
+            manualMinusProductInfo.innerHTML = `
+                <div><b>${found.name || "-"}</b></div>
+                <div>ID: <span style="color:#666;">${found.id}</span></div>
+                <div>Tồn: <span style="color:#00c853; font-weight:bold;">${Number(found.stock || 0)}</span></div>
+                <div>Đã bán: <span style="color:#ff9800; font-weight:bold;">${sold}</span></div>
+            `;
+
+        } catch (err) {
+            console
