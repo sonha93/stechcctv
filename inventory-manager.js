@@ -135,9 +135,7 @@ orderSnap.forEach(orderDoc => {
 const sold =
   Number(soldMap[String(doc.id)] || 0);
 
-const totalImported =
-  stock + sold;
- 
+
 
       // ============================
       // PROFIT
@@ -193,8 +191,8 @@ const lowStock =
   ${formatVND(price)}
 </td>
 
-      <td>
-  ${totalImported}
+     <td>
+  ${stock}
 </td>
 
 <td>
