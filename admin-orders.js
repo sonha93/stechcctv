@@ -600,12 +600,11 @@ ${
       </td>
 
       <td>
-
-        <select
-          class="order-status"
-          data-id="${doc.id}"
-          ${lockStatus ? "disabled" : ""}
-        >
+    <select
+  class="order-status status-${order.status}"
+  data-id="${doc.id}"
+  ${lockStatus ? "disabled" : ""}
+>
 
           <option value="pending"
             ${order.status === "pending" ? "selected" : ""}>
