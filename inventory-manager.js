@@ -106,7 +106,7 @@ let totalOldPrice = 0;
 let totalStock = 0;
 let totalSold = 0;
 let totalProfit = 0;
-
+let rowCount = 0;
     productSnap.forEach(doc => {
 
       const p = doc.data();
@@ -177,7 +177,25 @@ const negative =
 
 const lowStock =
   remain > 0 && remain <= 5;
+rowCount++;
 
+if(rowCount % 15 === 1){
+
+  html += `
+    <tr>
+      <td colspan="10" style="
+        background:#222;
+        color:white;
+        text-align:center;
+        font-weight:bold;
+        padding:10px;
+      ">
+        PAGE ${Math.ceil(rowCount / 15)}
+      </td>
+    </tr>
+  `;
+
+}
 
       html += `
         <tr>
