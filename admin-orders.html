@@ -590,61 +590,83 @@ tr:hover{
   <div style="padding:16px;">
 
    <h2 style="margin-bottom:10px;">
-  🔄 Stock Movements
-      </h2>
-<div style="
+ <div style="
   display:flex;
-  gap:10px;
-  margin:15px 0;
+  gap:14px;
+  align-items:stretch;
   flex-wrap:wrap;
 ">
 
+  <!-- SEARCH -->
   <input
-    type="text"
     id="manualMinusSearch"
-    placeholder="Tên sản phẩm"
+    type="text"
+    placeholder="Tên sản phẩm / ID"
     style="
-      padding:10px;
       width:260px;
+      padding:14px;
+      border-radius:14px;
       border:1px solid #ddd;
-      border-radius:8px;
+      font-size:16px;
     "
   >
 
+  <!-- PRODUCT INFO -->
+  <div
+    id="manualMinusProductInfo"
+    style="
+      min-width:260px;
+      padding:14px 18px;
+      border-radius:14px;
+      background:#f5f5f5;
+      border:1px solid #ddd;
+      line-height:1.8;
+      font-size:14px;
+    "
+  >
+    Chưa chọn sản phẩm
+  </div>
+
+  <!-- QTY -->
   <input
-    type="number"
     id="manualMinusQty"
+    type="number"
     placeholder="Số lượng trừ"
     style="
-      padding:10px;
-      width:140px;
+      width:180px;
+      padding:14px;
+      border-radius:14px;
       border:1px solid #ddd;
-      border-radius:8px;
+      font-size:16px;
     "
   >
 
+  <!-- REASON -->
   <input
-    type="text"
     id="manualMinusReason"
+    type="text"
     placeholder="Lý do"
     style="
-      padding:10px;
-      width:220px;
-      border:1px solid #ddd;
-      border-radius:8px;
+      width:260px;
+      padding:14px;
+      border-radius:14px;
+      border:2px solid #222;
+      font-size:16px;
     "
   >
 
+  <!-- BUTTON -->
   <button
     id="manualMinusBtn"
     style="
-      padding:10px 18px;
+      padding:14px 28px;
       border:none;
-      border-radius:8px;
-      background:#e53935;
+      border-radius:14px;
+      background:#ef5350;
       color:white;
-      cursor:pointer;
+      font-size:18px;
       font-weight:bold;
+      cursor:pointer;
     "
   >
     Trừ Stock
