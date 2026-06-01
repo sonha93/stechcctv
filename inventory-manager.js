@@ -163,11 +163,11 @@ const capital =
 const profit =
   revenue - capital;
 
-totalImportPrice += importPrice * stock;
+totalImportPrice += importPrice;
 
-totalPrice += price * stock;
+totalPrice += price;
 
-totalStock += stock;
+totalProfit += profit;
 
 totalSold += sold;
 
