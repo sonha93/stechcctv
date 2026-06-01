@@ -44,7 +44,7 @@ async function loadHistory() {
 
             inventoryMap[d.productId] = {
                 productName: d.productName || "",
-                stock: Number(d.stock || 0)
+                
             };
 
         });
@@ -135,7 +135,11 @@ async function loadHistory() {
 
                 importedQty: imp.qty || 0,
                 soldQty: sale.qty || 0,
-                stock: inven.stock || 0,
+           stock: Math.max(
+    0,
+    (imp.qty || 0) -
+    (sale.qty || 0)
+),
 
                 totalImport,
                 totalSale,
@@ -202,7 +206,14 @@ function renderHistory(data) {
 
             <td>${item.soldQty}</td>
 
-            <td>${item.stock}</td>
+         <td
+    style="
+        color:${item.stock < 0 ? 'red' : 'black'};
+        font-weight:${item.stock < 0 ? 'bold' : 'normal'};
+    "
+>
+    ${item.stock}
+</td>
 
             <td>${formatMoney(item.totalImport)}</td>
 
