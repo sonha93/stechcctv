@@ -1,12 +1,11 @@
+
 // ============================
 // INVENTORY MANAGER V8
 // ============================
 
 const inventoryBody =
   document.getElementById("inventoryBody");
-
 const db = firebase.firestore();
-
 const importBody =
   document.getElementById("importBody");
 
@@ -60,34 +59,38 @@ async function loadInventory(){
     const orderSnap = await db
       .collection("orders")
       .get();
+  
 
-    const soldMap = {};
+const soldMap = {};
 
-    orderSnap.forEach(orderDoc => {
+orderSnap.forEach(orderDoc => {
 
-      const order = orderDoc.data();
+  const order = orderDoc.data();
 
-      if(
-        order.status !== "completed" ||
-        order.customerCancelled ||
-        order.adminCancelled
-      ){
-        return;
-      }
 
-      (order.items || []).forEach(item => {
+  if(
+    order.status !== "completed" ||
+    order.customerCancelled ||
+    order.adminCancelled
+  ){
+    return;
+  }
 
-        const id = String(item.id);
+  (order.items || []).forEach(item => {
 
-        if(!soldMap[id]){
-          soldMap[id] = 0;
-        }
+   
+    const id = String(item.id);
 
-        soldMap[id] += Number(item.qty || 0);
+    if(!soldMap[id]){
+      soldMap[id] = 0;
+    }
 
-      });
+    soldMap[id] += Number(item.qty || 0);
 
-    });
+  });
+
+});
+
 
     let html = "";
 
@@ -95,22 +98,24 @@ async function loadInventory(){
 
       const p = doc.data();
 
-      // SEARCH
-      if(
-        keyword &&
-        !String(p.name || "")
-          .toLowerCase()
-          .includes(keyword) &&
-        !String(doc.id)
-          .toLowerCase()
-          .includes(keyword)
-      ){
-        return;
-      }
+      // search
+    if(
+  keyword &&
+  !String(p.name || "")
+      .toLowerCase()
+      .includes(keyword) &&
+  !String(doc.id)
+      .toLowerCase()
+      .includes(keyword)
+){
+  return;
+}
 
       const stock =
         Number(p.stock || 0);
+    
 
+      
       const importPrice =
         Number(p.importPrice || 0);
 
@@ -120,27 +125,33 @@ async function loadInventory(){
       const oldPrice =
         Number(p.oldPrice || 0);
 
+      // ============================
       // SOLD
-      const sold =
-        Number(soldMap[String(doc.id)] || 0);
+      // ============================
+const sold =
+  Number(soldMap[String(doc.id)] || 0);
+ 
 
+      // ============================
       // PROFIT
-      const remain = stock - sold;
+      // ============================
 
-      const revenue =
-        price * sold;
+const remain = stock - sold;
 
-      const capital =
-        importPrice * sold;
+const revenue =
+  price * sold;
 
-      const profit =
-        revenue - capital;
+const capital =
+  importPrice * sold;
 
-      const negative =
-        remain < 0;
+const profit =
+  revenue - capital;
+const negative =
+  remain < 0;
 
-      const lowStock =
-        remain > 0 && remain <= 5;
+const lowStock =
+  remain > 0 && remain <= 5;
+
 
       html += `
         <tr>
@@ -164,67 +175,52 @@ async function loadInventory(){
             >
           </td>
 
-          <td>
-            ${
-              oldPrice
-                ? formatVND(oldPrice)
-                : "---"
-            }
-          </td>
+        <td>
+  ${
+    oldPrice
+      ? formatVND(oldPrice)
+      : "---"
+  }
+</td>
 
-          <td>
-            ${formatVND(price)}
-          </td>
+<td>
+  ${formatVND(price)}
+</td>
 
-          <td>
-            ${stock}
-          </td>
+        <td>
+  ${stock}
+</td>
 
-          <td>
-            ${sold}
-          </td>
+<td>
+  ${sold}
+</td>
 
-          <td>
-            ${remain}
-          </td>
+<td>
+  ${remain}
+</td>
 
-          <td style="
-            color:${profit < 0 ? "red" : "green"};
-            font-weight:bold;
-          ">
-            ${formatVND(profit)}
-          </td>
+<td style="
+  color:${profit < 0 ? "red" : "green"};
+  font-weight:bold;
+">
+  ${formatVND(profit)}
+</td>
 
-          <td>
-            ${
-              negative
-              ? `
-                <span style="
-                  color:red;
-                  font-weight:bold;
-                ">
-                  Âm kho
-                </span>
-              `
-              : lowStock
-              ? `
-                <span style="
-                  color:#ff9800;
-                  font-weight:bold;
-                ">
-                  Sắp hết
-                </span>
-              `
-              : `
-                <span style="
-                  color:green;
-                  font-weight:bold;
-                ">
-                  OK
-                </span>
-              `
-            }
-          </td>
+<td>
+  ${
+    negative
+    ? `<span style="color:red;font-weight:bold;">
+         Âm kho
+       </span>`
+    : lowStock
+    ? `<span style="color:#ff9800;font-weight:bold;">
+         Sắp hết
+       </span>`
+    : `<span style="color:green;font-weight:bold;">
+         OK
+       </span>`
+  }
+</td>
 
           <td>
 
@@ -299,13 +295,13 @@ function bindInventoryEvents(){
 
   document
     .querySelectorAll(".saveImportBtn")
-    .forEach(btn => {
+.forEach(btn => {
 
-      if(btn.dataset.bound === "true"){
-        return;
-      }
+  if(btn.dataset.bound === "true"){
+    return;
+  }
 
-      btn.dataset.bound = "true";
+  btn.dataset.bound = "true";
 
       btn.addEventListener("click", async () => {
 
@@ -325,7 +321,7 @@ function bindInventoryEvents(){
           const importPrice =
             Number(importInput.value || 0);
 
-          // UPDATE PRODUCT
+          // update products
           await db
             .collection("products")
             .doc(id)
@@ -333,7 +329,7 @@ function bindInventoryEvents(){
               importPrice
             });
 
-          // SAVE IMPORT HISTORY
+          // save import history
           await db
             .collection("import_prices")
             .add({
@@ -349,7 +345,7 @@ function bindInventoryEvents(){
 
             });
 
-          // SAVE STOCK MOVEMENT
+          // save stock movement
           await db
             .collection("stock_movements")
             .add({
@@ -367,19 +363,19 @@ function bindInventoryEvents(){
 
             });
 
-          alert("Lưu giá nhập thành công");
+        alert("Lưu giá nhập thành công");
 
-          loadInventory();
-          loadImportPrices();
-          loadStockMovements();
+loadInventory();
+loadImportPrices();
+loadStockMovements();
 
-        }catch(err){
+      }catch(err){
 
-          console.error(err);
+  console.error(err);
 
-          alert(err.message);
+  alert(err.message);
 
-        }
+}
 
       });
 
@@ -439,14 +435,15 @@ async function loadImportPrices(){
           </td>
 
           <td>
-            ${
-              data.createdAt &&
-              typeof data.createdAt.toDate === "function"
-                ? data.createdAt
-                    .toDate()
-                    .toLocaleString("vi-VN")
-                : "-"
-            }
+           ${
+data.createdAt &&
+typeof data.createdAt.toDate === "function"
+  ? data.createdAt
+      .toDate()
+      .toLocaleString("vi-VN")
+  : "-"
+}
+            
           </td>
 
         </tr>
@@ -531,13 +528,13 @@ async function loadStockMovements(){
 
           <td>
             ${
-              data.createdAt &&
-              typeof data.createdAt.toDate === "function"
-                ? data.createdAt
-                    .toDate()
-                    .toLocaleString("vi-VN")
-                : "-"
-            }
+  data.createdAt &&
+  typeof data.createdAt.toDate === "function"
+    ? data.createdAt
+        .toDate()
+        .toLocaleString("vi-VN")
+    : "-"
+}
           </td>
 
         </tr>
@@ -675,12 +672,11 @@ document
 
   });
 
-// MẶC ĐỊNH
+// mặc định
 hideAllSections();
 
 ordersSection.style.display =
   "block";
-
 // ============================
 // INIT
 // ============================
