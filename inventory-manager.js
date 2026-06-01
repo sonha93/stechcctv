@@ -799,7 +799,20 @@ if(selectedDate){
 
           <td>${data.type || "-"}</td>
 
-          <td>${data.qty || 0}</td>
+         <td style="
+  color:${
+    data.type === "MANUAL_MINUS"
+      ? "red"
+      : "#00c853"
+  };
+  font-weight:bold;
+">
+  ${
+    data.type === "MANUAL_MINUS"
+      ? "-" + Number(data.qty || 0)
+      : "+" + Number(data.qty || 0)
+  }
+</td>
 
           <td>
             ${
