@@ -199,10 +199,6 @@ const lowStock =
   ${sold}
 </td>
 
-<td>
-  ${remain}
-</td>
-
 <td style="
   color:${profit < 0 ? "red" : "green"};
   font-weight:bold;
