@@ -66,17 +66,22 @@ async function loadInventory(){
       .collection("products")
       .get();
 
-    const orderSnap = await db
-      .collection("orders")
-      .get();
-  
+   const orderSnap = await db
+  .collection("orders")
+  .get();
+
+const movementSnap = await db
+  .collection("stock_movements")
+  .get();
 
 const soldMap = {};
 
+//
+// ORDER SOLD
+//
 orderSnap.forEach(orderDoc => {
 
   const order = orderDoc.data();
-
 
   if(
     order.status !== "completed" ||
@@ -88,7 +93,6 @@ orderSnap.forEach(orderDoc => {
 
   (order.items || []).forEach(item => {
 
-   
     const id = String(item.id);
 
     if(!soldMap[id]){
@@ -98,6 +102,27 @@ orderSnap.forEach(orderDoc => {
     soldMap[id] += Number(item.qty || 0);
 
   });
+
+});
+
+//
+// MANUAL MINUS
+//
+movementSnap.forEach(moveDoc => {
+
+  const move = moveDoc.data();
+
+  if(move.type !== "MANUAL_MINUS"){
+    return;
+  }
+
+  const id = String(move.productId);
+
+  if(!soldMap[id]){
+    soldMap[id] = 0;
+  }
+
+  soldMap[id] += Number(move.qty || 0);
 
 });
 
