@@ -1,130 +1,106 @@
-const historyBody =
-  document.getElementById("historyBody");
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
 
-const historySearch =
-  document.getElementById("historySearch");
+    const historyBody =
+      document.getElementById("historyBody");
 
-function formatVND(number){
+    const historySearch =
+      document.getElementById("historySearch");
 
-  return Number(number || 0)
-    .toLocaleString("vi-VN") + "đ";
+    function formatVND(number){
 
-}
-
-async function loadHistory(){
-
-  if(!historyBody) return;
-
-  try{
-
-    const keyword =
-      historySearch.value
-        .trim()
-        .toLowerCase();
-
-    const productSnap = await db
-      .collection("products")
-      .get();
-
-    let html = "";
-
-    productSnap.forEach(doc => {
-
-      const p = doc.data();
-
-      const name =
-        String(p.name || "");
-
-      const id =
-        String(doc.id || "");
-
-      if(
-        keyword &&
-        !name.toLowerCase().includes(keyword) &&
-        !id.toLowerCase().includes(keyword)
-      ){
-        return;
-      }
-
-      const imported =
-        Number(p.totalImportedQty || 0);
-
-      const sold =
-        Number(p.totalSoldQty || 0);
-
-      const stock =
-        Number(p.stock || 0);
-
-      const totalImport =
-        Number(p.totalImportValue || 0);
-
-      const totalSale =
-        Number(p.totalSaleValue || 0);
-
-      const profit =
-        Number(p.totalProfit || 0);
-
-      html += `
-        <tr>
-
-          <td>${name}</td>
-
-          <td>${imported}</td>
-
-          <td>${sold}</td>
-
-          <td>${stock}</td>
-
-          <td style="color:#ff9800;font-weight:bold;">
-            ${formatVND(totalImport)}
-          </td>
-
-          <td style="color:#00acc1;font-weight:bold;">
-            ${formatVND(totalSale)}
-          </td>
-
-          <td style="color:green;font-weight:bold;">
-            ${formatVND(profit)}
-          </td>
-
-        </tr>
-      `;
-
-    });
-
-    if(!html){
-
-      html = `
-        <tr>
-          <td colspan="7"
-            style="
-              text-align:center;
-              padding:20px;
-            "
-          >
-            Không có dữ liệu
-          </td>
-        </tr>
-      `;
+      return Number(number || 0)
+        .toLocaleString("vi-VN") + "đ";
 
     }
 
-    historyBody.innerHTML = html;
+    async function loadHistory(){
 
-  }catch(err){
+      if(!historyBody) {
+        console.log("Không tìm thấy historyBody");
+        return;
+      }
 
-    console.log(err);
+      try{
+
+        const keyword = historySearch
+          ? historySearch.value.trim().toLowerCase()
+          : "";
+
+        const productSnap = await db
+          .collection("products")
+          .get();
+
+        console.log(productSnap.size);
+
+        let html = "";
+
+        productSnap.forEach(doc => {
+
+          const p = doc.data();
+
+          const name =
+            String(p.name || "");
+
+          const id =
+            String(doc.id || "");
+
+          if(
+            keyword &&
+            !name.toLowerCase().includes(keyword) &&
+            !id.toLowerCase().includes(keyword)
+          ){
+            return;
+          }
+
+          html += `
+            <tr>
+              <td>${name}</td>
+              <td>${p.totalImportedQty || 0}</td>
+              <td>${p.totalSoldQty || 0}</td>
+              <td>${p.stock || 0}</td>
+              <td>${formatVND(p.totalImportValue)}</td>
+              <td>${formatVND(p.totalSaleValue)}</td>
+              <td>${formatVND(p.totalProfit)}</td>
+            </tr>
+          `;
+
+        });
+
+        if(!html){
+
+          html = `
+            <tr>
+              <td colspan="7"
+                style="text-align:center;padding:20px;">
+                Không có dữ liệu
+              </td>
+            </tr>
+          `;
+
+        }
+
+        historyBody.innerHTML = html;
+
+      }catch(err){
+
+        console.log(err);
+
+      }
+
+    }
+
+    if(historySearch){
+
+      historySearch.addEventListener(
+        "input",
+        loadHistory
+      );
+
+    }
+
+    loadHistory();
 
   }
-
-}
-
-if(historySearch){
-
-  historySearch.addEventListener(
-    "input",
-    loadHistory
-  );
-
-}
-loadHistory();
+);
