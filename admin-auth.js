@@ -1,7 +1,16 @@
-const currentUser =
-JSON.parse(
-    localStorage.getItem("adminUser")
-);
+let currentUser = null;
+
+try{
+
+    currentUser = JSON.parse(
+        localStorage.getItem("adminUser")
+    );
+
+}catch(err){
+
+    localStorage.removeItem("adminUser");
+
+}
 
 if(!currentUser){
 
