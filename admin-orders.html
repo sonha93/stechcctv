@@ -119,6 +119,7 @@ h1{
 
 .module-menu label{
     transition:.2s;
+    border:1px solid transparent;
 }
 
 .module-menu input[type="radio"]:checked + span{
@@ -145,10 +146,11 @@ h1{
     overflow:auto;
     box-shadow:0 2px 10px rgba(0,0,0,.08);
 }
-
+.table-wrap{
+    overflow-x:auto;
+}
 table{
     width:100%;
-    min-width:1100px;
     border-collapse:collapse;
 }
 
@@ -183,7 +185,25 @@ tr:hover{
     min-width:160px;
     cursor:pointer;
 }
+.status-pending{
+    color:#ff9800;
+    font-weight:bold;
+}
 
+.status-shipping{
+    color:#2196f3;
+    font-weight:bold;
+}
+
+.status-completed{
+    color:#4caf50;
+    font-weight:bold;
+}
+
+.status-cancelled{
+    color:#f44336;
+    font-weight:bold;
+}
 .order-status:disabled{
     background:#f5f5f5;
     cursor:not-allowed;
@@ -236,7 +256,7 @@ tr:hover{
 }
 .module-menu{
     display:grid !important;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
     gap:12px;
 }
 
@@ -251,6 +271,52 @@ tr:hover{
     justify-content:center;
     gap:8px;
     font-weight:600;
+}
+  .manual-minus-wrap{
+    display:grid;
+
+    grid-template-columns:
+        minmax(160px,1.2fr)
+        minmax(180px,1.6fr)
+        minmax(80px,120px)
+        minmax(140px,1fr)
+        minmax(100px,120px);
+
+    gap:10px;
+    align-items:center;
+    margin-bottom:16px;
+    width:100%;
+}
+
+.manual-minus-wrap input,
+.manual-minus-wrap button,
+#manualMinusProductInfo{
+    height:48px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    padding:0 14px;
+    font-size:14px;
+}
+
+.manual-minus-wrap input{
+    background:#fff;
+}
+
+#manualMinusProductInfo{
+    display:flex;
+    align-items:center;
+    background:#f5f5f5;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+
+#manualMinusBtn{
+    background:#ef5350;
+    color:#fff;
+    border:none;
+    cursor:pointer;
+    font-weight:bold;
 }
 /* =========================
    MOBILE
@@ -278,9 +344,9 @@ tr:hover{
         width:100%;
     }
 
-    table{
-        min-width:950px;
-    }
+   table{
+    min-width:100%;
+}
 
     th,
     td{
@@ -335,7 +401,58 @@ tr:hover{
     #movementsSection th{
         border:1px solid #e5e7eb;
     }
+.manual-minus-wrap{
+    grid-template-columns:1fr;
+}
 
+.manual-minus-wrap input,
+.manual-minus-wrap button,
+#manualMinusProductInfo{
+    width:100%;
+    height:44px;
+    font-size:13px;
+}
+   .module-menu label{
+    padding:12px;
+    font-size:13px;
+}
+
+.table-wrap{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+}
+   thead th{
+    position:sticky;
+    top:0;
+    z-index:2;
+}
+   .module-menu input[type="radio"]:checked + span{
+    color:#00acc1;
+}
+
+.module-menu input:checked + span{
+    color:#00acc1;
+    font-weight:bold;
+}
+   .status-pending{
+    color:#ff9800;
+    font-weight:bold;
+}
+
+.status-shipping{
+    color:#2196f3;
+    font-weight:bold;
+}
+
+.status-completed{
+    color:#4caf50;
+    font-weight:bold;
+}
+
+.status-cancelled{
+    color:#f44336;
+    font-weight:bold;
+}
 
 }
 
@@ -503,18 +620,20 @@ tr:hover{
 
     <table>
 
-      <thead>
-       <th>ID</th>
-<th>Sản phẩm</th>
-<th>Giá nhập</th>
-<th>Giá bán</th>
- <th>Giá KM</th>        
-<th>Tồn</th>
-<th>Đã bán</th>
-<th>Lợi nhuận</th>
-<th>Trạng thái</th>
-<th>Hành động</th>
-      </thead>
+    <thead>
+  <tr>
+    <th>ID</th>
+    <th>Sản phẩm</th>
+    <th>Giá nhập</th>
+    <th>Giá bán</th>
+    <th>Giá KM</th>
+    <th>Tồn</th>
+    <th>Đã bán</th>
+    <th>Lợi nhuận</th>
+    <th>Trạng thái</th>
+    <th>Hành động</th>
+  </tr>
+</thead>
 
       <tbody id="inventoryBody"></tbody>
        <tfoot id="inventoryFooter"></tfoot>
@@ -589,116 +708,72 @@ tr:hover{
 
   <div style="padding:16px;">
 
-   <h2 style="margin-bottom:10px;">
- <div style="
-  display:flex;
-  gap:14px;
-  align-items:stretch;
-  flex-wrap:wrap;
-">
+    <h2 style="margin-bottom:15px;">
+      🔄 Stock Movements
+    </h2>
 
-  <!-- SEARCH -->
-  <input
-    id="manualMinusSearch"
-    type="text"
-    placeholder="Tên sản phẩm / ID"
-    style="
-      width:260px;
-      padding:14px;
-      border-radius:14px;
-      border:1px solid #ddd;
-      font-size:16px;
-    "
-  >
+    <!-- MANUAL MINUS -->
+    <div class="manual-minus-wrap">
 
-  <!-- PRODUCT INFO -->
-  <div
-    id="manualMinusProductInfo"
-    style="
-      min-width:260px;
-      padding:14px 18px;
-      border-radius:14px;
-      background:#f5f5f5;
-      border:1px solid #ddd;
-      line-height:1.8;
-      font-size:14px;
-    "
-  >
-    Chưa chọn sản phẩm
-  </div>
+      <input
+        id="manualMinusSearch"
+        type="text"
+        placeholder="Tên sản phẩm / ID"
+      >
 
-  <!-- QTY -->
-  <input
-    id="manualMinusQty"
-    type="number"
-    placeholder="Số lượng trừ"
-    style="
-      width:180px;
-      padding:14px;
-      border-radius:14px;
-      border:1px solid #ddd;
-      font-size:16px;
-    "
-  >
+      <div id="manualMinusProductInfo">
+        Chưa chọn sản phẩm
+      </div>
 
-  <!-- REASON -->
-  <input
-    id="manualMinusReason"
-    type="text"
-    placeholder="Lý do"
-    style="
-      width:260px;
-      padding:14px;
-      border-radius:14px;
-      border:2px solid #222;
-      font-size:16px;
-    "
-  >
+      <input
+        id="manualMinusQty"
+        type="number"
+        placeholder="SL"
+      >
 
-  <!-- BUTTON -->
-  <button
-    id="manualMinusBtn"
-    style="
-      padding:14px 28px;
-      border:none;
-      border-radius:14px;
-      background:#ef5350;
-      color:white;
-      font-size:18px;
-      font-weight:bold;
-      cursor:pointer;
-    "
-  >
-    Trừ Stock
-  </button>
+      <input
+        id="manualMinusReason"
+        type="text"
+        placeholder="Lý do"
+      >
 
-</div>
-<input
-  type="date"
-  id="movementsDateFilter"
-  style="
-    padding:10px;
-    margin-bottom:12px;
-    border:1px solid #ddd;
-    border-radius:8px;
-  "
->
+      <button id="manualMinusBtn">
+        Trừ Stock
+      </button>
 
-<button
-  id="clearMovementsDate"
-  style="
-    padding:10px 14px;
-    margin-left:8px;
-    border:none;
-    border-radius:8px;
-    background:#666;
-    color:#fff;
-    cursor:pointer;
-  "
->
-  Tất cả
-</button>
+    </div>
 
+    <!-- FILTER -->
+    <div style="margin-bottom:14px;">
+
+      <input
+        type="date"
+        id="movementsDateFilter"
+        style="
+          padding:10px;
+          border:1px solid #ddd;
+          border-radius:8px;
+        "
+      >
+
+      <button
+        id="clearMovementsDate"
+        style="
+          padding:10px 14px;
+          margin-left:8px;
+          border:none;
+          border-radius:8px;
+          background:#666;
+          color:#fff;
+          cursor:pointer;
+        "
+      >
+        Tất cả
+      </button>
+
+    </div>
+
+    <!-- TABLE -->
     <table>
 
       <thead>
