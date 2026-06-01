@@ -9,6 +9,8 @@ const movementsDateFilter =
   document.getElementById("movementsDateFilter");
 const inventoryBody =
   document.getElementById("inventoryBody");
+const inventoryFooter =
+  document.getElementById("inventoryFooter");
 const db = firebase.firestore();
 const importBody =
   document.getElementById("importBody");
@@ -96,7 +98,17 @@ orderSnap.forEach(orderDoc => {
 });
 
 
-    let html = "";
+   let html = "";
+
+let totalImportPrice = 0;
+
+let totalPrice = 0;
+
+let totalStock = 0;
+
+let totalSold = 0;
+
+let totalProfit = 0;
 
     productSnap.forEach(doc => {
 
@@ -150,6 +162,17 @@ const capital =
   importPrice * sold;
 const profit =
   revenue - capital;
+
+totalImportPrice += importPrice * stock;
+
+totalPrice += price * stock;
+
+totalStock += stock;
+
+totalSold += sold;
+
+totalProfit += profit;
+
 const negative =
   remain < 0;
 
@@ -263,7 +286,65 @@ const lowStock =
     }
 
     inventoryBody.innerHTML = html;
+if(inventoryFooter){
 
+  inventoryFooter.innerHTML = `
+
+    <tr style="
+      background:#111;
+      color:white;
+      font-weight:bold;
+    ">
+
+      <td colspan="2">
+        TOTAL
+      </td>
+
+      <td>
+        ${formatVND(totalImportPrice)}
+      </td>
+
+      <td>
+        ---
+      </td>
+
+      <td>
+        ${formatVND(totalPrice)}
+      </td>
+
+      <td style="
+        color:${
+          totalStock < 0
+            ? "red"
+            : "#00ff90"
+        };
+      ">
+        ${totalStock}
+      </td>
+
+      <td>
+        ${totalSold}
+      </td>
+
+      <td style="
+        color:${
+          totalProfit < 0
+            ? "red"
+            : "#00ff90"
+        };
+      ">
+        ${formatVND(totalProfit)}
+      </td>
+
+      <td colspan="2">
+        ---
+      </td>
+
+    </tr>
+
+  `;
+
+}
     bindInventoryEvents();
 
   }catch(err){
@@ -737,15 +818,7 @@ document
 
         // MOVEMENTS
         if(value === "movements"){
-// HISTORY
-if(value === "history"){
 
-  historySection.style.display =
-    "block";
-
-  loadHistory();
-
-}
           movementsSection.style.display =
             "block";
 
@@ -753,10 +826,20 @@ if(value === "history"){
 
         }
 
-      }
-    );
+        // HISTORY
+        if(value === "history"){
 
-  });
+          historySection.style.display =
+            "block";
+
+          loadHistory();
+
+        }
+
+      } // đóng callback change
+    ); // đóng addEventListener
+
+  }); // đóng forEach
 if(importDateFilter){
   importDateFilter.addEventListener(
     "change",
