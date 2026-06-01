@@ -1062,13 +1062,6 @@ if(manualMinusSearch && manualMinusProductInfo){
                     </div>
 
                     <div>
-                        ID:
-                        <span style="color:#666;">
-                            ${found.id}
-                        </span>
-                    </div>
-
-                    <div>
                         Tồn:
                         <span
                             style="
