@@ -1047,6 +1047,164 @@ hideAllSections();
 ordersSection.style.display =
   "block";
 // ============================
+// MANUAL MINUS STOCK
+// ============================
+
+const manualMinusBtn =
+  document.getElementById(
+    "manualMinusBtn"
+  );
+
+if(manualMinusBtn){
+
+  manualMinusBtn.addEventListener(
+    "click",
+    async () => {
+
+      try{
+
+        const keyword =
+          document
+            .getElementById(
+              "manualMinusSearch"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
+        const qty =
+          Number(
+            document
+              .getElementById(
+                "manualMinusQty"
+              )
+              .value || 0
+          );
+
+        const reason =
+          document
+            .getElementById(
+              "manualMinusReason"
+            )
+            .value
+            .trim();
+
+        if(!keyword){
+
+          alert("Nhập tên sản phẩm");
+          return;
+
+        }
+
+        if(qty <= 0){
+
+          alert("Số lượng không hợp lệ");
+          return;
+
+        }
+
+        // tìm sản phẩm
+        const snap = await db
+          .collection("products")
+          .get();
+
+        let foundDoc = null;
+
+        snap.forEach(doc => {
+
+          const data = doc.data();
+
+          const name =
+            String(data.name || "")
+              .toLowerCase();
+
+          if(
+            name.includes(keyword)
+          ){
+            foundDoc = doc;
+          }
+
+        });
+
+        if(!foundDoc){
+
+          alert("Không tìm thấy sản phẩm");
+          return;
+
+        }
+
+        const product =
+          foundDoc.data();
+
+        const currentStock =
+          Number(product.stock || 0);
+
+        const newStock =
+          currentStock - qty;
+
+        // update stock
+        await db
+          .collection("products")
+          .doc(foundDoc.id)
+          .update({
+
+            stock:newStock
+
+          });
+
+        // save movement
+        await db
+          .collection("stock_movements")
+          .add({
+
+            productId:foundDoc.id,
+
+            type:"MANUAL_MINUS",
+
+            qty:qty,
+
+            reason:reason || "Sự cố",
+
+            createdAt:
+              firebase.firestore
+                .FieldValue
+                .serverTimestamp()
+
+          });
+
+        alert(
+          `Đã trừ ${qty} stock`
+        );
+
+        // clear input
+        document.getElementById(
+          "manualMinusSearch"
+        ).value = "";
+
+        document.getElementById(
+          "manualMinusQty"
+        ).value = "";
+
+        document.getElementById(
+          "manualMinusReason"
+        ).value = "";
+
+        loadInventory();
+        loadStockMovements();
+
+      }catch(err){
+
+        console.log(err);
+
+        alert(err.message);
+
+      }
+
+    }
+  );
+
+}
+// ============================
 // INIT
 // ============================
 
