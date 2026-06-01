@@ -304,15 +304,15 @@ inventoryFooter.innerHTML = `
     ${formatVND(totalImportPrice)}
   </td>
 
-  <!-- Giá bán -->
-  <td>
-    ${formatVND(totalPrice)}
-  </td>
+ <!-- Giá KM -->
+<td>
+  ${formatVND(totalOldPrice)}
+</td>
 
-  <!-- Giá KM -->
-  <td>
-    ${formatVND(totalOldPrice)}
-  </td>
+<!-- Giá bán -->
+<td>
+  ${formatVND(totalPrice)}
+</td>
 
   <!-- Tồn -->
   <td style="
