@@ -1,28 +1,17 @@
-const db = firebase.firestore();
+const db = firebase.database();
 
-const historyBody =
-    document.getElementById("historyBody");
-
-const historySearch =
-    document.getElementById("historySearch");
-
-if(!historyBody){
-    console.error("Không tìm thấy historyBody");
-}
+const historyBody = document.getElementById("historyBody");
+const historySearch = document.getElementById("historySearch");
 
 let historyData = [];
 
 async function loadHistory(){
 
-    // tránh crash
-    if(!historyBody){
-        return;
-    }
+    if(!historyBody) return;
 
     historyBody.innerHTML = `
         <tr>
-            <td colspan="7"
-                style="text-align:center;padding:20px;">
+            <td colspan="7" style="text-align:center;padding:20px;">
                 Đang tải...
             </td>
         </tr>
@@ -35,43 +24,40 @@ async function loadHistory(){
             importSnap,
             salesSnap
         ] = await Promise.all([
-            db.collection("inventory_snapshot").get(),
-            db.collection("import_history").get(),
-            db.collection("sales_history").get()
+
+            db.ref("inventory_snapshot").once("value"),
+            db.ref("import_history").once("value"),
+            db.ref("sales_history").once("value")
+
         ]);
 
-        console.log("inventory:", inventorySnap.size);
-        console.log("import:", importSnap.size);
-        console.log("sales:", salesSnap.size);
+        const inventoryData = inventorySnap.val() || {};
+        const importData = importSnap.val() || {};
+        const salesData = salesSnap.val() || {};
 
         const inventoryMap = {};
         const importMap = {};
         const salesMap = {};
 
         // INVENTORY
-        inventorySnap.forEach(doc => {
-
-            const d = doc.data();
+        Object.values(inventoryData).forEach(d => {
 
             inventoryMap[d.productId] = {
                 productName: d.productName || "",
-                stock: Number(d.stock || 0),
-                stockValue: Number(d.stockValue || 0)
+                stock: Number(d.stock || 0)
             };
 
         });
 
         // IMPORT
-        importSnap.forEach(doc => {
-
-            const d = doc.data();
+        Object.values(importData).forEach(d => {
 
             if(!importMap[d.productId]){
 
                 importMap[d.productId] = {
-                    qty:0,
-                    total:0,
-                    productName:d.productName || ""
+                    qty: 0,
+                    total: 0,
+                    productName: d.productName || ""
                 };
 
             }
@@ -86,16 +72,14 @@ async function loadHistory(){
         });
 
         // SALES
-        salesSnap.forEach(doc => {
-
-            const d = doc.data();
+        Object.values(salesData).forEach(d => {
 
             if(!salesMap[d.productId]){
 
                 salesMap[d.productId] = {
-                    qty:0,
-                    total:0,
-                    productName:d.productName || ""
+                    qty: 0,
+                    total: 0,
+                    productName: d.productName || ""
                 };
 
             }
@@ -119,33 +103,21 @@ async function loadHistory(){
 
         allProductIds.forEach(productId => {
 
-            const inven =
-                inventoryMap[productId] || {};
+            const inven = inventoryMap[productId] || {};
+            const imp = importMap[productId] || {};
+            const sale = salesMap[productId] || {};
 
-            const imp =
-                importMap[productId] || {};
-
-            const sale =
-                salesMap[productId] || {};
-
-            const totalImport =
-                imp.total || 0;
-
-            const totalSale =
-                sale.total || 0;
+            const totalImport = imp.total || 0;
+            const totalSale = sale.total || 0;
 
             const avgImportPrice =
                 imp.qty > 0
                     ? totalImport / imp.qty
                     : 0;
 
-            const estimatedCostOfSold =
-                avgImportPrice *
-                (sale.qty || 0);
-
             const profit =
                 totalSale -
-                estimatedCostOfSold;
+                (avgImportPrice * (sale.qty || 0));
 
             historyData.push({
 
@@ -157,14 +129,9 @@ async function loadHistory(){
                     imp.productName ||
                     "Không tên",
 
-                importedQty:
-                    imp.qty || 0,
-
-                soldQty:
-                    sale.qty || 0,
-
-                stock:
-                    inven.stock || 0,
+                importedQty: imp.qty || 0,
+                soldQty: sale.qty || 0,
+                stock: inven.stock || 0,
 
                 totalImport,
                 totalSale,
@@ -178,13 +145,11 @@ async function loadHistory(){
             (a, b) => b.totalSale - a.totalSale
         );
 
-        console.log(historyData);
-
         renderHistory(historyData);
 
     }catch(err){
 
-        console.log(err);
+        console.error(err);
 
         historyBody.innerHTML = `
             <tr>
@@ -205,19 +170,14 @@ async function loadHistory(){
 
 function renderHistory(data){
 
-    if(!historyBody){
-        return;
-    }
+    if(!historyBody) return;
 
     if(!data.length){
 
         historyBody.innerHTML = `
             <tr>
                 <td colspan="7"
-                    style="
-                        text-align:center;
-                        padding:20px;
-                    ">
+                    style="text-align:center;padding:20px;">
                     Không có dữ liệu
                 </td>
             </tr>
@@ -231,34 +191,22 @@ function renderHistory(data){
         <tr>
 
             <td>
-                <b>${item.productName}</b>
-                <br>
+                <b>${item.productName}</b><br>
                 <small>${item.productId}</small>
             </td>
 
             <td>${item.importedQty}</td>
-
             <td>${item.soldQty}</td>
-
             <td>${item.stock}</td>
 
-            <td>
-                ${formatMoney(item.totalImport)}
-            </td>
+            <td>${formatMoney(item.totalImport)}</td>
 
-            <td>
-                ${formatMoney(item.totalSale)}
-            </td>
+            <td>${formatMoney(item.totalSale)}</td>
 
-            <td
-                style="
-                    color:
-                    ${item.profit >= 0
-                        ? "green"
-                        : "red"};
-                    font-weight:bold;
-                "
-            >
+            <td style="
+                color:${item.profit >= 0 ? "green" : "red"};
+                font-weight:bold;
+            ">
                 ${item.profit >= 0 ? "+" : ""}
                 ${formatMoney(item.profit)}
             </td>
@@ -273,65 +221,48 @@ function formatMoney(value){
 
     const number = Number(value);
 
-    if(isNaN(number)){
-        return "0đ";
-    }
-
-    return number.toLocaleString("vi-VN") + "đ";
+    return isNaN(number)
+        ? "0đ"
+        : number.toLocaleString("vi-VN") + "đ";
 
 }
 
 // SEARCH
 if(historySearch){
 
-    historySearch.addEventListener(
-        "input",
-        () => {
+    historySearch.addEventListener("input", () => {
 
-            const keyword =
-                historySearch.value
-                    .toLowerCase();
+        const keyword =
+            historySearch.value.toLowerCase();
 
-            const filtered =
-                historyData.filter(item => {
+        const filtered = historyData.filter(item =>
 
-                    return (
+            (item.productId || "")
+                .toLowerCase()
+                .includes(keyword)
 
-                        (item.productId || "")
-                            .toLowerCase()
-                            .includes(keyword)
+            ||
 
-                        ||
+            (item.productName || "")
+                .toLowerCase()
+                .includes(keyword)
 
-                        (item.productName || "")
-                            .toLowerCase()
-                            .includes(keyword)
+        );
 
-                    );
+        renderHistory(filtered);
 
-                });
-
-            renderHistory(filtered);
-
-        }
-    );
+    });
 
 }
 
 loadHistory();
 
-
 // RADIO SWITCH
-const radios =
-    document.querySelectorAll(
-        'input[name="adminView"]'
-    );
+document
+    .querySelectorAll('input[name="adminView"]')
+    .forEach(radio => {
 
-radios.forEach(radio => {
-
-    radio.addEventListener(
-        "change",
-        () => {
+        radio.addEventListener("change", () => {
 
             [
                 "ordersSection",
@@ -359,7 +290,6 @@ radios.forEach(radio => {
                 target.style.display = "block";
             }
 
-        }
-    );
+        });
 
-});
+    });
