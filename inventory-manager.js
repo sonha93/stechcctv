@@ -703,7 +703,7 @@ async function loadStockMovements(){
                     <td>${productName}</td>
 
                     <td>${data.type || "-"}</td>
-
+                     <td>${data.reason || "---"}</td>
                     <td
                         style="
                             color:${
