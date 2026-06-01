@@ -947,306 +947,134 @@ hideAllSections();
 ordersSection.style.display = "block";
 
 // ============================
-// MANUAL MINUS PRODUCT INFO
+// MANUAL MINUS STOCK (JS SẴN)
 // ============================
 
-const manualMinusSearch =
-    document.getElementById("manualMinusSearch");
+const manualMinusSearch = document.getElementById("manualMinusSearch");
+const manualMinusProductInfo = document.getElementById("manualMinusProductInfo");
+const manualMinusQty = document.getElementById("manualMinusQty");
+const manualMinusReason = document.getElementById("manualMinusReason");
+const manualMinusBtn = document.getElementById("manualMinusBtn");
 
-const manualMinusProductInfo =
-    document.getElementById("manualMinusProductInfo");
+if (manualMinusSearch && manualMinusProductInfo && manualMinusQty && manualMinusReason && manualMinusBtn) {
 
-if(manualMinusSearch && manualMinusProductInfo){
+    // HIỂN THỊ THÔNG TIN SẢN PHẨM KHI SEARCH
+    manualMinusSearch.addEventListener("input", async () => {
 
-    manualMinusSearch.addEventListener(
-        "input",
-        async () => {
+        const keyword = manualMinusSearch.value.trim().toLowerCase();
 
-            const keyword = manualMinusSearch.value
-                .trim()
-                .toLowerCase();
+        if (!keyword) {
+            manualMinusProductInfo.innerHTML = "Chưa chọn sản phẩm";
+            return;
+        }
 
-            if(!keyword){
+        try {
+            const productSnap = await db.collection("products").get();
+            const orderSnap = await db.collection("orders").get();
 
-                manualMinusProductInfo.innerHTML =
-                    "Chưa chọn sản phẩm";
+            // SOLD MAP
+            const soldMap = {};
+            orderSnap.forEach(orderDoc => {
+                const order = orderDoc.data();
+                if (order.status !== "completed" || order.customerCancelled || order.adminCancelled) return;
+                (order.items || []).forEach(item => {
+                    const id = String(item.id);
+                    if (!soldMap[id]) soldMap[id] = 0;
+                    soldMap[id] += Number(item.qty || 0);
+                });
+            });
 
+            let found = null;
+            for (const doc of productSnap.docs) {
+                const data = doc.data();
+                const name = String(data.name || "").toLowerCase();
+                const productId = String(doc.id).toLowerCase();
+                if (name.includes(keyword) || productId.includes(keyword)) {
+                    found = { id: doc.id, ...data };
+                    break;
+                }
+            }
+
+            if (!found) {
+                manualMinusProductInfo.innerHTML = `<span style="color:red;font-weight:bold;">Không tìm thấy sản phẩm</span>`;
                 return;
-
             }
 
-            try{
+            const sold = Number(soldMap[String(found.id)] || 0);
 
-                const productSnap =
-                    await db.collection("products").get();
+            manualMinusProductInfo.innerHTML = `
+                <div class="product-info-wrap">
+                    <div class="product-info-name">${found.name || "-"}</div>
+                    <div class="product-info-stat"><span>Tồn:</span><b class="stock-green">${Number(found.stock || 0)}</b></div>
+                    <div class="product-info-stat"><span>Đã bán:</span><b class="sold-orange">${sold}</b></div>
+                </div>
+            `;
 
-                const orderSnap =
-                    await db.collection("orders").get();
-
-                // SOLD MAP
-
-                const soldMap = {};
-
-                orderSnap.forEach(orderDoc => {
-
-                    const order = orderDoc.data();
-
-                    if(
-                        order.status !== "completed" ||
-                        order.customerCancelled ||
-                        order.adminCancelled
-                    ){
-                        return;
-                    }
-
-                    (order.items || []).forEach(item => {
-
-                        const id = String(item.id);
-
-                        if(!soldMap[id]){
-                            soldMap[id] = 0;
-                        }
-
-                        soldMap[id] += Number(item.qty || 0);
-
-                    });
-
-                });
-
-               let found = null;
-
-for(const doc of productSnap.docs){
-
-    const data = doc.data();
-
-    const name = String(data.name || "")
-        .toLowerCase();
-
-    const productId = String(doc.id)
-        .toLowerCase();
-
-    if(
-        name.includes(keyword) ||
-        productId.includes(keyword)
-    ){
-
-        found = {
-            id:doc.id,
-            ...data
-        };
-
-        break; // QUAN TRỌNG
-    }
-
-}
-
-                if(!found){
-
-                    manualMinusProductInfo.innerHTML = `
-                        <span style="color:red;font-weight:bold;">
-                            Không tìm thấy sản phẩm
-                        </span>
-                    `;
-
-                    return;
-
-                }
-
-                const sold = Number(
-                    soldMap[String(found.id)] || 0
-                );
-
-               manualMinusProductInfo.innerHTML = `
-<div class="product-info-wrap">
-
-    <div class="product-info-name">
-        ${found.name || "-"}
-    </div>
-
-    <div class="product-info-stat">
-        <span>Tồn:</span>
-        <b class="stock-green">
-            ${Number(found.stock || 0)}
-        </b>
-    </div>
-
-    <div class="product-info-stat">
-        <span>Đã bán:</span>
-        <b class="sold-orange">
-            ${sold}
-        </b>
-    </div>
-
-</div>
-`;
-            }catch(err){
-
-                console.log(err);
-
-            }
-
+        } catch (err) {
+            console.log(err);
         }
-    );
+    });
 
-}
+    // TRỪ STOCK KHI BẤM NÚT
+    manualMinusBtn.addEventListener("click", async () => {
 
-// ============================
-// MANUAL MINUS STOCK
-// ============================
+        try {
+            const keyword = manualMinusSearch.value.trim().toLowerCase();
+            const qty = Number(manualMinusQty.value || 0);
+            const reasonValue = manualMinusReason.value.trim();
 
-const manualMinusBtn =
-    document.getElementById("manualMinusBtn");
+            if (!keyword) { alert("Nhập tên sản phẩm"); return; }
+            if (qty <= 0) { alert("Số lượng không hợp lệ"); return; }
+            if (!reasonValue) { alert("Chọn lý do"); return; }
 
-if(manualMinusBtn){
+            // TÌM SẢN PHẨM
+            const snap = await db.collection("products").get();
+            let foundDoc = null;
+            snap.forEach(doc => {
+                const data = doc.data();
+                const name = String(data.name || "").toLowerCase();
+                const productId = String(doc.id).toLowerCase();
+                if (name.includes(keyword) || productId.includes(keyword)) foundDoc = doc;
+            });
 
-    manualMinusBtn.addEventListener(
-        "click",
-        async () => {
+            if (!foundDoc) { alert("Không tìm thấy sản phẩm"); return; }
 
-            try{
+            const product = foundDoc.data();
+            const currentStock = Number(product.stock || 0);
+            const newStock = currentStock - qty;
 
-                const keyword = document
-                    .getElementById("manualMinusSearch")
-                    .value
-                    .trim()
-                    .toLowerCase();
+            // UPDATE STOCK
+            await db.collection("products").doc(foundDoc.id).update({ stock: newStock });
 
-                const qty = Number(
-                    document
-                    .getElementById("manualMinusQty")
-                    .value || 0
-                );
+            // SAVE STOCK MOVEMENT
+            await db.collection("stock_movements").add({
+                productId: foundDoc.id,
+                type: "MANUAL_MINUS",
+                qty: qty,
+                reason: reasonValue,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
 
-                const reason = document
-                    .getElementById("manualMinusReason")
-                    .value
-                    .trim();
+            alert(`Đã trừ ${qty} stock`);
 
-                if(!keyword){
+            // CLEAR INPUTS
+            manualMinusSearch.value = "";
+            manualMinusQty.value = "";
+            manualMinusReason.value = "";
+            manualMinusProductInfo.innerHTML = "Chưa chọn sản phẩm";
 
-                    alert("Nhập tên sản phẩm");
-                    return;
+            // LOAD LẠI BẢNG
+            loadInventory();
+            loadStockMovements();
 
-                }
-
-                if(qty <= 0){
-
-                    alert("Số lượng không hợp lệ");
-                    return;
-
-                }
-
-                // TÌM SẢN PHẨM
-
-                const snap =
-                    await db.collection("products").get();
-
-                let foundDoc = null;
-
-                snap.forEach(doc => {
-
-                    const data = doc.data();
-
-                    const name = String(data.name || "")
-                        .toLowerCase();
-
-                    const productId = String(doc.id)
-                        .toLowerCase();
-
-                    if(
-                        name.includes(keyword) ||
-                        productId.includes(keyword)
-                    ){
-
-                        foundDoc = doc;
-
-                    }
-
-                });
-
-                if(!foundDoc){
-
-                    alert("Không tìm thấy sản phẩm");
-                    return;
-
-                }
-
-                const product = foundDoc.data();
-
-                const currentStock =
-                    Number(product.stock || 0);
-
-                const newStock =
-                    Number(currentStock) - Number(qty);
-
-                console.log({
-                    currentStock,
-                    qty,
-                    newStock
-                });
-
-                // UPDATE STOCK
-
-                await db
-                    .collection("products")
-                    .doc(foundDoc.id)
-                    .update({
-                        stock:newStock
-                    });
-
-                // SAVE MOVEMENT
-
-                await db
-                    .collection("stock_movements")
-                    .add({
-
-                        productId:foundDoc.id,
-
-                        type:"MANUAL_MINUS",
-
-                        qty:qty,
-
-                        reason:reason || "Sự cố",
-
-                        createdAt:
-                            firebase.firestore
-                            .FieldValue
-                            .serverTimestamp()
-
-                    });
-
-                alert(`Đã trừ ${qty} stock`);
-
-                // CLEAR INPUT
-
-                document.getElementById(
-                    "manualMinusSearch"
-                ).value = "";
-
-                document.getElementById(
-                    "manualMinusQty"
-                ).value = "";
-
-                document.getElementById(
-                    "manualMinusReason"
-                ).value = "";
-manualMinusProductInfo.innerHTML =
-    "Chưa chọn sản phẩm";
-                loadInventory();
-                loadStockMovements();
-
-            }catch(err){
-
-                console.log(err);
-                alert(err.message);
-
-            }
-
+        } catch (err) {
+            console.log(err);
+            alert(err.message);
         }
-    );
+
+    });
 
 }
-
 // ============================
 // INIT
 // ============================
