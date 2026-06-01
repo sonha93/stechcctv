@@ -101,13 +101,10 @@ orderSnap.forEach(orderDoc => {
    let html = "";
 
 let totalImportPrice = 0;
-
 let totalPrice = 0;
-
+let totalOldPrice = 0;
 let totalStock = 0;
-
 let totalSold = 0;
-
 let totalProfit = 0;
 
     productSnap.forEach(doc => {
@@ -166,6 +163,8 @@ const profit =
 totalImportPrice += importPrice;
 
 totalPrice += price;
+
+totalOldPrice += oldPrice;
 
 totalStock += stock;
 
@@ -312,7 +311,7 @@ inventoryFooter.innerHTML = `
 
   <!-- Giá KM -->
   <td>
-    ---
+    ${formatVND(totalOldPrice)}
   </td>
 
   <!-- Tồn -->
