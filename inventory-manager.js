@@ -889,8 +889,19 @@ if(historySection)
 
   if(movementsSection)
     movementsSection.style.display = "none";
+ // HIDE INVENTORY PAGINATION
+  const inventoryPagination =
+    document.getElementById(
+      "inventoryPagination"
+    );
+
+  if(inventoryPagination){
+    inventoryPagination.style.display =
+      "none";
+  }
 
 }
+
 
 document
   .querySelectorAll(
@@ -919,7 +930,15 @@ document
 
           inventorySection.style.display =
             "block";
+const inventoryPagination =
+  document.getElementById(
+    "inventoryPagination"
+  );
 
+if(inventoryPagination){
+  inventoryPagination.style.display =
+    "flex";
+}
           loadInventory();
 
         }
