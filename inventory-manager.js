@@ -1051,7 +1051,7 @@ if(importDateFilter){
 }
 
 if(movementsDateFilter){
-  movementsDateFilter.value = "";
+  movementsDateFilter.value = todayStr;
 }
 // mặc định
 hideAllSections();
