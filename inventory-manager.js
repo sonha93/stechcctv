@@ -1013,31 +1013,32 @@ if(manualMinusSearch && manualMinusProductInfo){
 
                 });
 
-                let found = null;
+               let found = null;
 
-                productSnap.forEach(doc => {
+for(const doc of productSnap.docs){
 
-                    const data = doc.data();
+    const data = doc.data();
 
-                    const name = String(data.name || "")
-                        .toLowerCase();
+    const name = String(data.name || "")
+        .toLowerCase();
 
-                    const productId = String(doc.id)
-                        .toLowerCase();
+    const productId = String(doc.id)
+        .toLowerCase();
 
-                    if(
-                        name.includes(keyword) ||
-                        productId.includes(keyword)
-                    ){
+    if(
+        name.includes(keyword) ||
+        productId.includes(keyword)
+    ){
 
-                        found = {
-                            id:doc.id,
-                            ...data
-                        };
+        found = {
+            id:doc.id,
+            ...data
+        };
 
-                    }
+        break; // QUAN TRỌNG
+    }
 
-                });
+}
 
                 if(!found){
 
@@ -1229,7 +1230,8 @@ if(manualMinusBtn){
                 document.getElementById(
                     "manualMinusReason"
                 ).value = "";
-
+manualMinusProductInfo.innerHTML =
+    "Chưa chọn sản phẩm";
                 loadInventory();
                 loadStockMovements();
 
