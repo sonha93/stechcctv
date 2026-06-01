@@ -871,18 +871,33 @@ tr:hover{
         Chưa chọn sản phẩm
       </div>
 
-      <input
-        id="manualMinusQty"
-        type="number"
-        placeholder="SL"
-      >
+      <select id="manualMinusReason">
 
-      <input
-        id="manualMinusReason"
-        type="text"
-        placeholder="Lý do"
-      >
+    <option value="">
+        Chọn lý do
+    </option>
 
+    <option value="Hỏng">
+        Hỏng
+    </option>
+
+    <option value="Mất cắp">
+        Mất cắp
+    </option>
+
+    <option value="Nội bộ">
+        Nội bộ
+    </option>
+
+    <option value="Điều chỉnh Stock">
+        Điều chỉnh Stock
+    </option>
+
+    <option value="Khác">
+        Khác
+    </option>
+
+</select>
       <button id="manualMinusBtn">
         Trừ Stock
       </button>
