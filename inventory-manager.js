@@ -696,52 +696,23 @@ async function loadStockMovements(){
                 }
 
             }catch{}
-
-            html += `
-                <tr>
-
-                    <td>${productName}</td>
-                   
-                    <td>${data.type || "-"}</td>
-
-                      <td>${data.reason || "---"}</td>
-                    <td
-                        style="
-                            color:${
-                                data.type === "MANUAL_MINUS"
-                                ? "red"
-                                : "#00c853"
-                            };
-                            font-weight:bold;
-                        "
-                    >
-
-                        ${
-                            data.type === "MANUAL_MINUS"
-                            ? "-" + Number(data.qty || 0)
-                            : "+" + Number(data.qty || 0)
-                        }
-
-                    </td>
-
-                    <td>
-
-                        ${
-                            data.createdAt &&
-                            typeof data.createdAt.toDate === "function"
-
-                            ? data.createdAt
-                                .toDate()
-                                .toLocaleString("vi-VN")
-
-                            : "-"
-                        }
-
-                    </td>
-
-                </tr>
-            `;
-
+html += `
+    <tr>
+        <td>${productName}</td>
+        <td>${data.type || "---"}</td>        <!-- Loại -->
+        <td style="color:${data.qty < 0 ? "red" : "#00c853"};">
+            ${data.qty > 0 ? "+" + data.qty : data.qty}
+        </td>                                  <!-- Số lượng -->
+        <td>${data.reason || "---"}</td>      <!-- Lý do -->
+        <td>
+            ${
+                data.createdAt && typeof data.createdAt.toDate === "function"
+                ? data.createdAt.toDate().toLocaleString("vi-VN")
+                : "-"
+            }
+        </td>
+    </tr>
+`;
         }
 
         if(!html){
