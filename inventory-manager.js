@@ -35,7 +35,7 @@ function formatVND(number){
 // ============================
 // LOAD INVENTORY
 // ============================
-```js
+
 async function loadInventory(){
 
   if(!inventoryBody) return;
@@ -58,10 +58,6 @@ async function loadInventory(){
             .toLowerCase()
         : "";
 
-    // ============================
-    // GET DATA
-    // ============================
-
     const productSnap = await db
       .collection("products")
       .get();
@@ -69,129 +65,70 @@ async function loadInventory(){
     const orderSnap = await db
       .collection("orders")
       .get();
+  
 
-    // ============================
-    // SOLD MAP
-    // ============================
+const soldMap = {};
 
-    const soldMap = {};
+orderSnap.forEach(orderDoc => {
 
-    orderSnap.forEach(orderDoc => {
+  const order = orderDoc.data();
 
-      const order = orderDoc.data();
 
-      if(
-        order.status !== "completed" ||
-        order.customerCancelled ||
-        order.adminCancelled
-      ){
-        return;
-      }
+  if(
+    order.status !== "completed" ||
+    order.customerCancelled ||
+    order.adminCancelled
+  ){
+    return;
+  }
 
-      (order.items || []).forEach(item => {
+  (order.items || []).forEach(item => {
 
-        const id = String(item.id);
+   
+    const id = String(item.id);
 
-        if(!soldMap[id]){
-          soldMap[id] = 0;
-        }
+    if(!soldMap[id]){
+      soldMap[id] = 0;
+    }
 
-        soldMap[id] += Number(item.qty || 0);
+    soldMap[id] += Number(item.qty || 0);
 
-      });
+  });
 
-    });
+});
 
-    // ============================
-    // TOTAL
-    // ============================
 
-    let html = "";
+   let html = "";
 
-    let totalImportPrice = 0;
-    let totalPrice = 0;
-    let totalOldPrice = 0;
-    let totalStock = 0;
-    let totalSold = 0;
-    let totalProfit = 0;
-
-    // ============================
-    // PAGINATION
-    // ============================
-
-    const itemsPerPage = 15;
-
-    window.currentPage =
-      window.currentPage || 1;
-
-    const products = [];
-
-    // ============================
-    // BUILD PRODUCTS
-    // ============================
+let totalImportPrice = 0;
+let totalPrice = 0;
+let totalOldPrice = 0;
+let totalStock = 0;
+let totalSold = 0;
+let totalProfit = 0;
 
     productSnap.forEach(doc => {
 
       const p = doc.data();
 
-      // SEARCH
-      if(
-        keyword &&
-        !String(p.name || "")
-          .toLowerCase()
-          .includes(keyword) &&
-        !String(doc.id)
-          .toLowerCase()
-          .includes(keyword)
-      ){
-        return;
-      }
-
-      products.push({
-        id:doc.id,
-        data:p
-      });
-
-    });
-
-    // ============================
-    // TOTAL PAGES
-    // ============================
-
-    const totalPages =
-      Math.ceil(
-        products.length / itemsPerPage
-      );
-
-    if(window.currentPage > totalPages){
-      window.currentPage = 1;
-    }
-
-    const start =
-      (window.currentPage - 1)
-      * itemsPerPage;
-
-    const end =
-      start + itemsPerPage;
-
-    const pageProducts =
-      products.slice(start, end);
-
-    // ============================
-    // RENDER
-    // ============================
-
-    pageProducts.forEach(item => {
-
-      const doc = {
-        id:item.id
-      };
-
-      const p = item.data;
+      // search
+    if(
+  keyword &&
+  !String(p.name || "")
+      .toLowerCase()
+      .includes(keyword) &&
+  !String(doc.id)
+      .toLowerCase()
+      .includes(keyword)
+){
+  return;
+}
 
       const stock =
         Number(p.stock || 0);
+    
 
+      
       const importPrice =
         Number(p.importPrice || 0);
 
@@ -201,33 +138,45 @@ async function loadInventory(){
       const oldPrice =
         Number(p.oldPrice || 0);
 
-      const sold =
-        Number(
-          soldMap[String(doc.id)] || 0
-        );
+      // ============================
+      // SOLD
+      // ============================
+const sold =
+  Number(soldMap[String(doc.id)] || 0);
 
-      const revenue =
-        price * sold;
 
-      const capital =
-        importPrice * sold;
 
-      const profit =
-        revenue - capital;
+      // ============================
+      // PROFIT
+      // ============================
 
-      totalImportPrice += importPrice;
-      totalPrice += price;
-      totalOldPrice += oldPrice;
-      totalStock += stock;
-      totalSold += sold;
-      totalProfit += profit;
+const remain = stock;
 
-      const negative =
-        stock < 0;
+const revenue =
+  price * sold;
 
-      const lowStock =
-        stock > 0 && stock <= 5;
+const capital =
+  importPrice * sold;
+const profit =
+  revenue - capital;
 
+totalImportPrice += importPrice;
+
+totalPrice += price;
+
+totalOldPrice += oldPrice;
+
+totalStock += stock;
+
+totalSold += sold;
+
+totalProfit += profit;
+
+const negative =
+  remain < 0;
+
+const lowStock =
+  remain > 0 && remain <= 5;
       html += `
         <tr>
 
@@ -250,52 +199,48 @@ async function loadInventory(){
             >
           </td>
 
-          <td>
-            ${
-              oldPrice
-                ? formatVND(oldPrice)
-                : "---"
-            }
-          </td>
+        <td>
+  ${
+    oldPrice
+      ? formatVND(oldPrice)
+      : "---"
+  }
+</td>
 
-          <td>
-            ${formatVND(price)}
-          </td>
+<td>
+  ${formatVND(price)}
+</td>
 
-          <td>
-            ${stock}
-          </td>
+     <td>
+  ${stock}
+</td>
 
-          <td>
-            ${sold}
-          </td>
+<td>
+  ${sold}
+</td>
 
-          <td style="
-            color:${
-              profit < 0
-                ? "red"
-                : "green"
-            };
-            font-weight:bold;
-          ">
-            ${formatVND(profit)}
-          </td>
+<td style="
+  color:${profit < 0 ? "red" : "green"};
+  font-weight:bold;
+">
+  ${formatVND(profit)}
+</td>
 
-          <td>
-            ${
-              negative
-              ? `<span style="color:red;font-weight:bold;">
-                   Âm kho
-                 </span>`
-              : lowStock
-              ? `<span style="color:#ff9800;font-weight:bold;">
-                   Tồn thấp
-                 </span>`
-              : `<span style="color:green;font-weight:bold;">
-                   __
-                 </span>`
-            }
-          </td>
+<td>
+  ${
+    negative
+    ? `<span style="color:red;font-weight:bold;">
+         Âm kho
+       </span>`
+    : lowStock
+    ? `<span style="color:#ff9800;font-weight:bold;">
+         Tồn thấp
+       </span>`
+    : `<span style="color:green;font-weight:bold;">
+        __
+       </span>`
+  }
+</td>
 
           <td>
 
@@ -321,10 +266,6 @@ async function loadInventory(){
 
     });
 
-    // ============================
-    // EMPTY
-    // ============================
-
     if(!html){
 
       html = `
@@ -342,121 +283,70 @@ async function loadInventory(){
     }
 
     inventoryBody.innerHTML = html;
+if(inventoryFooter){
 
-    // ============================
-    // PAGINATION BUTTON
-    // ============================
+inventoryFooter.innerHTML = `
 
-    let paginationHTML = `
-      <tr>
-        <td colspan="10"
-          style="
-            text-align:center;
-            padding:20px;
-          ">
-    `;
+<tr style="
+  background:#111;
+  color:white;
+  font-weight:bold;
+">
 
-    for(let i = 1; i <= totalPages; i++){
+  <td colspan="2">
+    TOTAL
+  </td>
 
-      paginationHTML += `
-        <button
-          onclick="changePage(${i})"
-          style="
-            margin:0 5px;
-            padding:8px 12px;
-            border:none;
-            border-radius:6px;
-            cursor:pointer;
-            background:${
-              i === window.currentPage
-                ? "#00acc1"
-                : "#ddd"
-            };
-            color:${
-              i === window.currentPage
-                ? "white"
-                : "black"
-            };
-          "
-        >
-          ${i}
-        </button>
-      `;
+  <!-- Giá nhập -->
+  <td>
+    ${formatVND(totalImportPrice)}
+  </td>
 
-    }
+ <!-- Giá KM -->
+<td>
+  ${formatVND(totalOldPrice)}
+</td>
 
-    paginationHTML += `
-        </td>
-      </tr>
-    `;
+<!-- Giá bán -->
+<td>
+  ${formatVND(totalPrice)}
+</td>
 
-    inventoryBody.innerHTML +=
-      paginationHTML;
+  <!-- Tồn -->
+  <td style="
+    color:${
+      totalStock < 0
+        ? "red"
+        : "#00ff90"
+    };
+  ">
+    ${totalStock}
+  </td>
 
-    // ============================
-    // FOOTER
-    // ============================
+  <!-- Đã bán -->
+  <td>
+    ${totalSold}
+  </td>
 
-    if(inventoryFooter){
+  <!-- Lợi nhuận -->
+  <td style="
+    color:${
+      totalProfit < 0
+        ? "red"
+        : "#00ff90"
+    };
+  ">
+    ${formatVND(totalProfit)}
+  </td>
 
-      inventoryFooter.innerHTML = `
+  <td colspan="2">
+    ---
+  </td>
 
-        <tr style="
-          background:#111;
-          color:white;
-          font-weight:bold;
-        ">
+</tr>
 
-          <td colspan="2">
-            TOTAL
-          </td>
-
-          <td>
-            ${formatVND(totalImportPrice)}
-          </td>
-
-          <td>
-            ${formatVND(totalOldPrice)}
-          </td>
-
-          <td>
-            ${formatVND(totalPrice)}
-          </td>
-
-          <td style="
-            color:${
-              totalStock < 0
-                ? "red"
-                : "#00ff90"
-            };
-          ">
-            ${totalStock}
-          </td>
-
-          <td>
-            ${totalSold}
-          </td>
-
-          <td style="
-            color:${
-              totalProfit < 0
-                ? "red"
-                : "#00ff90"
-            };
-          ">
-            ${formatVND(totalProfit)}
-          </td>
-
-          <td colspan="2">
-            ---
-          </td>
-
-        </tr>
-
-      `;
-
-    }
-
+`;
+}
     bindInventoryEvents();
 
   }catch(err){
@@ -1021,13 +911,6 @@ hideAllSections();
 
 ordersSection.style.display =
   "block";
-function changePage(page){
-
-  window.currentPage = page;
-
-  loadInventory();
-
-}
 // ============================
 // INIT
 // ============================
