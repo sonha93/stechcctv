@@ -1,17 +1,12 @@
-
 // ============================
 // INVENTORY MANAGER V8
 // ============================
-const importDateFilter =
-  document.getElementById("importDateFilter");
 
-const movementsDateFilter =
-  document.getElementById("movementsDateFilter");
 const inventoryBody =
   document.getElementById("inventoryBody");
-const inventoryFooter =
-  document.getElementById("inventoryFooter");
+
 const db = firebase.firestore();
+
 const importBody =
   document.getElementById("importBody");
 
@@ -31,62 +26,7 @@ function formatVND(number){
     .toLocaleString("vi-VN") + "đ";
 
 }
-// ============================
-// PAGINATION
-// ============================
 
-let currentPage = 1;
-const rowsPerPage = 15;
-// ============================
-// BUILD SOLD MAP
-// ============================
-
-async function buildSoldMap(){
-
-  const orderSnap = await db
-    .collection("orders")
-    .get();
-
-  const soldMap = {};
-
-  orderSnap.forEach(orderDoc => {
-
-    const order = orderDoc.data();
-
-    const validStatus = [
-      "completed",
-      "delivered",
-      "done"
-    ];
-
-    if(
-      !validStatus.includes(
-        String(order.status || "")
-          .toLowerCase()
-      ) ||
-      order.customerCancelled ||
-      order.adminCancelled
-    ){
-      return;
-    }
-
-    (order.items || []).forEach(item => {
-
-      const id = String(item.id);
-
-      if(!soldMap[id]){
-        soldMap[id] = 0;
-      }
-
-      soldMap[id] += Number(item.qty || 0);
-
-    });
-
-  });
-
-  return soldMap;
-
-}
 // ============================
 // LOAD INVENTORY
 // ============================
@@ -99,7 +39,7 @@ async function loadInventory(){
 
     inventoryBody.innerHTML = `
       <tr>
-        <td colspan="10"
+        <td colspan="11"
           style="text-align:center;padding:20px;">
           Đang tải kho...
         </td>
@@ -120,43 +60,57 @@ async function loadInventory(){
     const orderSnap = await db
       .collection("orders")
       .get();
-  
 
-const soldMap = await buildSoldMap();
+    const soldMap = {};
 
+    orderSnap.forEach(orderDoc => {
 
-let html = "";
-let rows = [];
+      const order = orderDoc.data();
 
-let totalImportPrice = 0;
-let totalPrice = 0;
-let totalOldPrice = 0;
-let totalStock = 0;
-let totalSold = 0;
-let totalProfit = 0;
+      if(
+        order.status !== "completed" ||
+        order.customerCancelled ||
+        order.adminCancelled
+      ){
+        return;
+      }
+
+      (order.items || []).forEach(item => {
+
+        const id = String(item.id);
+
+        if(!soldMap[id]){
+          soldMap[id] = 0;
+        }
+
+        soldMap[id] += Number(item.qty || 0);
+
+      });
+
+    });
+
+    let html = "";
 
     productSnap.forEach(doc => {
 
       const p = doc.data();
 
-      // search
-    if(
-  keyword &&
-  !String(p.name || "")
-      .toLowerCase()
-      .includes(keyword) &&
-  !String(doc.id)
-      .toLowerCase()
-      .includes(keyword)
-){
-  return;
-}
+      // SEARCH
+      if(
+        keyword &&
+        !String(p.name || "")
+          .toLowerCase()
+          .includes(keyword) &&
+        !String(doc.id)
+          .toLowerCase()
+          .includes(keyword)
+      ){
+        return;
+      }
 
       const stock =
         Number(p.stock || 0);
-    
 
-      
       const importPrice =
         Number(p.importPrice || 0);
 
@@ -166,323 +120,154 @@ let totalProfit = 0;
       const oldPrice =
         Number(p.oldPrice || 0);
 
-      // ============================
       // SOLD
-      // ============================
-const sold =
-  Number(soldMap[String(doc.id)] || 0);
+      const sold =
+        Number(soldMap[String(doc.id)] || 0);
 
-
-
-      // ============================
       // PROFIT
-      // ============================
+      const remain = stock - sold;
 
-const remain = stock;
+      const revenue =
+        price * sold;
 
-const revenue =
-  price * sold;
+      const capital =
+        importPrice * sold;
 
-const capital =
-  importPrice * sold;
-const profit =
-  revenue - capital;
+      const profit =
+        revenue - capital;
 
-totalImportPrice += importPrice;
+      const negative =
+        remain < 0;
 
-totalPrice += price;
+      const lowStock =
+        remain > 0 && remain <= 5;
 
-totalOldPrice += oldPrice;
+      html += `
+        <tr>
 
-totalStock += stock;
+          <td>${doc.id}</td>
 
-totalSold += sold;
+          <td>
+            ${p.name || "-"}
+          </td>
 
-totalProfit += profit;
+          <td>
+            <input
+              type="number"
+              class="importPriceInput"
+              data-id="${doc.id}"
+              value="${importPrice}"
+              style="
+                width:120px;
+                padding:8px;
+              "
+            >
+          </td>
 
-const negative =
-  remain < 0;
+          <td>
+            ${
+              oldPrice
+                ? formatVND(oldPrice)
+                : "---"
+            }
+          </td>
 
-const lowStock =
-  remain > 0 && remain <= 5;
-rows.push(`
-  <tr>
+          <td>
+            ${formatVND(price)}
+          </td>
 
-    <td>${doc.id}</td>
+          <td>
+            ${stock}
+          </td>
 
-    <td>
-      ${p.name || "-"}
-    </td>
+          <td>
+            ${sold}
+          </td>
 
-    <td>
-      <input
-        type="number"
-        class="importPriceInput"
-        data-id="${doc.id}"
-        value="${importPrice}"
-        style="
-          width:120px;
-          padding:8px;
-        "
-      >
-    </td>
+          <td>
+            ${remain}
+          </td>
 
-    <td>
-      ${
-        oldPrice
-          ? formatVND(oldPrice)
-          : "---"
-      }
-    </td>
+          <td style="
+            color:${profit < 0 ? "red" : "green"};
+            font-weight:bold;
+          ">
+            ${formatVND(profit)}
+          </td>
 
-    <td>
-      ${formatVND(price)}
-    </td>
+          <td>
+            ${
+              negative
+              ? `
+                <span style="
+                  color:red;
+                  font-weight:bold;
+                ">
+                  Âm kho
+                </span>
+              `
+              : lowStock
+              ? `
+                <span style="
+                  color:#ff9800;
+                  font-weight:bold;
+                ">
+                  Sắp hết
+                </span>
+              `
+              : `
+                <span style="
+                  color:green;
+                  font-weight:bold;
+                ">
+                  OK
+                </span>
+              `
+            }
+          </td>
 
-    <td>
-      ${stock}
-    </td>
+          <td>
 
-    <td>
-      ${sold}
-    </td>
+            <button
+              class="saveImportBtn"
+              data-id="${doc.id}"
+              style="
+                padding:8px 12px;
+                border:none;
+                border-radius:8px;
+                background:#00acc1;
+                color:white;
+                cursor:pointer;
+              "
+            >
+              Lưu
+            </button>
 
-    <td style="
-      color:${profit < 0 ? "red" : "green"};
-      font-weight:bold;
-    ">
-      ${formatVND(profit)}
-    </td>
+          </td>
 
-    <td>
-      ${
-        negative
-        ? `<span style="color:red;font-weight:bold;">
-            Âm kho
-          </span>`
-        : lowStock
-        ? `<span style="color:#ff9800;font-weight:bold;">
-            Tồn thấp
-          </span>`
-        : `<span style="color:green;font-weight:bold;">
-            __
-          </span>`
-      }
-    </td>
+        </tr>
+      `;
 
-    <td>
+    });
 
-      <button
-        class="saveImportBtn"
-        data-id="${doc.id}"
-        style="
-          padding:8px 12px;
-          border:none;
-          border-radius:8px;
-          background:#00acc1;
-          color:white;
-          cursor:pointer;
-        "
-      >
-        Lưu
-      </button>
+    if(!html){
 
-    </td>
+      html = `
+        <tr>
+          <td colspan="11"
+            style="
+              text-align:center;
+              padding:20px;
+            ">
+            Không có dữ liệu
+          </td>
+        </tr>
+      `;
 
-  </tr>
-`);
-});
-   // ============================
-// PAGINATION
-// ============================
-
-const totalPages =
-  Math.max(
-    1,
-    Math.ceil(rows.length / rowsPerPage)
-  );
-if(currentPage > totalPages){
-  currentPage = 1;
-}
-
-const start =
-  (currentPage - 1) * rowsPerPage;
-
-const end =
-  start + rowsPerPage;
-
-html =
-  rows.slice(start, end).join("");
-
-// EMPTY
-if(!html){
-
-  html = `
-    <tr>
-      <td colspan="10"
-        style="
-          text-align:center;
-          padding:20px;
-        ">
-        Không có dữ liệu
-      </td>
-    </tr>
-  `;
-
-}
+    }
 
     inventoryBody.innerHTML = html;
-    // ============================
-// RENDER PAGINATION
-// ============================
 
-let pagination =
-  document.getElementById("inventoryPagination");
-
-if(!pagination){
-
-  pagination = document.createElement("div");
-
-  pagination.id = "inventoryPagination";
-
-  pagination.style.marginTop = "15px";
-  pagination.style.display = "flex";
-  pagination.style.gap = "10px";
-  pagination.style.alignItems = "center";
-  pagination.style.justifyContent = "center";
-
-  inventoryBody
-    .closest("table")
-    .after(pagination);
-
-}
-
-pagination.innerHTML = `
-  <button id="prevPageBtn"
-    ${currentPage === 1 ? "disabled" : ""}
-    style="
-      padding:8px 14px;
-      cursor:pointer;
-    ">
-    ← Prev
-  </button>
-
-  <span>
-    Trang ${currentPage}/${totalPages || 1}
-  </span>
-
-  <button id="nextPageBtn"
-    ${currentPage >= totalPages ? "disabled" : ""}
-    style="
-      padding:8px 14px;
-      cursor:pointer;
-    ">
-    Next →
-  </button>
-`;
-
-const prevBtn =
-  document.getElementById("prevPageBtn");
-
-const nextBtn =
-  document.getElementById("nextPageBtn");
-
-if(prevBtn){
-
-  prevBtn.onclick = () => {
-
-    if(currentPage > 1){
-
-     currentPage--;
-
-loadInventory();
-
-
-    }
-
-  };
-
-}
-
-if(nextBtn){
-
-  nextBtn.onclick = () => {
-
-    if(currentPage < totalPages){
-
-      currentPage++;
-
-      loadInventory();
-
-    }
-
-  };
-
-}
-if(inventoryFooter){
-
-inventoryFooter.innerHTML = `
-
-<tr style="
-  background:#111;
-  color:white;
-  font-weight:bold;
-">
-
-  <td colspan="2">
-    TOTAL
-  </td>
-
-  <!-- Giá nhập -->
-  <td>
-    ${formatVND(totalImportPrice)}
-  </td>
-
- <!-- Giá KM -->
-<td>
-  ${formatVND(totalOldPrice)}
-</td>
-
-<!-- Giá bán -->
-<td>
-  ${formatVND(totalPrice)}
-</td>
-
-  <!-- Tồn -->
-  <td style="
-    color:${
-      totalStock < 0
-        ? "red"
-        : "#00ff90"
-    };
-  ">
-    ${totalStock}
-  </td>
-
-  <!-- Đã bán -->
-  <td>
-    ${totalSold}
-  </td>
-
-  <!-- Lợi nhuận -->
-  <td style="
-    color:${
-      totalProfit < 0
-        ? "red"
-        : "#00ff90"
-    };
-  ">
-    ${formatVND(totalProfit)}
-  </td>
-
-  <td colspan="2">
-    ---
-  </td>
-
-</tr>
-
-`;
-}
     bindInventoryEvents();
 
   }catch(err){
@@ -491,7 +276,7 @@ inventoryFooter.innerHTML = `
 
     inventoryBody.innerHTML = `
       <tr>
-        <td colspan="10"
+        <td colspan="11"
           style="
             text-align:center;
             color:red;
@@ -514,13 +299,13 @@ function bindInventoryEvents(){
 
   document
     .querySelectorAll(".saveImportBtn")
-.forEach(btn => {
+    .forEach(btn => {
 
-  if(btn.dataset.bound === "true"){
-    return;
-  }
+      if(btn.dataset.bound === "true"){
+        return;
+      }
 
-  btn.dataset.bound = "true";
+      btn.dataset.bound = "true";
 
       btn.addEventListener("click", async () => {
 
@@ -540,49 +325,15 @@ function bindInventoryEvents(){
           const importPrice =
             Number(importInput.value || 0);
 
-          // update products
-         const productRef = db
-  .collection("products")
-  .doc(id);
+          // UPDATE PRODUCT
+          await db
+            .collection("products")
+            .doc(id)
+            .update({
+              importPrice
+            });
 
-const productDoc =
-  await productRef.get();
-
-const productData =
-  productDoc.data();
-
-const qtyImport = Number(
-  prompt("Nhập số lượng nhập thêm") || 0
-);
-
-const currentStock =
-  Number(productData.stock || 0);
-
-const newStock =
-  currentStock + qtyImport;
-
-const totalImport =
-  qtyImport * importPrice;
-
-await productRef.update({
-
-  importPrice,
-
-  stock:newStock,
-
-  totalImportedQty:
-    Number(
-      productData.totalImportedQty || 0
-    ) + qtyImport,
-
-  totalImportValue:
-    Number(
-      productData.totalImportValue || 0
-    ) + totalImport
-
-});
-
-          // save import history
+          // SAVE IMPORT HISTORY
           await db
             .collection("import_prices")
             .add({
@@ -598,7 +349,7 @@ await productRef.update({
 
             });
 
-          // save stock movement
+          // SAVE STOCK MOVEMENT
           await db
             .collection("stock_movements")
             .add({
@@ -616,20 +367,19 @@ await productRef.update({
 
             });
 
-        alert("Lưu giá nhập thành công");
+          alert("Lưu giá nhập thành công");
 
-currentPage = 1;
-loadInventory();
-loadImportPrices();
-loadStockMovements();
+          loadInventory();
+          loadImportPrices();
+          loadStockMovements();
 
-      }catch(err){
+        }catch(err){
 
-  console.error(err);
+          console.error(err);
 
-  alert(err.message);
+          alert(err.message);
 
-}
+        }
 
       });
 
@@ -653,34 +403,12 @@ async function loadImportPrices(){
       .limit(50)
       .get();
 
-let html = "";
-
+    let html = "";
 
     for(const doc of snap.docs){
 
       const data = doc.data();
 
-     const selectedDate =
-  importDateFilter?.value;
-
-if(!data.createdAt){
-  continue;
-}
-
-if(selectedDate){
-
-  const itemDate =
-    data.createdAt
-      .toDate()
-      .toISOString()
-      .split("T")[0];
-
-  if(itemDate !== selectedDate){
-    continue;
-  }
-
-}
-      
       let productName = "-";
 
       try{
@@ -699,7 +427,7 @@ if(selectedDate){
 
       }catch{}
 
-  html += `
+      html += `
         <tr>
 
           <td>${productName}</td>
@@ -711,15 +439,14 @@ if(selectedDate){
           </td>
 
           <td>
-           ${
-data.createdAt &&
-typeof data.createdAt.toDate === "function"
-  ? data.createdAt
-      .toDate()
-      .toLocaleString("vi-VN")
-  : "-"
-}
-            
+            ${
+              data.createdAt &&
+              typeof data.createdAt.toDate === "function"
+                ? data.createdAt
+                    .toDate()
+                    .toLocaleString("vi-VN")
+                : "-"
+            }
           </td>
 
         </tr>
@@ -774,27 +501,6 @@ async function loadStockMovements(){
     for(const doc of snap.docs){
 
       const data = doc.data();
-      
-    const selectedDate =
-  movementsDateFilter?.value;
-
-if(!data.createdAt){
-  continue;
-}
-
-if(selectedDate){
-
-  const itemDate =
-    data.createdAt
-      .toDate()
-      .toISOString()
-      .split("T")[0];
-
-  if(itemDate !== selectedDate){
-    continue;
-  }
-
-}
 
       let productName = "-";
 
@@ -821,30 +527,17 @@ if(selectedDate){
 
           <td>${data.type || "-"}</td>
 
-         <td style="
-  color:${
-    data.type === "MANUAL_MINUS"
-      ? "red"
-      : "#00c853"
-  };
-  font-weight:bold;
-">
-  ${
-    data.type === "MANUAL_MINUS"
-      ? "-" + Number(data.qty || 0)
-      : "+" + Number(data.qty || 0)
-  }
-</td>
+          <td>${data.qty || 0}</td>
 
           <td>
             ${
-  data.createdAt &&
-  typeof data.createdAt.toDate === "function"
-    ? data.createdAt
-        .toDate()
-        .toLocaleString("vi-VN")
-    : "-"
-}
+              data.createdAt &&
+              typeof data.createdAt.toDate === "function"
+                ? data.createdAt
+                    .toDate()
+                    .toLocaleString("vi-VN")
+                : "-"
+            }
           </td>
 
         </tr>
@@ -908,11 +601,9 @@ const importSection =
 
 const movementsSection =
   document.getElementById("movementsSection");
-const historySection =
-  document.getElementById("historySection");
+
 function hideAllSections(){
-if(historySection)
-  historySection.style.display = "none";
+
   if(ordersSection)
     ordersSection.style.display = "none";
 
@@ -924,19 +615,8 @@ if(historySection)
 
   if(movementsSection)
     movementsSection.style.display = "none";
- // HIDE INVENTORY PAGINATION
-  const inventoryPagination =
-    document.getElementById(
-      "inventoryPagination"
-    );
-
-  if(inventoryPagination){
-    inventoryPagination.style.display =
-      "none";
-  }
 
 }
-
 
 document
   .querySelectorAll(
@@ -965,15 +645,7 @@ document
 
           inventorySection.style.display =
             "block";
-const inventoryPagination =
-  document.getElementById(
-    "inventoryPagination"
-  );
 
-if(inventoryPagination){
-  inventoryPagination.style.display =
-    "flex";
-}
           loadInventory();
 
         }
@@ -998,387 +670,17 @@ if(inventoryPagination){
 
         }
 
-        // HISTORY
-        if(value === "history"){
+      }
+    );
 
-          historySection.style.display =
-            "block";
+  });
 
-          loadHistory();
-
-        }
-
-      } // đóng callback change
-    ); // đóng addEventListener
-
-  }); // đóng forEach
-if(importDateFilter){
-  importDateFilter.addEventListener(
-    "change",
-    loadImportPrices
-  );
-}
-
-if(movementsDateFilter){
-  movementsDateFilter.addEventListener(
-    "change",
-    loadStockMovements
-  );
-}
-const clearImportDate =
-  document.getElementById("clearImportDate");
-
-if(clearImportDate){
-
-  clearImportDate.addEventListener(
-    "click",
-    () => {
-
-      importDateFilter.value = "";
-
-      loadImportPrices();
-
-    }
-  );
-
-}
-
-const clearMovementsDate =
-  document.getElementById("clearMovementsDate");
-
-if(clearMovementsDate){
-
-  clearMovementsDate.addEventListener(
-    "click",
-    () => {
-
-      movementsDateFilter.value = "";
-
-      loadStockMovements();
-
-    }
-  );
-
-}
-// Mặc định chọn ngày hôm nay
-const today = new Date();
-today.setMinutes(
-  today.getMinutes() - today.getTimezoneOffset()
-);
-
-const todayStr =
-  today.toISOString().split("T")[0];
-
-if(importDateFilter){
-  importDateFilter.value = todayStr;
-}
-
-if(movementsDateFilter){
-  movementsDateFilter.value = todayStr;
-}
-// mặc định
+// MẶC ĐỊNH
 hideAllSections();
 
 ordersSection.style.display =
   "block";
-// ============================
-// MANUAL MINUS PRODUCT INFO
-// ============================
 
-const manualMinusSearch =
-  document.getElementById(
-    "manualMinusSearch"
-  );
-
-const manualMinusProductInfo =
-  document.getElementById(
-    "manualMinusProductInfo"
-  );
-
-if(
-  manualMinusSearch &&
-  manualMinusProductInfo
-){
-
-  manualMinusSearch.addEventListener(
-    "input",
-    async () => {
-
-      const keyword =
-        manualMinusSearch.value
-          .trim()
-          .toLowerCase();
-
-      if(!keyword){
-
-        manualMinusProductInfo.innerHTML =
-          "Chưa chọn sản phẩm";
-
-        return;
-
-      }
-
-      try{
-
-        const productSnap = await db
-          .collection("products")
-          .get();
-
-        const orderSnap = await db
-          .collection("orders")
-          .get();
-
-        const soldMap = await buildSoldMap();
-
-        let found = null;
-
-        productSnap.forEach(doc => {
-
-          const data = doc.data();
-
-          const name =
-            String(data.name || "")
-              .toLowerCase();
-
-          const productId =
-            String(doc.id)
-              .toLowerCase();
-
-          if(
-            name.includes(keyword) ||
-            productId.includes(keyword)
-          ){
-            found = {
-              id:doc.id,
-              ...data
-            };
-          }
-
-        });
-
-        if(!found){
-
-          manualMinusProductInfo.innerHTML = `
-            <span style="color:red;font-weight:bold;">
-              Không tìm thấy sản phẩm
-            </span>
-          `;
-
-          return;
-
-        }
-
-        const sold =
-          Number(
-            soldMap[String(found.id)] || 0
-          );
-
-        manualMinusProductInfo.innerHTML = `
-          <div>
-            <b>${found.name || "-"}</b>
-          </div>
-
-       
-
-          <div>
-            Tồn:
-            <span style="
-              color:#00c853;
-              font-weight:bold;
-            ">
-              ${Number(found.stock || 0)}
-            </span>
-          </div>
-
-          <div>
-            Đã bán:
-            <span style="
-              color:#ff9800;
-              font-weight:bold;
-            ">
-              ${sold}
-            </span>
-          </div>
-        `;
-
-      }catch(err){
-
-        console.log(err);
-
-      }
-
-    }
-  );
-
-}
-// ============================
-// MANUAL MINUS STOCK
-// ============================
-
-const manualMinusBtn =
-  document.getElementById(
-    "manualMinusBtn"
-  );
-
-if(manualMinusBtn){
-
-  manualMinusBtn.addEventListener(
-    "click",
-    async () => {
-
-      try{
-
-        const keyword =
-          document
-            .getElementById(
-              "manualMinusSearch"
-            )
-            .value
-            .trim()
-            .toLowerCase();
-
-        const qty =
-          Number(
-            document
-              .getElementById(
-                "manualMinusQty"
-              )
-              .value || 0
-          );
-
-        const reason =
-          document
-            .getElementById(
-              "manualMinusReason"
-            )
-            .value
-            .trim();
-
-        if(!keyword){
-
-          alert("Nhập tên sản phẩm");
-          return;
-
-        }
-
-        if(qty <= 0){
-
-          alert("Số lượng không hợp lệ");
-          return;
-
-        }
-
-        // tìm sản phẩm
-        const snap = await db
-          .collection("products")
-          .get();
-
-        let foundDoc = null;
-
-        snap.forEach(doc => {
-
-          const data = doc.data();
-
-          const name =
-            String(data.name || "")
-              .toLowerCase();
-
-         const productId =
-  String(doc.id).toLowerCase();
-
-if(
-  name.includes(keyword) ||
-  productId.includes(keyword)
-){
-  foundDoc = doc;
-}
-
-        });
-
-        if(!foundDoc){
-
-          alert("Không tìm thấy sản phẩm");
-          return;
-
-        }
-
-        const product =
-          foundDoc.data();
-
-        const currentStock =
-          Number(product.stock || 0);
-
-      const newStock =
-  Number(currentStock) - Number(qty);
-
-console.log({
-  currentStock,
-  qty,
-  newStock
-});
-
-        // update stock
-        await db
-          .collection("products")
-          .doc(foundDoc.id)
-          .update({
-
-            stock:newStock
-
-          });
-
-        // save movement
-        await db
-          .collection("stock_movements")
-          .add({
-
-            productId:foundDoc.id,
-
-            type:"MANUAL_MINUS",
-
-            qty:qty,
-
-            reason:reason || "Sự cố",
-
-            createdAt:
-              firebase.firestore
-                .FieldValue
-                .serverTimestamp()
-
-          });
-
-        alert(
-          `Đã trừ ${qty} stock`
-        );
-
-        // clear input
-        document.getElementById(
-          "manualMinusSearch"
-        ).value = "";
-
-        document.getElementById(
-          "manualMinusQty"
-        ).value = "";
-
-        document.getElementById(
-          "manualMinusReason"
-        ).value = "";
-
-        loadInventory();
-        loadStockMovements();
-
-      }catch(err){
-
-        console.log(err);
-
-        alert(err.message);
-
-      }
-
-    }
-  );
-
-}
 // ============================
 // INIT
 // ============================
