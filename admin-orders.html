@@ -272,22 +272,9 @@ tr:hover{
     gap:8px;
     font-weight:600;
 }
-  .manual-minus-wrap{
+.manual-minus-wrap{
     display:grid;
-
-    grid-template-columns:
-        1.2fr
-        2fr
-        90px
-        1fr
-        140px;
-
-    gap:10px;
-    align-items:center;
-    margin-bottom:16px;
-    width:100%;
-}
-  
+    grid-template-columns:1.2fr 2fr 90px 1fr 140px;
     gap:10px;
     align-items:center;
     margin-bottom:16px;
@@ -323,6 +310,73 @@ tr:hover{
     cursor:pointer;
     font-weight:bold;
 }
+   /* STOCK MOVEMENTS TOP */
+.stock-top-bar{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+/* ô search */
+#manualMinusSearch{
+  width:380px;
+  height:46px;
+  padding:0 14px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:16px;
+  outline:none;
+}
+
+/* box info sản phẩm */
+#manualMinusProductInfo{
+  min-width:320px;
+  padding:12px 18px;
+  background:#f5f5f5;
+  border-radius:12px;
+  line-height:1.8;
+  font-size:16px;
+}
+
+/* input số lượng */
+#manualMinusQty{
+  width:120px;
+  height:46px;
+  padding:0 12px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:16px;
+}
+
+/* input lý do */
+#manualMinusReason{
+  width:320px;
+  height:46px;
+  padding:0 14px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:16px;
+}
+
+/* button */
+#manualMinusBtn{
+  height:46px;
+  padding:0 28px;
+  border:none;
+  border-radius:10px;
+  background:#ef5350;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.2s;
+}
+
+#manualMinusBtn:hover{
+  opacity:.9;
+   }
 /* =========================
    MOBILE
 ========================= */
@@ -457,6 +511,7 @@ tr:hover{
 .status-cancelled{
     color:#f44336;
     font-weight:bold;
+   
 }
 
 }
