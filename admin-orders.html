@@ -280,9 +280,9 @@ tr:hover{
         100px
         minmax(180px,1fr)
         140px;
-    gap:16px;
+
+    gap:12px;
     align-items:center;
-    margin-bottom:16px;
     width:100%;
 }
 
@@ -358,6 +358,9 @@ tr:hover{
 
     flex-wrap:wrap;
     overflow:hidden;
+
+    width:100%;
+    min-width:0;
 }
 /* input số lượng */
 #manualMinusQty{
@@ -410,8 +413,9 @@ tr:hover{
 
     min-width:0;
 
-    overflow-wrap:anywhere;
-    word-break:break-word;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
 }
 
 .product-info-stat{
