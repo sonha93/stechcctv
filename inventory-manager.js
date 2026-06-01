@@ -37,56 +37,6 @@ function formatVND(number){
 let currentPage = 1;
 const rowsPerPage = 15;
 // ============================
-// BUILD SOLD MAP
-// ============================
-
-async function buildSoldMap(){
-
-  const orderSnap = await db
-    .collection("orders")
-    .get();
-
-  const soldMap = {};
-
-  orderSnap.forEach(orderDoc => {
-
-    const order = orderDoc.data();
-
-    const validStatus = [
-      "completed",
-      "delivered",
-      "done"
-    ];
-
-    if(
-      !validStatus.includes(
-        String(order.status || "")
-          .toLowerCase()
-      ) ||
-      order.customerCancelled ||
-      order.adminCancelled
-    ){
-      return;
-    }
-
-    (order.items || []).forEach(item => {
-
-      const id = String(item.id);
-
-      if(!soldMap[id]){
-        soldMap[id] = 0;
-      }
-
-      soldMap[id] += Number(item.qty || 0);
-
-    });
-
-  });
-
-  return soldMap;
-
-}
-// ============================
 // LOAD INVENTORY
 // ============================
 
@@ -121,7 +71,35 @@ async function loadInventory(){
       .get();
   
 
-const soldMap = await buildSoldMap();
+const soldMap = {};
+
+orderSnap.forEach(orderDoc => {
+
+  const order = orderDoc.data();
+
+
+  if(
+    order.status !== "completed" ||
+    order.customerCancelled ||
+    order.adminCancelled
+  ){
+    return;
+  }
+
+  (order.items || []).forEach(item => {
+
+   
+    const id = String(item.id);
+
+    if(!soldMap[id]){
+      soldMap[id] = 0;
+    }
+
+    soldMap[id] += Number(item.qty || 0);
+
+  });
+
+});
 
 
 let html = "";
@@ -1127,7 +1105,36 @@ if(
           .collection("orders")
           .get();
 
-        const soldMap = await buildSoldMap();
+        // SOLD MAP
+        const soldMap = {};
+
+        orderSnap.forEach(orderDoc => {
+
+          const order = orderDoc.data();
+
+          if(
+            order.status !== "completed" ||
+            order.customerCancelled ||
+            order.adminCancelled
+          ){
+            return;
+          }
+
+          (order.items || []).forEach(item => {
+
+            const id =
+              String(item.id);
+
+            if(!soldMap[id]){
+              soldMap[id] = 0;
+            }
+
+            soldMap[id] +=
+              Number(item.qty || 0);
+
+          });
+
+        });
 
         let found = null;
 
