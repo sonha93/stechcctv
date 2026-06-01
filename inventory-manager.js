@@ -167,7 +167,7 @@ totalImportPrice += importPrice;
 
 totalPrice += price;
 
-totalProfit += profit;
+totalStock += stock;
 
 totalSold += sold;
 
