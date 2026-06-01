@@ -322,12 +322,46 @@ function bindInventoryEvents(){
             Number(importInput.value || 0);
 
           // update products
-          await db
-            .collection("products")
-            .doc(id)
-            .update({
-              importPrice
-            });
+         const productRef = db
+  .collection("products")
+  .doc(id);
+
+const productDoc =
+  await productRef.get();
+
+const productData =
+  productDoc.data();
+
+const qtyImport = Number(
+  prompt("Nhập số lượng nhập thêm") || 0
+);
+
+const currentStock =
+  Number(productData.stock || 0);
+
+const newStock =
+  currentStock + qtyImport;
+
+const totalImport =
+  qtyImport * importPrice;
+
+await productRef.update({
+
+  importPrice,
+
+  stock:newStock,
+
+  totalImportedQty:
+    Number(
+      productData.totalImportedQty || 0
+    ) + qtyImport,
+
+  totalImportValue:
+    Number(
+      productData.totalImportValue || 0
+    ) + totalImport
+
+});
 
           // save import history
           await db
