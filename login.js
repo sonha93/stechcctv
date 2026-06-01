@@ -1,3 +1,7 @@
+// ============================
+// ADMIN ACCOUNTS
+// ============================
+
 const ADMINS = [
 {
     username: "20260610079",
@@ -7,13 +11,49 @@ const ADMINS = [
 }
 ];
 
+// ============================
+// AUTO LOGIN CHECK
+// ============================
+
+const currentUser =
+JSON.parse(
+    localStorage.getItem("adminUser")
+);
+
+if(currentUser){
+
+    if(
+        window.location.pathname
+        .includes("login.html")
+    ){
+        window.location.href =
+        "index.html";
+    }
+
+}
+
+// ============================
+// LOGIN
+// ============================
+
 function login(){
 
     const username =
-    document.getElementById("username").value.trim();
+    document.getElementById("username")
+    .value.trim();
 
     const password =
-    document.getElementById("password").value.trim();
+    document.getElementById("password")
+    .value.trim();
+
+    if(!username || !password){
+
+        document.getElementById("msg")
+        .innerText =
+        "Vui lòng nhập tài khoản và mật khẩu";
+
+        return;
+    }
 
     const user =
     ADMINS.find(
@@ -24,7 +64,8 @@ function login(){
 
     if(!user){
 
-        document.getElementById("msg").innerText =
+        document.getElementById("msg")
+        .innerText =
         "Sai tài khoản hoặc mật khẩu";
 
         return;
@@ -38,3 +79,19 @@ function login(){
     window.location.href =
     "index.html";
 }
+
+// ============================
+// ENTER TO LOGIN
+// ============================
+
+document.addEventListener(
+"keydown",
+function(e){
+
+    if(e.key === "Enter"){
+
+        login();
+
+    }
+
+});
