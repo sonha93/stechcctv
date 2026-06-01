@@ -31,7 +31,12 @@ function formatVND(number){
     .toLocaleString("vi-VN") + "đ";
 
 }
+// ============================
+// PAGINATION
+// ============================
 
+let currentPage = 1;
+const rowsPerPage = 15;
 // ============================
 // LOAD INVENTORY
 // ============================
@@ -98,7 +103,8 @@ orderSnap.forEach(orderDoc => {
 });
 
 
-   let html = "";
+let html = "";
+let rows = [];
 
 let totalImportPrice = 0;
 let totalPrice = 0;
@@ -177,112 +183,220 @@ const negative =
 
 const lowStock =
   remain > 0 && remain <= 5;
-      html += `
-        <tr>
+rows.push(`
+  <tr>
 
-          <td>${doc.id}</td>
+    <td>${doc.id}</td>
 
-          <td>
-            ${p.name || "-"}
-          </td>
+    <td>
+      ${p.name || "-"}
+    </td>
 
-          <td>
-            <input
-              type="number"
-              class="importPriceInput"
-              data-id="${doc.id}"
-              value="${importPrice}"
-              style="
-                width:120px;
-                padding:8px;
-              "
-            >
-          </td>
+    <td>
+      <input
+        type="number"
+        class="importPriceInput"
+        data-id="${doc.id}"
+        value="${importPrice}"
+        style="
+          width:120px;
+          padding:8px;
+        "
+      >
+    </td>
 
-        <td>
-  ${
-    oldPrice
-      ? formatVND(oldPrice)
-      : "---"
-  }
-</td>
+    <td>
+      ${
+        oldPrice
+          ? formatVND(oldPrice)
+          : "---"
+      }
+    </td>
 
-<td>
-  ${formatVND(price)}
-</td>
+    <td>
+      ${formatVND(price)}
+    </td>
 
-     <td>
-  ${stock}
-</td>
+    <td>
+      ${stock}
+    </td>
 
-<td>
-  ${sold}
-</td>
+    <td>
+      ${sold}
+    </td>
 
-<td style="
-  color:${profit < 0 ? "red" : "green"};
-  font-weight:bold;
-">
-  ${formatVND(profit)}
-</td>
+    <td style="
+      color:${profit < 0 ? "red" : "green"};
+      font-weight:bold;
+    ">
+      ${formatVND(profit)}
+    </td>
 
-<td>
-  ${
-    negative
-    ? `<span style="color:red;font-weight:bold;">
-         Âm kho
-       </span>`
-    : lowStock
-    ? `<span style="color:#ff9800;font-weight:bold;">
-         Tồn thấp
-       </span>`
-    : `<span style="color:green;font-weight:bold;">
-        __
-       </span>`
-  }
-</td>
+    <td>
+      ${
+        negative
+        ? `<span style="color:red;font-weight:bold;">
+            Âm kho
+          </span>`
+        : lowStock
+        ? `<span style="color:#ff9800;font-weight:bold;">
+            Tồn thấp
+          </span>`
+        : `<span style="color:green;font-weight:bold;">
+            __
+          </span>`
+      }
+    </td>
 
-          <td>
+    <td>
 
-            <button
-              class="saveImportBtn"
-              data-id="${doc.id}"
-              style="
-                padding:8px 12px;
-                border:none;
-                border-radius:8px;
-                background:#00acc1;
-                color:white;
-                cursor:pointer;
-              "
-            >
-              Lưu
-            </button>
+      <button
+        class="saveImportBtn"
+        data-id="${doc.id}"
+        style="
+          padding:8px 12px;
+          border:none;
+          border-radius:8px;
+          background:#00acc1;
+          color:white;
+          cursor:pointer;
+        "
+      >
+        Lưu
+      </button>
 
-          </td>
+    </td>
 
-        </tr>
-      `;
+  </tr>
+`);
+});
+   // ============================
+// PAGINATION
+// ============================
 
-    });
+const totalPages =
+  Math.max(
+    1,
+    Math.ceil(rows.length / rowsPerPage)
+  );
+if(currentPage > totalPages){
+  currentPage = 1;
+}
 
-    if(!html){
+const start =
+  (currentPage - 1) * rowsPerPage;
 
-      html = `
-        <tr>
-          <td colspan="10"
-            style="
-              text-align:center;
-              padding:20px;
-            ">
-            Không có dữ liệu
-          </td>
-        </tr>
-      `;
+const end =
+  start + rowsPerPage;
+
+html =
+  rows.slice(start, end).join("");
+
+// EMPTY
+if(!html){
+
+  html = `
+    <tr>
+      <td colspan="10"
+        style="
+          text-align:center;
+          padding:20px;
+        ">
+        Không có dữ liệu
+      </td>
+    </tr>
+  `;
+
+}
+
+    inventoryBody.innerHTML = html;
+    // ============================
+// RENDER PAGINATION
+// ============================
+
+let pagination =
+  document.getElementById("inventoryPagination");
+
+if(!pagination){
+
+  pagination = document.createElement("div");
+
+  pagination.id = "inventoryPagination";
+
+  pagination.style.marginTop = "15px";
+  pagination.style.display = "flex";
+  pagination.style.gap = "10px";
+  pagination.style.alignItems = "center";
+  pagination.style.justifyContent = "center";
+
+  inventoryBody
+    .closest("table")
+    .after(pagination);
+
+}
+
+pagination.innerHTML = `
+  <button id="prevPageBtn"
+    ${currentPage === 1 ? "disabled" : ""}
+    style="
+      padding:8px 14px;
+      cursor:pointer;
+    ">
+    ← Prev
+  </button>
+
+  <span>
+    Trang ${currentPage}/${totalPages || 1}
+  </span>
+
+  <button id="nextPageBtn"
+    ${currentPage >= totalPages ? "disabled" : ""}
+    style="
+      padding:8px 14px;
+      cursor:pointer;
+    ">
+    Next →
+  </button>
+`;
+
+const prevBtn =
+  document.getElementById("prevPageBtn");
+
+const nextBtn =
+  document.getElementById("nextPageBtn");
+
+if(prevBtn){
+
+  prevBtn.onclick = () => {
+
+    if(currentPage > 1){
+
+     currentPage--;
+
+loadInventory();
+
 
     }
 
-    inventoryBody.innerHTML = html;
+  };
+
+}
+
+if(nextBtn){
+
+  nextBtn.onclick = () => {
+
+    if(currentPage < totalPages){
+
+      currentPage++;
+
+      loadInventory();
+
+    }
+
+  };
+
+}
 if(inventoryFooter){
 
 inventoryFooter.innerHTML = `
@@ -482,6 +596,7 @@ await productRef.update({
 
         alert("Lưu giá nhập thành công");
 
+currentPage = 1;
 loadInventory();
 loadImportPrices();
 loadStockMovements();
@@ -516,7 +631,8 @@ async function loadImportPrices(){
       .limit(50)
       .get();
 
-    let html = "";
+let html = "";
+
 
     for(const doc of snap.docs){
 
@@ -561,7 +677,7 @@ if(selectedDate){
 
       }catch{}
 
-      html += `
+  html += `
         <tr>
 
           <td>${productName}</td>
