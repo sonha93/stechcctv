@@ -1,15 +1,28 @@
 const db = firebase.firestore();
 
-const historyBody = document.getElementById("historyBody");
-const historySearch = document.getElementById("historySearch");
+const historyBody =
+    document.getElementById("historyBody");
+
+const historySearch =
+    document.getElementById("historySearch");
+
+if(!historyBody){
+    console.error("Không tìm thấy historyBody");
+}
 
 let historyData = [];
 
 async function loadHistory(){
 
+    // tránh crash
+    if(!historyBody){
+        return;
+    }
+
     historyBody.innerHTML = `
         <tr>
-            <td colspan="7" style="text-align:center;padding:20px;">
+            <td colspan="7"
+                style="text-align:center;padding:20px;">
                 Đang tải...
             </td>
         </tr>
@@ -17,12 +30,20 @@ async function loadHistory(){
 
     try{
 
-        const inventorySnap = await db.collection("inventory_snapshot").get();
-        const importSnap = await db.collection("import_history").get();
-        const salesSnap = await db.collection("sales_history").get();
-console.log("inventory:", inventorySnap.size);
-console.log("import:", importSnap.size);
-console.log("sales:", salesSnap.size);
+        const [
+            inventorySnap,
+            importSnap,
+            salesSnap
+        ] = await Promise.all([
+            db.collection("inventory_snapshot").get(),
+            db.collection("import_history").get(),
+            db.collection("sales_history").get()
+        ]);
+
+        console.log("inventory:", inventorySnap.size);
+        console.log("import:", importSnap.size);
+        console.log("sales:", salesSnap.size);
+
         const inventoryMap = {};
         const importMap = {};
         const salesMap = {};
@@ -46,13 +67,17 @@ console.log("sales:", salesSnap.size);
             const d = doc.data();
 
             if(!importMap[d.productId]){
+
                 importMap[d.productId] = {
                     qty:0,
-                    total:0
+                    total:0,
+                    productName:d.productName || ""
                 };
+
             }
 
-            importMap[d.productId].qty += Number(d.quantity || 0);
+            importMap[d.productId].qty +=
+                Number(d.quantity || 0);
 
             importMap[d.productId].total +=
                 Number(d.quantity || 0) *
@@ -66,13 +91,17 @@ console.log("sales:", salesSnap.size);
             const d = doc.data();
 
             if(!salesMap[d.productId]){
+
                 salesMap[d.productId] = {
                     qty:0,
-                    total:0
+                    total:0,
+                    productName:d.productName || ""
                 };
+
             }
 
-            salesMap[d.productId].qty += Number(d.quantity || 0);
+            salesMap[d.productId].qty +=
+                Number(d.quantity || 0);
 
             salesMap[d.productId].total +=
                 Number(d.quantity || 0) *
@@ -82,29 +111,74 @@ console.log("sales:", salesSnap.size);
 
         historyData = [];
 
-        Object.keys(inventoryMap).forEach(productId => {
+        const allProductIds = new Set([
+            ...Object.keys(inventoryMap),
+            ...Object.keys(importMap),
+            ...Object.keys(salesMap)
+        ]);
 
-            const inven = inventoryMap[productId] || {};
-            const imp = importMap[productId] || {};
-            const sale = salesMap[productId] || {};
+        allProductIds.forEach(productId => {
 
-            const totalImport = imp.total || 0;
-            const totalSale = sale.total || 0;
+            const inven =
+                inventoryMap[productId] || {};
 
-            const profit = totalSale - totalImport;
+            const imp =
+                importMap[productId] || {};
+
+            const sale =
+                salesMap[productId] || {};
+
+            const totalImport =
+                imp.total || 0;
+
+            const totalSale =
+                sale.total || 0;
+
+            const avgImportPrice =
+                imp.qty > 0
+                    ? totalImport / imp.qty
+                    : 0;
+
+            const estimatedCostOfSold =
+                avgImportPrice *
+                (sale.qty || 0);
+
+            const profit =
+                totalSale -
+                estimatedCostOfSold;
 
             historyData.push({
+
                 productId,
-                productName: inven.productName || "",
-                importedQty: imp.qty || 0,
-                soldQty: sale.qty || 0,
-                stock: inven.stock || 0,
+
+                productName:
+                    inven.productName ||
+                    sale.productName ||
+                    imp.productName ||
+                    "Không tên",
+
+                importedQty:
+                    imp.qty || 0,
+
+                soldQty:
+                    sale.qty || 0,
+
+                stock:
+                    inven.stock || 0,
+
                 totalImport,
                 totalSale,
                 profit
+
             });
 
         });
+
+        historyData.sort(
+            (a, b) => b.totalSale - a.totalSale
+        );
+
+        console.log(historyData);
 
         renderHistory(historyData);
 
@@ -114,7 +188,12 @@ console.log("sales:", salesSnap.size);
 
         historyBody.innerHTML = `
             <tr>
-                <td colspan="7" style="text-align:center;padding:20px;color:red;">
+                <td colspan="7"
+                    style="
+                        text-align:center;
+                        padding:20px;
+                        color:red;
+                    ">
                     Lỗi load dữ liệu
                 </td>
             </tr>
@@ -126,11 +205,19 @@ console.log("sales:", salesSnap.size);
 
 function renderHistory(data){
 
+    if(!historyBody){
+        return;
+    }
+
     if(!data.length){
 
         historyBody.innerHTML = `
             <tr>
-                <td colspan="7" style="text-align:center;padding:20px;">
+                <td colspan="7"
+                    style="
+                        text-align:center;
+                        padding:20px;
+                    ">
                     Không có dữ liệu
                 </td>
             </tr>
@@ -149,17 +236,11 @@ function renderHistory(data){
                 <small>${item.productId}</small>
             </td>
 
-            <td>
-                ${item.importedQty}
-            </td>
+            <td>${item.importedQty}</td>
 
-            <td>
-                ${item.soldQty}
-            </td>
+            <td>${item.soldQty}</td>
 
-            <td>
-                ${item.stock}
-            </td>
+            <td>${item.stock}</td>
 
             <td>
                 ${formatMoney(item.totalImport)}
@@ -169,10 +250,16 @@ function renderHistory(data){
                 ${formatMoney(item.totalSale)}
             </td>
 
-            <td style="
-                color:${item.profit >= 0 ? 'green' : 'red'};
-                font-weight:bold;
-            ">
+            <td
+                style="
+                    color:
+                    ${item.profit >= 0
+                        ? "green"
+                        : "red"};
+                    font-weight:bold;
+                "
+            >
+                ${item.profit >= 0 ? "+" : ""}
                 ${formatMoney(item.profit)}
             </td>
 
@@ -184,63 +271,95 @@ function renderHistory(data){
 
 function formatMoney(value){
 
-    return Number(value || 0).toLocaleString("vi-VN") + "đ";
+    const number = Number(value);
+
+    if(isNaN(number)){
+        return "0đ";
+    }
+
+    return number.toLocaleString("vi-VN") + "đ";
 
 }
 
 // SEARCH
-historySearch.addEventListener("input", () => {
+if(historySearch){
 
-    const keyword = historySearch.value.toLowerCase();
+    historySearch.addEventListener(
+        "input",
+        () => {
 
-    const filtered = historyData.filter(item => {
+            const keyword =
+                historySearch.value
+                    .toLowerCase();
 
-        return (
-            item.productId.toLowerCase().includes(keyword) ||
-            item.productName.toLowerCase().includes(keyword)
-        );
+            const filtered =
+                historyData.filter(item => {
 
-    });
+                    return (
 
-    renderHistory(filtered);
+                        (item.productId || "")
+                            .toLowerCase()
+                            .includes(keyword)
 
-});
+                        ||
+
+                        (item.productName || "")
+                            .toLowerCase()
+                            .includes(keyword)
+
+                    );
+
+                });
+
+            renderHistory(filtered);
+
+        }
+    );
+
+}
 
 loadHistory();
 
-// DÁN XUỐNG DƯỚI CÙNG FILE
-const radios = document.querySelectorAll('input[name="adminView"]');
+
+// RADIO SWITCH
+const radios =
+    document.querySelectorAll(
+        'input[name="adminView"]'
+    );
 
 radios.forEach(radio => {
 
-    radio.addEventListener("change", () => {
+    radio.addEventListener(
+        "change",
+        () => {
 
-        document.getElementById("ordersSection").style.display = "none";
-        document.getElementById("inventorySection").style.display = "none";
-        document.getElementById("importSection").style.display = "none";
-        document.getElementById("movementsSection").style.display = "none";
-        document.getElementById("historySection").style.display = "none";
+            [
+                "ordersSection",
+                "inventorySection",
+                "importSection",
+                "movementsSection",
+                "historySection"
+            ].forEach(id => {
 
-        if(radio.value === "orders"){
-            document.getElementById("ordersSection").style.display = "block";
+                const el =
+                    document.getElementById(id);
+
+                if(el){
+                    el.style.display = "none";
+                }
+
+            });
+
+            const target =
+                document.getElementById(
+                    radio.value + "Section"
+                );
+
+            if(target){
+                target.style.display = "block";
+            }
+
         }
-
-        if(radio.value === "inventory"){
-            document.getElementById("inventorySection").style.display = "block";
-        }
-
-        if(radio.value === "import"){
-            document.getElementById("importSection").style.display = "block";
-        }
-
-        if(radio.value === "movements"){
-            document.getElementById("movementsSection").style.display = "block";
-        }
-
-        if(radio.value === "history"){
-            document.getElementById("historySection").style.display = "block";
-        }
-
-    });
+    );
 
 });
