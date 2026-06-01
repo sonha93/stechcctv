@@ -411,6 +411,10 @@ tr:hover{
   <input type="radio" name="adminView" value="movements">
   <span>Stock</span>
 </label> 
+    <label>
+  <input type="radio" name="adminView" value="history">
+  <span>History</span>
+</label>
   </div>
 
 </div>
@@ -513,7 +517,6 @@ tr:hover{
       </thead>
 
       <tbody id="inventoryBody"></tbody>
-
     </table>
 
   </div>
@@ -627,6 +630,68 @@ tr:hover{
       </thead>
 
       <tbody id="movementsBody"></tbody>
+
+    </table>
+
+  </div>
+
+</div>
+   <!-- HISTORY -->
+<div
+  id="historySection"
+  class="table-wrap"
+  style="display:none;margin-bottom:16px;"
+>
+
+  <div style="padding:16px;">
+
+    <h2 style="margin-bottom:15px;">
+      📦 History
+    </h2>
+
+    <input
+      type="text"
+      id="historySearch"
+      placeholder="Tìm ID hoặc tên sản phẩm..."
+      style="
+        width:100%;
+        padding:12px;
+        margin-bottom:15px;
+        border-radius:10px;
+        border:1px solid #ddd;
+      "
+    >
+
+    <table>
+
+      <thead>
+
+        <tr>
+          <th>Sản phẩm</th>
+          <th>Đã nhập</th>
+          <th>Đã bán</th>
+          <th>Tồn</th>
+          <th>Tổng nhập</th>
+          <th>Tổng bán</th>
+          <th>Lợi nhuận</th>
+        </tr>
+
+      </thead>
+
+      <tbody id="historyBody">
+
+        <tr>
+          <td colspan="7"
+            style="
+              text-align:center;
+              padding:20px;
+            "
+          >
+            Đang tải...
+          </td>
+        </tr>
+
+      </tbody>
 
     </table>
 
