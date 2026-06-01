@@ -1118,11 +1118,15 @@ if(manualMinusBtn){
             String(data.name || "")
               .toLowerCase();
 
-          if(
-            name.includes(keyword)
-          ){
-            foundDoc = doc;
-          }
+         const productId =
+  String(doc.id).toLowerCase();
+
+if(
+  name.includes(keyword) ||
+  productId.includes(keyword)
+){
+  foundDoc = doc;
+}
 
         });
 
