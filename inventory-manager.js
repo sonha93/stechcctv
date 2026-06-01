@@ -1,197 +1,686 @@
+
 // ============================
-// MANUAL MINUS PRODUCT INFO
-// CHẠY DỌC
+// INVENTORY MANAGER V8
 // ============================
 
-const manualMinusSearch = document.getElementById(
-  "manualMinusSearch"
-);
+const inventoryBody =
+  document.getElementById("inventoryBody");
+const db = firebase.firestore();
+const importBody =
+  document.getElementById("importBody");
 
-const manualMinusProductInfo = document.getElementById(
-  "manualMinusProductInfo"
-);
+const movementsBody =
+  document.getElementById("movementsBody");
 
-if(
-  manualMinusSearch &&
-  manualMinusProductInfo
-){
+const inventorySearch =
+  document.getElementById("inventorySearch");
 
-  // ép layout dọc bằng JS
-  const wrap = document.querySelector(
-    ".manual-minus-wrap"
-  );
+// ============================
+// FORMAT PRICE
+// ============================
 
-  if(wrap){
-    wrap.style.display = "flex";
-    wrap.style.flexDirection = "column";
-    wrap.style.gap = "10px";
-    wrap.style.width = "100%";
-    wrap.style.alignItems = "stretch";
+function formatVND(number){
+
+  return Number(number || 0)
+    .toLocaleString("vi-VN") + "đ";
+
+}
+
+// ============================
+// LOAD INVENTORY
+// ============================
+
+async function loadInventory(){
+
+  if(!inventoryBody) return;
+
+  try{
+
+    inventoryBody.innerHTML = `
+      <tr>
+        <td colspan="11"
+          style="text-align:center;padding:20px;">
+          Đang tải kho...
+        </td>
+      </tr>
+    `;
+
+    const keyword =
+      inventorySearch
+        ? inventorySearch.value
+            .trim()
+            .toLowerCase()
+        : "";
+
+    const productSnap = await db
+      .collection("products")
+      .get();
+
+    const orderSnap = await db
+      .collection("orders")
+      .get();
+  
+
+const soldMap = {};
+
+orderSnap.forEach(orderDoc => {
+
+  const order = orderDoc.data();
+
+
+  if(
+    order.status !== "completed" ||
+    order.customerCancelled ||
+    order.adminCancelled
+  ){
+    return;
   }
 
-  [
-    "manualMinusSearch",
-    "manualMinusQty",
-    "manualMinusReason",
-    "manualMinusBtn"
-  ].forEach(id => {
+  (order.items || []).forEach(item => {
 
-    const el = document.getElementById(id);
+   
+    const id = String(item.id);
 
-    if(el){
-      el.style.width = "100%";
-      el.style.height = "48px";
+    if(!soldMap[id]){
+      soldMap[id] = 0;
     }
+
+    soldMap[id] += Number(item.qty || 0);
 
   });
 
-  manualMinusProductInfo.style.width = "100%";
-  manualMinusProductInfo.style.minHeight = "80px";
-  manualMinusProductInfo.style.display = "flex";
-  manualMinusProductInfo.style.flexDirection = "column";
-  manualMinusProductInfo.style.justifyContent = "center";
-  manualMinusProductInfo.style.alignItems = "flex-start";
-  manualMinusProductInfo.style.padding = "12px 14px";
+});
 
-  manualMinusSearch.addEventListener(
-    "input",
-    async () => {
 
-      const keyword = manualMinusSearch.value
-        .trim()
-        .toLowerCase();
+    let html = "";
 
-      if(!keyword){
+    productSnap.forEach(doc => {
 
-        manualMinusProductInfo.innerHTML =
-          "Chưa chọn sản phẩm";
+      const p = doc.data();
 
-        return;
-      }
+      // search
+    if(
+  keyword &&
+  !String(p.name || "")
+      .toLowerCase()
+      .includes(keyword) &&
+  !String(doc.id)
+      .toLowerCase()
+      .includes(keyword)
+){
+  return;
+}
 
-      try{
+      const stock =
+        Number(p.stock || 0);
+    
 
-        const productSnap = await db
-          .collection("products")
-          .get();
+      
+      const importPrice =
+        Number(p.importPrice || 0);
 
-        const orderSnap = await db
-          .collection("orders")
-          .get();
+      const price =
+        Number(p.price || 0);
 
-        // SOLD MAP
-        const soldMap = {};
+      const oldPrice =
+        Number(p.oldPrice || 0);
 
-        orderSnap.forEach(orderDoc => {
+      // ============================
+      // SOLD
+      // ============================
+const sold =
+  Number(soldMap[String(doc.id)] || 0);
+ 
 
-          const order = orderDoc.data();
+      // ============================
+      // PROFIT
+      // ============================
 
-          if(
-            order.status !== "completed" ||
-            order.customerCancelled ||
-            order.adminCancelled
-          ){
-            return;
-          }
+const remain = stock - sold;
 
-          (order.items || []).forEach(item => {
+const revenue =
+  price * sold;
 
-            const id = String(item.id);
+const capital =
+  importPrice * sold;
 
-            if(!soldMap[id]){
-              soldMap[id] = 0;
-            }
+const profit =
+  revenue - capital;
+const negative =
+  remain < 0;
 
-            soldMap[id] += Number(item.qty || 0);
+const lowStock =
+  remain > 0 && remain <= 5;
 
-          });
 
-        });
+      html += `
+        <tr>
 
-        let found = null;
+          <td>${doc.id}</td>
 
-        productSnap.forEach(doc => {
+          <td>
+            ${p.name || "-"}
+          </td>
 
-          const data = doc.data();
+          <td>
+            <input
+              type="number"
+              class="importPriceInput"
+              data-id="${doc.id}"
+              value="${importPrice}"
+              style="
+                width:120px;
+                padding:8px;
+              "
+            >
+          </td>
 
-          const name = String(data.name || "")
-            .toLowerCase();
+        <td>
+  ${
+    oldPrice
+      ? formatVND(oldPrice)
+      : "---"
+  }
+</td>
 
-          const productId = String(doc.id)
-            .toLowerCase();
+<td>
+  ${formatVND(price)}
+</td>
 
-          if(
-            name.includes(keyword) ||
-            productId.includes(keyword)
-          ){
+        <td>
+  ${stock}
+</td>
 
-            found = {
-              id:doc.id,
-              ...data
-            };
+<td>
+  ${sold}
+</td>
 
-          }
+<td>
+  ${remain}
+</td>
 
-        });
+<td style="
+  color:${profit < 0 ? "red" : "green"};
+  font-weight:bold;
+">
+  ${formatVND(profit)}
+</td>
 
-        if(!found){
+<td>
+  ${
+    negative
+    ? `<span style="color:red;font-weight:bold;">
+         Âm kho
+       </span>`
+    : lowStock
+    ? `<span style="color:#ff9800;font-weight:bold;">
+         Sắp hết
+       </span>`
+    : `<span style="color:green;font-weight:bold;">
+         OK
+       </span>`
+  }
+</td>
 
-          manualMinusProductInfo.innerHTML = `
-            <span style="
-              color:red;
-              font-weight:bold;
+          <td>
+
+            <button
+              class="saveImportBtn"
+              data-id="${doc.id}"
+              style="
+                padding:8px 12px;
+                border:none;
+                border-radius:8px;
+                background:#00acc1;
+                color:white;
+                cursor:pointer;
+              "
+            >
+              Lưu
+            </button>
+
+          </td>
+
+        </tr>
+      `;
+
+    });
+
+    if(!html){
+
+      html = `
+        <tr>
+          <td colspan="11"
+            style="
+              text-align:center;
+              padding:20px;
             ">
-              Không tìm thấy sản phẩm
-            </span>
-          `;
+            Không có dữ liệu
+          </td>
+        </tr>
+      `;
 
-          return;
-        }
+    }
 
-        const sold = Number(
-          soldMap[String(found.id)] || 0
-        );
+    inventoryBody.innerHTML = html;
 
-        manualMinusProductInfo.innerHTML = `
-          <div>
-            <b>${found.name || "-"}</b>
-          </div>
+    bindInventoryEvents();
 
-          <div>
-            ID:
-            <span style="color:#666;">
-              ${found.id}
-            </span>
-          </div>
+  }catch(err){
 
-          <div>
-            Tồn:
-            <span style="
-              color:#00c853;
-              font-weight:bold;
-            ">
-              ${Number(found.stock || 0)}
-            </span>
-          </div>
+    console.log(err);
 
-          <div>
-            Đã bán:
-            <span style="
-              color:#ff9800;
-              font-weight:bold;
-            ">
-              ${sold}
-            </span>
-          </div>
-        `;
+    inventoryBody.innerHTML = `
+      <tr>
+        <td colspan="11"
+          style="
+            text-align:center;
+            color:red;
+            padding:20px;
+          ">
+          Lỗi tải inventory
+        </td>
+      </tr>
+    `;
+
+  }
+
+}
+
+// ============================
+// SAVE IMPORT PRICE
+// ============================
+
+function bindInventoryEvents(){
+
+  document
+    .querySelectorAll(".saveImportBtn")
+.forEach(btn => {
+
+  if(btn.dataset.bound === "true"){
+    return;
+  }
+
+  btn.dataset.bound = "true";
+
+      btn.addEventListener("click", async () => {
+
+        try{
+
+          const id =
+            btn.dataset.id;
+
+          const row =
+            btn.closest("tr");
+
+          const importInput =
+            row.querySelector(
+              ".importPriceInput"
+            );
+
+          const importPrice =
+            Number(importInput.value || 0);
+
+          // update products
+          await db
+            .collection("products")
+            .doc(id)
+            .update({
+              importPrice
+            });
+
+          // save import history
+          await db
+            .collection("import_prices")
+            .add({
+
+              productId:id,
+
+              importPrice,
+
+              createdAt:
+                firebase.firestore
+                  .FieldValue
+                  .serverTimestamp()
+
+            });
+
+          // save stock movement
+          await db
+            .collection("stock_movements")
+            .add({
+
+              productId:id,
+
+              type:"import_price_update",
+
+              qty:0,
+
+              createdAt:
+                firebase.firestore
+                  .FieldValue
+                  .serverTimestamp()
+
+            });
+
+        alert("Lưu giá nhập thành công");
+
+loadInventory();
+loadImportPrices();
+loadStockMovements();
 
       }catch(err){
 
-        console.log(err);
+  console.error(err);
 
-      }
-
-    }
-  );
+  alert(err.message);
 
 }
+
+      });
+
+    });
+
+}
+
+// ============================
+// LOAD IMPORT PRICES
+// ============================
+
+async function loadImportPrices(){
+
+  if(!importBody) return;
+
+  try{
+
+    const snap = await db
+      .collection("import_prices")
+      .orderBy("createdAt","desc")
+      .limit(50)
+      .get();
+
+    let html = "";
+
+    for(const doc of snap.docs){
+
+      const data = doc.data();
+
+      let productName = "-";
+
+      try{
+
+        const productDoc = await db
+          .collection("products")
+          .doc(data.productId)
+          .get();
+
+        if(productDoc.exists){
+
+          productName =
+            productDoc.data().name;
+
+        }
+
+      }catch{}
+
+      html += `
+        <tr>
+
+          <td>${productName}</td>
+
+          <td>
+            ${formatVND(
+              data.importPrice
+            )}
+          </td>
+
+          <td>
+           ${
+data.createdAt &&
+typeof data.createdAt.toDate === "function"
+  ? data.createdAt
+      .toDate()
+      .toLocaleString("vi-VN")
+  : "-"
+}
+            
+          </td>
+
+        </tr>
+      `;
+
+    }
+
+    if(!html){
+
+      html = `
+        <tr>
+          <td colspan="3"
+            style="
+              text-align:center;
+              padding:20px;
+            ">
+            Chưa có dữ liệu
+          </td>
+        </tr>
+      `;
+
+    }
+
+    importBody.innerHTML = html;
+
+  }catch(err){
+
+    console.log(err);
+
+  }
+
+}
+
+// ============================
+// LOAD STOCK MOVEMENTS
+// ============================
+
+async function loadStockMovements(){
+
+  if(!movementsBody) return;
+
+  try{
+
+    const snap = await db
+      .collection("stock_movements")
+      .orderBy("createdAt","desc")
+      .limit(100)
+      .get();
+
+    let html = "";
+
+    for(const doc of snap.docs){
+
+      const data = doc.data();
+
+      let productName = "-";
+
+      try{
+
+        const productDoc = await db
+          .collection("products")
+          .doc(data.productId)
+          .get();
+
+        if(productDoc.exists){
+
+          productName =
+            productDoc.data().name;
+
+        }
+
+      }catch{}
+
+      html += `
+        <tr>
+
+          <td>${productName}</td>
+
+          <td>${data.type || "-"}</td>
+
+          <td>${data.qty || 0}</td>
+
+          <td>
+            ${
+  data.createdAt &&
+  typeof data.createdAt.toDate === "function"
+    ? data.createdAt
+        .toDate()
+        .toLocaleString("vi-VN")
+    : "-"
+}
+          </td>
+
+        </tr>
+      `;
+
+    }
+
+    if(!html){
+
+      html = `
+        <tr>
+          <td colspan="4"
+            style="
+              text-align:center;
+              padding:20px;
+            ">
+            Chưa có dữ liệu
+          </td>
+        </tr>
+      `;
+
+    }
+
+    movementsBody.innerHTML = html;
+
+  }catch(err){
+
+    console.log(err);
+
+  }
+
+}
+
+// ============================
+// SEARCH
+// ============================
+
+if(inventorySearch){
+
+  inventorySearch
+    .addEventListener("input", () => {
+
+      loadInventory();
+
+    });
+
+}
+
+// ============================
+// SWITCH MODULE
+// ============================
+
+const ordersSection =
+  document.getElementById("ordersSection");
+
+const inventorySection =
+  document.getElementById("inventorySection");
+
+const importSection =
+  document.getElementById("importSection");
+
+const movementsSection =
+  document.getElementById("movementsSection");
+
+function hideAllSections(){
+
+  if(ordersSection)
+    ordersSection.style.display = "none";
+
+  if(inventorySection)
+    inventorySection.style.display = "none";
+
+  if(importSection)
+    importSection.style.display = "none";
+
+  if(movementsSection)
+    movementsSection.style.display = "none";
+
+}
+
+document
+  .querySelectorAll(
+    'input[name="adminView"]'
+  )
+  .forEach(radio => {
+
+    radio.addEventListener(
+      "change",
+      () => {
+
+        hideAllSections();
+
+        const value = radio.value;
+
+        // ORDERS
+        if(value === "orders"){
+
+          ordersSection.style.display =
+            "block";
+
+        }
+
+        // INVENTORY
+        if(value === "inventory"){
+
+          inventorySection.style.display =
+            "block";
+
+          loadInventory();
+
+        }
+
+        // IMPORT
+        if(value === "import"){
+
+          importSection.style.display =
+            "block";
+
+          loadImportPrices();
+
+        }
+
+        // MOVEMENTS
+        if(value === "movements"){
+
+          movementsSection.style.display =
+            "block";
+
+          loadStockMovements();
+
+        }
+
+      }
+    );
+
+  });
+
+// mặc định
+hideAllSections();
+
+ordersSection.style.display =
+  "block";
+// ============================
+// INIT
+// ============================
+
+loadInventory();
+loadImportPrices();
+loadStockMovements();
