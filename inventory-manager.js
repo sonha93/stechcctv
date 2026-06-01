@@ -1055,26 +1055,29 @@ if(manualMinusSearch && manualMinusProductInfo){
                     soldMap[String(found.id)] || 0
                 );
 
-                manualMinusProductInfo.innerHTML = `
-    <div class="product-info-wrap">
+               manualMinusProductInfo.innerHTML = `
+<div class="product-info-wrap">
 
-        <div class="product-info-name">
-            ${found.name || "-"}
-        </div>
-
-        <div class="product-info-stat">
-            <span>Tồn:</span>
-            <b>${Number(found.stock || 0)}</b>
-        </div>
-
-        <div class="product-info-stat">
-            <span>Đã bán:</span>
-            <b>${sold}</b>
-        </div>
-
+    <div class="product-info-name">
+        ${found.name || "-"}
     </div>
-`;
 
+    <div class="product-info-stat">
+        <span>Tồn:</span>
+        <b class="stock-green">
+            ${Number(found.stock || 0)}
+        </b>
+    </div>
+
+    <div class="product-info-stat">
+        <span>Đã bán:</span>
+        <b class="sold-orange">
+            ${sold}
+        </b>
+    </div>
+
+</div>
+`;
             }catch(err){
 
                 console.log(err);
