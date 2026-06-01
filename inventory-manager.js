@@ -449,7 +449,11 @@ function bindInventoryEvents(){
                 const importInput = row.querySelector(".importPriceInput");
 
                 const importPrice = Number(importInput.value || 0);
-
+                
+                if (!Number.isFinite(importPrice) || importPrice < 0) {
+    alert("Giá nhập không hợp lệ");
+    return;
+}
                 // UPDATE PRODUCTS
 
                 const productRef = db.collection("products").doc(id);
@@ -458,9 +462,15 @@ function bindInventoryEvents(){
 
                 const productData = productDoc.data();
 
-                const qtyImport = Number(
-                    prompt("Nhập số lượng nhập thêm") || 0
-                );
+            const qtyImport = Number(
+    prompt("Nhập số lượng nhập thêm")
+);
+
+if (!Number.isInteger(qtyImport) || qtyImport < 0) {
+    alert("Số lượng nhập phải là số nguyên >= 0");
+    return;
+}
+
 
                 const currentStock = Number(productData.stock || 0);
 
@@ -484,32 +494,29 @@ function bindInventoryEvents(){
 
                 });
                 // SAVE STOCK MOVEMENT
-await db.collection("stock_movements").add({
+if(qtyImport > 0){
 
-    productId:id,
-    type:"import_price_update",
-    qty:0,
+    await db.collection("stock_movements").add({
 
-    createdAt:
-        firebase.firestore
-        .FieldValue
-        .serverTimestamp()
+        productId:id,
+        type:"IMPORT",
+        qty:qtyImport,
 
-});
+        createdAt:
+            firebase.firestore
+            .FieldValue
+            .serverTimestamp()
+
+    });
+
+}
                 // SAVE IMPORT HISTORY
 
-                await db.collection("import_prices").add({
-
-                    productId:id,
-                    importPrice,
-
-                    createdAt:
-                        firebase.firestore
-                        .FieldValue
-                        .serverTimestamp()
-
-                });
-
+              await db.collection("import_prices").add({
+    productId:id,
+    importPrice,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
                 // SAVE STOCK MOVEMENT
 
               
@@ -992,12 +999,23 @@ if (manualMinusSearch && manualMinusProductInfo && manualMinusQty && manualMinus
 
         try {
             const keyword = manualMinusSearch.value.trim().toLowerCase();
-            const qty = Number(manualMinusQty.value || 0);
-            const reasonValue = manualMinusReason.value.trim();
+const qty = Number(manualMinusQty.value);
+const reasonValue = manualMinusReason.value.trim();
 
-            if (!keyword) { alert("Nhập tên sản phẩm"); return; }
-            if (qty <= 0) { alert("Số lượng không hợp lệ"); return; }
-            if (!reasonValue) { alert("Chọn lý do"); return; }
+if (!keyword) {
+    alert("Nhập tên sản phẩm");
+    return;
+}
+
+if (!Number.isInteger(qty) || qty <= 0) {
+    alert("Số lượng không hợp lệ");
+    return;
+}
+
+if (!reasonValue) {
+    alert("Chọn lý do");
+    return;
+}
 
             // TÌM SẢN PHẨM
             const snap = await db.collection("products").get();
