@@ -1017,7 +1017,13 @@ if (manualMinusSearch && manualMinusProductInfo && manualMinusQty && manualMinus
 
             // UPDATE STOCK
             await db.collection("products").doc(foundDoc.id).update({ stock: newStock })
-            
+            await db.collection("stock_movements").add({
+    productId: foundDoc.id,
+    type: "MANUAL_MINUS",
+    qty: -qty,
+    reason: reasonValue,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
 
             alert(`Đã trừ ${qty} stock`);
 
