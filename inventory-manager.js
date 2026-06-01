@@ -1056,36 +1056,24 @@ if(manualMinusSearch && manualMinusProductInfo){
                 );
 
                 manualMinusProductInfo.innerHTML = `
+    <div class="product-info-wrap">
 
-                    <div>
-                        <b>${found.name || "-"}</b>
-                    </div>
+        <div class="product-info-name">
+            ${found.name || "-"}
+        </div>
 
-                    <div>
-                        Tồn:
-                        <span
-                            style="
-                                color:#00c853;
-                                font-weight:bold;
-                            "
-                        >
-                            ${Number(found.stock || 0)}
-                        </span>
-                    </div>
+        <div class="product-info-stat">
+            <span>Tồn:</span>
+            <b>${Number(found.stock || 0)}</b>
+        </div>
 
-                    <div>
-                        Đã bán:
-                        <span
-                            style="
-                                color:#ff9800;
-                                font-weight:bold;
-                            "
-                        >
-                            ${sold}
-                        </span>
-                    </div>
+        <div class="product-info-stat">
+            <span>Đã bán:</span>
+            <b>${sold}</b>
+        </div>
 
-                `;
+    </div>
+`;
 
             }catch(err){
 
