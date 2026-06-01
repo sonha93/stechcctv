@@ -11,6 +11,7 @@ const db = firebase.firestore();
 
 const importBody = document.getElementById("importBody");
 const movementsBody = document.getElementById("movementsBody");
+
 const inventorySearch = document.getElementById("inventorySearch");
 
 // ============================
@@ -109,13 +110,21 @@ async function loadInventory(){
             const price = Number(p.price || 0);
             const oldPrice = Number(p.oldPrice || 0);
 
+            // ============================
             // SOLD
+            // ============================
+
             const sold = Number(soldMap[String(doc.id)] || 0);
 
+            // ============================
             // PROFIT
+            // ============================
+
             const remain = stock;
+
             const revenue = price * sold;
             const capital = importPrice * sold;
+
             const profit = revenue - capital;
 
             totalImportPrice += importPrice;
@@ -200,7 +209,6 @@ async function loadInventory(){
                     </td>
 
                     <td>
-
                         <button
                             class="saveImportBtn"
                             data-id="${doc.id}"
@@ -215,7 +223,6 @@ async function loadInventory(){
                         >
                             Lưu
                         </button>
-
                     </td>
 
                 </tr>
@@ -242,11 +249,15 @@ async function loadInventory(){
         html = rows.slice(start, end).join("");
 
         // EMPTY
+
         if(!html){
 
             html = `
                 <tr>
-                    <td colspan="10" style="text-align:center;padding:20px;">
+                    <td colspan="10" style="
+                        text-align:center;
+                        padding:20px;
+                    ">
                         Không có dữ liệu
                     </td>
                 </tr>
@@ -339,54 +350,50 @@ async function loadInventory(){
 
         }
 
-        // ============================
-        // FOOTER
-        // ============================
-
         if(inventoryFooter){
 
             inventoryFooter.innerHTML = `
-                <tr
-                    style="
-                        background:#111;
-                        color:white;
-                        font-weight:bold;
-                    "
-                >
+                <tr style="
+                    background:#111;
+                    color:white;
+                    font-weight:bold;
+                ">
 
                     <td colspan="2">
                         TOTAL
                     </td>
 
+                    <!-- Giá nhập -->
                     <td>
                         ${formatVND(totalImportPrice)}
                     </td>
 
+                    <!-- Giá KM -->
                     <td>
                         ${formatVND(totalOldPrice)}
                     </td>
 
+                    <!-- Giá bán -->
                     <td>
                         ${formatVND(totalPrice)}
                     </td>
 
-                    <td
-                        style="
-                            color:${totalStock < 0 ? "red" : "#00ff90"};
-                        "
-                    >
+                    <!-- Tồn -->
+                    <td style="
+                        color:${totalStock < 0 ? "red" : "#00ff90"};
+                    ">
                         ${totalStock}
                     </td>
 
+                    <!-- Đã bán -->
                     <td>
                         ${totalSold}
                     </td>
 
-                    <td
-                        style="
-                            color:${totalProfit < 0 ? "red" : "#00ff90"};
-                        "
-                    >
+                    <!-- Lợi nhuận -->
+                    <td style="
+                        color:${totalProfit < 0 ? "red" : "#00ff90"};
+                    ">
                         ${formatVND(totalProfit)}
                     </td>
 
@@ -407,14 +414,11 @@ async function loadInventory(){
 
         inventoryBody.innerHTML = `
             <tr>
-                <td
-                    colspan="10"
-                    style="
-                        text-align:center;
-                        color:red;
-                        padding:20px;
-                    "
-                >
+                <td colspan="10" style="
+                    text-align:center;
+                    color:red;
+                    padding:20px;
+                ">
                     Lỗi tải inventory
                 </td>
             </tr>
@@ -475,12 +479,10 @@ function bindInventoryEvents(){
                     stock:newStock,
 
                     totalImportedQty:
-                        Number(productData.totalImportedQty || 0)
-                        + qtyImport,
+                        Number(productData.totalImportedQty || 0) + qtyImport,
 
                     totalImportValue:
-                        Number(productData.totalImportValue || 0)
-                        + totalImport
+                        Number(productData.totalImportValue || 0) + totalImport
 
                 });
 
@@ -492,9 +494,7 @@ function bindInventoryEvents(){
                     importPrice,
 
                     createdAt:
-                        firebase.firestore
-                        .FieldValue
-                        .serverTimestamp()
+                        firebase.firestore.FieldValue.serverTimestamp()
 
                 });
 
@@ -507,9 +507,7 @@ function bindInventoryEvents(){
                     qty:0,
 
                     createdAt:
-                        firebase.firestore
-                        .FieldValue
-                        .serverTimestamp()
+                        firebase.firestore.FieldValue.serverTimestamp()
 
                 });
 
@@ -531,733 +529,6 @@ function bindInventoryEvents(){
         });
 
     });
-
-}
-
-// ============================
-// LOAD IMPORT PRICES
-// ============================
-
-async function loadImportPrices(){
-
-    if(!importBody) return;
-
-    try{
-
-        const snap = await db
-            .collection("import_prices")
-            .orderBy("createdAt","desc")
-            .limit(50)
-            .get();
-
-        let html = "";
-
-        for(const doc of snap.docs){
-
-            const data = doc.data();
-
-            const selectedDate = importDateFilter?.value;
-
-            if(!data.createdAt){
-                continue;
-            }
-
-            if(selectedDate){
-
-                const itemDate = data.createdAt
-                    .toDate()
-                    .toISOString()
-                    .split("T")[0];
-
-                if(itemDate !== selectedDate){
-                    continue;
-                }
-
-            }
-
-            let productName = "-";
-
-            try{
-
-                const productDoc = await db
-                    .collection("products")
-                    .doc(data.productId)
-                    .get();
-
-                if(productDoc.exists){
-                    productName = productDoc.data().name;
-                }
-
-            }catch{}
-
-            html += `
-                <tr>
-
-                    <td>${productName}</td>
-
-                    <td>
-                        ${formatVND(data.importPrice)}
-                    </td>
-
-                    <td>
-
-                        ${
-                            data.createdAt &&
-                            typeof data.createdAt.toDate === "function"
-
-                            ? data.createdAt
-                                .toDate()
-                                .toLocaleString("vi-VN")
-
-                            : "-"
-                        }
-
-                    </td>
-
-                </tr>
-            `;
-
-        }
-
-        if(!html){
-
-            html = `
-                <tr>
-                    <td colspan="3" style="text-align:center;padding:20px;">
-                        Chưa có dữ liệu
-                    </td>
-                </tr>
-            `;
-
-        }
-
-        importBody.innerHTML = html;
-
-    }catch(err){
-
-        console.log(err);
-
-    }
-
-}
-
-// ============================
-// LOAD STOCK MOVEMENTS
-// ============================
-
-async function loadStockMovements(){
-
-    if(!movementsBody) return;
-
-    try{
-
-        const snap = await db
-            .collection("stock_movements")
-            .orderBy("createdAt","desc")
-            .limit(100)
-            .get();
-
-        let html = "";
-
-        for(const doc of snap.docs){
-
-            const data = doc.data();
-
-            const selectedDate = movementsDateFilter?.value;
-
-            if(!data.createdAt){
-                continue;
-            }
-
-            if(selectedDate){
-
-                const itemDate = data.createdAt
-                    .toDate()
-                    .toISOString()
-                    .split("T")[0];
-
-                if(itemDate !== selectedDate){
-                    continue;
-                }
-
-            }
-
-            let productName = "-";
-
-            try{
-
-                const productDoc = await db
-                    .collection("products")
-                    .doc(data.productId)
-                    .get();
-
-                if(productDoc.exists){
-                    productName = productDoc.data().name;
-                }
-
-            }catch{}
-
-            html += `
-                <tr>
-
-                    <td>${productName}</td>
-
-                    <td>${data.type || "-"}</td>
-
-                    <td
-                        style="
-                            color:${
-                                data.type === "MANUAL_MINUS"
-                                ? "red"
-                                : "#00c853"
-                            };
-                            font-weight:bold;
-                        "
-                    >
-
-                        ${
-                            data.type === "MANUAL_MINUS"
-                            ? "-" + Number(data.qty || 0)
-                            : "+" + Number(data.qty || 0)
-                        }
-
-                    </td>
-
-                    <td>
-
-                        ${
-                            data.createdAt &&
-                            typeof data.createdAt.toDate === "function"
-
-                            ? data.createdAt
-                                .toDate()
-                                .toLocaleString("vi-VN")
-
-                            : "-"
-                        }
-
-                    </td>
-
-                </tr>
-            `;
-
-        }
-
-        if(!html){
-
-            html = `
-                <tr>
-                    <td colspan="4" style="text-align:center;padding:20px;">
-                        Chưa có dữ liệu
-                    </td>
-                </tr>
-            `;
-
-        }
-
-        movementsBody.innerHTML = html;
-
-    }catch(err){
-
-        console.log(err);
-
-    }
-
-}
-
-// ============================
-// SEARCH
-// ============================
-
-if(inventorySearch){
-
-    inventorySearch.addEventListener("input", () => {
-
-        loadInventory();
-
-    });
-
-}
-
-// ============================
-// SWITCH MODULE
-// ============================
-
-const ordersSection = document.getElementById("ordersSection");
-const inventorySection = document.getElementById("inventorySection");
-const importSection = document.getElementById("importSection");
-const movementsSection = document.getElementById("movementsSection");
-const historySection = document.getElementById("historySection");
-
-function hideAllSections(){
-
-    if(historySection) historySection.style.display = "none";
-    if(ordersSection) ordersSection.style.display = "none";
-    if(inventorySection) inventorySection.style.display = "none";
-    if(importSection) importSection.style.display = "none";
-    if(movementsSection) movementsSection.style.display = "none";
-
-    // HIDE INVENTORY PAGINATION
-
-    const inventoryPagination =
-        document.getElementById("inventoryPagination");
-
-    if(inventoryPagination){
-        inventoryPagination.style.display = "none";
-    }
-
-}
-
-document
-.querySelectorAll('input[name="adminView"]')
-.forEach(radio => {
-
-    radio.addEventListener("change", () => {
-
-        hideAllSections();
-
-        const value = radio.value;
-
-        // ORDERS
-        if(value === "orders"){
-            ordersSection.style.display = "block";
-        }
-
-        // INVENTORY
-        if(value === "inventory"){
-
-            inventorySection.style.display = "block";
-
-            const inventoryPagination =
-                document.getElementById("inventoryPagination");
-
-            if(inventoryPagination){
-                inventoryPagination.style.display = "flex";
-            }
-
-            loadInventory();
-
-        }
-
-        // IMPORT
-        if(value === "import"){
-
-            importSection.style.display = "block";
-            loadImportPrices();
-
-        }
-
-        // MOVEMENTS
-        if(value === "movements"){
-
-            movementsSection.style.display = "block";
-            loadStockMovements();
-
-        }
-
-        // HISTORY
-        if(value === "history"){
-
-            historySection.style.display = "block";
-            loadHistory();
-
-        }
-
-    });
-
-});
-
-// ============================
-// DATE FILTER
-// ============================
-
-if(importDateFilter){
-
-    importDateFilter.addEventListener(
-        "change",
-        loadImportPrices
-    );
-
-}
-
-if(movementsDateFilter){
-
-    movementsDateFilter.addEventListener(
-        "change",
-        loadStockMovements
-    );
-
-}
-
-const clearImportDate =
-    document.getElementById("clearImportDate");
-
-if(clearImportDate){
-
-    clearImportDate.addEventListener("click", () => {
-
-        importDateFilter.value = "";
-        loadImportPrices();
-
-    });
-
-}
-
-const clearMovementsDate =
-    document.getElementById("clearMovementsDate");
-
-if(clearMovementsDate){
-
-    clearMovementsDate.addEventListener("click", () => {
-
-        movementsDateFilter.value = "";
-        loadStockMovements();
-
-    });
-
-}
-
-// ============================
-// DEFAULT DATE
-// ============================
-
-const today = new Date();
-
-today.setMinutes(
-    today.getMinutes() - today.getTimezoneOffset()
-);
-
-const todayStr =
-    today.toISOString().split("T")[0];
-
-if(importDateFilter){
-    importDateFilter.value = todayStr;
-}
-
-if(movementsDateFilter){
-    movementsDateFilter.value = todayStr;
-}
-
-// ============================
-// DEFAULT VIEW
-// ============================
-
-hideAllSections();
-
-ordersSection.style.display = "block";
-
-// ============================
-// MANUAL MINUS PRODUCT INFO
-// ============================
-
-const manualMinusSearch =
-    document.getElementById("manualMinusSearch");
-
-const manualMinusProductInfo =
-    document.getElementById("manualMinusProductInfo");
-
-if(manualMinusSearch && manualMinusProductInfo){
-
-    manualMinusSearch.addEventListener(
-        "input",
-        async () => {
-
-            const keyword = manualMinusSearch.value
-                .trim()
-                .toLowerCase();
-
-            if(!keyword){
-
-                manualMinusProductInfo.innerHTML =
-                    "Chưa chọn sản phẩm";
-
-                return;
-
-            }
-
-            try{
-
-                const productSnap =
-                    await db.collection("products").get();
-
-                const orderSnap =
-                    await db.collection("orders").get();
-
-                // SOLD MAP
-
-                const soldMap = {};
-
-                orderSnap.forEach(orderDoc => {
-
-                    const order = orderDoc.data();
-
-                    if(
-                        order.status !== "completed" ||
-                        order.customerCancelled ||
-                        order.adminCancelled
-                    ){
-                        return;
-                    }
-
-                    (order.items || []).forEach(item => {
-
-                        const id = String(item.id);
-
-                        if(!soldMap[id]){
-                            soldMap[id] = 0;
-                        }
-
-                        soldMap[id] += Number(item.qty || 0);
-
-                    });
-
-                });
-
-                let found = null;
-
-                productSnap.forEach(doc => {
-
-                    const data = doc.data();
-
-                    const name = String(data.name || "")
-                        .toLowerCase();
-
-                    const productId = String(doc.id)
-                        .toLowerCase();
-
-                    if(
-                        name.includes(keyword) ||
-                        productId.includes(keyword)
-                    ){
-
-                        found = {
-                            id:doc.id,
-                            ...data
-                        };
-
-                    }
-
-                });
-
-                if(!found){
-
-                    manualMinusProductInfo.innerHTML = `
-                        <span style="color:red;font-weight:bold;">
-                            Không tìm thấy sản phẩm
-                        </span>
-                    `;
-
-                    return;
-
-                }
-
-                const sold = Number(
-                    soldMap[String(found.id)] || 0
-                );
-
-                manualMinusProductInfo.innerHTML = `
-
-                    <div>
-                        <b>${found.name || "-"}</b>
-                    </div>
-
-                    <div>
-                        ID:
-                        <span style="color:#666;">
-                            ${found.id}
-                        </span>
-                    </div>
-
-                    <div>
-                        Tồn:
-                        <span
-                            style="
-                                color:#00c853;
-                                font-weight:bold;
-                            "
-                        >
-                            ${Number(found.stock || 0)}
-                        </span>
-                    </div>
-
-                    <div>
-                        Đã bán:
-                        <span
-                            style="
-                                color:#ff9800;
-                                font-weight:bold;
-                            "
-                        >
-                            ${sold}
-                        </span>
-                    </div>
-
-                `;
-
-            }catch(err){
-
-                console.log(err);
-
-            }
-
-        }
-    );
-
-}
-
-// ============================
-// MANUAL MINUS STOCK
-// ============================
-
-const manualMinusBtn =
-    document.getElementById("manualMinusBtn");
-
-if(manualMinusBtn){
-
-    manualMinusBtn.addEventListener(
-        "click",
-        async () => {
-
-            try{
-
-                const keyword = document
-                    .getElementById("manualMinusSearch")
-                    .value
-                    .trim()
-                    .toLowerCase();
-
-                const qty = Number(
-                    document
-                    .getElementById("manualMinusQty")
-                    .value || 0
-                );
-
-                const reason = document
-                    .getElementById("manualMinusReason")
-                    .value
-                    .trim();
-
-                if(!keyword){
-
-                    alert("Nhập tên sản phẩm");
-                    return;
-
-                }
-
-                if(qty <= 0){
-
-                    alert("Số lượng không hợp lệ");
-                    return;
-
-                }
-
-                // TÌM SẢN PHẨM
-
-                const snap =
-                    await db.collection("products").get();
-
-                let foundDoc = null;
-
-                snap.forEach(doc => {
-
-                    const data = doc.data();
-
-                    const name = String(data.name || "")
-                        .toLowerCase();
-
-                    const productId = String(doc.id)
-                        .toLowerCase();
-
-                    if(
-                        name.includes(keyword) ||
-                        productId.includes(keyword)
-                    ){
-
-                        foundDoc = doc;
-
-                    }
-
-                });
-
-                if(!foundDoc){
-
-                    alert("Không tìm thấy sản phẩm");
-                    return;
-
-                }
-
-                const product = foundDoc.data();
-
-                const currentStock =
-                    Number(product.stock || 0);
-
-                const newStock =
-                    Number(currentStock) - Number(qty);
-
-                console.log({
-                    currentStock,
-                    qty,
-                    newStock
-                });
-
-                // UPDATE STOCK
-
-                await db
-                    .collection("products")
-                    .doc(foundDoc.id)
-                    .update({
-                        stock:newStock
-                    });
-
-                // SAVE MOVEMENT
-
-                await db
-                    .collection("stock_movements")
-                    .add({
-
-                        productId:foundDoc.id,
-
-                        type:"MANUAL_MINUS",
-
-                        qty:qty,
-
-                        reason:reason || "Sự cố",
-
-                        createdAt:
-                            firebase.firestore
-                            .FieldValue
-                            .serverTimestamp()
-
-                    });
-
-                alert(`Đã trừ ${qty} stock`);
-
-                // CLEAR INPUT
-
-                document.getElementById(
-                    "manualMinusSearch"
-                ).value = "";
-
-                document.getElementById(
-                    "manualMinusQty"
-                ).value = "";
-
-                document.getElementById(
-                    "manualMinusReason"
-                ).value = "";
-
-                loadInventory();
-                loadStockMovements();
-
-            }catch(err){
-
-                console.log(err);
-                alert(err.message);
-
-            }
-
-        }
-    );
 
 }
 
