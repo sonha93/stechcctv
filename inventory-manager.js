@@ -288,62 +288,67 @@ const lowStock =
     inventoryBody.innerHTML = html;
 if(inventoryFooter){
 
-  inventoryFooter.innerHTML = `
+inventoryFooter.innerHTML = `
 
-    <tr style="
-      background:#111;
-      color:white;
-      font-weight:bold;
-    ">
+<tr style="
+  background:#111;
+  color:white;
+  font-weight:bold;
+">
 
-      <td colspan="2">
-        TOTAL
-      </td>
+  <td colspan="2">
+    TOTAL
+  </td>
 
-      <td>
-        ${formatVND(totalImportPrice)}
-      </td>
+  <!-- Giá nhập -->
+  <td>
+    ${formatVND(totalImportPrice)}
+  </td>
 
-      <td>
-        ---
-      </td>
+  <!-- Giá bán -->
+  <td>
+    ${formatVND(totalPrice)}
+  </td>
 
-      <td>
-        ${formatVND(totalPrice)}
-      </td>
+  <!-- Giá KM -->
+  <td>
+    ---
+  </td>
 
-      <td style="
-        color:${
-          totalStock < 0
-            ? "red"
-            : "#00ff90"
-        };
-      ">
-        ${totalStock}
-      </td>
+  <!-- Tồn -->
+  <td style="
+    color:${
+      totalStock < 0
+        ? "red"
+        : "#00ff90"
+    };
+  ">
+    ${totalStock}
+  </td>
 
-      <td>
-        ${totalSold}
-      </td>
+  <!-- Đã bán -->
+  <td>
+    ${totalSold}
+  </td>
 
-      <td style="
-        color:${
-          totalProfit < 0
-            ? "red"
-            : "#00ff90"
-        };
-      ">
-        ${formatVND(totalProfit)}
-      </td>
+  <!-- Lợi nhuận -->
+  <td style="
+    color:${
+      totalProfit < 0
+        ? "red"
+        : "#00ff90"
+    };
+  ">
+    ${formatVND(totalProfit)}
+  </td>
 
-      <td colspan="2">
-        ---
-      </td>
+  <td colspan="2">
+    ---
+  </td>
 
-    </tr>
+</tr>
 
-  `;
-
+`;
 }
     bindInventoryEvents();
 
