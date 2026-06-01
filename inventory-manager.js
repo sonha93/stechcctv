@@ -1,5 +1,3 @@
-test thử 
-
 
 // ============================
 // INVENTORY MANAGER V8
