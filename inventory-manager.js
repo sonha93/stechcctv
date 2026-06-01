@@ -640,9 +640,11 @@ const importSection =
 
 const movementsSection =
   document.getElementById("movementsSection");
-
+const historySection =
+  document.getElementById("historySection");
 function hideAllSections(){
-
+if(historySection)
+  historySection.style.display = "none";
   if(ordersSection)
     ordersSection.style.display = "none";
 
@@ -701,7 +703,15 @@ document
 
         // MOVEMENTS
         if(value === "movements"){
+// HISTORY
+if(value === "history"){
 
+  historySection.style.display =
+    "block";
+
+  loadHistory();
+
+}
           movementsSection.style.display =
             "block";
 
