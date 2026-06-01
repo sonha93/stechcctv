@@ -858,14 +858,7 @@ if(
       await productRef.update({
         stock: stock - (item.qty || 1)
       });
-await db.collection("stock_movements").add({
-  productId: item.id,
-  type: "SALE",
-  qty: item.qty || 1,
-  orderId: id,
-  createdAt:
-    firebase.firestore.FieldValue.serverTimestamp()
-});
+
     }
 
   }
