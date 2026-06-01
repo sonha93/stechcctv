@@ -42,7 +42,7 @@ async function loadInventory(){
 
     inventoryBody.innerHTML = `
       <tr>
-        <td colspan="11"
+        <td colspan="10"
           style="text-align:center;padding:20px;">
           Đang tải kho...
         </td>
@@ -254,7 +254,7 @@ const lowStock =
 
       html = `
         <tr>
-          <td colspan="11"
+          <td colspan="10"
             style="
               text-align:center;
               padding:20px;
@@ -276,7 +276,7 @@ const lowStock =
 
     inventoryBody.innerHTML = `
       <tr>
-        <td colspan="11"
+        <td colspan="10"
           style="
             text-align:center;
             color:red;
