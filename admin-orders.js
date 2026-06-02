@@ -864,7 +864,85 @@ if(
   }
 
 }
+if(
+  status === "completed" &&
+  orderData.status !== "completed"
+){
 
+  for(const item of (orderData.items || [])){
+
+    const productRef =
+      db.collection("products")
+      .doc(item.id);
+
+    const productDoc =
+      await productRef.get();
+
+    if(productDoc.exists){
+
+      const product =
+        productDoc.data();
+
+      const importPrice =
+        Number(product.importPrice || 0);
+
+      const sellPrice =
+        Number(item.price || product.price || 0);
+
+      const qty =
+        Number(item.qty || 0);
+
+      const revenue =
+        sellPrice * qty;
+
+      const capital =
+        importPrice * qty;
+
+      const profit =
+        revenue - capital;
+
+      await db
+        .collection("sales_history")
+        .add({
+
+          orderId:id,
+
+          productId:item.id,
+
+          productName:
+            item.name || product.name,
+
+          qty,
+
+          importPrice,
+
+          sellPrice,
+
+          revenue,
+
+          capital,
+
+          profit,
+
+          createdAt:
+            firebase.firestore
+            .FieldValue
+            .serverTimestamp()
+
+        });
+
+      const stock =
+        Number(product.stock || 0);
+
+      await productRef.update({
+        stock: stock - qty
+      });
+
+    }
+
+  }
+
+}
 await db
   .collection("orders")
   .doc(id)
