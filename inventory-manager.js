@@ -1177,13 +1177,24 @@ if (!reasonValue) {
             // LOAD LẠI BẢNG
             loadInventory();
             loadStockMovements();
-
+            loadHistory();
         } catch (err) {
             console.log(err);
             alert(err.message);
         }
 
     });
+
+}
+const historySearch =
+    document.getElementById("historySearch");
+
+if(historySearch){
+
+    historySearch.addEventListener(
+        "input",
+        loadHistory
+    );
 
 }
 // ============================
@@ -1193,3 +1204,4 @@ if (!reasonValue) {
 loadInventory();
 loadImportPrices();
 loadStockMovements();
+loadHistory();
