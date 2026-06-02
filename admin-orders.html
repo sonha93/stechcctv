@@ -686,6 +686,10 @@ tr:hover{
   <input type="radio" name="adminView" value="logs">
   <span>Logs</span>
 </label>
+    <label>
+  <input type="radio" name="adminView" value="sales">
+  <span>Sales</span>
+</label>
   </div>
 
 </div>
@@ -968,6 +972,56 @@ tr:hover{
 
   </div>
 
+</div>
+   <!-- SALES HISTORY -->
+<div
+  id="salesSection"
+  class="table-wrap"
+  style="display:none;margin-bottom:16px;"
+>
+  <div style="padding:16px;">
+
+    <h2 style="margin-bottom:15px;">
+      💵 Lịch sử bán hàng
+    </h2>
+
+    <table>
+
+      <thead>
+        <tr>
+
+          <th>Ngày</th>
+
+          <th>Sản phẩm</th>
+
+          <th>SL bán</th>
+
+          <th>Giá nhập</th>
+
+          <th>Giá bán</th>
+
+          <th>Doanh thu</th>
+
+          <th>Giá vốn</th>
+
+          <th>Lợi nhuận</th>
+
+        </tr>
+      </thead>
+
+      <tbody id="salesHistoryBody">
+
+        <tr>
+          <td colspan="8" style="text-align:center;padding:20px;">
+            Đang tải...
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
 </div>
    <!-- LOSS -->
 <div
