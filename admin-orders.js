@@ -873,6 +873,16 @@ if(
 
       const profit =
         revenue - capital;
+      const existed = await db
+  .collection("sales_history")
+  .where("orderId","==",id)
+  .where("productId","==",item.id)
+  .limit(1)
+  .get();
+
+if(!existed.empty){
+  continue;
+}
 
       await db
         .collection("sales_history")
@@ -904,13 +914,9 @@ if(
 
         });
 
-      const stock =
-        Number(product.stock || 0);
-
       await productRef.update({
-        stock: stock - qty
-      });
-
+  stock: firebase.firestore.FieldValue.increment(-qty)
+});
     }
 
   }
