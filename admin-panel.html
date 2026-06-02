@@ -403,13 +403,15 @@ const stock = Number(
 
   }
 
- const slug = name
-  .toLowerCase()
-  .normalize("NFD")
-  .replace(/[\u0300-\u036f]/g,"")
-  .replace(/đ/g,"d")
-  .replace(/\s+/g,"-")
-  .replace(/[^a-z0-9-]/g,"")
+const slug =
+  name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/đ/g,"d")
+    .replace(/\s+/g,"-")
+    .replace(/[^a-z0-9-]/g,"")
+  + "-" + Date.now();
   async function addProduct(img){
 
     const productData = {
@@ -729,7 +731,30 @@ const currentStock = Number(
 );
 
 const stockValue = currentStock + addQty;
+if(
+  Number(latestData?.price || 0) !== newPrice ||
+  Number(latestData?.oldPrice || 0) !== oldPrice
+){
 
+  await addDoc(
+    collection(db,"product_sale_price_history"),
+    {
+      productId:id,
+      productName:latestData?.name || "",
+
+      oldSalePrice:Number(latestData?.price || 0),
+      newSalePrice:newPrice,
+
+      oldComparePrice:Number(latestData?.oldPrice || 0),
+      newComparePrice:oldPrice,
+
+      changedAt:serverTimestamp()
+    }
+  );
+
+}
+
+      
 await updateDoc(
   productRef,
   {
