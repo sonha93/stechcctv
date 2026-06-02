@@ -678,6 +678,10 @@ tr:hover{
   <input type="radio" name="adminView" value="history">
   <span>History</span>
 </label>
+    <label>
+  <input type="radio" name="adminView" value="loss">
+  <span>Loss</span>
+</label>
   </div>
 
 </div>
@@ -961,6 +965,40 @@ tr:hover{
   </div>
 
 </div>
+   <!-- LOSS -->
+<div
+  id="lossSection"
+  class="table-wrap"
+  style="display:none;margin-bottom:16px;"
+>
+  <div style="padding:16px;">
+
+    <h2 style="margin-bottom:15px;">
+      📉 Loss
+    </h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Sản phẩm</th>
+          <th>Số lượng</th>
+          <th>Lý do</th>
+          <th>Giá trị</th>
+          <th>Ngày</th>
+        </tr>
+      </thead>
+
+      <tbody id="lossBody">
+        <tr>
+          <td colspan="5" class="empty">
+            Chưa có dữ liệu
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
    <!-- HISTORY -->
 <div
   id="historySection"
@@ -991,7 +1029,6 @@ tr:hover{
 
       <thead>
 
-       <thead>
 <tr>
     <th>ID</th>
     <th>Sản phẩm</th>
@@ -1004,7 +1041,7 @@ tr:hover{
 </tr>
 </thead>
 
-      </thead>
+
 
       <tbody id="historyBody">
 
