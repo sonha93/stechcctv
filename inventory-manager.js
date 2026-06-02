@@ -1785,7 +1785,7 @@ async function loadProductChangeLogs(){
             html = `
                 <tr>
                     <td
-                        colspan="12"
+                        colspan="13"
                         style="
                             text-align:center;
                             padding:20px;
