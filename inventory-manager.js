@@ -1445,3 +1445,167 @@ loadInventory();
 loadImportPrices();
 loadStockMovements();
 loadHistory();
+// ============================
+// LOAD LOGS
+// ============================
+
+async function loadProductChangeLogs(){
+
+    const body =
+        document.getElementById(
+            "productChangeLogsBody"
+        );
+
+    if(!body) return;
+
+    try{
+
+        const snap =
+            await db
+            .collection(
+                "product_change_logs"
+            )
+            .orderBy(
+                "createdAt",
+                "desc"
+            )
+            .limit(500)
+            .get();
+
+        let html = "";
+
+        snap.forEach(doc=>{
+
+            const d = doc.data();
+
+            html += `
+                <tr>
+
+                    <td>
+                        ${
+                            d.createdAt
+                            ?
+                            d.createdAt
+                            .toDate()
+                            .toLocaleString(
+                                "vi-VN"
+                            )
+                            :
+                            "-"
+                        }
+                    </td>
+
+                    <td>
+                        ${d.productId}
+                    </td>
+
+                    <td>
+                        ${d.productName}
+                    </td>
+
+                    <td>
+                        ${d.changedBy}
+                    </td>
+
+                    <td>
+                        ${formatVND(
+                            d.before
+                            ?.importPrice
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatVND(
+                            d.after
+                            ?.importPrice
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatVND(
+                            d.before
+                            ?.price
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatVND(
+                            d.after
+                            ?.price
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatVND(
+                            d.before
+                            ?.oldPrice
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatVND(
+                            d.after
+                            ?.oldPrice
+                        )}
+                    </td>
+
+                    <td
+                        style="
+                            color:
+                            ${
+                                d.profitAfter < 0
+                                ? "red"
+                                : "#00c853"
+                            };
+                            font-weight:bold;
+                        "
+                    >
+                        ${formatVND(
+                            d.profitBefore
+                        )}
+
+                        →
+
+                        ${formatVND(
+                            d.profitAfter
+                        )}
+                    </td>
+
+                    <td>
+                        ${
+                            d.priceChangePercent
+                        }%
+                    </td>
+
+                </tr>
+            `;
+
+        });
+
+        if(!html){
+
+            html = `
+                <tr>
+                    <td
+                        colspan="12"
+                        style="
+                            text-align:center;
+                            padding:20px;
+                        "
+                    >
+                        Chưa có dữ liệu
+                    </td>
+                </tr>
+            `;
+
+        }
+
+        body.innerHTML = html;
+
+    }catch(err){
+
+        console.error(err);
+
+    }
+
+}
