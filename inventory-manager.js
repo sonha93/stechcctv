@@ -1215,13 +1215,109 @@ async function loadLoss(){
 
     if(!lossBody) return;
 
-    lossBody.innerHTML = `
-        <tr>
-            <td colspan="10" style="text-align:center;">
-                Chưa có dữ liệu hao hụt
-            </td>
-        </tr>
-    `;
+    try{
+
+        const snap = await db
+            .collection("stock_movements")
+            .orderBy("createdAt","desc")
+            .get();
+
+        let html = "";
+
+        for(const doc of snap.docs){
+
+            const data = doc.data();
+
+            if(data.type !== "MANUAL_MINUS"){
+                continue;
+            }
+
+            let productName = data.productId || "-";
+            let lossValue = 0;
+
+            try{
+
+                const productDoc = await db
+                    .collection("products")
+                    .doc(data.productId)
+                    .get();
+
+                if(productDoc.exists){
+
+                    const p = productDoc.data();
+
+                    productName = p.name || data.productId;
+
+                    lossValue =
+                        Math.abs(Number(data.qty || 0))
+                        *
+                        Number(p.importPrice || 0);
+
+                }
+
+            }catch(err){
+                console.log(err);
+            }
+
+            html += `
+                <tr>
+
+                    <td>${productName}</td>
+
+                    <td>
+                        ${Math.abs(data.qty || 0)}
+                    </td>
+
+                    <td>
+                        ${data.reason || "---"}
+                    </td>
+
+                    <td style="color:red;font-weight:bold;">
+                        ${formatVND(lossValue)}
+                    </td>
+
+                    <td>
+                        ${
+                            data.createdAt
+                            ? data.createdAt
+                                .toDate()
+                                .toLocaleString("vi-VN")
+                            : "-"
+                        }
+                    </td>
+
+                </tr>
+            `;
+
+        }
+
+        if(!html){
+
+            html = `
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:20px;">
+                        Chưa có dữ liệu hao hụt
+                    </td>
+                </tr>
+            `;
+
+        }
+
+        lossBody.innerHTML = html;
+
+    }catch(err){
+
+        console.log(err);
+
+        lossBody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align:center;color:red;">
+                    Lỗi tải dữ liệu hao hụt
+                </td>
+            </tr>
+        `;
+
+    }
 
 }
 // ============================
