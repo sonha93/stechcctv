@@ -423,7 +423,111 @@ async function loadInventory(){
     }
 
 }
+// ============================
+// SAVE PRODUCT CHANGE LOG
+// ============================
 
+async function saveProductChangeLog({
+
+    productId,
+    productName,
+
+    changedBy = "admin",
+
+    oldImportPrice = 0,
+    newImportPrice = 0,
+
+    oldPrice = 0,
+    newPrice = 0,
+
+    oldOldPrice = 0,
+    newOldPrice = 0,
+
+    changeType = "IMPORT"
+
+}){
+
+    try{
+
+        const profitBefore =
+            Number(oldPrice) -
+            Number(oldImportPrice);
+
+        const profitAfter =
+            Number(newPrice) -
+            Number(newImportPrice);
+
+        const priceChangePercent =
+            Number(oldPrice) > 0
+            ? (
+                (
+                    newPrice -
+                    oldPrice
+                )
+                /
+                oldPrice
+                *
+                100
+            ).toFixed(2)
+            : 0;
+
+        await db
+            .collection(
+                "product_change_logs"
+            )
+            .add({
+
+                productId,
+                productName,
+
+                changedBy,
+                changeType,
+
+                before:{
+                    importPrice:
+                        oldImportPrice,
+
+                    price:
+                        oldPrice,
+
+                    oldPrice:
+                        oldOldPrice
+                },
+
+                after:{
+                    importPrice:
+                        newImportPrice,
+
+                    price:
+                        newPrice,
+
+                    oldPrice:
+                        newOldPrice
+                },
+
+                profitBefore,
+                profitAfter,
+
+                priceChangePercent,
+
+                createdAt:
+                    firebase
+                    .firestore
+                    .FieldValue
+                    .serverTimestamp()
+
+            });
+
+    }catch(err){
+
+        console.error(
+            "Save log error:",
+            err
+        );
+
+    }
+
+}
 // ============================
 // SAVE IMPORT PRICE
 // ============================
@@ -493,6 +597,34 @@ if (!Number.isInteger(qtyImport) || qtyImport < 0) {
                         + totalImport
 
                 });
+                await saveProductChangeLog({
+
+    productId:id,
+    productName:productData.name,
+
+    oldImportPrice:
+        productData.importPrice || 0,
+
+    newImportPrice:
+        importPrice,
+
+    oldPrice:
+        productData.price || 0,
+
+    newPrice:
+        productData.price || 0,
+
+    oldOldPrice:
+        productData.oldPrice || 0,
+
+    newOldPrice:
+        productData.oldPrice || 0,
+
+    changedBy:"admin",
+
+    changeType:"IMPORT"
+
+});
                 // SAVE STOCK MOVEMENT
 if(qtyImport > 0){
 
@@ -1445,6 +1577,7 @@ loadInventory();
 loadImportPrices();
 loadStockMovements();
 loadHistory();
+loadProductChangeLogs();
 // ============================
 // LOAD LOGS
 // ============================
