@@ -1210,112 +1210,229 @@ if(historySearch){
 
 async function loadLoss(){
 
-    const lossBody =
-        document.getElementById("lossBody");
+    const lossBody = document.getElementById("lossBody");
 
     if(!lossBody) return;
 
     try{
 
-        const snap = await db
-            .collection("stock_movements")
-            .orderBy("createdAt","desc")
-            .get();
+        const productSnap =
+            await db.collection("products").get();
+
+        const orderSnap =
+            await db.collection("orders").get();
+
+        const moveSnap =
+            await db.collection("stock_movements").get();
+
+        const soldMap = {};
+        const lossMap = {};
+
+        // ====================
+        // SOLD
+        // ====================
+
+        orderSnap.forEach(doc=>{
+
+            const order = doc.data();
+
+            if(order.status !== "completed") return;
+
+            (order.items || []).forEach(item=>{
+
+                const id = String(item.id);
+
+                soldMap[id] =
+                    (soldMap[id] || 0)
+                    + Number(item.qty || 0);
+
+            });
+
+        });
+
+        // ====================
+        // LOSS
+        // ====================
+
+        moveSnap.forEach(doc=>{
+
+            const m = doc.data();
+
+            if(m.type !== "MANUAL_MINUS")
+                return;
+
+            const id =
+                String(m.productId);
+
+            lossMap[id] =
+                (lossMap[id] || 0)
+                + Math.abs(
+                    Number(m.qty || 0)
+                );
+
+        });
 
         let html = "";
 
-        for(const doc of snap.docs){
+        productSnap.forEach(doc=>{
 
-            const data = doc.data();
+            const p = doc.data();
 
-            if(data.type !== "MANUAL_MINUS"){
-                continue;
-            }
+            const id = doc.id;
 
-            let productName = data.productId || "-";
-            let lossValue = 0;
+            const importPrice =
+                Number(p.importPrice || 0);
 
-            try{
+            const sellPrice =
+                Number(p.price || 0);
 
-                const productDoc = await db
-                    .collection("products")
-                    .doc(data.productId)
-                    .get();
+            const totalImportedQty =
+                Number(
+                    p.totalImportedQty || 0
+                );
 
-                if(productDoc.exists){
+            const totalImportValue =
+                Number(
+                    p.totalImportValue || 0
+                );
 
-                    const p = productDoc.data();
+            const sold =
+                soldMap[id] || 0;
 
-                    productName = p.name || data.productId;
+            const stock =
+                Number(p.stock || 0);
 
-                    lossValue =
-                        Math.abs(Number(data.qty || 0))
-                        *
-                        Number(p.importPrice || 0);
+            const lossQty =
+                lossMap[id] || 0;
 
-                }
+            const revenue =
+                sold * sellPrice;
 
-            }catch(err){
-                console.log(err);
-            }
+            const stockValue =
+                stock * importPrice;
+
+            const lossValue =
+                lossQty * importPrice;
+
+            const profit =
+                revenue
+                -
+                (sold * importPrice);
+
+            const lossPercent =
+                totalImportedQty > 0
+                ? (
+                    lossQty
+                    /
+                    totalImportedQty
+                    *
+                    100
+                  ).toFixed(2)
+                : "0.00";
+
+            const profitPercent =
+                revenue > 0
+                ? (
+                    profit
+                    /
+                    revenue
+                    *
+                    100
+                  ).toFixed(2)
+                : "0.00";
 
             html += `
                 <tr>
 
-                    <td>${productName}</td>
+                    <td>${id}</td>
+
+                    <td>${p.name || "-"}</td>
 
                     <td>
-                        ${Math.abs(data.qty || 0)}
+                        ${formatVND(importPrice)}
                     </td>
 
                     <td>
-                        ${data.reason || "---"}
+                        ${formatVND(sellPrice)}
                     </td>
 
-                    <td style="color:red;font-weight:bold;">
+                    <td>
+                        ${totalImportedQty}
+                    </td>
+
+                    <td>
+                        ${formatVND(totalImportValue)}
+                    </td>
+
+                    <td>
+                        ${sold}
+                    </td>
+
+                    <td>
+                        ${formatVND(revenue)}
+                    </td>
+
+                    <td>
+                        ${stock}
+                    </td>
+
+                    <td>
+                        ${formatVND(stockValue)}
+                    </td>
+
+                    <td style="
+                        color:red;
+                        font-weight:bold;
+                    ">
+                        ${lossQty}
+                    </td>
+
+                    <td style="
+                        color:red;
+                        font-weight:bold;
+                    ">
                         ${formatVND(lossValue)}
                     </td>
 
-                    <td>
-                        ${
-                            data.createdAt
-                            ? data.createdAt
-                                .toDate()
-                                .toLocaleString("vi-VN")
-                            : "-"
-                        }
+                    <td style="
+                        color:red;
+                        font-weight:bold;
+                    ">
+                        ${lossPercent}%
+                    </td>
+
+                    <td style="
+                        color:${
+                            profit < 0
+                            ? "red"
+                            : "#00c853"
+                        };
+                        font-weight:bold;
+                    ">
+                        ${formatVND(profit)}
+                    </td>
+
+                    <td style="
+                        color:${
+                            profitPercent < 0
+                            ? "red"
+                            : "#00c853"
+                        };
+                        font-weight:bold;
+                    ">
+                        ${profitPercent}%
                     </td>
 
                 </tr>
             `;
 
-        }
-
-        if(!html){
-
-            html = `
-                <tr>
-                    <td colspan="5" style="text-align:center;padding:20px;">
-                        Chưa có dữ liệu hao hụt
-                    </td>
-                </tr>
-            `;
-
-        }
+        });
 
         lossBody.innerHTML = html;
 
     }catch(err){
 
         console.log(err);
-
-        lossBody.innerHTML = `
-            <tr>
-                <td colspan="5" style="text-align:center;color:red;">
-                    Lỗi tải dữ liệu hao hụt
-                </td>
-            </tr>
-        `;
 
     }
 
