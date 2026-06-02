@@ -1033,7 +1033,8 @@ const movementsSection = document.getElementById("movementsSection");
 const historySection = document.getElementById("historySection");
 const lossSection = document.getElementById("lossSection");
 const logsSection = document.getElementById("logsSection");
-
+const salesSection =
+    document.getElementById("salesSection");
 
 function hideAllSections(){
 
@@ -1045,7 +1046,7 @@ function hideAllSections(){
     if(inventorySection) inventorySection.style.display = "none";
     if(importSection) importSection.style.display = "none";
     if(movementsSection) movementsSection.style.display = "none";
-
+ if(movementsSection) movementsSection.style.display = "none";
     const inventoryPagination =
         document.getElementById("inventoryPagination");
 
@@ -1117,6 +1118,13 @@ if(value === "logs"){
 
     logsSection.style.display = "block";
     loadProductChangeLogs();
+
+}
+        if(value === "sales"){
+
+    salesSection.style.display = "block";
+
+    loadSalesHistory();
 
 }
     });
