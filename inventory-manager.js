@@ -449,28 +449,37 @@ async function saveProductChangeLog({
 
     try{
 
-        const profitBefore =
-            Number(oldPrice) -
-            Number(oldImportPrice);
+       const profitBefore =
+    Number(oldPrice) -
+    Number(oldImportPrice);
 
-        const profitAfter =
-            Number(newPrice) -
-            Number(newImportPrice);
+const profitAfter =
+    Number(newPrice) -
+    Number(newImportPrice);
 
-        const priceChangePercent =
-            Number(oldPrice) > 0
-            ? (
-                (
-                    newPrice -
-                    oldPrice
-                )
-                /
-                oldPrice
-                *
-                100
-            ).toFixed(2)
-            : 0;
+const priceChangePercent =
+    Number(oldPrice) > 0
+    ? (
+        (
+            newPrice -
+            oldPrice
+        ) /
+        oldPrice *
+        100
+    ).toFixed(2)
+    : 0;
 
+const importChangePercent =
+    Number(oldImportPrice) > 0
+    ? (
+        (
+            newImportPrice -
+            oldImportPrice
+        ) /
+        oldImportPrice *
+        100
+    ).toFixed(2)
+    : 0;
         await db
             .collection(
                 "product_change_logs"
@@ -505,11 +514,11 @@ async function saveProductChangeLog({
                         newOldPrice
                 },
 
-                profitBefore,
-                profitAfter,
+               profitBefore,
+profitAfter,
 
-                priceChangePercent,
-
+priceChangePercent,
+importChangePercent,
                 createdAt:
                     firebase
                     .firestore
@@ -1688,34 +1697,84 @@ async function loadProductChangeLogs(){
                         )}
                     </td>
 
-                    <td
-                        style="
-                            color:
-                            ${
-                                d.profitAfter < 0
-                                ? "red"
-                                : "#00c853"
-                            };
-                            font-weight:bold;
-                        "
-                    >
-                        ${formatVND(
-                            d.profitBefore
-                        )}
+                 <td
+    style="
+        color:${
+            Number(d.importChangePercent) < 0
+            ? "#00c853"
+            : "red"
+        };
+        font-weight:bold;
+    "
+>
+    ${
+        Number(d.importChangePercent) > 0
+        ? "+"
+        : ""
+    }${d.importChangePercent || 0}%
+</td>
 
-                        →
+<td
+    style="
+        color:${
+            d.profitAfter < 0
+            ? "red"
+            : "#00c853"
+        };
+        font-weight:bold;
+    "
+>
+    ${formatVND(d.profitBefore)}
+    →
+    ${formatVND(d.profitAfter)}
 
-                        ${formatVND(
-                            d.profitAfter
-                        )}
-                    </td>
+    <br>
 
-                    <td>
-                        ${
-                            d.priceChangePercent
-                        }%
-                    </td>
+    <small>
+    ${
+        d.profitAfter >= d.profitBefore
+        ? "+"
+        : ""
+    }
+    ${formatVND(
+        d.profitAfter - d.profitBefore
+    )}
 
+    |
+
+    ${
+        d.profitBefore > 0
+        ? (
+            (
+                (d.profitAfter - d.profitBefore)
+                /
+                d.profitBefore
+            ) * 100
+        ).toFixed(2)
+        : 0
+    }%
+</small>
+</td>
+
+<td
+    style="
+        color:${
+            Number(d.priceChangePercent) > 0
+            ? "#00c853"
+            : Number(d.priceChangePercent) < 0
+            ? "red"
+            : "#999"
+        };
+        font-weight:bold;
+    "
+>
+    ${
+        Number(d.priceChangePercent) > 0
+        ? "+"
+        : ""
+    }
+    ${d.priceChangePercent || 0}%
+</td>
                 </tr>
             `;
 
