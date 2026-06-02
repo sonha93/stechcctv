@@ -754,7 +754,54 @@ if(
 
 }
 
-      
+ await addDoc(
+  collection(db,"product_change_logs"),
+  {
+
+    productId:id,
+    productName:latestData?.name || "",
+
+    changedBy:"admin",
+    changeType:"PRICE_UPDATE",
+
+    before:{
+      importPrice:Number(latestData?.importPrice || 0),
+      price:Number(latestData?.price || 0),
+      oldPrice:Number(latestData?.oldPrice || 0)
+    },
+
+    after:{
+      importPrice:Number(latestData?.importPrice || 0),
+      price:newPrice,
+      oldPrice:oldPrice
+    },
+
+    profitBefore:
+      Number(latestData?.price || 0)
+      - Number(latestData?.importPrice || 0),
+
+    profitAfter:
+      newPrice
+      - Number(latestData?.importPrice || 0),
+
+    priceChangePercent:
+      Number(latestData?.price || 0) > 0
+      ? (
+          (
+            newPrice -
+            Number(latestData?.price || 0)
+          ) /
+          Number(latestData?.price || 0) *
+          100
+        ).toFixed(2)
+      : 0,
+
+    importChangePercent:0,
+
+    createdAt:serverTimestamp()
+
+  }
+);     
 await updateDoc(
   productRef,
   {
