@@ -988,39 +988,41 @@ if(
     return;
 }
 
+const sold =
+    soldMap[product.id] || 0;
 
+html += `
+    <tr>
 
-                <td>${product.id}</td>
+        <td>${product.id}</td>
 
-                <td>${p.name}</td>
+        <td>${p.name}</td>
 
-                <td>
-                    ${
-                        data.createdAt
-                        ? data.createdAt.toDate()
-                            .toLocaleString("vi-VN")
-                        : "-"
-                    }
-                </td>
+        <td>
+            ${
+                data.createdAt
+                ? data.createdAt.toDate()
+                    .toLocaleString("vi-VN")
+                : "-"
+            }
+        </td>
 
-                <td>${data.qty}</td>
+        <td>${data.qty}</td>
 
-                <td>
-                    ${formatVND(data.importPrice)}
-                </td>
+        <td>
+            ${formatVND(data.importPrice)}
+        </td>
 
-                <td>${sold}</td>
+        <td>${sold}</td>
 
-                <td>${data.stockAfter || "-"}</td>
+        <td>${data.stockAfter || "-"}</td>
 
-                <td>
-    0
-</td>
+        <td>0</td>
 
-            </tr>
-        `;
-
-    });
+    </tr>
+`;
+}); 
+                
 
     historyBody.innerHTML = html;
 
