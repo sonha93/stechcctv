@@ -1022,18 +1022,20 @@ const inventorySection = document.getElementById("inventorySection");
 const importSection = document.getElementById("importSection");
 const movementsSection = document.getElementById("movementsSection");
 const historySection = document.getElementById("historySection");
-const lossSection =
-    document.getElementById("lossSection");
+const lossSection = document.getElementById("lossSection");
+const logsSection = document.getElementById("logsSection");
+
+
 function hideAllSections(){
 
     if(historySection) historySection.style.display = "none";
     if(lossSection) lossSection.style.display = "none";
+    if(logsSection) logsSection.style.display = "none";
+
     if(ordersSection) ordersSection.style.display = "none";
     if(inventorySection) inventorySection.style.display = "none";
     if(importSection) importSection.style.display = "none";
     if(movementsSection) movementsSection.style.display = "none";
-
-    // HIDE INVENTORY PAGINATION
 
     const inventoryPagination =
         document.getElementById("inventoryPagination");
@@ -1041,7 +1043,6 @@ function hideAllSections(){
     if(inventoryPagination){
         inventoryPagination.style.display = "none";
     }
-
 }
 
 document
@@ -1103,7 +1104,12 @@ document
     loadLoss();
 
 }
+if(value === "logs"){
 
+    logsSection.style.display = "block";
+    loadProductChangeLogs();
+
+}
     });
 
 });
