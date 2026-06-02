@@ -1592,6 +1592,7 @@ loadImportPrices();
 loadStockMovements();
 loadHistory();
 loadProductChangeLogs();
+loadSalesHistory();
 // ============================
 // LOAD LOGS
 // ============================
@@ -1802,6 +1803,132 @@ async function loadProductChangeLogs(){
     }catch(err){
 
         console.error(err);
+
+    }
+
+}
+async function loadSalesHistory(){
+
+    const body =
+        document.getElementById(
+            "salesHistoryBody"
+        );
+
+    if(!body) return;
+
+    try{
+
+        const snap =
+            await db
+            .collection("sales_history")
+            .orderBy(
+                "createdAt",
+                "desc"
+            )
+            .limit(1000)
+            .get();
+
+        let html = "";
+
+        let totalRevenue = 0;
+        let totalCapital = 0;
+        let totalProfit = 0;
+
+        snap.forEach(doc=>{
+
+            const d = doc.data();
+
+            totalRevenue +=
+                Number(d.revenue || 0);
+
+            totalCapital +=
+                Number(d.capital || 0);
+
+            totalProfit +=
+                Number(d.profit || 0);
+
+            html += `
+                <tr>
+
+                    <td>
+                        ${
+                            d.createdAt
+                            ? d.createdAt
+                                .toDate()
+                                .toLocaleString("vi-VN")
+                            : "-"
+                        }
+                    </td>
+
+                    <td>${d.productName}</td>
+
+                    <td>${d.qty}</td>
+
+                    <td>
+                        ${formatVND(d.importPrice)}
+                    </td>
+
+                    <td>
+                        ${formatVND(d.sellPrice)}
+                    </td>
+
+                    <td>
+                        ${formatVND(d.revenue)}
+                    </td>
+
+                    <td>
+                        ${formatVND(d.capital)}
+                    </td>
+
+                    <td style="
+                        color:${
+                            d.profit < 0
+                            ? "red"
+                            : "#00c853"
+                        };
+                        font-weight:bold;
+                    ">
+                        ${formatVND(d.profit)}
+                    </td>
+
+                </tr>
+            `;
+
+        });
+
+        html += `
+            <tr
+                style="
+                    background:#111;
+                    color:white;
+                    font-weight:bold;
+                "
+            >
+
+                <td colspan="5">
+                    TỔNG
+                </td>
+
+                <td>
+                    ${formatVND(totalRevenue)}
+                </td>
+
+                <td>
+                    ${formatVND(totalCapital)}
+                </td>
+
+                <td>
+                    ${formatVND(totalProfit)}
+                </td>
+
+            </tr>
+        `;
+
+        body.innerHTML = html;
+
+    }catch(err){
+
+        console.log(err);
 
     }
 
