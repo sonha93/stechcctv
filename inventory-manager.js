@@ -658,6 +658,8 @@ if(qtyImport > 0){
 
     qty:qtyImport,
 
+    reason:"Nhập kho",
+
     importPrice: importPrice,
 
     createdAt:
@@ -666,7 +668,6 @@ if(qtyImport > 0){
         .serverTimestamp()
 
 });
-
 }
                 // SAVE IMPORT HISTORY
 
