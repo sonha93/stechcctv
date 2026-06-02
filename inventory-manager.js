@@ -496,18 +496,23 @@ if (!Number.isInteger(qtyImport) || qtyImport < 0) {
                 // SAVE STOCK MOVEMENT
 if(qtyImport > 0){
 
-    await db.collection("stock_movements").add({
+   await db.collection("stock_movements").add({
 
-        productId:id,
-        type:"IMPORT",
-        qty:qtyImport,
+    productId:id,
+    productName: productData.name || "",
 
-        createdAt:
-            firebase.firestore
-            .FieldValue
-            .serverTimestamp()
+    type:"IMPORT",
 
-    });
+    qty:qtyImport,
+
+    importPrice: importPrice,
+
+    createdAt:
+        firebase.firestore
+        .FieldValue
+        .serverTimestamp()
+
+});
 
 }
                 // SAVE IMPORT HISTORY
@@ -743,7 +748,125 @@ html += `
     }
 
 }
+async function loadHistory(){
 
+    const historyBody =
+        document.getElementById("historyBody");
+
+    const keyword =
+        document.getElementById("historySearch")
+        ?.value
+        .trim()
+        .toLowerCase();
+
+    const moveSnap =
+        await db.collection("stock_movements")
+        .orderBy("createdAt","desc")
+        .get();
+
+    const productSnap =
+        await db.collection("products")
+        .get();
+
+    const orderSnap =
+        await db.collection("orders")
+        .get();
+
+    const soldMap = {};
+
+    orderSnap.forEach(doc=>{
+
+        const order = doc.data();
+
+        if(order.status !== "completed")
+            return;
+
+        (order.items || []).forEach(item=>{
+
+            const id = String(item.id);
+
+            soldMap[id] =
+                (soldMap[id] || 0)
+                + Number(item.qty || 0);
+
+        });
+
+    });
+
+    let html = "";
+
+    moveSnap.forEach(doc=>{
+
+        const data = doc.data();
+
+        if(data.type !== "IMPORT")
+            return;
+
+        const product =
+            productSnap.docs.find(
+                p => p.id === data.productId
+            );
+
+        if(!product)
+            return;
+
+        const p = product.data();
+
+        if(
+            keyword &&
+            !p.name.toLowerCase().includes(keyword) &&
+            !product.id.toLowerCase().includes(keyword)
+        ){
+            return;
+        }
+
+        const sold =
+            soldMap[product.id] || 0;
+
+        const stock =
+            Number(p.stock || 0);
+
+        html += `
+            <tr>
+
+                <td>${product.id}</td>
+
+                <td>${p.name}</td>
+
+                <td>
+                    ${
+                        data.createdAt
+                        ? data.createdAt.toDate()
+                            .toLocaleString("vi-VN")
+                        : "-"
+                    }
+                </td>
+
+                <td>${data.qty}</td>
+
+                <td>
+                    ${formatVND(data.importPrice)}
+                </td>
+
+                <td>${sold}</td>
+
+                <td>${stock}</td>
+
+                <td>
+                    ${Math.max(
+                        0,
+                        data.qty - stock - sold
+                    )}
+                </td>
+
+            </tr>
+        `;
+
+    });
+
+    historyBody.innerHTML = html;
+
+}
 // ============================
 // SEARCH
 // ============================
