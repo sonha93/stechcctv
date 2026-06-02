@@ -1041,7 +1041,7 @@ function hideAllSections(){
     if(historySection) historySection.style.display = "none";
     if(lossSection) lossSection.style.display = "none";
     if(logsSection) logsSection.style.display = "none";
-
+    if(salesSection) salesSection.style.display = "none";
     if(ordersSection) ordersSection.style.display = "none";
     if(inventorySection) inventorySection.style.display = "none";
     if(importSection) importSection.style.display = "none";
