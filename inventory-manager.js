@@ -988,13 +988,7 @@ if(
     return;
 }
 
-        const sold =
-            soldMap[product.id] || 0;
 
-      <td>${data.stockAfter || "-"}</td>
-
-        html += `
-            <tr>
 
                 <td>${product.id}</td>
 
