@@ -59,17 +59,22 @@ async function loadInventory(){
 
             const order = orderDoc.data();
 
-            if(
-                order.status !== "completed" ||
-                order.customerCancelled ||
-                order.adminCancelled
-            ){
-                return;
-            }
+           if(
+    order.status !== "completed" ||
+    order.customerCancelled ||
+    order.adminCancelled
+){
+    return;
+}
 
             (order.items || []).forEach(item => {
 
-                const id = String(item.id);
+             const id =
+    String(
+        item.id ||
+        item.productId ||
+        ""
+    );
 
                 if(!soldMap[id]){
                     soldMap[id] = 0;
@@ -274,7 +279,14 @@ async function loadInventory(){
             pagination.style.alignItems = "center";
             pagination.style.justifyContent = "center";
 
-            inventoryBody.closest("table").after(pagination);
+            const table =
+    inventoryBody.closest("table");
+
+if(table){
+
+    table.after(pagination);
+
+}
 
         }
 
@@ -658,11 +670,16 @@ if(qtyImport > 0){
 }
                 // SAVE IMPORT HISTORY
 
-              await db.collection("import_prices").add({
-    productId:id,
-    importPrice,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-});
+           if(qtyImport > 0){
+
+    await db.collection("import_prices").add({
+        productId:id,
+        importPrice,
+        createdAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+}
                 // SAVE STOCK MOVEMENT
 
               
@@ -924,8 +941,12 @@ async function loadHistory(){
 
         (order.items || []).forEach(item=>{
 
-            const id = String(item.id);
-
+            const id =
+    String(
+        item.id ||
+        item.productId ||
+        ""
+    );
             soldMap[id] =
                 (soldMap[id] || 0)
                 + Number(item.qty || 0);
@@ -952,14 +973,17 @@ async function loadHistory(){
             return;
 
         const p = product.data();
-
-        if(
-            keyword &&
-            !p.name.toLowerCase().includes(keyword) &&
-            !product.id.toLowerCase().includes(keyword)
-        ){
-            return;
-        }
+if(
+    keyword &&
+    !String(p.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+    !String(product.id)
+        .toLowerCase()
+        .includes(keyword)
+){
+    return;
+}
 
         const sold =
             soldMap[product.id] || 0;
@@ -994,11 +1018,8 @@ async function loadHistory(){
                 <td>${stock}</td>
 
                 <td>
-                    ${Math.max(
-                        0,
-                        data.qty - stock - sold
-                    )}
-                </td>
+    0
+</td>
 
             </tr>
         `;
@@ -1045,8 +1066,9 @@ function hideAllSections(){
     if(ordersSection) ordersSection.style.display = "none";
     if(inventorySection) inventorySection.style.display = "none";
     if(importSection) importSection.style.display = "none";
-    if(movementsSection) movementsSection.style.display = "none";
- if(movementsSection) movementsSection.style.display = "none";
+   if(movementsSection){
+    movementsSection.style.display = "none";
+}
     const inventoryPagination =
         document.getElementById("inventoryPagination");
 
@@ -1241,11 +1263,25 @@ if (manualMinusSearch && manualMinusProductInfo && manualMinusQty && manualMinus
             orderSnap.forEach(orderDoc => {
                 const order = orderDoc.data();
                 if (order.status !== "completed" || order.customerCancelled || order.adminCancelled) return;
-                (order.items || []).forEach(item => {
-                    const id = String(item.id);
-                    if (!soldMap[id]) soldMap[id] = 0;
-                    soldMap[id] += Number(item.qty || 0);
-                });
+               (order.items || []).forEach(item => {
+
+    const id =
+        String(
+            item.id ||
+            item.productId ||
+            ""
+        );
+
+    if(!id) return;
+
+    if(!soldMap[id]){
+        soldMap[id] = 0;
+    }
+
+    soldMap[id] +=
+        Number(item.qty || 0);
+
+});
             });
 
          let found = null;
@@ -1270,7 +1306,7 @@ for (const doc of productSnap.docs) {
     break;
 }
     }
-}
+
             if (!found) {
                 manualMinusProductInfo.innerHTML = `<span style="color:red;font-weight:bold;">Không tìm thấy sản phẩm</span>`;
                 return;
@@ -1316,18 +1352,41 @@ if (!reasonValue) {
 
             // TÌM SẢN PHẨM
             const snap = await db.collection("products").get();
-            let foundDoc = null;
-            snap.forEach(doc => {
-                const data = doc.data();
-                const name = String(data.name || "").toLowerCase();
-                const productId = String(doc.id).toLowerCase();
-                if (name.includes(keyword) || productId.includes(keyword)) foundDoc = doc;
-            });
+           let foundDoc = null;
+
+snap.forEach(doc => {
+
+    if(foundDoc) return;
+
+    const data = doc.data();
+
+    const name =
+        String(data.name || "")
+        .toLowerCase();
+
+    const productId =
+        String(doc.id)
+        .toLowerCase();
+
+    if(
+        name === keyword ||
+        productId === keyword
+    ){
+        foundDoc = doc;
+    }
+
+});
 
             if (!foundDoc) { alert("Không tìm thấy sản phẩm"); return; }
 
             const product = foundDoc.data();
             const currentStock = Number(product.stock || 0);
+            if(qty > currentStock){
+
+    alert("Số lượng vượt tồn kho");
+
+    return;
+}
             const newStock = currentStock - qty;
 
             // UPDATE STOCK
@@ -1407,7 +1466,11 @@ async function loadLoss(){
 
             (order.items || []).forEach(item=>{
 
-                const id = String(item.id);
+             const id = String(
+    item.id ||
+    item.productId ||
+    ""
+);
 
                 soldMap[id] =
                     (soldMap[id] || 0)
