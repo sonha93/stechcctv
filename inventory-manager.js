@@ -677,6 +677,7 @@ if(qtyImport > 0){
     await db.collection("import_prices").add({
         productId:id,
         importPrice,
+        remainingQty: qtyImport
         createdAt:
             firebase.firestore.FieldValue.serverTimestamp()
     });
@@ -990,8 +991,8 @@ if(
         const sold =
             soldMap[product.id] || 0;
 
-        const stock =
-            Number(p.stock || 0);
+       const remainingQty =
+    Number(data.remainingQty || 0);
 
         html += `
             <tr>
@@ -1017,7 +1018,7 @@ if(
 
                 <td>${sold}</td>
 
-                <td>${stock}</td>
+                <td>${remainingQty}</td>
 
                 <td>
     0
