@@ -658,6 +658,8 @@ if(qtyImport > 0){
 
     qty:qtyImport,
 
+    stockAfter:newStock,
+
     reason:"Nhập kho",
 
     importPrice: importPrice,
@@ -989,8 +991,7 @@ if(
         const sold =
             soldMap[product.id] || 0;
 
-        const stock =
-            Number(p.stock || 0);
+      <td>${data.stockAfter || "-"}</td>
 
         html += `
             <tr>
@@ -1016,7 +1017,7 @@ if(
 
                 <td>${sold}</td>
 
-                <td>${stock}</td>
+                <td>${data.stockAfter || "-"}</td>
 
                 <td>
     0
