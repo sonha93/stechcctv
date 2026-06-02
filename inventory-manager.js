@@ -890,10 +890,12 @@ const inventorySection = document.getElementById("inventorySection");
 const importSection = document.getElementById("importSection");
 const movementsSection = document.getElementById("movementsSection");
 const historySection = document.getElementById("historySection");
-
+const lossSection =
+    document.getElementById("lossSection");
 function hideAllSections(){
 
     if(historySection) historySection.style.display = "none";
+    if(lossSection) lossSection.style.display = "none";
     if(ordersSection) ordersSection.style.display = "none";
     if(inventorySection) inventorySection.style.display = "none";
     if(importSection) importSection.style.display = "none";
@@ -962,8 +964,13 @@ document
 
             historySection.style.display = "block";
             loadHistory();
+}
+     if(value === "loss"){
 
-        }
+    lossSection.style.display = "block";
+    loadLoss();
+
+}
 
     });
 
@@ -1195,6 +1202,26 @@ if(historySearch){
         "input",
         loadHistory
     );
+
+}
+// ============================
+// LOAD LOSS
+// ============================
+
+async function loadLoss(){
+
+    const lossBody =
+        document.getElementById("lossBody");
+
+    if(!lossBody) return;
+
+    lossBody.innerHTML = `
+        <tr>
+            <td colspan="10" style="text-align:center;">
+                Chưa có dữ liệu hao hụt
+            </td>
+        </tr>
+    `;
 
 }
 // ============================
