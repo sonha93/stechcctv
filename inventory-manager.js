@@ -1248,26 +1248,23 @@ if (manualMinusSearch && manualMinusProductInfo && manualMinusQty && manualMinus
                 });
             });
 
-           let found = null;
+         let found = null;
 
-// Ưu tiên khớp chính xác
 for (const doc of productSnap.docs) {
 
     const data = doc.data();
 
     const name =
         String(data.name || "")
-        .trim()
         .toLowerCase();
 
     const productId =
         String(doc.id)
-        .trim()
         .toLowerCase();
 
     if (
-        name === keyword ||
-        productId === keyword
+        name.includes(keyword) ||
+        productId.includes(keyword)
     ) {
 
         found = {
@@ -1276,31 +1273,7 @@ for (const doc of productSnap.docs) {
         };
 
         break;
-    }
-}
 
-// Nếu không có mới tìm gần đúng
-if (!found) {
-
-    for (const doc of productSnap.docs) {
-
-        const data = doc.data();
-
-        const name =
-            String(data.name || "")
-            .toLowerCase();
-
-        const productId =
-            String(doc.id)
-            .toLowerCase();
-
-      if (
-    name === keyword ||
-    productId === keyword
-) {
-    found = { id: doc.id, ...data };
-    break;
-}
         }
     }
 }
