@@ -649,7 +649,7 @@ if (!Number.isInteger(qtyImport) || qtyImport < 0) {
                 // SAVE STOCK MOVEMENT
 if(qtyImport > 0){
 
-   await db.collection("stock_movements").add({
+ await db.collection("stock_movements").add({
 
     productId:id,
     productName: productData.name || "",
@@ -657,6 +657,8 @@ if(qtyImport > 0){
     type:"IMPORT",
 
     qty:qtyImport,
+
+    reason:"Nhập kho",
 
     importPrice: importPrice,
 
