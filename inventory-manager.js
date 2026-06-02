@@ -477,25 +477,28 @@ if (!Number.isInteger(qtyImport) || qtyImport < 0) {
 
                 const currentStock = Number(productData.stock || 0);
 
-                const newStock = currentStock + qtyImport;
+              const newStock = currentStock + qtyImport;
+const totalImport = qtyImport * importPrice;
 
-                const totalImport = qtyImport * importPrice;
+// 1. update FIFO + batch trước
+await importFIFO(id, qtyImport, importPrice);
 
-                await productRef.update({
-
-                    importPrice,
-
-                    stock:newStock,
-
-                    totalImportedQty:
-                        Number(productData.totalImportedQty || 0)
-                        + qtyImport,
-
-                    totalImportValue:
-                        Number(productData.totalImportValue || 0)
-                        + totalImport
-
-                });
+// 2. update product SAU
+await productRef.update({
+    importPrice,
+    stock: newStock,
+    totalImportedQty:
+        Number(productData.totalImportedQty || 0) + qtyImport,
+    totalImportValue:
+        Number(productData.totalImportValue || 0) + totalImport
+});
+                await db.collection("price_events").add({
+    productId: id,
+    type: "IMPORT_UPDATE",
+    oldPrice: productData.importPrice,
+    newPrice: importPrice,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
                 await db.collection("product_price_history").add({
 
     productId:id,
@@ -1475,3 +1478,106 @@ loadInventory();
 loadImportPrices();
 loadStockMovements();
 loadHistory();
+
+async function importFIFO(productId, qty, price) {
+
+    const ref = db.collection("products").doc(productId);
+    const p = await ref.get();
+
+    const stock = p.data()?.stock || 0;
+
+    await ref.update({
+        stock: stock + qty
+    });
+
+    await db.collection("stock_batches").add({
+        productId,
+        qty,
+        remainingQty: qty,
+        importPrice: price,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    await db.collection("price_events").add({
+        productId,
+        type: "IMPORT",
+        newPrice: price,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+}
+
+async function calcFIFO(productId, qtyNeed) {
+
+    const snap = await db.collection("stock_batches")
+        .where("productId", "==", productId)
+        .orderBy("createdAt", "asc")
+        .get();
+
+    let need = qtyNeed;
+    let cost = 0;
+
+    for (const d of snap.docs) {
+
+        const b = d.data();
+
+        if (need <= 0) break;
+
+        const take = Math.min(b.remainingQty, need);
+
+        cost += take * b.importPrice;
+
+        need -= take;
+    }
+
+    return cost;
+}
+
+async function sellFIFO(productId, qty, sellPrice) {
+
+    const snap = await db.collection("stock_batches")
+        .where("productId", "==", productId)
+        .orderBy("createdAt", "asc")
+        .get();
+
+    let need = qty;
+    let cost = 0;
+
+    for (const d of snap.docs) {
+
+        const b = d.data();
+
+        if (need <= 0) break;
+
+        const take = Math.min(b.remainingQty, need);
+
+        cost += take * b.importPrice;
+
+        await d.ref.update({
+            remainingQty: b.remainingQty - take
+        });
+
+        need -= take;
+    }
+
+    const revenue = qty * sellPrice;
+    const profit = revenue - cost;
+
+    const ref = db.collection("products").doc(productId);
+    const p = await ref.get();
+
+    await ref.update({
+        stock: (p.data().stock || 0) - qty
+    });
+
+    await db.collection("sales").add({
+        productId,
+        qty,
+        sellPrice,
+        costPrice: cost,
+        revenue,
+        profit,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    return { revenue, cost, profit };
+}
