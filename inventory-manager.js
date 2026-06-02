@@ -1536,11 +1536,11 @@ async function loadLoss(){
                     </td>
 
                     <td style="
-                        color:red;
-                        font-weight:bold;
-                    ">
-                        ${lossQty}
-                    </td>
+    color:red;
+    font-weight:bold;
+">
+    -${Math.abs(lossQty)}
+</td>
 
                     <td style="
     color:red;
