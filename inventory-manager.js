@@ -462,6 +462,9 @@ function bindInventoryEvents(){
 
                 const productData = productDoc.data();
 
+                const oldImportPrice =
+    Number(productData.importPrice || 0);
+
             const qtyImport = Number(
     prompt("Nhập số lượng nhập thêm")
 );
@@ -493,6 +496,33 @@ if (!Number.isInteger(qtyImport) || qtyImport < 0) {
                         + totalImport
 
                 });
+                await db.collection("product_price_history").add({
+
+    productId:id,
+
+    productName:
+        productData.name || "",
+
+    type:"IMPORT_UPDATE",
+
+    oldImportPrice,
+
+    newImportPrice:importPrice,
+
+    qtyImport,
+
+    stockBefore:currentStock,
+
+    stockAfter:newStock,
+
+    totalImport,
+
+    createdAt:
+        firebase.firestore
+        .FieldValue
+        .serverTimestamp()
+
+});
                 // SAVE STOCK MOVEMENT
 if(qtyImport > 0){
 
