@@ -1535,12 +1535,11 @@ async function loadLoss(){
                     </td>
 
                     <td style="
-                        color:red;
-                        font-weight:bold;
-                    ">
-                        ${formatVND(lossValue)}
-                    </td>
-
+    color:red;
+    font-weight:bold;
+">
+    -${formatVND(lossValue)}
+</td>
                     <td style="
                         color:red;
                         font-weight:bold;
