@@ -658,10 +658,6 @@ if(qtyImport > 0){
 
     qty:qtyImport,
 
-    stockAfter:newStock,
-
-    reason:"Nhập kho",
-
     importPrice: importPrice,
 
     createdAt:
@@ -670,6 +666,7 @@ if(qtyImport > 0){
         .serverTimestamp()
 
 });
+
 }
                 // SAVE IMPORT HISTORY
 
@@ -988,41 +985,46 @@ if(
     return;
 }
 
-const sold =
-    soldMap[product.id] || 0;
+        const sold =
+            soldMap[product.id] || 0;
 
-html += `
-    <tr>
+        const stock =
+            Number(p.stock || 0);
 
-        <td>${product.id}</td>
+        html += `
+            <tr>
 
-        <td>${p.name}</td>
+                <td>${product.id}</td>
 
-        <td>
-            ${
-                data.createdAt
-                ? data.createdAt.toDate()
-                    .toLocaleString("vi-VN")
-                : "-"
-            }
-        </td>
+                <td>${p.name}</td>
 
-        <td>${data.qty}</td>
+                <td>
+                    ${
+                        data.createdAt
+                        ? data.createdAt.toDate()
+                            .toLocaleString("vi-VN")
+                        : "-"
+                    }
+                </td>
 
-        <td>
-            ${formatVND(data.importPrice)}
-        </td>
+                <td>${data.qty}</td>
 
-        <td>${sold}</td>
+                <td>
+                    ${formatVND(data.importPrice)}
+                </td>
 
-        <td>${data.stockAfter || "-"}</td>
+                <td>${sold}</td>
 
-        <td>0</td>
+                <td>${stock}</td>
 
-    </tr>
-`;
-}); 
-                
+                <td>
+    0
+</td>
+
+            </tr>
+        `;
+
+    });
 
     historyBody.innerHTML = html;
 
