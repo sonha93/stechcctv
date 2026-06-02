@@ -1262,19 +1262,13 @@ for (const doc of productSnap.docs) {
         String(doc.id)
         .toLowerCase();
 
-    if (
-        name.includes(keyword) ||
-        productId.includes(keyword)
-    ) {
-
-        found = {
-            id: doc.id,
-            ...data
-        };
-
-        break;
-
-        }
+  if (
+    name === keyword ||
+    productId === keyword
+) {
+    found = { id: doc.id, ...data };
+    break;
+}
     }
 }
             if (!found) {
