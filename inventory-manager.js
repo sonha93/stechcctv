@@ -1248,17 +1248,62 @@ if (manualMinusSearch && manualMinusProductInfo && manualMinusQty && manualMinus
                 });
             });
 
-            let found = null;
-            for (const doc of productSnap.docs) {
-                const data = doc.data();
-                const name = String(data.name || "").toLowerCase();
-                const productId = String(doc.id).toLowerCase();
-                if (name.includes(keyword) || productId.includes(keyword)) {
-                    found = { id: doc.id, ...data };
-                    break;
-                }
-            }
+           let found = null;
 
+// Ưu tiên khớp chính xác
+for (const doc of productSnap.docs) {
+
+    const data = doc.data();
+
+    const name =
+        String(data.name || "")
+        .trim()
+        .toLowerCase();
+
+    const productId =
+        String(doc.id)
+        .trim()
+        .toLowerCase();
+
+    if (
+        name === keyword ||
+        productId === keyword
+    ) {
+
+        found = {
+            id: doc.id,
+            ...data
+        };
+
+        break;
+    }
+}
+
+// Nếu không có mới tìm gần đúng
+if (!found) {
+
+    for (const doc of productSnap.docs) {
+
+        const data = doc.data();
+
+        const name =
+            String(data.name || "")
+            .toLowerCase();
+
+        const productId =
+            String(doc.id)
+            .toLowerCase();
+
+      if (
+    name === keyword ||
+    productId === keyword
+) {
+    found = { id: doc.id, ...data };
+    break;
+}
+        }
+    }
+}
             if (!found) {
                 manualMinusProductInfo.innerHTML = `<span style="color:red;font-weight:bold;">Không tìm thấy sản phẩm</span>`;
                 return;
