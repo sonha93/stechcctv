@@ -1535,11 +1535,11 @@ async function loadLoss(){
                         ${formatVND(stockValue)}
                     </td>
 
-                    <td style="
+                   <td style="
     color:red;
     font-weight:bold;
 ">
-    -${Math.abs(lossQty)}
+    ${lossQty > 0 ? "-" + lossQty : "0"}
 </td>
 
                    <td style="
