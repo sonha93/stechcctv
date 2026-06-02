@@ -682,6 +682,10 @@ tr:hover{
   <input type="radio" name="adminView" value="loss">
   <span>Loss</span>
 </label>
+    <label>
+  <input type="radio" name="adminView" value="logs">
+  <span>Logs</span>
+</label>
   </div>
 
 </div>
@@ -1072,6 +1076,55 @@ tr:hover{
 
   </div>
 
+</div>
+   </div>
+
+</div>
+
+<!-- PRODUCT CHANGE LOGS -->
+<div
+  id="logsSection"
+  class="table-wrap"
+  style="display:none;margin-bottom:16px;"
+>
+  <div style="padding:16px;">
+
+    <h2 style="margin-bottom:15px;">
+      📝 Product Change Logs
+    </h2>
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Ngày</th>
+          <th>ID</th>
+          <th>Sản phẩm</th>
+          <th>Người sửa</th>
+          <th>Giá nhập cũ</th>
+          <th>Giá nhập mới</th>
+          <th>Giá bán cũ</th>
+          <th>Giá bán mới</th>
+          <th>Giá KM cũ</th>
+          <th>Giá KM mới</th>
+          <th>Lợi nhuận</th>
+          <th>% thay đổi</th>
+        </tr>
+      </thead>
+
+      <tbody id="productChangeLogsBody">
+
+        <tr>
+          <td colspan="12" style="text-align:center;padding:20px;">
+            Đang tải...
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
 </div>
 <!-- TABLE -->
 <div class="table-wrap" id="ordersSection">
