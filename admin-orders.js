@@ -836,6 +836,34 @@ if(status === "cancelled"){
   updateData.adminCancelled = true;
 }
 
+// Chỉ trừ kho khi giao thành công
+if(
+  status === "completed" &&
+  orderData.status !== "completed"
+){
+
+  for(const item of (orderData.items || [])){
+
+    const productRef =
+      db.collection("products").doc(item.id);
+
+    const productDoc =
+      await productRef.get();
+
+    if(productDoc.exists){
+
+      const stock =
+        Number(productDoc.data().stock || 0);
+
+      await productRef.update({
+        stock: stock - (item.qty || 1)
+      });
+
+    }
+
+  }
+
+}
 if(
   status === "completed" &&
   orderData.status !== "completed"
