@@ -1,4 +1,3 @@
-
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -663,12 +662,6 @@ if(qtyImport > 0){
 
     importPrice: importPrice,
 
-    stockBefore: currentStock,
-
-    stockAfter: newStock,
-
-    soldAtImport: soldMap?.[id] || 0,
-
     createdAt:
         firebase.firestore
         .FieldValue
@@ -993,11 +986,12 @@ if(
     return;
 }
 
-       const sold =
-    Number(data.soldAtImport || 0);
+        const sold =
+            soldMap[product.id] || 0;
 
-const stock =
-    Number(data.stockAfter || 0);
+        const stock =
+            Number(p.stock || 0);
+
         html += `
             <tr>
 
@@ -1020,8 +1014,9 @@ const stock =
                     ${formatVND(data.importPrice)}
                 </td>
 
-               <td>${sold}</td>
-               <td>${stock}</td>
+                <td>${sold}</td>
+
+                <td>${stock}</td>
 
                 <td>
     0
