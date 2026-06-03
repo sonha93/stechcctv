@@ -1,3 +1,5 @@
+admin-orders.js
+
 
 
 import { auth, db } from "./firebase-init.js";
@@ -839,112 +841,114 @@ if(status === "cancelled"){
 }
 
 
-if (
+if(
   status === "completed" &&
   orderData.status !== "completed"
-) {
+){
 
-  for (const item of (orderData.items || [])) {
+  for(const item of (orderData.items || [])){
 
-    try {
+    const productRef =
+  db.collection("products")
+  .doc(item.id);
 
-      if (!item.id) continue;
+    const productDoc =
+      await productRef.get();
 
-      const productId =
-        String(item.id).trim();
-
-      if (!productId) continue;
-
-      const productRef =
-        db.collection("products")
-        .doc(productId);
-
-      const productDoc =
-        await productRef.get();
-
-      if (!productDoc.exists) continue;
-
-      // check lịch sử bán
-      const existed = await db
-        .collection("sales_history")
-        .where("orderId", "==", id)
-        .where("productId", "==", productId)
-        .limit(1)
-        .get();
-
-      if (!existed.empty) continue;
+    if(productDoc.exists){
 
       const product =
         productDoc.data();
 
-      const qty =
-        Number(item.qty || 0);
+      const importPrice =
+        Number(product.importPrice || 0);
 
       const sellPrice =
         Number(item.price || product.price || 0);
 
-      const importPrice =
-        Number(product.importPrice || 0);
+      const qty =
+        Number(item.qty || 0);
 
-      // lưu lịch sử bán
+      const revenue =
+        sellPrice * qty;
+
+      const capital =
+        importPrice * qty;
+
+      const profit =
+        revenue - capital;
+      const existed = await db
+  .collection("sales_history")
+  .where("orderId","==",id)
+  .where("productId","==",item.id)
+  .limit(1)
+  .get();
+
+if(!existed.empty){
+  continue;
+}
+
       await db
         .collection("sales_history")
         .add({
 
-          orderId: id,
-          productId,
+          orderId:id,
+
+          productId:item.id,
+
           productName:
             item.name || product.name,
 
           qty,
 
           importPrice,
+
           sellPrice,
 
-          revenue:
-            sellPrice * qty,
+          revenue,
 
-          capital:
-            importPrice * qty,
+          capital,
 
-          profit:
-            (sellPrice - importPrice) * qty,
+          profit,
 
           createdAt:
             firebase.firestore
-              .FieldValue
-              .serverTimestamp()
+            .FieldValue
+            .serverTimestamp()
 
         });
 
-      // trừ stock
       await productRef.update({
-
-        stock:
-          firebase.firestore
-            .FieldValue
-            .increment(-qty)
-
-      });
-
-      console.log(
-        "Đã trừ stock:",
-        productId,
-        qty
-      );
-
-    } catch (err) {
-
-      console.error(
-        "Lỗi sản phẩm:",
-        err
-      );
-
+  stock: firebase.firestore.FieldValue.increment(-qty)
+});
     }
 
   }
 
 }
+await db
+  .collection("orders")
+  .doc(id)
+  .update(updateData);
+        // completed => khóa
+     if (
+  status === "completed" ||
+  status === "cancelled"
+) {
+
+  select.disabled = true;
+}
+        alert("Cập nhật trạng thái thành công");
+
+      } catch (error) {
+
+        console.error(error);
+        alert("Lỗi cập nhật trạng thái");
+      }
+    });
+  });
+}
+
 // ============================
 // REALTIME UPDATE
 // ============================
