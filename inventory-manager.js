@@ -6,7 +6,8 @@ const importDateFilter = document.getElementById("importDateFilter");
 const movementsDateFilter = document.getElementById("movementsDateFilter");
 const inventoryBody = document.getElementById("inventoryBody");
 const inventoryFooter = document.getElementById("inventoryFooter");
-
+const historyDateFilter =
+    document.getElementById("historyDateFilter");
 const db = firebase.firestore();
 
 const importBody = document.getElementById("importBody");
@@ -726,29 +727,7 @@ async function loadImportPrices(){
         for(const doc of snap.docs){
 
             const data = doc.data();
-if(data.createdAt){
 
-    const itemDate =
-        data.createdAt
-        .toDate()
-        .toISOString()
-        .split("T")[0];
-
-    if(
-        fromDate &&
-        itemDate < fromDate
-    ){
-        return;
-    }
-
-    if(
-        toDate &&
-        itemDate > toDate
-    ){
-        return;
-    }
-
-}
             const selectedDate = importDateFilter?.value;
 
             if(!data.createdAt){
@@ -930,13 +909,7 @@ html += `
 
 }
 async function loadHistory(){
-const fromDate =
-    document.getElementById("historyFromDate")
-    ?.value;
 
-const toDate =
-    document.getElementById("historyToDate")
-    ?.value;
     const historyBody =
         document.getElementById("historyBody");
 
@@ -945,7 +918,8 @@ const toDate =
         ?.value
         .trim()
         .toLowerCase();
-
+const selectedDate =
+    historyDateFilter?.value;
     const moveSnap =
         await db.collection("stock_movements")
         .orderBy("createdAt","desc")
@@ -989,7 +963,23 @@ const toDate =
     moveSnap.forEach(doc=>{
 
         const data = doc.data();
+if(selectedDate){
 
+    if(!data.createdAt){
+        return;
+    }
+
+    const itemDate =
+        data.createdAt
+        .toDate()
+        .toISOString()
+        .split("T")[0];
+
+    if(itemDate !== selectedDate){
+        return;
+    }
+
+}
         if(data.type !== "IMPORT")
             return;
 
@@ -1231,7 +1221,23 @@ if(clearMovementsDate){
     });
 
 }
+const clearHistoryDate =
+    document.getElementById("clearHistoryDate");
 
+if(clearHistoryDate){
+
+    clearHistoryDate.addEventListener(
+        "click",
+        ()=>{
+
+            historyDateFilter.value = "";
+
+            loadHistory();
+
+        }
+    );
+
+}
 // ============================
 // DEFAULT DATE
 // ============================
@@ -1252,7 +1258,9 @@ if(importDateFilter){
 if(movementsDateFilter){
     movementsDateFilter.value = todayStr;
 }
-
+if(historyDateFilter){
+    historyDateFilter.value = todayStr;
+}
 // ============================
 // DEFAULT VIEW
 // ============================
@@ -2249,41 +2257,11 @@ document.addEventListener("input",(e)=>{
     }
 
 });
-const historyFromDate =
-    document.getElementById("historyFromDate");
+if(historyDateFilter){
 
-const historyToDate =
-    document.getElementById("historyToDate");
-
-const clearHistoryDate =
-    document.getElementById("clearHistoryDate");
-
-if(historyFromDate){
-    historyFromDate.addEventListener(
+    historyDateFilter.addEventListener(
         "change",
         loadHistory
-    );
-}
-
-if(historyToDate){
-    historyToDate.addEventListener(
-        "change",
-        loadHistory
-    );
-}
-
-if(clearHistoryDate){
-
-    clearHistoryDate.addEventListener(
-        "click",
-        ()=>{
-
-            historyFromDate.value = "";
-            historyToDate.value = "";
-
-            loadHistory();
-
-        }
     );
 
 }
