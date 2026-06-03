@@ -1,3 +1,5 @@
+inventory.js 
+
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -1310,7 +1312,7 @@ for (const doc of productSnap.docs) {
     name === keyword ||
     productId === keyword
 ) {
-    found = { id: doc.id, ...data };
+   found = { ...data, id: doc.id };
     break;
 }
     }
@@ -1319,20 +1321,7 @@ for (const doc of productSnap.docs) {
                 manualMinusProductInfo.innerHTML = `<span style="color:red;font-weight:bold;">Không tìm thấy sản phẩm</span>`;
                 return;
             }
-            console.log(
-    "FOUND NAME:",
-    found.name
-);
 
-console.log(
-    "SOLD MAP KEYS:",
-    Object.keys(soldMap)
-);
-            console.log("FOUND:", found);
-console.log("FOUND ID:", found.id);
-console.log("SOLD MAP:", soldMap);
-console.log(Object.keys(soldMap));
-console.log("SOLD VALUE:", soldMap[String(found.id)]);
             const sold = Number(soldMap[String(found.id)] || 0);
 
             manualMinusProductInfo.innerHTML = `
