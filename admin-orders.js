@@ -840,7 +840,7 @@ if(status === "cancelled"){
 
 
 if(
-  status === "completed" &&
+if (status === "completed")
   orderData.status !== "completed"
 ){
 
