@@ -2008,77 +2008,189 @@ async function loadSalesHistory(){
 
     try{
 
+        const keyword =
+            document.getElementById("salesSearch")
+            ?.value
+            .trim()
+            .toLowerCase();
+
+        const fromDate =
+            document.getElementById("salesFromDate")
+            ?.value;
+
+        const toDate =
+            document.getElementById("salesToDate")
+            ?.value;
+
         const snap =
             await db
             .collection("sales_history")
-            .orderBy(
-                "createdAt",
-                "desc"
-            )
-            .limit(1000)
+            .orderBy("createdAt","desc")
             .get();
 
-        let html = "";
-
-        let totalRevenue = 0;
-        let totalCapital = 0;
-        let totalProfit = 0;
+        const grouped = {};
 
         snap.forEach(doc=>{
 
             const d = doc.data();
 
-            totalRevenue +=
+            if(!d.createdAt) return;
+
+            const saleDate =
+                d.createdAt
+                .toDate()
+                .toISOString()
+                .split("T")[0];
+
+            if(
+                fromDate &&
+                saleDate < fromDate
+            ){
+                return;
+            }
+
+            if(
+                toDate &&
+                saleDate > toDate
+            ){
+                return;
+            }
+
+            const productId =
+                String(
+                    d.productId || ""
+                );
+
+            const productName =
+                String(
+                    d.productName || ""
+                );
+
+            if(
+                keyword &&
+                !productId
+                    .toLowerCase()
+                    .includes(keyword)
+                &&
+                !productName
+                    .toLowerCase()
+                    .includes(keyword)
+            ){
+                return;
+            }
+
+            const key =
+                productId || productName;
+
+            if(!grouped[key]){
+
+                grouped[key] = {
+
+                    productId,
+
+                    productName,
+
+                    totalQty:0,
+
+                    totalRevenue:0,
+
+                    days:{}
+
+                };
+
+            }
+
+            grouped[key].totalQty +=
+                Number(d.qty || 0);
+
+            grouped[key].totalRevenue +=
                 Number(d.revenue || 0);
 
-            totalCapital +=
-                Number(d.capital || 0);
+            if(!grouped[key].days[saleDate]){
 
-            totalProfit +=
-                Number(d.profit || 0);
+                grouped[key].days[saleDate] = {
+
+                    qty:0,
+
+                    revenue:0
+
+                };
+
+            }
+
+            grouped[key].days[saleDate].qty +=
+                Number(d.qty || 0);
+
+            grouped[key].days[saleDate].revenue +=
+                Number(d.revenue || 0);
+
+        });
+
+        let html = "";
+
+        Object.values(grouped).forEach(item=>{
+
+            const days =
+                Object.keys(item.days)
+                .sort();
+
+            let dayHtml = "";
+
+            days.forEach(day=>{
+
+                dayHtml += `
+                    <div style="
+                        padding:6px;
+                        border-bottom:1px solid #eee;
+                    ">
+
+                        <b>${day}</b>
+
+                        |
+
+                        SL:
+                        ${item.days[day].qty}
+
+                        |
+
+                        DT:
+                        ${formatVND(
+                            item.days[day].revenue
+                        )}
+
+                    </div>
+                `;
+
+            });
 
             html += `
                 <tr>
 
                     <td>
-                        ${
-                            d.createdAt
-                            ? d.createdAt
-                                .toDate()
-                                .toLocaleString("vi-VN")
-                            : "-"
-                        }
-                    </td>
-
-                    <td>${d.productName}</td>
-
-                    <td>${d.qty}</td>
-
-                    <td>
-                        ${formatVND(d.importPrice)}
+                        ${item.productId}
                     </td>
 
                     <td>
-                        ${formatVND(d.sellPrice)}
+                        ${item.productName}
                     </td>
 
                     <td>
-                        ${formatVND(d.revenue)}
+                        ${dayHtml}
                     </td>
 
                     <td>
-                        ${formatVND(d.capital)}
+                        <b>
+                            ${item.totalQty}
+                        </b>
                     </td>
 
                     <td style="
-                        color:${
-                            d.profit < 0
-                            ? "red"
-                            : "#00c853"
-                        };
+                        color:#00c853;
                         font-weight:bold;
                     ">
-                        ${formatVND(d.profit)}
+                        ${formatVND(
+                            item.totalRevenue
+                        )}
                     </td>
 
                 </tr>
@@ -2086,33 +2198,20 @@ async function loadSalesHistory(){
 
         });
 
-        html += `
-            <tr
-                style="
-                    background:#111;
-                    color:white;
-                    font-weight:bold;
-                "
-            >
+        if(!html){
 
-                <td colspan="5">
-                    TỔNG
-                </td>
-
-                <td>
-                    ${formatVND(totalRevenue)}
-                </td>
-
-                <td>
-                    ${formatVND(totalCapital)}
-                </td>
-
-                <td>
-                    ${formatVND(totalProfit)}
-                </td>
-
-            </tr>
-        `;
+            html = `
+                <tr>
+                    <td colspan="5"
+                        style="
+                            text-align:center;
+                            padding:20px;
+                        ">
+                        Không có dữ liệu
+                    </td>
+                </tr>
+            `;
+        }
 
         body.innerHTML = html;
 
@@ -2123,3 +2222,14 @@ async function loadSalesHistory(){
     }
 
 }
+document.addEventListener("input",(e)=>{
+
+    if(
+        e.target.id === "salesSearch" ||
+        e.target.id === "salesFromDate" ||
+        e.target.id === "salesToDate"
+    ){
+        loadSalesHistory();
+    }
+
+});
