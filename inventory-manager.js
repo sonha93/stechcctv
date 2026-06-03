@@ -649,21 +649,18 @@ if (!Number.isInteger(qtyImport) || qtyImport < 0) {
                 // SAVE STOCK MOVEMENT
 if(qtyImport > 0){
 
-await db.collection("stock_movements").add({
+ await db.collection("stock_movements").add({
 
-    productId: id,
+    productId:id,
     productName: productData.name || "",
 
-    type: "IMPORT",
+    type:"IMPORT",
 
-    qty: qtyImport,
+    qty:qtyImport,
 
-    reason: "Nhập kho",
+    reason:"Nhập kho",
 
     importPrice: importPrice,
-
-    stockBefore: currentStock,
-    stockAfter: newStock,
 
     createdAt:
         firebase.firestore
@@ -915,134 +912,122 @@ async function loadHistory(){
     const historyBody =
         document.getElementById("historyBody");
 
-    if(!historyBody) return;
-
     const keyword =
         document.getElementById("historySearch")
         ?.value
         .trim()
         .toLowerCase();
 
-    try{
+    const moveSnap =
+        await db.collection("stock_movements")
+        .orderBy("createdAt","desc")
+        .get();
 
-        const moveSnap =
-            await db.collection("stock_movements")
-            .orderBy("createdAt","desc")
-            .get();
+    const productSnap =
+        await db.collection("products")
+        .get();
 
-        const productSnap =
-            await db.collection("products")
-            .get();
+    const orderSnap =
+        await db.collection("orders")
+        .get();
 
-        let html = "";
+    const soldMap = {};
 
-        moveSnap.forEach(doc=>{
+    orderSnap.forEach(doc=>{
 
-            const data = doc.data();
+        const order = doc.data();
 
-            if(data.type !== "IMPORT"){
-                return;
-            }
+        if(order.status !== "completed")
+            return;
 
-            const product =
-                productSnap.docs.find(
-                    p => p.id === data.productId
-                );
+        (order.items || []).forEach(item=>{
 
-            if(!product){
-                return;
-            }
-
-            const p = product.data();
-
-            if(
-                keyword &&
-                !String(p.name || "")
-                    .toLowerCase()
-                    .includes(keyword) &&
-                !String(product.id)
-                    .toLowerCase()
-                    .includes(keyword)
-            ){
-                return;
-            }
-
-            // Dữ liệu cũ không có stockAfter
-            const stock =
-                data.stockAfter !== undefined
-                ? Number(data.stockAfter)
-                : Number(p.stock || 0);
-
-            html += `
-                <tr>
-
-                    <td>${product.id}</td>
-
-                    <td>${p.name || "-"}</td>
-
-                    <td>
-                        ${
-                            data.createdAt
-                            ? data.createdAt
-                                .toDate()
-                                .toLocaleString("vi-VN")
-                            : "-"
-                        }
-                    </td>
-
-                    <td>${data.qty || 0}</td>
-
-                    <td>
-                        ${formatVND(data.importPrice || 0)}
-                    </td>
-
-                    <td>---</td>
-
-                    <td>${stock}</td>
-
-                    <td>0</td>
-
-                </tr>
-            `;
+            const id =
+    String(
+        item.id ||
+        item.productId ||
+        ""
+    );
+            soldMap[id] =
+                (soldMap[id] || 0)
+                + Number(item.qty || 0);
 
         });
 
-        if(!html){
+    });
 
-            html = `
-                <tr>
-                    <td colspan="8"
-                        style="
-                            text-align:center;
-                            padding:20px;
-                        ">
-                        Chưa có dữ liệu
-                    </td>
-                </tr>
-            `;
+    let html = "";
 
-        }
+    moveSnap.forEach(doc=>{
 
-        historyBody.innerHTML = html;
+        const data = doc.data();
 
-    }catch(err){
+        if(data.type !== "IMPORT")
+            return;
 
-        console.error(err);
+        const product =
+            productSnap.docs.find(
+                p => p.id === data.productId
+            );
 
-        historyBody.innerHTML = `
+        if(!product)
+            return;
+
+        const p = product.data();
+if(
+    keyword &&
+    !String(p.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+    !String(product.id)
+        .toLowerCase()
+        .includes(keyword)
+){
+    return;
+}
+
+        const sold =
+            soldMap[product.id] || 0;
+
+        const stock =
+            Number(p.stock || 0);
+
+        html += `
             <tr>
-                <td colspan="8"
-                    style="
-                        color:red;
-                        text-align:center;
-                        padding:20px;
-                    ">
-                    Lỗi tải lịch sử
+
+                <td>${product.id}</td>
+
+                <td>${p.name}</td>
+
+                <td>
+                    ${
+                        data.createdAt
+                        ? data.createdAt.toDate()
+                            .toLocaleString("vi-VN")
+                        : "-"
+                    }
                 </td>
+
+                <td>${data.qty}</td>
+
+                <td>
+                    ${formatVND(data.importPrice)}
+                </td>
+
+                <td>${sold}</td>
+
+                <td>${stock}</td>
+
+                <td>
+    0
+</td>
+
             </tr>
         `;
 
-    }
+    });
+
+    historyBody.innerHTML = html;
 
 }
 // ============================
