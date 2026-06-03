@@ -845,8 +845,8 @@ if(
   for(const item of (orderData.items || [])){
 
     const productRef =
-  db.collection("products")
-  .doc(item.id);
+      db.collection("products")
+      .doc(item.id);
 
     const productDoc =
       await productRef.get();
