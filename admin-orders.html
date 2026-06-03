@@ -275,15 +275,16 @@ tr:hover{
 .manual-minus-wrap{
     display:grid;
     grid-template-columns:
-         260px 
-        100px   
-       100px  
-        180px   
-        140px   
-        140px;  
+        390px   /* tìm kiếm */
+        1fr     /* thông tin sản phẩm */
+        120px   /* SL */
+        220px   /* lý do */
+        210px   /* Trừ */
+        210px;  /* Cộng */
 
-    gap:12px;
+    gap:16px;
     align-items:center;
+    width:100%;
 }
 
 .manual-minus-wrap input,
@@ -346,7 +347,16 @@ tr:hover{
   font-size:16px;
   outline:none;
 }
+#manualMinusProductInfo{
+    width:100%;
+    min-width:0;
+}
 
+.product-info-name{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
 /* box info sản phẩm */
 #manualMinusProductInfo{
     display:flex;
