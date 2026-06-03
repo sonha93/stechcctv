@@ -846,19 +846,9 @@ if(
 
   for(const item of (orderData.items || [])){
 
-    const productId =
-  item.id ||
-  item.productId ||
-  item.slug;
-
-if(!productId){
-  console.error("Không có productId", item);
-  continue;
-}
-
-const productRef =
+    const productRef =
   db.collection("products")
-  .doc(productId);
+  .doc(item.id);
 
     const productDoc =
       await productRef.get();
