@@ -907,15 +907,12 @@ if(!existed.empty){
 
           profit,
 
-          createdAt:
-            firebase.firestore
-            .FieldValue
-            .serverTimestamp()
+         createdAt: new Date()
 
         });
 
-      await productRef.update({
-  stock: firebase.firestore.FieldValue.increment(-qty)
+     await productRef.update({
+  stock: (Number(product.stock || 0) - qty)
 });
     }
 
