@@ -886,17 +886,25 @@ html += `
 `;
         }
 
-        if(!html){
+       if(!html){
 
-            html = `
-                <tr>
-                    <td colspan="4" style="text-align:center;padding:20px;">
-                        Chưa có dữ liệu
-                    </td>
-                </tr>
-            `;
+    html = `
+        <tr>
+            <td
+                colspan="8"
+                style="
+                    text-align:center;
+                    padding:30px;
+                    color:#999;
+                    font-style:italic;
+                "
+            >
+                Không có lịch sử bán hàng trong khoảng thời gian đã chọn
+            </td>
+        </tr>
+    `;
 
-        }
+}
 
         movementsBody.innerHTML = html;
 
