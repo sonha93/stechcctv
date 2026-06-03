@@ -320,14 +320,16 @@ tr:hover{
 .stock-top-bar{
     display:grid;
     grid-template-columns:
-        minmax(220px,2fr)
-        minmax(220px,2fr)
-        100px
-        minmax(180px,1fr)
-        140px;
+        260px  
+        260px   
+        100px  
+        180px   
+        140px  
+        140px;  
 
     gap:16px;
-    width:100%;
+    align-items:center;
+    width:max-content;
     margin-bottom:20px;
 }
 
@@ -431,6 +433,21 @@ tr:hover{
     align-items:center;
     gap:5px;
     white-space:nowrap;
+}
+   #manualPlusBtn{
+    height:46px;
+    padding:0 28px;
+    border:none;
+    border-radius:10px;
+    background:#00c853;
+    color:#fff;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#manualPlusBtn:hover{
+    opacity:.9;
 }
 /* =========================
    MOBILE
