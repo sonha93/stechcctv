@@ -1823,7 +1823,7 @@ async function loadProductChangeLogs(){
         snap.forEach(doc=>{
 
             const d = doc.data();
-
+            rowCount++;
             html += `
                 <tr>
 
@@ -2042,7 +2042,7 @@ async function loadSalesHistory(){
         let totalRevenue = 0;
         let totalCapital = 0;
         let totalProfit = 0;
-
+        let rowCount = 0;
         snap.forEach(doc=>{
 
             const d = doc.data();
@@ -2167,55 +2167,53 @@ async function loadSalesHistory(){
 
         });
 
-        html += `
-            <tr
+       if(rowCount === 0){
+
+    html = `
+        <tr>
+            <td
+                colspan="8"
                 style="
-                    background:#111;
-                    color:white;
-                    font-weight:bold;
+                    text-align:center;
+                    padding:30px;
+                    color:#999;
+                    font-style:italic;
                 "
             >
+                Không có lịch sử bán hàng trong khoảng thời gian đã chọn
+            </td>
+        </tr>
+    `;
 
-                <td colspan="2">
-                    TỔNG
-                </td>
+}else{
 
-                <td>
-                    ${totalQty}
-                </td>
+    html += `
+        <tr
+            style="
+                background:#111;
+                color:white;
+                font-weight:bold;
+            "
+        >
 
-                <td></td>
+            <td colspan="2">
+                TỔNG
+            </td>
 
-                <td></td>
+            <td>${totalQty}</td>
 
-                <td>
-                    ${formatVND(
-                        totalRevenue
-                    )}
-                </td>
+            <td></td>
 
-                <td>
-                    ${formatVND(
-                        totalCapital
-                    )}
-                </td>
+            <td></td>
 
-                <td>
-                    ${formatVND(
-                        totalProfit
-                    )}
-                </td>
+            <td>${formatVND(totalRevenue)}</td>
 
-            </tr>
-        `;
+            <td>${formatVND(totalCapital)}</td>
 
-        body.innerHTML = html;
+            <td>${formatVND(totalProfit)}</td>
 
-    }catch(err){
-
-        console.log(err);
-
-    }
+        </tr>
+    `;
 
 }
 document.addEventListener("input",(e)=>{
