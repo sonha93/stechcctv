@@ -224,27 +224,22 @@ String(p.id);
 ========================= */
 
 window.addToCart = async function(id) {
-
   if (!allProducts || allProducts.length === 0) {
-    alert("Sản phẩm chưa load xong!");
+    alert("Sản phẩm chưa load xong, thử lại sau!");
     return;
   }
 
-  const product = allProducts.find(
-    p => String(p.id) === String(id)
-  );
+  // Thêm || p.id để tránh trường hợp dữ liệu cũ
+const product = allProducts.find(
+  p => String(p.id) === String(id)
+);
 
-  if (!product) {
-    alert("Không tìm thấy sản phẩm!");
-    return;
-  }
+if (!product) {
+  alert("Không tìm thấy sản phẩm!");
+  return;
+}
 
-  await firebaseAddToCart({
-    ...product,
-    productId: product.id,
-    qty: 1
-  });
-
+  await firebaseAddToCart(product); // gọi cart.js
   await updateCartCount();
 
   alert("Đã thêm vào giỏ 🛒");
