@@ -886,25 +886,17 @@ html += `
 `;
         }
 
-       if(!html){
+        if(!html){
 
-    html = `
-        <tr>
-            <td
-                colspan="8"
-                style="
-                    text-align:center;
-                    padding:30px;
-                    color:#999;
-                    font-style:italic;
-                "
-            >
-                Không có lịch sử bán hàng trong khoảng thời gian đã chọn
-            </td>
-        </tr>
-    `;
+            html = `
+                <tr>
+                    <td colspan="4" style="text-align:center;padding:20px;">
+                        Chưa có dữ liệu
+                    </td>
+                </tr>
+            `;
 
-}
+        }
 
         movementsBody.innerHTML = html;
 
@@ -1823,7 +1815,7 @@ async function loadProductChangeLogs(){
         snap.forEach(doc=>{
 
             const d = doc.data();
-            rowCount++;
+
             html += `
                 <tr>
 
@@ -2042,7 +2034,7 @@ async function loadSalesHistory(){
         let totalRevenue = 0;
         let totalCapital = 0;
         let totalProfit = 0;
-        let rowCount = 0;
+
         snap.forEach(doc=>{
 
             const d = doc.data();
@@ -2167,53 +2159,55 @@ async function loadSalesHistory(){
 
         });
 
-       if(rowCount === 0){
-
-    html = `
-        <tr>
-            <td
-                colspan="8"
+        html += `
+            <tr
                 style="
-                    text-align:center;
-                    padding:30px;
-                    color:#999;
-                    font-style:italic;
+                    background:#111;
+                    color:white;
+                    font-weight:bold;
                 "
             >
-                Không có lịch sử bán hàng trong khoảng thời gian đã chọn
-            </td>
-        </tr>
-    `;
 
-}else{
+                <td colspan="2">
+                    TỔNG
+                </td>
 
-    html += `
-        <tr
-            style="
-                background:#111;
-                color:white;
-                font-weight:bold;
-            "
-        >
+                <td>
+                    ${totalQty}
+                </td>
 
-            <td colspan="2">
-                TỔNG
-            </td>
+                <td></td>
 
-            <td>${totalQty}</td>
+                <td></td>
 
-            <td></td>
+                <td>
+                    ${formatVND(
+                        totalRevenue
+                    )}
+                </td>
 
-            <td></td>
+                <td>
+                    ${formatVND(
+                        totalCapital
+                    )}
+                </td>
 
-            <td>${formatVND(totalRevenue)}</td>
+                <td>
+                    ${formatVND(
+                        totalProfit
+                    )}
+                </td>
 
-            <td>${formatVND(totalCapital)}</td>
+            </tr>
+        `;
 
-            <td>${formatVND(totalProfit)}</td>
+        body.innerHTML = html;
 
-        </tr>
-    `;
+    }catch(err){
+
+        console.log(err);
+
+    }
 
 }
 document.addEventListener("input",(e)=>{
