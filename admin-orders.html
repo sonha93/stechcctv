@@ -275,15 +275,15 @@ tr:hover{
 .manual-minus-wrap{
     display:grid;
     grid-template-columns:
-        minmax(220px,2fr)
-        minmax(220px,2fr)
-        100px
-        minmax(180px,1fr)
-        140px;
+        220px   
+        220px   
+        90px   
+        180px   
+        140px   
+        140px;  
 
     gap:12px;
     align-items:center;
-    width:100%;
 }
 
 .manual-minus-wrap input,
@@ -295,7 +295,11 @@ tr:hover{
     padding:0 14px;
     font-size:14px;
 }
-
+#manualPlusBtn,
+#manualMinusBtn{
+    height:46px;
+    width:140px;
+}
 .manual-minus-wrap input{
     background:#fff;
 }
