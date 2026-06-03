@@ -728,8 +728,11 @@ async function loadImportPrices(){
 
             const data = doc.data();
 
-            const selectedDate = importDateFilter?.value;
+           const fromDate =
+    document.getElementById("historyFromDate")?.value;
 
+const toDate =
+    document.getElementById("historyToDate")?.value;
             if(!data.createdAt){
                 continue;
             }
@@ -963,11 +966,7 @@ const selectedDate =
     moveSnap.forEach(doc=>{
 
         const data = doc.data();
-if(selectedDate){
-
-    if(!data.createdAt){
-        return;
-    }
+if(data.createdAt){
 
     const itemDate =
         data.createdAt
@@ -975,7 +974,11 @@ if(selectedDate){
         .toISOString()
         .split("T")[0];
 
-    if(itemDate !== selectedDate){
+    if(fromDate && itemDate < fromDate){
+        return;
+    }
+
+    if(toDate && itemDate > toDate){
         return;
     }
 
