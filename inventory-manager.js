@@ -1,3 +1,5 @@
+inventory.js 
+
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -1310,7 +1312,7 @@ for (const doc of productSnap.docs) {
     name === keyword ||
     productId === keyword
 ) {
-   found = { ...data, id: doc.id };
+    found = { id: doc.id, ...data };
     break;
 }
     }
@@ -2008,29 +2010,18 @@ async function loadSalesHistory(){
 
     try{
 
-        const keyword =
-            document.getElementById("salesSearch")
-            ?.value
-            .trim()
-            .toLowerCase();
-
-        const fromDate =
-            document.getElementById("salesFromDate")
-            ?.value;
-
-        const toDate =
-            document.getElementById("salesToDate")
-            ?.value;
-
         const snap =
             await db
             .collection("sales_history")
-            .orderBy("createdAt","desc")
+            .orderBy(
+                "createdAt",
+                "desc"
+            )
+            .limit(1000)
             .get();
 
         let html = "";
 
-        let totalQty = 0;
         let totalRevenue = 0;
         let totalCapital = 0;
         let totalProfit = 0;
@@ -2038,54 +2029,6 @@ async function loadSalesHistory(){
         snap.forEach(doc=>{
 
             const d = doc.data();
-
-            if(!d.createdAt) return;
-
-            const saleDate =
-                d.createdAt
-                .toDate()
-                .toISOString()
-                .split("T")[0];
-
-            if(
-                fromDate &&
-                saleDate < fromDate
-            ){
-                return;
-            }
-
-            if(
-                toDate &&
-                saleDate > toDate
-            ){
-                return;
-            }
-
-            const productId =
-                String(
-                    d.productId || ""
-                );
-
-            const productName =
-                String(
-                    d.productName || ""
-                );
-
-            if(
-                keyword &&
-                !productId
-                    .toLowerCase()
-                    .includes(keyword)
-                &&
-                !productName
-                    .toLowerCase()
-                    .includes(keyword)
-            ){
-                return;
-            }
-
-            totalQty +=
-                Number(d.qty || 0);
 
             totalRevenue +=
                 Number(d.revenue || 0);
@@ -2102,56 +2045,42 @@ async function loadSalesHistory(){
                     <td>
                         ${
                             d.createdAt
-                            .toDate()
-                            .toLocaleDateString("vi-VN")
+                            ? d.createdAt
+                                .toDate()
+                                .toLocaleString("vi-VN")
+                            : "-"
                         }
                     </td>
 
+                    <td>${d.productName}</td>
+
+                    <td>${d.qty}</td>
+
                     <td>
-                        ${productName}
+                        ${formatVND(d.importPrice)}
                     </td>
 
                     <td>
-                        ${d.qty}
+                        ${formatVND(d.sellPrice)}
                     </td>
 
                     <td>
-                        ${formatVND(
-                            d.importPrice
-                        )}
+                        ${formatVND(d.revenue)}
                     </td>
 
                     <td>
-                        ${formatVND(
-                            d.sellPrice
-                        )}
+                        ${formatVND(d.capital)}
                     </td>
 
-                    <td>
-                        ${formatVND(
-                            d.revenue
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatVND(
-                            d.capital
-                        )}
-                    </td>
-
-                    <td
-                        style="
-                            color:${
-                                d.profit < 0
-                                ? "red"
-                                : "#00c853"
-                            };
-                            font-weight:bold;
-                        "
-                    >
-                        ${formatVND(
-                            d.profit
-                        )}
+                    <td style="
+                        color:${
+                            d.profit < 0
+                            ? "red"
+                            : "#00c853"
+                        };
+                        font-weight:bold;
+                    ">
+                        ${formatVND(d.profit)}
                     </td>
 
                 </tr>
@@ -2159,64 +2088,33 @@ async function loadSalesHistory(){
 
         });
 
-       if(!html){
-
-    html = `
-        <tr>
-            <td
-                colspan="8"
+        html += `
+            <tr
                 style="
-                    text-align:center;
-                    padding:30px;
-                    color:#999;
-                    font-style:italic;
+                    background:#111;
+                    color:white;
+                    font-weight:bold;
                 "
             >
-                Không có lịch sử bán hàng trong khoảng thời gian đã chọn
-            </td>
-        </tr>
-    `;
 
-}else{
+                <td colspan="5">
+                    TỔNG
+                </td>
 
-    html += `
-        <tr
-            style="
-                background:#111;
-                color:white;
-                font-weight:bold;
-            "
-        >
+                <td>
+                    ${formatVND(totalRevenue)}
+                </td>
 
-            <td colspan="2">
-                TỔNG
-            </td>
+                <td>
+                    ${formatVND(totalCapital)}
+                </td>
 
-            <td>
-                ${totalQty}
-            </td>
+                <td>
+                    ${formatVND(totalProfit)}
+                </td>
 
-            <td></td>
-
-            <td></td>
-
-            <td>
-                ${formatVND(totalRevenue)}
-            </td>
-
-            <td>
-                ${formatVND(totalCapital)}
-            </td>
-
-            <td>
-                ${formatVND(totalProfit)}
-            </td>
-
-        </tr>
-    `;
-
-}
-
+            </tr>
+        `;
 
         body.innerHTML = html;
 
@@ -2227,14 +2125,3 @@ async function loadSalesHistory(){
     }
 
 }
-document.addEventListener("input",(e)=>{
-
-    if(
-        e.target.id === "salesSearch" ||
-        e.target.id === "salesFromDate" ||
-        e.target.id === "salesToDate"
-    ){
-        loadSalesHistory();
-    }
-
-});
