@@ -1249,7 +1249,7 @@ const manualMinusProductInfo = document.getElementById("manualMinusProductInfo")
 const manualMinusQty = document.getElementById("manualMinusQty");
 const manualMinusReason = document.getElementById("manualMinusReason");
 const manualMinusBtn = document.getElementById("manualMinusBtn");
-
+const manualPlusBtn = document.getElementById("manualPlusBtn");
 if (
     manualMinusSearch &&
     manualMinusProductInfo &&
