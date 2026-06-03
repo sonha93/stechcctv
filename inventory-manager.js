@@ -2136,32 +2136,28 @@ async function loadSalesHistory(){
 
             let dayHtml = "";
 
-            days.forEach(day=>{
+          days.forEach(day=>{
 
-                dayHtml += `
-                    <div style="
-                        padding:6px;
-                        border-bottom:1px solid #eee;
-                    ">
+    const info = item.days[day];
 
-                        <b>${day}</b>
+    dayHtml += `
+        <div style="
+            padding:8px;
+            border-bottom:1px solid #eee;
+        ">
+            📅 ${day}
+            |
+            Bán:
+            <b>${info.qty}</b>
+            |
+            Doanh thu:
+            <b style="color:#00c853">
+                ${formatVND(info.revenue)}
+            </b>
+        </div>
+    `;
 
-                        |
-
-                        SL:
-                        ${item.days[day].qty}
-
-                        |
-
-                        DT:
-                        ${formatVND(
-                            item.days[day].revenue
-                        )}
-
-                    </div>
-                `;
-
-            });
+});
 
             html += `
                 <tr>
