@@ -1322,6 +1322,7 @@ for (const doc of productSnap.docs) {
             console.log("FOUND:", found);
 console.log("FOUND ID:", found.id);
 console.log("SOLD MAP:", soldMap);
+console.log(Object.keys(soldMap));
 console.log("SOLD VALUE:", soldMap[String(found.id)]);
             const sold = Number(soldMap[String(found.id)] || 0);
 
