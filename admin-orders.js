@@ -839,19 +839,21 @@ if(status === "cancelled"){
 }
 
 
-if (status === "completed") {
+if (
+  status === "completed" &&
+  orderData.status !== "completed"
+) {
 
   for (const item of (orderData.items || [])) {
 
     try {
 
-      if (!item.id) {
-        console.log("Thiếu item.id", item);
-        continue;
-      }
+      if (!item.id) continue;
 
       const productId =
-        String(item.id || "").trim();
+        String(item.id).trim();
+
+      if (!productId) continue;
 
       const productRef =
         db.collection("products")
@@ -860,11 +862,9 @@ if (status === "completed") {
       const productDoc =
         await productRef.get();
 
-      if (!productDoc.exists) {
-        console.log("Không tồn tại product:", productId);
-        continue;
-      }
+      if (!productDoc.exists) continue;
 
+      // check lịch sử bán
       const existed = await db
         .collection("sales_history")
         .where("orderId", "==", id)
@@ -872,10 +872,7 @@ if (status === "completed") {
         .limit(1)
         .get();
 
-      // đã lưu rồi thì bỏ qua
-      if (!existed.empty) {
-        continue;
-      }
+      if (!existed.empty) continue;
 
       const product =
         productDoc.data();
@@ -883,34 +880,35 @@ if (status === "completed") {
       const qty =
         Number(item.qty || 0);
 
+      const sellPrice =
+        Number(item.price || product.price || 0);
+
+      const importPrice =
+        Number(product.importPrice || 0);
+
+      // lưu lịch sử bán
       await db
         .collection("sales_history")
         .add({
 
           orderId: id,
-          productId: productId,
+          productId,
           productName:
             item.name || product.name,
 
           qty,
 
-          importPrice:
-            Number(product.importPrice || 0),
-
-          sellPrice:
-            Number(item.price || product.price || 0),
+          importPrice,
+          sellPrice,
 
           revenue:
-            Number(item.price || product.price || 0) * qty,
+            sellPrice * qty,
 
           capital:
-            Number(product.importPrice || 0) * qty,
+            importPrice * qty,
 
           profit:
-            (
-              Number(item.price || product.price || 0) -
-              Number(product.importPrice || 0)
-            ) * qty,
+            (sellPrice - importPrice) * qty,
 
           createdAt:
             firebase.firestore
@@ -919,12 +917,14 @@ if (status === "completed") {
 
         });
 
-      // TRỪ STOCK
+      // trừ stock
       await productRef.update({
+
         stock:
           firebase.firestore
             .FieldValue
             .increment(-qty)
+
       });
 
       console.log(
@@ -936,8 +936,7 @@ if (status === "completed") {
     } catch (err) {
 
       console.error(
-        "Lỗi xử lý sản phẩm:",
-        item,
+        "Lỗi sản phẩm:",
         err
       );
 
