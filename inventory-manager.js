@@ -930,7 +930,13 @@ html += `
 
 }
 async function loadHistory(){
+const fromDate =
+    document.getElementById("historyFromDate")
+    ?.value;
 
+const toDate =
+    document.getElementById("historyToDate")
+    ?.value;
     const historyBody =
         document.getElementById("historyBody");
 
