@@ -839,155 +839,113 @@ if(status === "cancelled"){
 }
 
 
-if(
-if (status === "completed")
-  orderData.status !== "completed"
-){
+if (status === "completed") {
 
-for (const item of (orderData.items || [])) {
+  for (const item of (orderData.items || [])) {
 
-  try {
+    try {
 
-    if (!item.id) {
-      console.log("Thiếu item.id", item);
-      continue;
-    }
+      if (!item.id) {
+        console.log("Thiếu item.id", item);
+        continue;
+      }
 
-    const productId =
-      String(item.id || "").trim();
+      const productId =
+        String(item.id || "").trim();
 
-    if (!productId) {
-      console.log("Thiếu productId", item);
-      continue;
-    }
+      const productRef =
+        db.collection("products")
+        .doc(productId);
 
-    const productRef =
-      db.collection("products")
-      .doc(productId);
+      const productDoc =
+        await productRef.get();
 
-    const productDoc =
-      await productRef.get();
+      if (!productDoc.exists) {
+        console.log("Không tồn tại product:", productId);
+        continue;
+      }
 
-    if (!productDoc.exists) {
+      const existed = await db
+        .collection("sales_history")
+        .where("orderId", "==", id)
+        .where("productId", "==", productId)
+        .limit(1)
+        .get();
 
-      console.log(
-        "Không tồn tại product:",
-        productId
-      );
+      // đã lưu rồi thì bỏ qua
+      if (!existed.empty) {
+        continue;
+      }
 
-      continue;
-    }
+      const product =
+        productDoc.data();
 
-    const product =
-      productDoc.data();
+      const qty =
+        Number(item.qty || 0);
 
-    const importPrice =
-      Number(product.importPrice || 0);
+      await db
+        .collection("sales_history")
+        .add({
 
-    const sellPrice =
-      Number(item.price || product.price || 0);
+          orderId: id,
+          productId: productId,
+          productName:
+            item.name || product.name,
 
-    const qty =
-      Number(item.qty || 0);
+          qty,
 
-    const revenue =
-      sellPrice * qty;
+          importPrice:
+            Number(product.importPrice || 0),
 
-    const capital =
-      importPrice * qty;
+          sellPrice:
+            Number(item.price || product.price || 0),
 
-    const profit =
-      revenue - capital;
+          revenue:
+            Number(item.price || product.price || 0) * qty,
 
-    const existed = await db
-      .collection("sales_history")
-      .where("orderId", "==", id)
-      .where("productId", "==", productId)
-      .limit(1)
-      .get();
+          capital:
+            Number(product.importPrice || 0) * qty,
 
-    if (!existed.empty) {
-      continue;
-    }
+          profit:
+            (
+              Number(item.price || product.price || 0) -
+              Number(product.importPrice || 0)
+            ) * qty,
 
-    await db
-      .collection("sales_history")
-      .add({
+          createdAt:
+            firebase.firestore
+              .FieldValue
+              .serverTimestamp()
 
-        orderId: id,
+        });
 
-        productId: productId,
-
-        productName:
-          item.name || product.name,
-
-        qty,
-
-        importPrice,
-
-        sellPrice,
-
-        revenue,
-
-        capital,
-
-        profit,
-
-        createdAt:
+      // TRỪ STOCK
+      await productRef.update({
+        stock:
           firebase.firestore
             .FieldValue
-            .serverTimestamp()
-
+            .increment(-qty)
       });
 
-    await productRef.update({
-      stock:
-        firebase.firestore
-          .FieldValue
-          .increment(-qty)
-    });
+      console.log(
+        "Đã trừ stock:",
+        productId,
+        qty
+      );
 
-    console.log(
-      "Đã trừ stock:",
-      productId,
-      qty
-    );
+    } catch (err) {
 
-  } catch (err) {
+      console.error(
+        "Lỗi xử lý sản phẩm:",
+        item,
+        err
+      );
 
-    console.error(
-      "Lỗi xử lý sản phẩm:",
-      item,
-      err
-    );
+    }
 
   }
 
 }
-  }
-await db
-  .collection("orders")
-  .doc(id)
-  .update(updateData);
-        // completed => khóa
-     if (
-  status === "completed" ||
-  status === "cancelled"
-) {
-
-  select.disabled = true;
-}
-        alert("Cập nhật trạng thái thành công");
-
-      } catch (error) {
-
-        console.error(error);
-        alert("Lỗi cập nhật trạng thái");
-      }
-    });
-  });
-}
-
 // ============================
 // REALTIME UPDATE
 // ============================
