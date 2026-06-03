@@ -324,16 +324,17 @@ tr:hover{
 .stock-top-bar{
     display:grid;
     grid-template-columns:
-        330px
-        1fr
-        120px
-        220px
-        180px
-        180px;
+        320px   /* ô tìm */
+        1fr     /* thông tin sản phẩm */
+        100px   /* SL */
+        260px   /* lý do */
+        180px   /* trừ */
+        180px;  /* cộng */
 
     gap:16px;
     align-items:center;
     width:100%;
+    margin-bottom:20px;
 }
 
 /* ô search */
@@ -395,7 +396,16 @@ tr:hover{
   border-radius:10px;
   font-size:16px;
 }
+#manualMinusProductInfo{
+    width:100%;
+    min-width:350px;
+}
 
+.product-info-name{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
 /* button */
 #manualMinusBtn{
   height:46px;
