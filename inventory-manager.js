@@ -726,7 +726,29 @@ async function loadImportPrices(){
         for(const doc of snap.docs){
 
             const data = doc.data();
+if(data.createdAt){
 
+    const itemDate =
+        data.createdAt
+        .toDate()
+        .toISOString()
+        .split("T")[0];
+
+    if(
+        fromDate &&
+        itemDate < fromDate
+    ){
+        return;
+    }
+
+    if(
+        toDate &&
+        itemDate > toDate
+    ){
+        return;
+    }
+
+}
             const selectedDate = importDateFilter?.value;
 
             if(!data.createdAt){
@@ -2221,3 +2243,41 @@ document.addEventListener("input",(e)=>{
     }
 
 });
+const historyFromDate =
+    document.getElementById("historyFromDate");
+
+const historyToDate =
+    document.getElementById("historyToDate");
+
+const clearHistoryDate =
+    document.getElementById("clearHistoryDate");
+
+if(historyFromDate){
+    historyFromDate.addEventListener(
+        "change",
+        loadHistory
+    );
+}
+
+if(historyToDate){
+    historyToDate.addEventListener(
+        "change",
+        loadHistory
+    );
+}
+
+if(clearHistoryDate){
+
+    clearHistoryDate.addEventListener(
+        "click",
+        ()=>{
+
+            historyFromDate.value = "";
+            historyToDate.value = "";
+
+            loadHistory();
+
+        }
+    );
+
+}
