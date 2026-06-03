@@ -1,3 +1,5 @@
+
+
 import { auth, db } from "./firebase-init.js";
 let allSnapshotOrders = [];
 let allOrders = [];
@@ -907,12 +909,15 @@ if(!existed.empty){
 
           profit,
 
-         createdAt: new Date()
+          createdAt:
+            firebase.firestore
+            .FieldValue
+            .serverTimestamp()
 
         });
 
-     await productRef.update({
-  stock: (Number(product.stock || 0) - qty)
+      await productRef.update({
+  stock: firebase.firestore.FieldValue.increment(-qty)
 });
     }
 
