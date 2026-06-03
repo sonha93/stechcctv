@@ -1243,7 +1243,14 @@ const manualMinusQty = document.getElementById("manualMinusQty");
 const manualMinusReason = document.getElementById("manualMinusReason");
 const manualMinusBtn = document.getElementById("manualMinusBtn");
 
-if (manualMinusSearch && manualMinusProductInfo && manualMinusQty && manualMinusReason && manualMinusBtn) {
+if (
+    manualMinusSearch &&
+    manualMinusProductInfo &&
+    manualMinusQty &&
+    manualMinusReason &&
+    manualMinusBtn &&
+    manualPlusBtn
+) {
 
     // HIỂN THỊ THÔNG TIN SẢN PHẨM KHI SEARCH
     manualMinusSearch.addEventListener("input", async () => {
@@ -1327,7 +1334,102 @@ for (const doc of productSnap.docs) {
             console.log(err);
         }
     });
+manualPlusBtn.addEventListener("click", async () => {
 
+    try {
+
+        const keyword = manualMinusSearch.value.trim().toLowerCase();
+        const qty = Number(manualMinusQty.value);
+        const reasonValue = manualMinusReason.value.trim();
+
+        if (!keyword) {
+            alert("Nhập tên sản phẩm");
+            return;
+        }
+
+        if (!Number.isInteger(qty) || qty <= 0) {
+            alert("Số lượng không hợp lệ");
+            return;
+        }
+
+        if (!reasonValue) {
+            alert("Chọn lý do");
+            return;
+        }
+
+        const snap = await db.collection("products").get();
+
+        let foundDoc = null;
+
+        snap.forEach(doc => {
+
+            if (foundDoc) return;
+
+            const data = doc.data();
+
+            const name = String(data.name || "").toLowerCase();
+            const productId = String(doc.id).toLowerCase();
+
+            if (
+                name === keyword ||
+                productId === keyword
+            ) {
+                foundDoc = doc;
+            }
+
+        });
+
+        if (!foundDoc) {
+            alert("Không tìm thấy sản phẩm");
+            return;
+        }
+
+        const product = foundDoc.data();
+
+        const currentStock =
+            Number(product.stock || 0);
+
+        const newStock =
+            currentStock + qty;
+
+        await db
+            .collection("products")
+            .doc(foundDoc.id)
+            .update({
+                stock: newStock
+            });
+
+        await db
+            .collection("stock_movements")
+            .add({
+                productId: foundDoc.id,
+                productName: product.name || "",
+                type: "MANUAL_PLUS",
+                qty: qty,
+                reason: reasonValue,
+                createdAt:
+                    firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+        alert(`Đã cộng ${qty} stock`);
+
+        manualMinusSearch.value = "";
+        manualMinusQty.value = "";
+        manualMinusReason.value = "";
+        manualMinusProductInfo.innerHTML = "Chưa chọn sản phẩm";
+
+        loadInventory();
+        loadStockMovements();
+        loadHistory();
+
+    } catch (err) {
+
+        console.log(err);
+        alert(err.message);
+
+    }
+
+});
     // TRỪ STOCK KHI BẤM NÚT
     manualMinusBtn.addEventListener("click", async () => {
 
