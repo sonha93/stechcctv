@@ -1,3 +1,4 @@
+import firebase from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js";
 import { auth, db } from "./firebase-init.js";
 let allSnapshotOrders = [];
 let allOrders = [];
