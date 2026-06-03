@@ -1,4 +1,3 @@
-inventory.js 
 
 // ============================
 // INVENTORY MANAGER V8
@@ -652,15 +651,13 @@ if (!Number.isInteger(qtyImport) || qtyImport < 0) {
 if(qtyImport > 0){
 
  await db.collection("stock_movements").add({
+
     productId:id,
     productName: productData.name || "",
 
     type:"IMPORT",
 
     qty:qtyImport,
-
-    stockBefore: currentStock,
-    stockAfter: newStock,
 
     reason:"Nhập kho",
 
@@ -993,12 +990,9 @@ if(
         const sold =
             soldMap[product.id] || 0;
 
-       const stock =
-    Number(
-        data.stockAfter ??
-        p.stock ??
-        0
-    );
+        const stock =
+            Number(p.stock || 0);
+
         html += `
             <tr>
 
@@ -1249,7 +1243,7 @@ const manualMinusProductInfo = document.getElementById("manualMinusProductInfo")
 const manualMinusQty = document.getElementById("manualMinusQty");
 const manualMinusReason = document.getElementById("manualMinusReason");
 const manualMinusBtn = document.getElementById("manualMinusBtn");
-const manualPlusBtn = document.getElementById("manualPlusBtn");
+
 if (
     manualMinusSearch &&
     manualMinusProductInfo &&
@@ -1317,7 +1311,7 @@ for (const doc of productSnap.docs) {
     name === keyword ||
     productId === keyword
 ) {
-    found = { id: doc.id, ...data };
+   found = { ...data, id: doc.id };
     break;
 }
     }
@@ -2015,18 +2009,29 @@ async function loadSalesHistory(){
 
     try{
 
+        const keyword =
+            document.getElementById("salesSearch")
+            ?.value
+            .trim()
+            .toLowerCase();
+
+        const fromDate =
+            document.getElementById("salesFromDate")
+            ?.value;
+
+        const toDate =
+            document.getElementById("salesToDate")
+            ?.value;
+
         const snap =
             await db
             .collection("sales_history")
-            .orderBy(
-                "createdAt",
-                "desc"
-            )
-            .limit(1000)
+            .orderBy("createdAt","desc")
             .get();
 
         let html = "";
 
+        let totalQty = 0;
         let totalRevenue = 0;
         let totalCapital = 0;
         let totalProfit = 0;
@@ -2034,6 +2039,54 @@ async function loadSalesHistory(){
         snap.forEach(doc=>{
 
             const d = doc.data();
+
+            if(!d.createdAt) return;
+
+            const saleDate =
+                d.createdAt
+                .toDate()
+                .toISOString()
+                .split("T")[0];
+
+            if(
+                fromDate &&
+                saleDate < fromDate
+            ){
+                return;
+            }
+
+            if(
+                toDate &&
+                saleDate > toDate
+            ){
+                return;
+            }
+
+            const productId =
+                String(
+                    d.productId || ""
+                );
+
+            const productName =
+                String(
+                    d.productName || ""
+                );
+
+            if(
+                keyword &&
+                !productId
+                    .toLowerCase()
+                    .includes(keyword)
+                &&
+                !productName
+                    .toLowerCase()
+                    .includes(keyword)
+            ){
+                return;
+            }
+
+            totalQty +=
+                Number(d.qty || 0);
 
             totalRevenue +=
                 Number(d.revenue || 0);
@@ -2050,42 +2103,56 @@ async function loadSalesHistory(){
                     <td>
                         ${
                             d.createdAt
-                            ? d.createdAt
-                                .toDate()
-                                .toLocaleString("vi-VN")
-                            : "-"
+                            .toDate()
+                            .toLocaleDateString("vi-VN")
                         }
                     </td>
 
-                    <td>${d.productName}</td>
-
-                    <td>${d.qty}</td>
-
                     <td>
-                        ${formatVND(d.importPrice)}
+                        ${productName}
                     </td>
 
                     <td>
-                        ${formatVND(d.sellPrice)}
+                        ${d.qty}
                     </td>
 
                     <td>
-                        ${formatVND(d.revenue)}
+                        ${formatVND(
+                            d.importPrice
+                        )}
                     </td>
 
                     <td>
-                        ${formatVND(d.capital)}
+                        ${formatVND(
+                            d.sellPrice
+                        )}
                     </td>
 
-                    <td style="
-                        color:${
-                            d.profit < 0
-                            ? "red"
-                            : "#00c853"
-                        };
-                        font-weight:bold;
-                    ">
-                        ${formatVND(d.profit)}
+                    <td>
+                        ${formatVND(
+                            d.revenue
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatVND(
+                            d.capital
+                        )}
+                    </td>
+
+                    <td
+                        style="
+                            color:${
+                                d.profit < 0
+                                ? "red"
+                                : "#00c853"
+                            };
+                            font-weight:bold;
+                        "
+                    >
+                        ${formatVND(
+                            d.profit
+                        )}
                     </td>
 
                 </tr>
@@ -2102,20 +2169,34 @@ async function loadSalesHistory(){
                 "
             >
 
-                <td colspan="5">
+                <td colspan="2">
                     TỔNG
                 </td>
 
                 <td>
-                    ${formatVND(totalRevenue)}
+                    ${totalQty}
+                </td>
+
+                <td></td>
+
+                <td></td>
+
+                <td>
+                    ${formatVND(
+                        totalRevenue
+                    )}
                 </td>
 
                 <td>
-                    ${formatVND(totalCapital)}
+                    ${formatVND(
+                        totalCapital
+                    )}
                 </td>
 
                 <td>
-                    ${formatVND(totalProfit)}
+                    ${formatVND(
+                        totalProfit
+                    )}
                 </td>
 
             </tr>
@@ -2130,3 +2211,14 @@ async function loadSalesHistory(){
     }
 
 }
+document.addEventListener("input",(e)=>{
+
+    if(
+        e.target.id === "salesSearch" ||
+        e.target.id === "salesFromDate" ||
+        e.target.id === "salesToDate"
+    ){
+        loadSalesHistory();
+    }
+
+});
