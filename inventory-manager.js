@@ -651,8 +651,7 @@ if (!Number.isInteger(qtyImport) || qtyImport < 0) {
                 // SAVE STOCK MOVEMENT
 if(qtyImport > 0){
 
- aawait db.collection("stock_movements").add({
-
+ await db.collection("stock_movements").add({
     productId:id,
     productName: productData.name || "",
 
