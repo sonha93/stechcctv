@@ -1319,6 +1319,15 @@ for (const doc of productSnap.docs) {
                 manualMinusProductInfo.innerHTML = `<span style="color:red;font-weight:bold;">Không tìm thấy sản phẩm</span>`;
                 return;
             }
+            console.log(
+    "FOUND NAME:",
+    found.name
+);
+
+console.log(
+    "SOLD MAP KEYS:",
+    Object.keys(soldMap)
+);
             console.log("FOUND:", found);
 console.log("FOUND ID:", found.id);
 console.log("SOLD MAP:", soldMap);
