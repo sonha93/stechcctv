@@ -6,8 +6,7 @@ const importDateFilter = document.getElementById("importDateFilter");
 const movementsDateFilter = document.getElementById("movementsDateFilter");
 const inventoryBody = document.getElementById("inventoryBody");
 const inventoryFooter = document.getElementById("inventoryFooter");
-const historyDateFilter =
-    document.getElementById("historyDateFilter");
+
 const db = firebase.firestore();
 
 const importBody = document.getElementById("importBody");
@@ -728,11 +727,8 @@ async function loadImportPrices(){
 
             const data = doc.data();
 
-           const fromDate =
-    document.getElementById("historyFromDate")?.value;
+            const selectedDate = importDateFilter?.value;
 
-const toDate =
-    document.getElementById("historyToDate")?.value;
             if(!data.createdAt){
                 continue;
             }
@@ -921,8 +917,7 @@ async function loadHistory(){
         ?.value
         .trim()
         .toLowerCase();
-const selectedDate =
-    historyDateFilter?.value;
+
     const moveSnap =
         await db.collection("stock_movements")
         .orderBy("createdAt","desc")
@@ -966,23 +961,7 @@ const selectedDate =
     moveSnap.forEach(doc=>{
 
         const data = doc.data();
-if(data.createdAt){
 
-    const itemDate =
-        data.createdAt
-        .toDate()
-        .toISOString()
-        .split("T")[0];
-
-    if(fromDate && itemDate < fromDate){
-        return;
-    }
-
-    if(toDate && itemDate > toDate){
-        return;
-    }
-
-}
         if(data.type !== "IMPORT")
             return;
 
@@ -1224,23 +1203,7 @@ if(clearMovementsDate){
     });
 
 }
-const clearHistoryDate =
-    document.getElementById("clearHistoryDate");
 
-if(clearHistoryDate){
-
-    clearHistoryDate.addEventListener(
-        "click",
-        ()=>{
-
-            historyDateFilter.value = "";
-
-            loadHistory();
-
-        }
-    );
-
-}
 // ============================
 // DEFAULT DATE
 // ============================
@@ -1261,9 +1224,7 @@ if(importDateFilter){
 if(movementsDateFilter){
     movementsDateFilter.value = todayStr;
 }
-if(historyDateFilter){
-    historyDateFilter.value = todayStr;
-}
+
 // ============================
 // DEFAULT VIEW
 // ============================
@@ -2260,11 +2221,3 @@ document.addEventListener("input",(e)=>{
     }
 
 });
-if(historyDateFilter){
-
-    historyDateFilter.addEventListener(
-        "change",
-        loadHistory
-    );
-
-}
