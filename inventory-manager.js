@@ -2028,7 +2028,12 @@ async function loadSalesHistory(){
             .orderBy("createdAt","desc")
             .get();
 
-        const grouped = {};
+        let html = "";
+
+        let totalQty = 0;
+        let totalRevenue = 0;
+        let totalCapital = 0;
+        let totalProfit = 0;
 
         snap.forEach(doc=>{
 
@@ -2079,113 +2084,73 @@ async function loadSalesHistory(){
                 return;
             }
 
-            const key =
-                productId || productName;
-
-            if(!grouped[key]){
-
-                grouped[key] = {
-
-                    productId,
-
-                    productName,
-
-                    totalQty:0,
-
-                    totalRevenue:0,
-
-                    days:{}
-
-                };
-
-            }
-
-            grouped[key].totalQty +=
+            totalQty +=
                 Number(d.qty || 0);
 
-            grouped[key].totalRevenue +=
+            totalRevenue +=
                 Number(d.revenue || 0);
 
-            if(!grouped[key].days[saleDate]){
+            totalCapital +=
+                Number(d.capital || 0);
 
-                grouped[key].days[saleDate] = {
-
-                    qty:0,
-
-                    revenue:0
-
-                };
-
-            }
-
-            grouped[key].days[saleDate].qty +=
-                Number(d.qty || 0);
-
-            grouped[key].days[saleDate].revenue +=
-                Number(d.revenue || 0);
-
-        });
-
-        let html = "";
-
-        Object.values(grouped).forEach(item=>{
-
-            const days =
-                Object.keys(item.days)
-                .sort();
-
-            let dayHtml = "";
-
-          days.forEach(day=>{
-
-    const info = item.days[day];
-
-    dayHtml += `
-        <div style="
-            padding:8px;
-            border-bottom:1px solid #eee;
-        ">
-            📅 ${day}
-            |
-            Bán:
-            <b>${info.qty}</b>
-            |
-            Doanh thu:
-            <b style="color:#00c853">
-                ${formatVND(info.revenue)}
-            </b>
-        </div>
-    `;
-
-});
+            totalProfit +=
+                Number(d.profit || 0);
 
             html += `
                 <tr>
 
                     <td>
-                        ${item.productId}
+                        ${
+                            d.createdAt
+                            .toDate()
+                            .toLocaleDateString("vi-VN")
+                        }
                     </td>
 
                     <td>
-                        ${item.productName}
+                        ${productName}
                     </td>
 
                     <td>
-                        ${dayHtml}
+                        ${d.qty}
                     </td>
 
                     <td>
-                        <b>
-                            ${item.totalQty}
-                        </b>
-                    </td>
-
-                    <td style="
-                        color:#00c853;
-                        font-weight:bold;
-                    ">
                         ${formatVND(
-                            item.totalRevenue
+                            d.importPrice
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatVND(
+                            d.sellPrice
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatVND(
+                            d.revenue
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatVND(
+                            d.capital
+                        )}
+                    </td>
+
+                    <td
+                        style="
+                            color:${
+                                d.profit < 0
+                                ? "red"
+                                : "#00c853"
+                            };
+                            font-weight:bold;
+                        "
+                    >
+                        ${formatVND(
+                            d.profit
                         )}
                     </td>
 
@@ -2194,20 +2159,47 @@ async function loadSalesHistory(){
 
         });
 
-        if(!html){
+        html += `
+            <tr
+                style="
+                    background:#111;
+                    color:white;
+                    font-weight:bold;
+                "
+            >
 
-            html = `
-                <tr>
-                    <td colspan="5"
-                        style="
-                            text-align:center;
-                            padding:20px;
-                        ">
-                        Không có dữ liệu
-                    </td>
-                </tr>
-            `;
-        }
+                <td colspan="2">
+                    TỔNG
+                </td>
+
+                <td>
+                    ${totalQty}
+                </td>
+
+                <td></td>
+
+                <td></td>
+
+                <td>
+                    ${formatVND(
+                        totalRevenue
+                    )}
+                </td>
+
+                <td>
+                    ${formatVND(
+                        totalCapital
+                    )}
+                </td>
+
+                <td>
+                    ${formatVND(
+                        totalProfit
+                    )}
+                </td>
+
+            </tr>
+        `;
 
         body.innerHTML = html;
 
