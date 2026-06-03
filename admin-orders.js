@@ -844,86 +844,127 @@ if(
   orderData.status !== "completed"
 ){
 
-  for(const item of (orderData.items || [])){
+for (const item of (orderData.items || [])) {
+
+  try {
+
+    if (!item.id) {
+      console.log("Thiếu item.id", item);
+      continue;
+    }
+
+    const productId =
+      String(item.id || "").trim();
+
+    if (!productId) {
+      console.log("Thiếu productId", item);
+      continue;
+    }
 
     const productRef =
-  db.collection("products")
-  .doc(item.id);
+      db.collection("products")
+      .doc(productId);
 
     const productDoc =
       await productRef.get();
 
-    if(productDoc.exists){
+    if (!productDoc.exists) {
 
-      const product =
-        productDoc.data();
+      console.log(
+        "Không tồn tại product:",
+        productId
+      );
 
-      const importPrice =
-        Number(product.importPrice || 0);
+      continue;
+    }
 
-      const sellPrice =
-        Number(item.price || product.price || 0);
+    const product =
+      productDoc.data();
 
-      const qty =
-        Number(item.qty || 0);
+    const importPrice =
+      Number(product.importPrice || 0);
 
-      const revenue =
-        sellPrice * qty;
+    const sellPrice =
+      Number(item.price || product.price || 0);
 
-      const capital =
-        importPrice * qty;
+    const qty =
+      Number(item.qty || 0);
 
-      const profit =
-        revenue - capital;
-      const existed = await db
-  .collection("sales_history")
-  .where("orderId","==",id)
-  .where("productId","==",item.id)
-  .limit(1)
-  .get();
+    const revenue =
+      sellPrice * qty;
 
-if(!existed.empty){
-  continue;
-}
+    const capital =
+      importPrice * qty;
 
-      await db
-        .collection("sales_history")
-        .add({
+    const profit =
+      revenue - capital;
 
-          orderId:id,
+    const existed = await db
+      .collection("sales_history")
+      .where("orderId", "==", id)
+      .where("productId", "==", productId)
+      .limit(1)
+      .get();
 
-          productId:item.id,
+    if (!existed.empty) {
+      continue;
+    }
 
-          productName:
-            item.name || product.name,
+    await db
+      .collection("sales_history")
+      .add({
 
-          qty,
+        orderId: id,
 
-          importPrice,
+        productId: productId,
 
-          sellPrice,
+        productName:
+          item.name || product.name,
 
-          revenue,
+        qty,
 
-          capital,
+        importPrice,
 
-          profit,
+        sellPrice,
 
-          createdAt:
-            firebase.firestore
+        revenue,
+
+        capital,
+
+        profit,
+
+        createdAt:
+          firebase.firestore
             .FieldValue
             .serverTimestamp()
 
-        });
+      });
 
-      await productRef.update({
-  stock: firebase.firestore.FieldValue.increment(-qty)
-});
-    }
+    await productRef.update({
+      stock:
+        firebase.firestore
+          .FieldValue
+          .increment(-qty)
+    });
+
+    console.log(
+      "Đã trừ stock:",
+      productId,
+      qty
+    );
+
+  } catch (err) {
+
+    console.error(
+      "Lỗi xử lý sản phẩm:",
+      item,
+      err
+    );
 
   }
 
 }
+  }
 await db
   .collection("orders")
   .doc(id)
