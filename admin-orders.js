@@ -1,7 +1,3 @@
-admin-orders.js
-
-
-
 import { auth, db } from "./firebase-init.js";
 let allSnapshotOrders = [];
 let allOrders = [];
