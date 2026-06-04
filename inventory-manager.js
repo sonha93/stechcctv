@@ -163,13 +163,13 @@ async function loadInventory(){
                         ${formatVND(price)}
                     </td>
 
-                  <td>
-    ${sold}
-</td>
+                    <td>
+                        ${stock}
+                    </td>
 
-<td>
-    ${stock}
-</td>
+                    <td>
+                        ${sold}
+                    </td>
 
                     <td
                         style="
@@ -661,11 +661,7 @@ if(qtyImport > 0){
     reason:"Nhập kho",
 
     importPrice: importPrice,
-soldQty:
-    Number(productData.totalSold || 0),
 
-stockAfter:
-    newStock,
     createdAt:
         firebase.firestore
         .FieldValue
@@ -924,96 +920,77 @@ async function loadHistory(){
 
     const moveSnap =
         await db.collection("stock_movements")
-        .orderBy("createdAt","asc")
+        .orderBy("createdAt","desc")
         .get();
 
     const productSnap =
         await db.collection("products")
         .get();
 
-    let html = "";
+    const orderSnap =
+        await db.collection("orders")
+        .get();
 
-    // lưu stock riêng từng sản phẩm
-    const runningStockMap = {};
+    const soldMap = {};
+
+    orderSnap.forEach(doc=>{
+
+        const order = doc.data();
+
+        if(order.status !== "completed")
+            return;
+
+        (order.items || []).forEach(item=>{
+
+            const id =
+    String(
+        item.id ||
+        item.productId ||
+        ""
+    );
+            soldMap[id] =
+                (soldMap[id] || 0)
+                + Number(item.qty || 0);
+
+        });
+
+    });
+
+    let html = "";
 
     moveSnap.forEach(doc=>{
 
         const data = doc.data();
+
+        if(data.type !== "IMPORT")
+            return;
 
         const product =
             productSnap.docs.find(
                 p => p.id === data.productId
             );
 
-        if(!product) return;
+        if(!product)
+            return;
 
         const p = product.data();
+if(
+    keyword &&
+    !String(p.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+    !String(product.id)
+        .toLowerCase()
+        .includes(keyword)
+){
+    return;
+}
 
-        if(
-            keyword &&
-            !String(p.name || "")
-                .toLowerCase()
-                .includes(keyword) &&
-            !String(product.id)
-                .toLowerCase()
-                .includes(keyword)
-        ){
-            return;
-        }
+        const sold =
+            soldMap[product.id] || 0;
 
-        // tạo stock ban đầu
-        if(
-            runningStockMap[product.id] == null
-        ){
-            runningStockMap[product.id] = 0;
-        }
-
-        // ====================
-        // IMPORT
-        // ====================
-
-        if(data.type === "IMPORT"){
-
-            runningStockMap[product.id] +=
-                Number(data.qty || 0);
-
-        }
-
-        // ====================
-        // BÁN
-        // ====================
-
-        if(data.type === "SALE"){
-
-            runningStockMap[product.id] -=
-                Number(data.qty || 0);
-
-        }
-
-        // ====================
-        // TRỪ TAY
-        // ====================
-
-        if(data.type === "MANUAL_MINUS"){
-
-            runningStockMap[product.id] -=
-                Math.abs(Number(data.qty || 0));
-
-        }
-
-        // ====================
-        // CỘNG TAY
-        // ====================
-
-        if(data.type === "MANUAL_PLUS"){
-
-            runningStockMap[product.id] +=
-                Number(data.qty || 0);
-
-        }
-
-        const currentStock =
-            runningStockMap[product.id];
+        const stock =
+            Number(p.stock || 0);
 
         html += `
             <tr>
@@ -1025,44 +1002,25 @@ async function loadHistory(){
                 <td>
                     ${
                         data.createdAt
-                        ? data.createdAt
-                            .toDate()
+                        ? data.createdAt.toDate()
                             .toLocaleString("vi-VN")
                         : "-"
                     }
                 </td>
 
+                <td>${data.qty}</td>
+
                 <td>
-    ${
-        data.type === "IMPORT"
-        ? "+" + Number(data.qty || 0)
-        : 0
-    }
+                    ${formatVND(data.importPrice)}
+                </td>
+
+                <td>${sold}</td>
+
+                <td>${stock}</td>
+
+                <td>
+    0
 </td>
-
-                <td>
-                    ${
-                        data.importPrice
-                        ? formatVND(data.importPrice)
-                        : "---"
-                    }
-                </td>
-
-                <td>
-    ${
-        data.type === "SALE"
-        ? Math.abs(Number(data.qty || 0))
-        : 0
-    }
-</td>
-
-                <td>
-                    ${currentStock}
-                </td>
-
-                <td>
-                    ${data.reason || "---"}
-                </td>
 
             </tr>
         `;
@@ -1072,7 +1030,6 @@ async function loadHistory(){
     historyBody.innerHTML = html;
 
 }
-
 // ============================
 // SEARCH
 // ============================
@@ -1671,6 +1628,12 @@ async function loadLoss(){
                 Number(
                     p.totalImportValue || 0
                 );
+
+            const sold =
+                soldMap[id] || 0;
+
+            const stock =
+                Number(p.stock || 0);
 
             const lossQty =
                 lossMap[id] || 0;
