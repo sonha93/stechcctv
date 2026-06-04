@@ -1043,3 +1043,32 @@ function renderPagination() {
 
     });
 }
+// ============================
+// LIVE DATE TIME
+// ============================
+
+function updateLiveDateTime() {
+
+  const el =
+    document.getElementById("liveDateTime");
+
+  if (!el) return;
+
+  const now = new Date();
+
+  const date =
+    now.toLocaleDateString("vi-VN");
+
+  const time =
+    now.toLocaleTimeString("vi-VN");
+
+  el.innerHTML = `
+    ${date} - ${time}
+  `;
+}
+
+// chạy ngay
+updateLiveDateTime();
+
+// cập nhật mỗi giây
+setInterval(updateLiveDateTime, 1000);
