@@ -842,121 +842,109 @@ if(
   orderData.status !== "completed"
 ){
 
- for(const item of (orderData.items || [])){
+  for(const item of (orderData.items || [])){
 
-  // bỏ qua item lỗi
-  if(!item.id || typeof item.id !== "string"){
-    console.warn("Item lỗi hoặc đặt riêng:", item);
-    continue;
+    const productRef =
+      db.collection("products")
+      .doc(item.id);
+
+    const productDoc =
+      await productRef.get();
+
+    if(productDoc.exists){
+
+      const product =
+        productDoc.data();
+
+      const importPrice =
+        Number(product.importPrice || 0);
+
+      const sellPrice =
+        Number(item.price || product.price || 0);
+
+      const qty =
+        Number(item.qty || 0);
+
+      const revenue =
+        sellPrice * qty;
+
+      const capital =
+        importPrice * qty;
+
+      const profit =
+        revenue - capital;
+      const existed = await db
+  .collection("sales_history")
+  .where("orderId","==",id)
+  .where("productId","==",item.id)
+  .limit(1)
+  .get();
+
+if(!existed.empty){
+  continue;
+}
+
+      await db
+        .collection("sales_history")
+        .add({
+
+          orderId:id,
+
+          productId:item.id,
+
+          productName:
+            item.name || product.name,
+
+          qty,
+
+          importPrice,
+
+          sellPrice,
+
+          revenue,
+
+          capital,
+
+          profit,
+
+          createdAt:
+            firebase.firestore
+            .FieldValue
+            .serverTimestamp()
+
+        });
+
+      await productRef.update({
+  stock: firebase.firestore.FieldValue.increment(-qty)
+});
+    }
+
   }
 
-  const productRef =
-    db.collection("products")
-    .doc(item.id);
+}
+await db
+  .collection("orders")
+  .doc(id)
+  .update(updateData);
+        // completed => khóa
+     if (
+  status === "completed" ||
+  status === "cancelled"
+) {
 
-  const productDoc =
-    await productRef.get();
+  select.disabled = true;
+}
+        alert("Cập nhật trạng thái thành công");
 
-  if(!productDoc.exists){
-    console.warn("Không tồn tại product:", item.id);
-    continue;
-  }
+      } catch (error) {
 
-  const product =
-    productDoc.data();
-
-  const importPrice =
-    Number(product.importPrice || 0);
-
-  const sellPrice =
-    Number(item.price || product.price || 0);
-
-  const qty =
-    Number(item.qty || 0);
-
-  const revenue =
-    sellPrice * qty;
-
-  const capital =
-    importPrice * qty;
-
-  const profit =
-    revenue - capital;
-
-  const existed = await db
-    .collection("sales_history")
-    .where("orderId","==",id)
-    .where("productId","==",item.id)
-    .limit(1)
-    .get();
-
-  if(!existed.empty){
-    continue;
-  }
-
-  await db
-    .collection("sales_history")
-    .add({
-
-      orderId:id,
-
-      productId:item.id,
-
-      productName:
-        item.name || product.name,
-
-      qty,
-
-      importPrice,
-
-      sellPrice,
-
-      revenue,
-
-      capital,
-
-      profit,
-
-      createdAt:
-        firebase.firestore
-        .FieldValue
-        .serverTimestamp()
-
+        console.error(error);
+        alert("Lỗi cập nhật trạng thái");
+      }
     });
-
-  // trừ tồn
-  await productRef.update({
-    stock:
-      firebase.firestore
-      .FieldValue
-      .increment(-qty)
   });
-
-  // lịch sử kho
-  await db
-    .collection("stock_movements")
-    .add({
-
-      productId: item.id,
-
-      productName:
-        item.name || product.name,
-
-      type: "SALE",
-
-      qty: -qty,
-
-      reason: `Đơn hàng ${id}`,
-
-      createdAt:
-        firebase.firestore
-        .FieldValue
-        .serverTimestamp()
-
-    });
-
 }
-}
+
 // ============================
 // REALTIME UPDATE
 // ============================
