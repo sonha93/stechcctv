@@ -1046,16 +1046,29 @@ const stock =
                         : "-"
                     }
                 </td>
+<td>
+    ${data.type}
+</td>
 
-                <td>${data.qty}</td>
+<td>
+    ${data.qty > 0
+        ? "+" + data.qty
+        : data.qty}
+</td>
 
-                <td>
-                    ${formatVND(data.importPrice)}
-                </td>
+<td>
+    ${
+        data.importPrice
+        ? formatVND(data.importPrice)
+        : "-"
+    }
+</td>
 
-                <td>${sold}</td>
-
-                <td>${stock}</td>
+<td>
+    ${
+        data.stockAfter ?? "-"
+    }
+</td>
 
                 <td>
     0
