@@ -220,24 +220,38 @@ const sub =
               ${p.name || ""}
             </b>
 
-         <div>
-  ${qty} × ${format(price)}
-</div>
+         <div class="calc">
 
-${
-  oldPrice > price
-  ? `
-    <div style="
-      text-decoration:line-through;
-      color:#999;
-      font-size:13px;
-      margin-top:4px;
-    ">
-      ${format(oldPrice)}
-    </div>
-  `
-  : ""
-}
+  <div style="
+    color:#e53935;
+    font-weight:bold;
+    font-size:16px;
+  ">
+    ${format(price)}
+  </div>
+
+  ${
+    oldPrice > price
+    ? `
+      <div style="
+        text-decoration:line-through;
+        color:#999;
+        font-size:13px;
+        margin-top:2px;
+      ">
+        ${format(oldPrice)}
+      </div>
+    `
+    : ""
+  }
+
+  <div>
+    ${qty} × ${format(price)}
+    =
+    ${format(sub)}
+  </div>
+
+</div>
 
             <div style="
               color:#d70018;
