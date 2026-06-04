@@ -842,15 +842,25 @@ if(
   orderData.status !== "completed"
 ){
 
-  for(const item of (orderData.items || [])){
-  if(typeof item.id !== "string"){
-  console.error("ID lỗi:", item);
-  continue;
-}
+for(const item of (orderData.items || [])){
 
-const productRef =
-  db.collection("products")
-  .doc(item.id);
+  const productId =
+    String(
+      item.id ||
+      item.productId ||
+      ""
+    );
+
+  if(!productId){
+
+    console.error("ID lỗi:", item);
+    continue;
+
+  }
+
+  const productRef =
+    db.collection("products")
+    .doc(productId);
 
 const productDoc =
   await productRef.get();
@@ -880,7 +890,7 @@ const productDoc =
       const existed = await db
   .collection("sales_history")
   .where("orderId","==",id)
-  .where("productId","==",item.id)
+ .where("productId","==",productId)
   .limit(1)
   .get();
 
@@ -894,7 +904,7 @@ if(!existed.empty){
 
           orderId:id,
 
-          productId:item.id,
+          productId:productId,
 
           productName:
             item.name || product.name,
@@ -932,7 +942,7 @@ await db
     .collection("stock_movements")
     .add({
 
-        productId: item.id,
+       productId: productId,
 
         productName:
             item.name || product.name,
