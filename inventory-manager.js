@@ -986,11 +986,7 @@ if(
     return;
 }
 
-        const sold =
-            soldMap[product.id] || 0;
-
-        const stock =
-            Number(p.stock || 0);
+       
 
         html += `
             <tr>
@@ -1014,9 +1010,23 @@ if(
                     ${formatVND(data.importPrice)}
                 </td>
 
-                <td>${sold}</td>
+                <td>
+    ${
+        Number(
+            data.soldAfterImport || 0
+        )
+    }
+</td>
 
-                <td>${stock}</td>
+<td>
+    ${
+        Number(
+            data.remainAfterImport ||
+            data.stockAfterImport ||
+            0
+        )
+    }
+</td>
 
                 <td>
     0
