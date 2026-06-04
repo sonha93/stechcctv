@@ -928,10 +928,11 @@ async function loadProducts(){
 
   querySnapshot.forEach(docSnap=>{
 
-    products.push({
+   products.push({
+  id: docSnap.id,
   firestoreId: docSnap.id,
   ...docSnap.data()
-	});
+});
   });
 
 }
