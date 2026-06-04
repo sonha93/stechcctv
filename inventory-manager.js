@@ -164,24 +164,11 @@ async function loadInventory(){
                     </td>
 
                   <td>
-    ${
-        Number(
-            soldMap[product.id] || 0
-        )
-    }
+    ${sold}
 </td>
 
 <td>
-    ${
-        Math.max(
-            0,
-            Number(data.qty || 0)
-            -
-            Number(
-                soldMap[product.id] || 0
-            )
-        )
-    }
+    ${stock}
 </td>
 
                     <td
@@ -674,7 +661,11 @@ if(qtyImport > 0){
     reason:"Nhập kho",
 
     importPrice: importPrice,
+soldQty:
+    Number(productData.totalSold || 0),
 
+stockAfter:
+    newStock,
     createdAt:
         firebase.firestore
         .FieldValue
