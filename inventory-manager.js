@@ -1,3 +1,6 @@
+inventory-manager.js
+
+
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -912,124 +915,122 @@ async function loadHistory(){
     const historyBody =
         document.getElementById("historyBody");
 
-    if(!historyBody) return;
+    const keyword =
+        document.getElementById("historySearch")
+        ?.value
+        .trim()
+        .toLowerCase();
 
-    try{
+    const moveSnap =
+        await db.collection("stock_movements")
+        .orderBy("createdAt","desc")
+        .get();
 
-        const keyword =
-            document.getElementById("historySearch")
-            ?.value
-            .trim()
-            .toLowerCase();
+    const productSnap =
+        await db.collection("products")
+        .get();
 
-        const snap =
-            await db
-            .collection("stock_movements")
-            .orderBy("createdAt","desc")
-            .get();
+    const orderSnap =
+        await db.collection("orders")
+        .get();
 
-        let html = "";
+    const soldMap = {};
 
-        snap.forEach(doc=>{
+    orderSnap.forEach(doc=>{
 
-            const data = doc.data();
+        const order = doc.data();
 
-            const productName =
-                String(
-                    data.productName || ""
-                );
+        if(order.status !== "completed")
+            return;
 
-            const productId =
-                String(
-                    data.productId || ""
-                );
+        (order.items || []).forEach(item=>{
 
-            if(
-                keyword &&
-                !productName
-                    .toLowerCase()
-                    .includes(keyword)
-                &&
-                !productId
-                    .toLowerCase()
-                    .includes(keyword)
-            ){
-                return;
-            }
-
-            html += `
-                <tr>
-
-                    <td>
-                        ${productId}
-                    </td>
-
-                    <td>
-                        ${productName}
-                    </td>
-
-                    <td>
-                        ${
-                            data.createdAt
-                            ? data.createdAt
-                                .toDate()
-                                .toLocaleString("vi-VN")
-                            : "-"
-                        }
-                    </td>
-
-                    <td>
-                        ${data.type || "-"}
-                    </td>
-
-                    <td style="
-                        color:${
-                            Number(data.qty) < 0
-                            ? "red"
-                            : "#00c853"
-                        };
-                        font-weight:bold;
-                    ">
-                        ${
-                            Number(data.qty) > 0
-                            ? "+"
-                            : ""
-                        }
-                        ${Number(data.qty || 0)}
-                    </td>
-
-                    <td>
-                        ${data.reason || "---"}
-                    </td>
-
-                </tr>
-            `;
+            const id =
+    String(
+        item.id ||
+        item.productId ||
+        ""
+    );
+            soldMap[id] =
+                (soldMap[id] || 0)
+                + Number(item.qty || 0);
 
         });
 
-        if(!html){
+    });
 
-            html = `
-                <tr>
-                    <td colspan="6"
-                        style="
-                            text-align:center;
-                            padding:20px;
-                        ">
-                        Không có dữ liệu
-                    </td>
-                </tr>
-            `;
+    let html = "";
 
-        }
+    moveSnap.forEach(doc=>{
 
-        historyBody.innerHTML = html;
+        const data = doc.data();
 
-    }catch(err){
+        if(data.type !== "IMPORT")
+            return;
 
-        console.log(err);
+        const product =
+            productSnap.docs.find(
+                p => p.id === data.productId
+            );
 
-    }
+        if(!product)
+            return;
+
+        const p = product.data();
+if(
+    keyword &&
+    !String(p.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+    !String(product.id)
+        .toLowerCase()
+        .includes(keyword)
+){
+    return;
+}
+
+        const sold =
+            soldMap[product.id] || 0;
+
+        const stock =
+            Number(p.stock || 0);
+
+        html += `
+            <tr>
+
+                <td>${product.id}</td>
+
+                <td>${p.name}</td>
+
+                <td>
+                    ${
+                        data.createdAt
+                        ? data.createdAt.toDate()
+                            .toLocaleString("vi-VN")
+                        : "-"
+                    }
+                </td>
+
+                <td>${data.qty}</td>
+
+                <td>
+                    ${formatVND(data.importPrice)}
+                </td>
+
+                <td>${sold}</td>
+
+                <td>${stock}</td>
+
+                <td>
+    0
+</td>
+
+            </tr>
+        `;
+
+    });
+
+    historyBody.innerHTML = html;
 
 }
 // ============================
