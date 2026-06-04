@@ -968,9 +968,19 @@ async function loadProduct(){
   }
 
   product = {
-    id: docSnap.id,
-    ...docSnap.data()
-  };
+  id: docSnap.id,
+  productId: docSnap.id,
+
+  ...docSnap.data(),
+
+  originalPrice:
+    Number(
+      docSnap.data().originalPrice ||
+      docSnap.data().oldPrice ||
+      docSnap.data().price ||
+      0
+    )
+};
 
   // IMAGE
  // IMAGE GALLERY
