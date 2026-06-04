@@ -172,15 +172,21 @@ function renderOrders(){
       : [];
 
     items.forEach(p => {
+const qty =
+  Number(p.qty || 1);
 
-      const qty =
-        Number(p.qty || 1);
+const price =
+  Number(p.price || 0);
 
-      const price =
-        Number(p.price || 0);
+const originalPrice =
+  Number(
+    p.originalPrice ||
+    p.oldPrice ||
+    0
+  );
 
-      const sub =
-        qty * price;
+const sub =
+  qty * price;
 
       total += sub;
 
