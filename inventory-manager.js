@@ -1740,167 +1740,138 @@ async function loadLoss(){
                 ).toFixed(2)
                 : "0.00";
 
-            html += `
-                <tr>
+        html += `
+<tr>
 
-                    <td>${id}</td>
+    <td>${id}</td>
 
-                    <td>${p.name || "-"}</td>
+    <td>${p.name || "-"}</td>
 
-                    <td>
-                        ${formatVND(importPrice)}
-                    </td>
+    <td>
+        ${formatVND(importPrice)}
+    </td>
 
-                    <td>
-                        ${formatVND(sellPrice)}
-                    </td>
+    <td>
+        ${formatVND(sellPrice)}
+    </td>
 
-                    <td>
-                        ${importedQty}
-                    </td>
+    <td>
+        ${importedQty}
+    </td>
 
-                    <td>
-                        ${formatVND(importValue)}
-                    </td>
+    <td>
+        ${formatVND(importValue)}
+    </td>
 
-                    <td>
-                        ${sold}
-                    </td>
+    <td>
+        ${sold}
+    </td>
 
-                    <td>
-                        ${formatVND(revenue)}
-                    </td>
+    <td>
+        ${formatVND(revenue)}
+    </td>
 
-                    <td
-                    style="
-                        color:${
-                            systemStock < 0
-                            ? "red"
-                            : "#00c853"
-                        };
-                        font-weight:bold;
-                    "
-                    >
-                        ${systemStock}
-                    </td>
+    <td
+    style="
+        color:${
+            systemStock < 0
+            ? "red"
+            : "#00c853"
+        };
+        font-weight:bold;
+    "
+    >
+        ${systemStock}
+    </td>
 
-                    <td>
-                        ${formatVND(stockValue)}
-                    </td>
+    <td>
+        ${formatVND(stockValue)}
+    </td>
 
-                    <td
-                    style="
-                        color:red;
-                        font-weight:bold;
-                    "
-                    >
-                        ${
-                            lossQty > 0
-                            ? "-" + lossQty
-                            : 0
-                        }
-                    </td>
+    <td
+    style="
+        color:red;
+        font-weight:bold;
+    "
+    >
+        ${
+            lossQty > 0
+            ? "-" + lossQty
+            : 0
+        }
+    </td>
 
-                    <td
-                    style="
-                        color:red;
-                        font-weight:bold;
-                    "
-                    >
-                        ${
-                            lossValue > 0
-                            ? "-" + formatVND(lossValue)
-                            : formatVND(0)
-                        }
-                    </td>
+    <td
+    style="
+        color:red;
+        font-weight:bold;
+    "
+    >
+        ${
+            lossValue > 0
+            ? "-" + formatVND(lossValue)
+            : formatVND(0)
+        }
+    </td>
 
-                    <td
-                    style="
-                        color:red;
-                        font-weight:bold;
-                    "
-                    >
-                        ${lossPercent}%
-                    </td>
+    <td
+    style="
+        color:red;
+        font-weight:bold;
+    "
+    >
+        ${lossPercent}%
+    </td>
 
-                    <td
-                    style="
-                        color:${
-                            profit < 0
-                            ? "red"
-                            : "#00c853"
-                        };
-                        font-weight:bold;
-                    "
-                    >
-                        ${formatVND(profit)}
-                    </td>
+    <td
+    style="
+        color:${
+            profit < 0
+            ? "red"
+            : "#00c853"
+        };
+        font-weight:bold;
+    "
+    >
+        ${formatVND(profit)}
+    </td>
 
-                    <td
-                    style="
-                        color:${
-                            profitPercent < 0
-                            ? "red"
-                            : "#00c853"
-                        };
-                        font-weight:bold;
-                    "
-                    >
-                        ${profitPercent}%
-                    </td>
-<td
-style="
-    color:${
-        stockDiff === 0
-        ? "#00c853"
-        : stockDiff > 0
-        ? "#ff9800"
-        : "red"
-    };
-    font-weight:bold;
-"
->
-    ${
-        stockDiff > 0
-        ? "+" + stockDiff
-        : stockDiff
-    }
-</td>
+    <td
+    style="
+        color:${
+            profitPercent < 0
+            ? "red"
+            : "#00c853"
+        };
+        font-weight:bold;
+    "
+    >
+        ${profitPercent}%
+    </td>
 
-<!-- PROFIT -->
+    <td
+    style="
+        color:${
+            stockDiff === 0
+            ? "#00c853"
+            : stockDiff > 0
+            ? "#ff9800"
+            : "red"
+        };
+        font-weight:bold;
+    "
+    >
+        ${
+            stockDiff > 0
+            ? "+" + stockDiff
+            : stockDiff
+        }
+    </td>
 
-<td
-style="
-    color:${
-        profit < 0
-        ? "red"
-        : "#00c853"
-    };
-    font-weight:bold;
-"
->
-    ${formatVND(profit)}
-</td>
-
-<!-- % PROFIT -->
-
-<td
-style="
-    color:${
-        profitPercent < 0
-        ? "red"
-        : "#00c853"
-    };
-    font-weight:bold;
-"
->
-    ${profitPercent}%
-</td>
-
-                </tr>
-            `;
-
-        });
+</tr>
+`;
+    
+ });
 
         if(!html){
 
