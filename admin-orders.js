@@ -1,3 +1,5 @@
+admin-order.js 4/6
+
 import { auth, db } from "./firebase-init.js";
 let allSnapshotOrders = [];
 let allOrders = [];
@@ -842,28 +844,14 @@ if(
   orderData.status !== "completed"
 ){
 
-for(const item of (orderData.items || [])){
+  for(const item of (orderData.items || [])){
 
-  const productId =
-    String(
-      item.id ||
-      item.productId ||
-      ""
-    );
+    const productRef =
+      db.collection("products")
+      .doc(item.id);
 
-  if(!productId){
-
-    console.error("ID lỗi:", item);
-    continue;
-
-  }
-
-  const productRef =
-    db.collection("products")
-    .doc(productId);
-
-const productDoc =
-  await productRef.get();
+    const productDoc =
+      await productRef.get();
 
     if(productDoc.exists){
 
@@ -890,7 +878,7 @@ const productDoc =
       const existed = await db
   .collection("sales_history")
   .where("orderId","==",id)
- .where("productId","==",productId)
+  .where("productId","==",item.id)
   .limit(1)
   .get();
 
@@ -904,7 +892,7 @@ if(!existed.empty){
 
           orderId:id,
 
-          productId:productId,
+          productId:item.id,
 
           productName:
             item.name || product.name,
@@ -928,39 +916,9 @@ if(!existed.empty){
 
         });
 
-      const currentStock =
-    Number(product.stock || 0);
-
-const newStock =
-    currentStock - qty;
-
-await productRef.update({
-    stock: newStock
+      await productRef.update({
+  stock: firebase.firestore.FieldValue.increment(-qty)
 });
-
-await db
-    .collection("stock_movements")
-    .add({
-
-       productId: productId,
-
-        productName:
-            item.name || product.name,
-
-        type: "SALE",
-
-        qty: -qty,
-
-        reason: `Đơn hàng ${id}`,
-
-        stockAfter: newStock,
-
-        createdAt:
-            firebase.firestore
-            .FieldValue
-            .serverTimestamp()
-
-    });
     }
 
   }
@@ -1053,34 +1011,3 @@ function renderPagination() {
 
     });
 }
-function updateDateTime(){
-
-    const now = new Date();
-
-    const days = [
-        "Chủ nhật",
-        "Thứ 2",
-        "Thứ 3",
-        "Thứ 4",
-        "Thứ 5",
-        "Thứ 6",
-        "Thứ 7"
-    ];
-
-    const day = days[now.getDay()];
-
-    const date = String(now.getDate()).padStart(2,'0');
-    const month = String(now.getMonth() + 1).padStart(2,'0');
-    const year = now.getFullYear();
-
-    const hours = String(now.getHours()).padStart(2,'0');
-    const minutes = String(now.getMinutes()).padStart(2,'0');
-    const seconds = String(now.getSeconds()).padStart(2,'0');
-
-    document.getElementById("liveDateTime").innerHTML =
-        `${day}, ${date}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
-}
-
-updateDateTime();
-
-setInterval(updateDateTime,1000);
