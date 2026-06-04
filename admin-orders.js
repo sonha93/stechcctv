@@ -880,7 +880,7 @@ const productDoc =
       const existed = await db
   .collection("sales_history")
   .where("orderId","==",id)
- .where("productId","==",productId)
+  .where("productId","==",item.id)
   .limit(1)
   .get();
 
@@ -894,7 +894,7 @@ if(!existed.empty){
 
           orderId:id,
 
-        productId:productId
+          productId:item.id,
 
           productName:
             item.name || product.name,
@@ -929,14 +929,14 @@ await productRef.update({
 });
 
 await db
-   await db
     .collection("stock_movements")
     .add({
 
-        productId: productId,
+        productId: item.id,
 
         productName:
             item.name || product.name,
+
         type: "SALE",
 
         qty: -qty,
