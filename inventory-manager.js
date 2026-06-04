@@ -1,6 +1,3 @@
-inventory-manager.js
-
-
 // ============================
 // INVENTORY MANAGER V8
 // ============================
