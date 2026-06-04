@@ -843,7 +843,7 @@ if(
 ){
 
   for(const item of (orderData.items || [])){
-  
+  console.log("ORDER ITEM", item);
   if(typeof item.id !== "string"){
   console.error("ID lỗi:", item);
   continue;
