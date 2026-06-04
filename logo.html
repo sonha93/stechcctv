@@ -928,11 +928,10 @@ async function loadProducts(){
 
   querySnapshot.forEach(docSnap=>{
 
-   products.push({
-  id: docSnap.id,
+    products.push({
   firestoreId: docSnap.id,
   ...docSnap.data()
-});
+	});
   });
 
 }
@@ -1533,6 +1532,6 @@ viewer.addEventListener("mouseup",(e)=>{
 
 }
 	</script>
-<script type="module" src="detail.js"></script>
+
 </body>
 </html>
