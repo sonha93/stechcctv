@@ -843,13 +843,17 @@ if(
 ){
 
   for(const item of (orderData.items || [])){
+  if(typeof item.id !== "string"){
+  console.error("ID lỗi:", item);
+  continue;
+}
 
-    const productRef =
-      db.collection("products")
-      .doc(item.id);
+const productRef =
+  db.collection("products")
+  .doc(item.id);
 
-    const productDoc =
-      await productRef.get();
+const productDoc =
+  await productRef.get();
 
     if(productDoc.exists){
 
@@ -914,9 +918,39 @@ if(!existed.empty){
 
         });
 
-      await productRef.update({
-  stock: firebase.firestore.FieldValue.increment(-qty)
+      const currentStock =
+    Number(product.stock || 0);
+
+const newStock =
+    currentStock - qty;
+
+await productRef.update({
+    stock: newStock
 });
+
+await db
+    .collection("stock_movements")
+    .add({
+
+        productId: item.id,
+
+        productName:
+            item.name || product.name,
+
+        type: "SALE",
+
+        qty: -qty,
+
+        reason: `Đơn hàng ${id}`,
+
+        stockAfter: newStock,
+
+        createdAt:
+            firebase.firestore
+            .FieldValue
+            .serverTimestamp()
+
+    });
     }
 
   }
