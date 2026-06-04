@@ -1,5 +1,3 @@
-
-
 import { auth, db } from "./firebase-init.js";
 let allSnapshotOrders = [];
 let allOrders = [];
@@ -958,7 +956,7 @@ if(
     });
 
 }
-
+}
 // ============================
 // REALTIME UPDATE
 // ============================
