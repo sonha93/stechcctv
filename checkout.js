@@ -178,13 +178,12 @@ const qty =
 const price =
   Number(p.price || 0);
 
-const originalPrice =
+const oldPrice =
   Number(
-    p.originalPrice ||
     p.oldPrice ||
-    0
+    p.originalPrice ||
+    price
   );
-
 const sub =
   qty * price;
 
