@@ -1848,12 +1848,13 @@ async function loadLoss(){
                     >
                         ${profitPercent}%
                     </td>
-
-                  <td
+<td
 style="
     color:${
         stockDiff === 0
         ? "#00c853"
+        : stockDiff > 0
+        ? "#ff9800"
         : "red"
     };
     font-weight:bold;
@@ -1865,6 +1866,8 @@ style="
         : stockDiff
     }
 </td>
+
+<!-- PROFIT -->
 
 <td
 style="
@@ -1878,6 +1881,8 @@ style="
 >
     ${formatVND(profit)}
 </td>
+
+<!-- % PROFIT -->
 
 <td
 style="
