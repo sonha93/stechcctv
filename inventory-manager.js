@@ -919,10 +919,9 @@ async function loadHistory(){
         .toLowerCase();
 
     const moveSnap =
-        await db.collection("stock_movements")
-        .orderBy("createdAt","desc")
-        .get();
-
+    await db.collection("sales_history")
+    .orderBy("createdAt","desc")
+    .get();
     const productSnap =
         await db.collection("products")
         .get();
@@ -962,8 +961,7 @@ async function loadHistory(){
 
         const data = doc.data();
 
-        if(data.type !== "IMPORT")
-            return;
+        
 
         const product =
             productSnap.docs.find(
@@ -1008,10 +1006,10 @@ if(
                     }
                 </td>
 
-                <td>${data.qty}</td>
+                    <td>${data.qty || 0}</td>
 
-                <td>
-                    ${formatVND(data.importPrice)}
+                  <td>
+    ${formatVND(data.sellPrice || 0)}
                 </td>
 
                 <td>${sold}</td>
