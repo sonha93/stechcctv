@@ -841,101 +841,127 @@ if(
   status === "completed" &&
   orderData.status !== "completed"
 ){
+for(const item of (orderData.items || [])){
 
-  for(const item of (orderData.items || [])){
-  if(typeof item.id !== "string"){
-  console.error("ID lỗi:", item);
-  continue;
-}
+  try{
 
-const productRef =
-  db.collection("products")
-  .doc(item.id);
+    const productId =
+      item.id ||
+      item.productId ||
+      item.slug ||
+      item._id;
 
-const productDoc =
-  await productRef.get();
+    if(!productId){
 
-    if(productDoc.exists){
+      console.error(
+        "Không tìm thấy productId:",
+        item
+      );
 
-      const product =
-        productDoc.data();
+      continue;
+    }
 
-      const importPrice =
-        Number(product.importPrice || 0);
+    const productRef =
+      db.collection("products")
+      .doc(productId);
 
-      const sellPrice =
-        Number(item.price || product.price || 0);
+    const productDoc =
+      await productRef.get();
 
-      const qty =
-        Number(item.qty || 0);
+    if(!productDoc.exists){
+      continue;
+    }
 
-      const revenue =
-        sellPrice * qty;
+    const product =
+      productDoc.data();
 
-      const capital =
-        importPrice * qty;
+    const qty =
+      Number(item.qty || 0);
 
-      const profit =
-        revenue - capital;
-      const existed = await db
-  .collection("sales_history")
-  .where("orderId","==",id)
-  .where("productId","==",item.id)
-  .limit(1)
-  .get();
+    const currentStock =
+      Number(product.stock || 0);
 
-if(!existed.empty){
-  continue;
-}
+    if(currentStock < qty){
 
-      await db
-        .collection("sales_history")
-        .add({
+      console.error(
+        "Không đủ tồn kho:",
+        item.name
+      );
 
-          orderId:id,
+      continue;
+    }
 
-          productId:item.id,
+    const existed = await db
+      .collection("sales_history")
+      .where("orderId","==",id)
+      .where("productId","==",productId)
+      .limit(1)
+      .get();
 
-          productName:
-            item.name || product.name,
+    if(!existed.empty){
+      continue;
+    }
 
-          qty,
+    const importPrice =
+      Number(product.importPrice || 0);
 
-          importPrice,
+    const sellPrice =
+      Number(item.price || product.price || 0);
 
-          sellPrice,
+    const revenue =
+      sellPrice * qty;
 
-          revenue,
+    const capital =
+      importPrice * qty;
 
-          capital,
+    const profit =
+      revenue - capital;
 
-          profit,
+    await db
+      .collection("sales_history")
+      .add({
 
-          createdAt:
-            firebase.firestore
-            .FieldValue
-            .serverTimestamp()
+        orderId:id,
 
-        });
-
-      const currentStock =
-    Number(product.stock || 0);
-
-const newStock =
-    currentStock - qty;
-
-await productRef.update({
-    stock: newStock
-});
-
-await db
-    .collection("stock_movements")
-    .add({
-
-        productId: item.id,
+        productId: productId,
 
         productName:
-            item.name || product.name,
+          item.name || product.name,
+
+        qty,
+
+        importPrice,
+
+        sellPrice,
+
+        revenue,
+
+        capital,
+
+        profit,
+
+        createdAt:
+          firebase.firestore
+          .FieldValue
+          .serverTimestamp()
+
+      });
+
+    const newStock =
+      currentStock - qty;
+
+    await productRef.update({
+      stock: newStock
+    });
+
+    await db
+      .collection("stock_movements")
+      .add({
+
+        productId: productId,
+
+        productName:
+          item.name || product.name,
 
         type: "SALE",
 
@@ -946,12 +972,19 @@ await db
         stockAfter: newStock,
 
         createdAt:
-            firebase.firestore
-            .FieldValue
-            .serverTimestamp()
+          firebase.firestore
+          .FieldValue
+          .serverTimestamp()
 
-    });
-    }
+      });
+
+  }catch(err){
+
+    console.error(
+      "Lỗi xử lý sản phẩm:",
+      item,
+      err
+    );
 
   }
 
