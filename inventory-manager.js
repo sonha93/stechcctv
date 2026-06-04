@@ -1,3 +1,6 @@
+inventory-manager.js
+
+
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -962,9 +965,8 @@ async function loadHistory(){
 
         const data = doc.data();
 
-       moveSnap.forEach(doc=>{
-
-    const data = doc.data();
+        if(data.type !== "IMPORT")
+            return;
 
         const product =
             productSnap.docs.find(
@@ -1019,8 +1021,8 @@ if(
 
                 <td>${stock}</td>
 
-          <td>
-    ${data.type || "-"}
+                <td>
+    0
 </td>
 
             </tr>
