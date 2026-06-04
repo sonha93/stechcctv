@@ -989,6 +989,7 @@ for(const item of (orderData.items || [])){
   }
 
 }
+} 
 await db
   .collection("orders")
   .doc(id)
