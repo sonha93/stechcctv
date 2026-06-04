@@ -1611,7 +1611,7 @@ async function loadLoss(){
 
             if(!id) return;
 
-            // IMPORT
+            // NHẬP KHO
             if(m.type === "IMPORT"){
 
                 importMap[id] =
@@ -1620,7 +1620,7 @@ async function loadLoss(){
 
             }
 
-            // MANUAL MINUS
+            // TRỪ TAY
             if(m.type === "MANUAL_MINUS"){
 
                 lossMap[id] =
@@ -1631,7 +1631,7 @@ async function loadLoss(){
 
             }
 
-            // MANUAL PLUS
+            // CỘNG TAY
             if(m.type === "MANUAL_PLUS"){
 
                 plusMap[id] =
@@ -1661,7 +1661,7 @@ async function loadLoss(){
                 Number(p.price || 0);
 
             // ====================
-            // REAL DATA
+            // DATA
             // ====================
 
             const importedQty =
@@ -1676,22 +1676,26 @@ async function loadLoss(){
             const plusQty =
                 plusMap[id] || 0;
 
-            // STOCK SYSTEM
+            // TỒN HỆ THỐNG
             const systemStock =
                 Number(p.stock || 0);
 
-            // STOCK HISTORY
-            const realStock =
+            // TỒN ĐÁNG LẼ PHẢI CÓ
+            const expectedStock =
                 importedQty
                 - sold
                 - lossQty
                 + plusQty;
 
-            // DIFF
+            // CHÊNH LỆCH
             const stockDiff =
-                systemStock - realStock;
+                systemStock
+                - expectedStock;
 
+            // ====================
             // MONEY
+            // ====================
+
             const revenue =
                 sold * sellPrice;
 
@@ -1702,7 +1706,7 @@ async function loadLoss(){
                 revenue - capital;
 
             const stockValue =
-                realStock * importPrice;
+                systemStock * importPrice;
 
             const lossValue =
                 lossQty * importPrice;
@@ -1710,7 +1714,10 @@ async function loadLoss(){
             const importValue =
                 importedQty * importPrice;
 
+            // ====================
             // %
+            // ====================
+
             const lossPercent =
                 importedQty > 0
                 ? (
@@ -1767,14 +1774,14 @@ async function loadLoss(){
                     <td
                     style="
                         color:${
-                            realStock < 0
+                            systemStock < 0
                             ? "red"
                             : "#00c853"
                         };
                         font-weight:bold;
                     "
                     >
-                        ${realStock}
+                        ${systemStock}
                     </td>
 
                     <td>
@@ -1805,61 +1812,63 @@ async function loadLoss(){
                             ? "-" + formatVND(lossValue)
                             : formatVND(0)
                         }
-                   </td>
+                    </td>
 
-<td
-style="
-    color:red;
-    font-weight:bold;
-"
->
-    ${lossPercent}%
-</td>
+                    <td
+                    style="
+                        color:red;
+                        font-weight:bold;
+                    "
+                    >
+                        ${lossPercent}%
+                    </td>
 
-<td
-style="
-    color:${
-        stockDiff === 0
-        ? "#00c853"
-        : "red"
-    };
-    font-weight:bold;
-"
->
-    ${
-        stockDiff > 0
-        ? "+" + stockDiff
-        : stockDiff
-    }
-</td>
+                    <td
+                    style="
+                        color:${
+                            profit < 0
+                            ? "red"
+                            : "#00c853"
+                        };
+                        font-weight:bold;
+                    "
+                    >
+                        ${formatVND(profit)}
+                    </td>
 
-<td
-style="
-    color:${
-        profit < 0
-        ? "red"
-        : "#00c853"
-    };
-    font-weight:bold;
-"
->
-    ${formatVND(profit)}
-</td>
+                    <td
+                    style="
+                        color:${
+                            profitPercent < 0
+                            ? "red"
+                            : "#00c853"
+                        };
+                        font-weight:bold;
+                    "
+                    >
+                        ${profitPercent}%
+                    </td>
 
-<td
-style="
-    color:${
-        profitPercent < 0
-        ? "red"
-        : "#00c853"
-    };
-    font-weight:bold;
-"
->
-    ${profitPercent}%
-</td>
+                    <td
+                    style="
+                        color:${
+                            stockDiff === 0
+                            ? "#00c853"
+                            : stockDiff > 0
+                            ? "#ff9800"
+                            : "red"
+                        };
+                        font-weight:bold;
+                    "
+                    >
+                        ${
+                            stockDiff > 0
+                            ? "+" + stockDiff
+                            : stockDiff
+                        }
+                    </td>
 
-</tr>
+                </tr>
             `;
 
         });
