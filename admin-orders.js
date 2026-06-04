@@ -845,33 +845,48 @@ for(const item of (orderData.items || [])){
 
   try{
 
-    const productId =
-      item.id ||
-      item.productId ||
-      item.slug ||
-      item._id;
+   let productId =
+  item.productId ||
+  item.id ||
+  item._id;
 
-    if(!productId){
+let productRef =
+  db.collection("products")
+  .doc(productId);
 
-      console.error(
-        "Không tìm thấy productId:",
-        item
-      );
+let productDoc =
+  await productRef.get();
 
-      continue;
-    }
+// fallback tìm bằng slug
+if(!productDoc.exists && item.slug){
 
-    const productRef =
+  const slugSnap = await db
+    .collection("products")
+    .where("slug", "==", item.slug)
+    .limit(1)
+    .get();
+
+  if(!slugSnap.empty){
+
+    productDoc = slugSnap.docs[0];
+
+    productId = productDoc.id;
+
+    productRef =
       db.collection("products")
       .doc(productId);
+  }
+}
 
-    const productDoc =
-      await productRef.get();
+if(!productDoc.exists){
 
-    if(!productDoc.exists){
-      continue;
-    }
+  console.error(
+    "Không tìm thấy sản phẩm:",
+    item
+  );
 
+  continue;
+}
     const product =
       productDoc.data();
 
