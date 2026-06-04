@@ -163,13 +163,26 @@ async function loadInventory(){
                         ${formatVND(price)}
                     </td>
 
-                    <td>
-                        ${stock}
-                    </td>
+                  <td>
+    ${
+        Number(
+            soldMap[product.id] || 0
+        )
+    }
+</td>
 
-                    <td>
-                        ${sold}
-                    </td>
+<td>
+    ${
+        Math.max(
+            0,
+            Number(data.qty || 0)
+            -
+            Number(
+                soldMap[product.id] || 0
+            )
+        )
+    }
+</td>
 
                     <td
                         style="
@@ -1638,12 +1651,6 @@ async function loadLoss(){
                 Number(
                     p.totalImportValue || 0
                 );
-
-            const sold =
-                soldMap[id] || 0;
-
-            const stock =
-                Number(p.stock || 0);
 
             const lossQty =
                 lossMap[id] || 0;
