@@ -243,16 +243,42 @@ const productId =
 
     });
 
-    await setDoc(itemRef, {
+  await setDoc(itemRef, {
 
-      id: product.id,
-      name: product.name || "",
-      price: Number(product.price) || 0,
-      oldPrice: Number(product.oldPrice) || 0,
-      img: product.img || "",
-      qty: oldQty + 1
+  id: product.id,
 
-    });
+  productId:
+    product.productId ||
+    product.id,
+
+  name: product.name || "",
+
+  price:
+    Number(product.price) || 0,
+
+  oldPrice:
+    Number(
+      product.oldPrice ||
+      product.price
+    ) || 0,
+
+  originalPrice:
+    Number(
+      product.originalPrice ||
+      product.oldPrice ||
+      product.price
+    ) || 0,
+
+  category:
+    product.category || "",
+
+  img:
+    product.img || "",
+
+  qty:
+    oldQty + 1
+
+});
 
 
 
