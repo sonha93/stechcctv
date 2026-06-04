@@ -843,13 +843,21 @@ if(
 ){
 
   for(const item of (orderData.items || [])){
+    console.log("=== ITEM ===");
+console.log(item);
+console.log("item.id =", item.id);
+console.log("typeof item.id =", typeof item.id);
+  if(typeof item.id !== "string"){
+  console.error("ID lỗi:", item);
+  continue;
+}
 
-    const productRef =
-      db.collection("products")
-      .doc(item.id);
+const productRef =
+  db.collection("products")
+  .doc(item.id);
 
-    const productDoc =
-      await productRef.get();
+const productDoc =
+  await productRef.get();
 
     if(productDoc.exists){
 
