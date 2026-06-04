@@ -968,9 +968,10 @@ await db
 
       } catch (error) {
 
-        console.error(error);
-        alert("Lỗi cập nhật trạng thái");
-      }
+       catch(error){
+   console.error(error);
+   alert("Lỗi cập nhật trạng thái:\n" + error.message);
+}
     });
   });
 }
