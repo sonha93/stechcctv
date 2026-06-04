@@ -1,6 +1,7 @@
 window.goDetail = function(id){
   window.location.href =
-  `detail.html?id=${id}`;
+  `logo.html?id=${id}`;
+
 };
 /* =========================
    FIREBASE
