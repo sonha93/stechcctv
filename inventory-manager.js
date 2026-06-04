@@ -1,3 +1,4 @@
+
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -962,7 +963,8 @@ async function loadHistory(){
 
         const data = doc.data();
 
-       
+        if(data.type !== "IMPORT")
+            return;
 
         const product =
             productSnap.docs.find(
@@ -1046,29 +1048,16 @@ const stock =
                         : "-"
                     }
                 </td>
-<td>
-    ${data.type}
-</td>
 
-<td>
-    ${data.qty > 0
-        ? "+" + data.qty
-        : data.qty}
-</td>
+                <td>${data.qty}</td>
 
-<td>
-    ${
-        data.importPrice
-        ? formatVND(data.importPrice)
-        : "-"
-    }
-</td>
+                <td>
+                    ${formatVND(data.importPrice)}
+                </td>
 
-<td>
-    ${
-        data.stockAfter ?? "-"
-    }
-</td>
+                <td>${sold}</td>
+
+                <td>${stock}</td>
 
                 <td>
     0
@@ -1546,23 +1535,18 @@ snap.forEach(doc => {
 
             // UPDATE STOCK
             await db.collection("products").doc(foundDoc.id).update({ stock: newStock })
-          await db.collection("stock_movements").add({
-    productId:id,
-    productName: productData.name || "",
+           await db.collection("stock_movements").add({
+    type: "IMPORT",
+    productId: productId,
+    qty: qty,
+    importPrice: price,
 
-    type:"IMPORT",
+    stockAfter: newStock,
+    soldAfter: totalSold,
 
-    qty: qtyImport,
-
-    reason:"Nhập kho",
-
-    importPrice,
-
-    stockAfter:newStock,
-
-    createdAt:
-        firebase.firestore.FieldValue.serverTimestamp()
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
 });
+
             alert(`Đã trừ ${qty} stock`);
 
             // CLEAR INPUTS
