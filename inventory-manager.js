@@ -962,8 +962,9 @@ async function loadHistory(){
 
         const data = doc.data();
 
-        if(data.type !== "IMPORT")
-            return;
+       moveSnap.forEach(doc=>{
+
+    const data = doc.data();
 
         const product =
             productSnap.docs.find(
@@ -1018,8 +1019,8 @@ if(
 
                 <td>${stock}</td>
 
-                <td>
-    0
+          <td>
+    ${data.type || "-"}
 </td>
 
             </tr>
