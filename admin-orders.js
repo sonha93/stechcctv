@@ -843,6 +843,10 @@ if(
 ){
 
   for(const item of (orderData.items || [])){
+for(const item of (orderData.items || [])){
+
+  console.log("ITEM =", item);
+  console.log("ITEM ID =", item.id);
 
     const productRef =
       db.collection("products")
