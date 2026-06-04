@@ -1033,12 +1033,12 @@ async function loadHistory(){
                 </td>
 
                 <td>
-                    ${
-                        data.type === "IMPORT"
-                        ? "+" + data.qty
-                        : data.qty
-                    }
-                </td>
+    ${
+        data.type === "IMPORT"
+        ? "+" + Number(data.qty || 0)
+        : 0
+    }
+</td>
 
                 <td>
                     ${
@@ -1049,8 +1049,12 @@ async function loadHistory(){
                 </td>
 
                 <td>
-                    ${data.type}
-                </td>
+    ${
+        data.type === "SALE"
+        ? Math.abs(Number(data.qty || 0))
+        : 0
+    }
+</td>
 
                 <td>
                     ${currentStock}
