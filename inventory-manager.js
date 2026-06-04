@@ -1805,61 +1805,61 @@ async function loadLoss(){
                             ? "-" + formatVND(lossValue)
                             : formatVND(0)
                         }
-                    </td>
+                   </td>
 
-                    <td
-                    style="
-                        color:red;
-                        font-weight:bold;
-                    "
-                    >
-                        ${lossPercent}%
-                    </td>
+<td
+style="
+    color:red;
+    font-weight:bold;
+"
+>
+    ${lossPercent}%
+</td>
 
-                    <td
-                    style="
-                        color:${
-                            profit < 0
-                            ? "red"
-                            : "#00c853"
-                        };
-                        font-weight:bold;
-                    "
-                    >
-                        ${formatVND(profit)}
-                    </td>
+<td
+style="
+    color:${
+        stockDiff === 0
+        ? "#00c853"
+        : "red"
+    };
+    font-weight:bold;
+"
+>
+    ${
+        stockDiff > 0
+        ? "+" + stockDiff
+        : stockDiff
+    }
+</td>
 
-                    <td
-                    style="
-                        color:${
-                            profitPercent < 0
-                            ? "red"
-                            : "#00c853"
-                        };
-                        font-weight:bold;
-                    "
-                    >
-                        ${profitPercent}%
-                    </td>
+<td
+style="
+    color:${
+        profit < 0
+        ? "red"
+        : "#00c853"
+    };
+    font-weight:bold;
+"
+>
+    ${formatVND(profit)}
+</td>
 
-                    <td
-                    style="
-                        color:${
-                            stockDiff === 0
-                            ? "#00c853"
-                            : "red"
-                        };
-                        font-weight:bold;
-                    "
-                    >
-                        ${
-                            stockDiff > 0
-                            ? "+" + stockDiff
-                            : stockDiff
-                        }
-                    </td>
+<td
+style="
+    color:${
+        profitPercent < 0
+        ? "red"
+        : "#00c853"
+    };
+    font-weight:bold;
+"
+>
+    ${profitPercent}%
+</td>
 
-                </tr>
+</tr>
             `;
 
         });
