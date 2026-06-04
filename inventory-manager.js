@@ -962,8 +962,7 @@ async function loadHistory(){
 
         const data = doc.data();
 
-        if(data.type !== "IMPORT")
-            return;
+       
 
         const product =
             productSnap.docs.find(
@@ -1534,18 +1533,23 @@ snap.forEach(doc => {
 
             // UPDATE STOCK
             await db.collection("products").doc(foundDoc.id).update({ stock: newStock })
-           await db.collection("stock_movements").add({
-    type: "IMPORT",
-    productId: productId,
-    qty: qty,
-    importPrice: price,
+          await db.collection("stock_movements").add({
+    productId:id,
+    productName: productData.name || "",
 
-    stockAfter: newStock,
-    soldAfter: totalSold,
+    type:"IMPORT",
 
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    qty: qtyImport,
+
+    reason:"Nhập kho",
+
+    importPrice,
+
+    stockAfter:newStock,
+
+    createdAt:
+        firebase.firestore.FieldValue.serverTimestamp()
 });
-
             alert(`Đã trừ ${qty} stock`);
 
             // CLEAR INPUTS
