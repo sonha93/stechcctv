@@ -1043,3 +1043,34 @@ function renderPagination() {
 
     });
 }
+function updateDateTime(){
+
+    const now = new Date();
+
+    const days = [
+        "Chủ nhật",
+        "Thứ 2",
+        "Thứ 3",
+        "Thứ 4",
+        "Thứ 5",
+        "Thứ 6",
+        "Thứ 7"
+    ];
+
+    const day = days[now.getDay()];
+
+    const date = String(now.getDate()).padStart(2,'0');
+    const month = String(now.getMonth() + 1).padStart(2,'0');
+    const year = now.getFullYear();
+
+    const hours = String(now.getHours()).padStart(2,'0');
+    const minutes = String(now.getMinutes()).padStart(2,'0');
+    const seconds = String(now.getSeconds()).padStart(2,'0');
+
+    document.getElementById("liveDateTime").innerHTML =
+        `${day}, ${date}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
+}
+
+updateDateTime();
+
+setInterval(updateDateTime,1000);
