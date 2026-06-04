@@ -8,8 +8,11 @@ function calcOrder(items){
     const qty = Number(item.qty || 1);
     const price = Number(item.price || 0);
 
-    const original = Number(item.originalPrice || price);
-
+   const original = Number(
+  item.originalPrice ||
+  item.oldPrice ||
+  price
+);
     total += price * qty;
     originalTotal += original * qty;
   });
@@ -108,10 +111,18 @@ async function loadOrders(userUid){
 
           // nếu đã có originalPrice
           // thì giữ nguyên
-          if(item.originalPrice){
+        if(item.originalPrice || item.oldPrice){
 
-            return item;
-          }
+  return {
+    ...item,
+    originalPrice:
+      Number(
+        item.originalPrice ||
+        item.oldPrice ||
+        item.price
+      )
+  };
+}
 
           try{
 
@@ -335,8 +346,11 @@ function renderOrders(){
   const price =
     Number(item.price || 0);
 
-  const original =
-    Number(item.originalPrice || price);
+ const original = Number(
+  item.originalPrice ||
+  item.oldPrice ||
+  price
+);
 
   const sub = qty * price;
 
