@@ -986,11 +986,51 @@ if(
     return;
 }
 
-        const sold =
-            soldMap[product.id] || 0;
+      const totalSold =
+    soldMap[product.id] || 0;
 
-        const stock =
-            Number(p.stock || 0);
+const currentStock =
+    Number(p.stock || 0);
+
+const imports =
+    moveSnap.docs
+        .map(d => ({
+            id: d.id,
+            ...d.data()
+        }))
+        .filter(m =>
+            m.type === "IMPORT" &&
+            m.productId === product.id
+        )
+        .sort((a,b)=>{
+
+            const ta =
+                a.createdAt
+                ? a.createdAt.toMillis()
+                : 0;
+
+            const tb =
+                b.createdAt
+                ? b.createdAt.toMillis()
+                : 0;
+
+            return ta - tb;
+
+        });
+
+const isLastImport =
+    imports.length &&
+    imports[imports.length - 1].id === doc.id;
+
+const sold =
+    isLastImport
+        ? totalSold
+        : 0;
+
+const stock =
+    isLastImport
+        ? currentStock
+        : data.qty;
 
         html += `
             <tr>
@@ -1494,11 +1534,15 @@ snap.forEach(doc => {
 
             // UPDATE STOCK
             await db.collection("products").doc(foundDoc.id).update({ stock: newStock })
-            await db.collection("stock_movements").add({
-    productId: foundDoc.id,
-    type: "MANUAL_MINUS",
-    qty: -qty,
-    reason: reasonValue,
+           await db.collection("stock_movements").add({
+    type: "IMPORT",
+    productId: productId,
+    qty: qty,
+    importPrice: price,
+
+    stockAfter: newStock,
+    soldAfter: totalSold,
+
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
 });
 
