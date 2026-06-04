@@ -933,73 +933,96 @@ async function loadHistory(){
 
     const moveSnap =
         await db.collection("stock_movements")
-        .orderBy("createdAt","desc")
+        .orderBy("createdAt","asc")
         .get();
 
     const productSnap =
         await db.collection("products")
         .get();
 
-    const orderSnap =
-        await db.collection("orders")
-        .get();
-
-    const soldMap = {};
-
-    orderSnap.forEach(doc=>{
-
-        const order = doc.data();
-
-        if(order.status !== "completed")
-            return;
-
-        (order.items || []).forEach(item=>{
-
-            const id =
-    String(
-        item.id ||
-        item.productId ||
-        ""
-    );
-            soldMap[id] =
-                (soldMap[id] || 0)
-                + Number(item.qty || 0);
-
-        });
-
-    });
-
     let html = "";
+
+    // lưu stock riêng từng sản phẩm
+    const runningStockMap = {};
 
     moveSnap.forEach(doc=>{
 
         const data = doc.data();
-
-        if(data.type !== "IMPORT")
-            return;
 
         const product =
             productSnap.docs.find(
                 p => p.id === data.productId
             );
 
-        if(!product)
-            return;
+        if(!product) return;
 
         const p = product.data();
-if(
-    keyword &&
-    !String(p.name || "")
-        .toLowerCase()
-        .includes(keyword) &&
-    !String(product.id)
-        .toLowerCase()
-        .includes(keyword)
-){
-    return;
-}
 
-       
+        if(
+            keyword &&
+            !String(p.name || "")
+                .toLowerCase()
+                .includes(keyword) &&
+            !String(product.id)
+                .toLowerCase()
+                .includes(keyword)
+        ){
+            return;
+        }
+
+        // tạo stock ban đầu
+        if(
+            runningStockMap[product.id] == null
+        ){
+            runningStockMap[product.id] = 0;
+        }
+
+        // ====================
+        // IMPORT
+        // ====================
+
+        if(data.type === "IMPORT"){
+
+            runningStockMap[product.id] +=
+                Number(data.qty || 0);
+
+        }
+
+        // ====================
+        // BÁN
+        // ====================
+
+        if(data.type === "SALE"){
+
+            runningStockMap[product.id] -=
+                Number(data.qty || 0);
+
+        }
+
+        // ====================
+        // TRỪ TAY
+        // ====================
+
+        if(data.type === "MANUAL_MINUS"){
+
+            runningStockMap[product.id] -=
+                Math.abs(Number(data.qty || 0));
+
+        }
+
+        // ====================
+        // CỘNG TAY
+        // ====================
+
+        if(data.type === "MANUAL_PLUS"){
+
+            runningStockMap[product.id] +=
+                Number(data.qty || 0);
+
+        }
+
+        const currentStock =
+            runningStockMap[product.id];
 
         html += `
             <tr>
@@ -1011,39 +1034,40 @@ if(
                 <td>
                     ${
                         data.createdAt
-                        ? data.createdAt.toDate()
+                        ? data.createdAt
+                            .toDate()
                             .toLocaleString("vi-VN")
                         : "-"
                     }
                 </td>
 
-                <td>${data.qty}</td>
-
                 <td>
-                    ${formatVND(data.importPrice)}
+                    ${
+                        data.type === "IMPORT"
+                        ? "+" + data.qty
+                        : data.qty
+                    }
                 </td>
 
                 <td>
-    ${
-        Number(
-            data.soldAfterImport || 0
-        )
-    }
-</td>
-
-<td>
-    ${
-        Number(
-            data.remainAfterImport ||
-            data.stockAfterImport ||
-            0
-        )
-    }
-</td>
+                    ${
+                        data.importPrice
+                        ? formatVND(data.importPrice)
+                        : "---"
+                    }
+                </td>
 
                 <td>
-    0
-</td>
+                    ${data.type}
+                </td>
+
+                <td>
+                    ${currentStock}
+                </td>
+
+                <td>
+                    ${data.reason || "---"}
+                </td>
 
             </tr>
         `;
@@ -1053,6 +1077,7 @@ if(
     historyBody.innerHTML = html;
 
 }
+
 // ============================
 // SEARCH
 // ============================
