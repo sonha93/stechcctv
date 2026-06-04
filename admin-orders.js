@@ -843,10 +843,6 @@ if(
 ){
 
   for(const item of (orderData.items || [])){
-for(const item of (orderData.items || [])){
-
-  console.log("ITEM =", item);
-  console.log("ITEM ID =", item.id);
 
     const productRef =
       db.collection("products")
@@ -971,9 +967,10 @@ await db
         alert("Cập nhật trạng thái thành công");
 
       } catch (error) {
-   console.error(error);
-   alert("Lỗi cập nhật trạng thái:\n" + error.message);
-}
+
+        console.error(error);
+        alert("Lỗi cập nhật trạng thái");
+      }
     });
   });
 }
