@@ -967,8 +967,6 @@ await db
         alert("Cập nhật trạng thái thành công");
 
       } catch (error) {
-
-       catch(error){
    console.error(error);
    alert("Lỗi cập nhật trạng thái:\n" + error.message);
 }
