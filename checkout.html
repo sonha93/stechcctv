@@ -289,7 +289,25 @@ await db.collection("orders").add({
   payment:
     document.getElementById("payment").value,
 
-  items: cart,
+  items: cart.map(item => ({
+
+  ...item,
+
+  salePriceAtSale:
+    Number(item.price || 0),
+
+  originalPriceAtSale:
+    Number(
+      item.originalPrice ||
+      item.oldPrice ||
+      item.price ||
+      0
+    ),
+
+  importPriceAtSale:
+    Number(item.importPrice || 0)
+
+})),
 
   total: total,
 
