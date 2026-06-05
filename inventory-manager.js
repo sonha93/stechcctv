@@ -1036,8 +1036,53 @@ salesSnap.forEach(doc=>{
                 qty
             );
 
-        const remain =
-            qty - soldInPeriod;
+       // ======================
+// LOSS / THẤT THOÁT
+// ======================
+
+let loss = 0;
+
+moveSnap.forEach(mDoc=>{
+
+    const mData = mDoc.data();
+
+    if(
+        String(mData.productId) === String(id)
+    ){
+
+        // trừ stock tay
+        if(
+            mData.type === "MANUAL_MINUS"
+        ){
+
+            loss +=
+                Math.abs(
+                    Number(mData.qty || 0)
+                );
+
+        }
+
+        // cộng stock tay
+        if(
+            mData.type === "MANUAL_PLUS"
+        ){
+
+            loss -=
+                Math.abs(
+                    Number(mData.qty || 0)
+                );
+
+        }
+
+    }
+
+});
+
+// tồn thực
+const remain =
+    qty
+    - soldInPeriod
+    - loss;
 
         // TRỪ SALES CÒN LẠI
         salesLeftMap[id] =
@@ -1074,8 +1119,9 @@ salesSnap.forEach(doc=>{
                     ${remain}
                 </td>
 
-                <td>0</td>
-
+<td>
+    ${loss > 0 ? loss : 0}
+</td>
             </tr>
         `;
 
