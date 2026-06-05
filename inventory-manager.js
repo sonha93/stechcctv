@@ -945,13 +945,11 @@ async function loadHistory(){
         .trim()
         .toLowerCase();
 
-    // IMPORT
     const moveSnap =
         await db.collection("stock_movements")
         .orderBy("createdAt","asc")
         .get();
 
-    // SALES
     const salesSnap =
         await db.collection("sales_history")
         .orderBy("createdAt","asc")
@@ -963,172 +961,105 @@ async function loadHistory(){
 
     let html = "";
 
-   
+    // MAP PRODUCT
+    const productMap = {};
 
+    productSnap.forEach(doc=>{
+
+        productMap[doc.id] = doc.data();
+
+    });
+
+    // GROUP SALES
+    const salesMap = {};
+
+    salesSnap.forEach(doc=>{
+
+        const sale = doc.data();
+
+        const id = sale.productId;
+
+        if(!salesMap[id]){
+            salesMap[id] = 0;
+        }
+
+        salesMap[id] += Number(sale.qty || 0);
+
+    });
+
+    // FIFO SALES LEFT
+    const salesLeftMap = {
+        ...salesMap
+    };
+
+    // LOOP IMPORT
     moveSnap.forEach(doc=>{
 
         const data = doc.data();
 
-        // CHỈ HISTORY NHẬP
         if(data.type !== "IMPORT")
             return;
 
-      const productMap = {};
+        const id = data.productId;
 
-productSnap.forEach(doc=>{
+        const p = productMap[id];
 
-    productMap[doc.id] = doc;
-
-});
-
-const product =
-    productMap[data.productId];
-
-if(!product)
-    return;
-
-        const p = product.data();
+        if(!p)
+            return;
 
         if(
             keyword &&
             !String(p.name || "")
                 .toLowerCase()
                 .includes(keyword) &&
-            !String(product.id)
+            !String(id)
                 .toLowerCase()
                 .includes(keyword)
         ){
             return;
         }
 
-        const id = product.id;
+        const qty =
+            Number(data.qty || 0);
 
-       
-        // TÍNH SOLD TỪ ĐỢT NHẬP NÀY -> TRƯỚC ĐỢT NHẬP TIẾP
-      // CHỈ lấy bán SAU lần nhập này
-// và TRƯỚC lần nhập tiếp theo
+        const salesLeft =
+            Number(salesLeftMap[id] || 0);
 
-// ========================
-// FIFO CHUẨN
-// ========================
-
-// tổng sales product
-let totalSales = 0;
-
-salesSnap.forEach(saleDoc=>{
-
-    const sale = saleDoc.data();
-
-    if(
-        String(sale.productId)
-        ===
-        String(id)
-    ){
-        totalSales +=
-            Number(sale.qty || 0);
-    }
-
-});
-
-// lấy toàn bộ import product
-const imports =
-    moveSnap.docs
-        .filter(d=>{
-
-            const x = d.data();
-
-            return (
-                x.type === "IMPORT" &&
-                String(x.productId)
-                ===
-                String(id)
+        // FIFO
+        const soldInPeriod =
+            Math.min(
+                salesLeft,
+                qty
             );
 
-        })
-       .sort((a,b)=>{
+        const remain =
+            qty - soldInPeriod;
 
-    const createdA = a.data().createdAt;
-    const createdB = b.data().createdAt;
+        // TRỪ SALES CÒN LẠI
+        salesLeftMap[id] =
+            salesLeft - soldInPeriod;
 
-    const timeA =
-        createdA &&
-        typeof createdA.toMillis === "function"
-        ? createdA.toMillis()
-        : 0;
-
-    const timeB =
-        createdB &&
-        typeof createdB.toMillis === "function"
-        ? createdB.toMillis()
-        : 0;
-
-    return timeA - timeB;
-
-})
-
-// sales còn lại để trừ FIFO
-let salesLeft = totalSales;
-
-let soldInPeriod = 0;
-let remain = 0;
-
-// chạy FIFO
-for(const importDoc of imports){
-
-    const importData =
-        importDoc.data();
-
-    const qty =
-        Number(importData.qty || 0);
-
-    // số bán ăn vào đợt này
-    const soldForThisImport =
-        Math.min(
-            salesLeft,
-            qty
-        );
-
-    // tồn đợt này
-    const remainForThisImport =
-        qty - soldForThisImport;
-
-    // trừ sales còn lại
-    salesLeft -= soldForThisImport;
-
-    // đúng dòng hiện tại
-    if(importDoc.id === doc.id){
-
-        soldInPeriod =
-            soldForThisImport;
-
-        remain =
-            remainForThisImport;
-
-        break;
-
-    }
-
-}
         html += `
             <tr>
 
                 <td>${id}</td>
 
-                <td>${p.name}</td>
+                <td>${p.name || "-"}</td>
 
                 <td>
                     ${
                         data.createdAt
-                        ? data.createdAt.toDate()
+                        ? data.createdAt
+                            .toDate()
                             .toLocaleString("vi-VN")
                         : "-"
                     }
                 </td>
 
-                <td>${data.qty}</td>
+                <td>${qty}</td>
 
                 <td>
-                    ${formatVND(data.importPrice)}
+                    ${formatVND(data.importPrice || 0)}
                 </td>
 
                 <td>
@@ -1139,9 +1070,7 @@ for(const importDoc of imports){
                     ${remain}
                 </td>
 
-                <td>
-                    0
-                </td>
+                <td>0</td>
 
             </tr>
         `;
@@ -1165,6 +1094,8 @@ for(const importDoc of imports){
     }
 
     historyBody.innerHTML = html;
+
+}
 
 }
 // ============================
