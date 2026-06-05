@@ -54,7 +54,7 @@ async function loadInventory(){
         const orderSnap = await db.collection("orders").get();
 
         const soldMap = {};
-        const lossMap = {};
+
         orderSnap.forEach(orderDoc => {
 
             const order = orderDoc.data();
@@ -68,10 +68,14 @@ async function loadInventory(){
 }
 
             (order.items || []).forEach(item => {
-const id = normalizeId(
-    item.id ||
-    item.productId
-);
+
+             const id =
+    String(
+        item.id ||
+        item.productId ||
+        ""
+    );
+
                 if(!soldMap[id]){
                     soldMap[id] = 0;
                 }
@@ -722,21 +726,7 @@ async function loadImportPrices(){
         for(const doc of snap.docs){
 
             const data = doc.data();
-            const moveId = normalizeId(
-    data.productId
-);
 
-if(
-    data.type === "MANUAL_MINUS"
-){
-
-    lossMap[moveId] =
-        (lossMap[moveId] || 0)
-        + Math.abs(
-            Number(data.qty || 0)
-        );
-
-}
             const selectedDate = importDateFilter?.value;
 
             if(!data.createdAt){
@@ -941,16 +931,7 @@ async function loadHistory(){
         await db.collection("orders")
         .get();
 
-    // ====================
-    // MAP
-    // ====================
-
     const soldMap = {};
-    const lossMap = {};
-
-    // ====================
-    // SOLD
-    // ====================
 
     orderSnap.forEach(doc=>{
 
@@ -961,11 +942,12 @@ async function loadHistory(){
 
         (order.items || []).forEach(item=>{
 
-            const id = normalizeId(
-                item.id ||
-                item.productId
-            );
-
+            const id =
+    String(
+        item.id ||
+        item.productId ||
+        ""
+    );
             soldMap[id] =
                 (soldMap[id] || 0)
                 + Number(item.qty || 0);
@@ -973,36 +955,6 @@ async function loadHistory(){
         });
 
     });
-
-    // ====================
-    // LOSS
-    // ====================
-
-    moveSnap.forEach(doc=>{
-
-        const data = doc.data();
-
-        const moveId = normalizeId(
-            data.productId
-        );
-
-        if(
-            data.type === "MANUAL_MINUS"
-        ){
-
-            lossMap[moveId] =
-                (lossMap[moveId] || 0)
-                + Math.abs(
-                    Number(data.qty || 0)
-                );
-
-        }
-
-    });
-
-    // ====================
-    // HTML
-    // ====================
 
     let html = "";
 
@@ -1015,41 +967,30 @@ async function loadHistory(){
 
         const product =
             productSnap.docs.find(
-                p =>
-                    normalizeId(p.id)
-                    ===
-                    normalizeId(data.productId)
+                p => p.id === data.productId
             );
 
         if(!product)
             return;
 
         const p = product.data();
-
-        if(
-            keyword &&
-            !String(p.name || "")
-                .toLowerCase()
-                .includes(keyword) &&
-            !String(product.id)
-                .toLowerCase()
-                .includes(keyword)
-        ){
-            return;
-        }
+if(
+    keyword &&
+    !String(p.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+    !String(product.id)
+        .toLowerCase()
+        .includes(keyword)
+){
+    return;
+}
 
         const sold =
-            soldMap[
-                normalizeId(product.id)
-            ] || 0;
+            soldMap[product.id] || 0;
 
         const stock =
             Number(p.stock || 0);
-
-        const lossQty =
-            lossMap[
-                normalizeId(product.id)
-            ] || 0;
 
         html += `
             <tr>
@@ -1077,41 +1018,14 @@ async function loadHistory(){
 
                 <td>${stock}</td>
 
-                <td
-                style="
-                    color:red;
-                    font-weight:bold;
-                "
-                >
-                    ${
-                        lossQty > 0
-                        ? "-" + lossQty
-                        : 0
-                    }
-                </td>
+                <td>
+    0
+</td>
 
             </tr>
         `;
 
     });
-
-    if(!html){
-
-        html = `
-            <tr>
-                <td
-                    colspan="8"
-                    style="
-                        text-align:center;
-                        padding:20px;
-                    "
-                >
-                    Chưa có dữ liệu
-                </td>
-            </tr>
-        `;
-
-    }
 
     historyBody.innerHTML = html;
 
@@ -1359,10 +1273,12 @@ if (
                 if (order.status !== "completed" || order.customerCancelled || order.adminCancelled) return;
                (order.items || []).forEach(item => {
 
-   const id = normalizeId(
-    item.id ||
-    item.productId
-);
+    const id =
+        String(
+            item.id ||
+            item.productId ||
+            ""
+        );
 
     if(!id) return;
 
@@ -1734,7 +1650,7 @@ async function loadLoss(){
         // ====================
         // HTML
         // ====================
-        const lossMap = {};  
+
         let html = "";
 
         productSnap.forEach(doc => {
@@ -1753,8 +1669,8 @@ async function loadLoss(){
             // DATA
             // ====================
 
-           const importedQty =
-    importMap[id] || 0;
+            const importedQty =
+    Number(p.totalImportedQty || 0);
 
             const sold =
                 soldMap[id] || 0;
@@ -1770,11 +1686,17 @@ async function loadLoss(){
                 Number(p.stock || 0);
 
             // TỒN ĐÁNG LẼ PHẢI CÓ
-           const expectedStock =
+           const expectedStockRaw =
     importedQty
     - sold
     - lossQty
     + plusQty;
+
+const expectedStock =
+    Math.max(
+        expectedStockRaw,
+        0
+    );
 
             // CHÊNH LỆCH
             const stockDiff =
@@ -1789,14 +1711,12 @@ async function loadLoss(){
 
 const capital =
     sold * importPrice;
-const profit =
-    revenue - capital;
+
 const profit =
     revenue - capital;
 
 const stockValue =
-    Math.abs(systemStock)
-    * importPrice;
+    systemStock * importPrice;
 
 const realLossQty =
     stockDiff < 0
