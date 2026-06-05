@@ -187,16 +187,16 @@ async function loadInventory(){
                         ${sold}
                     </td>
 
-                   <td
+                 <td
     style="
         color:#00c853;
         font-weight:bold;
     "
 >
     ${formatVND(
-        Number(product.importPrice || 0)
+        Number(p.importPrice || 0)
         *
-        Number(product.stock || 0)
+        Number(p.stock || 0)
     )}
 </td>
 
