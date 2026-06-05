@@ -54,7 +54,7 @@ async function loadInventory(){
         const orderSnap = await db.collection("orders").get();
 
         const soldMap = {};
-
+        const lossMap = {};
         orderSnap.forEach(orderDoc => {
 
             const order = orderDoc.data();
@@ -970,7 +970,24 @@ async function loadHistory(){
 
     moveSnap.forEach(doc=>{
 
-        const data = doc.data();
+    const data = doc.data();
+
+    const moveId = normalizeId(
+        data.productId
+    );
+
+    // THẤT THOÁT
+    if(
+        data.type === "MANUAL_MINUS"
+    ){
+
+        lossMap[moveId] =
+            (lossMap[moveId] || 0)
+            + Math.abs(
+                Number(data.qty || 0)
+            );
+
+    }
 
         if(data.type !== "IMPORT")
             return;
@@ -1295,12 +1312,10 @@ if (
                 if (order.status !== "completed" || order.customerCancelled || order.adminCancelled) return;
                (order.items || []).forEach(item => {
 
-    const id =
-        String(
-            item.id ||
-            item.productId ||
-            ""
-        );
+   const id = normalizeId(
+    item.id ||
+    item.productId
+);
 
     if(!id) return;
 
