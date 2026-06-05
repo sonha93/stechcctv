@@ -603,10 +603,9 @@ function bindInventoryEvents(){
 
                 const productData = productDoc.data();
 
-            const qtyImport = Number(
-    prompt("Nhập số lượng nhập thêm")
+         const qtyImport = Number(
+    row.querySelector(".add-stock-input")?.value || 0
 );
-
 if (!Number.isInteger(qtyImport) || qtyImport < 0) {
     alert("Số lượng nhập phải là số nguyên >= 0");
     return;
