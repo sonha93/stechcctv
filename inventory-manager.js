@@ -931,246 +931,127 @@ html += `
     }
 
 }
-// ============================
-// loadHistory
-// ============================
-
 async function loadHistory(){
 
     const historyBody =
         document.getElementById("historyBody");
 
-    if(!historyBody) return;
+    const keyword =
+        document.getElementById("historySearch")
+        ?.value
+        .trim()
+        .toLowerCase();
 
-    try{
+    const moveSnap =
+        await db.collection("stock_movements")
+        .orderBy("createdAt","desc")
+        .get();
 
-        const keyword =
-            document.getElementById("historySearch")
-            ?.value
-            .trim()
-            .toLowerCase();
+    const productSnap =
+        await db.collection("products")
+        .get();
 
-        const moveSnap =
-            await db
-            .collection("stock_movements")
-            .orderBy("createdAt","asc")
-            .get();
+    const orderSnap =
+        await db.collection("orders")
+        .get();
 
-        // ============================
-        // TRACK MAP
-        // ============================
+    const soldMap = {};
 
-        const stockMap = {};
-        const soldMap = {};
+    orderSnap.forEach(doc=>{
 
-        let html = "";
+        const order = doc.data();
 
-       for(const doc of moveSnap.docs){
+        if(order.status !== "completed")
+            return;
 
-            const data = doc.data();
+        (order.items || []).forEach(item=>{
 
-            const productId =
-                String(data.productId || "");
-
-            if(!productId) return;
-
-            let productName =
-    String(data.productName || "");
-
-if(!productName){
-
-    try{
-
-        const productDoc =
-            await db
-            .collection("products")
-            .doc(productId)
-            .get();
-
-        if(productDoc.exists){
-
-            productName =
-                productDoc.data().name || "-";
-
-        }else{
-
-            productName = "-";
-
-        }
-
-    }catch{
-
-        productName = "-";
-
-    }
-
-}
-
-            // SEARCH
-            if(
-                keyword &&
-                !productName
-                    .toLowerCase()
-                    .includes(keyword)
-                &&
-                !productId
-                    .toLowerCase()
-                    .includes(keyword)
-            ){
-                return;
-            }
-
-            // INIT
-            if(stockMap[productId] == null){
-                stockMap[productId] = 0;
-            }
-
-            if(soldMap[productId] == null){
-                soldMap[productId] = 0;
-            }
-
-            // ============================
-            // IMPORT
-            // ============================
-
-            if(data.type === "IMPORT"){
-
-                stockMap[productId] +=
-                    Number(data.qty || 0);
-
-            }
-
-            // ============================
-            // SALE
-            // ============================
-
-            if(data.type === "SALE"){
-
-                const saleQty =
-                    Math.abs(
-                        Number(data.qty || 0)
-                    );
-
-                soldMap[productId] +=
-                    saleQty;
-
-                stockMap[productId] -=
-                    saleQty;
-
-            }
-
-            // ============================
-            // MANUAL MINUS
-            // ============================
-
-            if(data.type === "MANUAL_MINUS"){
-
-                stockMap[productId] -=
-                    Math.abs(
-                        Number(data.qty || 0)
-                    );
-
-            }
-
-            // ============================
-            // MANUAL PLUS
-            // ============================
-
-            if(data.type === "MANUAL_PLUS"){
-
-                stockMap[productId] +=
-                    Math.abs(
-                        Number(data.qty || 0)
-                    );
-
-            }
-
-            // ============================
-            // CHỈ HIỆN IMPORT ROW
-            // ============================
-
-            if(data.type !== "IMPORT"){
-                return;
-            }
-
-            html += `
-                <tr>
-
-                    <td>
-                        ${productId}
-                    </td>
-
-                    <td>
-                        ${productName}
-                    </td>
-
-                    <td>
-                        ${
-                            data.createdAt
-                            ? data.createdAt
-                                .toDate()
-                                .toLocaleString("vi-VN")
-                            : "-"
-                        }
-                    </td>
-
-                    <td>
-                        ${data.qty}
-                    </td>
-
-                    <td>
-                        ${formatVND(
-                            data.importPrice || 0
-                        )}
-                    </td>
-
-                    <td>
-                        ${soldMap[productId]}
-                    </td>
-
-                    <td
-                        style="
-                            color:#00c853;
-                            font-weight:bold;
-                        "
-                    >
-                        ${stockMap[productId]}
-                    </td>
-
-                    <td>
-                        0
-                    </td>
-
-                </tr>
-            `;
+            const id =
+    String(
+        item.id ||
+        item.productId ||
+        ""
+    );
+            soldMap[id] =
+                (soldMap[id] || 0)
+                + Number(item.qty || 0);
 
         });
 
-        if(!html){
+    });
 
-            html = `
-                <tr>
-                    <td
-                        colspan="8"
-                        style="
-                            text-align:center;
-                            padding:20px;
-                        "
-                    >
-                        Không có dữ liệu
-                    </td>
-                </tr>
-            `;
+    let html = "";
 
-        }
+    moveSnap.forEach(doc=>{
 
-        historyBody.innerHTML = html;
+        const data = doc.data();
 
-    }catch(err){
+        if(data.type !== "IMPORT")
+            return;
 
-        console.log(err);
+        const product =
+            productSnap.docs.find(
+                p => p.id === data.productId
+            );
 
-    }
+        if(!product)
+            return;
+
+        const p = product.data();
+if(
+    keyword &&
+    !String(p.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+    !String(product.id)
+        .toLowerCase()
+        .includes(keyword)
+){
+    return;
+}
+
+        const sold =
+            soldMap[product.id] || 0;
+
+        const stock =
+            Number(p.stock || 0);
+
+        html += `
+            <tr>
+
+                <td>${product.id}</td>
+
+                <td>${p.name}</td>
+
+                <td>
+                    ${
+                        data.createdAt
+                        ? data.createdAt.toDate()
+                            .toLocaleString("vi-VN")
+                        : "-"
+                    }
+                </td>
+
+                <td>${data.qty}</td>
+
+                <td>
+                    ${formatVND(data.importPrice)}
+                </td>
+
+                <td>${sold}</td>
+
+                <td>${stock}</td>
+
+                <td>
+    0
+</td>
+
+            </tr>
+        `;
+
+    });
+
+    historyBody.innerHTML = html;
 
 }
 // ============================
