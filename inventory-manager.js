@@ -1718,9 +1718,14 @@ const profit =
 const stockValue =
     systemStock * importPrice;
 
-const lossValue =
-    lossQty * importPrice;
+const realLossQty =
+    stockDiff < 0
+    ? Math.abs(stockDiff)
+    : lossQty;
 
+const lossValue =
+    realLossQty * importPrice;
+            
 const realProfit =
     profit - lossValue;
 
@@ -1781,10 +1786,10 @@ html += `
     "
     >
         ${
-            lossQty > 0
-            ? "-" + lossQty
-            : 0
-        }
+    realLossQty > 0
+    ? "-" + realLossQty
+    : 0
+}
     </td>
 
     <td
