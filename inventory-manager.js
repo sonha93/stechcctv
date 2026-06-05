@@ -606,8 +606,13 @@ function bindInventoryEvents(){
          const qtyImport = Number(
     row.querySelector(".add-stock-input")?.value || 0
 );
-if (!Number.isInteger(qtyImport) || qtyImport < 0) {
-    alert("Số lượng nhập phải là số nguyên >= 0");
+if(
+    !Number.isInteger(qtyImport)
+    || qtyImport <= 0
+){
+
+    alert("Lưu không thành công");
+
     return;
 }
 
