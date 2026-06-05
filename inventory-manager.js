@@ -963,9 +963,7 @@ async function loadHistory(){
 
     let html = "";
 
-    // MAP THEO TỪNG GIAI ĐOẠN
-    const soldMap = {};
-    const stockMap = {};
+   
 
     moveSnap.forEach(doc=>{
 
@@ -999,18 +997,7 @@ async function loadHistory(){
 
         const id = product.id;
 
-        // INIT
-        if(!soldMap[id]){
-            soldMap[id] = 0;
-        }
-
-        if(!stockMap[id]){
-            stockMap[id] = 0;
-        }
-
-        // NHẬP KHO
-        stockMap[id] += Number(data.qty || 0);
-
+       
         // TÍNH SOLD TỪ ĐỢT NHẬP NÀY -> TRƯỚC ĐỢT NHẬP TIẾP
         let soldInPeriod = 0;
 
@@ -1043,10 +1030,39 @@ async function loadHistory(){
 
         });
 
-        soldMap[id] += soldInPeriod;
+        // TOTAL SOLD PRODUCT
+let totalSold = 0;
 
-        const remain =
-            stockMap[id] - soldMap[id];
+salesSnap.forEach(saleDoc=>{
+
+    const sale = saleDoc.data();
+
+    if(
+        String(sale.productId)
+        ===
+        String(id)
+    ){
+        totalSold +=
+            Number(sale.qty || 0);
+    }
+
+});
+
+// FIFO
+const importQty =
+    Number(data.qty || 0);
+
+const soldInPeriod =
+    Math.min(
+        totalSold,
+        importQty
+    );
+
+const remain =
+    importQty - soldInPeriod;
+
+// TRỪ ĐỂ ĐỢT SAU KHÔNG ĂN LẠI
+totalSold -= soldInPeriod;
 
         html += `
             <tr>
