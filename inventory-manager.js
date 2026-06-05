@@ -931,6 +931,9 @@ html += `
     }
 
 }
+// ============================
+// loadHistory
+// ============================
 async function loadHistory(){
 
     const historyBody =
@@ -942,50 +945,33 @@ async function loadHistory(){
         .trim()
         .toLowerCase();
 
+    // IMPORT
     const moveSnap =
         await db.collection("stock_movements")
-        .orderBy("createdAt","desc")
+        .orderBy("createdAt","asc")
+        .get();
+
+    // SALES
+    const salesSnap =
+        await db.collection("sales_history")
+        .orderBy("createdAt","asc")
         .get();
 
     const productSnap =
         await db.collection("products")
         .get();
 
-    const orderSnap =
-        await db.collection("orders")
-        .get();
-
-    const soldMap = {};
-
-    orderSnap.forEach(doc=>{
-
-        const order = doc.data();
-
-        if(order.status !== "completed")
-            return;
-
-        (order.items || []).forEach(item=>{
-
-            const id =
-    String(
-        item.id ||
-        item.productId ||
-        ""
-    );
-            soldMap[id] =
-                (soldMap[id] || 0)
-                + Number(item.qty || 0);
-
-        });
-
-    });
-
     let html = "";
+
+    // MAP THEO TỪNG GIAI ĐOẠN
+    const soldMap = {};
+    const stockMap = {};
 
     moveSnap.forEach(doc=>{
 
         const data = doc.data();
 
+        // CHỈ HISTORY NHẬP
         if(data.type !== "IMPORT")
             return;
 
@@ -998,28 +984,74 @@ async function loadHistory(){
             return;
 
         const p = product.data();
-if(
-    keyword &&
-    !String(p.name || "")
-        .toLowerCase()
-        .includes(keyword) &&
-    !String(product.id)
-        .toLowerCase()
-        .includes(keyword)
-){
-    return;
-}
 
-        const sold =
-            soldMap[product.id] || 0;
+        if(
+            keyword &&
+            !String(p.name || "")
+                .toLowerCase()
+                .includes(keyword) &&
+            !String(product.id)
+                .toLowerCase()
+                .includes(keyword)
+        ){
+            return;
+        }
 
-        const stock =
-            Number(p.stock || 0);
+        const id = product.id;
+
+        // INIT
+        if(!soldMap[id]){
+            soldMap[id] = 0;
+        }
+
+        if(!stockMap[id]){
+            stockMap[id] = 0;
+        }
+
+        // NHẬP KHO
+        stockMap[id] += Number(data.qty || 0);
+
+        // TÍNH SOLD TỪ ĐỢT NHẬP NÀY -> TRƯỚC ĐỢT NHẬP TIẾP
+        let soldInPeriod = 0;
+
+        salesSnap.forEach(saleDoc=>{
+
+            const sale = saleDoc.data();
+
+            if(
+                String(sale.productId) !== String(id)
+            ){
+                return;
+            }
+
+            if(
+                !sale.createdAt ||
+                !data.createdAt
+            ){
+                return;
+            }
+
+            // CHỈ TÍNH SALES SAU ĐỢT NHẬP
+            if(
+                sale.createdAt.toMillis()
+                >=
+                data.createdAt.toMillis()
+            ){
+                soldInPeriod +=
+                    Number(sale.qty || 0);
+            }
+
+        });
+
+        soldMap[id] += soldInPeriod;
+
+        const remain =
+            stockMap[id] - soldMap[id];
 
         html += `
             <tr>
 
-                <td>${product.id}</td>
+                <td>${id}</td>
 
                 <td>${p.name}</td>
 
@@ -1038,18 +1070,38 @@ if(
                     ${formatVND(data.importPrice)}
                 </td>
 
-                <td>${sold}</td>
-
-                <td>${stock}</td>
+                <td>
+                    ${soldInPeriod}
+                </td>
 
                 <td>
-    0
-</td>
+                    ${remain}
+                </td>
+
+                <td>
+                    0
+                </td>
 
             </tr>
         `;
 
     });
+
+    if(!html){
+
+        html = `
+            <tr>
+                <td colspan="8"
+                style="
+                    text-align:center;
+                    padding:20px;
+                ">
+                    Chưa có dữ liệu
+                </td>
+            </tr>
+        `;
+
+    }
 
     historyBody.innerHTML = html;
 
