@@ -2032,11 +2032,11 @@ async function loadProductChangeLogs(){
 
                  <td
     style="
-        color:${
-            Number(d.importChangePercent) < 0
-            ? "#00c853"
-            : "red"
-        };
+       color:${
+    Number(d.importChangePercent) > 0
+    ? "red"
+    : "#00c853"
+};
         font-weight:bold;
     "
 >
@@ -2049,64 +2049,58 @@ async function loadProductChangeLogs(){
 
 <td
     style="
-        color:${
-            d.profitAfter < 0
-            ? "red"
-            : "#00c853"
-        };
         font-weight:bold;
+        color:${
+            d.profitAfter >= 0
+            ? "#00c853"
+            : "red"
+        };
     "
 >
-    ${formatVND(d.profitBefore)}
-    →
     ${formatVND(d.profitAfter)}
 
     <br>
 
-    <small>
-    ${
-        d.profitAfter >= d.profitBefore
-        ? "+"
-        : ""
-    }
-    ${formatVND(
-        d.profitAfter - d.profitBefore
-    )}
+    <small style="font-size:11px;color:#999;">
 
-    |
+        ${
+            d.profitAfter > d.profitBefore
+            ? "▲"
+            : d.profitAfter < d.profitBefore
+            ? "▼"
+            : "="
+        }
 
-    ${
-        d.profitBefore > 0
-        ? (
-            (
-                (d.profitAfter - d.profitBefore)
-                /
-                d.profitBefore
-            ) * 100
-        ).toFixed(2)
-        : 0
-    }%
-</small>
+        ${Math.abs(
+            d.profitAfter - d.profitBefore
+        ).toLocaleString("vi-VN")}đ
+
+    </small>
 </td>
-
 <td
-    style="
-        color:${
-            Number(d.priceChangePercent) > 0
-            ? "#00c853"
-            : Number(d.priceChangePercent) < 0
-            ? "red"
-            : "#999"
-        };
-        font-weight:bold;
-    "
+style="
+    font-weight:bold;
+    color:
+    ${
+        Number(d.priceChangePercent) > 0
+        ? "#00c853"
+        : Number(d.priceChangePercent) < 0
+        ? "red"
+        : "#999"
+    };
+"
 >
     ${
         Number(d.priceChangePercent) > 0
-        ? "+"
+        ? "▲ "
+        : Number(d.priceChangePercent) < 0
+        ? "▼ "
         : ""
     }
-    ${d.priceChangePercent || 0}%
+
+    ${Math.abs(
+        Number(d.priceChangePercent || 0)
+    ).toFixed(2)}%
 </td>
                 </tr>
             `;
