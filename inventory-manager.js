@@ -1079,39 +1079,7 @@ salesSnap.forEach(saleDoc=>{
 const remain =
     Number(data.qty || 0)
     - soldInPeriod;
-        // TOTAL SOLD PRODUCT
-let totalSold = 0;
-
-salesSnap.forEach(saleDoc=>{
-
-    const sale = saleDoc.data();
-
-    if(
-        String(sale.productId)
-        ===
-        String(id)
-    ){
-        totalSold +=
-            Number(sale.qty || 0);
-    }
-
-});
-
-// FIFO
-const importQty =
-    Number(data.qty || 0);
-
-const soldInPeriod =
-    Math.min(
-        totalSold,
-        importQty
-    );
-
-const remain =
-    importQty - soldInPeriod;
-
-// TRỪ ĐỂ ĐỢT SAU KHÔNG ĂN LẠI
-totalSold -= soldInPeriod;
+    
 
         html += `
             <tr>
