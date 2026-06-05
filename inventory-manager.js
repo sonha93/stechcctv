@@ -1536,7 +1536,13 @@ if(historySearch){
 // ============================
 // LOAD LOSS
 // ============================
+function normalizeId(id){
 
+    return String(id || "")
+        .trim()
+        .toLowerCase();
+
+}
 async function loadLoss(){
 
     const lossBody =
@@ -1582,10 +1588,9 @@ async function loadLoss(){
 
             (order.items || []).forEach(item => {
 
-                const id = String(
-                    item.id ||
-                    item.productId ||
-                    ""
+               const id = normalizeId(
+                item.id ||
+                item.productId
                 );
 
                 if(!id) return;
@@ -1607,7 +1612,7 @@ async function loadLoss(){
             const m = doc.data();
 
             const id =
-                String(m.productId || "");
+    normalizeId(m.productId);
 
             if(!id) return;
 
@@ -1652,7 +1657,7 @@ async function loadLoss(){
 
             const p = doc.data();
 
-            const id = doc.id;
+            const id = normalizeId(doc.id);
 
             const importPrice =
                 Number(p.importPrice || 0);
@@ -1665,7 +1670,7 @@ async function loadLoss(){
             // ====================
 
             const importedQty =
-                importMap[id] || 0;
+    Number(p.totalImportedQty || 0);
 
             const sold =
                 soldMap[id] || 0;
@@ -1681,11 +1686,17 @@ async function loadLoss(){
                 Number(p.stock || 0);
 
             // TỒN ĐÁNG LẼ PHẢI CÓ
-            const expectedStock =
-                importedQty
-                - sold
-                - lossQty
-                + plusQty;
+           const expectedStockRaw =
+    importedQty
+    - sold
+    - lossQty
+    + plusQty;
+
+const expectedStock =
+    Math.max(
+        expectedStockRaw,
+        0
+    );
 
             // CHÊNH LỆCH
             const stockDiff =
@@ -1702,8 +1713,8 @@ async function loadLoss(){
             const capital =
                 sold * importPrice;
 
-            const profit =
-                revenue - capital;
+           const realProfit =
+    profit - lossValue;
 
             const stockValue =
                 systemStock * importPrice;
@@ -1833,7 +1844,7 @@ async function loadLoss(){
         font-weight:bold;
     "
     >
-        ${formatVND(profit)}
+       ${formatVND(realProfit)}
     </td>
 
     <td
