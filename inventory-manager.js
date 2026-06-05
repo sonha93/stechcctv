@@ -421,7 +421,7 @@ if(table){
                     <td colspan="2">
                         ---
                     </td>
-
+                     <td></td>  
                 </tr>
             `;
 
