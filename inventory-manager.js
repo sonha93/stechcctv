@@ -1075,10 +1075,66 @@ salesSnap.forEach(saleDoc=>{
 
 });
 
-// tồn riêng từng đợt
+// TOTAL IMPORT ĐẾN THỜI ĐIỂM NÀY
+let totalImported = 0;
+
+moveSnap.docs.forEach(importDoc=>{
+
+    const importData = importDoc.data();
+
+    if(
+        importData.type !== "IMPORT" ||
+        String(importData.productId) !== String(id) ||
+        !importData.createdAt
+    ){
+        return;
+    }
+
+    // chỉ cộng các lần nhập trước hoặc bằng hiện tại
+    if(
+        importData.createdAt.toMillis()
+        <=
+        currentTime
+    ){
+        totalImported +=
+            Number(importData.qty || 0);
+    }
+
+});
+
+// TOTAL SOLD ĐẾN HIỆN TẠI
+let totalSoldUntilNow = 0;
+
+salesSnap.forEach(saleDoc=>{
+
+    const sale = saleDoc.data();
+
+    if(
+        String(sale.productId) !== String(id)
+    ){
+        return;
+    }
+
+    if(!sale.createdAt){
+        return;
+    }
+
+    // chỉ tính sale tới thời điểm hiện tại
+    if(
+        sale.createdAt.toMillis()
+        <=
+        currentTime
+    ){
+        totalSoldUntilNow +=
+            Number(sale.qty || 0);
+    }
+
+});
+
+// TỒN THỰC TẾ SAU ĐỢT NHẬP NÀY
 const remain =
-    Number(data.qty || 0)
-    - soldInPeriod;
+    totalImported
+    - totalSoldUntilNow;
     
 
         html += `
