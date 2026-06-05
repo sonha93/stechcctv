@@ -1077,6 +1077,91 @@ async function loadHistory(){
 
     });
 
+
+// ======================
+// TOTAL
+// ======================
+
+let totalImport = 0;
+let totalSold = 0;
+
+moveSnap.forEach(doc=>{
+
+    const data = doc.data();
+
+    if(data.type === "IMPORT"){
+
+        totalImport +=
+            Number(data.qty || 0);
+
+    }
+
+});
+
+salesSnap.forEach(doc=>{
+
+    const sale = doc.data();
+
+    totalSold +=
+        Number(sale.qty || 0);
+
+});
+
+const totalRemain =
+    totalImport - totalSold;
+
+// FOOTER
+html += `
+    <tr
+        style="
+            background:#111;
+            color:#fff;
+            font-weight:bold;
+        "
+    >
+
+        <td colspan="3">
+            TOTAL
+        </td>
+
+        <td>
+            ${totalImport}
+        </td>
+
+        <td>
+            ---
+        </td>
+
+        <td>
+            ${totalSold}
+        </td>
+
+        <td style="color:#00e676;">
+            ${totalRemain}
+        </td>
+
+        <td>
+            0
+        </td>
+
+    </tr>
+`;
+
+if(!html){
+
+    html = `
+        <tr>
+            <td colspan="8"
+            style="
+                text-align:center;
+                padding:20px;
+            ">
+                Chưa có dữ liệu
+            </td>
+        </tr>
+    `;
+
+}
     if(!html){
 
         html = `
@@ -1097,7 +1182,6 @@ async function loadHistory(){
 
 }
 
-}
 // ============================
 // SEARCH
 // ============================
