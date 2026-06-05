@@ -1,51 +1,269 @@
-// ============================
-// HISTORY
-// ============================
 
+// ============================
+// loadHistory
+// ============================
 async function loadHistory(){
 
     const historyBody =
         document.getElementById("historyBody");
 
-    if(!historyBody) return;
+    const keyword =
+        document.getElementById("historySearch")
+        ?.value
+        .trim()
+        .toLowerCase();
 
-    try{
+    const moveSnap =
+        await db.collection("stock_movements")
+        .orderBy("createdAt","asc")
+        .get();
 
-        const snap = await db
-            .collection("stock_movements")
-            .orderBy("createdAt","desc")
-            .get();
+    const salesSnap =
+        await db.collection("sales_history")
+        .orderBy("createdAt","asc")
+        .get();
 
-        let html = "";
+    const productSnap =
+        await db.collection("products")
+        .get();
 
-        snap.forEach(doc=>{
+    let html = "";
 
-            const data = doc.data();
+    // MAP PRODUCT
+    const productMap = {};
 
-            html += `
-                <tr>
+    productSnap.forEach(doc=>{
 
-                    <td>${data.productId}</td>
+        productMap[doc.id] = doc.data();
 
-                    <td>${data.productName || "-"}</td>
+    });
 
-                    <td>${data.qty}</td>
+   // GROUP SALES
+const salesMap = {};
 
-                    <td>${data.type}</td>
+salesSnap.forEach(doc=>{
 
-                    <td>${data.reason || "-"}</td>
+    const sale = doc.data();
 
-                </tr>
-            `;
+    const id = sale.productId;
 
-        });
+    if(!salesMap[id]){
+        salesMap[id] = 0;
+    }
 
-        historyBody.innerHTML = html;
+    salesMap[id] +=
+        Number(sale.qty || 0);
 
-    }catch(err){
+});
+    // FIFO SALES LEFT
+    const salesLeftMap = {
+        ...salesMap
+    };
 
-        console.log(err);
+    // LOOP IMPORT
+    moveSnap.forEach(doc=>{
+
+        const data = doc.data();
+
+        if(data.type !== "IMPORT")
+            return;
+
+        const id = data.productId;
+
+        const p = productMap[id];
+
+        if(!p)
+            return;
+
+        if(
+            keyword &&
+            !String(p.name || "")
+                .toLowerCase()
+                .includes(keyword) &&
+            !String(id)
+                .toLowerCase()
+                .includes(keyword)
+        ){
+            return;
+        }
+
+        const qty =
+            Number(data.qty || 0);
+
+        const salesLeft =
+            Number(salesLeftMap[id] || 0);
+
+        // FIFO
+        const soldInPeriod =
+            Math.min(
+                salesLeft,
+                qty
+            );
+
+        const remain =
+            qty - soldInPeriod;
+
+        // TRỪ SALES CÒN LẠI
+        salesLeftMap[id] =
+            salesLeft - soldInPeriod;
+
+        html += `
+            <tr>
+
+                <td>${id}</td>
+
+                <td>${p.name || "-"}</td>
+
+                <td>
+                    ${
+                        data.createdAt
+                        ? data.createdAt
+                            .toDate()
+                            .toLocaleString("vi-VN")
+                        : "-"
+                    }
+                </td>
+
+                <td>${qty}</td>
+
+                <td>
+                    ${formatVND(data.importPrice || 0)}
+                </td>
+
+                <td>
+                    ${soldInPeriod}
+                </td>
+
+                <td>
+                    ${remain}
+                </td>
+
+                <td>0</td>
+
+            </tr>
+        `;
+
+    });
+
+
+    // ======================
+    // TOTAL
+    // ======================
+
+    let totalImport = 0;
+    let totalSold = 0;
+
+    moveSnap.forEach(doc=>{
+
+        const data = doc.data();
+
+        if(
+            data.type === "IMPORT"
+        ){
+
+            // nếu đang search
+          const p =
+    productMap[data.productId];
+
+if(
+    keyword &&
+    !String(p?.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+    !String(data.productId)
+        .toLowerCase()
+        .includes(keyword)
+){
+    return;
+}
+
+            totalImport +=
+                Number(data.qty || 0);
+
+        }
+
+    });
+
+    salesSnap.forEach(doc=>{
+
+        const sale = doc.data();
+
+       const p =
+    productMap[sale.productId];
+
+if(
+    keyword &&
+    !String(p?.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+    !String(sale.productId)
+        .toLowerCase()
+        .includes(keyword)
+){
+    return;
+}
+
+        totalSold +=
+            Number(sale.qty || 0);
+
+    });
+
+    const totalRemain =
+        totalImport - totalSold;
+
+    // FOOTER
+    html += `
+        <tr
+            style="
+                background:#111;
+                color:#fff;
+                font-weight:bold;
+            "
+        >
+
+            <td colspan="3">
+                TOTAL
+            </td>
+
+            <td>
+                ${totalImport}
+            </td>
+
+            <td>
+                ---
+            </td>
+
+            <td>
+                ${totalSold}
+            </td>
+
+            <td style="color:#00e676;">
+                ${totalRemain}
+            </td>
+
+            <td>
+                0
+            </td>
+
+        </tr>
+    `;
+
+    if(!html){
+
+        html = `
+            <tr>
+                <td colspan="8"
+                style="
+                    text-align:center;
+                    padding:20px;
+                ">
+                    Chưa có dữ liệu
+                </td>
+            </tr>
+        `;
 
     }
+
+    historyBody.innerHTML = html;
 
 }
