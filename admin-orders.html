@@ -142,37 +142,93 @@ h1{
 
 .table-wrap{
     background:#fff;
-    border-radius:12px;
+    border-radius:14px;
     overflow:auto;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    margin-bottom:16px;
 }
-.table-wrap{
-    overflow-x:auto;
-}
+
 table{
     width:100%;
     border-collapse:collapse;
+    min-width:1400px;
 }
 
-th{
+thead th{
+    position:sticky;
+    top:0;
+    z-index:5;
+
     background:#111;
     color:#fff;
-    padding:14px;
+
+    padding:14px 12px;
+
     font-size:13px;
-    text-align:left;
+    font-weight:700;
+    text-align:center;
+    white-space:nowrap;
 }
 
-td{
-    padding:14px;
+tbody td{
+    padding:13px 12px;
     border-bottom:1px solid #eee;
     font-size:13px;
-    vertical-align:top;
+    text-align:center;
+    vertical-align:middle;
+    white-space:nowrap;
 }
 
-tr:hover{
+tbody tr:hover{
     background:#fafafa;
 }
 
+tbody tr:nth-child(even){
+    background:#fcfcfc;
+}
+
+/* tên sản phẩm */
+
+tbody td:nth-child(2){
+    text-align:left;
+    min-width:220px;
+    white-space:normal;
+    line-height:1.5;
+}
+
+/* code */
+
+tbody td:nth-child(1){
+    font-size:12px;
+    color:#555;
+}
+
+/* số tiền */
+
+.money{
+    font-weight:700;
+}
+
+/* xanh */
+
+.green{
+    color:#00c853;
+    font-weight:700;
+}
+
+/* đỏ */
+
+.red{
+    color:#f44336;
+    font-weight:700;
+}
+
+/* cam */
+
+.orange{
+    color:#ff9800;
+    font-weight:700;
+}
 /* =========================
    STATUS SELECT
 ========================= */
@@ -272,21 +328,7 @@ tr:hover{
     gap:8px;
     font-weight:600;
 }
-.manual-minus-wrap{
-    display:grid;
-    grid-template-columns:
-        170px
-        1fr
-        60px
-        150px
-        140px
-        140px;
-}
 
-    gap:16px;
-    align-items:center;
-    width:100%;
-}
 
 .manual-minus-wrap input,
 .manual-minus-wrap button,
@@ -325,18 +367,20 @@ tr:hover{
    /* STOCK MOVEMENTS TOP */
 .stock-top-bar{
     display:grid;
-    grid-template-columns:
-        320px   /* ô tìm */
-        1fr     /* thông tin sản phẩm */
-        90px   /* SL */
-        260px   /* lý do */
-        140px   /* trừ */
-        140px;  /* cộng */
 
-    gap:16px;
+    grid-template-columns:
+        250px
+        1fr
+        90px
+        180px
+        120px
+        120px;
+
+    gap:14px;
     align-items:center;
+
     width:100%;
-    margin-bottom:20px;
+    margin-bottom:18px;
 }
 
 /* ô search */
@@ -553,9 +597,22 @@ tr:hover{
         border:1px solid #e5e7eb;
     }
 .manual-minus-wrap{
-    grid-template-columns:1fr;
-}
+    display:grid;
 
+    grid-template-columns:
+        250px
+        1fr
+        90px
+        180px
+        120px
+        120px;
+
+    gap:14px;
+    align-items:center;
+
+    width:100%;
+    margin-bottom:18px;
+}
 .manual-minus-wrap input,
 .manual-minus-wrap button,
 #manualMinusProductInfo{
@@ -651,6 +708,30 @@ tr:hover{
     width:fit-content;
     box-shadow:0 2px 10px rgba(0,0,0,0.08);
     margin-bottom:15px;
+}
+   table{
+    min-width:1200px;
+}
+
+.table-wrap{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+}
+
+thead th,
+tbody td{
+    font-size:12px;
+    padding:10px 8px;
+}
+
+.manual-minus-wrap,
+.stock-top-bar{
+    grid-template-columns:1fr;
+}
+
+#manualMinusBtn,
+#manualPlusBtn{
+    width:100%;
 }
 
 }
