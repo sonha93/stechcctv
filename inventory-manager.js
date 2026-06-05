@@ -1706,25 +1706,26 @@ const expectedStock =
             // ====================
             // MONEY
             // ====================
-
             const revenue =
-                sold * sellPrice;
+    sold * sellPrice;
 
-            const capital =
-                sold * importPrice;
+const capital =
+    sold * importPrice;
 
-           const realProfit =
+const profit =
+    revenue - capital;
+
+const stockValue =
+    systemStock * importPrice;
+
+const lossValue =
+    lossQty * importPrice;
+
+const realProfit =
     profit - lossValue;
 
-            const stockValue =
-                systemStock * importPrice;
-
-            const lossValue =
-                lossQty * importPrice;
-
-            const importValue =
-                importedQty * importPrice;
-
+const importValue =
+    importedQty * importPrice;
             // ====================
             // %
             // ====================
@@ -1740,16 +1741,16 @@ const expectedStock =
                 ).toFixed(2)
                 : "0.00";
 
-            const profitPercent =
-                revenue > 0
-                ? (
-                    profit
-                    /
-                    revenue
-                    *
-                    100
-                ).toFixed(2)
-                : "0.00";
+                const profitPercent =
+    revenue > 0
+    ? (
+        realProfit
+        /
+        revenue
+        *
+        100
+    ).toFixed(2)
+    : "0.00";
 
         html += `
 <tr>
