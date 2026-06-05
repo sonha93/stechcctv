@@ -917,11 +917,29 @@ if(!productDoc.exists){
       continue;
     }
 
-    const importPrice =
-      Number(product.importPrice || 0);
+   const importPrice =
+  Number(
+
+    item.importPriceAtSale ??
+
+    product.importPrice ??
+
+    0
+
+  );
 
     const sellPrice =
-      Number(item.price || product.price || 0);
+  Number(
+
+    item.salePriceAtSale ??
+
+    item.price ??
+
+    product.price ??
+
+    0
+
+  );
 
     const revenue =
       sellPrice * qty;
