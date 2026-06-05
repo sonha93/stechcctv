@@ -931,127 +931,175 @@ html += `
     }
 
 }
+// ============================
+// loadHistory
+// ============================
+
 async function loadHistory(){
 
     const historyBody =
         document.getElementById("historyBody");
 
-    const keyword =
-        document.getElementById("historySearch")
-        ?.value
-        .trim()
-        .toLowerCase();
+    if(!historyBody) return;
 
-    const moveSnap =
-        await db.collection("stock_movements")
-        .orderBy("createdAt","desc")
-        .get();
+    try{
 
-    const productSnap =
-        await db.collection("products")
-        .get();
+        const keyword =
+            document.getElementById("historySearch")
+            ?.value
+            .trim()
+            .toLowerCase();
 
-    const orderSnap =
-        await db.collection("orders")
-        .get();
+        const moveSnap =
+            await db
+            .collection("stock_movements")
+            .orderBy("createdAt","asc")
+            .get();
 
-    const soldMap = {};
+        // ============================
+        // STOCK TRACKER
+        // ============================
 
-    orderSnap.forEach(doc=>{
+        const stockMap = {};
+        const soldMap = {};
 
-        const order = doc.data();
+        let html = "";
 
-        if(order.status !== "completed")
-            return;
+        moveSnap.forEach(doc=>{
 
-        (order.items || []).forEach(item=>{
+            const data = doc.data();
 
-            const id =
-    String(
-        item.id ||
-        item.productId ||
-        ""
-    );
-            soldMap[id] =
-                (soldMap[id] || 0)
-                + Number(item.qty || 0);
+            const productId =
+                String(data.productId || "");
+
+            if(!productId) return;
+
+            // CHỈ HISTORY IMPORT
+            if(data.type !== "IMPORT"){
+                return;
+            }
+
+            const productName =
+                String(
+                    data.productName || "-"
+                );
+
+            // SEARCH
+            if(
+                keyword &&
+                !productName
+                    .toLowerCase()
+                    .includes(keyword)
+                &&
+                !productId
+                    .toLowerCase()
+                    .includes(keyword)
+            ){
+                return;
+            }
+
+            // ============================
+            // TRACK STOCK
+            // ============================
+
+            if(stockMap[productId] == null){
+                stockMap[productId] = 0;
+            }
+
+            if(soldMap[productId] == null){
+                soldMap[productId] = 0;
+            }
+
+            // TỒN TRƯỚC NHẬP
+            const beforeStock =
+                stockMap[productId];
+
+            // NHẬP
+            stockMap[productId] +=
+                Number(data.qty || 0);
+
+            // TỒN SAU NHẬP
+            const afterStock =
+                stockMap[productId];
+
+            html += `
+                <tr>
+
+                    <td>
+                        ${productId}
+                    </td>
+
+                    <td>
+                        ${productName}
+                    </td>
+
+                    <td>
+                        ${
+                            data.createdAt
+                            ? data.createdAt
+                                .toDate()
+                                .toLocaleString("vi-VN")
+                            : "-"
+                        }
+                    </td>
+
+                    <td>
+                        ${data.qty}
+                    </td>
+
+                    <td>
+                        ${formatVND(
+                            data.importPrice || 0
+                        )}
+                    </td>
+
+                    <td>
+                        ${soldMap[productId]}
+                    </td>
+
+                    <td
+                        style="
+                            color:#00c853;
+                            font-weight:bold;
+                        "
+                    >
+                        ${afterStock}
+                    </td>
+
+                    <td>
+                        0
+                    </td>
+
+                </tr>
+            `;
 
         });
 
-    });
+        if(!html){
 
-    let html = "";
+            html = `
+                <tr>
+                    <td
+                        colspan="8"
+                        style="
+                            text-align:center;
+                            padding:20px;
+                        "
+                    >
+                        Không có dữ liệu
+                    </td>
+                </tr>
+            `;
 
-    moveSnap.forEach(doc=>{
+        }
 
-        const data = doc.data();
+        historyBody.innerHTML = html;
 
-        if(data.type !== "IMPORT")
-            return;
+    }catch(err){
 
-        const product =
-            productSnap.docs.find(
-                p => p.id === data.productId
-            );
+        console.log(err);
 
-        if(!product)
-            return;
-
-        const p = product.data();
-if(
-    keyword &&
-    !String(p.name || "")
-        .toLowerCase()
-        .includes(keyword) &&
-    !String(product.id)
-        .toLowerCase()
-        .includes(keyword)
-){
-    return;
-}
-
-        const sold =
-            soldMap[product.id] || 0;
-
-        const stock =
-            Number(p.stock || 0);
-
-        html += `
-            <tr>
-
-                <td>${product.id}</td>
-
-                <td>${p.name}</td>
-
-                <td>
-                    ${
-                        data.createdAt
-                        ? data.createdAt.toDate()
-                            .toLocaleString("vi-VN")
-                        : "-"
-                    }
-                </td>
-
-                <td>${data.qty}</td>
-
-                <td>
-                    ${formatVND(data.importPrice)}
-                </td>
-
-                <td>${sold}</td>
-
-                <td>${stock}</td>
-
-                <td>
-    0
-</td>
-
-            </tr>
-        `;
-
-    });
-
-    historyBody.innerHTML = html;
+    }
 
 }
 // ============================
