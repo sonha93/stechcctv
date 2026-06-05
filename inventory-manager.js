@@ -1751,8 +1751,7 @@ const importValue =
         100
     ).toFixed(2)
     : "0.00";
-
-        html += `
+html += `
 <tr>
 
     <td>${id}</td>
@@ -1772,15 +1771,20 @@ const importValue =
     </td>
 
     <td>
-        ${formatVND(importValue)}
-    </td>
-
-    <td>
         ${sold}
     </td>
 
-    <td>
-        ${formatVND(revenue)}
+    <td
+    style="
+        color:red;
+        font-weight:bold;
+    "
+    >
+        ${
+            lossQty > 0
+            ? "-" + lossQty
+            : 0
+        }
     </td>
 
     <td
@@ -1796,21 +1800,35 @@ const importValue =
         ${systemStock}
     </td>
 
-    <td>
-        ${formatVND(stockValue)}
-    </td>
-
     <td
     style="
-        color:red;
+        color:${
+            stockDiff === 0
+            ? "#00c853"
+            : stockDiff > 0
+            ? "#ff9800"
+            : "red"
+        };
         font-weight:bold;
     "
     >
         ${
-            lossQty > 0
-            ? "-" + lossQty
-            : 0
+            stockDiff > 0
+            ? "+" + stockDiff
+            : stockDiff
         }
+    </td>
+
+    <td>
+        ${formatVND(importValue)}
+    </td>
+
+    <td>
+        ${formatVND(revenue)}
+    </td>
+
+    <td>
+        ${formatVND(stockValue)}
     </td>
 
     <td
@@ -1838,14 +1856,14 @@ const importValue =
     <td
     style="
         color:${
-            profit < 0
+            realProfit < 0
             ? "red"
             : "#00c853"
         };
         font-weight:bold;
     "
     >
-       ${formatVND(realProfit)}
+        ${formatVND(realProfit)}
     </td>
 
     <td
@@ -1859,25 +1877,6 @@ const importValue =
     "
     >
         ${profitPercent}%
-    </td>
-
-    <td
-    style="
-        color:${
-            stockDiff === 0
-            ? "#00c853"
-            : stockDiff > 0
-            ? "#ff9800"
-            : "red"
-        };
-        font-weight:bold;
-    "
-    >
-        ${
-            stockDiff > 0
-            ? "+" + stockDiff
-            : stockDiff
-        }
     </td>
 
 </tr>
