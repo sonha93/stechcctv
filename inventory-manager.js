@@ -965,7 +965,7 @@ async function loadHistory(){
 
         let html = "";
 
-        moveSnap.forEach(doc=>{
+       for(const doc of moveSnap.docs){
 
             const data = doc.data();
 
@@ -974,10 +974,37 @@ async function loadHistory(){
 
             if(!productId) return;
 
-            const productName =
-                String(
-                    data.productName || "-"
-                );
+            let productName =
+    String(data.productName || "");
+
+if(!productName){
+
+    try{
+
+        const productDoc =
+            await db
+            .collection("products")
+            .doc(productId)
+            .get();
+
+        if(productDoc.exists){
+
+            productName =
+                productDoc.data().name || "-";
+
+        }else{
+
+            productName = "-";
+
+        }
+
+    }catch{
+
+        productName = "-";
+
+    }
+
+}
 
             // SEARCH
             if(
