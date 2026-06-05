@@ -6,21 +6,11 @@ function calcOrder(items){
   items.forEach(item => {
 
     const qty = Number(item.qty || 1);
-    const price = Number(
-  item.priceAtSale ??
-  item.price ??
-  0
-);
+    const price = Number(item.price || 0);
 
- const original = Math.max(
-
-  Number(
-    item.originalPriceAtSale ??
-    item.originalPrice ??
-    item.oldPrice ??
-    price
-  ),
-
+   const original = Number(
+  item.originalPrice ||
+  item.oldPrice ||
   price
 );
     total += price * qty;
@@ -106,34 +96,89 @@ async function loadOrders(userUid){
       .orderBy("createdAt", "desc")
       .get();
 
-  allOrders = snapshot.docs.map(doc => {
+   allOrders = await Promise.all(
+
+  snapshot.docs.map(async doc => {
+
     const data = doc.data();
 
     // load thêm giá gốc
-   if(Array.isArray(data.items)){
+    if(Array.isArray(data.items)){
 
-  data.items = data.items.map(item => ({
+      data.items = await Promise.all(
 
+        data.items.map(async item => {
+
+          // nếu đã có originalPrice
+          // thì giữ nguyên
+        if(item.originalPrice || item.oldPrice){
+
+  return {
     ...item,
-
     originalPrice:
-  Number(
-    item.originalPriceAtSale ??
-    item.originalPrice ??
-    item.oldPrice ??
-    item.priceAtSale ??
-    item.price ??
-    0
-  )
-  }));
+      Number(
+        item.originalPrice ||
+        item.oldPrice ||
+        item.price
+      )
+  };
 }
 
-return {
+          try{
 
-  id: doc.id,
-  ...data
-};
-});
+            // lấy product từ collection products
+            const productDoc = await db
+              .collection("products")
+            .doc(item.productId || item.id)
+              .get();
+
+            if(productDoc.exists){
+
+              const product =
+                productDoc.data();
+
+              return {
+
+                ...item,
+
+                originalPrice:
+                  Number(
+                    product.originalPrice ||
+                    product.oldPrice ||
+                    product.price ||
+                    item.price
+                  )
+              };
+            }
+
+          }catch(err){
+
+            console.error(
+              "Lỗi load giá gốc:",
+              err
+            );
+          }
+
+          // fallback nếu lỗi
+          return {
+
+            ...item,
+            originalPrice: item.price
+          };
+
+        })
+      );
+    }
+
+    return {
+
+      id: doc.id,
+      ...data
+    };
+
+  })
+);
+
     console.log(allOrders);
 
     if(allOrders.length === 0){
@@ -233,64 +278,58 @@ function renderOrders(){
 
     let itemsHTML = "";
 
-items.slice(0,2).forEach(item => {
+    items.slice(0,2).forEach(item => {
 
-  const qty = Number(item.qty || 1);
+      const qty = Number(item.qty || 1);
+      const price = Number(item.price || 0);
+      const sub = qty * price;
 
-  const price = Number(
-    item.priceAtSale ??
-    item.price ??
-    0
-  );
+      itemsHTML += `
 
-  const sub = qty * price;
+        <div class="item">
 
-  itemsHTML += `
+          <img src="${item.img || ''}">
 
-    <div class="item">
+          <div style="flex:1;">
 
-      <img src="${item.img || ''}">
+            <div style="
+              font-weight:bold;
+              margin-bottom:5px;
+            ">
+              ${item.name || ""}
+            </div>
 
-      <div style="flex:1;">
+            <div class="sale-price">
+              ${format(price)}
+            </div>
 
-        <div style="
-          font-weight:bold;
-          margin-bottom:5px;
-        ">
-          ${item.name || ""}
-        </div>
+            ${Number(item.originalPrice) > Number(price) ? `
+              <div style="
+                text-decoration: line-through;
+                color:#999;
+                font-size:13px;
+              ">
+                ${format(item.originalPrice)}
+              </div>
+            ` : ""}
 
-        <div class="sale-price">
-          ${format(price)}
-        </div>
+            <div class="calc">
+              ${qty} × ${format(price)}
+            </div>
 
-        ${Number(item.originalPrice) > Number(price) ? `
-          <div style="
-            text-decoration: line-through;
-            color:#999;
-            font-size:13px;
-          ">
-            ${format(item.originalPrice)}
+            <div style="
+              color:#e53935;
+              font-weight:bold;
+              margin-top:4px;
+            ">
+              ${format(sub)}
+            </div>
+
           </div>
-        ` : ""}
 
-        <div class="calc">
-          ${qty} × ${format(price)}
         </div>
-
-        <div style="
-          color:#e53935;
-          font-weight:bold;
-          margin-top:4px;
-        ">
-          ${format(sub)}
-        </div>
-
-      </div>
-
-    </div>
-  `;
-});
+      `;
+    });
 
     // =========================
     // HIDDEN ITEMS
@@ -304,21 +343,12 @@ items.slice(0,2).forEach(item => {
   const qty =
     Number(item.qty || 1);
 
-  const price = Number(
-  item.priceAtSale ??
-  item.price ??
-  0
-);
+  const price =
+    Number(item.price || 0);
 
-const original = Math.max(
-
-  Number(
-    item.originalPriceAtSale ??
-    item.originalPrice ??
-    item.oldPrice ??
-    price
-  ),
-
+ const original = Number(
+  item.originalPrice ||
+  item.oldPrice ||
   price
 );
 
