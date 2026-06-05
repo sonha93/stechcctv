@@ -970,23 +970,23 @@ async function loadHistory(){
 
     });
 
-    // GROUP SALES
-    const salesMap = {};
+   // GROUP SALES
+const salesMap = {};
 
-    salesSnap.forEach(doc=>{
+salesSnap.forEach(doc=>{
 
-        const sale = doc.data();
+    const sale = doc.data();
 
-        const id = sale.productId;
+    const id = sale.productId;
 
-        if(!salesMap[id]){
-            salesMap[id] = 0;
-        }
+    if(!salesMap[id]){
+        salesMap[id] = 0;
+    }
 
-        salesMap[id] += Number(sale.qty || 0);
+    salesMap[id] +=
+        Number(sale.qty || 0);
 
-    });
-
+});
     // FIFO SALES LEFT
     const salesLeftMap = {
         ...salesMap
@@ -1078,90 +1078,108 @@ async function loadHistory(){
     });
 
 
-// ======================
-// TOTAL
-// ======================
+    // ======================
+    // TOTAL
+    // ======================
 
-let totalImport = 0;
-let totalSold = 0;
+    let totalImport = 0;
+    let totalSold = 0;
 
-moveSnap.forEach(doc=>{
+    moveSnap.forEach(doc=>{
 
-    const data = doc.data();
+        const data = doc.data();
 
-    if(data.type === "IMPORT"){
+        if(
+            data.type === "IMPORT"
+        ){
 
-        totalImport +=
-            Number(data.qty || 0);
+            // nếu đang search
+          const p =
+    productMap[data.productId];
 
-    }
+if(
+    keyword &&
+    !String(p?.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+    !String(data.productId)
+        .toLowerCase()
+        .includes(keyword)
+){
+    return;
+}
 
-});
+            totalImport +=
+                Number(data.qty || 0);
 
-salesSnap.forEach(doc=>{
+        }
 
-    const sale = doc.data();
+    });
 
-    totalSold +=
-        Number(sale.qty || 0);
+    salesSnap.forEach(doc=>{
 
-});
+        const sale = doc.data();
 
-const totalRemain =
-    totalImport - totalSold;
+       const p =
+    productMap[sale.productId];
 
-// FOOTER
-html += `
-    <tr
-        style="
-            background:#111;
-            color:#fff;
-            font-weight:bold;
-        "
-    >
+if(
+    keyword &&
+    !String(p?.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+    !String(sale.productId)
+        .toLowerCase()
+        .includes(keyword)
+){
+    return;
+}
 
-        <td colspan="3">
-            TOTAL
-        </td>
+        totalSold +=
+            Number(sale.qty || 0);
 
-        <td>
-            ${totalImport}
-        </td>
+    });
 
-        <td>
-            ---
-        </td>
+    const totalRemain =
+        totalImport - totalSold;
 
-        <td>
-            ${totalSold}
-        </td>
-
-        <td style="color:#00e676;">
-            ${totalRemain}
-        </td>
-
-        <td>
-            0
-        </td>
-
-    </tr>
-`;
-
-if(!html){
-
-    html = `
-        <tr>
-            <td colspan="8"
+    // FOOTER
+    html += `
+        <tr
             style="
-                text-align:center;
-                padding:20px;
-            ">
-                Chưa có dữ liệu
+                background:#111;
+                color:#fff;
+                font-weight:bold;
+            "
+        >
+
+            <td colspan="3">
+                TOTAL
             </td>
+
+            <td>
+                ${totalImport}
+            </td>
+
+            <td>
+                ---
+            </td>
+
+            <td>
+                ${totalSold}
+            </td>
+
+            <td style="color:#00e676;">
+                ${totalRemain}
+            </td>
+
+            <td>
+                0
+            </td>
+
         </tr>
     `;
 
-}
     if(!html){
 
         html = `
