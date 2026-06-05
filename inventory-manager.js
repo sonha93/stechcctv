@@ -973,13 +973,19 @@ async function loadHistory(){
         if(data.type !== "IMPORT")
             return;
 
-        const product =
-            productSnap.docs.find(
-                p => p.id === data.productId
-            );
+      const productMap = {};
 
-        if(!product)
-            return;
+productSnap.forEach(doc=>{
+
+    productMap[doc.id] = doc;
+
+});
+
+const product =
+    productMap[data.productId];
+
+if(!product)
+    return;
 
         const p = product.data();
 
@@ -1002,141 +1008,107 @@ async function loadHistory(){
       // CHỈ lấy bán SAU lần nhập này
 // và TRƯỚC lần nhập tiếp theo
 
-let soldInPeriod = 0;
+// ========================
+// FIFO CHUẨN
+// ========================
 
-const currentTime =
-    data.createdAt.toMillis();
-
-// tìm lần nhập kế tiếp
-let nextImportTime = null;
-
-moveSnap.docs.forEach(nextDoc=>{
-
-    const nextData = nextDoc.data();
-
-    if(
-        nextData.type !== "IMPORT" ||
-        String(nextData.productId) !== String(id) ||
-        !nextData.createdAt
-    ){
-        return;
-    }
-
-    const nextTime =
-        nextData.createdAt.toMillis();
-
-    if(nextTime > currentTime){
-
-        if(
-            nextImportTime === null ||
-            nextTime < nextImportTime
-        ){
-            nextImportTime = nextTime;
-        }
-
-    }
-
-});
-
-// SALES TRONG GIAI ĐOẠN
-salesSnap.forEach(saleDoc=>{
-
-    const sale = saleDoc.data();
-
-    if(
-        String(sale.productId) !== String(id)
-    ){
-        return;
-    }
-
-    if(!sale.createdAt){
-        return;
-    }
-
-    const saleTime =
-        sale.createdAt.toMillis();
-
-    // sau lần nhập hiện tại
-    if(saleTime < currentTime){
-        return;
-    }
-
-    // nếu có lần nhập tiếp theo
-    // thì sales phải trước lần nhập đó
-    if(
-        nextImportTime &&
-        saleTime >= nextImportTime
-    ){
-        return;
-    }
-
-    soldInPeriod +=
-        Number(sale.qty || 0);
-
-});
-
-// TOTAL IMPORT ĐẾN THỜI ĐIỂM NÀY
-let totalImported = 0;
-
-moveSnap.docs.forEach(importDoc=>{
-
-    const importData = importDoc.data();
-
-    if(
-        importData.type !== "IMPORT" ||
-        String(importData.productId) !== String(id) ||
-        !importData.createdAt
-    ){
-        return;
-    }
-
-    // chỉ cộng các lần nhập trước hoặc bằng hiện tại
-    if(
-        importData.createdAt.toMillis()
-        <=
-        currentTime
-    ){
-        totalImported +=
-            Number(importData.qty || 0);
-    }
-
-});
-
-// TOTAL SOLD ĐẾN HIỆN TẠI
-let totalSoldUntilNow = 0;
+// tổng sales product
+let totalSales = 0;
 
 salesSnap.forEach(saleDoc=>{
 
     const sale = saleDoc.data();
 
     if(
-        String(sale.productId) !== String(id)
+        String(sale.productId)
+        ===
+        String(id)
     ){
-        return;
-    }
-
-    if(!sale.createdAt){
-        return;
-    }
-
-    // chỉ tính sale tới thời điểm hiện tại
-    if(
-        sale.createdAt.toMillis()
-        <=
-        currentTime
-    ){
-        totalSoldUntilNow +=
+        totalSales +=
             Number(sale.qty || 0);
     }
 
 });
 
-// TỒN THỰC TẾ SAU ĐỢT NHẬP NÀY
-const remain =
-    totalImported
-    - totalSoldUntilNow;
-    
+// lấy toàn bộ import product
+const imports =
+    moveSnap.docs
+        .filter(d=>{
 
+            const x = d.data();
+
+            return (
+                x.type === "IMPORT" &&
+                String(x.productId)
+                ===
+                String(id)
+            );
+
+        })
+       .sort((a,b)=>{
+
+    const createdA = a.data().createdAt;
+    const createdB = b.data().createdAt;
+
+    const timeA =
+        createdA &&
+        typeof createdA.toMillis === "function"
+        ? createdA.toMillis()
+        : 0;
+
+    const timeB =
+        createdB &&
+        typeof createdB.toMillis === "function"
+        ? createdB.toMillis()
+        : 0;
+
+    return timeA - timeB;
+
+})
+
+// sales còn lại để trừ FIFO
+let salesLeft = totalSales;
+
+let soldInPeriod = 0;
+let remain = 0;
+
+// chạy FIFO
+for(const importDoc of imports){
+
+    const importData =
+        importDoc.data();
+
+    const qty =
+        Number(importData.qty || 0);
+
+    // số bán ăn vào đợt này
+    const soldForThisImport =
+        Math.min(
+            salesLeft,
+            qty
+        );
+
+    // tồn đợt này
+    const remainForThisImport =
+        qty - soldForThisImport;
+
+    // trừ sales còn lại
+    salesLeft -= soldForThisImport;
+
+    // đúng dòng hiện tại
+    if(importDoc.id === doc.id){
+
+        soldInPeriod =
+            soldForThisImport;
+
+        remain =
+            remainForThisImport;
+
+        break;
+
+    }
+
+}
         html += `
             <tr>
 
