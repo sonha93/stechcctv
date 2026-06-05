@@ -187,14 +187,18 @@ async function loadInventory(){
                         ${sold}
                     </td>
 
-                    <td
-                        style="
-                            color:${profit < 0 ? "red" : "green"};
-                            font-weight:bold;
-                        "
-                    >
-                        ${formatVND(profit)}
-                    </td>
+                   <td
+    style="
+        color:#00c853;
+        font-weight:bold;
+    "
+>
+    ${formatVND(
+        Number(product.importPrice || 0)
+        *
+        Number(product.stock || 0)
+    )}
+</td>
 
                     <td>
 
