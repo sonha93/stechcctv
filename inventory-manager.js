@@ -699,7 +699,7 @@ if(qtyImport > 0){
                 // SAVE STOCK MOVEMENT
 
               
-                alert("Lưu giá nhập thành công");
+                alert("Đã lưu");
 
                 currentPage = 1;
 
