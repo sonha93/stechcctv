@@ -144,10 +144,10 @@ async function loadInventory(){
 
                     <td>
                         <input
-                            type="number"
+                            type="text"
                             class="importPriceInput"
                             data-id="${doc.id}"
-                            value="${importPrice}"
+                           value="${Number(importPrice || 0).toLocaleString('vi-VN')}"
                             style="
                                 width:120px;
                                 padding:8px;
