@@ -957,7 +957,7 @@ async function loadHistory(){
             .get();
 
         // ============================
-        // STOCK TRACKER
+        // TRACK MAP
         // ============================
 
         const stockMap = {};
@@ -973,11 +973,6 @@ async function loadHistory(){
                 String(data.productId || "");
 
             if(!productId) return;
-
-            // CHỈ HISTORY IMPORT
-            if(data.type !== "IMPORT"){
-                return;
-            }
 
             const productName =
                 String(
@@ -998,10 +993,7 @@ async function loadHistory(){
                 return;
             }
 
-            // ============================
-            // TRACK STOCK
-            // ============================
-
+            // INIT
             if(stockMap[productId] == null){
                 stockMap[productId] = 0;
             }
@@ -1010,17 +1002,69 @@ async function loadHistory(){
                 soldMap[productId] = 0;
             }
 
-            // TỒN TRƯỚC NHẬP
-            const beforeStock =
-                stockMap[productId];
+            // ============================
+            // IMPORT
+            // ============================
 
-            // NHẬP
-            stockMap[productId] +=
-                Number(data.qty || 0);
+            if(data.type === "IMPORT"){
 
-            // TỒN SAU NHẬP
-            const afterStock =
-                stockMap[productId];
+                stockMap[productId] +=
+                    Number(data.qty || 0);
+
+            }
+
+            // ============================
+            // SALE
+            // ============================
+
+            if(data.type === "SALE"){
+
+                const saleQty =
+                    Math.abs(
+                        Number(data.qty || 0)
+                    );
+
+                soldMap[productId] +=
+                    saleQty;
+
+                stockMap[productId] -=
+                    saleQty;
+
+            }
+
+            // ============================
+            // MANUAL MINUS
+            // ============================
+
+            if(data.type === "MANUAL_MINUS"){
+
+                stockMap[productId] -=
+                    Math.abs(
+                        Number(data.qty || 0)
+                    );
+
+            }
+
+            // ============================
+            // MANUAL PLUS
+            // ============================
+
+            if(data.type === "MANUAL_PLUS"){
+
+                stockMap[productId] +=
+                    Math.abs(
+                        Number(data.qty || 0)
+                    );
+
+            }
+
+            // ============================
+            // CHỈ HIỆN IMPORT ROW
+            // ============================
+
+            if(data.type !== "IMPORT"){
+                return;
+            }
 
             html += `
                 <tr>
@@ -1063,7 +1107,7 @@ async function loadHistory(){
                             font-weight:bold;
                         "
                     >
-                        ${afterStock}
+                        ${stockMap[productId]}
                     </td>
 
                     <td>
