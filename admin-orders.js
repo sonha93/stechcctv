@@ -1,5 +1,4 @@
 import { auth, db } from "./firebase-init.js";
-import "./member-system.js";
 let allSnapshotOrders = [];
 let allOrders = [];
 let revenueByDate = {};
@@ -11,8 +10,6 @@ const perPage = 10;
 // ============================
 
 const ordersTable = document.getElementById("ordersTable");
-const memberSection =
-  document.getElementById("memberSection");
 const totalOrders = document.getElementById("totalOrders");
 const totalRevenue = document.getElementById("totalRevenue");
 
@@ -1124,109 +1121,3 @@ updateLiveDateTime();
 
 // cập nhật mỗi giây
 setInterval(updateLiveDateTime, 1000);    
-// ============================
-// SWITCH MODULE
-// ============================
-
-const ordersSection =
-  document.getElementById("ordersSection");
-
-const inventorySection =
-  document.getElementById("inventorySection");
-
-const importSection =
-  document.getElementById("importSection");
-
-const movementsSection =
-  document.getElementById("movementsSection");
-
-const historySection =
-  document.getElementById("historySection");
-
-const lossSection =
-  document.getElementById("lossSection");
-
-const logsSection =
-  document.getElementById("logsSection");
-
-const salesSection =
-  document.getElementById("salesSection");
-
-document
-.querySelectorAll(
-  'input[name="adminView"]'
-)
-.forEach(radio=>{
-
-  radio.addEventListener(
-    "change",
-    ()=>{
-
-      const value =
-        radio.value;
-
-      // HIDE ALL
-      ordersSection.style.display = "none";
-
-      inventorySection.style.display = "none";
-
-      importSection.style.display = "none";
-
-      movementsSection.style.display = "none";
-
-      historySection.style.display = "none";
-
-      lossSection.style.display = "none";
-
-      logsSection.style.display = "none";
-
-      salesSection.style.display = "none";
-
-      memberSection.style.display = "none";
-
-      // SHOW
-      if(value === "orders"){
-        ordersSection.style.display = "block";
-      }
-
-      if(value === "inventory"){
-        inventorySection.style.display = "block";
-      }
-
-      if(value === "import"){
-        importSection.style.display = "block";
-      }
-
-      if(value === "movements"){
-        movementsSection.style.display = "block";
-      }
-
-      if(value === "history"){
-        historySection.style.display = "block";
-      }
-
-      if(value === "loss"){
-        lossSection.style.display = "block";
-      }
-
-      if(value === "logs"){
-        logsSection.style.display = "block";
-      }
-
-      if(value === "sales"){
-        salesSection.style.display = "block";
-      }
-
-      if(value === "member"){
-
-        memberSection.style.display =
-          "block";
-
-        loadMembers();
-
-      }
-
-    }
-  );
-
-});
