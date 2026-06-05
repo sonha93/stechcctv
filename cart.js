@@ -255,7 +255,8 @@ const productId =
 
   price:
     Number(product.price) || 0,
-
+  importPrice:
+  Number(product.importPrice || 0),
   oldPrice:
     Number(
       product.oldPrice ||
