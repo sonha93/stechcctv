@@ -159,13 +159,29 @@ async function loadInventory(){
                         ${oldPrice ? formatVND(oldPrice) : "---"}
                     </td>
 
-                    <td>
-                        ${formatVND(price)}
-                    </td>
+                  <td>
+    ${formatVND(price)}
+</td>
 
-                    <td>
-                        ${stock}
-                    </td>
+<td>
+    <input
+        type="number"
+        class="add-stock-input"
+        min="0"
+        value="0"
+        style="
+            width:80px;
+            padding:6px;
+            border:1px solid #ddd;
+            border-radius:6px;
+            text-align:center;
+        "
+    >
+</td>
+
+<td>
+    ${stock}
+</td>
 
                     <td>
                         ${sold}
