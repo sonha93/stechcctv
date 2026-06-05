@@ -999,37 +999,86 @@ async function loadHistory(){
 
        
         // TÍNH SOLD TỪ ĐỢT NHẬP NÀY -> TRƯỚC ĐỢT NHẬP TIẾP
-        let soldInPeriod = 0;
+      // CHỈ lấy bán SAU lần nhập này
+// và TRƯỚC lần nhập tiếp theo
 
-        salesSnap.forEach(saleDoc=>{
+let soldInPeriod = 0;
 
-            const sale = saleDoc.data();
+const currentTime =
+    data.createdAt.toMillis();
 
-            if(
-                String(sale.productId) !== String(id)
-            ){
-                return;
-            }
+// tìm lần nhập kế tiếp
+let nextImportTime = null;
 
-            if(
-                !sale.createdAt ||
-                !data.createdAt
-            ){
-                return;
-            }
+moveSnap.docs.forEach(nextDoc=>{
 
-            // CHỈ TÍNH SALES SAU ĐỢT NHẬP
-            if(
-                sale.createdAt.toMillis()
-                >=
-                data.createdAt.toMillis()
-            ){
-                soldInPeriod +=
-                    Number(sale.qty || 0);
-            }
+    const nextData = nextDoc.data();
 
-        });
+    if(
+        nextData.type !== "IMPORT" ||
+        String(nextData.productId) !== String(id) ||
+        !nextData.createdAt
+    ){
+        return;
+    }
 
+    const nextTime =
+        nextData.createdAt.toMillis();
+
+    if(nextTime > currentTime){
+
+        if(
+            nextImportTime === null ||
+            nextTime < nextImportTime
+        ){
+            nextImportTime = nextTime;
+        }
+
+    }
+
+});
+
+// SALES TRONG GIAI ĐOẠN
+salesSnap.forEach(saleDoc=>{
+
+    const sale = saleDoc.data();
+
+    if(
+        String(sale.productId) !== String(id)
+    ){
+        return;
+    }
+
+    if(!sale.createdAt){
+        return;
+    }
+
+    const saleTime =
+        sale.createdAt.toMillis();
+
+    // sau lần nhập hiện tại
+    if(saleTime < currentTime){
+        return;
+    }
+
+    // nếu có lần nhập tiếp theo
+    // thì sales phải trước lần nhập đó
+    if(
+        nextImportTime &&
+        saleTime >= nextImportTime
+    ){
+        return;
+    }
+
+    soldInPeriod +=
+        Number(sale.qty || 0);
+
+});
+
+// tồn riêng từng đợt
+const remain =
+    Number(data.qty || 0)
+    - soldInPeriod;
         // TOTAL SOLD PRODUCT
 let totalSold = 0;
 
