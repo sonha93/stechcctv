@@ -974,9 +974,10 @@ async function loadHistory(){
 
     });
 
-   // GROUP SALES
+  // GROUP STOCK OUT
 const salesMap = {};
 
+// SALES
 salesSnap.forEach(doc=>{
 
     const sale = doc.data();
@@ -989,6 +990,35 @@ salesSnap.forEach(doc=>{
 
     salesMap[id] +=
         Number(sale.qty || 0);
+
+});
+
+// MANUAL MOVEMENTS
+moveSnap.forEach(doc=>{
+
+    const data = doc.data();
+
+    const id = data.productId;
+
+    if(!salesMap[id]){
+        salesMap[id] = 0;
+    }
+
+    // chỉnh giảm stock
+    if(data.type === "MANUAL_MINUS"){
+
+        salesMap[id] +=
+            Math.abs(Number(data.qty || 0));
+
+    }
+
+    // chỉnh tăng stock
+    if(data.type === "MANUAL_PLUS"){
+
+        salesMap[id] -=
+            Math.abs(Number(data.qty || 0));
+
+    }
 
 });
     // FIFO SALES LEFT
