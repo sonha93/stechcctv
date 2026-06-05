@@ -1,3 +1,4 @@
+
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -1036,53 +1037,8 @@ salesSnap.forEach(doc=>{
                 qty
             );
 
-       // ======================
-// LOSS / THẤT THOÁT
-// ======================
-
-let loss = 0;
-
-moveSnap.forEach(mDoc=>{
-
-    const mData = mDoc.data();
-
-    if(
-        String(mData.productId) === String(id)
-    ){
-
-        // trừ stock tay
-        if(
-            mData.type === "MANUAL_MINUS"
-        ){
-
-            loss +=
-                Math.abs(
-                    Number(mData.qty || 0)
-                );
-
-        }
-
-        // cộng stock tay
-        if(
-            mData.type === "MANUAL_PLUS"
-        ){
-
-            loss -=
-                Math.abs(
-                    Number(mData.qty || 0)
-                );
-
-        }
-
-    }
-
-});
-
-// tồn thực
-const remain =
-    qty
-    - soldInPeriod
-    - loss;
+        const remain =
+            qty - soldInPeriod;
 
         // TRỪ SALES CÒN LẠI
         salesLeftMap[id] =
@@ -1119,9 +1075,8 @@ const remain =
                     ${remain}
                 </td>
 
-<td>
-    ${loss > 0 ? loss : 0}
-</td>
+                <td>0</td>
+
             </tr>
         `;
 
