@@ -5,7 +5,8 @@ import {
   doc,
   deleteDoc,
   setDoc,
-  updateDoc
+  updateDoc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -111,13 +112,45 @@ actionBox = document.getElementById("cartAction");
 
     let total = 0;
 
-    snapshot.forEach(docSnap => {
+  for (const docSnap of snapshot.docs) {
 
-      const p = docSnap.data();
+  const p = docSnap.data();
 
-      const qty = Number(p.qty) || 1;
-      const price = Number(p.price) || 0;
+  const qty = Number(p.qty) || 1;
 
+  // load giá realtime từ products
+  let price = 0;
+  let oldPrice = 0;
+
+  try {
+
+    const productRef = doc(
+      db,
+      "products",
+      String(p.productId || p.id)
+    );
+
+    const productSnap = await getDoc(productRef);
+
+    if(productSnap.exists()){
+
+      const productData = productSnap.data();
+
+      price = Number(productData.price || 0);
+
+      oldPrice = Number(
+        productData.oldPrice ||
+        productData.price ||
+        0
+      );
+
+    }
+
+  } catch(err){
+
+    console.error(err);
+
+  }
       const subTotal = qty * price;
 
       total += subTotal;
@@ -134,11 +167,11 @@ actionBox = document.getElementById("cartAction");
    <div class="price-row">
 
   ${
-    p.oldPrice
-      ? `<div class="price-old">
-           ${Number(p.oldPrice).toLocaleString()}đ
-         </div>`
-      : ""
+    oldPrice > price
+  ? `<div class="price-old">
+       ${oldPrice.toLocaleString()}đ
+     </div>`
+  : ""
   }
 
   <div class="price-new">
@@ -172,7 +205,7 @@ actionBox = document.getElementById("cartAction");
 
 </div>
 `;
-    });
+  }
 
     totalBox.innerHTML =
       "Tổng tiền: " +
@@ -251,24 +284,8 @@ const productId =
     product.productId ||
     product.id,
 
-  name: product.name || "",
-
-  price:
-    Number(product.price) || 0,
-  importPrice:
-  Number(product.importPrice || 0),
-  oldPrice:
-    Number(
-      product.oldPrice ||
-      product.price
-    ) || 0,
-
-  originalPrice:
-    Number(
-      product.originalPrice ||
-      product.oldPrice ||
-      product.price
-    ) || 0,
+  name:
+    product.name || "",
 
   category:
     product.category || "",
@@ -280,8 +297,6 @@ const productId =
     oldQty + 1
 
 });
-
-
 
   await renderCart();
 await updateCartCount();
