@@ -917,29 +917,11 @@ if(!productDoc.exists){
       continue;
     }
 
-   const importPrice =
-  Number(
-
-    item.importPriceAtSale ??
-
-    product.importPrice ??
-
-    0
-
-  );
+    const importPrice =
+      Number(product.importPrice || 0);
 
     const sellPrice =
-  Number(
-
-    item.salePriceAtSale ??
-
-    item.price ??
-
-    product.price ??
-
-    0
-
-  );
+      Number(item.price || product.price || 0);
 
     const revenue =
       sellPrice * qty;
@@ -1138,4 +1120,4 @@ function updateLiveDateTime() {
 updateLiveDateTime();
 
 // cập nhật mỗi giây
-setInterval(updateLiveDateTime, 1000);
+setInterval(updateLiveDateTime, 1000);    
