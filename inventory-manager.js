@@ -1959,157 +1959,74 @@ async function loadProductChangeLogs(){
 
             const d = doc.data();
 
-            html += `
-                <tr>
+           html += `
+<tr>
 
-                    <td>
-                        ${
-                            d.createdAt
-                            ?
-                            d.createdAt
-                            .toDate()
-                            .toLocaleString(
-                                "vi-VN"
-                            )
-                            :
-                            "-"
-                        }
-                    </td>
+<td>
+    ${date}
+</td>
 
-                    <td>
-                        ${d.productId}
-                    </td>
+<td>
+    ${name}
+</td>
 
-                    <td>
-                        ${d.productName}
-                    </td>
-
-                    <td>
-                        ${d.changedBy}
-                    </td>
-
-                    <td>
-                        ${formatVND(
-                            d.before
-                            ?.importPrice
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatVND(
-                            d.after
-                            ?.importPrice
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatVND(
-                            d.before
-                            ?.price
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatVND(
-                            d.after
-                            ?.price
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatVND(
-                            d.before
-                            ?.oldPrice
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatVND(
-                            d.after
-                            ?.oldPrice
-                        )}
-                    </td>
-
-                 <td
-    style="
-        color:${
-            Number(d.importChangePercent) < 0
-            ? "#00c853"
-            : "red"
-        };
-        font-weight:bold;
-    "
->
+<td>
     ${
-        Number(d.importChangePercent) > 0
-        ? "+"
-        : ""
-    }${d.importChangePercent || 0}%
+        oldImport === newImport
+        ? formatVND(newImport)
+        : `
+            ${formatVND(oldImport)}
+            →
+            ${formatVND(newImport)}
+        `
+    }
+</td>
+
+<td>
+    ${
+        oldPrice === newPrice
+        ? formatVND(newPrice)
+        : `
+            ${formatVND(oldPrice)}
+            →
+            ${formatVND(newPrice)}
+        `
+    }
 </td>
 
 <td
-    style="
-        color:${
-            d.profitAfter < 0
-            ? "red"
-            : "#00c853"
-        };
-        font-weight:bold;
-    "
+style="
+    color:${
+        newProfit >= 0
+        ? "#00c853"
+        : "red"
+    };
+    font-weight:bold;
+"
 >
-    ${formatVND(d.profitBefore)}
-    →
-    ${formatVND(d.profitAfter)}
-
-    <br>
-
-    <small>
-    ${
-        d.profitAfter >= d.profitBefore
-        ? "+"
-        : ""
-    }
-    ${formatVND(
-        d.profitAfter - d.profitBefore
-    )}
-
-    |
-
-    ${
-        d.profitBefore > 0
-        ? (
-            (
-                (d.profitAfter - d.profitBefore)
-                /
-                d.profitBefore
-            ) * 100
-        ).toFixed(2)
-        : 0
-    }%
-</small>
+    ${formatVND(newProfit)}
 </td>
 
 <td
-    style="
-        color:${
-            Number(d.priceChangePercent) > 0
-            ? "#00c853"
-            : Number(d.priceChangePercent) < 0
-            ? "red"
-            : "#999"
-        };
-        font-weight:bold;
-    "
+style="
+    color:${
+        pricePercent >= 0
+        ? "#00c853"
+        : "red"
+    };
+    font-weight:bold;
+"
 >
     ${
-        Number(d.priceChangePercent) > 0
+        pricePercent > 0
         ? "+"
         : ""
     }
-    ${d.priceChangePercent || 0}%
+    ${pricePercent}%
 </td>
-                </tr>
-            `;
+
+</tr>
+`;
 
         });
 
