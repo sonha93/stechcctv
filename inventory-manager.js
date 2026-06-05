@@ -371,61 +371,65 @@ if(table){
         // FOOTER
         // ============================
 
-        if(inventoryFooter){
+if(inventoryFooter){
 
-            inventoryFooter.innerHTML = `
-                <tr
-                    style="
-                        background:#111;
-                        color:white;
-                        font-weight:bold;
-                    "
-                >
+    inventoryFooter.innerHTML = `
+        <tr
+            style="
+                background:#111;
+                color:white;
+                font-weight:bold;
+            "
+        >
 
-                    <td colspan="2">
-                        TOTAL
-                    </td>
+            <td colspan="2">
+                TOTAL
+            </td>
 
-                    <td>
-                        ${formatVND(totalImportPrice)}
-                    </td>
+            <td>
+                ${formatVND(totalImportPrice)}
+            </td>
 
-                    <td>
-                        ${formatVND(totalOldPrice)}
-                    </td>
+            <td>
+                ${formatVND(totalOldPrice)}
+            </td>
 
-                    <td>
-                        ${formatVND(totalPrice)}
-                    </td>
+            <td>
+                ${formatVND(totalPrice)}
+            </td>
 
-                    <td
-                        style="
-                            color:${totalStock < 0 ? "red" : "#00ff90"};
-                        "
-                    >
-                        ${totalStock}
-                    </td>
+            <td></td>
 
-                    <td>
-                        ${totalSold}
-                    </td>
+            <td
+                style="
+                    color:${totalStock < 0 ? "red" : "#00ff90"};
+                "
+            >
+                ${totalStock}
+            </td>
 
-                    <td
-                        style="
-                            color:${totalProfit < 0 ? "red" : "#00ff90"};
-                        "
-                    >
-                        ${formatVND(totalProfit)}
-                    </td>
+            <td>
+                ${totalSold}
+            </td>
 
-                    <td colspan="2">
-                        ---
-                    </td>
-                     <td></td>  
-                </tr>
-            `;
+            <td
+                style="
+                    color:${totalProfit < 0 ? "red" : "#00ff90"};
+                "
+            >
+                ${formatVND(totalProfit)}
+            </td>
 
-        }
+            <td>
+                ---
+            </td>
+
+            <td></td>
+
+        </tr>
+    `;
+
+}
 
         bindInventoryEvents();
 
