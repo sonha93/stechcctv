@@ -137,97 +137,157 @@ h1{
 }
 
 /* =========================
-   TABLE
+   TABLE UI V2
 ========================= */
 
 .table-wrap{
     background:#fff;
-    border-radius:14px;
+    border-radius:16px;
     overflow:auto;
-    box-shadow:0 2px 10px rgba(0,0,0,.06);
-    margin-bottom:16px;
+    margin-bottom:18px;
+    border:1px solid #ececec;
 }
+
+/* table */
 
 table{
     width:100%;
-    border-collapse:collapse;
-    min-width:1400px;
+    border-collapse:separate;
+    border-spacing:0;
+    min-width:1650px;
 }
+
+/* header */
 
 thead th{
     position:sticky;
     top:0;
     z-index:5;
 
-    background:#111;
+    background:#0f1115;
     color:#fff;
 
-    padding:14px 12px;
+    padding:18px 14px;
 
     font-size:13px;
     font-weight:700;
+
     text-align:center;
     white-space:nowrap;
+
+    border-bottom:1px solid #222;
 }
 
-tbody td{
-    padding:13px 12px;
-    border-bottom:1px solid #eee;
-    font-size:13px;
-    text-align:center;
-    vertical-align:middle;
-    white-space:nowrap;
-}
+/* row */
 
-tbody tr:hover{
-    background:#fafafa;
+tbody tr{
+    transition:.18s;
 }
 
 tbody tr:nth-child(even){
-    background:#fcfcfc;
+    background:#fafafa;
 }
 
-/* tên sản phẩm */
+tbody tr:hover{
+    background:#f2f7ff;
+}
 
-tbody td:nth-child(2){
-    text-align:left;
-    min-width:220px;
-    white-space:normal;
-    line-height:1.5;
+/* cell */
+
+tbody td{
+    padding:16px 14px;
+
+    font-size:14px;
+    color:#222;
+
+    border-bottom:1px solid #eee;
+
+    text-align:center;
+    vertical-align:middle;
+
+    white-space:nowrap;
 }
 
 /* code */
 
 tbody td:nth-child(1){
     font-size:12px;
-    color:#555;
+    color:#666;
+    width:230px;
 }
 
-/* số tiền */
+/* tên */
+
+tbody td:nth-child(2){
+    text-align:left;
+    min-width:240px;
+
+    font-weight:600;
+
+    white-space:normal;
+    line-height:1.5;
+}
+
+/* số */
+
+tbody td:nth-child(n+3){
+    font-variant-numeric:tabular-nums;
+}
+
+/* LOSS */
+
+#lossSection table{
+    min-width:1850px;
+}
+
+/* header loss */
+
+#lossSection thead th{
+    background:#0b0d11;
+}
+
+/* sticky shadow */
+
+#lossSection thead{
+    box-shadow:0 2px 10px rgba(0,0,0,.12);
+}
+
+/* màu */
+
+.green{
+    color:#00c853 !important;
+    font-weight:700;
+}
+
+.red{
+    color:#ff3b30 !important;
+    font-weight:700;
+}
+
+.orange{
+    color:#ff9800 !important;
+    font-weight:700;
+}
+
+/* tiền */
 
 .money{
     font-weight:700;
 }
 
-/* xanh */
+/* scrollbar */
 
-.green{
-    color:#00c853;
-    font-weight:700;
+.table-wrap::-webkit-scrollbar{
+    height:10px;
 }
 
-/* đỏ */
-
-.red{
-    color:#f44336;
-    font-weight:700;
+.table-wrap::-webkit-scrollbar-thumb{
+    background:#d0d0d0;
+    border-radius:20px;
 }
 
-/* cam */
-
-.orange{
-    color:#ff9800;
-    font-weight:700;
+.table-wrap::-webkit-scrollbar-track{
+    background:#f5f5f5;
 }
 /* =========================
    STATUS SELECT
