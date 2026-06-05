@@ -311,3 +311,36 @@ async function(phone){
     }
 
 };
+// ==========================
+// SWITCH TAB
+// ==========================
+
+const memberRadio =
+    document.querySelector(
+        'input[value="member"]'
+    );
+
+const memberSection =
+    document.getElementById(
+        "memberSection"
+    );
+
+if(memberRadio){
+
+    memberRadio.addEventListener(
+        "change",
+        ()=>{
+
+            if(memberRadio.checked){
+
+                memberSection.style.display =
+                    "block";
+
+                loadMembers();
+
+            }
+
+        }
+    );
+
+}
