@@ -68,14 +68,10 @@ async function loadInventory(){
 }
 
             (order.items || []).forEach(item => {
-
-             const id =
-    String(
-        item.id ||
-        item.productId ||
-        ""
-    );
-
+const id = normalizeId(
+    item.id ||
+    item.productId
+);
                 if(!soldMap[id]){
                     soldMap[id] = 0;
                 }
@@ -726,7 +722,21 @@ async function loadImportPrices(){
         for(const doc of snap.docs){
 
             const data = doc.data();
+            const moveId = normalizeId(
+    data.productId
+);
 
+if(
+    data.type === "MANUAL_MINUS"
+){
+
+    lossMap[moveId] =
+        (lossMap[moveId] || 0)
+        + Math.abs(
+            Number(data.qty || 0)
+        );
+
+}
             const selectedDate = importDateFilter?.value;
 
             if(!data.createdAt){
@@ -986,12 +996,16 @@ if(
     return;
 }
 
-        const sold =
-            soldMap[product.id] || 0;
-
+       const sold =
+    soldMap[
+        normalizeId(product.id)
+    ] || 0;
         const stock =
             Number(p.stock || 0);
-
+        const lossQty =
+    lossMap[
+        normalizeId(product.id)
+    ] || 0;
         html += `
             <tr>
 
@@ -1017,9 +1031,17 @@ if(
                 <td>${sold}</td>
 
                 <td>${stock}</td>
-
-                <td>
-    0
+        <td
+style="
+    color:red;
+    font-weight:bold;
+"
+>
+    ${
+        lossQty > 0
+        ? "-" + lossQty
+        : 0
+    }
 </td>
 
             </tr>
@@ -1650,7 +1672,7 @@ async function loadLoss(){
         // ====================
         // HTML
         // ====================
-
+        const lossMap = {};  
         let html = "";
 
         productSnap.forEach(doc => {
@@ -1669,8 +1691,8 @@ async function loadLoss(){
             // DATA
             // ====================
 
-            const importedQty =
-    Number(p.totalImportedQty || 0);
+           const importedQty =
+    importMap[id] || 0;
 
             const sold =
                 soldMap[id] || 0;
@@ -1686,17 +1708,11 @@ async function loadLoss(){
                 Number(p.stock || 0);
 
             // TỒN ĐÁNG LẼ PHẢI CÓ
-           const expectedStockRaw =
+           const expectedStock =
     importedQty
     - sold
     - lossQty
     + plusQty;
-
-const expectedStock =
-    Math.max(
-        expectedStockRaw,
-        0
-    );
 
             // CHÊNH LỆCH
             const stockDiff =
@@ -1711,12 +1727,14 @@ const expectedStock =
 
 const capital =
     sold * importPrice;
-
+const profit =
+    revenue - capital;
 const profit =
     revenue - capital;
 
 const stockValue =
-    systemStock * importPrice;
+    Math.abs(systemStock)
+    * importPrice;
 
 const realLossQty =
     stockDiff < 0
