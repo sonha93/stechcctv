@@ -941,7 +941,16 @@ async function loadHistory(){
         await db.collection("orders")
         .get();
 
+    // ====================
+    // MAP
+    // ====================
+
     const soldMap = {};
+    const lossMap = {};
+
+    // ====================
+    // SOLD
+    // ====================
 
     orderSnap.forEach(doc=>{
 
@@ -952,12 +961,11 @@ async function loadHistory(){
 
         (order.items || []).forEach(item=>{
 
-            const id =
-    String(
-        item.id ||
-        item.productId ||
-        ""
-    );
+            const id = normalizeId(
+                item.id ||
+                item.productId
+            );
+
             soldMap[id] =
                 (soldMap[id] || 0)
                 + Number(item.qty || 0);
@@ -966,63 +974,83 @@ async function loadHistory(){
 
     });
 
+    // ====================
+    // LOSS
+    // ====================
+
+    moveSnap.forEach(doc=>{
+
+        const data = doc.data();
+
+        const moveId = normalizeId(
+            data.productId
+        );
+
+        if(
+            data.type === "MANUAL_MINUS"
+        ){
+
+            lossMap[moveId] =
+                (lossMap[moveId] || 0)
+                + Math.abs(
+                    Number(data.qty || 0)
+                );
+
+        }
+
+    });
+
+    // ====================
+    // HTML
+    // ====================
+
     let html = "";
 
     moveSnap.forEach(doc=>{
 
-    const data = doc.data();
-
-    const moveId = normalizeId(
-        data.productId
-    );
-
-    // THẤT THOÁT
-    if(
-        data.type === "MANUAL_MINUS"
-    ){
-
-        lossMap[moveId] =
-            (lossMap[moveId] || 0)
-            + Math.abs(
-                Number(data.qty || 0)
-            );
-
-    }
+        const data = doc.data();
 
         if(data.type !== "IMPORT")
             return;
 
         const product =
             productSnap.docs.find(
-                p => p.id === data.productId
+                p =>
+                    normalizeId(p.id)
+                    ===
+                    normalizeId(data.productId)
             );
 
         if(!product)
             return;
 
         const p = product.data();
-if(
-    keyword &&
-    !String(p.name || "")
-        .toLowerCase()
-        .includes(keyword) &&
-    !String(product.id)
-        .toLowerCase()
-        .includes(keyword)
-){
-    return;
-}
 
-       const sold =
-    soldMap[
-        normalizeId(product.id)
-    ] || 0;
+        if(
+            keyword &&
+            !String(p.name || "")
+                .toLowerCase()
+                .includes(keyword) &&
+            !String(product.id)
+                .toLowerCase()
+                .includes(keyword)
+        ){
+            return;
+        }
+
+        const sold =
+            soldMap[
+                normalizeId(product.id)
+            ] || 0;
+
         const stock =
             Number(p.stock || 0);
+
         const lossQty =
-    lossMap[
-        normalizeId(product.id)
-    ] || 0;
+            lossMap[
+                normalizeId(product.id)
+            ] || 0;
+
         html += `
             <tr>
 
@@ -1048,23 +1076,42 @@ if(
                 <td>${sold}</td>
 
                 <td>${stock}</td>
-        <td
-style="
-    color:red;
-    font-weight:bold;
-"
->
-    ${
-        lossQty > 0
-        ? "-" + lossQty
-        : 0
-    }
-</td>
+
+                <td
+                style="
+                    color:red;
+                    font-weight:bold;
+                "
+                >
+                    ${
+                        lossQty > 0
+                        ? "-" + lossQty
+                        : 0
+                    }
+                </td>
 
             </tr>
         `;
 
     });
+
+    if(!html){
+
+        html = `
+            <tr>
+                <td
+                    colspan="8"
+                    style="
+                        text-align:center;
+                        padding:20px;
+                    "
+                >
+                    Chưa có dữ liệu
+                </td>
+            </tr>
+        `;
+
+    }
 
     historyBody.innerHTML = html;
 
