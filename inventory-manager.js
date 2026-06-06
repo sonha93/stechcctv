@@ -1844,9 +1844,8 @@ async function loadLoss(){
             // DATA
             // ====================
 
-            const importedQty =
-    Number(p.totalImportedQty || 0);
-
+          const importedQty =
+    Number(importMap[id] || 0);
             const sold =
                 soldMap[id] || 0;
 
@@ -1861,23 +1860,30 @@ async function loadLoss(){
                 Number(p.stock || 0);
 
             // TỒN ĐÁNG LẼ PHẢI CÓ
-           const expectedStockRaw =
+        const expectedStock =
     importedQty
     - sold
     - lossQty
     + plusQty;
 
-const expectedStock =
-    Math.max(
-        expectedStockRaw,
-        0
-    );
-
             // CHÊNH LỆCH
             const stockDiff =
                 systemStock
                 - expectedStock;
-
+                if(
+    Math.abs(stockDiff) > 10
+){
+    console.log({
+        product:p.name,
+        importedQty,
+        sold,
+        lossQty,
+        plusQty,
+        expectedStock,
+        systemStock,
+        stockDiff
+    });
+}
             // ====================
             // MONEY
             // ====================
@@ -1894,9 +1900,10 @@ const stockValue =
     systemStock * importPrice;
 
 const realLossQty =
-    stockDiff < 0
-    ? Math.abs(stockDiff)
-    : lossQty;
+    Math.max(
+        0,
+        -stockDiff
+    );
 
 const lossValue =
     realLossQty * importPrice;
@@ -1910,16 +1917,16 @@ const importValue =
             // %
             // ====================
 
-            const lossPercent =
-                importedQty > 0
-                ? (
-                    lossQty
-                    /
-                    importedQty
-                    *
-                    100
-                ).toFixed(2)
-                : "0.00";
+           const lossPercent =
+    importedQty > 0
+    ? (
+        realLossQty
+        /
+        importedQty
+        *
+        100
+    ).toFixed(2)
+    : "0.00";
 
                 const profitPercent =
     revenue > 0
