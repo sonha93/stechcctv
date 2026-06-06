@@ -955,25 +955,24 @@ async function loadHistory(){
         .orderBy("createdAt","asc")
         .get();
 
-    const salesSnap =
-        await db.collection("sales_history")
-        .orderBy("createdAt","asc")
-        .get();
+   const salesSnap =
+    await db.collection("sales_history").get();
 
-    const productSnap =
-        await db.collection("products")
-        .get();
+salesSnap.forEach(doc => {
 
-    let html = "";
+    const sale = doc.data();
 
-    // MAP PRODUCT
-    const productMap = {};
+    const id = normalizeId(
+        sale.productId
+    );
 
-    productSnap.forEach(doc=>{
+    if(!id) return;
 
-        productMap[doc.id] = doc.data();
+    soldMap[id] =
+        (soldMap[id] || 0)
+        + Number(sale.qty || 0);
 
-    });
+});
 
    // GROUP SALES
 const salesMap = {};
