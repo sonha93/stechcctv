@@ -741,6 +741,10 @@ tr:hover{
   <input type="radio" name="adminView" value="sales">
   <span>Sales</span>
 </label>
+    <label>
+  <input type="radio" name="adminView" value="member">
+  <span>Member</span>
+</label>
   </div>
 
 </div>
@@ -1017,6 +1021,28 @@ tr:hover{
       </button>
 
     </div>
+
+</div>
+    <!-- TABLE -->
+    <table>
+
+      <thead>
+        <tr>
+          <th>Sản phẩm</th>
+          <th>Loại</th>
+          <th>Số lượng</th>
+          <th>Lý do</th>
+          <th>Ngày</th>
+        </tr>
+      </thead>
+
+      <tbody id="movementsBody"></tbody>
+
+    </table>
+
+  </div>
+
+</div>
 <!-- MEMBER -->
 <div
   id="memberSection"
@@ -1057,17 +1083,11 @@ tr:hover{
       </thead>
 
       <tbody id="memberBody">
-
         <tr>
-          <td colspan="6"
-              style="
-                text-align:center;
-                padding:20px;
-              ">
+          <td colspan="6" style="text-align:center;padding:20px;">
             Đang tải...
           </td>
         </tr>
-
       </tbody>
 
     </table>
@@ -1075,27 +1095,6 @@ tr:hover{
   </div>
 
 </div>
-    <!-- TABLE -->
-    <table>
-
-      <thead>
-        <tr>
-          <th>Sản phẩm</th>
-          <th>Loại</th>
-          <th>Số lượng</th>
-          <th>Lý do</th>
-          <th>Ngày</th>
-        </tr>
-      </thead>
-
-      <tbody id="movementsBody"></tbody>
-
-    </table>
-
-  </div>
-
-</div>
-
    <!-- SALES HISTORY -->
 <div
   id="salesSection"
