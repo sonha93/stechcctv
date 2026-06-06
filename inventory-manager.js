@@ -2034,7 +2034,8 @@ const realLossQty =
         0,
         -stockDiff
     );
-
+const lossValue =
+    realLossQty * importPrice;
 // giá trị thất thoát thực tế
 const lossValue =
     realLossQty * importPrice;
