@@ -917,20 +917,60 @@ if(!productDoc.exists){
       continue;
     }
 
-    const importPrice =
-      Number(product.importPrice || 0);
+   const sellPrice =
+  Number(item.price || product.price || 0);
 
-    const sellPrice =
-      Number(item.price || product.price || 0);
+const revenue =
+  sellPrice * qty;
 
-    const revenue =
-      sellPrice * qty;
+let capital = 0;
+let remainNeed = qty;
 
-    const capital =
-      importPrice * qty;
+const fifoSnap = await db
+  .collection("stock_movements")
+  .where("productId","==",productId)
+  .where("type","==","IMPORT")
+  .orderBy("createdAt","asc")
+  .get();
 
-    const profit =
-      revenue - capital;
+for(const fifoDoc of fifoSnap.docs){
+
+  if(remainNeed <= 0){
+    break;
+  }
+
+  const lot = fifoDoc.data();
+
+  const lotRemain =
+    Number(lot.remainQty || 0);
+
+  if(lotRemain <= 0){
+    continue;
+  }
+
+  const takeQty =
+    Math.min(
+      remainNeed,
+      lotRemain
+    );
+
+  capital +=
+    takeQty *
+    Number(lot.importPrice || 0);
+
+  remainNeed -= takeQty;
+
+  await fifoDoc.ref.update({
+
+    remainQty:
+      lotRemain - takeQty
+
+  });
+
+}
+
+const profit =
+  revenue - capital;
 
     await db
       .collection("sales_history")
