@@ -68,32 +68,22 @@ async function loadInventory(){
     return;
 }
 
-           (order.items || []).forEach(item => {
+            (order.items || []).forEach(item => {
 
-    console.log("LOSS ITEM", item);
-
-    const id = normalizeId(
+             const id =
+    String(
         item.id ||
-        item.productId
+        item.productId ||
+        ""
     );
 
-    console.log(
-        "LOSS ID",
-        id,
-        item.id,
-        item.productId
-    );
+                if(!soldMap[id]){
+                    soldMap[id] = 0;
+                }
 
-    if(!id){
-        console.log("THIEU ID", item);
-        return;
-    }
+                soldMap[id] += Number(item.qty || 0);
 
-    soldMap[id] =
-        (soldMap[id] || 0)
-        + Number(item.qty || 0);
-
-});
+            });
 
         });
 
@@ -1880,25 +1870,6 @@ async function loadLoss(){
             const stockDiff =
                 systemStock
                 - expectedStock;
-            if(
-    p.name === "home+trong ngoài trời"
-){
-    console.log(
-        "HOME DEBUG",
-        {
-            id,
-            importedQty,
-            sold,
-            lossQty,
-            plusQty,
-            expectedStock,
-            systemStock,
-            stockDiff,
-            importPrice,
-            sellPrice
-        }
-    );
-}
                 if(
     Math.abs(stockDiff) > 10
 ){
