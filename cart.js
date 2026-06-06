@@ -213,7 +213,7 @@ export async function addToCart(product) {
     return;
   }
 const productId =
-  String(product.id || product.slug);
+  String(product.id);
   try {
 
     const itemRef = doc(
