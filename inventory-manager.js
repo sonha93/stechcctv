@@ -1309,13 +1309,13 @@ Object.entries(productMap).forEach(([id,p])=>{
                 ${totalRemain}
             </td>
 
-           <td
+          <td
 style="
     color:red;
     font-weight:bold;
 "
 >
-    ${totalMinus}
+    ${totalMinus > 0 ? "-" + totalMinus : 0}
 </td>
 
         </tr>
