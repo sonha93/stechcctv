@@ -685,7 +685,7 @@ if(qtyImport > 0){
     type:"IMPORT",
 
     qty:qtyImport,
-
+    remainQty:qtyImport,
     reason:"Nhập kho",
 
     importPrice: importPrice,
