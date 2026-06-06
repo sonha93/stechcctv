@@ -985,7 +985,7 @@ const profit =
 
         qty,
 
-        importPrice,
+       importPrice: avgImportPrice,
 
         sellPrice,
 
