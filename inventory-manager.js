@@ -1258,11 +1258,15 @@ moveSnap.forEach(doc=>{
     }
 
 });
-const totalRemain =
-    totalImport
-    - totalSold
-    - totalMinus
-    + totalPlus;
+let totalRemain = 0;
+
+Object.values(productMap).forEach(p=>{
+
+    totalRemain += Number(
+        p.stock || 0
+    );
+
+});
     // FOOTER
     html += `
         <tr
