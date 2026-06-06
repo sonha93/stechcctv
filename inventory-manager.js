@@ -1903,7 +1903,11 @@ const capital =
 
 const profit =
     revenue - capital;
-
+const avgImportPrice =
+  qty > 0
+  ? capital / qty
+  : 0;
+            
 const stockValue =
     systemStock * importPrice;
 
