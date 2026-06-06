@@ -2029,13 +2029,16 @@ const profit =
 const stockValue =
     systemStock * importPrice;
 
-const realLossQty =
+const diffLossQty =
     Math.max(
         0,
         -stockDiff
     );
-const lossValue =
-    realLossQty * importPrice;
+
+const realLossQty =
+    lossQty +
+    diffLossQty;
+
 // giá trị thất thoát thực tế
 const lossValue =
     realLossQty * importPrice;
