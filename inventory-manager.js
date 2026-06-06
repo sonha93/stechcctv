@@ -1880,6 +1880,25 @@ async function loadLoss(){
             const stockDiff =
                 systemStock
                 - expectedStock;
+            if(
+    p.name === "home+trong ngoài trời"
+){
+    console.log(
+        "HOME DEBUG",
+        {
+            id,
+            importedQty,
+            sold,
+            lossQty,
+            plusQty,
+            expectedStock,
+            systemStock,
+            stockDiff,
+            importPrice,
+            sellPrice
+        }
+    );
+}
                 if(
     Math.abs(stockDiff) > 10
 ){
