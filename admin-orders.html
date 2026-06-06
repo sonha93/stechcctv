@@ -516,6 +516,63 @@ tr:hover{
 #lossSection td:nth-child(2){
     background:#fff;
 }
+   /* LOSS SCROLL */
+
+#lossSection{
+    max-height: 780px; /* khoảng 12 dòng */
+    overflow:auto;
+    position:relative;
+}
+
+/* thanh cuộn luôn hiện */
+#lossSection::-webkit-scrollbar{
+    width:12px;
+    height:12px;
+}
+
+#lossSection::-webkit-scrollbar-thumb{
+    background:#999;
+    border-radius:10px;
+}
+
+#lossSection::-webkit-scrollbar-track{
+    background:#eee;
+}
+
+/* header dính trên */
+#lossSection thead th{
+    position:sticky;
+    top:0;
+    z-index:5;
+}
+
+/* cột Code cố định */
+#lossSection th:nth-child(1),
+#lossSection td:nth-child(1){
+    position:sticky;
+    left:0;
+    min-width:180px;
+    background:#fff;
+    z-index:3;
+}
+
+/* cột Tên SP cố định */
+#lossSection th:nth-child(2),
+#lossSection td:nth-child(2){
+    position:sticky;
+    left:180px;
+    min-width:220px;
+    background:#fff;
+    z-index:3;
+}
+
+/* giữ header đen */
+#lossSection thead th:nth-child(1),
+#lossSection thead th:nth-child(2){
+    background:#111;
+    color:#fff;
+    z-index:6;
+}
 /* =========================
    MOBILE
 ========================= */
