@@ -1,3 +1,5 @@
+admin-orders.html
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -6,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Quản lý đơn hàng Stech</title>
-<div id="liveDateTime"></div>
+
 <style>
 
 /* =========================
@@ -641,16 +643,6 @@ tr:hover{
 .product-info-stat{
     white-space:normal;
 }  
-   #liveDateTime{
-    font-size:18px;
-    font-weight:600;
-    padding:12px 16px;
-    background:#fff;
-    border-radius:12px;
-    width:fit-content;
-    box-shadow:0 2px 10px rgba(0,0,0,0.08);
-    margin-bottom:15px;
-}
 
 }
 </style>
@@ -741,10 +733,6 @@ tr:hover{
   <input type="radio" name="adminView" value="sales">
   <span>Sales</span>
 </label>
-    <label>
-  <input type="radio" name="adminView" value="member">
-  <span>Member</span>
-</label>
   </div>
 
 </div>
@@ -804,12 +792,7 @@ tr:hover{
         Chọn khoảng ngày rồi bấm Lọc doanh thu
     </div>
 
-
 </div>
-
-
-</div>
-
 <!-- INVENTORY MODULE -->
 <div
   id="inventorySection"
@@ -845,10 +828,9 @@ tr:hover{
     <th>Giá nhập</th>
     <th>Giá bán</th>
     <th>Giá KM</th>
-   <th>Nhập thêm</th>
     <th>Tồn</th>
     <th>Đã bán</th>
-    <th>Giá trị tồn</th>
+    <th>Lợi nhuận</th>
     <th>Trạng thái</th>
     <th>Hành động</th>
   </tr>
@@ -1022,7 +1004,6 @@ tr:hover{
 
     </div>
 
-</div>
     <!-- TABLE -->
     <table>
 
@@ -1043,58 +1024,7 @@ tr:hover{
   </div>
 
 </div>
-<!-- MEMBER -->
-<div
-  id="memberSection"
-  class="table-wrap"
-  style="display:none;margin-bottom:16px;"
->
 
-  <div style="padding:16px;">
-
-    <h2 style="margin-bottom:15px;">
-      👑 Member
-    </h2>
-
-    <input
-      type="text"
-      id="memberSearch"
-      placeholder="Tìm tên / SĐT..."
-      style="
-        width:100%;
-        padding:12px;
-        margin-bottom:15px;
-        border-radius:10px;
-        border:1px solid #ddd;
-      "
-    >
-
-    <table>
-
-      <thead>
-        <tr>
-          <th>Tên</th>
-          <th>SĐT</th>
-          <th>Điểm</th>
-          <th>Hạng</th>
-          <th>Tổng chi</th>
-          <th>Ngày tạo</th>
-        </tr>
-      </thead>
-
-      <tbody id="memberBody">
-        <tr>
-          <td colspan="6" style="text-align:center;padding:20px;">
-            Đang tải...
-          </td>
-        </tr>
-      </tbody>
-
-    </table>
-
-  </div>
-
-</div>
    <!-- SALES HISTORY -->
 <div
   id="salesSection"
@@ -1180,41 +1110,23 @@ tr:hover{
 
     <table>
       <thead>
-       <tr>
-
-    <th>Code</th>
-
+        <tr>
+         <th>Code</th>
     <th>Tên SP</th>
-
     <th>Giá nhập</th>
-
     <th>Giá bán</th>
-
     <th>Tổng nhập</th>
-
-    <th>Đã bán</th>
-
-    <th>Điều chỉnh tồn</th>
-
-    <th>Tồn Hệ thống</th>
-
-    <th>Chênh lệch</th>
-
     <th>Giá trị nhập</th>
-
+    <th>Đã bán</th>
     <th>Doanh thu</th>
-
+    <th>Tồn Hệ thống</th>
     <th>Giá trị tồn kho</th>
-
+    <th>Điều chỉnh tồn</th>
     <th>Giá trị</th>
-
     <th>% Hao hụt</th>
-
     <th>Profit</th>
-
     <th>% Profit</th>
-
-</tr>
+        </tr>
       </thead>
 
       <tbody id="lossBody">
@@ -1391,6 +1303,5 @@ tr:hover{
 <script type="module" src="admin-orders.js"></script>
 <script type="module" src="inventory-manager.js"></script>
 <script type="module" src="history.js"></script>
-   <script type="module" src="./member.js"></script>
 </body>
 </html>
