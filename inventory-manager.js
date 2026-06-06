@@ -1906,7 +1906,7 @@ const realLossQty =
     );
 
 const lossValue =
-    realLossQty * importPrice;
+    lossQty * importPrice;
             
 const realProfit =
     profit - lossValue;
@@ -1967,9 +1967,9 @@ html += `
         font-weight:bold;
     "
     >
-        ${
-    realLossQty > 0
-    ? "-" + realLossQty
+       ${
+    lossQty > 0
+    ? "-" + lossQty
     : 0
 }
     </td>
