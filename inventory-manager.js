@@ -1,4 +1,3 @@
-
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -955,24 +954,25 @@ async function loadHistory(){
         .orderBy("createdAt","asc")
         .get();
 
-   const salesSnap =
-    await db.collection("sales_history").get();
+    const salesSnap =
+        await db.collection("sales_history")
+        .orderBy("createdAt","asc")
+        .get();
 
-salesSnap.forEach(doc => {
+    const productSnap =
+        await db.collection("products")
+        .get();
 
-    const sale = doc.data();
+    let html = "";
 
-    const id = normalizeId(
-        sale.productId
-    );
+    // MAP PRODUCT
+    const productMap = {};
 
-    if(!id) return;
+    productSnap.forEach(doc=>{
 
-    soldMap[id] =
-        (soldMap[id] || 0)
-        + Number(sale.qty || 0);
+        productMap[doc.id] = doc.data();
 
-});
+    });
 
    // GROUP SALES
 const salesMap = {};
