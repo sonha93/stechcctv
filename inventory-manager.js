@@ -1905,19 +1905,18 @@ const realLossQty =
         -stockDiff
     );
 
+// giá trị thất thoát thực tế
 const lossValue =
-    lossQty * importPrice;
-            
+    realLossQty * importPrice;
+
 const realProfit =
     profit - lossValue;
 
 const importValue =
     importedQty * importPrice;
-            // ====================
-            // %
-            // ====================
 
-           const lossPercent =
+// % thất thoát thực tế
+const lossPercent =
     importedQty > 0
     ? (
         realLossQty
