@@ -968,10 +968,10 @@ async function loadProduct(){
   }
 
   product = {
+  ...docSnap.data(),
+
   id: docSnap.id,
   productId: docSnap.id,
-
-  ...docSnap.data(),
 
   originalPrice:
     Number(
