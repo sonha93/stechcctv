@@ -977,25 +977,22 @@ async function loadHistory(){
 
    // GROUP SALES
 const salesMap = {};
-
-    const minusMap = {};
-    const plusMap = {};
-
-    salesSnap.forEach(doc=>{
+salesSnap.forEach(doc => {
 
     const sale = doc.data();
 
-    const id = sale.productId;
+    const id = String(
+        sale.productId || ""
+    );
 
-    if(!salesMap[id]){
-        salesMap[id] = 0;
-    }
+    if(!id) return;
 
-    salesMap[id] +=
-        Number(sale.qty || 0);
+    salesMap[id] =
+        (salesMap[id] || 0)
+        + Number(sale.qty || 0);
 
 });
-    const minusMap = {};
+   const minusMap = {};
 const plusMap = {};
 
 moveSnap.forEach(doc=>{
@@ -1008,22 +1005,20 @@ moveSnap.forEach(doc=>{
 
     if(data.type === "MANUAL_MINUS"){
 
-        if(!minusMap[id]){
-            minusMap[id] = 0;
-        }
-
-        minusMap[id] +=
+        minusMap[id] =
+            (minusMap[id] || 0)
+            +
             Math.abs(Number(data.qty || 0));
+
     }
 
     if(data.type === "MANUAL_PLUS"){
 
-        if(!plusMap[id]){
-            plusMap[id] = 0;
-        }
-
-        plusMap[id] +=
+        plusMap[id] =
+            (plusMap[id] || 0)
+            +
             Number(data.qty || 0);
+
     }
 
 });
@@ -1043,22 +1038,9 @@ const plusLeftMap = {
     moveSnap.forEach(doc=>{
 
         const data = doc.data();
-
-        if(data.type !== "IMPORT")
-            if(data.type === "MANUAL_MINUS"){
-
-    totalMinus +=
-        Math.abs(
-            Number(data.qty || 0)
-        );
+if(data.type !== "IMPORT"){
+    return;
 }
-
-if(data.type === "MANUAL_PLUS"){
-
-    totalPlus +=
-        Number(data.qty || 0);
-}
-            return;
 
         const id = data.productId;
 
@@ -1081,8 +1063,7 @@ if(data.type === "MANUAL_PLUS"){
 
         const qty =
             Number(data.qty || 0);
-
-     const salesLeft =
+const salesLeft =
     Number(salesLeftMap[id] || 0);
 
 const soldInPeriod =
@@ -1090,6 +1071,12 @@ const soldInPeriod =
         salesLeft,
         qty
     );
+
+salesLeftMap[id] =
+    salesLeft - soldInPeriod;
+
+const qtyAfterSold =
+    qty - soldInPeriod;
 
 const minusLeft =
     Number(
@@ -1099,25 +1086,31 @@ const minusLeft =
 const lossInPeriod =
     Math.min(
         minusLeft,
-        qty - soldInPeriod
+        qtyAfterSold
     );
-
-const remain =
-    qty
-    - soldInPeriod
-    - lossInPeriod;
-
-salesLeftMap[id] =
-    salesLeft - soldInPeriod;
 
 minusLeftMap[id] =
     minusLeft - lossInPeriod;
 
-salesLeftMap[id] =
-    salesLeft - soldInPeriod;
-        // TRỪ SALES CÒN LẠI
-        salesLeftMap[id] =
-            salesLeft - soldInPeriod;
+const plusLeft =
+    Number(
+        plusLeftMap[id] || 0
+    );
+
+const plusInPeriod =
+    Math.min(
+        plusLeft,
+        qty
+    );
+
+plusLeftMap[id] =
+    plusLeft - plusInPeriod;
+
+const remain =
+    qty
+    - soldInPeriod
+    - lossInPeriod
+    + plusInPeriod;
 
         html += `
             <tr>
@@ -1238,6 +1231,37 @@ if(
     - totalSold
     - totalMinus
     + totalPlus;
+moveSnap.forEach(doc=>{
+
+    const data = doc.data();
+
+    const p = productMap[data.productId];
+
+    if(
+        keyword &&
+        !String(p?.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+        !String(data.productId)
+        .toLowerCase()
+        .includes(keyword)
+    ){
+        return;
+    }
+
+    if(data.type === "MANUAL_MINUS"){
+        totalMinus += Math.abs(
+            Number(data.qty || 0)
+        );
+    }
+
+    if(data.type === "MANUAL_PLUS"){
+        totalPlus += Number(
+            data.qty || 0
+        );
+    }
+
+});
     // FOOTER
     html += `
         <tr
