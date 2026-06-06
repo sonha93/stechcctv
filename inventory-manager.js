@@ -1226,11 +1226,7 @@ if(
 
     });
 
-   const totalRemain =
-    totalImport
-    - totalSold
-    - totalMinus
-    + totalPlus;
+   
 moveSnap.forEach(doc=>{
 
     const data = doc.data();
@@ -1262,6 +1258,11 @@ moveSnap.forEach(doc=>{
     }
 
 });
+const totalRemain =
+    totalImport
+    - totalSold
+    - totalMinus
+    + totalPlus;
     // FOOTER
     html += `
         <tr
