@@ -68,22 +68,32 @@ async function loadInventory(){
     return;
 }
 
-            (order.items || []).forEach(item => {
+           (order.items || []).forEach(item => {
 
-             const id =
-    String(
+    console.log("LOSS ITEM", item);
+
+    const id = normalizeId(
         item.id ||
-        item.productId ||
-        ""
+        item.productId
     );
 
-                if(!soldMap[id]){
-                    soldMap[id] = 0;
-                }
+    console.log(
+        "LOSS ID",
+        id,
+        item.id,
+        item.productId
+    );
 
-                soldMap[id] += Number(item.qty || 0);
+    if(!id){
+        console.log("THIEU ID", item);
+        return;
+    }
 
-            });
+    soldMap[id] =
+        (soldMap[id] || 0)
+        + Number(item.qty || 0);
+
+});
 
         });
 
