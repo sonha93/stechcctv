@@ -1,4 +1,3 @@
-FI VS CHẢ FO
 
 // ============================
 // INVENTORY MANAGER V8
