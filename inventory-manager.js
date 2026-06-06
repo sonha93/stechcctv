@@ -1870,17 +1870,6 @@ async function loadLoss(){
             const stockDiff =
                 systemStock
                 - expectedStock;
-            if(id === "18wxaie0cru4buzpyv0y"){
-    console.log("DEBUG NGOAI TROI", {
-        importedQty,
-        sold,
-        lossQty,
-        plusQty,
-        systemStock,
-        expectedStock,
-        stockDiff
-    });
-}
                 if(
     Math.abs(stockDiff) > 10
 ){
