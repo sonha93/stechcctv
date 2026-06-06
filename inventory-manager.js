@@ -978,7 +978,10 @@ async function loadHistory(){
    // GROUP SALES
 const salesMap = {};
 
-salesSnap.forEach(doc=>{
+    const minusMap = {};
+    const plusMap = {};
+
+    salesSnap.forEach(doc=>{
 
     const sale = doc.data();
 
@@ -992,17 +995,69 @@ salesSnap.forEach(doc=>{
         Number(sale.qty || 0);
 
 });
+    const minusMap = {};
+const plusMap = {};
+
+moveSnap.forEach(doc=>{
+
+    const data = doc.data();
+
+    const id = data.productId;
+
+    if(!id) return;
+
+    if(data.type === "MANUAL_MINUS"){
+
+        if(!minusMap[id]){
+            minusMap[id] = 0;
+        }
+
+        minusMap[id] +=
+            Math.abs(Number(data.qty || 0));
+    }
+
+    if(data.type === "MANUAL_PLUS"){
+
+        if(!plusMap[id]){
+            plusMap[id] = 0;
+        }
+
+        plusMap[id] +=
+            Number(data.qty || 0);
+    }
+
+});
     // FIFO SALES LEFT
     const salesLeftMap = {
         ...salesMap
     };
 
+    const minusLeftMap = {
+    ...minusMap
+};
+
+const plusLeftMap = {
+    ...plusMap
+};
     // LOOP IMPORT
     moveSnap.forEach(doc=>{
 
         const data = doc.data();
 
         if(data.type !== "IMPORT")
+            if(data.type === "MANUAL_MINUS"){
+
+    totalMinus +=
+        Math.abs(
+            Number(data.qty || 0)
+        );
+}
+
+if(data.type === "MANUAL_PLUS"){
+
+    totalPlus +=
+        Number(data.qty || 0);
+}
             return;
 
         const id = data.productId;
@@ -1027,19 +1082,39 @@ salesSnap.forEach(doc=>{
         const qty =
             Number(data.qty || 0);
 
-        const salesLeft =
-            Number(salesLeftMap[id] || 0);
+     const salesLeft =
+    Number(salesLeftMap[id] || 0);
 
-        // FIFO
-        const soldInPeriod =
-            Math.min(
-                salesLeft,
-                qty
-            );
+const soldInPeriod =
+    Math.min(
+        salesLeft,
+        qty
+    );
 
-        const remain =
-            qty - soldInPeriod;
+const minusLeft =
+    Number(
+        minusLeftMap[id] || 0
+    );
 
+const lossInPeriod =
+    Math.min(
+        minusLeft,
+        qty - soldInPeriod
+    );
+
+const remain =
+    qty
+    - soldInPeriod
+    - lossInPeriod;
+
+salesLeftMap[id] =
+    salesLeft - soldInPeriod;
+
+minusLeftMap[id] =
+    minusLeft - lossInPeriod;
+
+salesLeftMap[id] =
+    salesLeft - soldInPeriod;
         // TRỪ SALES CÒN LẠI
         salesLeftMap[id] =
             salesLeft - soldInPeriod;
@@ -1075,7 +1150,18 @@ salesSnap.forEach(doc=>{
                     ${remain}
                 </td>
 
-                <td>0</td>
+<td
+style="
+    color:red;
+    font-weight:bold;
+"
+>
+    ${
+        lossInPeriod > 0
+        ? "-" + lossInPeriod
+        : 0
+    }
+</td>
 
             </tr>
         `;
@@ -1088,7 +1174,9 @@ salesSnap.forEach(doc=>{
     // ======================
 
     let totalImport = 0;
-    let totalSold = 0;
+let totalSold = 0;
+let totalMinus = 0;
+let totalPlus = 0;
 
     moveSnap.forEach(doc=>{
 
@@ -1145,9 +1233,11 @@ if(
 
     });
 
-    const totalRemain =
-        totalImport - totalSold;
-
+   const totalRemain =
+    totalImport
+    - totalSold
+    - totalMinus
+    + totalPlus;
     // FOOTER
     html += `
         <tr
@@ -1178,9 +1268,14 @@ if(
                 ${totalRemain}
             </td>
 
-            <td>
-                0
-            </td>
+           <td
+style="
+    color:red;
+    font-weight:bold;
+"
+>
+    ${totalMinus}
+</td>
 
         </tr>
     `;
