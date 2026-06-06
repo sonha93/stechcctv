@@ -686,7 +686,7 @@ if(qtyImport > 0){
     type:"IMPORT",
 
     qty:qtyImport,
-
+    remainQty:qtyImport,
     reason:"Nhập kho",
 
     importPrice: importPrice,
@@ -1744,7 +1744,7 @@ async function loadLoss(){
         const lossMap = {};
         const plusMap = {};
         const importMap = {};
-
+        const importValueMap = {};
         // ====================
         // SOLD
         // ====================
@@ -1794,12 +1794,21 @@ async function loadLoss(){
             // NHẬP KHO
             if(m.type === "IMPORT"){
 
-                importMap[id] =
-                    (importMap[id] || 0)
-                    + Number(m.qty || 0);
+    const qty =
+        Number(m.qty || 0);
 
-            }
+    const price =
+        Number(m.importPrice || 0);
 
+    importMap[id] =
+        (importMap[id] || 0)
+        + qty;
+
+    importValueMap[id] =
+        (importValueMap[id] || 0)
+        + (qty * price);
+
+}
             // TRỪ TAY
             if(m.type === "MANUAL_MINUS"){
 
@@ -1896,6 +1905,7 @@ const capital =
 const profit =
     revenue - capital;
 
+            
 const stockValue =
     systemStock * importPrice;
 
@@ -1913,7 +1923,7 @@ const realProfit =
     profit - lossValue;
 
 const importValue =
-    importedQty * importPrice;
+    Number(importValueMap[id] || 0);
 
 // % thất thoát thực tế
 const lossPercent =
