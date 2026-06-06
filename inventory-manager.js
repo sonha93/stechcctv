@@ -1,3 +1,5 @@
+FI VS CHẢ FO
+
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -685,7 +687,7 @@ if(qtyImport > 0){
     type:"IMPORT",
 
     qty:qtyImport,
-
+    remainQty:qtyImport,
     reason:"Nhập kho",
 
     importPrice: importPrice,
@@ -1904,6 +1906,7 @@ const capital =
 const profit =
     revenue - capital;
 
+            
 const stockValue =
     systemStock * importPrice;
 
