@@ -475,6 +475,47 @@ tr:hover{
 #manualPlusBtn:hover{
     opacity:.9;
 }
+   /* =========================
+   LOSS STICKY COLUMN
+========================= */
+
+#lossSection{
+    overflow-x:auto;
+}
+
+#lossSection table{
+    min-width:1700px;
+}
+
+#lossSection th:nth-child(1),
+#lossSection td:nth-child(1){
+    position:sticky;
+    left:0;
+    z-index:3;
+}
+
+#lossSection th:nth-child(1){
+    background:#111;
+}
+
+#lossSection td:nth-child(1){
+    background:#fff;
+}
+
+#lossSection th:nth-child(2),
+#lossSection td:nth-child(2){
+    position:sticky;
+    left:180px;
+    z-index:3;
+}
+
+#lossSection th:nth-child(2){
+    background:#111;
+}
+
+#lossSection td:nth-child(2){
+    background:#fff;
+}
 /* =========================
    MOBILE
 ========================= */
