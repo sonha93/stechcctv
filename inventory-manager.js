@@ -977,7 +977,7 @@ async function loadHistory(){
 
    // GROUP SALES
 const salesMap = {};
-const lossMap = {};
+
 salesSnap.forEach(doc=>{
 
     const sale = doc.data();
@@ -990,23 +990,6 @@ salesSnap.forEach(doc=>{
 
     salesMap[id] +=
         Number(sale.qty || 0);
-
-});
-    moveSnap.forEach(doc=>{
-
-    const m = doc.data();
-
-    if(m.type !== "MANUAL_MINUS") return;
-
-    const id = m.productId;
-
-    if(!lossMap[id]){
-        lossMap[id] = 0;
-    }
-
-    lossMap[id] += Math.abs(
-        Number(m.qty || 0)
-    );
 
 });
     // FIFO SALES LEFT
@@ -1043,9 +1026,7 @@ salesSnap.forEach(doc=>{
 
         const qty =
             Number(data.qty || 0);
-        const totalLoss =
-    Number(lossMap[id] || 0);
-        
+
         const salesLeft =
             Number(salesLeftMap[id] || 0);
 
@@ -1057,9 +1038,7 @@ salesSnap.forEach(doc=>{
             );
 
         const remain =
-    qty
-    - soldInPeriod
-    - totalLoss;
+            qty - soldInPeriod;
 
         // TRỪ SALES CÒN LẠI
         salesLeftMap[id] =
@@ -1096,14 +1075,8 @@ salesSnap.forEach(doc=>{
                     ${remain}
                 </td>
 
-               <td
-style="
-    color:red;
-    font-weight:bold;
-"
->
-    ${totalLoss}
-</td>
+                <td>0</td>
+
             </tr>
         `;
 
