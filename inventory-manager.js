@@ -1871,7 +1871,7 @@ async function loadLoss(){
                 systemStock
                 - expectedStock;
             if(id === "18wxaie0cru4buzpyv0y"){
-    console.log({
+    console.log("DEBUG NGOAI TROI", {
         importedQty,
         sold,
         lossQty,
