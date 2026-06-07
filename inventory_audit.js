@@ -38,7 +38,9 @@ async function loadProducts(){
     const snap =
     await db.collection("products").get();
 
-    snap.forEach(docSnap => {
+   let stt = 1;
+
+snap.forEach(docSnap => {
 
         const p = docSnap.data();
 
