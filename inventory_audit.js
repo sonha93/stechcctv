@@ -60,12 +60,13 @@ async function loadProducts(){
     class="actualStock"
 >
 
-            <input
-                type="number"
-                placeholder="Nhập tồn thực tế"
-                data-id="${docSnap.id}"
-                class="actualStock"
-            >
+          <input
+    type="number"
+    placeholder="Nhập tồn thực tế"
+    data-id="${docSnap.id}"
+    data-name="${p.name}"
+    class="actualStock"
+>
 
         </div>
 
