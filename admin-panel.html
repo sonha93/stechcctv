@@ -148,7 +148,7 @@ button{
  <input id="price" placeholder="Giá bán" class="full">
 
  <input id="oldPrice" placeholder="Giá gốc" class="full">
-<input id="stock" placeholder="Số lượng tồn kho" class="full">
+<input id="importPrice" placeholder="Giá nhập" class="full">
   <textarea id="desc" placeholder="Mô tả" class="full"></textarea>
 
   <input id="imgUrl" placeholder="Link ảnh Cloudinary" class="full">
@@ -382,9 +382,10 @@ btnAdd.addEventListener("click", async function(){
   const oldPrice=Number(
     getVal("oldPrice").replace(/\D/g,"") || 0
   );
-const stock = Number(
-  getVal("stock").replace(/\D/g,"") || 0
+  const importPrice = Number(
+  getVal("importPrice").replace(/\D/g,"") || 0
 );
+
   const desc=getVal("desc");
 
   const category=categoryEl.value;
@@ -424,13 +425,13 @@ const slug =
   async function addProduct(img){
 
     const productData = {
-
+importPrice,
       id:Date.now(),
 
       name,
       price,
       oldPrice,
-     stock,
+   
       desc,
 
       category,
@@ -614,7 +615,10 @@ filteredProducts.slice(start, end);
             ? Number(p.oldPrice).toLocaleString() + 'đ'
             : 'Đơn hàng 0đ'}
         </div>
-
+        <div style="margin-top:2px;color:#2563eb;font-weight:bold;">
+  Giá nhập:
+  ${Number(p.importPrice || 0).toLocaleString()}đ
+</div>
         <input
           type="text"
           class="priceInput"
@@ -781,20 +785,16 @@ if(
       oldPrice:Number(latestData?.oldPrice || 0)
     },
 
-    after:{
-      importPrice:Number(latestData?.importPrice || 0),
-      price:newPrice,
-      oldPrice:oldPrice
-    },
-
-    profitBefore:
-      Number(latestData?.price || 0)
-      - Number(latestData?.importPrice || 0),
-
-    profitAfter:
-      newPrice
-      - Number(latestData?.importPrice || 0),
-
+   after:{
+  importPrice:Number(latestData?.importPrice || 0),
+  price:newPrice,
+  oldPrice:oldPrice
+},
+profitBefore:
+  Number(latestData?.price || 0)
+  - Number(latestData?.importPrice || 0),
+profitAfter:
+  newPrice - Number(latestData?.importPrice || 0),
     priceChangePercent:
       Number(latestData?.price || 0) > 0
       ? (
@@ -816,12 +816,11 @@ if(
 await updateDoc(
   productRef,
   {
-    price: newPrice,
-    oldPrice: oldPrice,
-    stock: stockValue
+    price:newPrice,
+    oldPrice:oldPrice,
+    stock:stockValue
   }
 );
-
 if(addQty > 0){
 
   await addDoc(
@@ -871,6 +870,7 @@ loadProducts();
 ========================= */
 
 loadProducts();
+
 const searchProduct =
 document.getElementById("searchProduct");
 
@@ -901,11 +901,37 @@ if(searchProduct){
   });
 
 }
+
 categoryEl.dispatchEvent(
   new Event("change")
 );
 
 }); // đóng window load
+
+/* FORMAT MONEY INPUT */
+function formatMoneyInput(input){
+
+  if(!input) return;
+
+  input.addEventListener("input", () => {
+
+    let value = input.value.replace(/\D/g,"");
+
+    if(!value){
+      input.value = "";
+      return;
+    }
+
+    input.value =
+      Number(value).toLocaleString("vi-VN");
+
+  });
+
+}
+
+formatMoneyInput(document.getElementById("price"));
+formatMoneyInput(document.getElementById("oldPrice"));
+formatMoneyInput(document.getElementById("importPrice"));
 
 </script>
 
