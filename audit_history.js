@@ -78,7 +78,7 @@ function renderAudit(auditId, audits, auditList){
                 </div>
 
                 <div class="audit-card">
-                    <span>Thời gian</span>
+                    <span>Time</span>
                     <b>${d.auditDateTime || "-"}</b>
                 </div>
 
@@ -88,17 +88,17 @@ function renderAudit(auditId, audits, auditList){
                 </div>
 
                 <div class="audit-card">
-                    <span>Tồn hệ thống</span>
+                    <span>System Stock</span>
                     <b>${d.systemStock}</b>
                 </div>
 
                 <div class="audit-card">
-                    <span>Tồn thực tế</span>
+                    <span>Actual Stock</span>
                     <b>${d.countedStock}</b>
                 </div>
 
                 <div class="audit-card">
-                    <span>Chênh lệch</span>
+                    <span>Difference</span>
                     <b class="${diffClass}">
                         ${diffText}
                     </b>
