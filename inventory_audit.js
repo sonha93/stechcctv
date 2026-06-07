@@ -81,6 +81,24 @@ stt++;
 });
 }
 loadProducts();
+
+document.addEventListener("input",(e)=>{
+
+    if(!e.target.classList.contains("actualStock")){
+        return;
+    }
+
+    const card =
+    e.target.closest(".audit-item");
+
+    if(e.target.value !== ""){
+        card.classList.add("done");
+    }else{
+        card.classList.remove("done");
+    }
+
+});
+
 document
 .getElementById("submitAudit")
 .addEventListener("click", async ()=>{
