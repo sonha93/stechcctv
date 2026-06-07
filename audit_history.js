@@ -117,28 +117,28 @@ function renderAudit(auditId, audits, auditList){
                 <div class="audit-card">
                     <span>Giá trị thất thoát</span>
                     <b class="summary-loss">
-                        ${-Number(d.lossValue || 0).toLocaleString()}
+                         -${Number(d.lossValue || 0).toLocaleString()}
                     </b>
                 </div>
 
                 <div class="audit-card">
                     <span>Lợi nhuận thất thoát</span>
                     <b class="summary-loss">
-                        ${Number(d.profitLossValue || 0).toLocaleString()}
+                         -${Number(d.profitLossValue || 0).toLocaleString()}
                     </b>
                 </div>
 
                 <div class="audit-card">
                     <span>Giá trị hàng dư</span>
                     <b class="summary-more">
-                        ${Number(d.extraValue || 0).toLocaleString()}
+                        +${Number(d.extraValue || 0).toLocaleString()}
                     </b>
                 </div>
 
                 <div class="audit-card">
                     <span>Lợi nhuận hàng dư</span>
                     <b class="summary-more">
-                        ${Number(d.extraProfitValue || 0).toLocaleString()}
+                        +${Number(d.extraProfitValue || 0).toLocaleString()}
                     </b>
                 </div>
 
