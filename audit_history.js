@@ -46,7 +46,7 @@ function renderAudit(auditId, audits, auditList){
     font-weight:bold;
     font-size:18px;
     ">
-    📋 KỲ KIỂM KÊ: ${auditId}
+    📋 Stock Audit Period: ${auditId}
     </div>
     `;
 
@@ -78,7 +78,7 @@ function renderAudit(auditId, audits, auditList){
                 </div>
 
                 <div class="audit-card">
-                    <span>Time</span>
+                    <span>Time-date</span>
                     <b>${d.auditDateTime || "-"}</b>
                 </div>
 
