@@ -8,8 +8,10 @@ async function loadAuditHistory(){
     auditList.innerHTML = "";
 
     const snap =
+const snap =
 await db
 .collection("audit_entries")
+.limit(50)
 .get();
 
    snap.forEach(docSnap=>{
