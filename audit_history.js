@@ -36,92 +36,94 @@ await db
 
     }
 
-    auditList.innerHTML += `
+   auditList.innerHTML += `
 
-    <div class="audit-row">
+<div class="audit-row">
 
-        <h3>
-            ${d.productName}
-        </h3>
+    <h3>${d.productName}</h3>
 
-        <div>
-            Audit ID:
+    <div class="audit-grid">
+
+        <div class="audit-card">
+            <span>Audit ID</span>
             <b>${d.auditId || "-"}</b>
         </div>
 
-        <div>
-            Thời gian:
-            ${d.auditDateTime || "-"}
+        <div class="audit-card">
+            <span>Thời gian</span>
+            <b>${d.auditDateTime || "-"}</b>
         </div>
 
-        <div>
-            Product ID:
-            ${d.productId || "-"}
+        <div class="audit-card">
+            <span>Product ID</span>
+            <b>${d.productId || "-"}</b>
         </div>
 
-        <hr>
-
-        <div>
-            Tồn hệ thống:
+        <div class="audit-card">
+            <span>Tồn hệ thống</span>
             <b>${d.systemStock}</b>
         </div>
 
-        <div>
-            Tồn thực tế:
+        <div class="audit-card">
+            <span>Tồn thực tế</span>
             <b>${d.countedStock}</b>
         </div>
 
-        <div class="${diffClass}">
-            ${diffText}
+        <div class="audit-card">
+            <span>Chênh lệch</span>
+            <b class="${diffClass}">
+                ${diffText}
+            </b>
         </div>
 
-        <hr>
-
-        <div>
-            Giá nhập:
-            ${Number(d.importPrice || 0).toLocaleString()}
+        <div class="audit-card">
+            <span>Giá nhập</span>
+            <b>${Number(d.importPrice || 0).toLocaleString()}</b>
         </div>
 
-        <div>
-            Giá bán:
-            ${Number(d.salePrice || 0).toLocaleString()}
+        <div class="audit-card">
+            <span>Giá bán</span>
+            <b>${Number(d.salePrice || 0).toLocaleString()}</b>
         </div>
 
-        <hr>
-
-        <div style="color:red">
-            Giá trị thất thoát:
-            ${Number(d.lossValue || 0).toLocaleString()}
+        <div class="audit-card">
+            <span>Giá trị thất thoát</span>
+            <b class="summary-loss">
+                ${Number(d.lossValue || 0).toLocaleString()}
+            </b>
         </div>
 
-        <div style="color:red">
-            Lợi nhuận thất thoát:
-            ${Number(d.profitLossValue || 0).toLocaleString()}
+        <div class="audit-card">
+            <span>Lợi nhuận thất thoát</span>
+            <b class="summary-loss">
+                ${Number(d.profitLossValue || 0).toLocaleString()}
+            </b>
         </div>
 
-        <div style="color:green">
-            Giá trị hàng dư:
-            ${Number(d.extraValue || 0).toLocaleString()}
+        <div class="audit-card">
+            <span>Giá trị hàng dư</span>
+            <b class="summary-more">
+                ${Number(d.extraValue || 0).toLocaleString()}
+            </b>
         </div>
 
-        <div style="color:green">
-            Lợi nhuận hàng dư:
-            ${Number(d.extraProfitValue || 0).toLocaleString()}
-        </div>
-
-        <hr>
-
-        <div style="
-            font-weight:bold;
-            font-size:18px;
-        ">
-            Tổng ảnh hưởng:
-            ${Number(d.totalImpact || 0).toLocaleString()}
+        <div class="audit-card">
+            <span>Lợi nhuận hàng dư</span>
+            <b class="summary-more">
+                ${Number(d.extraProfitValue || 0).toLocaleString()}
+            </b>
         </div>
 
     </div>
 
-    `;
+    <div class="summary-total">
+        Tổng ảnh hưởng:
+        ${Number(d.totalImpact || 0).toLocaleString()}
+    </div>
+
+</div>
+
+`;
 
 });
 }
