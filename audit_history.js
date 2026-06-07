@@ -37,122 +37,78 @@ const audits = {};
 function renderAudit(auditId, audits, auditList){
 
     auditList.innerHTML = `
-    <div style="
-    background:#111;
-    color:#fff;
-    padding:15px;
-    margin-bottom:15px;
-    border-radius:10px;
-    font-weight:bold;
-    font-size:18px;
-    ">
-    📋 KỲ KIỂM KÊ: ${auditId}
-    </div>
+    <div class="auditTableWrap">
+
+    <table class="auditTable">
+
+    <thead>
+    <tr>
+        <th>Sản phẩm</th>
+        <th>Tồn HT</th>
+        <th>Tồn TT</th>
+        <th>Chênh lệch</th>
+        <th>Giá nhập</th>
+        <th>Giá bán</th>
+        <th>Giá trị lệch</th>
+        <th>Lợi nhuận lệch</th>
+    </tr>
+    </thead>
+
+    <tbody>
     `;
 
     audits[auditId].forEach(d=>{
 
-        let diffClass = "good";
-        let diffText = "Khớp";
-
-        if(d.difference < 0){
-            diffClass = "loss";
-            diffText = `Thiếu ${Math.abs(d.difference)}`;
-        }
-
-        if(d.difference > 0){
-            diffClass = "more";
-            diffText = `Dư ${d.difference}`;
-        }
-
         auditList.innerHTML += `
-        <div class="audit-row">
+        <tr>
 
-            <h3>${d.productName}</h3>
+            <td>${d.productName}</td>
 
-            <div class="audit-grid">
+            <td>${d.systemStock}</td>
 
-                <div class="audit-card">
-                    <span>Audit ID</span>
-                    <b>${d.auditId || "-"}</b>
-                </div>
+            <td>${d.countedStock}</td>
 
-                <div class="audit-card">
-                    <span>Thời gian</span>
-                    <b>${d.auditDateTime || "-"}</b>
-                </div>
+            <td class="${
+                d.difference > 0
+                ? "more"
+                : d.difference < 0
+                ? "loss"
+                : "good"
+            }">
+                ${d.difference}
+            </td>
 
-                <div class="audit-card">
-                    <span>Product ID</span>
-                    <b>${d.productId || "-"}</b>
-                </div>
+            <td>
+                ${Number(d.importPrice || 0).toLocaleString()}
+            </td>
 
-                <div class="audit-card">
-                    <span>Tồn hệ thống</span>
-                    <b>${d.systemStock}</b>
-                </div>
+            <td>
+                ${Number(d.salePrice || 0).toLocaleString()}
+            </td>
 
-                <div class="audit-card">
-                    <span>Tồn thực tế</span>
-                    <b>${d.countedStock}</b>
-                </div>
+            <td>
+                ${Number(
+                    d.lossValue || d.extraValue || 0
+                ).toLocaleString()}
+            </td>
 
-                <div class="audit-card">
-                    <span>Chênh lệch</span>
-                    <b class="${diffClass}">
-                        ${diffText}
-                    </b>
-                </div>
+            <td>
+                ${Number(
+                    d.profitLossValue ||
+                    d.extraProfitValue ||
+                    0
+                ).toLocaleString()}
+            </td>
 
-                <div class="audit-card">
-                    <span>Giá nhập</span>
-                    <b>${Number(d.importPrice || 0).toLocaleString()}</b>
-                </div>
-
-                <div class="audit-card">
-                    <span>Giá bán</span>
-                    <b>${Number(d.salePrice || 0).toLocaleString()}</b>
-                </div>
-
-                <div class="audit-card">
-                    <span>Giá trị thất thoát</span>
-                    <b class="summary-loss">
-                        ${Number(d.lossValue || 0).toLocaleString()}
-                    </b>
-                </div>
-
-                <div class="audit-card">
-                    <span>Lợi nhuận thất thoát</span>
-                    <b class="summary-loss">
-                        ${Number(d.profitLossValue || 0).toLocaleString()}
-                    </b>
-                </div>
-
-                <div class="audit-card">
-                    <span>Giá trị hàng dư</span>
-                    <b class="summary-more">
-                        ${Number(d.extraValue || 0).toLocaleString()}
-                    </b>
-                </div>
-
-                <div class="audit-card">
-                    <span>Lợi nhuận hàng dư</span>
-                    <b class="summary-more">
-                        ${Number(d.extraProfitValue || 0).toLocaleString()}
-                    </b>
-                </div>
-
-            </div>
-
-            <div class="summary-total">
-                Tổng ảnh hưởng:
-                ${Number(d.totalImpact || 0).toLocaleString()}
-            </div>
-
-        </div>
+        </tr>
         `;
     });
 
+    auditList.innerHTML += `
+        </tbody>
+        </table>
+        </div>
+    `;
 }
 snap.forEach(docSnap=>{
 
