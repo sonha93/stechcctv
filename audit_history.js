@@ -105,38 +105,38 @@ function renderAudit(auditId, audits, auditList){
                 </div>
 
                 <div class="audit-card">
-                    <span>Giá nhập</span>
+                    <span>Cost Price</span>
                     <b>${Number(d.importPrice || 0).toLocaleString()}</b>
                 </div>
 
                 <div class="audit-card">
-                    <span>Giá bán</span>
+                    <span>Selling Price</span>
                     <b>${Number(d.salePrice || 0).toLocaleString()}</b>
                 </div>
 
                 <div class="audit-card">
-                    <span>Giá trị thất thoát</span>
+                    <span>Loss Value</span>
                     <b class="summary-loss">
                          -${Number(d.lossValue || 0).toLocaleString()}
                     </b>
                 </div>
 
                 <div class="audit-card">
-                    <span>Lợi nhuận thất thoát</span>
+                    <span>Lost Profit</span>
                     <b class="summary-loss">
                          -${Number(d.profitLossValue || 0).toLocaleString()}
                     </b>
                 </div>
 
                 <div class="audit-card">
-                    <span>Giá trị hàng dư</span>
+                    <span>Overage Value</span>
                     <b class="summary-more">
                         +${Number(d.extraValue || 0).toLocaleString()}
                     </b>
                 </div>
 
                 <div class="audit-card">
-                    <span>Lợi nhuận hàng dư</span>
+                    <span>Overage Profit</span>
                     <b class="summary-more">
                         +${Number(d.extraProfitValue || 0).toLocaleString()}
                     </b>
