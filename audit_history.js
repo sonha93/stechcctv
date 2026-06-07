@@ -14,8 +14,8 @@ async function loadAuditStatus(){
 
     auditStatus.innerHTML =
     auditOpen
-    ? "🟢 ĐANG MỞ KIỂM KÊ"
-    : "🔴 ĐANG ĐÓNG KIỂM KÊ";
+    ? "🟢 OPEN AUDIT"
+    : "🔴 CLOSING AUDIT";
 
 }
 async function loadAuditHistory(){
