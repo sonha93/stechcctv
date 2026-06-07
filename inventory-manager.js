@@ -144,15 +144,7 @@ async function loadInventory(){
                     </td>
 
                     <td>
-                        <input
-                           type="text"
-                            class="importPriceInput"
-                            data-id="${doc.id}"
-                           value="${Number(importPrice || 0).toLocaleString('vi-VN')}"
-                            style="
-                                width:120px;
-                                padding:8px;
-                            "
+                       ${formatVND(importPrice)}
                         >
                     </td>
 
@@ -596,25 +588,27 @@ function bindInventoryEvents(){
 
                 const row = btn.closest("tr");
 
-                const importInput = row.querySelector(".importPriceInput");
-
-                const importPrice = Number(importInput.value || 0);
+               
                 
-                if (!Number.isFinite(importPrice) || importPrice < 0) {
+               
+                // UPDATE PRODUCTS
+
+               const productRef = db.collection("products").doc(id);
+
+const productDoc = await productRef.get();
+
+const productData = productDoc.data();
+
+const importPrice =
+    Number(productData.importPrice || 0);
+if (!Number.isFinite(importPrice) || importPrice < 0) {
     alert("Giá nhập không hợp lệ");
     return;
 }
-                // UPDATE PRODUCTS
-
-                const productRef = db.collection("products").doc(id);
-
-                const productDoc = await productRef.get();
-
-                const productData = productDoc.data();
-
-         const qtyImport = Number(
+const qtyImport = Number(
     row.querySelector(".add-stock-input")?.value || 0
 );
+
 if(
     !Number.isInteger(qtyImport)
     || qtyImport <= 0
@@ -632,21 +626,22 @@ if(
 
                 const totalImport = qtyImport * importPrice;
 
-                await productRef.update({
+              await productRef.update({
 
-                    importPrice,
+    stock:newStock,
 
-                    stock:newStock,
+    totalImportedQty:
+        Number(productData.totalImportedQty || 0)
+        + qtyImport,
 
-                    totalImportedQty:
-                        Number(productData.totalImportedQty || 0)
-                        + qtyImport,
+    totalImportValue:
+        Number(productData.totalImportValue || 0)
+        + (
+            qtyImport *
+            Number(productData.importPrice || 0)
+        )
 
-                    totalImportValue:
-                        Number(productData.totalImportValue || 0)
-                        + totalImport
-
-                });
+});
                 await saveProductChangeLog({
 
     productId:id,
