@@ -606,7 +606,6 @@ auth.onAuthStateChanged(user=>{
     userCreatedAt.innerText = new Date(currentUser.metadata.creationTime).toLocaleDateString();
 
     db.ref('users/'+uidToLoad).once('value').then(snapshot=>{
-       console.log("USER DATA:", snapshot.val());
         if(snapshot.exists()){
             const data = snapshot.val();
             nameInput.value = data.name||"";
