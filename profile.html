@@ -1,886 +1,1153 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Thông tin cá nhân</title>
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-<link rel="icon" type="image/png" href="favicon-96x96.png?v=20260523" sizes="96x96" /> 
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260523" /> 
-<link rel="shortcut icon" href="favicon.ico?v=20260523" /> 
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260523" /> 
-<meta name="apple-mobile-web-app-title" content="Stech" />
-<link rel="manifest" href="site.webmanifest?v=20260523" />
+<title>
+Thông tin cá nhân - Stech
+</title>
+
 <style>
+
 /* =========================
-   GLOBAL RESET
+   RESET
 ========================= */
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,sans-serif;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+}
+
+html{
+  overflow-x:hidden;
 }
 
 body{
-    background:#f5f5f5;
-    color:#111;
-    overflow-x:hidden;
+  background:#f5f5f5;
+  color:#111;
+  overflow-x:hidden;
+
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
 }
 
-/* =========================
-   HEADER & NAVBAR
-========================= */
 header{
-    display:flex;
-    align-items:center;
+  display:flex;
+  align-items:center;
 
-    gap:8px;
-    padding:8px 10px;
+  padding:
+    calc(8px + env(safe-area-inset-top))
+    10px
+    8px;
 
-    background:#33A0AB;
-    height:80px;
-
-    position:sticky;
-    top:0;
-    z-index:999;
+  background:#33A0AB;
+  gap:8px;
+  position:sticky;
+  top:0;
+  z-index:999;
 }
 
-/* Đẩy icon qua phải */
-.header-icons{
-    margin-left:auto;
-
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
-/* MENU + LOGO + ICON */
-.menu-btn,
-.logo,
-.icon-btn{
-
-    width:48px;
-    height:48px;
-
-    min-width:48px;
-
-    border-radius:16px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    flex-shrink:0;
-
-    position:relative;
-
-    transition:
-    transform .18s cubic-bezier(.34,1.56,.64,1),
-    box-shadow .18s ease;
-
-    /* 3D */
-    box-shadow:
-    6px 6px 12px rgba(0,0,0,.35),
-    -3px -3px 8px rgba(255,255,255,.12),
-    inset 1px 1px 1px rgba(255,255,255,.06);
-}
-/* MENU */
 .menu-btn{
-    background:#111;
-    color:#fff;
-    font-size:22px;
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  background:#00acc1;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  cursor:pointer;
+  flex-shrink:0;
 }
 
-/* LOGO */
 .logo{
-    background:#fff;
-    overflow:hidden;
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  overflow:hidden;
+  background:#fff;
+  flex-shrink:0;
 }
 
 .logo img{
-    width:100%;
-    height:100%;
-    object-fit:contain;
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
-/* ICON */
+.search-box{
+  flex:1;
+  margin-left:8px;
+  min-width:0;
+}
+
+.search-box input{
+  width:100%;
+  height:36px;
+  border-radius:12px;
+  border:none;
+  padding:0 10px;
+  font-size:14px;
+}
+
+.header-icons{
+  display:flex;
+  gap:8px;
+  margin-left:auto;
+  flex-shrink:0;
+}
+
 .icon-btn{
-    background:linear-gradient(
-        145deg,
-        #1c1c1c,
-        #0d0d0d
-    );
-
-    color:#fff;
-
-    text-decoration:none;
-
-    font-size:20px;
-    line-height:1;
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  background:#00acc1;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  text-decoration:none;
+  position:relative;
+  cursor:pointer;
+  flex-shrink:0;
 }
 
-
-/* Cart badge */
 .cart-count{
-    position:absolute;
-    top:-4px;
-    right:-4px;
-    min-width:18px;
-    height:18px;
-    border-radius:50%;
-    background:red;
-    color:#fff;
-    font-size:11px;
-    font-weight:bold;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  min-width:18px;
+  height:18px;
+  border-radius:50%;
+  background:red;
+  color:white;
+  font-size:11px;
+  font-weight:bold;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-/* =========================
-   SIDEBAR
-========================= */
 .sidebar{
-    position:fixed;
-    top:0;
-    left:-260px;
-    width:240px;
-    height:100vh;
-    background:#fff;
-    z-index:9999;
-    transition:.3s;
-    padding:20px;
-    box-shadow:0 0 20px rgba(0,0,0,.15);
+  position:fixed;
+  top:0;
+  left:-260px;
+  width:240px;
+  height:100vh;
+  background:#fff;
+  z-index:9999;
+  transition:.3s;
+  padding:20px;
+  box-shadow:0 0 20px rgba(0,0,0,.15);
 }
 
 .sidebar.active{
-    left:0;
+  left:0;
 }
 
 .sidebar h3{
-    margin-bottom:20px;
-    color:#00acc1;
+  margin-bottom:20px;
+  color:#00acc1;
 }
 
 .sidebar a{
-    display:block;
-    padding:14px;
-    margin-bottom:10px;
-    border-radius:12px;
-    background:#f5f5f5;
-    text-decoration:none;
-    color:#111;
-    font-weight:bold;
+  display:block;
+  padding:14px;
+  margin-bottom:10px;
+  border-radius:12px;
+  background:#f5f5f5;
+  text-decoration:none;
+  color:#111;
+  font-weight:bold;
 }
 
-/* Overlay */
 #overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.45);
-    z-index:9998;
-    opacity:0;
-    visibility:hidden;
-    transition:.3s;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.45);
+  z-index:9998;
+  opacity:0;
+  visibility:hidden;
+  transition:.3s;
 }
 
 #overlay.active{
-    opacity:1;
-    visibility:visible;
+  opacity:1;
+  visibility:visible;
 }
 
 /* =========================
    CONTAINER
 ========================= */
 .container{
-    background:#fff;
-    padding:25px;
-    border-radius:12px;
-    max-width:600px;
-    margin:20px auto;
-    box-shadow:0 4px 20px rgba(0,0,0,.1);
-}
+  background:#fff;
 
+  padding:25px;
+
+  border-radius:12px;
+
+  max-width:600px;
+
+  margin:20px auto;
+
+  box-shadow:0 4px 20px rgba(0,0,0,0.1);
+}
 
 h2{
-    text-align:center;
-    margin-bottom:20px;
+  text-align:center;
+  margin-bottom:20px;
 }
 
 
-/* Avatar */
-.avatar-container {
-    width: 130px;
-    height: 130px;
-    margin: 0 auto 15px;
-    border: 3px solid #4CAF50;
-    border-radius: 50%;
-    overflow: hidden;
-    cursor: pointer;
-   position:relative;
+/* =========================
+   AVATAR
+========================= */
+.avatar-container{
+  width:130px;
+  height:130px;
+
+  margin:0 auto 15px;
+
+  border:3px solid #4CAF50;
+
+  border-radius:50%;
+
+  overflow:hidden;
 }
 
 .avatar-container img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    border-radius:50%;
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+
+  border-radius:50%;
 }
-.camera-btn{
-    position:absolute;
-    bottom:5px;
-    right:5px;
-    width:34px;
-    height:34px;
-    border-radius:50%;
-    background:#00acc1;
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:18px;
-    cursor:pointer;
-    border:2px solid #fff;
-   z-index:5;
-    box-shadow:0 2px 6px rgba(0,0,0,.25);
-}
-/* Inputs */
+
+
+/* =========================
+   FORM
+========================= */
 .info-fields label{
-    font-weight:bold;
-    margin-top:10px;
-    display:block;
-    color:#333;
+  display:block;
+
+  margin-top:10px;
+
+  font-weight:bold;
+
+  color:#333;
 }
 
 .info-fields input{
-    width:100%;
-    padding:10px;
-    margin-top:4px;
-    margin-bottom:8px;
-    border-radius:8px;
-    border:1px solid #b3e5fc;
-    font-size:.95rem;
+  width:100%;
+
+  padding:10px;
+
+  margin-top:4px;
+  margin-bottom:8px;
+
+  border-radius:8px;
+
+  border:1px solid #b3e5fc;
+
+  font-size:.95rem;
 }
 
-/* Buttons */
+
+/* =========================
+   BUTTON
+========================= */
 button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:8px;
-    background:#007BFF;
-    color:#fff;
-    font-size:1rem;
-    cursor:pointer;
-    margin-top:8px;
+  width:100%;
+
+  padding:12px;
+
+  border:none;
+  border-radius:8px;
+
+  background:#007BFF;
+  color:#fff;
+
+  font-size:1rem;
+
+  cursor:pointer;
+
+  margin-top:8px;
 }
 
 button:hover{
-    background:#0056b3;
+  background:#0056b3;
 }
 
-/* Updated info */
+
+/* =========================
+   CURRENT INFO
+========================= */
 .updated-info{
-    margin-top:20px;
-    background:#e7f3ff;
-    padding:15px;
-    border-radius:12px;
+  margin-top:20px;
+
+  background:#e7f3ff;
+
+  padding:15px;
+
+  border-radius:12px;
 }
 
 .updated-info p{
-    margin:0;
-    padding:6px 0;
+  padding:6px 0;
 }
 
-/* Password */
+
+/* =========================
+   PASSWORD
+========================= */
 .password-section{
-    margin-top:20px;
-    text-align:center;
+  margin-top:20px;
+
+  text-align:center;
 }
 
-/* Actions */
 .actions{
-    display:flex;
-    gap:10px;
-    margin-top:15px;
+  display:flex;
+  gap:10px;
+
+  margin-top:15px;
 }
 
 .actions button{
-    flex:1;
+  flex:1;
 }
 
-/* Orders */
+
+/* =========================
+   ORDERS
+========================= */
 .orders{
-    margin-top:20px;
-    background:#fff;
-    padding:15px;
-    border-radius:12px;
-    box-shadow:0 2px 6px rgba(0,0,0,.1);
+  margin-top:20px;
+
+  background:#fff;
+
+  padding:15px;
+
+  border-radius:12px;
+
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
 
 .order-item{
-    border-bottom:1px solid #eee;
-    padding:8px 0;
+  border-bottom:1px solid #eee;
+
+  padding:8px 0;
 }
 
 .order-item:last-child{
-    border-bottom:none;
+  border-bottom:none;
 }
 
-/* Animation */
+
+/* =========================
+   MESSAGE
+========================= */
 .fade{
-    opacity:0;
-    transition:opacity .5s;
+  opacity:0;
+
+  transition:opacity .5s;
 }
 
 .fade.show{
-    opacity:1;
+  opacity:1;
 }
+
+
+/* =========================
+   FIX
+========================= */
+#logoutArrow{
+  z-index:1000;
+}
+
 
 /* =========================
    MOBILE
 ========================= */
-@media (max-width:768px){
+@media(max-width:500px){
 
-    header{
-        padding:6px 8px;
-        gap:6px;
-    }
-    #logoutArrow{
-        font-size:22px !important;
-        font-weight:bold;
-    }
-   .header-icons{
-        gap:5px;
-    }
+  header{
+    padding:8px 5px;
+    gap:5px;
+  }
 
-    .cart-count{
-        min-width:16px;
-        height:16px;
-        font-size:10px;
-        top:-2px;
-        right:-2px;
-    }
+  .menu-btn,
+  .logo,
+  .icon-btn{
+    width:36px;
+    height:36px;
+  }
 
-    .container{
-        margin:12px;
-        padding:18px;
-    }
+  .search-box input{
+    height:34px;
+    font-size:13px;
+  }
 
-.actions{
-    flex-direction:column;
-}
-
-.camera-btn{
-    width:32px;
-    height:32px;
-    font-size:16px;
-    bottom:4px;
-    right:4px;
-}
-   .logo::before,
-.menu-btn::before,
-.icon-btn::before{
-    content:"";
-    position:absolute;
-    inset:0;
-
-    border-radius:16px;
-
-    background:linear-gradient(
-        to bottom,
-        rgba(255,255,255,.12),
-        transparent
-    );
-
-    pointer-events:none;
-}
-   .logo:active,
-.menu-btn:active,
-.icon-btn:active{
-
-    transform:
-    scale(.92)
-    translateY(2px);
-
-    box-shadow:
-    inset 4px 4px 8px rgba(0,0,0,.25),
-    inset -2px -2px 4px rgba(255,255,255,.08);
-}
-   .icon-btn{
-  position:relative !important;
+  .container{
+    margin:10px;
+    padding:15px;
+  }
 
 }
 
 </style>
+
 </head>
+
 <body>
-<div id="overlay" onclick="toggleMenu()"></div>
-<div class="sidebar" id="sidebar">
-<h3>Menu</h3>
-<a href="index.html">Trang Chủ</a>
-<a href="orders.html" id="ordersBtn">Lịch sử đơn hàng</a>
+
+
+<!-- =========================
+     OVERLAY
+========================= -->
+<div id="overlay"
+onclick="toggleMenu()">
 </div>
 
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+<div class="sidebar"
+id="sidebar">
+
+<h3>
+Menu
+</h3>
+
+<a href="index.html">
+Trang Chủ
+</a>
+
+<a href="#"
+id="orderHistoryBtn">
+Lịch sử đơn hàng
+</a>
+
+</div>
+
+
+<!-- =========================
+     HEADER
+========================= -->
 <header>
-<div class="menu-btn" onclick="toggleMenu()">☰</div>
-<div class="logo"><img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="logo"></div>
+
+<div class="menu-btn"
+onclick="toggleMenu()">
+☰
+</div>
+
+<div class="logo">
+<img
+src="https://i.ibb.co/Z1kv9nJj/logo.png"
+alt="logo">
+</div>
+<input
+type="file"
+id="avatarUpload"
+accept="image/*">
+<div class="search-box">
+<input
+type="text"
+placeholder="Tìm kiếm sản phẩm...">
+</div>
+
 <div class="header-icons">
-<a href="#" class="icon-btn" id="logoutArrow">↩</a>
-<a href="cart.html" class="icon-btn">
-      🛒
-      <span class="cart-count" id="cartCount">0</span>
-    </a>
+
+<a href="#"
+class="icon-btn"
+id="logoutArrow">
+⏻
+</a>
+
+<a href="cart.html"
+class="icon-btn">
+
+🛒
+
+<span class="cart-count"
+id="cartCount">
+0
+</span>
+
+</a>
 
 </div>
+
 </header>
 
+
+<!-- =========================
+     PROFILE
+========================= -->
 <div class="container">
-<h2>Thông tin cá nhân</h2>
+
+<h2>
+Thông tin cá nhân
+</h2>
+
+
+<!-- AVATAR -->
 <div class="avatar-container">
 
-    <img id="avatarImg"
-    src="https://i.ibb.co/Z1kv9nJj/logo.png"
-    alt="avatar">
+<img
+id="avatarImg"
+src="https://i.ibb.co/Z1kv9nJj/logo.png"
+alt="avatar">
 
-    <div class="camera-btn" id="avatarBox">
-        📷
-    </div>
 </div>
 
-<input type="file" id="avatarUpload" accept="image/*" hidden>
 
+<!-- FORM -->
 <div class="info-fields">
-<p>Email: <b id="userEmail"></b></p>
-<p>Ngày đăng ký: <span id="userCreatedAt"></span></p>
-<label for="name">Họ và tên:</label><input type="text" id="name">
-<label for="address">Địa chỉ:</label><input type="text" id="address">
-<label for="birthday">Ngày sinh:</label><input type="date" id="birthday">
-<label for="phone">Số điện thoại:</label>
+
+<p>
+Email:
+<b id="userEmail"></b>
+</p>
+
+<p>
+Ngày đăng ký:
+<span id="userCreatedAt"></span>
+</p>
+
+<label for="name">
+Họ và tên:
+</label>
 
 <input
-type="tel"
+type="text"
+id="name">
+
+<label for="address">
+Địa chỉ:
+</label>
+
+<input
+type="text"
+id="address">
+
+<label for="birthday">
+Ngày sinh:
+</label>
+
+<input
+type="date"
+id="birthday">
+
+<label for="phone">
+Số điện thoại:
+</label>
+
+<input
+type="text"
 id="phone"
-maxlength="10"
 placeholder="VD: 0912345678">
-<button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
+
+<button id="updateInfoBtn"
+disabled>
+
+Cập nhật thông tin
+
+</button>
+
 </div>
 
+
+<!-- CURRENT INFO -->
 <div class="updated-info">
-<h3>Thông tin hiện tại:</h3>
-<p>Họ và tên: <span id="currentName"></span></p>
-<p>Địa chỉ: <span id="currentAddress"></span></p>
-<p>Ngày sinh: <span id="currentBirthday"></span></p>
-<p>Số điện thoại: <span id="currentPhone"></span></p>
-<p>Điểm thành viên: <span id="memberPoints">0</span></p>
-<p>Hạng thành viên: <span id="memberLevel">Đồng</span></p>
+
+<h3>
+Thông tin hiện tại:
+</h3>
+
+<p>
+Họ và tên:
+<span id="currentName"></span>
+</p>
+
+<p>
+Địa chỉ:
+<span id="currentAddress"></span>
+</p>
+
+<p>
+Ngày sinh:
+<span id="currentBirthday"></span>
+</p>
+
+<p>
+Số điện thoại:
+<span id="currentPhone"></span>
+</p>
+
 </div>
 
+
+<!-- PASSWORD -->
 <div class="password-section">
-<h2>Đổi mật khẩu</h2>
-<input type="password" id="newPassword" placeholder="Mật khẩu mới">
+
+<h2>
+Đổi mật khẩu
+</h2>
+
+<input
+type="password"
+id="newPassword"
+placeholder="Mật khẩu mới">
+
 <div class="actions">
-<button id="changePasswordBtn">Đổi mật khẩu</button>
-</div>
+
+<button id="changePasswordBtn">
+
+Đổi mật khẩu
+
+</button>
+
 </div>
 
-<div class="orders" id="ordersContainer" style="display:none;">
-<h3>Lịch sử đơn hàng</h3>
+</div>
+
+
+<!-- ORDERS -->
+<div class="orders"
+id="ordersContainer"
+style="display:none;">
+
+<h3>
+Lịch sử đơn hàng
+</h3>
+
 <div id="ordersList"></div>
+
 </div>
 
-<div id="message" class="fade"></div>
-<div id="error" class="fade"></div>
+
+<!-- MESSAGE -->
+<div id="message"
+class="fade">
 </div>
 
+<div id="error"
+class="fade">
+</div>
+
+</div>
+
+
+<!-- =========================
+     FIREBASE
+========================= -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+
 <script>
+
+/* =========================
+   FIREBASE SETUP
+========================= */
 const firebaseConfig = {
-apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-authDomain:"stech-73b89.firebaseapp.com",
-databaseURL:"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app",
-projectId:"stech-73b89",
-storageBucket:"stech-73b89.appspot.com",
-messagingSenderId:"873739162979",
-appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
+
+  apiKey:"AIzaSy",
+
+  authDomain:"",
+
+  databaseURL:"",
+
+  projectId:"",
+
+  storageBucket:"",
+
+  messagingSenderId:"",
+
+  appId:""
+
 };
+
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
-const db = firebase.firestore();
 
-const userEmail = document.getElementById("userEmail");
-const userCreatedAt = document.getElementById("userCreatedAt");
-const nameInput = document.getElementById("name");
-const phoneInput = document.getElementById("phone");
-const addressInput = document.getElementById("address");
-const birthdayInput = document.getElementById("birthday");
-const currentName = document.getElementById("currentName");
-const currentPhone = document.getElementById("currentPhone");
-const currentAddress = document.getElementById("currentAddress");
-const currentBirthday = document.getElementById("currentBirthday");
-const newPasswordInput = document.getElementById("newPassword");
-const updateInfoBtn = document.getElementById("updateInfoBtn");
-const changePasswordBtn = document.getElementById("changePasswordBtn");
-const logoutArrow = document.getElementById("logoutArrow");
-const cartCountEl = document.getElementById("cartCount");
-const ordersContainer = document.getElementById("ordersContainer");
-const ordersList = document.getElementById("ordersList");
-const orderHistoryBtn = document.getElementById("orderHistoryBtn");
-const avatarImg = document.getElementById("avatarImg");
-const avatarUpload = document.getElementById("avatarUpload");
-const avatarBox = document.getElementById("avatarBox");
-const sidebar = document.getElementById("sidebar");
-const overlay = document.getElementById("overlay");
-const messageEl = document.getElementById("message");
-const errorEl = document.getElementById("error");
-function toggleMenu(){ sidebar.classList.toggle("active"); overlay.classList.toggle("active"); }
-/* bấm avatar để chọn ảnh */
-avatarBox.addEventListener("click", () => {
-    avatarUpload.click();
+const db = firebase.database();
+
+
+/* =========================
+   DOM
+========================= */
+const userEmail =
+document.getElementById("userEmail");
+
+const userCreatedAt =
+document.getElementById("userCreatedAt");
+
+const nameInput =
+document.getElementById("name");
+
+const phoneInput =
+document.getElementById("phone");
+
+const addressInput =
+document.getElementById("address");
+
+const birthdayInput =
+document.getElementById("birthday");
+
+const currentName =
+document.getElementById("currentName");
+
+const currentPhone =
+document.getElementById("currentPhone");
+
+const currentAddress =
+document.getElementById("currentAddress");
+
+const currentBirthday =
+document.getElementById("currentBirthday");
+
+const newPasswordInput =
+document.getElementById("newPassword");
+
+const updateInfoBtn =
+document.getElementById("updateInfoBtn");
+
+const changePasswordBtn =
+document.getElementById("changePasswordBtn");
+
+const logoutArrow =
+document.getElementById("logoutArrow");
+
+const cartCountEl =
+document.getElementById("cartCount");
+
+const ordersContainer =
+document.getElementById("ordersContainer");
+
+const ordersList =
+document.getElementById("ordersList");
+
+const orderHistoryBtn =
+document.getElementById("orderHistoryBtn");
+
+const avatarImg =
+document.getElementById("avatarImg");
+   
+const avatarUpload =
+document.getElementById("avatarUpload");
+
+const sidebar =
+document.getElementById("sidebar");
+
+const overlay =
+document.getElementById("overlay");
+
+
+
+/* =========================
+   UPLOAD AVATAR CLOUDINARY
+========================= */
+avatarUpload.addEventListener(
+"change",
+async(e)=>{
+
+  const file = e.target.files[0];
+
+  if(!file) return;
+
+  const formData = new FormData();
+
+  formData.append(
+    "file",
+    file
+  );
+
+  formData.append(
+    "upload_preset",
+    "stech_upload"
+  );
+
+  try{
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+      {
+        method:"POST",
+        body:formData
+      }
+    );
+
+    const data = await res.json();
+
+    avatarImg.src = data.secure_url;
+
+    await db.ref(
+      'users/'+currentUser.uid
+    ).update({
+
+      avatar:data.secure_url
+
+    });
+
+  }
+  catch(err){
+
+    console.log(err);
+
+  }
+
 });
 
-/* upload ảnh */
-avatarUpload.addEventListener("change", async (e) => {
 
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-
-    formData.append("file", file);
-    formData.append("upload_preset", "stech_upload");
-
-    try {
-
-        const res = await fetch(
-            "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
-            {
-                method: "POST",
-                body: formData
-            }
-        );
-
-        const data = await res.json();
-
-        if (data.secure_url) {
-
-            /* hiện avatar mới */
-            avatarImg.src = data.secure_url;
-
-            /* lưu firebase */
-           await db
-.collection("users")
-.doc(currentUser.uid)
-.set({
-    avatar: data.secure_url
-},{
-    merge:true
-});
-
-            alert("Upload avatar thành công!");
-        }
-
-    } catch (err) {
-
-        console.error(err);
-        alert("Upload thất bại!");
-
-    }
-
-});
-function showMsg(el,text,color){ el.innerText=text; el.style.color=color; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000); }
-
+/* =========================
+   GLOBAL
+========================= */
 let currentUser = null;
+/* =========================
+   GLOBAL
+========================= */
+let currentUser = null;
+
+const urlParams =
+new URLSearchParams(window.location.search);
+
+const profileUID =
+urlParams.get('uid');
+
+
+/* =========================
+   MENU
+========================= */
+function toggleMenu(){
+
+  sidebar.classList.toggle("active");
+
+  overlay.classList.toggle("active");
+
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+function showMsg(el,text,color){
+
+  el.innerText = text;
+
+  el.style.color = color;
+
+  el.classList.add("show");
+
+  setTimeout(()=>{
+
+    el.classList.remove("show");
+
+  },3000);
+
+}
+
+
+/* =========================
+   AUTH
+========================= */
 auth.onAuthStateChanged(user=>{
-    if(!user){window.location.href="index.html";return;}
-    currentUser = user;
-    updateInfoBtn.disabled = false;
 
-    // Thêm UID vào URL nếu chưa có
-    const urlParams = new URLSearchParams(window.location.search);
-    let uidToLoad = urlParams.get('uid') || currentUser.uid;
-    if(!window.location.search.includes("uid=")){
-        window.history.replaceState({}, "", `${window.location.pathname}?uid=${currentUser.uid}`);
-    }
+  if(!user){
 
-    userEmail.innerText = currentUser.email;
-    userCreatedAt.innerText = new Date(currentUser.metadata.creationTime).toLocaleDateString();
+    window.location.href =
+    "index.html";
 
-    db.collection("users")
-.doc(uidToLoad)
-.get()
-.then(doc=>{
+    return;
 
-    if(doc.exists){
+  }
 
-        const data = doc.data();
+  currentUser = user;
 
-        nameInput.value = data.name || "";
-        phoneInput.value = data.phone || "";
-        addressInput.value = data.address || "";
-        birthdayInput.value = data.birthday || "";
-
-        avatarImg.src =
-          data.avatar ||
-          "https://i.ibb.co/Z1kv9nJj/logo.png";
-
-        currentName.innerText =
-          data.name || "Chưa cập nhật";
-
-        currentPhone.innerText =
-          data.phone || "Chưa cập nhật";
-
-        currentAddress.innerText =
-          data.address || "Chưa cập nhật";
-
-        currentBirthday.innerText =
-          data.birthday || "Chưa cập nhật";
-
-        document.getElementById("memberPoints").innerText =
-          data.points || 0;
-
-        document.getElementById("memberLevel").innerText =
-          data.level || "Đồng";
-    }
-
-});
-    db.ref('carts/'+currentUser.uid).on('value',snapshot=>{
-        let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); 
-        cartCountEl.innerText=count;
-    });
-});
+  updateInfoBtn.disabled = false;
 
 
-updateInfoBtn.addEventListener("click", async () => {
+  /* ADD UID TO URL */
+  if(
+    !window.location.search.includes("uid=")
+  ){
 
-    if (!currentUser) return;
+    window.history.replaceState(
+      {},
+      "",
+      `?uid=${user.uid}`
+    );
 
-    // Lấy dữ liệu
-    const name = nameInput.value.trim();
-    const address = addressInput.value.trim();
-    const birthday = birthdayInput.value;
-    const phone = phoneInput.value.trim();
+  }
 
-    // =========================
-    // KIỂM TRA RỖNG
-    // =========================
-    if (!name || !address || !birthday || !phone) {
 
-        showMsg(
-            errorEl,
-            "Vui lòng nhập đầy đủ thông tin!",
-            "red"
-        );
+  const uidToLoad =
+  profileUID || currentUser.uid;
 
-        return;
-    }
 
-    // =========================
-    // KIỂM TRA SỐ ĐIỆN THOẠI VN
-    // - đúng 10 số
-    // - đầu số Việt Nam
-    // =========================
-    const vnPhoneRegex =
-        /^(03|05|07|08|09)\d{8}$/;
+  /* LOAD USER */
+  db.ref('users/'+uidToLoad)
+  .once('value')
+  .then(snapshot=>{
 
-    if (!vnPhoneRegex.test(phone)) {
+    if(snapshot.exists()){
 
-        showMsg(
-            errorEl,
-            "Số điện thoại không hợp lệ!",
-            "red"
-        );
+      const data = snapshot.val();
 
-        return;
-    }
+      nameInput.value =
+      data.name || "";
 
-    try {
+      phoneInput.value =
+      data.phone || "";
 
-       await db
-.collection("users")
-.doc(currentUser.uid)
-.set({
-    name,
-    phone,
-    address,
-    birthday
-},{
-    merge:true
-});
-        currentName.innerText = name;
-        currentPhone.innerText = phone;
-        currentAddress.innerText = address;
-        currentBirthday.innerText = birthday;
+      addressInput.value =
+      data.address || "";
 
-        showMsg(
-            messageEl,
-            "Cập nhật thành công!",
-            "green"
-        );
+      birthdayInput.value =
+      data.birthday || "";
 
-    } catch (err) {
+      avatarImg.src =
+      data.avatar ||
+      "https://i.ibb.co/Z1kv9nJj/logo.png";
 
-        showMsg(
-            errorEl,
-            err.message,
-            "red"
-        );
+      currentName.innerText =
+      data.name || "Chưa cập nhật";
+
+      currentPhone.innerText =
+      data.phone || "Chưa cập nhật";
+
+      currentAddress.innerText =
+      data.address || "Chưa cập nhật";
+
+      currentBirthday.innerText =
+      data.birthday || "Chưa cập nhật";
+
+      userEmail.innerText =
+      data.email || currentUser.email;
+
+      userCreatedAt.innerText =
+      new Date(
+        data.createdAt ||
+        currentUser.metadata.creationTime
+      ).toLocaleDateString();
 
     }
 
-});
-</script>
-   <script>
+  });
 
-// ==========================
-// LOGOUT
-// ==========================
-logoutArrow.addEventListener("click", async (e) => {
 
-    e.preventDefault();
+  /* CART COUNT */
+  db.ref('carts/'+currentUser.uid)
+  .on('value',snapshot=>{
 
-    try {
+    let count = 0;
 
-        await auth.signOut();
+    snapshot.forEach(item=>{
 
-        window.location.href = "index.html";
-
-    } catch (err) {
-
-        alert(err.message);
-
-    }
-
-});
-
-// ==========================
-// ĐỔI MẬT KHẨU
-// ==========================
-changePasswordBtn.addEventListener("click", async () => {
-
-    const newPassword =
-        newPasswordInput.value.trim();
-
-    if (newPassword.length < 6) {
-
-        showMsg(
-            errorEl,
-            "Mật khẩu tối thiểu 6 ký tự!",
-            "red"
-        );
-
-        return;
-    }
-
-    try {
-
-        await currentUser.updatePassword(
-            newPassword
-        );
-
-        newPasswordInput.value = "";
-
-        showMsg(
-            messageEl,
-            "Đổi mật khẩu thành công!",
-            "green"
-        );
-
-    } catch (err) {
-
-        showMsg(
-            errorEl,
-            err.message,
-            "red"
-        );
-
-    }
-
-});
-
-// ==========================
-// LỊCH SỬ ĐƠN HÀNG
-// ==========================
-if(orderHistoryBtn){
-
-    orderHistoryBtn.addEventListener("click", (e) => {
-
-        e.preventDefault();
-
-        ordersContainer.style.display =
-            ordersContainer.style.display === "none"
-            ? "block"
-            : "none";
-
-        loadOrders();
+      count +=
+      parseInt(item.val().quantity) || 1;
 
     });
 
-}
+    cartCountEl.innerText = count;
 
-// ==========================
-// LOAD ORDERS
-// ==========================
-function loadOrders(){
+  });
 
-    if(!currentUser) return;
+});
 
-    db.ref("orders/" + currentUser.uid)
-    .once("value")
-    .then(snapshot => {
 
-        ordersList.innerHTML = "";
+/* =========================
+   UPDATE INFO
+========================= */
+updateInfoBtn.addEventListener(
+"click",
+async()=>{
 
-        if(!snapshot.exists()){
+  if(!currentUser) return;
 
-            ordersList.innerHTML =
-            "<p>Chưa có đơn hàng</p>";
+  try{
 
-            return;
-        }
+    await db.ref(
+      'users/'+currentUser.uid
+    ).update({
 
-        snapshot.forEach(item => {
+      name:nameInput.value,
 
-            const order = item.val();
+      phone:phoneInput.value,
 
-            const div =
-            document.createElement("div");
+      address:addressInput.value,
 
-            div.className = "order-item";
-
-            div.innerHTML = `
-
-                <p>
-                <b>Mã đơn:</b>
-                ${item.key}
-                </p>
-
-                <p>
-                <b>Tổng tiền:</b>
-                ${order.total || 0}đ
-                </p>
-
-                <p>
-                <b>Ngày:</b>
-                ${order.date || ""}
-                </p>
-
-            `;
-
-            ordersList.appendChild(div);
-
-        });
+      birthday:birthdayInput.value
 
     });
 
-}
+
+    currentName.innerText =
+    nameInput.value ||
+    "Chưa cập nhật";
+
+    currentPhone.innerText =
+    phoneInput.value ||
+    "Chưa cập nhật";
+
+    currentAddress.innerText =
+    addressInput.value ||
+    "Chưa cập nhật";
+
+    currentBirthday.innerText =
+    birthdayInput.value ||
+    "Chưa cập nhật";
+
+  }
+  catch(err){
+
+    console.log(err);
+
+  }
+
+});
+
+
+/* =========================
+   CHANGE PASSWORD
+========================= */
+changePasswordBtn.addEventListener(
+"click",
+async()=>{
+
+  const newPass =
+  newPasswordInput.value.trim();
+
+  if(newPass.length < 6){
+
+    return;
+
+  }
+
+  try{
+
+    await currentUser.updatePassword(
+      newPass
+    );
+
+    newPasswordInput.value = "";
+
+  }
+  catch(err){
+
+    console.log(err);
+
+  }
+
+});
+
+
+/* =========================
+   LOGOUT
+========================= */
+logoutArrow.addEventListener(
+"click",
+e=>{
+
+  e.preventDefault();
+
+  auth.signOut()
+  .then(()=>{
+
+    window.location.href =
+    "index.html";
+
+  });
+
+});
+
+
+/* =========================
+   ORDER HISTORY
+========================= */
+orderHistoryBtn.addEventListener(
+"click",
+()=>{
+
+  ordersContainer.style.display =
+  "block";
+
+  ordersList.innerHTML =
+  "Đang tải...";
+
+  db.ref('orders/'+currentUser.uid)
+  .once('value')
+  .then(snapshot=>{
+
+    ordersList.innerHTML = '';
+
+    if(!snapshot.exists()){
+
+      ordersList.innerHTML =
+      '<p>Chưa có đơn hàng nào.</p>';
+
+      return;
+
+    }
+
+    snapshot.forEach(order=>{
+
+      const data = order.val();
+
+      const div =
+      document.createElement('div');
+
+      div.className =
+      'order-item';
+
+      const productNames =
+      data.items
+      ? data.items.map(i=>i.name).join(', ')
+      : "Không có sản phẩm";
+
+      div.innerHTML = `
+
+        <strong>
+        Mã đơn:
+        ${order.key}
+        </strong>
+
+        <br>
+
+        Trạng thái:
+        ${data.status || "Đang xử lý"}
+
+        <br>
+
+        Sản phẩm:
+        ${productNames}
+
+      `;
+
+      ordersList.appendChild(div);
+
+    });
+
+  });
+
+});
 
 </script>
+
 </body>
 </html>
-                    
