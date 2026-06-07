@@ -1,9 +1,5 @@
 
 import { db } from "./firebase-init.js";
-
-document
-.getElementById("closeAudit")
-.addEventListener("click",()=>{
 async function loadProducts(){
 
     const auditProducts =
