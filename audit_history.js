@@ -261,18 +261,22 @@ document
 loadAuditHistory();
 const openAuditBtn = document.getElementById("openAudit");
 const closeAuditBtn = document.getElementById("closeAudit");
-
 if(openAuditBtn){
 
-    openAuditBtn.addEventListener("click",()=>{
+    openAuditBtn.addEventListener("click", async ()=>{
 
         if(!confirm("Mở kỳ kiểm kê mới?")){
             return;
         }
 
-        alert("Đã mở kiểm kê");
+        await db
+        .collection("system")
+        .doc("audit")
+        .set({
+            auditOpen:true
+        });
 
-        // code mở kiểm kê của mày ở đây
+        alert("Đã mở kiểm kê");
 
     });
 
@@ -280,15 +284,20 @@ if(openAuditBtn){
 
 if(closeAuditBtn){
 
-    closeAuditBtn.addEventListener("click",()=>{
+    closeAuditBtn.addEventListener("click", async ()=>{
 
         if(!confirm("Đóng kỳ kiểm kê hiện tại?")){
             return;
         }
 
-        alert("Đã đóng kiểm kê");
+        await db
+        .collection("system")
+        .doc("audit")
+        .set({
+            auditOpen:false
+        });
 
-        // code đóng kiểm kê của mày ở đây
+        alert("Đã đóng kiểm kê");
 
     });
 
