@@ -200,8 +200,5 @@ firebase.firestore.FieldValue.serverTimestamp()
 
     alert("Đã lưu kiểm kê");
     submitBtn.disabled = false;
-    auditOpen = false;
-
-auditStatus.innerHTML =
-"🔴 ĐANG ĐÓNG";
+    
 });
