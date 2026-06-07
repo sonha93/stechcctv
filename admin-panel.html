@@ -192,8 +192,21 @@ button{
   <button id="btnAdd" class="full">
     ➕ Thêm sản phẩm
   </button>
-
+<div style="margin-top:10px;">
+    <input
+        type="text"
+        id="searchProduct"
+        placeholder="Tìm sản phẩm theo tên..."
+        style="
+            width:100%;
+            padding:12px;
+            border:1px solid #ddd;
+            border-radius:8px;
+            font-size:14px;
+        "
+    >
 </div>
+
 
 <hr>
 
@@ -235,7 +248,7 @@ const db = getFirestore(app);
 window.addEventListener("load", function(){
 
 let products = [];
-
+let filteredProducts = [];
 const nameMap = {
 
   sd:"Thẻ nhớ",
@@ -353,7 +366,7 @@ async function loadProducts(){
     });
 
   });
-
+  filteredProducts = [...products];
   render();
 
 }
@@ -555,20 +568,22 @@ const itemsPerPage = 10;
 
 function render() {
 
-  if(products.length === 0){
+  if(filteredProducts.length === 0){
     list.innerHTML = "<p>Chưa có sản phẩm</p>";
     return;
   }
 
   // tổng số trang
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+ const totalPages =
+Math.ceil(filteredProducts.length / itemsPerPage);
 
   // vị trí cắt mảng
   const start = (currentPage - 1) * itemsPerPage;
   const end = start + itemsPerPage;
 
   // dữ liệu trang hiện tại
-  const currentProducts = products.slice(start, end);
+  const currentProducts =
+filteredProducts.slice(start, end);
 
   // render sản phẩm
   list.innerHTML = currentProducts.map(p => `
@@ -860,7 +875,36 @@ loadProducts();
 ========================= */
 
 loadProducts();
+const searchProduct =
+document.getElementById("searchProduct");
 
+if(searchProduct){
+
+  searchProduct.addEventListener("input", () => {
+
+    const keyword =
+      searchProduct.value
+      .trim()
+      .toLowerCase();
+
+    filteredProducts =
+      products.filter(p => {
+
+        return (
+          p.name || ""
+        )
+        .toLowerCase()
+        .includes(keyword);
+
+      });
+
+    currentPage = 1;
+
+    render();
+
+  });
+
+}
 categoryEl.dispatchEvent(
   new Event("change")
 );
