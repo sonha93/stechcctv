@@ -48,8 +48,7 @@ Object.keys(audits)
     `;
 
     audits[auditId].forEach(d=>{
-    const d = docSnap.data();
-
+  
     let diffClass = "good";
     let diffText = "Khớp";
 
