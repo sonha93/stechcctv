@@ -54,18 +54,11 @@ async function loadProducts(){
 
 <input
     type="number"
+    class="actualStock"
+    data-id="${docSnap.id}"
+    data-name="${p.name}"
+    data-system="${p.stock || 0}"
     placeholder="Số lượng đếm thực tế"
-    data-id="${docSnap.id}"
-    data-name="${p.name}"
-    class="actualStock"
->
-
-          <input
-    type="number"
-    placeholder="Nhập tồn thực tế"
-    data-id="${docSnap.id}"
-    data-name="${p.name}"
-    class="actualStock"
 >
 
         </div>
@@ -95,23 +88,34 @@ document
         const counted =
         Number(row.value || 0);
 
-        await db
-        .collection("audit_entries")
-        .add({
+      const productDoc =
+await db
+.collection("products")
+.doc(row.dataset.id)
+.get();
 
-            productId:
-            row.dataset.id,
+const systemStock =
+Number(productDoc.data()?.stock || 0);
 
-            productName:
-            row.dataset.name,
+await db
+.collection("audit_entries")
+.add({
 
-            countedStock:
-            counted,
+    productId: row.dataset.id,
 
-            createdAt:
-            firebase.firestore.FieldValue.serverTimestamp()
+    productName: row.dataset.name,
 
-        });
+    systemStock,
+
+    countedStock: counted,
+
+    difference:
+        counted - systemStock,
+
+    createdAt:
+    firebase.firestore.FieldValue.serverTimestamp()
+
+});
 
     }
 
