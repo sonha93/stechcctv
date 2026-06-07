@@ -48,10 +48,17 @@ async function loadProducts(){
 
             <h3>${p.name}</h3>
 
-            <div>
-                📦 Tồn hệ thống:
-                <b>${p.stock || 0}</b>
-            </div>
+            <div class="audit-name">
+    ${p.name}
+</div>
+
+<input
+    type="number"
+    placeholder="Số lượng đếm thực tế"
+    data-id="${docSnap.id}"
+    data-name="${p.name}"
+    class="actualStock"
+>
 
             <input
                 type="number"
