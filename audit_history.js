@@ -1,5 +1,23 @@
 import { db } from "./firebase-init.js";
+async function loadAuditStatus(){
 
+    const auditDoc =
+    await db.collection("system")
+    .doc("audit")
+    .get();
+
+    const auditOpen =
+    auditDoc.data()?.auditOpen || false;
+
+    const auditStatus =
+    document.getElementById("auditStatus");
+
+    auditStatus.innerHTML =
+    auditOpen
+    ? "🟢 ĐANG MỞ KIỂM KÊ"
+    : "🔴 ĐANG ĐÓNG KIỂM KÊ";
+
+}
 async function loadAuditHistory(){
 
   const auditList =
@@ -263,18 +281,19 @@ const openAuditBtn = document.getElementById("openAudit");
 const closeAuditBtn = document.getElementById("closeAudit");
 if(openAuditBtn){
 
-    openAuditBtn.addEventListener("click", async ()=>{
+  openAuditBtn.addEventListener("click",async ()=>{
 
         try{
 
-            await db
-            .collection("system")
-            .doc("audit")
-            .set({
-                auditOpen:true
-            });
+            await db.collection("system")
+.doc("audit")
+.set({
+    auditOpen:true
+});
 
-            alert("Đã mở kiểm kê");
+alert("Đã mở kiểm kê");
+
+loadAuditStatus();
 
         }catch(err){
 
@@ -288,18 +307,20 @@ if(openAuditBtn){
 }
 if(closeAuditBtn){
 
-    closeAuditBtn.addEventListener("click", async ()=>{
+   closeAuditBtn.addEventListener("click",async ()=>{
 
         try{
 
-            await db
-            .collection("system")
-            .doc("audit")
-            .set({
-                auditOpen:false
-            });
+          await db.collection("system")
+.doc("audit")
+.set({
+    auditOpen:false
+});
 
-            alert("Đã đóng kiểm kê");
+alert("Đã đóng kiểm kê");
+
+loadAuditHistory();
+loadAuditStatus();
 
         }catch(err){
 
