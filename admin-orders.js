@@ -836,11 +836,68 @@ if(status === "cancelled"){
   updateData.adminCancelled = true;
 }
 
-console.log(orderData);
+
 if(
   status === "completed" &&
   orderData.status !== "completed"
 ){
+  // =====================
+// MEMBER POINTS
+// =====================
+
+if(orderData.uid){
+
+  const userRef =
+    db.collection("users")
+    .doc(orderData.uid);
+
+  const userDoc =
+    await userRef.get();
+
+  if(userDoc.exists){
+
+    const userData =
+      userDoc.data();
+
+    const currentPoints =
+      Number(userData.points || 0);
+
+    // 1 điểm = 1.000đ
+    const earnedPoints =
+      Math.floor(
+        Number(orderData.total || 0) / 1000
+      );
+
+    const newPoints =
+      currentPoints + earnedPoints;
+
+    let level = "Bronze";
+
+    if(newPoints >= 50000){
+      level = "Diamond";
+    }
+    else if(newPoints >= 20000){
+      level = "Gold";
+    }
+    else if(newPoints >= 5000){
+      level = "Silver";
+    }
+
+    await userRef.update({
+
+      points: newPoints,
+
+      level: level,
+
+      totalSpent:
+        Number(userData.totalSpent || 0)
+        + Number(orderData.total || 0)
+
+    });
+
+  }
+
+}
 for(const item of (orderData.items || [])){
 
   try{
