@@ -474,6 +474,8 @@ placeholder="VD: 0912345678">
 <p>Địa chỉ: <span id="currentAddress"></span></p>
 <p>Ngày sinh: <span id="currentBirthday"></span></p>
 <p>Số điện thoại: <span id="currentPhone"></span></p>
+<p>Điểm thành viên: <span id="memberPoints">0</span></p>
+<p>Hạng thành viên: <span id="memberLevel">Đồng</span></p>
 </div>
 
 <div class="password-section">
@@ -615,6 +617,11 @@ auth.onAuthStateChanged(user=>{
             currentPhone.innerText = data.phone||"Chưa cập nhật";
             currentAddress.innerText = data.address||"Chưa cập nhật";
             currentBirthday.innerText = data.birthday||"Chưa cập nhật";
+           document.getElementById("memberPoints").innerText =
+             data.points || 0;
+
+         document.getElementById("memberLevel").innerText =
+          data.level || "Đồng";
         }
     });
 
