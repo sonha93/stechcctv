@@ -890,7 +890,7 @@ if(uid){
   else if(newSpent >= 5000000){
     level = "Bạc";
   }
-
+  console.log(
   await userRef.set({
 
     points: newPoints,
