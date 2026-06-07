@@ -534,10 +534,12 @@ const lockStatus =
         <small>${order.phone || ""}</small>
       </td>
 
-      <td>
-        ${order.address || "-"}
-      </td>
-
+    <td style="
+    max-width:300px;
+    word-break:break-word;
+">
+  ${order.address || "-"}
+</td>
       <td>
         ${renderProducts(order.items || [])}
       </td>
@@ -769,12 +771,15 @@ function renderProducts(items) {
   if (!items.length) return "-";
 
   return items.map(item => {
-
-    return `
-      <div style="margin-bottom:6px;">
-        ${item.name || "Sản phẩm"} x${item.qty || 1}
-      </div>
-    `;
+return `
+  <div style="
+      margin-bottom:6px;
+      line-height:1.6;
+      word-break:break-word;
+  ">
+      ${item.name || "Sản phẩm"} x${item.qty || 1}
+  </div>
+`;
 
   }).join("");
 }
