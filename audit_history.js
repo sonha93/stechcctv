@@ -117,7 +117,7 @@ function renderAudit(auditId, audits, auditList){
                 <div class="audit-card">
                     <span>Giá trị thất thoát</span>
                     <b class="summary-loss">
-                        ${Number(d.lossValue || 0).toLocaleString()}
+                        ${-Number(d.lossValue || 0).toLocaleString()}
                     </b>
                 </div>
 
