@@ -778,18 +778,22 @@ changePasswordBtn.addEventListener("click", async () => {
 // ==========================
 // LỊCH SỬ ĐƠN HÀNG
 // ==========================
-orderHistoryBtn.addEventListener("click", (e) => {
+if(orderHistoryBtn){
 
-    e.preventDefault();
+    orderHistoryBtn.addEventListener("click", (e) => {
 
-    ordersContainer.style.display =
-        ordersContainer.style.display === "none"
-        ? "block"
-        : "none";
+        e.preventDefault();
 
-    loadOrders();
+        ordersContainer.style.display =
+            ordersContainer.style.display === "none"
+            ? "block"
+            : "none";
 
-});
+        loadOrders();
+
+    });
+
+}
 
 // ==========================
 // LOAD ORDERS
