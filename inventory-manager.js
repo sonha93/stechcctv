@@ -145,7 +145,7 @@ async function loadInventory(){
 
                     <td>
                        ${formatVND(importPrice)}
-                        >
+                    
                     </td>
 
                     <td>
