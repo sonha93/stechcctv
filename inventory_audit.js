@@ -4,13 +4,6 @@ import { db } from "./firebase-init.js";
 document
 .getElementById("closeAudit")
 .addEventListener("click",()=>{
-
-    auditOpen = false;
-
-    auditStatus.innerHTML =
-    "🔴 ĐANG ĐÓNG";
-
-});
 async function loadProducts(){
 
     const auditProducts =
