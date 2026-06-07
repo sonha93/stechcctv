@@ -110,6 +110,11 @@ h2{
     background:#111;
     color:white;
 }
+    #auditStatus{
+    margin:15px 0;
+    font-size:18px;
+    font-weight:bold;
+}
 </style>
 </head>
 <body>
@@ -117,10 +122,7 @@ h2{
 <h2>📋 Lịch sử kiểm kê kho</h2>
 <div class="audit-filter">
 
-    <input
-        type="date"
-        id="auditDateFilter"
-    >
+    <input type="date" id="auditDateFilter">
 
     <button id="searchAudit">
         Tìm kiểm kê
@@ -129,19 +131,18 @@ h2{
     <button id="latestAudit">
         Kỳ mới nhất
     </button>
+
     <button id="openAudit">
         Mở kiểm kê
     </button>
 
-    <button id="closeAudit">
-        Đóng kiểm kê
-    </button>
+</div>
 
+<div id="auditStatus">
+    🔴 ĐANG ĐÓNG KIỂM KÊ
 </div>
-</div>
-    <select id="auditSelect">
+<select id="auditSelect">
 </select>
-
 <br><br>
 
 <div id="auditList"></div>
