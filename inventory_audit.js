@@ -38,38 +38,34 @@ async function loadProducts(){
     const snap =
     await db.collection("products").get();
 
-   let stt = 1;
+ let stt = 1;
 
 snap.forEach(docSnap => {
 
-        const p = docSnap.data();
+    const p = docSnap.data();
 
-        auditProducts.innerHTML += `
+    auditProducts.innerHTML += `
 
-        <div class="audit-item">
+    <div class="audit-item">
 
         <h3>${stt}. ${p.name}</h3>
 
-            <div class="audit-name">
-    ${p.name}
-</div>
+        <input
+            type="number"
+            class="actualStock"
+            data-id="${docSnap.id}"
+            data-name="${p.name}"
+            data-system="${p.stock || 0}"
+            placeholder="Số lượng đếm thực tế"
+        >
 
-<input
-    type="number"
-    class="actualStock"
-    data-id="${docSnap.id}"
-    data-name="${p.name}"
-    data-system="${p.stock || 0}"
-    placeholder="Số lượng đếm thực tế"
->
+    </div>
 
-        </div>
+    `;
 
-        `;
+    stt++;
 
-    });
-
-}
+});
 loadProducts();
 document
 .getElementById("submitAudit")
