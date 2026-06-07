@@ -554,12 +554,13 @@ ${
   ? `
     <span style="
       background:#ffebee;
-      color:#d32f2f;
-      padding:5px 10px;
-      border-radius:20px;
-      font-size:12px;
-      font-weight:bold;
-      display:inline-block;
+color:#d32f2f;
+padding:10px 16px;
+border-radius:12px;
+font-size:13px;
+font-weight:600;
+display:inline-flex;
+align-items:center;
     ">
       Khách hủy đơn
     </span>
@@ -567,13 +568,14 @@ ${
   : order.adminCancelled
   ? `
     <span style="
-      background:#fff3e0;
-      color:#ef6c00;
-      padding:5px 10px;
-      border-radius:20px;
-      font-size:12px;
-      font-weight:bold;
-      display:inline-block;
+     background:#fff3e0;
+color:#ef6c00;
+padding:10px 16px;
+border-radius:12px;
+font-size:13px;
+font-weight:600;
+display:inline-flex;
+align-items:center;
     ">
       Admin hủy đơn
     </span>
@@ -581,12 +583,13 @@ ${
   : `
     <span style="
       background:#e8f5e9;
-      color:#2e7d32;
-      padding:5px 10px;
-      border-radius:20px;
-      font-size:12px;
-      font-weight:bold;
-      display:inline-block;
+color:#2e7d32;
+padding:10px 16px;
+border-radius:12px;
+font-size:13px;
+font-weight:600;
+display:inline-flex;
+align-items:center;
     ">
    ${getStatusText(order.status)}
     </span>
