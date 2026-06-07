@@ -89,13 +89,48 @@ h2{
     color:orange;
     font-weight:bold;
 }
+.audit-filter{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
 
+.audit-filter input{
+    padding:10px;
+    border:1px solid #ddd;
+    border-radius:8px;
+}
+
+.audit-filter button{
+    padding:10px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#111;
+    color:white;
+}
 </style>
 </head>
 <body>
 
 <h2>📋 Lịch sử kiểm kê kho</h2>
+<div class="audit-filter">
 
+    <input
+        type="date"
+        id="auditDateFilter"
+    >
+
+    <button id="searchAudit">
+        Tìm kiểm kê
+    </button>
+
+    <button id="latestAudit">
+        Kỳ mới nhất
+    </button>
+
+</div>
 <div id="auditList"></div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
