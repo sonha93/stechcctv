@@ -10,11 +10,44 @@ async function loadAuditHistory(){
     const snap =
 await db
 .collection("audit_entries")
-.limit(50)
+.limit(500)
 .get();
 
-   snap.forEach(docSnap=>{
+const audits = {};
 
+snap.forEach(docSnap=>{
+
+    const d = docSnap.data();
+
+    if(!audits[d.auditId]){
+        audits[d.auditId] = [];
+    }
+
+    audits[d.auditId].push(d);
+
+});
+
+Object.keys(audits)
+.reverse()
+.forEach(auditId=>{
+
+    auditList.innerHTML += `
+
+    <div style="
+        background:#111;
+        color:white;
+        padding:15px;
+        margin:20px 0 10px;
+        border-radius:10px;
+        font-size:18px;
+        font-weight:bold;
+    ">
+        📋 KỲ KIỂM KÊ: ${auditId}
+    </div>
+
+    `;
+
+    audits[auditId].forEach(d=>{
     const d = docSnap.data();
 
     let diffClass = "good";
@@ -125,7 +158,10 @@ await db
 
 `;
 
+   });
+
 });
+
 }
 
 loadAuditHistory();
