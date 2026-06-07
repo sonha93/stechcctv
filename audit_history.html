@@ -19,10 +19,11 @@ h2{
 }
 
 .audit-row{
-    background:#fff;
-    margin-bottom:1px;
-    padding:15px;
-    border-bottom:1px solid #eee;
+    background:white;
+    padding:20px;
+    margin-bottom:15px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
 .audit-row h3{
@@ -32,48 +33,17 @@ h2{
 .audit-grid{
     display:grid;
     grid-template-columns:
-    repeat(6,minmax(140px,1fr));
-    gap:10px;
-    margin-top:10px;
+    repeat(auto-fit,minmax(220px,1fr));
+    gap:12px;
+    margin:15px 0;
 }
 
 .audit-card{
-    background:#fafafa;
-    padding:10px;
-    border-radius:6px;
-    border:1px solid #eee;
-}
-#auditList{
-    background:#fff;
-    border-radius:15px;
-    overflow:hidden;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
-}
-    .audit-filter button:hover{
-    opacity:.9;
-}
-
-#openAudit{
-    background:#16a34a;
-}
-
-#closeAudit{
-    background:#dc2626;
-}
-    #auditStatus{
-    padding:15px;
-    background:#fff;
-    border-radius:12px;
-    margin-bottom:15px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
-    #auditSelect{
-    padding:10px;
-    border:1px solid #ddd;
+    background:#f8f8f8;
+    padding:12px;
     border-radius:8px;
-    min-width:320px;
-    margin-bottom:20px;
 }
+
 .audit-card span{
     display:block;
     color:#666;
