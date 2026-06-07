@@ -8,10 +8,9 @@ async function loadAuditHistory(){
     auditList.innerHTML = "";
 
     const snap =
-    await db
-    .collection("audit_entries")
-    .orderBy("createdAt","desc")
-    .get();
+await db
+.collection("audit_entries")
+.get();
 
    snap.forEach(docSnap=>{
 
