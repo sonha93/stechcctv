@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Lịch sử kiểm kê kho</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#f5f5f5;
+    padding:20px;
+}
+
+h2{
+    margin-bottom:20px;
+}
+
+.audit-row{
+    background:white;
+    padding:15px;
+    margin-bottom:10px;
+    border-radius:10px;
+}
+
+.good{
+    color:green;
+    font-weight:bold;
+}
+
+.loss{
+    color:red;
+    font-weight:bold;
+}
+
+.more{
+    color:orange;
+    font-weight:bold;
+}
+
+</style>
+</head>
+<body>
+
+<h2>📋 Lịch sử kiểm kê kho</h2>
+
+<div id="auditList"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script type="module" src="audit_history.js"></script>
+
+</body>
+</html>
