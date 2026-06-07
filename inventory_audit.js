@@ -1,10 +1,6 @@
-console.log("DB =", db);
+
 import { db } from "./firebase-init.js";
 
-import {
-    collection,
-    getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let auditOpen = false;
 
@@ -34,23 +30,41 @@ document
 });
 async function loadProducts(){
 
-    try{
+    const auditProducts =
+    document.getElementById("auditProducts");
 
-        console.log("LOAD");
+    auditProducts.innerHTML = "";
 
-        const snap =
-        await getDocs(
-            collection(db,"products")
-        );
+    const snap =
+    await db.collection("products").get();
 
-        console.log("SIZE =", snap.size);
+    snap.forEach(docSnap => {
 
-    }
-    catch(err){
+        const p = docSnap.data();
 
-        console.error("ERR =", err);
+        auditProducts.innerHTML += `
 
-    }
+        <div class="audit-item">
+
+            <h3>${p.name}</h3>
+
+            <div>
+                📦 Tồn hệ thống:
+                <b>${p.stock || 0}</b>
+            </div>
+
+            <input
+                type="number"
+                placeholder="Nhập tồn thực tế"
+                data-id="${docSnap.id}"
+                class="actualStock"
+            >
+
+        </div>
+
+        `;
+
+    });
 
 }
 loadProducts();
