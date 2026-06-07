@@ -259,3 +259,37 @@ document
     }
 
 loadAuditHistory();
+const openAuditBtn = document.getElementById("openAudit");
+const closeAuditBtn = document.getElementById("closeAudit");
+
+if(openAuditBtn){
+
+    openAuditBtn.addEventListener("click",()=>{
+
+        if(!confirm("Mở kỳ kiểm kê mới?")){
+            return;
+        }
+
+        alert("Đã mở kiểm kê");
+
+        // code mở kiểm kê của mày ở đây
+
+    });
+
+}
+
+if(closeAuditBtn){
+
+    closeAuditBtn.addEventListener("click",()=>{
+
+        if(!confirm("Đóng kỳ kiểm kê hiện tại?")){
+            return;
+        }
+
+        alert("Đã đóng kiểm kê");
+
+        // code đóng kiểm kê của mày ở đây
+
+    });
+
+}
