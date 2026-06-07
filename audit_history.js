@@ -29,9 +29,17 @@ snap.forEach(docSnap=>{
 });
 
 const auditIds =
-Object.keys(audits)
-.sort()
-.reverse();
+Object.keys(audits).sort((a,b)=>{
+
+    const timeA =
+    audits[a][0]?.createdAt?.seconds || 0;
+
+    const timeB =
+    audits[b][0]?.createdAt?.seconds || 0;
+
+    return timeB - timeA;
+
+});
 const auditSelect =
 document.getElementById("auditSelect");
 
