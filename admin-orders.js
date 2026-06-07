@@ -841,67 +841,6 @@ if(
   status === "completed" &&
   orderData.status !== "completed"
 ){
-  // =====================
-// MEMBER POINTS
-// =====================
-
-const uid = orderData.uid;
-
-if(uid){
-
-  const userRef =
-    db.collection("users").doc(uid);
-
-  const userDoc =
-    await userRef.get();
-
-  const userData =
-    userDoc.exists
-      ? userDoc.data()
-      : {};
-
-  const totalOrder =
-    Number(orderData.total || 0);
-
-  // 1 điểm = 1.000đ
-  const earnedPoints =
-    Math.floor(totalOrder / 1000);
-
-  const oldPoints =
-    Number(userData.points || 0);
-
-  const oldSpent =
-    Number(userData.totalSpent || 0);
-
-  const newPoints =
-    oldPoints + earnedPoints;
-
-  const newSpent =
-    oldSpent + totalOrder;
-
-  let level = "Đồng";
-
-  if(newSpent >= 50000000){
-    level = "Kim Cương";
-  }
-  else if(newSpent >= 20000000){
-    level = "Vàng";
-  }
-  else if(newSpent >= 5000000){
-    level = "Bạc";
-  }
-  console.log(
-  await userRef.set({
-
-    points: newPoints,
-
-    totalSpent: newSpent,
-
-    level: level
-
-  }, { merge:true });
-
-}
 for(const item of (orderData.items || [])){
 
   try{
