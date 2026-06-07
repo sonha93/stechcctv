@@ -103,13 +103,19 @@ document
 .getElementById("submitAudit")
 .addEventListener("click", async ()=>{
 
+    const submitBtn =
+    document.getElementById("submitAudit");
+
+    submitBtn.disabled = true;
+
     if(!auditOpen){
 
         alert("Chưa mở kiểm kê");
 
+        submitBtn.disabled = false;
+
         return;
     }
-
     const rows =
     document.querySelectorAll(".actualStock");
 
@@ -152,6 +158,7 @@ await db
     }
 
     alert("Đã lưu kiểm kê");
+    submitBtn.disabled = false;
     auditOpen = false;
 
 auditStatus.innerHTML =
