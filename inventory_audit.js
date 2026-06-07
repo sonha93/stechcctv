@@ -44,27 +44,40 @@ snap.forEach(docSnap => {
 
     const p = docSnap.data();
 
-    auditProducts.innerHTML += `
+  auditProducts.innerHTML += `
 
-    <div class="audit-item">
+<div class="audit-item">
 
-        <h3>${stt}. ${p.name}</h3>
+    <div class="audit-top">
 
-        <input
-            type="number"
-            class="actualStock"
-            data-id="${docSnap.id}"
-            data-name="${p.name}"
-            data-system="${p.stock || 0}"
-            placeholder="Số lượng đếm thực tế"
-        >
+        <span class="audit-stt">
+            #${String(stt).padStart(3,"0")}
+        </span>
 
     </div>
 
-    `;
+    <div class="audit-product-name">
+        ${p.name}
+    </div>
 
-    stt++;
+    <div class="audit-product-id">
+        ID: ${docSnap.id}
+    </div>
 
+    <input
+        type="number"
+        class="actualStock"
+        data-id="${docSnap.id}"
+        data-name="${p.name}"
+        data-system="${p.stock || 0}"
+        placeholder="Nhập số lượng đếm thực tế"
+    >
+
+</div>
+
+`;
+
+stt++;
 });
 }
 loadProducts();
