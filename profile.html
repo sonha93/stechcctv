@@ -498,6 +498,7 @@ placeholder="VD: 0912345678">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 const firebaseConfig = {
 apiKey:"AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -510,7 +511,7 @@ appId:"1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.database();
+const db = firebase.firestore();
 
 const userEmail = document.getElementById("userEmail");
 const userCreatedAt = document.getElementById("userCreatedAt");
@@ -572,9 +573,14 @@ avatarUpload.addEventListener("change", async (e) => {
             avatarImg.src = data.secure_url;
 
             /* lưu firebase */
-            await db.ref("users/" + currentUser.uid).update({
-                avatar: data.secure_url
-            });
+           await db
+.collection("users")
+.doc(currentUser.uid)
+.set({
+    avatar: data.secure_url
+},{
+    merge:true
+});
 
             alert("Upload avatar thành công!");
         }
@@ -605,26 +611,44 @@ auth.onAuthStateChanged(user=>{
     userEmail.innerText = currentUser.email;
     userCreatedAt.innerText = new Date(currentUser.metadata.creationTime).toLocaleDateString();
 
-    db.ref('users/'+uidToLoad).once('value').then(snapshot=>{
-        if(snapshot.exists()){
-            const data = snapshot.val();
-            nameInput.value = data.name||"";
-            phoneInput.value = data.phone||"";
-            addressInput.value = data.address||"";
-            birthdayInput.value = data.birthday||"";
-            avatarImg.src = data.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
-            currentName.innerText = data.name||"Chưa cập nhật";
-            currentPhone.innerText = data.phone||"Chưa cập nhật";
-            currentAddress.innerText = data.address||"Chưa cập nhật";
-            currentBirthday.innerText = data.birthday||"Chưa cập nhật";
-           document.getElementById("memberPoints").innerText =
-             data.points || 0;
+    db.collection("users")
+.doc(uidToLoad)
+.get()
+.then(doc=>{
 
-         document.getElementById("memberLevel").innerText =
+    if(doc.exists){
+
+        const data = doc.data();
+
+        nameInput.value = data.name || "";
+        phoneInput.value = data.phone || "";
+        addressInput.value = data.address || "";
+        birthdayInput.value = data.birthday || "";
+
+        avatarImg.src =
+          data.avatar ||
+          "https://i.ibb.co/Z1kv9nJj/logo.png";
+
+        currentName.innerText =
+          data.name || "Chưa cập nhật";
+
+        currentPhone.innerText =
+          data.phone || "Chưa cập nhật";
+
+        currentAddress.innerText =
+          data.address || "Chưa cập nhật";
+
+        currentBirthday.innerText =
+          data.birthday || "Chưa cập nhật";
+
+        document.getElementById("memberPoints").innerText =
+          data.points || 0;
+
+        document.getElementById("memberLevel").innerText =
           data.level || "Đồng";
-        }
-    });
+    }
 
+});
     db.ref('carts/'+currentUser.uid).on('value',snapshot=>{
         let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); 
         cartCountEl.innerText=count;
@@ -677,13 +701,17 @@ updateInfoBtn.addEventListener("click", async () => {
 
     try {
 
-        await db.ref('users/' + currentUser.uid).update({
-            name: name,
-            phone: phone,
-            address: address,
-            birthday: birthday
-        });
-
+       await db
+.collection("users")
+.doc(currentUser.uid)
+.set({
+    name,
+    phone,
+    address,
+    birthday
+},{
+    merge:true
+});
         currentName.innerText = name;
         currentPhone.innerText = phone;
         currentAddress.innerText = address;
