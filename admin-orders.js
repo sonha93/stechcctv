@@ -845,57 +845,61 @@ if(
 // MEMBER POINTS
 // =====================
 
-if(orderData.uid){
+const uid = orderData.uid;
+
+if(uid){
 
   const userRef =
-    db.collection("users")
-    .doc(orderData.uid);
+    db.collection("users").doc(uid);
 
   const userDoc =
     await userRef.get();
 
-  if(userDoc.exists){
+  const userData =
+    userDoc.exists
+      ? userDoc.data()
+      : {};
 
-    const userData =
-      userDoc.data();
+  const totalOrder =
+    Number(orderData.total || 0);
 
-    const currentPoints =
-      Number(userData.points || 0);
+  // 1 điểm = 1.000đ
+  const earnedPoints =
+    Math.floor(totalOrder / 1000);
 
-    // 1 điểm = 1.000đ
-    const earnedPoints =
-      Math.floor(
-        Number(orderData.total || 0) / 1000
-      );
+  const oldPoints =
+    Number(userData.points || 0);
 
-    const newPoints =
-      currentPoints + earnedPoints;
+  const oldSpent =
+    Number(userData.totalSpent || 0);
 
-    let level = "Bronze";
+  const newPoints =
+    oldPoints + earnedPoints;
 
-    if(newPoints >= 50000){
-      level = "Diamond";
-    }
-    else if(newPoints >= 20000){
-      level = "Gold";
-    }
-    else if(newPoints >= 5000){
-      level = "Silver";
-    }
+  const newSpent =
+    oldSpent + totalOrder;
 
-    await userRef.update({
+  let level = "Đồng";
 
-      points: newPoints,
-
-      level: level,
-
-      totalSpent:
-        Number(userData.totalSpent || 0)
-        + Number(orderData.total || 0)
-
-    });
-
+  if(newSpent >= 50000000){
+    level = "Kim Cương";
   }
+  else if(newSpent >= 20000000){
+    level = "Vàng";
+  }
+  else if(newSpent >= 5000000){
+    level = "Bạc";
+  }
+
+  await userRef.set({
+
+    points: newPoints,
+
+    totalSpent: newSpent,
+
+    level: level
+
+  }, { merge:true });
 
 }
 for(const item of (orderData.items || [])){
