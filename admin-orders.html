@@ -148,9 +148,9 @@ h1{
 
 .table-wrap{
     background:#fff;
-    border-radius:12px;
-    overflow:auto;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 4px 20px rgba(0,0,0,.06);
 }
 .table-wrap{
     overflow-x:auto;
@@ -158,21 +158,23 @@ h1{
 table{
     width:100%;
     border-collapse:collapse;
+    table-layout:fixed;
 }
+  
 
 th{
-    background:#111;
+    background:#050505;
     color:#fff;
-    padding:14px;
-    font-size:13px;
-    text-align:left;
+    padding:18px 14px;
+    font-size:14px;
+    font-weight:700;
 }
 
 td{
-    padding:14px;
-    border-bottom:1px solid #eee;
-    font-size:13px;
-    vertical-align:top;
+    padding:18px 14px;
+    border-bottom:1px solid #f1f1f1;
+    font-size:14px;
+    vertical-align:middle;
 }
 
 tr:hover{
@@ -1389,18 +1391,16 @@ rel="stylesheet">
 <table>
 
 <thead>
-
 <tr>
-    <th>Mã đơn</th>
-    <th>Khách hàng</th>
-    <th>Địa chỉ</th>
-    <th>Sản phẩm</th>
-    <th>Tổng tiền</th>
-    <th>Trạng thái</th>
-    <th>Ngày tạo</th>
-    <th>Hành động</th>
+    <th style="width:180px">Mã đơn</th>
+    <th style="width:220px">Khách hàng</th>
+    <th style="width:300px">Địa chỉ</th>
+    <th style="width:260px">Sản phẩm</th>
+    <th style="width:140px">Tổng tiền</th>
+    <th style="width:170px">Trạng thái</th>
+    <th style="width:170px">Ngày tạo</th>
+    <th style="width:220px">Hành động</th>
 </tr>
-
 </thead>
 
 <tbody id="ordersTable">
