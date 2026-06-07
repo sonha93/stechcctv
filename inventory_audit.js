@@ -1,3 +1,4 @@
+console.log("DB =", db);
 import { db } from "./firebase-init.js";
 
 import {
@@ -33,43 +34,23 @@ document
 });
 async function loadProducts(){
 
-    const auditProducts =
-    document.getElementById("auditProducts");
+    try{
 
-    auditProducts.innerHTML = "";
+        console.log("LOAD");
 
-    const snap =
-    await getDocs(
-        collection(db,"products")
-    );
+        const snap =
+        await getDocs(
+            collection(db,"products")
+        );
 
-    snap.forEach(docSnap => {
+        console.log("SIZE =", snap.size);
 
-        const p = docSnap.data();
+    }
+    catch(err){
 
-        auditProducts.innerHTML += `
+        console.error("ERR =", err);
 
-        <div class="audit-item">
-
-            <h3>${p.name}</h3>
-
-            <div>
-                📦 Tồn hệ thống:
-                <b>${p.stock || 0}</b>
-            </div>
-
-            <input
-                type="number"
-                placeholder="Nhập tồn thực tế"
-                data-id="${docSnap.id}"
-                class="actualStock"
-            >
-
-        </div>
-
-        `;
-
-    });
+    }
 
 }
 loadProducts();
