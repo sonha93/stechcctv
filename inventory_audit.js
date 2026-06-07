@@ -102,7 +102,7 @@ Number(productDoc.data()?.stock || 0);
 await db
 .collection("audit_entries")
 .add({
-      auditSessionId,
+
     productId: row.dataset.id,
 
     productName: row.dataset.name,
