@@ -743,7 +743,22 @@ tr:hover{
 
 .product-info-stat{
     white-space:normal;
-}  
+} 
+   .header-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+#exportExcelBtn{
+    background:#217346;
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+}
 
 }
 </style>
@@ -1330,8 +1345,10 @@ rel="stylesheet">
     <h2 style="margin-bottom:15px;">
       📝 Product Change Logs
     </h2>
-
-    <table>
+    <button id="exportExcelBtn">
+        📊 Export Excel
+    </button>
+   <table id="logsTable">
 
       <thead>
       <tr>
@@ -1414,6 +1431,7 @@ rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <!-- ADMIN JS -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <script type="module" src="admin-orders.js"></script>
 <script type="module" src="inventory-manager.js"></script>
 <script type="module" src="history.js"></script>
