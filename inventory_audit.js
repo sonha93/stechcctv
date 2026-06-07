@@ -80,14 +80,22 @@ document
 
     submitBtn.disabled = true;
 
-    if(!auditOpen){
+    const auditConfig =
+await db.collection("system")
+.doc("audit")
+.get();
 
-        alert("Chưa mở kiểm kê");
+const auditOpen =
+auditConfig.data()?.auditOpen || false;
 
-        submitBtn.disabled = false;
+if(!auditOpen){
 
-        return;
-    }
+    alert("Chưa mở kiểm kê");
+
+    submitBtn.disabled = false;
+
+    return;
+}
     const auditId =
 "AUD-" +
 new Date().toISOString().slice(0,10).replaceAll("-","") +
