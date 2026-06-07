@@ -66,6 +66,7 @@ snap.forEach(docSnap => {
     stt++;
 
 });
+}
 loadProducts();
 document
 .getElementById("submitAudit")
