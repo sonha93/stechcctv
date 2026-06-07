@@ -84,7 +84,9 @@ document
     document.querySelectorAll(".actualStock");
 
     for(const row of rows){
-
+if(row.value === ""){
+    continue;
+}
         const counted =
         Number(row.value || 0);
 
@@ -100,7 +102,7 @@ Number(productDoc.data()?.stock || 0);
 await db
 .collection("audit_entries")
 .add({
-
+      auditSessionId,
     productId: row.dataset.id,
 
     productName: row.dataset.name,
@@ -120,5 +122,8 @@ await db
     }
 
     alert("Đã lưu kiểm kê");
+    auditOpen = false;
 
+auditStatus.innerHTML =
+"🔴 ĐANG ĐÓNG";
 });
