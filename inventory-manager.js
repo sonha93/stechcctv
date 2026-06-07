@@ -2689,3 +2689,22 @@ document.addEventListener("input",(e)=>{
     }
 
 });
+document
+.getElementById("exportExcelBtn")
+?.addEventListener("click", () => {
+
+    const table =
+        document.getElementById("logsTable");
+
+    const wb =
+        XLSX.utils.table_to_book(
+            table,
+            { sheet:"Logs" }
+        );
+
+    XLSX.writeFile(
+        wb,
+        "Product_Change_Logs.xlsx"
+    );
+
+});
