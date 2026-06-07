@@ -4,12 +4,13 @@ async function loadAuditHistory(){
 
     const auditList =
     document.getElementById("auditList");
-
+  
     auditList.innerHTML = "";
 
-    const snap =
+ const snap =
 await db
 .collection("audit_entries")
+.orderBy("createdAt","desc")
 .limit(500)
 .get();
 
@@ -27,28 +28,52 @@ snap.forEach(docSnap=>{
 
 });
 
+const auditIds =
 Object.keys(audits)
-.reverse()
-.forEach(auditId=>{
+.sort()
+.reverse();
+const auditSelect =
+document.getElementById("auditSelect");
 
-    auditList.innerHTML += `
+if(auditSelect){
 
-    <div style="
-        background:#111;
-        color:white;
-        padding:15px;
-        margin:20px 0 10px;
-        border-radius:10px;
-        font-size:18px;
-        font-weight:bold;
-    ">
-        📋 KỲ KIỂM KÊ: ${auditId}
-    </div>
+    auditSelect.innerHTML = "";
 
-    `;
+    auditIds.forEach(id=>{
 
-    audits[auditId].forEach(d=>{
-  
+        auditSelect.innerHTML += `
+            <option value="${id}">
+                ${id}
+            </option>
+        `;
+
+    });
+
+}
+if(auditIds.length === 0){
+    auditList.innerHTML =
+    "Chưa có dữ liệu kiểm kê";
+    return;
+}
+
+let selectedAuditId =
+auditIds[0];
+auditList.innerHTML += `
+<div style="
+background:#111;
+color:#fff;
+padding:15px;
+margin-bottom:15px;
+border-radius:10px;
+font-weight:bold;
+font-size:18px;
+">
+📋 KỲ KIỂM KÊ:${selectedAuditId}
+</div>
+`;
+ 
+
+    audits[selectedAuditId].forEach(d=>{
     let diffClass = "good";
     let diffText = "Khớp";
 
@@ -157,7 +182,7 @@ Object.keys(audits)
 
 `;
 
-   });
+
 
 });
 
