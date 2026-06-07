@@ -75,3 +75,45 @@ async function loadProducts(){
 
 }
 loadProducts();
+document
+.getElementById("submitAudit")
+.addEventListener("click", async ()=>{
+
+    if(!auditOpen){
+
+        alert("Chưa mở kiểm kê");
+
+        return;
+    }
+
+    const rows =
+    document.querySelectorAll(".actualStock");
+
+    for(const row of rows){
+
+        const counted =
+        Number(row.value || 0);
+
+        await db
+        .collection("audit_entries")
+        .add({
+
+            productId:
+            row.dataset.id,
+
+            productName:
+            row.dataset.name,
+
+            countedStock:
+            counted,
+
+            createdAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+
+        });
+
+    }
+
+    alert("Đã lưu kiểm kê");
+
+});
