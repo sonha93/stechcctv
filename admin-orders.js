@@ -534,12 +534,10 @@ const lockStatus =
         <small>${order.phone || ""}</small>
       </td>
 
-    <td style="
-    max-width:300px;
-    word-break:break-word;
-">
-  ${order.address || "-"}
-</td>
+      <td>
+        ${order.address || "-"}
+      </td>
+
       <td>
         ${renderProducts(order.items || [])}
       </td>
@@ -556,13 +554,12 @@ ${
   ? `
     <span style="
       background:#ffebee;
-color:#d32f2f;
-padding:10px 16px;
-border-radius:12px;
-font-size:13px;
-font-weight:600;
-display:inline-flex;
-align-items:center;
+      color:#d32f2f;
+      padding:5px 10px;
+      border-radius:20px;
+      font-size:12px;
+      font-weight:bold;
+      display:inline-block;
     ">
       Khách hủy đơn
     </span>
@@ -570,14 +567,13 @@ align-items:center;
   : order.adminCancelled
   ? `
     <span style="
-     background:#fff3e0;
-color:#ef6c00;
-padding:10px 16px;
-border-radius:12px;
-font-size:13px;
-font-weight:600;
-display:inline-flex;
-align-items:center;
+      background:#fff3e0;
+      color:#ef6c00;
+      padding:5px 10px;
+      border-radius:20px;
+      font-size:12px;
+      font-weight:bold;
+      display:inline-block;
     ">
       Admin hủy đơn
     </span>
@@ -585,13 +581,12 @@ align-items:center;
   : `
     <span style="
       background:#e8f5e9;
-color:#2e7d32;
-padding:10px 16px;
-border-radius:12px;
-font-size:13px;
-font-weight:600;
-display:inline-flex;
-align-items:center;
+      color:#2e7d32;
+      padding:5px 10px;
+      border-radius:20px;
+      font-size:12px;
+      font-weight:bold;
+      display:inline-block;
     ">
    ${getStatusText(order.status)}
     </span>
@@ -771,15 +766,12 @@ function renderProducts(items) {
   if (!items.length) return "-";
 
   return items.map(item => {
-return `
-  <div style="
-      margin-bottom:6px;
-      line-height:1.6;
-      word-break:break-word;
-  ">
-      ${item.name || "Sản phẩm"} x${item.qty || 1}
-  </div>
-`;
+
+    return `
+      <div style="margin-bottom:6px;">
+        ${item.name || "Sản phẩm"} x${item.qty || 1}
+      </div>
+    `;
 
   }).join("");
 }
