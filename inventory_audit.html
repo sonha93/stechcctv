@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Inventory Audit</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#f5f5f5;
+    padding:20px;
+}
+
+.audit-header{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+button{
+    padding:12px 20px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+#openAudit{
+    background:#00acc1;
+    color:white;
+}
+
+#closeAudit{
+    background:red;
+    color:white;
+}
+
+#auditStatus{
+    margin:15px 0;
+    font-weight:bold;
+    font-size:18px;
+}
+
+.audit-item{
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.audit-item input{
+    width:150px;
+    padding:8px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>📦 Inventory Audit</h2>
+
+<div class="audit-header">
+
+    <button id="openAudit">
+        Mở kiểm kê
+    </button>
+
+    <button id="closeAudit">
+        Đóng kiểm kê
+    </button>
+
+</div>
+
+<div id="auditStatus">
+
+🔴 ĐANG ĐÓNG
+
+</div>
+
+<div id="auditProducts">
+
+</div>
+
+<script type="module" src="inventory_audit.js"></script>
+
+</body>
+</html>
