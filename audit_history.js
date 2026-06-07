@@ -265,39 +265,48 @@ if(openAuditBtn){
 
     openAuditBtn.addEventListener("click", async ()=>{
 
-        if(!confirm("Mở kỳ kiểm kê mới?")){
-            return;
+        try{
+
+            await db
+            .collection("system")
+            .doc("audit")
+            .set({
+                auditOpen:true
+            });
+
+            alert("Đã mở kiểm kê");
+
+        }catch(err){
+
+            console.log(err);
+            alert(err.message);
+
         }
-
-        await db
-        .collection("system")
-        .doc("audit")
-        .set({
-            auditOpen:true
-        });
-
-        alert("Đã mở kiểm kê");
 
     });
 
 }
-
 if(closeAuditBtn){
 
     closeAuditBtn.addEventListener("click", async ()=>{
 
-        if(!confirm("Đóng kỳ kiểm kê hiện tại?")){
-            return;
+        try{
+
+            await db
+            .collection("system")
+            .doc("audit")
+            .set({
+                auditOpen:false
+            });
+
+            alert("Đã đóng kiểm kê");
+
+        }catch(err){
+
+            console.log(err);
+            alert(err.message);
+
         }
-
-        await db
-        .collection("system")
-        .doc("audit")
-        .set({
-            auditOpen:false
-        });
-
-        alert("Đã đóng kiểm kê");
 
     });
 
