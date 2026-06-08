@@ -110,7 +110,44 @@ async function loadInventory(){
             }
 
             const stock = Number(p.stock || 0);
-            const importPrice = Number(p.importPrice || 0);
+           // ====================
+// LẤY TOÀN BỘ GIÁ NHẬP CỦA CÁC LÔ
+// ====================
+
+const importLots = [];
+
+moveSnap.forEach(doc => {
+
+    const m = doc.data();
+
+    if(
+        normalizeId(m.productId) === id &&
+        m.type === "IMPORT"
+    ){
+
+        importLots.push({
+            qty:Number(m.qty || 0),
+            price:Number(m.importPrice || 0)
+        });
+
+    }
+
+});
+
+// danh sách giá nhập khác nhau
+const uniquePrices = [
+    ...new Set(
+        importLots.map(x => x.price)
+    )
+];
+
+// text hiển thị
+const importPriceText =
+    uniquePrices.length <= 1
+    ? formatVND(uniquePrices[0] || 0)
+    : uniquePrices
+        .map(v => formatVND(v))
+        .join("<br>");
             const price = Number(p.price || 0);
             const oldPrice = Number(p.oldPrice || 0);
 
@@ -2038,15 +2075,52 @@ async function loadLoss(){
             const revenue =
     sold * sellPrice;
 
-const capital =
-    sold * importPrice;
+let soldLeft = sold;
 
+let capital = 0;
+
+for(const lot of importLots){
+
+    if(soldLeft <= 0) break;
+
+    const takeQty =
+        Math.min(
+            soldLeft,
+            lot.qty
+        );
+
+    capital +=
+        takeQty * lot.price;
+
+    soldLeft -= takeQty;
+
+}
 const profit =
     revenue - capital;
 
             
-const stockValue =
-    systemStock * importPrice;
+let remainLeft = systemStock;
+
+let stockValue = 0;
+
+for(let i = importLots.length - 1; i >= 0; i--){
+
+    if(remainLeft <= 0) break;
+
+    const lot = importLots[i];
+
+    const takeQty =
+        Math.min(
+            remainLeft,
+            lot.qty
+        );
+
+    stockValue +=
+        takeQty * lot.price;
+
+    remainLeft -= takeQty;
+
+}
 
 const realLossQty = lossQty;
 
@@ -2124,8 +2198,8 @@ html += `
     <td>${p.name || "-"}</td>
 
     <td>
-        ${formatVND(importPrice)}
-    </td>
+    ${importPriceText}
+</td>
 
     <td>
         ${formatVND(sellPrice)}
