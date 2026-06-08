@@ -2043,8 +2043,42 @@ const stockValue =
 const realLossQty = lossQty;
 
 // giá trị thất thoát thực tế
-const lossValue =
-    realLossQty * importPrice;
+let lossLeft = realLossQty;
+let lossValue = 0;
+
+const importLots = [];
+
+moveSnap.forEach(doc => {
+
+    const m = doc.data();
+
+    if(
+        normalizeId(m.productId) === id &&
+        m.type === "IMPORT"
+    ){
+
+        importLots.push({
+            qty: Number(m.qty || 0),
+            price: Number(m.importPrice || 0)
+        });
+
+    }
+
+});
+
+for(const lot of importLots){
+
+    if(lossLeft <= 0) break;
+
+    const takeQty =
+        Math.min(lossLeft, lot.qty);
+
+    lossValue +=
+        takeQty * lot.price;
+
+    lossLeft -= takeQty;
+
+}
 
 const realProfit =
     profit - lossValue;
