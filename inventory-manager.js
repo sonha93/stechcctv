@@ -165,8 +165,7 @@ const importPriceText =
             const revenue = price * sold;
             const capital = importPrice * sold;
 const profit = revenue - capital;
-            const profit = revenue - capital;
-
+            
             totalImportPrice += importPrice;
             totalPrice += price;
             totalOldPrice += oldPrice;
