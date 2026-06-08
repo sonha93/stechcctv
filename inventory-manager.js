@@ -1,4 +1,3 @@
-
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -2065,7 +2064,9 @@ moveSnap.forEach(doc => {
     }
 
 });
-
+if(id === "18wxaie0cru4buzpyv0y"){
+    console.log("FIFO LOTS", importLots);
+}
 for(const lot of importLots){
 
     if(lossLeft <= 0) break;
@@ -2079,7 +2080,12 @@ for(const lot of importLots){
     lossLeft -= takeQty;
 
 }
-
+if(id === "18wxaie0cru4buzpyv0y"){
+    console.log({
+        lossQty: realLossQty,
+        lossValue
+    });
+}
 const realProfit =
     profit - lossValue;
 
