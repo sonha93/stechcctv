@@ -676,6 +676,12 @@ updateInfoBtn.addEventListener("click", async () => {
             address: address,
             birthday: birthday
         });
+       console.log("PROFILE SAVE", {
+  name,
+  phone,
+  address,
+  birthday
+});
 localStorage.setItem(
   "userProfile",
   JSON.stringify({
