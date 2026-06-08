@@ -1950,7 +1950,7 @@ async function loadLoss(){
                     );
 
             }
-
+if(id === "18wxaie0cru
             // CỘNG TAY
             if(m.type === "MANUAL_PLUS"){
 
@@ -2011,17 +2011,6 @@ async function loadLoss(){
             const stockDiff =
                 systemStock
                 - expectedStock;
-             if(p.name === "HOME"){
-    console.log({
-        importedQty,
-        sold,
-        lossQty,
-        plusQty,
-        expectedStock,
-        systemStock,
-        stockDiff
-    });
-}
                 if(
     Math.abs(stockDiff) > 10
 ){
