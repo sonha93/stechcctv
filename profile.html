@@ -676,7 +676,15 @@ updateInfoBtn.addEventListener("click", async () => {
             address: address,
             birthday: birthday
         });
-
+localStorage.setItem(
+  "userProfile",
+  JSON.stringify({
+    name,
+    phone,
+    address,
+    birthday
+  })
+);
         currentName.innerText = name;
         currentPhone.innerText = phone;
         currentAddress.innerText = address;
