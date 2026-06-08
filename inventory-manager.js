@@ -1020,7 +1020,10 @@ moveSnap.forEach(doc=>{
     const salesLeftMap = {
         ...salesMap
     };
-
+console.log(
+    "HISTORY SOLD =",
+    salesMap["18wxaie0cru4buzpyv0y"]
+);
     const minusLeftMap = {
     ...minusMap
 };
@@ -1992,7 +1995,14 @@ async function loadLoss(){
 
             const plusQty =
                 plusMap[id] || 0;
+if(id === "18wxaie0cru4buzpyv0y"){
 
+    console.log(
+        "LOSS SOLD =",
+        sold
+    );
+
+}
             // TỒN HỆ THỐNG
             const systemStock =
                 Number(p.stock || 0);
