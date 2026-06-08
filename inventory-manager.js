@@ -1996,7 +1996,17 @@ async function loadLoss(){
             // TỒN HỆ THỐNG
             const systemStock =
                 Number(p.stock || 0);
+            if(id === "18wxaie0cru4buzpyv0y"){
 
+    console.log({
+        importedQty,
+        sold,
+        lossQty,
+        plusQty,
+        systemStock
+    });
+
+}
             // TỒN ĐÁNG LẼ PHẢI CÓ
         const expectedStock =
     importedQty
