@@ -2042,6 +2042,14 @@ if(id === "18wxaie0cru4buzpyv0y"){
         systemStock,
         stockDiff
     });
+                    console.log({
+    importedQty,
+    sold,
+    plusQty,
+    lossQty,
+    calcStock: importedQty - sold + plusQty - lossQty,
+    systemStock
+});
 }
             // ====================
             // MONEY
