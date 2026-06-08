@@ -634,7 +634,13 @@ filteredProducts.slice(start, end);
           placeholder="Giá cũ"
           style="width:150px;margin-top:2px;"
         >
-
+        <input
+  type="text"
+  class="importPriceInput"
+  value="${p.importPrice || ''}"
+  placeholder="Giá nhập"
+  style="width:150px;margin-top:2px;"
+>
         <button class="updateBtn" style="margin-top:6px;">
           Cập nhật
         </button>
@@ -723,7 +729,10 @@ filteredProducts.slice(start, end);
         item.querySelector('.oldPriceInput')
         .value.replace(/\D/g,'') || 0
       );
-
+    const importPrice = Number(
+  item.querySelector('.importPriceInput')
+  .value.replace(/\D/g,'') || 0
+);
       if(!newPrice){
         return alert("Giá không hợp lệ");
       }
@@ -818,6 +827,7 @@ await updateDoc(
   {
     price:newPrice,
     oldPrice:oldPrice,
+    importPrice:importPrice,
     stock:stockValue
   }
 );
