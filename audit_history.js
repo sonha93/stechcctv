@@ -65,97 +65,74 @@ function renderAudit(auditId, audits, auditList){
             diffText = `+ ${d.difference}`;
         }
 
-        auditList.innerHTML += `
-        <div class="audit-row">
+      auditList.innerHTML += `
+<div class="audit-row">
 
-            <div class="audit-product-title">
+<div class="audit-product-title">
     ${d.productName}
 </div>
 
-            <div class="audit-grid">
+<table class="audit-table">
 
-                <div class="audit-card audit-info">
-                    <span>Audit ID</span>
-                    <b>${d.auditId || "-"}</b>
-                </div>
+<tr>
+    <th>Tồn HT</th>
+    <th>Tồn TT</th>
+    <th>Chênh lệch</th>
+    <th>Giá nhập</th>
+    <th>Giá bán</th>
+    <th>Giá trị lệch</th>
+    <th>Lợi nhuận lệch</th>
+    <th>Tổng ảnh hưởng</th>
+</tr>
 
-              <div class="audit-card audit-info">
-                    <span>Time-date</span>
-                    <b>${d.auditDateTime || "-"}</b>
-                </div>
+<tr>
 
-              <div class="audit-card audit-info">
-                    <span>Product ID</span>
-                    <b>${d.productId || "-"}</b>
-                </div>
+<td>${d.systemStock}</td>
 
-               <div class="audit-card audit-info">
-                    <span>System Stock</span>
-                    <b>${d.systemStock}</b>
-                </div>
+<td>${d.countedStock}</td>
 
-              <div class="audit-card audit-info">
-                    <span>Actual Stock</span>
-                    <b>${d.countedStock}</b>
-                </div>
+<td class="${diffClass}">
+    ${diffText}
+</td>
 
-             <div class="audit-card audit-info">
-                    <span>Difference</span>
-                    <b class="${diffClass}">
-                        ${diffText}
-                    </b>
-                </div>
+<td>
+${Number(d.importPrice || 0).toLocaleString()}đ
+</td>
 
-              <div class="audit-card audit-info">
-                    <span>Cost Price</span>
-                    <b>${Number(d.importPrice || 0).toLocaleString()}</b>
-                </div>
+<td>
+${Number(d.salePrice || 0).toLocaleString()}đ
+</td>
 
-               <div class="audit-card audit-info">
-                    <span>Selling Price</span>
-                    <b>${Number(d.salePrice || 0).toLocaleString()}</b>
-                </div>
+<td class="${
+d.lossValue > 0 ? "loss" : "good"
+}">
+${Number(
+d.lossValue || d.extraValue || 0
+).toLocaleString()}đ
+</td>
 
-              <div class="audit-card audit-info">
-                    <span>Loss Value</span>
-                    <b class="summary-loss">
-                         -${Number(d.lossValue || 0).toLocaleString()}
-                    </b>
-                </div>
+<td class="${
+d.profitLossValue > 0 ? "loss" : "good"
+}">
+${Number(
+d.profitLossValue ||
+d.extraProfitValue ||
+0
+).toLocaleString()}đ
+</td>
 
-               <div class="audit-card audit-info">
-                    <span>Lost Profit</span>
-                    <b class="summary-loss">
-                         -${Number(d.profitLossValue || 0).toLocaleString()}
-                    </b>
-                </div>
+<td>
+${Number(
+d.totalImpact || 0
+).toLocaleString()}đ
+</td>
 
-              <div class="audit-card audit-info">
-                    <span>Overage Value</span>
-                    <b class="summary-more">
-                        +${Number(d.extraValue || 0).toLocaleString()}
-                    </b>
-                </div>
+</tr>
 
-               <div class="audit-card audit-info">
-                    <span>Overage Profit</span>
-                    <b class="summary-more">
-                        +${Number(d.extraProfitValue || 0).toLocaleString()}
-                    </b>
-                </div>
+</table>
 
-            </div>
-
-            <div class="summary-total">
-                Tổng ảnh hưởng:
-                ${Number(d.totalImpact || 0).toLocaleString()}
-            </div>
-
-        </div>
-        `;
-    });
-
-}
+</div>
+`;
 snap.forEach(docSnap=>{
 
     const d = docSnap.data();
