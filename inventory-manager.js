@@ -143,9 +143,18 @@ async function loadInventory(){
                     </td>
 
                     <td>
-                       ${formatVND(importPrice)}
-                    
-                    </td>
+    ${
+        importedQty > 0
+        ? formatVND(
+            Math.round(importValue / importedQty)
+        )
+        : "0đ"
+    }
+    <br>
+    <small style="color:#999;">
+        TB
+    </small>
+</td>
 
                     <td>
                         ${oldPrice ? formatVND(oldPrice) : "---"}
