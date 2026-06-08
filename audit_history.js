@@ -68,7 +68,9 @@ function renderAudit(auditId, audits, auditList){
         auditList.innerHTML += `
         <div class="audit-row">
 
-            <h3>${d.productName}</h3>
+            <div class="audit-product-title">
+    ${d.productName}
+</div>
 
             <div class="audit-grid">
 
