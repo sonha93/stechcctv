@@ -1020,10 +1020,7 @@ moveSnap.forEach(doc=>{
     const salesLeftMap = {
         ...salesMap
     };
-console.log(
-    "HISTORY SOLD =",
-    salesMap["18wxaie0cru4buzpyv0y"]
-);
+
     const minusLeftMap = {
     ...minusMap
 };
@@ -1995,28 +1992,11 @@ async function loadLoss(){
 
             const plusQty =
                 plusMap[id] || 0;
-if(id === "18wxaie0cru4buzpyv0y"){
 
-    console.log(
-        "LOSS SOLD =",
-        sold
-    );
-
-}
             // TỒN HỆ THỐNG
             const systemStock =
                 Number(p.stock || 0);
-            if(id === "18wxaie0cru4buzpyv0y"){
 
-    console.log({
-        importedQty,
-        sold,
-        lossQty,
-        plusQty,
-        systemStock
-    });
-
-}
             // TỒN ĐÁNG LẼ PHẢI CÓ
         const expectedStock =
     importedQty
@@ -2042,14 +2022,6 @@ if(id === "18wxaie0cru4buzpyv0y"){
         systemStock,
         stockDiff
     });
-                    console.log({
-    importedQty,
-    sold,
-    plusQty,
-    lossQty,
-    calcStock: importedQty - sold + plusQty - lossQty,
-    systemStock
-});
 }
             // ====================
             // MONEY
@@ -2099,18 +2071,6 @@ for(const lot of importLots){
 
     const takeQty =
         Math.min(lossLeft, lot.qty);
-
-    if(id === "18wxaie0cru4buzpyv0y"){
-
-        console.log("FIFO",{
-            takeQty,
-            lotQty: lot.qty,
-            price: lot.price,
-            value: takeQty * lot.price,
-            lossLeftBefore: lossLeft
-        });
-
-    }
 
     lossValue +=
         takeQty * lot.price;
