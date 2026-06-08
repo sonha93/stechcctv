@@ -114,6 +114,29 @@ auth.onAuthStateChanged(async user => {
     return;
   }
 
+  // LOAD PROFILE
+
+  const profileDoc = await db
+    .collection("users")
+    .doc(user.uid)
+    .get();
+
+  if(profileDoc.exists){
+
+    const profile = profileDoc.data();
+
+    document.getElementById("name").value =
+      profile.name || "";
+
+    document.getElementById("phone").value =
+      profile.phone || "";
+
+    document.getElementById("address").value =
+      profile.address || "";
+  }
+
+  // LOAD CART
+
   const snapshot = await db
     .collection("users")
     .doc(user.uid)
