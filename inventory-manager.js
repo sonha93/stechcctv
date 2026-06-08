@@ -1921,16 +1921,6 @@ async function loadLoss(){
     normalizeId(m.productId);
 
             if(!id) return;
-if(id === "18wxaie0cru4buzpyv0y"){
-
-    console.log({
-        type: m.type,
-        qty: m.qty,
-        productId: m.productId,
-        reason: m.reason
-    });
-
-}
             // NHẬP KHO
             if(m.type === "IMPORT"){
 
