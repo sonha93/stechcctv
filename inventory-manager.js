@@ -2064,9 +2064,7 @@ moveSnap.forEach(doc => {
     }
 
 });
-if(id === "18wxaie0cru4buzpyv0y"){
-    console.log("FIFO LOTS", importLots);
-}
+
 for(const lot of importLots){
 
     if(lossLeft <= 0) break;
@@ -2074,26 +2072,25 @@ for(const lot of importLots){
     const takeQty =
         Math.min(lossLeft, lot.qty);
 
+    if(id === "18wxaie0cru4buzpyv0y"){
+
+        console.log("FIFO",{
+            takeQty,
+            lotQty: lot.qty,
+            price: lot.price,
+            value: takeQty * lot.price,
+            lossLeftBefore: lossLeft
+        });
+
+    }
+
     lossValue +=
         takeQty * lot.price;
 
     lossLeft -= takeQty;
 
 }
-            if(id === "18wxaie0cru4buzpyv0y"){
 
-    console.log(
-        importLots,
-        lossQty
-    );
-
-}
-if(id === "18wxaie0cru4buzpyv0y"){
-    console.log({
-        lossQty: realLossQty,
-        lossValue
-    });
-}
 const realProfit =
     profit - lossValue;
 
