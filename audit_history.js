@@ -74,70 +74,70 @@ function renderAudit(auditId, audits, auditList){
 
             <div class="audit-grid">
 
-                <div class="audit-card">
+                <div class="audit-card audit-info">
                     <span>Audit ID</span>
                     <b>${d.auditId || "-"}</b>
                 </div>
 
-                <div class="audit-card">
+              <div class="audit-card audit-info">
                     <span>Time-date</span>
                     <b>${d.auditDateTime || "-"}</b>
                 </div>
 
-                <div class="audit-card">
+              <div class="audit-card audit-info">
                     <span>Product ID</span>
                     <b>${d.productId || "-"}</b>
                 </div>
 
-                <div class="audit-card">
+               <div class="audit-card audit-info">
                     <span>System Stock</span>
                     <b>${d.systemStock}</b>
                 </div>
 
-                <div class="audit-card">
+              <div class="audit-card audit-info">
                     <span>Actual Stock</span>
                     <b>${d.countedStock}</b>
                 </div>
 
-                <div class="audit-card">
+             <div class="audit-card audit-info">
                     <span>Difference</span>
                     <b class="${diffClass}">
                         ${diffText}
                     </b>
                 </div>
 
-                <div class="audit-card">
+              <div class="audit-card audit-info">
                     <span>Cost Price</span>
                     <b>${Number(d.importPrice || 0).toLocaleString()}</b>
                 </div>
 
-                <div class="audit-card">
+               <div class="audit-card audit-info">
                     <span>Selling Price</span>
                     <b>${Number(d.salePrice || 0).toLocaleString()}</b>
                 </div>
 
-                <div class="audit-card">
+              <div class="audit-card audit-info">
                     <span>Loss Value</span>
                     <b class="summary-loss">
                          -${Number(d.lossValue || 0).toLocaleString()}
                     </b>
                 </div>
 
-                <div class="audit-card">
+               <div class="audit-card audit-info">
                     <span>Lost Profit</span>
                     <b class="summary-loss">
                          -${Number(d.profitLossValue || 0).toLocaleString()}
                     </b>
                 </div>
 
-                <div class="audit-card">
+              <div class="audit-card audit-info">
                     <span>Overage Value</span>
                     <b class="summary-more">
                         +${Number(d.extraValue || 0).toLocaleString()}
                     </b>
                 </div>
 
-                <div class="audit-card">
+               <div class="audit-card audit-info">
                     <span>Overage Profit</span>
                     <b class="summary-more">
                         +${Number(d.extraProfitValue || 0).toLocaleString()}
