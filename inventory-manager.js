@@ -52,7 +52,7 @@ async function loadInventory(){
 
         const productSnap = await db.collection("products").get();
         const orderSnap = await db.collection("orders").get();
-
+        const moveSnap = await db.collection("stock_movements").get();
         const soldMap = {};
 
         orderSnap.forEach(orderDoc => {
@@ -113,9 +113,10 @@ async function loadInventory(){
            // ====================
 // LẤY TOÀN BỘ GIÁ NHẬP CỦA CÁC LÔ
 // ====================
-
 const importLots = [];
 
+let importedQty = 0;
+let importValue = 0;
 moveSnap.forEach(doc => {
 
     const m = doc.data();
@@ -129,7 +130,12 @@ moveSnap.forEach(doc => {
             qty:Number(m.qty || 0),
             price:Number(m.importPrice || 0)
         });
+importedQty += Number(m.qty || 0);
 
+importValue +=
+    Number(m.qty || 0)
+    *
+    Number(m.importPrice || 0);
     }
 
 });
@@ -158,6 +164,7 @@ const importPriceText =
             const remain = stock;
             const revenue = price * sold;
             const capital = importPrice * sold;
+const profit = revenue - capital;
             const profit = revenue - capital;
 
             totalImportPrice += importPrice;
@@ -2023,7 +2030,40 @@ async function loadLoss(){
 
             const sellPrice =
                 Number(p.price || 0);
+const importLots = [];
 
+moveSnap.forEach(doc => {
+
+    const m = doc.data();
+
+    if(
+        normalizeId(m.productId) === id &&
+        m.type === "IMPORT"
+    ){
+
+        importLots.push({
+            qty:Number(m.qty || 0),
+            price:Number(m.importPrice || 0)
+        });
+
+    }
+
+});
+
+// hiển thị các giá nhập
+
+const uniquePrices = [
+    ...new Set(
+        importLots.map(x => x.price)
+    )
+];
+
+const importPriceText =
+    uniquePrices.length <= 1
+    ? formatVND(uniquePrices[0] || 0)
+    : uniquePrices
+        .map(v => formatVND(v))
+        .join("<br>");
             // ====================
             // DATA
             // ====================
@@ -2128,25 +2168,6 @@ const realLossQty = lossQty;
 let lossLeft = realLossQty;
 let lossValue = 0;
 
-const importLots = [];
-
-moveSnap.forEach(doc => {
-
-    const m = doc.data();
-
-    if(
-        normalizeId(m.productId) === id &&
-        m.type === "IMPORT"
-    ){
-
-        importLots.push({
-            qty: Number(m.qty || 0),
-            price: Number(m.importPrice || 0)
-        });
-
-    }
-
-});
 
 for(const lot of importLots){
 
