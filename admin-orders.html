@@ -1,3 +1,4 @@
+admin-orders.html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -872,10 +873,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
   <input type="radio" name="adminView" value="sales">
   <span>Sales</span>
 </label>
-    <label>
-  <input type="radio" name="adminView" value="offlineSales">
-  <span>Offline</span>
-</label>
   </div>
 
 </div>
@@ -1403,146 +1400,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
   </div>
 </div>
 <!-- TABLE -->
-<!-- OFFLINE SALES -->
-<div
-    id="offlineSalesSection"
-    class="table-wrap"
-    style="display:none;margin-bottom:16px;"
->
-
-<div style="padding:16px;">
-
-<h2 style="margin-bottom:15px;">
-🧾 Xuất hàng Offline
-</h2>
-
-<div
-style="
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:10px;
-margin-bottom:15px;
-"
->
-
-<input
-type="text"
-id="offlineCustomerName"
-placeholder="Tên khách hàng"
->
-
-<input
-type="text"
-id="offlineCustomerPhone"
-placeholder="Số điện thoại"
->
-
-<input
-type="text"
-id="offlineCustomerAddress"
-placeholder="Địa chỉ"
->
-
-<input
-type="text"
-id="offlineCustomerNote"
-placeholder="Ghi chú"
->
-
-</div>
-
-<hr style="margin:15px 0;">
-
-<input
-type="text"
-id="offlineProductSearch"
-placeholder="Tìm sản phẩm..."
-style="
-width:100%;
-padding:12px;
-margin-bottom:10px;
-"
->
-
-<div id="offlineSelectedProduct">
-Chưa chọn sản phẩm
-</div>
-
-<div
-style="
-display:flex;
-gap:10px;
-margin-top:10px;
-margin-bottom:15px;
-"
->
-
-<input
-type="number"
-id="offlineQty"
-placeholder="Số lượng"
-min="1"
->
-
-<button id="addOfflineItemBtn">
-Thêm sản phẩm
-</button>
-
-</div>
-
-<table>
-
-<thead>
-<tr>
-<th>Sản phẩm</th>
-<th>SL</th>
-<th>Giá</th>
-<th>Thành tiền</th>
-<th></th>
-</tr>
-</thead>
-
-<tbody id="offlineCartBody">
-
-<tr>
-<td colspan="5">
-Chưa có sản phẩm
-</td>
-</tr>
-
-</tbody>
-
-</table>
-
-<div
-style="
-margin-top:20px;
-display:flex;
-flex-direction:column;
-gap:10px;
-"
->
-
-<h3>
-Tổng tiền:
-<span id="offlineTotal">
-0đ
-</span>
-</h3>
-
-<button id="offlineCheckoutBtn">
-Xuất hàng
-</button>
-
-<button id="offlinePrintBtn">
-In hóa đơn
-</button>
-
-</div>
-
-</div>
-
-</div>
 <div class="table-wrap" id="ordersSection">
 
 <table>
@@ -1591,6 +1448,5 @@ In hóa đơn
 <script type="module" src="admin-orders.js"></script>
 <script type="module" src="inventory-manager.js"></script>
 <script type="module" src="history.js"></script>
-<script type="module" src="offline-sales.js"></script>
 </body>
 </html>
