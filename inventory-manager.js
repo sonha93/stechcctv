@@ -2114,24 +2114,21 @@ const importPriceText =
             const revenue =
     sold * sellPrice;
 
-let soldLeft = sold;
+let fifoSoldLeft = sold;
 
 let capital = 0;
 
 for(const lot of importLots){
 
-    if(soldLeft <= 0) break;
+  if(fifoSoldLeft <= 0) break;
 
-    const takeQty =
-        Math.min(
-            soldLeft,
-            lot.qty
-        );
+const takeQty =
+    Math.min(
+        fifoSoldLeft,
+        lot.qty
+    );
 
-    capital +=
-        takeQty * lot.price;
-
-    soldLeft -= takeQty;
+fifoSoldLeft -= takeQty;
 
 }
 const profit =
@@ -2142,7 +2139,7 @@ const fifoLots = importLots.map(l => ({
 }));
 
 // trừ bán FIFO
-let soldLeft = sold;
+ soldLeft = sold;
 
 for(const lot of fifoLots){
 
