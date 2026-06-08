@@ -107,7 +107,7 @@ import { auth, db } from "./firebase-init.js";
 let cart = [];
 
 auth.onAuthStateChanged(async user => {
-console.log("UID CHECKOUT =", user.uid);
+
   if(!user){
     alert("Bạn chưa đăng nhập!");
     window.location.href = "login.html";
@@ -117,24 +117,29 @@ console.log("UID CHECKOUT =", user.uid);
   // LOAD PROFILE
 
   const profileDoc = await db
-    .collection("users")
-    .doc(user.uid)
-    .get();
+  .collection("users")
+  .doc(user.uid)
+  .get();
 
-  if(profileDoc.exists){
+console.log("PROFILE CHECKOUT:", profileDoc.data());
 
-    const profile = profileDoc.data();
-console.log(profile);
-    document.getElementById("name").value =
-      profile.name || "";
+if(profileDoc.exists){
 
-    document.getElementById("phone").value =
-      profile.phone || "";
+  const profile = profileDoc.data();
 
-    document.getElementById("address").value =
-      profile.address || "";
-  }
+  // Ưu tiên dữ liệu mới nhất trong localStorage
+  const localProfile =
+    JSON.parse(localStorage.getItem("userProfile") || "{}");
 
+  document.getElementById("name").value =
+    localProfile.name || profile.name || "";
+
+  document.getElementById("phone").value =
+    localProfile.phone || profile.phone || "";
+
+  document.getElementById("address").value =
+    localProfile.address || profile.address || "";
+}
   // LOAD CART
 
   const snapshot = await db
