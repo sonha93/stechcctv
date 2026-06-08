@@ -2007,6 +2007,17 @@ async function loadLoss(){
     + plusQty;
 
             // CHÊNH LỆCH
+            if(p.name === "HOME"){
+    console.log({
+        importedQty,
+        sold,
+        lossQty,
+        plusQty,
+        expectedStock,
+        systemStock,
+        stockDiff
+    });
+}
             const stockDiff =
                 systemStock
                 - expectedStock;
