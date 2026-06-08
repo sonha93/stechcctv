@@ -57,12 +57,12 @@ function renderAudit(auditId, audits, auditList){
 
         if(d.difference < 0){
             diffClass = "loss";
-            diffText = `Thiếu ${Math.abs(d.difference)}`;
+            diffText = `- ${Math.abs(d.difference)}`;
         }
 
         if(d.difference > 0){
             diffClass = "more";
-            diffText = `Dư ${d.difference}`;
+            diffText = `+ ${d.difference}`;
         }
 
         auditList.innerHTML += `
