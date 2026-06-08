@@ -99,7 +99,7 @@ async function loadInventory(){
         productSnap.forEach(doc => {
 
             const p = doc.data();
-
+            const id = normalizeId(doc.id);
             // SEARCH
             if(
                 keyword &&
