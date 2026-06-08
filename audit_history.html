@@ -59,11 +59,10 @@ h2{
 .audit-row{
     background:#fff;
     border-radius:24px;
-    padding:28px;
+    padding:30px;
     margin-bottom:25px;
     box-shadow:0 4px 20px rgba(0,0,0,.06);
 }
-
 .audit-row h3{
     background:#111;
     color:white;
@@ -75,25 +74,27 @@ h2{
 
 .audit-grid{
     display:grid;
-    grid-template-columns:
-    repeat(auto-fit,minmax(260px,1fr));
-    gap:15px;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:16px;
     margin-top:20px;
 }
-
 .audit-card{
-    background:#f8fafc;
-    border:1px solid #edf2f7;
+    background:#fff;
+    border:1px solid #ececec;
     border-radius:16px;
-    padding:18px;
+    padding:20px;
+    min-height:110px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+.audit-card b{
+    font-size:32px;
+    font-weight:700;
+    color:#111827;
 }
 
-.audit-card span{
-    display:block;
-    color:#6b7280;
-    font-size:14px;
-    margin-bottom:8px;
-}
 
 .audit-card b{
     font-size:18px;
@@ -125,15 +126,20 @@ h2{
 }
 
 .summary-total{
-    margin-top:25px;
-    background:#111;
-    color:white;
-    border-radius:18px;
-    padding:20px;
-    font-size:28px;
-    font-weight:bold;
+    margin-top:20px;
+    background:#fff7ed;
+    border:1px solid #fed7aa;
+    color:#ea580c;
+
+    padding:22px;
+    border-radius:16px;
+
+    font-size:32px;
+    font-weight:700;
+
     text-align:center;
 }
+
 
 @media(max-width:768px){
 
