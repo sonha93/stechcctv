@@ -2136,30 +2136,60 @@ for(const lot of importLots){
 }
 const profit =
     revenue - capital;
+const fifoLots = importLots.map(l => ({
+    qty: Number(l.qty),
+    price: Number(l.price)
+}));
 
-            
-let remainLeft = systemStock;
+// trừ bán FIFO
+let soldLeft = sold;
 
-let stockValue = 0;
+for(const lot of fifoLots){
 
-for(let i = importLots.length - 1; i >= 0; i--){
-
-    if(remainLeft <= 0) break;
-
-    const lot = importLots[i];
+    if(soldLeft <= 0) break;
 
     const takeQty =
         Math.min(
-            remainLeft,
+            soldLeft,
             lot.qty
         );
 
-    stockValue +=
-        takeQty * lot.price;
+    lot.qty -= takeQty;
 
-    remainLeft -= takeQty;
+    soldLeft -= takeQty;
+}
+
+// trừ thất thoát FIFO
+let lossLeft = lossQty;
+
+for(const lot of fifoLots){
+
+    if(lossLeft <= 0) break;
+
+    const takeQty =
+        Math.min(
+            lossLeft,
+            lot.qty
+        );
+
+    lot.qty -= takeQty;
+
+    lossLeft -= takeQty;
+}
+
+// tính giá trị tồn thực
+let stockValue = 0;
+
+for(const lot of fifoLots){
+
+    stockValue +=
+        lot.qty * lot.price;
 
 }
+            
+
+
+
 
 const realLossQty = lossQty;
 
