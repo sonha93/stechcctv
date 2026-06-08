@@ -2080,6 +2080,14 @@ for(const lot of importLots){
     lossLeft -= takeQty;
 
 }
+            if(id === "18wxaie0cru4buzpyv0y"){
+
+    console.log(
+        importLots,
+        lossQty
+    );
+
+}
 if(id === "18wxaie0cru4buzpyv0y"){
     console.log({
         lossQty: realLossQty,
