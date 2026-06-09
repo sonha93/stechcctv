@@ -31,9 +31,10 @@ function loginAdmin() {
             window.location.href = "admin-orders.html";
         })
         .catch((error) => {
-            console.error(error);
-            msg.innerText = "Sai tài khoản hoặc mật khẩu";
-        });
+    console.log("CODE:", error.code);
+    console.log("MESSAGE:", error.message);
+    msg.innerText = error.code;
+});
 }
 
 document.addEventListener("keydown", function(e){
