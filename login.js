@@ -1,4 +1,4 @@
-console.log("login.js loaded");
+
 
 const ADMINS = [
 {
@@ -9,7 +9,7 @@ const ADMINS = [
 }
 ];
 
-function login(){
+async function login(){
 
     const username =
     document.getElementById("username").value.trim();
@@ -17,34 +17,22 @@ function login(){
     const password =
     document.getElementById("password").value.trim();
 
-    if(
-        username === "20260610079" &&
-        password === "123456"
-    ){
+    try{
 
-        localStorage.setItem(
-            "adminUser",
-            JSON.stringify({
-                username:"20260610079",
-                role:"Admin"
-            })
+        await firebase.auth()
+        .signInWithEmailAndPassword(
+            username + "@admin.com",
+            password
         );
 
-        window.location.href = "index.html";
+        window.location.href =
+        "index.html";
 
-        return;
+    }catch(err){
+
+        document.getElementById("msg").innerText =
+        "Sai tài khoản hoặc mật khẩu";
+
     }
 
-    document.getElementById("msg").innerText =
-    "Sai tài khoản hoặc mật khẩu";
 }
-
-document.addEventListener(
-"keydown",
-function(e){
-
-    if(e.key === "Enter"){
-        login();
-    }
-
-});
