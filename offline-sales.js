@@ -1,5 +1,7 @@
 import { db } from "./firebase-init.js";
+window.currentCart = [];
 
+let offlineProducts = [];
 async function createOfflineSale() {
 
     const customerName =
@@ -159,3 +161,121 @@ async function createOfflineSale() {
 
 window.createOfflineSale =
     createOfflineSale;
+async function loadOfflineProducts(){
+
+    const snap =
+        await db.collection("products").get();
+
+    offlineProducts =
+        snap.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+}
+document
+.getElementById("offlineSearch")
+.addEventListener("input", e => {
+
+    const keyword =
+        e.target.value.toLowerCase();
+
+    const result =
+        offlineProducts.filter(p =>
+            (p.name || "")
+            .toLowerCase()
+            .includes(keyword)
+        );
+
+    document.getElementById(
+        "offlineSearchResults"
+    ).innerHTML = result.map(p => `
+
+        <div
+            onclick="addOfflineItem('${p.id}')"
+            style="
+                padding:10px;
+                border:1px solid #ddd;
+                margin-bottom:5px;
+                cursor:pointer;
+            "
+        >
+            ${p.name}
+            - ${Number(p.price || 0).toLocaleString()}đ
+            - Tồn ${p.stock || 0}
+        </div>
+
+    `).join("");
+
+});
+window.addOfflineItem = function(productId){
+
+    const product =
+        offlineProducts.find(
+            x => x.id === productId
+        );
+
+    if(!product) return;
+
+    const existed =
+        window.currentCart.find(
+            x => x.productId === productId
+        );
+
+    if(existed){
+
+        existed.qty++;
+
+    }else{
+
+        window.currentCart.push({
+
+            productId: product.id,
+
+            name: product.name,
+
+            price: product.price,
+
+            qty: 1
+
+        });
+
+    }
+
+    renderOfflineCart();
+
+}
+function renderOfflineCart(){
+
+    let total = 0;
+
+    document.getElementById(
+        "offlineCart"
+    ).innerHTML = window.currentCart.map(item => {
+
+        total +=
+            Number(item.price) *
+            Number(item.qty);
+
+        return `
+            <div style="
+                padding:10px;
+                border-bottom:1px solid #ddd;
+            ">
+                ${item.name}
+                x${item.qty}
+                =
+                ${(item.price * item.qty)
+                    .toLocaleString()}đ
+            </div>
+        `;
+
+    }).join("");
+
+    document.getElementById(
+        "offlineTotal"
+    ).innerText =
+        total.toLocaleString() + "đ";
+
+}
+loadOfflineProducts();
