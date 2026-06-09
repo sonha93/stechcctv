@@ -66,7 +66,8 @@ async function forgotPassword(){
 })
             }
         );
-
+const data = await res.json();
+console.log(data);
         document.getElementById("msg").innerText =
         "Đã gửi mã OTP tới Telegram";
 
