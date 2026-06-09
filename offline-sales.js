@@ -172,42 +172,42 @@ async function loadOfflineProducts(){
     }));
 
 }
-document
-.getElementById("offlineSearch")
-.addEventListener("input", e => {
+document.addEventListener("input", e => {
+
+    if (e.target.id !== "offlineSearch") return;
 
     const keyword =
         e.target.value.toLowerCase();
 
-const result =
-    window.offlineProducts.filter(p =>
-        (p.name || "")
+    const result =
+        window.offlineProducts.filter(p =>
+            (p.name || "")
             .toLowerCase()
             .includes(keyword)
-    );
-  document.getElementById("offlineSearchResults").innerHTML =
-result.map(p => `
+        );
 
-<button
-    type="button"
-    data-id="${p.id}"
-    class="offline-product-btn"
-    style="
-        width:100%;
-        text-align:left;
-        padding:12px;
-        border:1px solid #ddd;
-        background:#fff;
-        margin-bottom:5px;
-        cursor:pointer;
-    "
->
-    ${p.name}
-    - ${Number(p.price || 0).toLocaleString()}đ
-    - Tồn ${p.stock || 0}
-</button>
+    document.getElementById("offlineSearchResults").innerHTML =
+    result.map(p => `
 
-`).join("");
+    <button
+        type="button"
+        onclick="addOfflineItem('${p.id}')"
+        style="
+            width:100%;
+            text-align:left;
+            padding:12px;
+            border:1px solid #ddd;
+            background:#fff;
+            margin-bottom:5px;
+            cursor:pointer;
+        "
+    >
+        ${p.name}
+        - ${Number(p.price || 0).toLocaleString()}đ
+        - Tồn ${p.stock || 0}
+    </button>
+
+    `).join("");
 
 });
 window.addOfflineItem = function(productId){
@@ -284,18 +284,3 @@ loadOfflineProducts();
 document
 .getElementById("saveOfflineSale")
 .addEventListener("click", createOfflineSale);
-document
-.getElementById("offlineSearchResults")
-.addEventListener("click", e => {
-
-    const btn =
-        e.target.closest(".offline-product-btn");
-
-    if (!btn) return;
-
-    addOfflineItem(btn.dataset.id);
-
-});
-console.log("offline js loaded");
-console.log(window.offlineProducts);
-console.log(document.getElementById("offlineSearchResults"));
