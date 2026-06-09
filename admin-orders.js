@@ -797,7 +797,8 @@ function renderProducts(items) {
 // BIND EVENTS
 // ============================
 function bindEvents() {
-
+const offlineSalesSection =
+document.getElementById("offlineSalesSection");
   // UPDATE STATUS
   document.querySelectorAll(".order-status").forEach(select => {
 
@@ -1162,3 +1163,51 @@ if (logoutBtn) {
     });
 
 }
+// ============================
+// SWITCH MODULE
+// ============================
+
+document
+.querySelectorAll('input[name="adminView"]')
+.forEach(radio => {
+
+    radio.addEventListener("change", () => {
+
+        const value = radio.value;
+
+        document.getElementById("ordersSection").style.display =
+            value === "orders" ? "block" : "none";
+
+        document.getElementById("inventorySection").style.display =
+            value === "inventory" ? "block" : "none";
+
+        document.getElementById("importSection").style.display =
+            value === "import" ? "block" : "none";
+
+        document.getElementById("movementsSection").style.display =
+            value === "movements" ? "block" : "none";
+
+        document.getElementById("historySection").style.display =
+            value === "history" ? "block" : "none";
+
+        document.getElementById("lossSection").style.display =
+            value === "loss" ? "block" : "none";
+
+        document.getElementById("logsSection").style.display =
+            value === "logs" ? "block" : "none";
+
+        document.getElementById("salesSection").style.display =
+            value === "sales" ? "block" : "none";
+
+        // OFFLINE SALES
+        const offlineSection =
+            document.getElementById("offlineSalesSection");
+
+        if (offlineSection) {
+            offlineSection.style.display =
+                value === "offline" ? "block" : "none";
+        }
+
+    });
+
+});
