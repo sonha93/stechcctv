@@ -296,3 +296,6 @@ document
     addOfflineItem(btn.dataset.id);
 
 });
+console.log("offline js loaded");
+console.log(window.offlineProducts);
+console.log(document.getElementById("offlineSearchResults"));
