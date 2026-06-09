@@ -123,9 +123,9 @@ async function loadInventory(){
             const capital = importPrice * sold;
             const profit = revenue - capital;
 
-            totalImportPrice += importPrice;
-            totalPrice += price;
-            totalOldPrice += oldPrice;
+           totalImportPrice += importPrice * stock;
+            totalPrice += price * stock;
+            totalOldPrice += oldPrice * stock;
             totalStock += stock;
             totalSold += sold;
             totalProfit += profit;
@@ -696,12 +696,14 @@ if(qtyImport > 0){
 
            if(qtyImport > 0){
 
-    await db.collection("import_prices").add({
-        productId:id,
-        importPrice,
-        createdAt:
-            firebase.firestore.FieldValue.serverTimestamp()
-    });
+   await db.collection("import_prices").add({
+    productId:id,
+    qty: qtyImport,
+    importPrice,
+    total: qtyImport * importPrice,
+    createdAt:
+        firebase.firestore.FieldValue.serverTimestamp()
+});
 
 }
                 // SAVE STOCK MOVEMENT
