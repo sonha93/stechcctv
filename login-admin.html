@@ -5,7 +5,93 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Đăng nhập Admin</title>
-<link rel="stylesheet" href="login.css">
+/* Reset cơ bản */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Background gradient */
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1e90ff, #00c6ff);
+}
+
+/* Card đăng nhập */
+.login-box {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  width: 350px;
+  text-align: center;
+}
+
+/* Tiêu đề */
+.login-box h2 {
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Input */
+.login-box input[type="text"],
+.login-box input[type="password"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.login-box input[type="text"]:focus,
+.login-box input[type="password"]:focus {
+  border-color: #1e90ff;
+  box-shadow: 0 0 8px rgba(30,144,255,0.3);
+}
+
+/* Nút đăng nhập */
+.login-box button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: #00c6ff;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-box button:hover {
+  background: #1e90ff;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(30,144,255,0.3);
+}
+
+/* Placeholder */
+.login-box input::placeholder {
+  color: #aaa;
+  font-weight: 500;
+}
+
+/* Responsive nhỏ */
+@media (max-width: 400px) {
+  .login-box {
+    width: 90%;
+    padding: 30px 20px;
+  }
+}
 </head>
 <body>
 
