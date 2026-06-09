@@ -745,7 +745,10 @@ async function loadImportPrices(){
             .orderBy("createdAt","desc")
             .limit(50)
             .get();
-
+const keyword =
+    manualMinusSearch?.value
+    ?.trim()
+    .toLowerCase() || "";
         let html = "";
 
         for(const doc of snap.docs){
@@ -785,7 +788,24 @@ async function loadImportPrices(){
                 }
 
             }catch{}
+if(keyword){
 
+    const productId =
+        String(data.productId || "")
+        .toLowerCase();
+
+    if(
+        !productName
+            .toLowerCase()
+            .includes(keyword)
+        &&
+        !productId
+            .includes(keyword)
+    ){
+        continue;
+    }
+
+}
             html += `
                 <tr>
 
@@ -1561,13 +1581,18 @@ if (
 
     // HIỂN THỊ THÔNG TIN SẢN PHẨM KHI SEARCH
     manualMinusSearch.addEventListener("input", async () => {
-
+    
         const keyword = manualMinusSearch.value.trim().toLowerCase();
 
-        if (!keyword) {
-            manualMinusProductInfo.innerHTML = "Chưa chọn sản phẩm";
-            return;
-        }
+       if (!keyword) {
+
+    manualMinusProductInfo.innerHTML =
+        "Chưa chọn sản phẩm";
+
+    loadStockMovements();
+
+    return;
+}
 
         try {
             const productSnap = await db.collection("products").get();
