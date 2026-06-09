@@ -1157,8 +1157,7 @@ const remain =
 
                 <td>${id}</td>
 
-                <td>${p.name || "-"}</td>
-
+              <td>${p || "-"}</td>
                 <td>
                     ${
                         data.createdAt
