@@ -185,25 +185,28 @@ const result =
             .toLowerCase()
             .includes(keyword)
     );
-    document.getElementById(
-        "offlineSearchResults"
-    ).innerHTML = result.map(p => `
+  document.getElementById("offlineSearchResults").innerHTML =
+result.map(p => `
 
-        <div
-            onclick="addOfflineItem('${p.id}')"
-            style="
-                padding:10px;
-                border:1px solid #ddd;
-                margin-bottom:5px;
-                cursor:pointer;
-            "
-        >
-            ${p.name}
-            - ${Number(p.price || 0).toLocaleString()}đ
-            - Tồn ${p.stock || 0}
-        </div>
+<button
+    type="button"
+    onclick="addOfflineItem('${p.id}')"
+    style="
+        width:100%;
+        text-align:left;
+        padding:12px;
+        border:1px solid #ddd;
+        background:#fff;
+        margin-bottom:5px;
+        cursor:pointer;
+    "
+>
+    ${p.name}
+    - ${Number(p.price || 0).toLocaleString()}đ
+    - Tồn ${p.stock || 0}
+</button>
 
-    `).join("");
+`).join("");
 
 });
 window.addOfflineItem = function(productId){
