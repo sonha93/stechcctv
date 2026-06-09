@@ -41,7 +41,7 @@ document.addEventListener("keydown", function(e){
         loginAdmin();
     }
 });
-const BOT_TOKEN = "8470541434:AAF8-2eveInGsShGx2zHhLpDgRRPnQvjyVk";
+const BOT_TOKEN = "8752443026:AAEHrvCIDLqEDfE_inDeAAI9dzClm3WZyz4"
 const CHAT_ID = "847054134";
 
 async function forgotPassword(){
