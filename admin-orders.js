@@ -106,10 +106,9 @@ function formatDate(timestamp) {
 auth.onAuthStateChanged(async (user) => {
 
   if (!user) {
-    window.location.href = "login.html";
+    window.location.href = "login-admin.html";
     return;
-  }
-
+}
   currentAdmin = user;
 
   loadOrders();
@@ -1121,3 +1120,27 @@ updateLiveDateTime();
 
 // cập nhật mỗi giây
 setInterval(updateLiveDateTime, 1000);    
+const logoutBtn =
+    document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+
+    logoutBtn.addEventListener("click", async () => {
+
+        try {
+
+            await auth.signOut();
+
+            window.location.href =
+                "admin-login.html";
+
+        } catch (err) {
+
+            console.error(err);
+            alert("Không thể đăng xuất");
+
+        }
+
+    });
+
+}
