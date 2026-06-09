@@ -39,21 +39,33 @@ if(currentUser){
 function login(){
 
     const username =
-    document.getElementById("username")
-    .value.trim();
+    document.getElementById("username").value.trim();
 
     const password =
-    document.getElementById("password")
-    .value.trim();
+    document.getElementById("password").value.trim();
 
-    if(!username || !password){
+    if(
+        username === "20260610079" &&
+        password === "123456"
+    ){
 
-        document.getElementById("msg")
-        .innerText =
-        "Vui lòng nhập tài khoản và mật khẩu";
+        localStorage.setItem(
+            "adminUser",
+            JSON.stringify({
+                username:"20260610079",
+                role:"Admin"
+            })
+        );
+
+        window.location.href =
+        "index.html";
 
         return;
     }
+
+    document.getElementById("msg").innerText =
+    "Sai tài khoản hoặc mật khẩu";
+}
 
     const user =
     ADMINS.find(
