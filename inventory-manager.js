@@ -774,20 +774,8 @@ const keyword =
 
             }
 
-            let productName = "-";
-
-            try{
-
-                const productDoc = await db
-                    .collection("products")
-                    .doc(data.productId)
-                    .get();
-
-                if(productDoc.exists){
-                    productName = productDoc.data().name;
-                }
-
-            }catch{}
+           const productName =
+    productMap[data.productId] || "-";
 if(keyword){
 
     const productId =
@@ -986,22 +974,25 @@ async function loadHistory(){
         .trim()
         .toLowerCase();
 
-    const moveSnap =
-        await db.collection("stock_movements")
-        .orderBy("createdAt","asc")
-        .get();
+   const snap = await db
+    .collection("stock_movements")
+    .orderBy("createdAt","desc")
+    .get();
 
-    const salesSnap =
-        await db.collection("sales_history")
-        .orderBy("createdAt","asc")
-        .get();
+const productSnap = await db
+    .collection("products")
+    .get();
 
-    const productSnap =
-        await db.collection("products")
-        .get();
+const productMap = {};
 
-    let html = "";
+productSnap.forEach(doc => {
 
+    productMap[doc.id] =
+        doc.data().name || "-";
+
+});
+
+let html = "";
     // MAP PRODUCT
     const productMap = {};
 
