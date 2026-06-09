@@ -112,23 +112,23 @@ auth.onAuthStateChanged(async (user) => {
 
     currentAdmin = user;
 
-    const adminNameEl = document.getElementById("adminName");
+   const adminNameEl = document.getElementById("adminName");
 
-    try {
-        // Lấy tên admin từ Firestore
-        const adminDoc = await db.collection("admins").doc(user.uid).get();
+try {
+    // Lấy tên admin từ collection "admins"
+    const adminDoc = await db.collection("admins").doc(user.uid).get();
 
-        if (adminDoc.exists) {
-            adminNameEl.textContent = adminDoc.data().fullName;
-        } else {
-            // fallback: nếu chưa có data
-            adminNameEl.textContent = user.email;
-        }
-    } catch (err) {
-        console.error(err);
+    if (adminDoc.exists) {
+        // trường displayName trong document
+        adminNameEl.textContent = adminDoc.data().displayName || user.email;
+    } else {
+        // fallback nếu chưa tạo document
         adminNameEl.textContent = user.email;
     }
-
+} catch (err) {
+    console.error("Lỗi lấy tên admin:", err);
+    adminNameEl.textContent = user.email;
+}
     loadOrders();
 });
 // ============================
