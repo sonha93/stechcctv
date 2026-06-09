@@ -914,19 +914,19 @@ const keyword =
                 }
 
             }catch{}
-            if(keyword){
+           if(keyword){
 
     const productId =
         String(data.productId || "")
         .toLowerCase();
 
+    const productNameLower =
+        String(productName || "")
+        .toLowerCase();
+
     if(
-        !productName
-            .toLowerCase()
-            .includes(keyword)
-        &&
-        !productId
-            .includes(keyword)
+        productNameLower !== keyword &&
+        productId !== keyword
     ){
         continue;
     }
