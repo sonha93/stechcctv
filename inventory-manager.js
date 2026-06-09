@@ -858,7 +858,10 @@ async function loadStockMovements(){
             const data = doc.data();
 
             const selectedDate = movementsDateFilter?.value;
-
+            const keyword =
+    manualMinusSearch?.value
+    ?.trim()
+    .toLowerCase() || "";
             if(!data.createdAt){
                 continue;
             }
@@ -888,7 +891,25 @@ async function loadStockMovements(){
                 if(productDoc.exists){
                     productName = productDoc.data().name;
                 }
+                    if(keyword){
 
+    const productId =
+        String(data.productId || "")
+        .toLowerCase();
+
+    const productNameLower =
+        String(productName || "")
+        .toLowerCase();
+
+    if(
+        !productNameLower.includes(keyword)
+        &&
+        !productId.includes(keyword)
+    ){
+        continue;
+    }
+
+}
             }catch{}
 html += `
     <tr>
