@@ -105,13 +105,31 @@ function formatDate(timestamp) {
 // ============================
 auth.onAuthStateChanged(async (user) => {
 
-  if (!user) {
-    window.location.href = "login-admin.html";
-    return;
-}
-  currentAdmin = user;
+    if (!user) {
+        window.location.href = "login-admin.html";
+        return;
+    }
 
-  loadOrders();
+    currentAdmin = user;
+
+    const adminNameEl = document.getElementById("adminName");
+
+    try {
+        // Lấy tên admin từ Firestore
+        const adminDoc = await db.collection("admins").doc(user.uid).get();
+
+        if (adminDoc.exists) {
+            adminNameEl.textContent = adminDoc.data().fullName;
+        } else {
+            // fallback: nếu chưa có data
+            adminNameEl.textContent = user.email;
+        }
+    } catch (err) {
+        console.error(err);
+        adminNameEl.textContent = user.email;
+    }
+
+    loadOrders();
 });
 // ============================
 // FILTER DATE EVENT
