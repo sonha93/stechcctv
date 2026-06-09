@@ -870,11 +870,10 @@ const keyword =
     manualMinusSearch?.value
     ?.trim()
     .toLowerCase() || "";
-        const snap = await db
-            .collection("stock_movements")
-            .orderBy("createdAt","desc")
-            .limit(100)
-            .get();
+      const snap = await db
+    .collection("stock_movements")
+    .orderBy("createdAt","desc")
+    .get();
 
         let html = "";
 
@@ -1660,8 +1659,9 @@ for (const doc of productSnap.docs) {
         .toLowerCase();
 
   if (
-    name === keyword ||
-    productId === keyword
+   name.includes(keyword)
+||
+productId.includes(keyword)
 ) {
    found = { ...data, id: doc.id };
     break;
