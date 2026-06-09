@@ -284,3 +284,15 @@ loadOfflineProducts();
 document
 .getElementById("saveOfflineSale")
 .addEventListener("click", createOfflineSale);
+document
+.getElementById("offlineSearchResults")
+.addEventListener("click", e => {
+
+    const btn =
+        e.target.closest(".offline-product-btn");
+
+    if (!btn) return;
+
+    addOfflineItem(btn.dataset.id);
+
+});
