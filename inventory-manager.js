@@ -1031,8 +1031,12 @@ salesSnap.forEach(doc => {
    const minusMap = {};
 const plusMap = {};
 
-moveSnap.forEach(doc=>{
+const importDocs =
+    moveSnap.docs.filter(doc =>
+        doc.data().type === "IMPORT"
+    );
 
+importDocs.forEach(doc=>{
     const data = doc.data();
 
     const id = data.productId;
@@ -1911,9 +1915,11 @@ async function loadLoss(){
         const orderSnap =
             await db.collection("orders").get();
 
-        const moveSnap =
-            await db.collection("stock_movements").get();
-
+       const moveSnap =
+    await db
+        .collection("stock_movements")
+        .orderBy("createdAt","asc")
+        .get();
         // ====================
         // MAPS
         // ====================
