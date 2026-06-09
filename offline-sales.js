@@ -1,7 +1,7 @@
 import { db } from "./firebase-init.js";
 window.currentCart = [];
 
-let offlineProducts = [];
+window.offlineProducts = [];
 async function createOfflineSale() {
 
   const customerName =
@@ -165,11 +165,11 @@ async function loadOfflineProducts(){
     const snap =
         await db.collection("products").get();
 
-    offlineProducts =
-        snap.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
+  window.offlineProducts =
+    snap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    }));
 
 }
 document
@@ -179,8 +179,8 @@ document
     const keyword =
         e.target.value.toLowerCase();
 
-    const result =
-        offlineProducts.filter(p =>
+  const result =
+    window.offlineProducts.filter(...)
             (p.name || "")
             .toLowerCase()
             .includes(keyword)
@@ -209,8 +209,8 @@ document
 });
 window.addOfflineItem = function(productId){
 
-    const product =
-        offlineProducts.find(
+   const product =
+    window.offlineProducts.find(...)
             x => x.id === productId
         );
 
