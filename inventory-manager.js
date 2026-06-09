@@ -866,7 +866,10 @@ async function loadStockMovements(){
     if(!movementsBody) return;
 
     try{
-
+const keyword =
+    manualMinusSearch?.value
+    ?.trim()
+    .toLowerCase() || "";
         const snap = await db
             .collection("stock_movements")
             .orderBy("createdAt","desc")
@@ -912,6 +915,24 @@ async function loadStockMovements(){
                 }
 
             }catch{}
+            if(keyword){
+
+    const productId =
+        String(data.productId || "")
+        .toLowerCase();
+
+    if(
+        !productName
+            .toLowerCase()
+            .includes(keyword)
+        &&
+        !productId
+            .includes(keyword)
+    ){
+        continue;
+    }
+
+}
 html += `
     <tr>
         <td>${productName}</td>
