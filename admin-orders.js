@@ -120,7 +120,7 @@ try {
 
     if (adminDoc.exists) {
         // trường displayName trong document
-        adminNameEl.textContent = adminDoc.data().displayName || user.email;
+        adminNameEl.textContent = adminDoc.data().displayName;
     } else {
         // fallback nếu chưa tạo document
         adminNameEl.textContent = user.email;
