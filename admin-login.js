@@ -60,11 +60,10 @@ async function forgotPassword(){
                 headers:{
                     "Content-Type":"application/json"
                 },
-                body:JSON.stringify({
-                    chat_id: CHAT_ID,
-                    text:
-                    `🔐 Mã khôi phục Admin: ${otp}`
-                })
+                body: JSON.stringify({
+    chat_id: chatId,
+    text: `🔐 Mã khôi phục Admin: ${otp}`
+})
             }
         );
 
