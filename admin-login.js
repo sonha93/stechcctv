@@ -1,15 +1,4 @@
-// admin-login.js
-
-  const firebaseConfig = {
-  apiKey: "AIzaSyB6NgSwqMq4S5-osEzpLy-RucEkJDD_d8E",
-  authDomain: "free-acc-b05ec.firebaseapp.com",
-  projectId: "free-acc-b05ec",
-  storageBucket: "free-acc-b05ec.firebasestorage.app",
-  messagingSenderId: "405851091446",
-  appId: "1:405851091446:web:0e031c2afcc2d65c9c17d7",
-};
-
-firebase.initializeApp(firebaseConfig);
+const adminAuth = firebase.app("adminApp").auth();
 
 function loginAdmin() {
 
@@ -24,16 +13,15 @@ function loginAdmin() {
 
     const email = username + "@stech.com";
 
-    firebase.auth()
+    adminAuth
         .signInWithEmailAndPassword(email, password)
         .then(() => {
             window.location.href = "admin-orders.html";
         })
         .catch((error) => {
-    console.log("CODE:", error.code);
-    console.log("MESSAGE:", error.message);
-    msg.innerText = error.code;
-});
+            msg.innerText = error.code;
+            console.log(error);
+        });
 }
 
 document.addEventListener("keydown", function(e){
