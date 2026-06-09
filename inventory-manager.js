@@ -1,3 +1,4 @@
+invent
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -123,9 +124,9 @@ async function loadInventory(){
             const capital = importPrice * sold;
             const profit = revenue - capital;
 
-           totalImportPrice += importPrice * stock;
-            totalPrice += price * stock;
-            totalOldPrice += oldPrice * stock;
+            totalImportPrice += importPrice;
+            totalPrice += price;
+            totalOldPrice += oldPrice;
             totalStock += stock;
             totalSold += sold;
             totalProfit += profit;
@@ -696,14 +697,12 @@ if(qtyImport > 0){
 
            if(qtyImport > 0){
 
-   await db.collection("import_prices").add({
-    productId:id,
-    qty: qtyImport,
-    importPrice,
-    total: qtyImport * importPrice,
-    createdAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-});
+    await db.collection("import_prices").add({
+        productId:id,
+        importPrice,
+        createdAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+    });
 
 }
                 // SAVE STOCK MOVEMENT
@@ -745,20 +744,7 @@ async function loadImportPrices(){
             .orderBy("createdAt","desc")
             .limit(50)
             .get();
-      const productSnap = await db
-    .collection("products")
-    .get();
 
-const productMap = {};
-
-productSnap.forEach(doc => {
-    productMap[doc.id] =
-        doc.data().name || "-";
-});
-const keyword =
-    manualMinusSearch?.value
-    ?.trim()
-    .toLowerCase() || "";
         let html = "";
 
         for(const doc of snap.docs){
@@ -784,26 +770,21 @@ const keyword =
 
             }
 
-           const productName =
-    productMap[data.productId] || "-";
-if(keyword){
+            let productName = "-";
 
-    const productId =
-        String(data.productId || "")
-        .toLowerCase();
+            try{
 
-    if(
-        !productName
-            .toLowerCase()
-            .includes(keyword)
-        &&
-        !productId
-            .includes(keyword)
-    ){
-        continue;
-    }
+                const productDoc = await db
+                    .collection("products")
+                    .doc(data.productId)
+                    .get();
 
-}
+                if(productDoc.exists){
+                    productName = productDoc.data().name;
+                }
+
+            }catch{}
+
             html += `
                 <tr>
 
@@ -864,14 +845,12 @@ async function loadStockMovements(){
     if(!movementsBody) return;
 
     try{
-const keyword =
-    manualMinusSearch?.value
-    ?.trim()
-    .toLowerCase() || "";
-      const snap = await db
-    .collection("stock_movements")
-    .orderBy("createdAt","desc")
-    .get();
+
+        const snap = await db
+            .collection("stock_movements")
+            .orderBy("createdAt","desc")
+            .limit(100)
+            .get();
 
         let html = "";
 
@@ -912,24 +891,6 @@ const keyword =
                 }
 
             }catch{}
-           if(keyword){
-
-    const productId =
-        String(data.productId || "")
-        .toLowerCase();
-
-    const productNameLower =
-        String(productName || "")
-        .toLowerCase();
-
-    if(
-        productNameLower !== keyword &&
-        productId !== keyword
-    ){
-        continue;
-    }
-
-}
 html += `
     <tr>
         <td>${productName}</td>
@@ -983,68 +944,77 @@ async function loadHistory(){
         ?.value
         .trim()
         .toLowerCase();
-const moveSnap = await db
-    .collection("stock_movements")
-    .get();
 
+    const moveSnap =
+        await db.collection("stock_movements")
+        .orderBy("createdAt","asc")
+        .get();
 
-   const snap = await db
-    .collection("stock_movements")
-    .orderBy("createdAt","desc")
-    .get();
+    const salesSnap =
+        await db.collection("sales_history")
+        .orderBy("createdAt","asc")
+        .get();
 
-const productSnap = await db
-    .collection("products")
-    .get();
+    const productSnap =
+        await db.collection("products")
+        .get();
 
-const productMap = {};
+    let html = "";
 
-productSnap.forEach(doc => {
+    // MAP PRODUCT
+    const productMap = {};
 
-  productMap[doc.id] = {
-    name: doc.data().name || "-",
-    stock: Number(doc.data().stock || 0)
-};
+    productSnap.forEach(doc=>{
 
-});
-
-let html = "";
-   
-
-   // GROUP SALES
-const orderSnap = await db
-    .collection("orders")
-    .get();
-
-const salesMap = {};
-
-orderSnap.forEach(doc=>{
-
-    const order = doc.data();
-
-    if(
-        order.status !== "completed" ||
-        order.customerCancelled ||
-        order.adminCancelled
-    ){
-        return;
-    }
-
-    (order.items || []).forEach(item=>{
-
-        const id = String(
-            item.id ||
-            item.productId ||
-            ""
-        );
-
-        if(!id) return;
-
-        salesMap[id] =
-            (salesMap[id] || 0)
-            + Number(item.qty || 0);
+        productMap[doc.id] = doc.data();
 
     });
+
+   // GROUP SALES
+const salesMap = {};
+salesSnap.forEach(doc => {
+
+    const sale = doc.data();
+
+    const id = String(
+        sale.productId || ""
+    );
+
+    if(!id) return;
+
+    salesMap[id] =
+        (salesMap[id] || 0)
+        + Number(sale.qty || 0);
+
+});
+   const minusMap = {};
+const plusMap = {};
+
+moveSnap.forEach(doc=>{
+
+    const data = doc.data();
+
+    const id = data.productId;
+
+    if(!id) return;
+
+    if(data.type === "MANUAL_MINUS"){
+
+        minusMap[id] =
+            (minusMap[id] || 0)
+            +
+            Math.abs(Number(data.qty || 0));
+
+    }
+
+    if(data.type === "MANUAL_PLUS"){
+
+        plusMap[id] =
+            (plusMap[id] || 0)
+            +
+            Number(data.qty || 0);
+
+    }
 
 });
     // FIFO SALES LEFT
@@ -1067,11 +1037,12 @@ if(data.type !== "IMPORT"){
     return;
 }
 
-       const p = productMap[id];
+        const id = data.productId;
 
-if(!p) return;
+        const p = productMap[id];
 
-<td>${p.name || "-"}</td>
+        if(!p)
+            return;
 
         if(
             keyword &&
@@ -1141,7 +1112,8 @@ const remain =
 
                 <td>${id}</td>
 
-              <td>${p || "-"}</td>
+                <td>${p.name || "-"}</td>
+
                 <td>
                     ${
                         data.createdAt
@@ -1297,7 +1269,10 @@ Object.entries(productMap).forEach(([id,p])=>{
         return;
     }
 
-   totalRemain += p.stock || 0;
+    totalRemain += Number(
+        p.stock || 0
+    );
+
 });
     // FOOTER
     html += `
@@ -1585,18 +1560,13 @@ if (
 
     // HIỂN THỊ THÔNG TIN SẢN PHẨM KHI SEARCH
     manualMinusSearch.addEventListener("input", async () => {
-    
+
         const keyword = manualMinusSearch.value.trim().toLowerCase();
 
-       if (!keyword) {
-
-    manualMinusProductInfo.innerHTML =
-        "Chưa chọn sản phẩm";
-
-    loadStockMovements();
-
-    return;
-}
+        if (!keyword) {
+            manualMinusProductInfo.innerHTML = "Chưa chọn sản phẩm";
+            return;
+        }
 
         try {
             const productSnap = await db.collection("products").get();
@@ -1643,9 +1613,8 @@ for (const doc of productSnap.docs) {
         .toLowerCase();
 
   if (
-   name.includes(keyword)
-||
-productId.includes(keyword)
+    name === keyword ||
+    productId === keyword
 ) {
    found = { ...data, id: doc.id };
     break;
@@ -1895,11 +1864,9 @@ async function loadLoss(){
         const orderSnap =
             await db.collection("orders").get();
 
-       const moveSnap =
-    await db
-        .collection("stock_movements")
-        .orderBy("createdAt","asc")
-        .get();
+        const moveSnap =
+            await db.collection("stock_movements").get();
+
         // ====================
         // MAPS
         // ====================
