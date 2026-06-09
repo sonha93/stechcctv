@@ -987,9 +987,7 @@ const moveSnap = await db
     .collection("stock_movements")
     .get();
 
-const salesSnap = await db
-    .collection("sales_history")
-    .get();
+
    const snap = await db
     .collection("stock_movements")
     .orderBy("createdAt","desc")
@@ -1003,8 +1001,10 @@ const productMap = {};
 
 productSnap.forEach(doc => {
 
-    productMap[doc.id] =
-        doc.data().name || "-";
+  productMap[doc.id] = {
+    name: doc.data().name || "-",
+    stock: Number(doc.data().stock || 0)
+};
 
 });
 
@@ -1012,54 +1012,39 @@ let html = "";
    
 
    // GROUP SALES
+const orderSnap = await db
+    .collection("orders")
+    .get();
+
 const salesMap = {};
-salesSnap.forEach(doc => {
 
-    const sale = doc.data();
+orderSnap.forEach(doc=>{
 
-    const id = String(
-        sale.productId || ""
-    );
+    const order = doc.data();
 
-    if(!id) return;
-
-    salesMap[id] =
-        (salesMap[id] || 0)
-        + Number(sale.qty || 0);
-
-});
-   const minusMap = {};
-const plusMap = {};
-
-const importDocs =
-    moveSnap.docs.filter(doc =>
-        doc.data().type === "IMPORT"
-    );
-
-importDocs.forEach(doc=>{
-    const data = doc.data();
-
-    const id = data.productId;
-
-    if(!id) return;
-
-    if(data.type === "MANUAL_MINUS"){
-
-        minusMap[id] =
-            (minusMap[id] || 0)
-            +
-            Math.abs(Number(data.qty || 0));
-
+    if(
+        order.status !== "completed" ||
+        order.customerCancelled ||
+        order.adminCancelled
+    ){
+        return;
     }
 
-    if(data.type === "MANUAL_PLUS"){
+    (order.items || []).forEach(item=>{
 
-        plusMap[id] =
-            (plusMap[id] || 0)
-            +
-            Number(data.qty || 0);
+        const id = String(
+            item.id ||
+            item.productId ||
+            ""
+        );
 
-    }
+        if(!id) return;
+
+        salesMap[id] =
+            (salesMap[id] || 0)
+            + Number(item.qty || 0);
+
+    });
 
 });
     // FIFO SALES LEFT
@@ -1082,12 +1067,11 @@ if(data.type !== "IMPORT"){
     return;
 }
 
-        const id = data.productId;
+       const p = productMap[id];
 
-        const p = productMap[id];
+if(!p) return;
 
-        if(!p)
-            return;
+<td>${p.name || "-"}</td>
 
         if(
             keyword &&
@@ -1313,10 +1297,7 @@ Object.entries(productMap).forEach(([id,p])=>{
         return;
     }
 
-    totalRemain += Number(
-        p.stock || 0
-    );
-
+   totalRemain += p.stock || 0;
 });
     // FOOTER
     html += `
