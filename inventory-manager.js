@@ -745,6 +745,16 @@ async function loadImportPrices(){
             .orderBy("createdAt","desc")
             .limit(50)
             .get();
+      const productSnap = await db
+    .collection("products")
+    .get();
+
+const productMap = {};
+
+productSnap.forEach(doc => {
+    productMap[doc.id] =
+        doc.data().name || "-";
+});
 const keyword =
     manualMinusSearch?.value
     ?.trim()
@@ -973,7 +983,13 @@ async function loadHistory(){
         ?.value
         .trim()
         .toLowerCase();
+const moveSnap = await db
+    .collection("stock_movements")
+    .get();
 
+const salesSnap = await db
+    .collection("sales_history")
+    .get();
    const snap = await db
     .collection("stock_movements")
     .orderBy("createdAt","desc")
