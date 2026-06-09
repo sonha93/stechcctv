@@ -993,14 +993,7 @@ productSnap.forEach(doc => {
 });
 
 let html = "";
-    // MAP PRODUCT
-    const productMap = {};
-
-    productSnap.forEach(doc=>{
-
-        productMap[doc.id] = doc.data();
-
-    });
+   
 
    // GROUP SALES
 const salesMap = {};
