@@ -1,4 +1,4 @@
-const adminAuth = firebase.app("adminApp").auth();
+
 
 function loginAdmin() {
 
