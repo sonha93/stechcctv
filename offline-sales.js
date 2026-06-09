@@ -190,8 +190,8 @@ result.map(p => `
 
 <button
     type="button"
-    onclick="addOfflineItem('${p.id}')"
-    >
+    data-id="${p.id}"
+    class="offline-product-btn"
     style="
         width:100%;
         text-align:left;
