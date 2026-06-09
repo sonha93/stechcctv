@@ -191,6 +191,7 @@ result.map(p => `
 <button
     type="button"
     onclick="addOfflineItem('${p.id}')"
+    >
     style="
         width:100%;
         text-align:left;
