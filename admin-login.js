@@ -41,3 +41,43 @@ document.addEventListener("keydown", function(e){
         loginAdmin();
     }
 });
+const BOT_TOKEN = "8470541434:AAF8-2eveInGsShGx2zHhLpDgRRPnQvjyVk";
+const CHAT_ID = "847054134";
+
+async function forgotPassword(){
+
+    try{
+
+        const otp =
+        Math.floor(
+            100000 + Math.random() * 900000
+        );
+
+        await fetch(
+            `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    chat_id: CHAT_ID,
+                    text:
+                    `🔐 Mã khôi phục Admin: ${otp}`
+                })
+            }
+        );
+
+        document.getElementById("msg").innerText =
+        "Đã gửi mã OTP tới Telegram";
+
+    }catch(err){
+
+        console.error(err);
+
+        document.getElementById("msg").innerText =
+        "Gửi OTP thất bại";
+
+    }
+
+}
