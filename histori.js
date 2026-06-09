@@ -1,4 +1,3 @@
-
 // ============================
 // loadHistory
 // ============================
@@ -40,19 +39,49 @@ async function loadHistory(){
 
    // GROUP SALES
 const salesMap = {};
-
-salesSnap.forEach(doc=>{
+salesSnap.forEach(doc => {
 
     const sale = doc.data();
 
-    const id = sale.productId;
+    const id = String(
+        sale.productId || ""
+    );
 
-    if(!salesMap[id]){
-        salesMap[id] = 0;
+    if(!id) return;
+
+    salesMap[id] =
+        (salesMap[id] || 0)
+        + Number(sale.qty || 0);
+
+});
+   const minusMap = {};
+const plusMap = {};
+
+moveSnap.forEach(doc=>{
+
+    const data = doc.data();
+
+    const id = data.productId;
+
+    if(!id) return;
+
+    if(data.type === "MANUAL_MINUS"){
+
+        minusMap[id] =
+            (minusMap[id] || 0)
+            +
+            Math.abs(Number(data.qty || 0));
+
     }
 
-    salesMap[id] +=
-        Number(sale.qty || 0);
+    if(data.type === "MANUAL_PLUS"){
+
+        plusMap[id] =
+            (plusMap[id] || 0)
+            +
+            Number(data.qty || 0);
+
+    }
 
 });
     // FIFO SALES LEFT
@@ -60,13 +89,20 @@ salesSnap.forEach(doc=>{
         ...salesMap
     };
 
+    const minusLeftMap = {
+    ...minusMap
+};
+
+const plusLeftMap = {
+    ...plusMap
+};
     // LOOP IMPORT
     moveSnap.forEach(doc=>{
 
         const data = doc.data();
-
-        if(data.type !== "IMPORT")
-            return;
+if(data.type !== "IMPORT"){
+    return;
+}
 
         const id = data.productId;
 
@@ -89,23 +125,54 @@ salesSnap.forEach(doc=>{
 
         const qty =
             Number(data.qty || 0);
+const salesLeft =
+    Number(salesLeftMap[id] || 0);
 
-        const salesLeft =
-            Number(salesLeftMap[id] || 0);
+const soldInPeriod =
+    Math.min(
+        salesLeft,
+        qty
+    );
 
-        // FIFO
-        const soldInPeriod =
-            Math.min(
-                salesLeft,
-                qty
-            );
+salesLeftMap[id] =
+    salesLeft - soldInPeriod;
 
-        const remain =
-            qty - soldInPeriod;
+const qtyAfterSold =
+    qty - soldInPeriod;
 
-        // TRỪ SALES CÒN LẠI
-        salesLeftMap[id] =
-            salesLeft - soldInPeriod;
+const minusLeft =
+    Number(
+        minusLeftMap[id] || 0
+    );
+
+const lossInPeriod =
+    Math.min(
+        minusLeft,
+        qtyAfterSold
+    );
+
+minusLeftMap[id] =
+    minusLeft - lossInPeriod;
+
+const plusLeft =
+    Number(
+        plusLeftMap[id] || 0
+    );
+
+const plusInPeriod =
+    Math.min(
+        plusLeft,
+        qty
+    );
+
+plusLeftMap[id] =
+    plusLeft - plusInPeriod;
+
+const remain =
+    qty
+    - soldInPeriod
+    - lossInPeriod
+    + plusInPeriod;
 
         html += `
             <tr>
@@ -138,7 +205,18 @@ salesSnap.forEach(doc=>{
                     ${remain}
                 </td>
 
-                <td>0</td>
+<td
+style="
+    color:red;
+    font-weight:bold;
+"
+>
+    ${
+        lossInPeriod > 0
+        ? "-" + lossInPeriod
+        : 0
+    }
+</td>
 
             </tr>
         `;
@@ -151,7 +229,9 @@ salesSnap.forEach(doc=>{
     // ======================
 
     let totalImport = 0;
-    let totalSold = 0;
+let totalSold = 0;
+let totalMinus = 0;
+let totalPlus = 0;
 
     moveSnap.forEach(doc=>{
 
@@ -208,9 +288,59 @@ if(
 
     });
 
-    const totalRemain =
-        totalImport - totalSold;
+   
+moveSnap.forEach(doc=>{
 
+    const data = doc.data();
+
+    const p = productMap[data.productId];
+
+    if(
+        keyword &&
+        !String(p?.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+        !String(data.productId)
+        .toLowerCase()
+        .includes(keyword)
+    ){
+        return;
+    }
+
+    if(data.type === "MANUAL_MINUS"){
+        totalMinus += Math.abs(
+            Number(data.qty || 0)
+        );
+    }
+
+    if(data.type === "MANUAL_PLUS"){
+        totalPlus += Number(
+            data.qty || 0
+        );
+    }
+
+});
+let totalRemain = 0;
+
+Object.entries(productMap).forEach(([id,p])=>{
+
+    if(
+        keyword &&
+        !String(p?.name || "")
+            .toLowerCase()
+            .includes(keyword) &&
+        !String(id)
+            .toLowerCase()
+            .includes(keyword)
+    ){
+        return;
+    }
+
+    totalRemain += Number(
+        p.stock || 0
+    );
+
+});
     // FOOTER
     html += `
         <tr
@@ -241,9 +371,14 @@ if(
                 ${totalRemain}
             </td>
 
-            <td>
-                0
-            </td>
+          <td
+style="
+    color:red;
+    font-weight:bold;
+"
+>
+    ${totalMinus > 0 ? "-" + totalMinus : 0}
+</td>
 
         </tr>
     `;
