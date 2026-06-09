@@ -1132,7 +1132,7 @@ if (logoutBtn) {
             await auth.signOut();
 
             window.location.href =
-                "admin-login.html";
+                "login-admin.html";
 
         } catch (err) {
 
