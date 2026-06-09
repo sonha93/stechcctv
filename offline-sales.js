@@ -4,12 +4,11 @@ window.currentCart = [];
 let offlineProducts = [];
 async function createOfflineSale() {
 
-    const customerName =
-        document.getElementById("customerName").value.trim();
+  const customerName =
+document.getElementById("offlineCustomer").value.trim();
 
-    const phone =
-        document.getElementById("customerPhone").value.trim();
-
+const phone =
+document.getElementById("offlinePhone").value.trim();
     const items =
         window.currentCart || [];
 
@@ -279,3 +278,6 @@ function renderOfflineCart(){
 
 }
 loadOfflineProducts();
+document
+.getElementById("saveOfflineSale")
+.addEventListener("click", createOfflineSale);
