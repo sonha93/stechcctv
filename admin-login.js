@@ -46,12 +46,16 @@ const BOT_TOKEN = "8752443026:AAEHrvCIDLqEDfE_inDeAAI9dzClm3WZyz4"
 
 async function forgotPassword(){
 
-    try{
+    const username =
+    document.getElementById("username").value.trim();
 
-        const otp =
-        Math.floor(
-            100000 + Math.random() * 900000
-        );
+    if(!username){
+        document.getElementById("msg").innerText =
+        "Nhập tên đăng nhập";
+        return;
+    }
+
+    try{
 
         await fetch(
             `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
@@ -61,22 +65,27 @@ async function forgotPassword(){
                     "Content-Type":"application/json"
                 },
                 body: JSON.stringify({
-    chat_id: chatId,
-    text: `🔐 Mã khôi phục Admin: ${otp}`
-})
+                    chat_id: chatId,
+                    text:
+`🚨 YÊU CẦU RESET PASSWORD
+
+Admin: ${username}
+
+Thời gian:
+${new Date().toLocaleString("vi-VN")}`
+                })
             }
         );
-const data = await res.json();
+
         document.getElementById("msg").innerText =
-        "Đã gửi mã OTP tới Telegram";
+        "Đã gửi yêu cầu tới quản trị";
 
     }catch(err){
 
         console.error(err);
 
         document.getElementById("msg").innerText =
-        "Gửi OTP thất bại";
+        "Gửi yêu cầu thất bại";
 
     }
-
 }
