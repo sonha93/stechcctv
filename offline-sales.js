@@ -179,13 +179,12 @@ document
     const keyword =
         e.target.value.toLowerCase();
 
-  const result =
-    window.offlineProducts.filter(...)
-            (p.name || "")
+const result =
+    window.offlineProducts.filter(p =>
+        (p.name || "")
             .toLowerCase()
             .includes(keyword)
-        );
-
+    );
     document.getElementById(
         "offlineSearchResults"
     ).innerHTML = result.map(p => `
@@ -209,10 +208,10 @@ document
 });
 window.addOfflineItem = function(productId){
 
-   const product =
-    window.offlineProducts.find(...)
-            x => x.id === productId
-        );
+  const product =
+    window.offlineProducts.find(
+        x => x.id === productId
+    );
 
     if(!product) return;
 
