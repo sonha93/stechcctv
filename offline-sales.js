@@ -169,7 +169,10 @@ if(qrImg){
     qrImg.src = qrUrl;
 }
 document.getElementById("qrBox").style.display = "block";
-
+document.getElementById("qrBox").scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+});
 alert("Đã tạo đơn bán offline");
 
 window.currentCart = [];
