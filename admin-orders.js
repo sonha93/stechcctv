@@ -120,6 +120,9 @@ auth.onAuthStateChanged(async (user) => {
         const snap = await firebase.database()
     .ref("/" + user.uid)
     .once("value");
+console.log("UID:", user.uid);
+console.log("EXISTS:", snap.exists());
+console.log("DATA:", snap.val());
 
         const data = snap.val();
 
