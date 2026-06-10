@@ -1203,11 +1203,10 @@ document
         const offlineSection =
             document.getElementById("offlineSalesSection");
 
-        if (offlineSection) {
-            offlineSection.style.display =
-                value === "offline" ? "block" : "none";
-        }
-
+       if (offlineSection) {
+    offlineSection.style.display =
+        value === "offlineSales" ? "block" : "none";
+}
     });
 
 });
