@@ -630,9 +630,11 @@ ${
 }
       </td>
 
-      <td>
-         ${order.handledBy || "-"}
-      </td>
+     <td>
+  <span style="white-space:nowrap;">
+    ${order.handledBy || "-"}
+  </span>
+</td>
 
       <td>
     <select
