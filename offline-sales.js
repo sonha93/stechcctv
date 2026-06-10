@@ -52,11 +52,7 @@ document.getElementById("offlinePhone").value.trim();
     };
 
     try {
-          console.log("ORDER DATA");
-console.log(orderData);
-
-console.log("ITEMS");
-console.log(items);
+         
         const orderRef =
             await db.collection("orders")
             .add(orderData);
@@ -156,7 +152,8 @@ renderOfflineCart();
 
 document.getElementById("offlineSearch").value = "";
 document.getElementById("offlineSearchResults").innerHTML = "";
-    catch (err) {
+    
+} catch (err) {
 
     console.error(err);
 
@@ -178,7 +175,6 @@ async function loadOfflineProducts(){
         id: doc.id,
         ...doc.data()
     }));
-    console.log(window.offlineProducts[0]);
 }
 
 document.addEventListener("input", e => {
