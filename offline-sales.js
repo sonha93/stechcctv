@@ -39,9 +39,7 @@ document.getElementById("offlinePhone").value.trim();
 
         offlineSale: true,
 
-        createdAt:
-            firebase.firestore.FieldValue.serverTimestamp(),
-
+     createdAt: new Date(),
         items: items.map(i => ({
     productId: String(i.productId),
     name: String(i.name),
