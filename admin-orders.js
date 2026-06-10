@@ -1233,7 +1233,6 @@ document
     });
 
 });
-import { auth } from "./firebase-init.js";
 
 document.getElementById("changePasswordBtn")
 ?.addEventListener("click", () => {
