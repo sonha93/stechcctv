@@ -118,8 +118,8 @@ auth.onAuthStateChanged(async (user) => {
     try {
 
         const snap = await firebase.database()
-            .ref("users/" + user.uid)
-            .once("value");
+    .ref("/" + user.uid)
+    .once("value");
 
         const data = snap.val();
 
