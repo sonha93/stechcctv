@@ -52,7 +52,11 @@ document.getElementById("offlinePhone").value.trim();
     };
 
     try {
+          console.log("ORDER DATA");
+console.log(orderData);
 
+console.log("ITEMS");
+console.log(items);
         const orderRef =
             await db.collection("orders")
             .add(orderData);
