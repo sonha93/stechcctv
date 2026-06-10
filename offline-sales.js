@@ -181,29 +181,22 @@ document.addEventListener("input", e => {
 
     if (e.target.id !== "offlineSearch") return;
 
-   const keyword =
-    e.target.value.toLowerCase().trim();
+    const keyword =
+        e.target.value.toLowerCase().trim();
 
-if (!keyword) {
-    document.getElementById("offlineSearchResults").innerHTML = "";
-    return;
-}
+    const box =
+        document.getElementById("offlineSearchResults");
 
-const result =
-    window.offlineProducts.filter(p =>
-    // CHƯA GÕ GÌ => KHÔNG HIỆN
-    if (keyword.length < 1) {
-
+    if (!keyword) {
         box.innerHTML = "";
-
         return;
     }
 
     const result =
         window.offlineProducts.filter(p =>
             (p.name || "")
-            .toLowerCase()
-            .includes(keyword)
+                .toLowerCase()
+                .includes(keyword)
         );
 
     box.innerHTML = "";
@@ -269,7 +262,11 @@ window.addOfflineItem = function(productId){
 
     }
 
-    renderOfflineCart();
+   
+ renderOfflineCart();
+
+   document.getElementById("offlineSearch").value = "";
+   document.getElementById("offlineSearchResults").innerHTML = "";
 
 }
 function renderOfflineCart(){
