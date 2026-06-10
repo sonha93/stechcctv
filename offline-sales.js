@@ -153,26 +153,7 @@ document.getElementById("offlinePhone").value.trim();
 
         }
 
-   await loadOfflineSales();
-
-// QR chuyển khoản
-const bankCode = "970415"; // VietinBank
-const accountNo = "101005245058"; // STK của mày
-
-const qrUrl =
-`https://img.vietqr.io/image/${bankCode}-${accountNo}-compact2.png?amount=${total}&addInfo=${orderRef.id}`;
-
-const qrImg =
-document.getElementById("vietqrImage");
-
-if(qrImg){
-    qrImg.src = qrUrl;
-}
-document.getElementById("qrBox").style.display = "block";
-document.getElementById("qrBox").scrollIntoView({
-    behavior: "smooth",
-    block: "center"
-});
+  await loadOfflineSales();
 alert("Đã tạo đơn bán offline");
 
 window.currentCart = [];
@@ -388,15 +369,6 @@ if(changeBox){
 }
 
 loadOfflineProducts();
-const saveBtn =
-    document.getElementById("saveOfflineSale");
-
-if (saveBtn) {
-    saveBtn.addEventListener(
-        "click",
-        createOfflineSale
-    );
-}
 document.addEventListener("input", e => {
 
     if(e.target.id !== "customerPaid") return;
@@ -455,3 +427,74 @@ async function loadOfflineSales(){
 
 }
 loadOfflineSales();
+const paymentBtn =
+document.getElementById("paymentBtn");
+
+if(paymentBtn){
+
+paymentBtn.addEventListener("click",()=>{
+
+if(!window.currentCart.length){
+    alert("Chưa có sản phẩm");
+    return;
+}
+
+document.getElementById(
+"paymentModal"
+).style.display="block";
+
+});
+
+}
+
+// tiền mặt
+
+document.getElementById(
+"cashBtn"
+).addEventListener("click",async()=>{
+
+document.getElementById(
+"paymentModal"
+).style.display="none";
+
+await createOfflineSale();
+
+});
+
+// chuyển khoản
+
+document.getElementById(
+"bankBtn"
+).addEventListener("click",()=>{
+
+const total =
+window.currentCart.reduce(
+(sum,item)=>
+sum + Number(item.price)*Number(item.qty),
+0
+);
+
+document.getElementById(
+"bankArea"
+).style.display="block";
+
+document.getElementById(
+"paymentQr"
+).src =
+`https://img.vietqr.io/image/970415-101005245058-compact2.png?amount=${total}`;
+
+});
+
+// xác nhận đã nhận tiền
+
+document.getElementById(
+"confirmTransferBtn"
+).addEventListener("click",async()=>{
+
+document.getElementById(
+"paymentModal"
+).style.display="none";
+
+await createOfflineSale();
+
+});
