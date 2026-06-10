@@ -153,7 +153,17 @@ document.getElementById("offlinePhone").value.trim();
 
         }
 
-    await loadOfflineSales();
+   await loadOfflineSales();
+
+// QR chuyển khoản
+const bankCode = "970415"; // VietinBank
+const accountNo = "101005245058"; // STK của mày
+
+const qrUrl =
+`https://img.vietqr.io/image/${bankCode}-${accountNo}-compact2.png?amount=${total}&addInfo=${orderRef.id}`;
+
+document.getElementById("vietqrImage").src = qrUrl;
+document.getElementById("qrBox").style.display = "block";
 
 alert("Đã tạo đơn bán offline");
 
