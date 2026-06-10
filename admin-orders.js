@@ -200,7 +200,9 @@ if(filterRangeBtn){
       ){
         return;
       }
-
+if(order.offlineSale === true){
+  return;
+}
       try{
 
         const dateObj =
@@ -353,45 +355,38 @@ const selectedDate =
 
 // lưu toàn bộ orders
 allOrders = snapshot.docs.filter(doc => {
+
   const order = doc.data();
 
-  // SEARCH ID
   const matchSearch =
     !searchKeyword ||
-    doc.id
-      .toLowerCase()
-      .includes(searchKeyword);
+    doc.id.toLowerCase().includes(searchKeyword);
 
-  // FILTER DATE
+  // Ẩn đơn offline khi xem bình thường
+  // nhưng vẫn cho hiện khi tìm đúng ID
+  if (order.offlineSale === true && !matchSearch) {
+    return false;
+  }
   let matchDate = true;
 
-  if(selectedDate){
+  if (selectedDate) {
 
-    try{
+    try {
 
       const dateObj =
         typeof order.createdAt?.toDate === "function"
           ? order.createdAt.toDate()
           : new Date(order.createdAt);
 
-      const yyyy =
-        dateObj.getFullYear();
+      const yyyy = dateObj.getFullYear();
+      const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const dd = String(dateObj.getDate()).padStart(2, "0");
 
-      const mm = String(
-        dateObj.getMonth() + 1
-      ).padStart(2,"0");
+      const orderDate = `${yyyy}-${mm}-${dd}`;
 
-      const dd = String(
-        dateObj.getDate()
-      ).padStart(2,"0");
+      matchDate = orderDate === selectedDate;
 
-      const orderDate =
-        `${yyyy}-${mm}-${dd}`;
-
-      matchDate =
-        orderDate === selectedDate;
-
-    }catch{
+    } catch {
 
       matchDate = false;
 
@@ -435,6 +430,9 @@ let cancelledCount = 0;
 snapshot.forEach(doc => {
 
   const order = doc.data();
+  if (order.offlineSale === true) {
+  return;
+}
 if(selectedDate){
 
   try{
