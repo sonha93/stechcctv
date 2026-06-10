@@ -53,10 +53,11 @@ document.getElementById("offlinePhone").value.trim();
 
     try {
          
-        const orderRef =
-            await db.collection("orders")
-            .add(orderData);
-
+       const orderRef =
+    await db.collection("orders")
+    .add({
+        customerName: "TEST"
+    });
         for (const item of items) {
 
             const productRef =
