@@ -122,8 +122,7 @@ auth.onAuthStateChanged(async (user) => {
             .once("value");
 
         const data = snap.val();
-console.log("UID:", user.uid);
-console.log("DATA:", data);
+
 adminNameEl.textContent =
     data?.name ||
     data?.displayName ||
