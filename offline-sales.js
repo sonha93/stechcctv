@@ -62,10 +62,9 @@ document.getElementById("offlinePhone").value.trim();
   
         for (const item of items) {
 
-            const productRef =
-                db.collection("products")
-                .doc(item.productId);
-
+           const productRef =
+    db.collection("products")
+    .doc(String(item.productId));
             const productDoc =
                 await productRef.get();
 
@@ -93,9 +92,8 @@ document.getElementById("offlinePhone").value.trim();
                 orderId:
                     orderRef.id,
 
-                productId:
-                    item.productId,
-
+               productId:
+    String(item.productId),
                 productName:
                     item.name,
 
@@ -175,8 +173,8 @@ async function loadOfflineProducts(){
 
   window.offlineProducts =
     snap.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
+        ...doc.data(),
+        _id: doc.id
     }));
 }
 
@@ -223,8 +221,8 @@ document.addEventListener("input", e => {
             `${p.name} - ${Number(p.price || 0).toLocaleString()}đ - Tồn ${p.stock || 0}`;
 
         btn.onclick = () => {
-            window.addOfflineItem(p.id);
-        };
+    window.addOfflineItem(p._id);
+};
 
         box.appendChild(btn);
 
@@ -235,7 +233,7 @@ window.addOfflineItem = function(productId){
 
   const product =
     window.offlineProducts.find(
-        x => x.id === productId
+        x => x._id === productId
     );
 
     if(!product) return;
@@ -251,18 +249,12 @@ window.addOfflineItem = function(productId){
 
     }else{
 
-        window.currentCart.push({
-
-            productId: product.id,
-
-            name: product.name,
-
-            price: product.price,
-
-            qty: 1
-
-        });
-
+     window.currentCart.push({
+    productId: product._id,
+    name: product.name,
+    price: product.price,
+    qty: 1
+});
     }
 
    
