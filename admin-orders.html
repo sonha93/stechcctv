@@ -823,25 +823,42 @@ tr:hover{
     padding:10px;
 }
 
-@media(min-width:769px){
+.mobile-gear-btn,
+.mobile-menu{
+    display:none;
+}
 
-    .gear-btn{
+@media(max-width:768px){
+
+    #changePasswordBtn,
+    #logoutBtn{
         display:none;
     }
 
-    .setting-menu{
-        display:flex !important;
-        position:static;
-        box-shadow:none;
-        background:transparent;
-        width:auto;
-        gap:12px;
-        padding:0;
-        align-items:center;
+    .mobile-gear-btn{
+        display:block;
+        width:48px;
+        height:48px;
+        border:none;
+        border-radius:12px;
+        background:#2196f3;
+        color:#fff;
+        font-size:20px;
     }
 
-    .setting-menu button{
-        margin:0;
+    .mobile-menu{
+        position:absolute;
+        right:0;
+        top:60px;
+        width:220px;
+        background:#fff;
+        border-radius:12px;
+        box-shadow:0 5px 20px rgba(0,0,0,.15);
+        padding:10px;
+    }
+
+    .mobile-menu.show{
+        display:block;
     }
 }
 
