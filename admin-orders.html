@@ -794,22 +794,34 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
     <h1 style="margin:0;">Quản lý đơn hàng Stech</h1>
 
-    <div style="display:flex;align-items:center;gap:12px;">
-        <span id="adminName" style="font-weight:600;color:#00acc1;">Admin</span>
+   <div style="display:flex;align-items:center;gap:12px;">
+    <span id="adminName" style="font-weight:600;color:#00acc1;">Admin</span>
 
-        <button id="logoutBtn"
-            style="
-                background:#f44336;
-                color:#fff;
-                border:none;
-                padding:10px 16px;
-                border-radius:8px;
-                cursor:pointer;
-            ">
-            Đăng xuất
-        </button>
-    </div>
+    <button id="changePasswordBtn"
+        style="
+            background:#2196f3;
+            color:#fff;
+            border:none;
+            padding:10px 16px;
+            border-radius:8px;
+            cursor:pointer;
+        ">
+        Đổi mật khẩu
+    </button>
+
+    <button id="logoutBtn"
+        style="
+            background:#f44336;
+            color:#fff;
+            border:none;
+            padding:10px 16px;
+            border-radius:8px;
+            cursor:pointer;
+        ">
+        Đăng xuất
+    </button>
 </div>
+
 
 <!-- SEARCH + FILTER -->
 <div class="top-bar">
@@ -1602,6 +1614,53 @@ placeholder="Tiền thối">
 <script type="module" src="inventory-manager.js"></script>
 <script type="module" src="history.js"></script>
 <script type="module" src="offline-sales.js"></script>
+   <div id="changePasswordModal" style="
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.6);
+z-index:99999;
+">
+
+<div style="
+background:#fff;
+width:400px;
+max-width:95%;
+margin:80px auto;
+padding:20px;
+border-radius:12px;
+">
+
+<h3>Đổi mật khẩu</h3>
+
+<input
+id="newPassword"
+type="password"
+placeholder="Mật khẩu mới"
+style="
+width:100%;
+padding:12px;
+margin:15px 0;
+border:1px solid #ddd;
+border-radius:8px;
+">
+
+<button
+id="savePasswordBtn"
+style="
+width:100%;
+padding:12px;
+background:#2196f3;
+color:#fff;
+border:none;
+border-radius:8px;
+cursor:pointer;
+">
+Lưu mật khẩu
+</button>
+
+</div>
+</div>
 </body>
 <div id="paymentModal" style="
 display:none;
