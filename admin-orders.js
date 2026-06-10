@@ -430,33 +430,32 @@ let cancelledCount = 0;
 snapshot.forEach(doc => {
 
   const order = doc.data();
-if(selectedDate){
 
-  try{
+  if(selectedDate){
 
-if(selectedDate){
+    try{
 
-  try{
+      const dateObj =
+        typeof order.createdAt?.toDate === "function"
+          ? order.createdAt.toDate()
+          : new Date(order.createdAt);
 
-    const dateObj =
-      typeof order.createdAt?.toDate === "function"
-        ? order.createdAt.toDate()
-        : new Date(order.createdAt);
+      const yyyy = dateObj.getFullYear();
+      const mm = String(dateObj.getMonth() + 1).padStart(2,"0");
+      const dd = String(dateObj.getDate()).padStart(2,"0");
 
-    const yyyy = dateObj.getFullYear();
-    const mm = String(dateObj.getMonth() + 1).padStart(2,"0");
-    const dd = String(dateObj.getDate()).padStart(2,"0");
+      const orderDate = `${yyyy}-${mm}-${dd}`;
 
-    const orderDate = `${yyyy}-${mm}-${dd}`;
+      if(orderDate !== selectedDate){
+        return;
+      }
 
-    if(orderDate !== selectedDate){
+    } catch {
       return;
     }
 
-  }catch{
-    return;
   }
-}
+
   // ============================
 // COUNT STATUS
 // ============================
