@@ -1486,18 +1486,18 @@ placeholder="Khách đưa">
 id="changeMoney"
 readonly
 placeholder="Tiền thối">
-      <button
-        id="saveOfflineSale"
-        style="
-          background:#00c853;
-          color:white;
-          border:none;
-          padding:10px 20px;
-          border-radius:8px;
-        "
-      >
-        Lưu bill
-      </button>
+     <button
+  id="paymentBtn"
+  style="
+    background:#00c853;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+  "
+>
+  Thanh toán
+</button>
 
     </div>
 
@@ -1603,4 +1603,82 @@ placeholder="Tiền thối">
 <script type="module" src="history.js"></script>
 <script type="module" src="offline-sales.js"></script>
 </body>
+<div id="paymentModal" style="
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.6);
+z-index:99999;
+">
+
+<div style="
+background:#fff;
+width:420px;
+max-width:95%;
+margin:60px auto;
+padding:20px;
+border-radius:12px;
+text-align:center;
+">
+
+<h2>Thanh toán</h2>
+
+<div style="margin-top:15px;">
+
+<button id="cashBtn"
+style="
+padding:12px 20px;
+margin-right:10px;
+background:#00c853;
+color:#fff;
+border:none;
+border-radius:8px;
+cursor:pointer;
+">
+Tiền mặt
+</button>
+
+<button id="bankBtn"
+style="
+padding:12px 20px;
+background:#2196f3;
+color:#fff;
+border:none;
+border-radius:8px;
+cursor:pointer;
+">
+Chuyển khoản
+</button>
+
+</div>
+
+<div id="bankArea"
+style="display:none;margin-top:20px;">
+
+<img
+id="paymentQr"
+style="
+max-width:280px;
+width:100%;
+height:auto;
+">
+
+<br><br>
+
+<button id="confirmTransferBtn"
+style="
+padding:12px 20px;
+background:#ff9800;
+color:#fff;
+border:none;
+border-radius:8px;
+cursor:pointer;
+">
+Đã nhận tiền
+</button>
+
+</div>
+
+</div>
+</div>
 </html>
