@@ -152,13 +152,13 @@ renderOfflineCart();
 
 document.getElementById("offlineSearch").value = "";
 document.getElementById("offlineSearchResults").innerHTML = "";
-    } catch (err) {
+    catch (err) {
 
-        console.error(err);
+    console.error(err);
 
-        alert("Lỗi tạo đơn");
+    alert(err.message);
 
-    }
+}
 
 }
 
