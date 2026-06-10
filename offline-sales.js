@@ -184,15 +184,23 @@ document.addEventListener("input", e => {
     const keyword =
         e.target.value.toLowerCase().trim();
 
+    const box =
+        document.getElementById("offlineSearchResults");
+
+    // CHƯA GÕ GÌ => KHÔNG HIỆN
+    if (keyword.length < 1) {
+
+        box.innerHTML = "";
+
+        return;
+    }
+
     const result =
         window.offlineProducts.filter(p =>
             (p.name || "")
             .toLowerCase()
             .includes(keyword)
         );
-
-    const box =
-        document.getElementById("offlineSearchResults");
 
     box.innerHTML = "";
 
@@ -214,9 +222,9 @@ document.addEventListener("input", e => {
         btn.innerText =
             `${p.name} - ${Number(p.price || 0).toLocaleString()}đ - Tồn ${p.stock || 0}`;
 
-        btn.addEventListener("click", () => {
+        btn.onclick = () => {
             window.addOfflineItem(p.id);
-        });
+        };
 
         box.appendChild(btn);
 
