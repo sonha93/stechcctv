@@ -439,9 +439,11 @@ if(!window.currentCart.length){
     return;
 }
 
+paymentBtn.addEventListener("click",()=>{
+
 document.getElementById(
 "paymentModal"
-).style.display="block";
+).style.display="flex";
 
 });
 
