@@ -1265,3 +1265,18 @@ document.getElementById("savePasswordBtn")
     }
 
 });
+const settingBtn =
+document.getElementById("settingBtn");
+
+const settingMenu =
+document.getElementById("settingMenu");
+
+if(settingBtn){
+
+    settingBtn.addEventListener("click",()=>{
+
+        settingMenu.classList.toggle("show");
+
+    });
+
+}
