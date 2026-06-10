@@ -170,8 +170,9 @@ async function loadOfflineProducts(){
         id: doc.id,
         ...doc.data()
     }));
-
+    console.log(window.offlineProducts[0]);
 }
+
 document.addEventListener("input", e => {
 
     if (e.target.id !== "offlineSearch") return;
