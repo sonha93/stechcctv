@@ -123,10 +123,11 @@ auth.onAuthStateChanged(async (user) => {
 
         const data = snap.val();
 
-        adminNameEl.textContent =
-            data?.displayName ||
-            data?.fullName ||
-            user.email;
+adminNameEl.textContent =
+    data?.name ||
+    data?.displayName ||
+    data?.fullName ||
+    user.email;
 
     } catch (err) {
 
