@@ -179,9 +179,7 @@ document.addEventListener("input", e => {
 
     const keyword =
         e.target.value.toLowerCase();
-  console.log("search fired");
-console.log(keyword);
-console.log(window.offlineProducts.length);
+ 
     const result =
         window.offlineProducts.filter(p =>
             (p.name || "")
