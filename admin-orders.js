@@ -429,9 +429,16 @@ let cancelledCount = 0;
 // tính doanh thu toàn bộ
 snapshot.forEach(doc => {
 
-  const order = doc.data();
-  if (order.offlineSale === true) {
-  return;
+ const isOffline = order.offlineSale === true;
+
+if (
+  isOffline &&
+  (
+    !searchKeyword ||
+    !doc.id.toLowerCase().includes(searchKeyword)
+  )
+) {
+  return false;
 }
 if(selectedDate){
 
