@@ -57,8 +57,7 @@ document.getElementById("offlinePhone").value.trim();
         await db.collection("orders")
         .add(orderData);
 
-    for (const item of items) {
-    });
+  
         for (const item of items) {
 
             const productRef =
@@ -305,6 +304,12 @@ function renderOfflineCart(){
 
 }
 loadOfflineProducts();
-document
-.getElementById("saveOfflineSale")
-.addEventListener("click", createOfflineSale);
+const saveBtn =
+    document.getElementById("saveOfflineSale");
+
+if (saveBtn) {
+    saveBtn.addEventListener(
+        "click",
+        createOfflineSale
+    );
+}
