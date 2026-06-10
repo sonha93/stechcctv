@@ -42,8 +42,12 @@ document.getElementById("offlinePhone").value.trim();
         createdAt:
             firebase.firestore.FieldValue.serverTimestamp(),
 
-        items,
-
+        items: items.map(i => ({
+    productId: String(i.productId),
+    name: String(i.name),
+    price: Number(i.price),
+    qty: Number(i.qty)
+})),
         total,
 
         customerCancelled: false,
