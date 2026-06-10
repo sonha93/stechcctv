@@ -843,7 +843,63 @@ tr:hover{
     .setting-menu button{
         margin:0;
     }
+   @media(min-width:769px){
+
+    .admin-tools{
+        position:fixed;
+        top:20px;
+        right:20px;
+        z-index:9999;
+    }
+
+    .gear-btn{
+        width:48px;
+        height:48px;
+        border:none;
+        border-radius:12px;
+        background:#2196f3;
+        color:#fff;
+        cursor:pointer;
+        font-size:20px;
+        display:block;
+    }
+
+    .setting-menu{
+        display:none;
+        position:absolute;
+        right:0;
+        top:60px;
+
+        width:220px;
+
+        background:#fff;
+        border-radius:12px;
+        box-shadow:0 5px 20px rgba(0,0,0,.15);
+        padding:10px;
+    }
+
+    .setting-menu.show{
+        display:block;
+    }
+
+    .setting-menu button{
+        width:100%;
+        border:none;
+        background:#f5f5f5;
+        padding:12px;
+        border-radius:8px;
+        margin-top:8px;
+        cursor:pointer;
+    }
+
+    .admin-name{
+        text-align:center;
+        font-weight:700;
+        color:#00acc1;
+        padding:10px;
+    }
 }
+
 
 </style>
 <link
