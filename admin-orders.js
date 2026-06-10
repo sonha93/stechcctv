@@ -1233,3 +1233,36 @@ document
     });
 
 });
+import { auth } from "./firebase-init.js";
+
+document.getElementById("changePasswordBtn")
+?.addEventListener("click", () => {
+    document.getElementById("changePasswordModal").style.display = "block";
+});
+
+document.getElementById("savePasswordBtn")
+?.addEventListener("click", async () => {
+
+    const newPassword =
+        document.getElementById("newPassword").value.trim();
+
+    if (newPassword.length < 6) {
+        alert("Mật khẩu tối thiểu 6 ký tự");
+        return;
+    }
+
+    try {
+
+        await auth.currentUser.updatePassword(newPassword);
+
+        alert("Đổi mật khẩu thành công");
+
+        document.getElementById("changePasswordModal").style.display = "none";
+
+    } catch (err) {
+
+        alert(err.message);
+
+    }
+
+});
