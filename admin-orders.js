@@ -624,16 +624,7 @@ ${
     ${getStatusText(order.status)}
   </span>
 
-  ${order.handledBy ? `
-    <div style="
-      margin-top:4px;
-      font-size:11px;
-      color:#666;
-      font-weight:600;
-    ">
-      ${order.handledBy}
-    </div>
-  ` : ""}
+ 
 </div>
 `
 }
