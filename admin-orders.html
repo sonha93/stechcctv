@@ -1,1828 +1,1282 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
+import { auth, db } from "./firebase-init.js";
+let allSnapshotOrders = [];
+let allOrders = [];
+let revenueByDate = {};
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+let currentPage = 1;
+const perPage = 10;
+// ============================
+// ADMIN ORDERS
+// ============================
 
-<title>Quản lý đơn hàng Stech</title>
+const ordersTable = document.getElementById("ordersTable");
+const totalOrders = document.getElementById("totalOrders");
+const totalRevenue = document.getElementById("totalRevenue");
 
-<style>
+let currentAdmin = null;
+// ============================
+// SEARCH EVENT
+// ============================
+const searchInput =
+  document.getElementById("searchOrder");
 
-/* =========================
-   RESET
-========================= */
+if (searchInput) {
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:
-        Inter,
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
-}
-
-body{
-    background:#f5f5f5;
-    padding:16px;
-    color:#111;
-}
-
-/* =========================
-   TITLE
-========================= */
-
-h1{
-    margin-bottom:16px;
-    font-size:22px;
-}
-
-/* =========================
-   SEARCH + FILTER
-========================= */
-
-.top-bar{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-bottom:16px;
-}
-
-.top-bar input,
-.top-bar button{
-    padding:12px;
-    border-radius:10px;
-    border:1px solid #ddd;
-    font-size:14px;
-}
-
-.top-bar input{
-    background:#fff;
-}
-
-.top-bar button{
-    background:#111;
-    color:#fff;
-    border:none;
-    cursor:pointer;
-}
-
-/* =========================
-   RANGE FILTER
-========================= */
-
-.range-filter{
-    display:flex;
-    gap:10px;
-    flex-wrap:nowrap;
-    margin-bottom:16px;
-}
-
-.range-filter input,
-.range-filter button{
-    padding:12px;
-    border-radius:10px;
-    border:1px solid #ddd;
-    font-size:14px;
-}
-
-.range-filter input{
-    background:#fff;
-}
-
-.range-filter button{
-    background:#00acc1;
-    color:#fff;
-    border:none;
-    cursor:pointer;
-}
-
-/* =========================
-   STATS
-========================= */
-
-.stats-wrap{
-    display:grid;
-    grid-template-columns:repeat(6,1fr);
-    gap:12px;
-    margin-bottom:16px;
-}
-
-.stat-box{
-    background:#fff;
-    padding:14px;
-    border-radius:12px;
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
-}
-.module-menu input[type="radio"]{
-    display:none;
-}
-
-.module-menu label{
-    transition:.2s;
-    border:1px solid transparent;
-}
-
-.module-menu input[type="radio"]:checked + span{
-    color:#00acc1;
-}
-.stat-box h3{
-    font-size:13px;
-    color:#777;
-    margin-bottom:6px;
-}
-
-.stat-box > span{
-    font-size:22px;
-    font-weight:bold;
-}
-
-/* =========================
-   TABLE
-========================= */
-
-.table-wrap{
-    background:#fff;
-    border-radius:12px;
-    overflow:auto;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
-}
-.table-wrap{
-    overflow-x:auto;
-}
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-th{
-    background:#111;
-    color:#fff;
-    padding:14px;
-    font-size:13px;
-    text-align:left;
-}
-
-td{
-    padding:14px;
-    border-bottom:1px solid #eee;
-    font-size:13px;
-    vertical-align:top;
-}
-
-tr:hover{
-    background:#fafafa;
-}
-
-/* =========================
-   STATUS SELECT
-========================= */
-
-.order-status{
-    padding:8px 10px;
-    border-radius:8px;
-    border:1px solid #ddd;
-    background:#fff;
-    min-width:160px;
-    cursor:pointer;
-}
-.status-pending{
-    color:#ff9800;
-    font-weight:bold;
-}
-
-.status-shipping{
-    color:#2196f3;
-    font-weight:bold;
-}
-
-.status-completed{
-    color:#4caf50;
-    font-weight:bold;
-}
-
-.status-cancelled{
-    color:#f44336;
-    font-weight:bold;
-}
-.order-status:disabled{
-    background:#f5f5f5;
-    cursor:not-allowed;
-    opacity:.8;
-}
-
-/* =========================
-   EMPTY
-========================= */
-
-.empty{
-    text-align:center;
-    padding:30px;
-    color:#777;
-}
-
-/* =========================
-   PAGINATION
-========================= */
-
-#pagination{
-    margin-top:18px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px;
-    justify-content:center;
-}
-
-.page-btn{
-    padding:8px 12px;
-    border:none;
-    border-radius:8px;
-    background:#e0e0e0;
-    cursor:pointer;
-    transition:.2s;
-}
+  searchInput.addEventListener("input", () => {
 
-.page-btn:hover{
-    opacity:.85;
-}
-
-/* =========================
-   REVENUE
-========================= */
-
-#revenueByDate{
-    max-height:300px;
-    overflow:auto;
-    margin-top:10px;
-}
-.module-menu{
-    display:grid !important;
-    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-    gap:12px;
-}
-
-.module-menu label{
-    background:#fff;
-    border-radius:12px;
-    padding:16px;
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    font-weight:600;
-}
-.manual-minus-wrap{
-    display:grid;
-    grid-template-columns:
-        170px
-        1fr
-        60px
-        150px
-        140px
-        140px;
-}
-
-    gap:16px;
-    align-items:center;
-    width:100%;
-}
-
-.manual-minus-wrap input,
-.manual-minus-wrap button,
-#manualMinusProductInfo{
-    height:48px;
-    border-radius:10px;
-    border:1px solid #ddd;
-    padding:0 14px;
-    font-size:14px;
-}
-#manualPlusBtn,
-#manualMinusBtn{
-    height:46px;
-    width:140px;
-}
-.manual-minus-wrap input{
-    background:#fff;
-}
-
-
-#manualMinusBtn{
-    background:#ef5350;
-    color:#fff;
-    border:none;
-    cursor:pointer;
-    font-weight:bold;
-}
-   #manualMinusSearch,
-#manualMinusProductInfo,
-#manualMinusQty,
-#manualMinusReason,
-#manualMinusBtn{
-    width:100%;
-    min-width:0;
-}
-   /* STOCK MOVEMENTS TOP */
-.stock-top-bar{
-    display:grid;
-    grid-template-columns:
-        320px   /* ô tìm */
-        1fr     /* thông tin sản phẩm */
-        90px   /* SL */
-        260px   /* lý do */
-        140px   /* trừ */
-        140px;  /* cộng */
-
-    gap:16px;
-    align-items:center;
-    width:100%;
-    margin-bottom:20px;
-}
-
-/* ô search */
-#manualMinusSearch{
-  height:46px;
-  padding:0 14px;
-  border:1px solid #ddd;
-  border-radius:10px;
-  font-size:16px;
-  outline:none;
-}
-#manualMinusProductInfo{
-    width:100%;
-    min-width:0;
-}
-
-.product-info-name{
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-}
-/* box info sản phẩm */
-#manualMinusProductInfo{
-    display:flex;
-    align-items:center;
-    gap:12px;
-
-    background:#f5f5f5;
-    border:1px solid #ddd;
-    border-radius:12px;
-
-    padding:10px 16px;
-    min-height:48px;
-
-    font-size:15px;
-
-    flex-wrap:wrap;
-    overflow:hidden;
-
-    width:100%;
-    min-width:0;
-}
-   #manualMinusProductInfo{
-    display:flex;
-    align-items:center;
-
-    min-height:48px;
-    height:auto;
-
-    overflow:visible;
-}
-/* input số lượng */
-#manualMinusQty{
+    currentPage = 1;
+    loadOrders();
 
-  height:46px;
-  padding:0 12px;
-  border:1px solid #ddd;
-  border-radius:10px;
-  font-size:16px;
-}
-
-/* input lý do */
-#manualMinusReason{
- 
-  height:46px;
-  padding:0 14px;
-  border:1px solid #ddd;
-  border-radius:10px;
-  font-size:16px;
-}
-#manualMinusProductInfo{
-    width:100%;
-    min-width:0;
-}
-.product-info-name{
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-/* button */
-#manualMinusBtn{
-  height:46px;
-  padding:0 28px;
-  border:none;
-  border-radius:10px;
-  background:#ef5350;
-  color:white;
-  font-size:16px;
-  font-weight:bold;
-  cursor:pointer;
-  transition:.2s;
-}
-
-#manualMinusBtn:hover{
-  opacity:.9;
-   }
-  .product-info-wrap{
-    display:flex;
-    align-items:center;
-    gap:15px;
-    width:100%;
-    flex-wrap:nowrap;
-}
-
-.product-info-name{
-    font-weight:bold;
-    overflow:visible;
-    text-overflow:unset;
-    white-space:nowrap;
-}
-
-.product-info-stat{
-    display:flex;
-    align-items:center;
-    gap:5px;
-    white-space:nowrap;
-}
-   #manualPlusBtn{
-    height:46px;
-    padding:0 28px;
-    border:none;
-    border-radius:10px;
-    background:#00c853;
-    color:#fff;
-    font-size:16px;
-    font-weight:bold;
-    cursor:pointer;
-
-}
-#manualPlusBtn:hover{
-    opacity:.9;
-}
-   /* =========================
-   LOSS STICKY COLUMN
-========================= */
-
-#lossSection{
-    overflow-x:auto;
-}
+  });
 
-#lossSection table{
-    min-width:1700px;
 }
-
-#lossSection th:nth-child(1),
-#lossSection td:nth-child(1){
-    position:sticky;
-    left:0;
-    z-index:3;
-}
-
-#lossSection th:nth-child(1){
-    background:#111;
-}
-
-#lossSection td:nth-child(1){
-    background:#fff;
-}
-
-#lossSection th:nth-child(2),
-#lossSection td:nth-child(2){
-    position:sticky;
-    left:180px;
-    z-index:3;
-}
-
-#lossSection th:nth-child(2){
-    background:#111;
+// ============================
+// FORMAT PRICE
+// ============================
+function formatPrice(number) {
+  return Number(number || 0).toLocaleString("vi-VN") + "đ";
 }
+function getStatusText(status){
 
-#lossSection td:nth-child(2){
-    background:#fff;
-}
-   /* LOSS SCROLL */
+  switch(status){
 
-#lossSection{
-    max-height: 780px; /* khoảng 12 dòng */
-    overflow:auto;
-    position:relative;
-}
+    case "pending":
+      return "Chờ xử lý";
 
-/* thanh cuộn luôn hiện */
-#lossSection::-webkit-scrollbar{
-    width:12px;
-    height:12px;
-}
+    case "confirmed":
+      return "Đã xác nhận";
 
-#lossSection::-webkit-scrollbar-thumb{
-    background:#999;
-    border-radius:10px;
-}
+    case "shipping":
+      return "Đang giao";
 
-#lossSection::-webkit-scrollbar-track{
-    background:#eee;
-}
+    case "completed":
+      return "Đã giao thành công";
 
-/* header dính trên */
-#lossSection thead th{
-    position:sticky;
-    top:0;
-    z-index:5;
-}
+    case "cancelled":
+      return "Đã hủy";
 
-/* cột Code cố định */
-#lossSection th:nth-child(1),
-#lossSection td:nth-child(1){
-    position:sticky;
-    left:0;
-    min-width:180px;
-    background:#fff;
-    z-index:3;
+    default:
+      return "-";
+  }
 }
+// ============================
+// FORMAT DATE
+// ============================
+function formatDate(timestamp) {
 
-/* cột Tên SP cố định */
-#lossSection th:nth-child(2),
-#lossSection td:nth-child(2){
-    position:sticky;
-    left:180px;
-    min-width:220px;
-    background:#fff;
-    z-index:3;
-}
+  if (!timestamp) return "-";
 
-/* giữ header đen */
-#lossSection thead th:nth-child(1),
-#lossSection thead th:nth-child(2){
-    background:#111;
-    color:#fff;
-    z-index:6;
-}
-/* =========================
-   MOBILE
-========================= */
+  try {
 
-@media(max-width:768px){
+    let date;
 
-    body{
-        padding:10px;
+    // firestore timestamp
+    if (typeof timestamp.toDate === "function") {
+      date = timestamp.toDate();
     }
 
-    h1{
-        font-size:18px;
+    // timestamp number
+    else if (typeof timestamp === "number") {
+      date = new Date(timestamp);
     }
 
-    .top-bar,
-    .range-filter{
-        flex-direction:column;
+    // string
+    else {
+      date = new Date(timestamp);
     }
 
-    .top-bar input,
-    .top-bar button,
-    .range-filter input,
-    .range-filter button{
-        width:100%;
+    if (isNaN(date.getTime())) return "-";
+
+    return date.toLocaleString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+  } catch (err) {
+    return "-";
+  }
+}
+
+// ============================
+// CHECK ADMIN
+// ============================
+auth.onAuthStateChanged(async (user) => {
+
+    if (!user) {
+        window.location.href = "login-admin.html";
+        return;
     }
 
-   table{
-    min-width:100%;
-}
+    currentAdmin = user;
 
-    th,
-    td{
-        padding:10px;
-        font-size:12px;
+    const adminNameEl =
+        document.getElementById("adminName");
+
+    try {
+
+        const snap = await firebase.database()
+    .ref("/" + user.uid)
+    .once("value");
+
+        const data = snap.val();
+
+adminNameEl.textContent =
+    data?.display ||
+    data?.name ||
+    data?.displayName ||
+    data?.fullName ||
+    user.email;
+
+    } catch (err) {
+
+        console.error(err);
+
+        adminNameEl.textContent =
+            user.email;
+
     }
 
-   .stats-wrap{
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
+    loadOrders();
+
+});
+
+// ============================
+// FILTER DATE EVENT
+// ============================
+
+const filterDate =
+  document.getElementById("filterDate");
+
+const clearDate =
+  document.getElementById("clearDate");
+
+
+// mặc định ngày hôm nay
+if (filterDate) {
+
+  const today = new Date();
+
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+
+  filterDate.value = `${yyyy}-${mm}-${dd}`;
+
 }
 
-.stat-box{
-    padding:12px;
-}
+// ============================
+// FILTER REVENUE RANGE
+// ============================
 
-.stat-box h3{
-    font-size:12px;
-    line-height:1.4;
-}
+const startDate =
+  document.getElementById("startDate");
 
-.stat-box > span{
-    font-size:18px;
-}
-.stats-wrap{
-    overflow-x:unset;
-}
-   .module-menu{
-    grid-template-columns:repeat(2,1fr);
-}
-   #importSection table,
-#movementsSection table{
-    min-width:100% !important;
-}
+const endDate =
+  document.getElementById("endDate");
 
-#importSection th,
-#importSection td,
-#movementsSection th,
-#movementsSection td{
-    padding:6px 4px;
-    font-size:11px;
-}
-   
-    #importSection table,
-    #movementsSection table{
-        border-collapse:collapse;
+const filterRangeBtn =
+  document.getElementById("filterRangeBtn");
+
+if(filterRangeBtn){
+
+  filterRangeBtn.addEventListener("click", () => {
+
+    let total = 0;
+
+    const start =
+      startDate?.value
+        ? new Date(startDate.value)
+        : null;
+
+    const end =
+      endDate?.value
+        ? new Date(endDate.value)
+        : null;
+
+    // set cuối ngày
+    if(end){
+      end.setHours(23,59,59,999);
     }
 
-    #importSection td,
-    #importSection th,
-    #movementsSection td,
-    #movementsSection th{
-        border:1px solid #e5e7eb;
-    }
-.manual-minus-wrap{
-    grid-template-columns:1fr;
-}
+  allSnapshotOrders.forEach(doc => {
+      const order = doc.data();
 
-.manual-minus-wrap input,
-.manual-minus-wrap button,
-#manualMinusProductInfo{
-    width:100%;
-    height:44px;
-    font-size:13px;
+      // chỉ tính completed
+      if(
+        order.status !== "completed" ||
+        order.customerCancelled ||
+        order.adminCancelled
+      ){
+        return;
+      }
+if(order.offlineSale === true){
+  return;
 }
-   #manualPlusBtn,
-#manualMinusBtn{
-    width:100% !important;
-    height:52px;
-}
-   .module-menu label{
-    padding:12px;
-    font-size:13px;
-}
+      try{
 
-.table-wrap{
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-}
-   thead th{
-    position:sticky;
-    top:0;
-    z-index:2;
-}
-   .module-menu input[type="radio"]:checked + span{
-    color:#00acc1;
-}
+        const dateObj =
+          typeof order.createdAt?.toDate === "function"
+            ? order.createdAt.toDate()
+            : new Date(order.createdAt);
 
-.module-menu input:checked + span{
-    color:#00acc1;
-    font-weight:bold;
-}
-   .status-pending{
-    color:#ff9800;
-    font-weight:bold;
-}
+        // lọc từ ngày
+        if(start && dateObj < start){
+          return;
+        }
 
-.status-shipping{
-    color:#2196f3;
-    font-weight:bold;
-}
+        // lọc đến ngày
+        if(end && dateObj > end){
+          return;
+        }
 
-.status-completed{
-    color:#4caf50;
-    font-weight:bold;
-}
+        total += Number(order.total || 0);
 
-.status-cancelled{
-    color:#f44336;
-    font-weight:bold;
-   
-}
-   .stock-top-bar{
-    grid-template-columns:1fr;
-}
-   .stock-green{
-    background:#e8f5e9;
-    color:#00c853;
-    padding:2px 8px;
-    border-radius:6px;
-}
+      }catch(err){}
+    });
+let revenueHTML = "";
 
-.sold-orange{
-    background:#fff3e0;
-    color:#ff9800;
-    padding:2px 8px;
-    border-radius:6px;
-}
+Object.entries(revenueByDate)
+  .sort((a,b)=>new Date(b[0])-new Date(a[0]))
+  .forEach(([date,total])=>{
 
-#manualMinusProductInfo{
-    height:auto !important;
-    min-height:44px;
-    padding:10px;
-}
+    const currentDate = new Date(date + "T23:59:59");
 
-.product-info-wrap{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:6px;
-}
-
-.product-info-stat{
-    white-space:normal;
-} 
-   .header-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-#exportExcelBtn{
-    background:#217346;
-    color:#fff;
-    border:none;
-    padding:10px 18px;
-    border-radius:10px;
-    cursor:pointer;
-    font-weight:600;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    box-shadow:0 3px 10px rgba(33,115,70,.25);
-    transition:.2s;
-}
-
-#exportExcelBtn:hover{
-    background:#1b5e3a;
-    transform:translateY(-1px);
-}
-   .admin-tools{
-    position:relative;
-}
-
-.gear-btn{
-    width:48px;
-    height:48px;
-    border:none;
-    border-radius:12px;
-    background:#2196f3;
-    color:#fff;
-    cursor:pointer;
-    font-size:20px;
-}
-
-.setting-menu{
-    display:none;
-    position:absolute;
-    right:0;
-    top:60px;
-
-    width:220px;
-
-    background:#fff;
-    border-radius:12px;
-
-    box-shadow:0 5px 20px rgba(0,0,0,.15);
-
-    padding:10px;
-
-    z-index:9999;
-}
-
-.setting-menu.show{
-    display:block;
-}
-
-.setting-menu button{
-    width:100%;
-    border:none;
-    background:#f5f5f5;
-    padding:12px;
-    border-radius:8px;
-    margin-top:8px;
-    cursor:pointer;
-}
-
-.admin-name{
-    text-align:center;
-    font-weight:700;
-    color:#00acc1;
-    padding:10px;
-}
-
-.mobile-gear-btn,
-.mobile-menu{
-    display:none;
-}
-
-@media(max-width:768px){
-
-    #changePasswordBtn,
-    #logoutBtn{
-        display:none;
+    if(start && currentDate < start){
+      return;
     }
 
-    .mobile-gear-btn{
-        display:block;
-        width:48px;
-        height:48px;
-        border:none;
-        border-radius:12px;
-        background:#2196f3;
-        color:#fff;
-        font-size:20px;
+    if(end && currentDate > end){
+      return;
+    }
+    revenueHTML += `
+      <div style="
+        padding:8px 0;
+        border-bottom:1px solid #eee;
+      ">
+        <b>
+          ${currentDate.toLocaleDateString("vi-VN")}
+        </b>
+        :
+        ${formatPrice(total)}
+      </div>
+    `;
+  });
+
+document.getElementById("rangeRevenueDetail").innerHTML =
+  revenueHTML || "Không có doanh thu";
+    const rangeRevenue =
+      document.getElementById("rangeRevenue");
+
+    if(rangeRevenue){
+      rangeRevenue.textContent =
+        formatPrice(total);
     }
 
-    .mobile-menu{
-        position:absolute;
-        right:0;
-        top:60px;
-        width:220px;
-        background:#fff;
-        border-radius:12px;
-        box-shadow:0 5px 20px rgba(0,0,0,.15);
-        padding:10px;
-    }
+  });
 
-    .mobile-menu.show{
-        display:block;
-    }
 }
 
-</style>
-<link
-rel="preconnect"
-href="https://fonts.googleapis.com">
+if(filterDate){
 
-<link
-rel="preconnect"
-href="https://fonts.gstatic.com"
-crossorigin>
+  filterDate.addEventListener("change", () => {
 
-<link
-href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-rel="stylesheet">
-   <link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-</head>
+    currentPage = 1;
+    loadOrders();
 
-<body>
+  });
 
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-    <h1 style="margin:0;">Quản lý đơn hàng Stech</h1>
+}
 
-  <div class="admin-tools">
+if(clearDate){
 
-    <button id="settingBtn" class="gear-btn">
-        <i class="fa-solid fa-gear"></i>
-    </button>
+clearDate.addEventListener("click", () => {
 
-    <div id="settingMenu" class="setting-menu">
+  filterDate.value = "";
 
-        <div class="admin-name">
-            <span id="adminName">Admin</span>
-        </div>
+  currentPage = 1;
 
-        <button id="changePasswordBtn">
-            🔑 Đổi mật khẩu
-        </button>
+  loadOrders();
 
-        <button id="logoutBtn">
-            🚪 Đăng xuất
-        </button>
+});
 
-    </div>
-  </div>
-</div>
+}
 
-<!-- SEARCH + FILTER -->
-<div class="top-bar">
+// ============================
+// LOAD ORDERS
+// ============================
+async function loadOrders() {
 
-    <input
-        type="text"
-        id="searchOrder"
-        placeholder="Tìm mã đơn hàng..."
-    >
+  try {
 
-   <input
-    type="date"
-    id="filterDate"
->
+    ordersTable.innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align:center;padding:20px;">
+          Đang tải đơn hàng...
+        </td>
+      </tr>
+    `;
 
-<button id="clearDate">
-    Xóa lọc
-</button>
-
-</div>
-
-<!-- RANGE FILTER -->
-<div class="range-filter">
-
-    <input
-        type="date"
-        id="startDate"
-    >
-
-    <input
-        type="date"
-        id="endDate"
-    >
-
-    <button id="filterRangeBtn">
-        Lọc doanh thu
-    </button>
-
-</div>
-<!-- SWITCH MODULE -->
-<div class="stat-box" style="margin-bottom:16px;">
-
- <div class="module-menu">
-
-  <label>
-  <input type="radio" name="adminView" value="orders" checked>
-  <span>Orders</span>
-</label>
-
-
-  <label>
-  <input type="radio" name="adminView" value="inventory">
-  <span>Inven</span>
-</label>
-
- <label>
-  <input type="radio" name="adminView" value="import">
-  <span>Price</span>
-</label>
-    
-
-   <label>
-  <input type="radio" name="adminView" value="movements">
-  <span>Stock</span>
-</label> 
-    <label>
-  <input type="radio" name="adminView" value="history">
-  <span>History</span>
-</label>
-    <label>
-  <input type="radio" name="adminView" value="loss">
-  <span>Loss</span>
-</label>
-    <label>
-  <input type="radio" name="adminView" value="logs">
-  <span>Logs</span>
-</label>
-    <label>
-  <input type="radio" name="adminView" value="sales">
-  <span>Sales</span>
-</label>
-
-<label>
-  <input type="radio" name="adminView" value="offlineSales">
-  <span>Offline</span>
-</label>
-
-  </div>
-
-</div>
-<!-- STATS -->
-<div class="stats-wrap">
-
-    <div class="stat-box">
-        <h3>Tổng đơn</h3>
-        <span id="totalOrders">0</span>
-    </div>
-
-   
-    <div class="stat-box">
-        <h3>Doanh thu khoảng thời gian</h3>
-        <span id="rangeRevenue">0đ</span>
-    </div>
-
-    <div class="stat-box">
-        <h3>Đơn chờ xử lý</h3>
-        <span id="pendingCount">0</span>
-    </div>
-
-    <div class="stat-box">
-        <h3>Đơn đang giao</h3>
-        <span id="shippingCount">0</span>
-    </div>
-
-    <div class="stat-box">
-        <h3>Đơn hoàn thành</h3>
-        <span id="completedCount">0</span>
-    </div>
-
-    <div class="stat-box">
-        <h3>Đơn đã hủy</h3>
-        <span id="cancelledCount">0</span>
-    </div>
-
-</div>
-
-<!-- REVENUE TODAY -->
-<div class="stat-box" style="margin-bottom:16px;">
-
-    <h3>Doanh thu theo ngày</h3>
-
-    <div id="revenueByDate">
-        Đang tải...
-    </div>
-
-</div>
-
-<!-- REVENUE RANGE -->
-<div class="stat-box" style="margin-bottom:16px;">
-
-    <h3>Chi tiết doanh thu khoảng thời gian</h3>
-
-    <div id="rangeRevenueDetail">
-        Chọn khoảng ngày rồi bấm Lọc doanh thu
-    </div>
-
-</div>
-<!-- INVENTORY MODULE -->
-<div
-  id="inventorySection"
-  class="table-wrap"
-  style="display:none;margin-bottom:16px;"
->
-
-  <div style="padding:16px;">
-
-    <h2 style="margin-bottom:15px;">
-      🏪 Quản lý kho
-    </h2>
-
-    <input
-      type="text"
-      id="inventorySearch"
-      placeholder="Tìm sản phẩm..."
-      style="
-        width:100%;
-        padding:12px;
-        margin-bottom:15px;
-        border-radius:10px;
-        border:1px solid #ddd;
-      "
-    >
-      
-    <table>
-
-    <thead>
-  <tr>
-    <th>ID</th>
-    <th>Sản phẩm</th>
-    <th>Giá nhập</th>
-    <th>Giá bán</th>
-    <th>Giá KM</th>
-   <th>Đặt hàng</th>
-    <th>Tồn</th>
-    <th>Đã bán</th>
-    <th>Lợi nhuận</th>
-    <th>Trạng thái</th>
-    <th>Hành động</th>
-  </tr>
-</thead>
-
-      <tbody id="inventoryBody"></tbody>
-       <tfoot id="inventoryFooter"></tfoot>
-    </table>
-
-  </div>
-
-</div>
-
-<!-- IMPORT PRICE -->
-<div
-  id="importSection"
-  class="table-wrap"
-  style="display:none;margin-bottom:16px;"
->
-
-  <div style="padding:16px;">
-
-   <h2 style="margin-bottom:10px;">
-  💰 Import Price
-</h2>
-
-<input
-  type="date"
-  id="importDateFilter"
-  style="
-    padding:10px;
-    margin-bottom:12px;
-    border:1px solid #ddd;
-    border-radius:8px;
-  "
->
-
-<button
-  id="clearImportDate"
-  style="
-    padding:10px 14px;
-    margin-left:8px;
-    border:none;
-    border-radius:8px;
-    background:#666;
-    color:#fff;
-    cursor:pointer;
-  "
->
-  Tất cả
-</button>
-    <table>
-
-      <thead>
-        <tr>
-          <th>Sản phẩm</th>
-          <th>Giá nhập</th>
-          <th>Ngày nhập</th>
-        </tr>
-      </thead>
-
-      <tbody id="importBody"></tbody>
-
-    </table>
-
-  </div>
-
-</div>
-
-<!-- STOCK MOVEMENTS -->
-<div
-  id="movementsSection"
-  class="table-wrap"
-  style="display:none;margin-bottom:16px;"
->
-
-  <div style="padding:16px;">
-
-    <h2 style="margin-bottom:15px;">
-      🔄 Stock Movements
-    </h2>
-
-    <!-- MANUAL MINUS -->
-    <div class="manual-minus-wrap">
-
-      <input
-        id="manualMinusSearch"
-        type="text"
-        placeholder="Tên sản phẩm / ID"
-      >
-
-     <div id="manualMinusProductInfo">
-    Chưa chọn sản phẩm
-</div>
-
-<input
-    type="number"
-    id="manualMinusQty"
-    placeholder="SL"
-    min="1"
->
-
-<select id="manualMinusReason">
-
-    <option value="">
-        Chọn lý do
-    </option>
-
-    <option value="Hỏng">
-        Hỏng
-    </option>
-
-    <option value="Mất cắp">
-        Mất cắp
-    </option>
-
-    <option value="Nội bộ">
-        Nội bộ
-    </option>
-
-    <option value="Điều chỉnh Stock">
-        Điều chỉnh Stock
-    </option>
-
-    <option value="Khác">
-        Khác
-    </option>
-
-</select>
-      <button id="manualMinusBtn">
-        -
-      </button>
-<button
-    id="manualPlusBtn"
-    style="
-        background:#00c853;
-        color:white;
-    "
->
-    +
-</button>
-    </div>
-
-    <!-- FILTER -->
-    <div style="margin-bottom:14px;">
-
-      <input
-        type="date"
-        id="movementsDateFilter"
-        style="
-          padding:10px;
-          border:1px solid #ddd;
-          border-radius:8px;
-        "
-      >
-
-      <button
-        id="clearMovementsDate"
-        style="
-          padding:10px 14px;
-          margin-left:8px;
-          border:none;
-          border-radius:8px;
-          background:#666;
-          color:#fff;
-          cursor:pointer;
-        "
-      >
-        Tất cả
-      </button>
-
-    </div>
-
-    <!-- TABLE -->
-    <table>
-
-      <thead>
-        <tr>
-          <th>Sản phẩm</th>
-          <th>Loại</th>
-          <th>Số lượng</th>
-          <th>Lý do</th>
-          <th>Ngày</th>
-        </tr>
-      </thead>
-
-      <tbody id="movementsBody"></tbody>
-
-    </table>
-
-  </div>
-
-</div>
-
-   <!-- SALES HISTORY -->
-<div
-  id="salesSection"
-  class="table-wrap"
-  style="display:none;margin-bottom:16px;"
->
-  <div style="padding:16px;">
-
-    <h2 style="margin-bottom:15px;">
-      💵 Lịch sử bán hàng
-    </h2>
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;">
-
-    <input
-        type="text"
-        id="salesSearch"
-        placeholder="ID hoặc tên sản phẩm"
-        style="padding:8px;width:250px;"
-    >
-
-    <input
-        type="date"
-        id="salesFromDate"
-        style="padding:8px;"
-    >
-
-    <input
-        type="date"
-        id="salesToDate"
-        style="padding:8px;"
-    >
-
-</div>
-    <table>
-
-      <thead>
-        <tr>
-
-          <th>Ngày</th>
-
-          <th>Sản phẩm</th>
-
-          <th>SL bán</th>
-
-          <th>Giá nhập</th>
-
-          <th>Giá bán</th>
-
-          <th>Doanh thu</th>
-
-          <th>Giá vốn</th>
-
-          <th>Lợi nhuận</th>
-
-        </tr>
-      </thead>
-
-      <tbody id="salesHistoryBody">
-
+    const snapshot = await db
+      .collection("orders")
+      .orderBy("createdAt", "desc")
+      .get();
+allSnapshotOrders = snapshot.docs;
+    // ============================
+    // EMPTY
+    // ============================
+    if (snapshot.empty) {
+renderPagination();
+      ordersTable.innerHTML = `
         <tr>
           <td colspan="8" style="text-align:center;padding:20px;">
-            Đang tải...
+            Chưa có đơn hàng nào
           </td>
         </tr>
+      `;
 
-      </tbody>
+      if (totalOrders) {
+        totalOrders.textContent = 0;
+      }
 
-    </table>
+      if (totalRevenue) {
+        totalRevenue.textContent = formatPrice(0);
+      }
 
-  </div>
-</div>
-   <!-- LOSS -->
-<div
-  id="lossSection"
-  class="table-wrap"
-  style="display:none;margin-bottom:16px;"
->
-  <div style="padding:16px;">
+      return;
+    }
 
-    <h2 style="margin-bottom:15px;">
-      📉 Loss
-    </h2>
+  let html = "";
 
-    <table>
-      <thead>
-        <tr>
-    <th>Code</th>
-    <th>Tên sản phẩm</th>
-    <th>Giá nhập</th>
-    <th>Giá bán</th>
-    <th>Tổng nhập</th>
-    <th>Đã bán </th>
-    <th>Điều chỉnh tồn kho</th>
-    <th>Tồn hệ thống</th>
-    <th>Chênh lệch</th>
-    <th>Giá trị nhập</th>
-    <th>Doanh thu</th>
-    <th>Giá trị tồn kho</th>
-    <th>Giá trị</th>
-    <th>% Hao hụt</th>
-    <th>Profit</th>
-    <th>% Profit</th>
-        </tr>
-      </thead>
+// ============================
+// SEARCH
+// ============================
+// ============================
+// SEARCH + FILTER DATE
+// ============================
 
-      <tbody id="lossBody">
-        <tr>
-          <td colspan="5" class="empty">
-            Chưa có dữ liệu
-          </td>
-        </tr>
-      </tbody>
-    </table>
+const searchKeyword =
+  searchInput
+    ? searchInput.value.trim().toLowerCase()
+    : "";
 
-  </div>
-</div>
-   <!-- HISTORY -->
-<div
-  id="historySection"
-  class="table-wrap"
-  style="display:none;margin-bottom:16px;"
->
+const selectedDate =
+  filterDate?.value || "";
 
-  <div style="padding:16px;">
+// lưu toàn bộ orders
+allOrders = snapshot.docs.filter(doc => {
 
-    <h2 style="margin-bottom:15px;">
-      📦 History
-    </h2>
+  const order = doc.data();
 
-    <input
-      type="text"
-      id="historySearch"
-      placeholder="Tìm ID hoặc tên sản phẩm..."
-      style="
-        width:100%;
-        padding:12px;
-        margin-bottom:15px;
-        border-radius:10px;
-        border:1px solid #ddd;
-      "
-    >
+  const matchSearch =
+    !searchKeyword ||
+    doc.id.toLowerCase().includes(searchKeyword);
 
-    <table>
+  // Ẩn đơn offline khi xem bình thường
+  // nhưng vẫn cho hiện khi tìm đúng ID
+  if (order.offlineSale === true && !matchSearch) {
+    return false;
+  }
+  let matchDate = true;
 
-      <thead>
+  if (selectedDate) {
 
-<tr>
-    <th>ID</th>
-    <th>Sản phẩm</th>
-    <th>Ngày nhập</th>
-    <th>SL nhập</th>
-    <th>Giá nhập</th>
-    <th>Đã bán</th>
-    <th>Tồn kho</th>
-    <th>Thất thoát</th>
-</tr>
-</thead>
+    try {
 
+      const dateObj =
+        typeof order.createdAt?.toDate === "function"
+          ? order.createdAt.toDate()
+          : new Date(order.createdAt);
 
+      const yyyy = dateObj.getFullYear();
+      const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const dd = String(dateObj.getDate()).padStart(2, "0");
 
-      <tbody id="historyBody">
+      const orderDate = `${yyyy}-${mm}-${dd}`;
 
-        <tr>
-          <td colspan="8"
-            style="
-              text-align:center;
-              padding:20px;
-            "
-          >
-            Đang tải...
-          </td>
-        </tr>
+      matchDate = orderDate === selectedDate;
 
-      </tbody>
+    } catch {
 
-    </table>
+      matchDate = false;
 
-  </div>
+    }
 
-</div>
+  }
 
-<!-- PRODUCT CHANGE LOGS -->
-<div
-  id="logsSection"
-  class="table-wrap"
-  style="display:none;margin-bottom:16px;"
->
-  <div style="padding:16px;">
+  return matchSearch && matchDate;
 
-    <h2 style="margin-bottom:15px;">
-      📝 Product Change Logs
-    </h2>
-  <button id="exportExcelBtn">
-    📗 Export Excel
-</button>
-   <table id="logsTable">
+});
+ const totalPages =
+  Math.ceil(allOrders.length / perPage) || 1;
 
-      <thead>
-      <tr>
-    <th>Ngày</th>
-    <th>ID</th>
-    <th>Sản phẩm</th>
-    <th>Người sửa</th>
+if(currentPage > totalPages){
+  currentPage = 1;
+}
+// ============================
+// PAGINATION
+// ============================
+const start =
+  (currentPage - 1) * perPage;
 
-    <th>Giá nhập cũ</th>
-    <th>Giá nhập mới</th>
+const end = start + perPage;
 
-    <th>Giá bán cũ</th>
-    <th>Giá bán mới</th>
+const pageOrders =
+  allOrders.slice(start, end);
 
-    <th>Giá KM cũ</th>
-    <th>Giá KM mới</th>
+// ============================
+// REVENUE
+// ============================
+let revenue = 0;
 
-    <th>% giá nhập</th>
-    <th>Lợi nhuận</th>
-    <th>% giá bán</th>
-</tr>
-      </thead>
+revenueByDate = {};
 
-      <tbody id="productChangeLogsBody">
+let pendingCount = 0;
+let shippingCount = 0;
+let completedCount = 0;
+let cancelledCount = 0;
+    
+// tính doanh thu toàn bộ
+snapshot.forEach(doc => {
 
-        <tr>
-          <td colspan="12" style="text-align:center;padding:20px;">
-            Đang tải...
-          </td>
-        </tr>
+  const order = doc.data();
 
-      </tbody>
+  if(selectedDate){
 
-    </table>
+    try{
 
-  </div>
-</div>
-   <!-- OFFLINE SALES -->
-<div
-  id="offlineSalesSection"
-  class="table-wrap"
-  style="display:none;margin-bottom:16px;"
->
-  <div style="padding:16px;">
+      const dateObj =
+        typeof order.createdAt?.toDate === "function"
+          ? order.createdAt.toDate()
+          : new Date(order.createdAt);
 
-    <h2 style="margin-bottom:15px;">
-      🛒 Offline Sales
-    </h2>
-<div style="margin-bottom:15px;">
+      const yyyy = dateObj.getFullYear();
+      const mm = String(dateObj.getMonth() + 1).padStart(2,"0");
+      const dd = String(dateObj.getDate()).padStart(2,"0");
 
-    <input
-        type="text"
-        id="offlineSearch"
-        placeholder="Tìm sản phẩm..."
-        style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;"
-    >
+      const orderDate = `${yyyy}-${mm}-${dd}`;
 
-    <div id="offlineSearchResults"
-         style="margin-top:10px;">
-    </div>
+      if(orderDate !== selectedDate){
+        return;
+      }
 
-</div>
+    } catch {
+      return;
+    }
 
-<div id="offlineCart"
-     style="margin-bottom:15px;">
-</div>
+  }
 
-<div id="offlineTotal"
-     style="font-size:20px;font-weight:bold;margin-bottom:15px;">
-    0đ
-</div>
-    <div style="
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:15px;
-    ">
+  // ============================
+// COUNT STATUS
+// ============================
 
-      <input
-        type="text"
-        id="offlineCustomer"
-        placeholder="Tên khách"
-        style="padding:10px;"
-      >
+if(order.status === "pending"){
+  pendingCount++;
+}
 
-      <input
-        type="text"
-        id="offlinePhone"
-        placeholder="SĐT"
-        style="padding:10px;"
-      >
-      <input
-id="customerPaid"
-type="number"
-placeholder="Khách đưa">
+if(order.status === "shipping"){
+  shippingCount++;
+}
 
-<input
-id="changeMoney"
-readonly
-placeholder="Tiền thối">
-     <button
-  id="paymentBtn"
-  style="
-    background:#00c853;
-    color:white;
-    border:none;
-    padding:10px 20px;
-    border-radius:8px;
-  "
->
-  Thanh toán
-</button>
+if(
+  order.status === "completed" &&
+  !order.customerCancelled &&
+  !order.adminCancelled
+){
+  completedCount++;
+}
 
-    </div>
+if(
+  order.status === "cancelled" ||
+  order.customerCancelled ||
+  order.adminCancelled
+){
+  cancelledCount++;
+}
+ if (
+  order.status === "completed" &&
+  !order.customerCancelled &&
+  !order.adminCancelled
+) {
 
-    <table>
-      <thead>
-        <tr>
-          <th>Mã bill</th>
-          <th>Khách hàng</th>
-          <th>SĐT</th>
-          <th>Tổng tiền</th>
-          <th>Ngày</th>
-        </tr>
-      </thead>
+    revenue += Number(order.total || 0);
 
-      <tbody id="offlineSalesBody">
-        <tr>
-          <td colspan="5">
-            Chưa có dữ liệu
-          </td>
-        </tr>
-      </tbody>
-    </table>
-<div id="qrBox" style="
-    display:none;
-    text-align:center;
-    margin-top:15px;
-    padding:15px;
-    border:1px solid #ddd;
-    border-radius:10px;
-    background:#fff;
-">
-    <h3>QR Thanh Toán</h3>
+    let dateKey = "-";
 
-    <img
-        id="vietqrImage"
-        src=""
-        alt="VietQR"
-        style="
-            max-width:250px;
-            width:100%;
-            height:auto;
-        "
-    >
+    try {
 
-    <div style="
-        margin-top:10px;
-        font-size:14px;
-        color:#666;
-    ">
-        VietinBank - 101005245058
-    </div>
-</div>
-  </div>
-</div>
-<!-- TABLE -->
-<div class="table-wrap" id="ordersSection">
+      const dateObj =
+        typeof order.createdAt?.toDate === "function"
+          ? order.createdAt.toDate()
+          : new Date(order.createdAt);
 
-<table>
+   const yyyy = dateObj.getFullYear();
+const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+const dd = String(dateObj.getDate()).padStart(2, "0");
 
-<thead>
+dateKey = `${yyyy}-${mm}-${dd}`;
 
-<tr>
-    <th>Mã đơn</th>
-    <th>Khách hàng</th>
-    <th>Địa chỉ</th>
-    <th>Sản phẩm</th>
-    <th>Tổng tiền</th>
-    <th>Trạng thái</th>
-    <th>Nhân viên xử lý</th>
-    <th>Hành động</th>
-</tr>
+    } catch {}
 
-</thead>
+    if (!revenueByDate[dateKey]) {
+      revenueByDate[dateKey] = 0;
+    }
 
-<tbody id="ordersTable">
+    revenueByDate[dateKey] +=
+      Number(order.total || 0);
+  }
 
-<tr>
-<td colspan="8" class="empty">
-    Đang tải đơn hàng...
+});
+
+// ============================
+// RENDER TABLE
+// ============================
+pageOrders.forEach(doc => {
+
+  const order = doc.data();
+
+  const isCompleted =
+    order.status === "completed";
+
+  const isCustomerCancelled =
+  order.customerCancelled === true;
+
+const isAdminCancelled =
+  order.adminCancelled === true;
+
+const lockStatus =
+  isCompleted ||
+  isCustomerCancelled ||
+  isAdminCancelled;
+ 
+  html += `
+    <tr>
+
+     <td>
+  ${doc.id}
+  <br>
+  <small style="color:#666;">
+    ${formatDate(order.createdAt)}
+  </small>
 </td>
-</tr>
 
-</tbody>
+      <td>
+        ${order.customerName || "-"}<br>
+        <small>${order.phone || ""}</small>
+      </td>
 
-</table>
+      <td>
+        ${order.address || "-"}
+      </td>
 
+      <td>
+        ${renderProducts(order.items || [])}
+      </td>
+
+      <td>
+        ${formatPrice(order.total)}
+      </td>
+
+      <td>
+
+    
+${
+  order.customerCancelled
+  ? `
+    <span style="
+      background:#ffebee;
+      color:#d32f2f;
+      padding:5px 10px;
+      border-radius:20px;
+      font-size:12px;
+      font-weight:bold;
+      display:inline-block;
+    ">
+      Khách hủy đơn
+    </span>
+  `
+  : order.adminCancelled
+  ? `
+    <span style="
+      background:#fff3e0;
+      color:#ef6c00;
+      padding:5px 10px;
+      border-radius:20px;
+      font-size:12px;
+      font-weight:bold;
+      display:inline-block;
+    ">
+      Admin hủy đơn
+    </span>
+  `
+  : `
+   <div>
+  <span style="
+    background:#e8f5e9;
+    color:#2e7d32;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+    display:inline-block;
+  ">
+    ${getStatusText(order.status)}
+  </span>
+
+ 
 </div>
+`
+}
+      </td>
 
-<!-- PAGINATION -->
-<div id="pagination"></div>
+     <td>
+  <span style="white-space:nowrap;">
+    ${order.handledBy || "-"}
+  </span>
+</td>
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+      <td>
+    <select
+  class="order-status status-${order.status}"
+  data-id="${doc.id}"
+  ${lockStatus ? "disabled" : ""}
+>
 
-<!-- ADMIN JS -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-<script type="module" src="admin-orders.js"></script>
-<script type="module" src="inventory-manager.js"></script>
-<script type="module" src="history.js"></script>
-<script type="module" src="offline-sales.js"></script>
-   <div id="changePasswordModal" style="
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.6);
-z-index:99999;
-">
+          <option value="pending"
+            ${order.status === "pending" ? "selected" : ""}>
+            Chờ xử lý
+          </option>
 
-<div style="
-background:#fff;
-width:400px;
-max-width:95%;
-margin:80px auto;
-padding:20px;
-border-radius:12px;
-">
+          <option value="confirmed"
+            ${order.status === "confirmed" ? "selected" : ""}>
+            Đã xác nhận
+          </option>
 
-<h3>Đổi mật khẩu</h3>
+          <option value="shipping"
+            ${order.status === "shipping" ? "selected" : ""}>
+            Đang giao
+          </option>
 
-<input
-id="newPassword"
-type="password"
-placeholder="Mật khẩu mới"
-style="
-width:100%;
-padding:12px;
-margin:15px 0;
-border:1px solid #ddd;
-border-radius:8px;
-">
+          <option value="completed"
+            ${order.status === "completed" ? "selected" : ""}>
+            Đã giao thành công
+          </option>
 
-<button
-id="savePasswordBtn"
-style="
-width:100%;
-padding:12px;
-background:#2196f3;
-color:#fff;
-border:none;
-border-radius:8px;
-cursor:pointer;
-">
-Lưu mật khẩu
-</button>
+          <option value="cancelled"
+            ${order.status === "cancelled" ? "selected" : ""}>
+            Đã hủy
+          </option>
 
-</div>
-</div>
-</body>
-<div id="paymentModal" style="
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.6);
-z-index:99999;
-">
+        </select>
 
-<div style="
-background:#fff;
-width:420px;
-max-width:95%;
-margin:60px auto;
-padding:20px;
-border-radius:12px;
-text-align:center;
-">
+   ${lockStatus ? `
+  <div style="
+    color:${
+      isCustomerCancelled
+        ? "red"
+        : isAdminCancelled
+        ? "#ff9800"
+        : "green"
+    };
+    font-size:12px;
+    margin-top:5px;
+    font-weight:bold;
+  ">
+    ${
+      isCustomerCancelled
+        ? ""
+        : isAdminCancelled
+        ? ""
+        : ""
+    }
+  </div>
+` : ""}
 
-<h2>Thanh toán</h2>
+      </td>
 
-<div style="margin-top:15px;">
+    </tr>
+  `;
+});
 
-<button id="cashBtn"
-style="
-padding:12px 20px;
-margin-right:10px;
-background:#00c853;
-color:#fff;
-border:none;
-border-radius:8px;
-cursor:pointer;
-">
-Tiền mặt
-</button>
+// empty search
+if (!html) {
 
-<button id="bankBtn"
-style="
-padding:12px 20px;
-background:#2196f3;
-color:#fff;
-border:none;
-border-radius:8px;
-cursor:pointer;
-">
-Chuyển khoản
-</button>
+  html = `
+    <tr>
+      <td colspan="8"
+        style="text-align:center;padding:20px;">
+        Không tìm thấy đơn hàng
+      </td>
+    </tr>
+  `;
+}
+    ordersTable.innerHTML = html;
+    renderPagination();
+    // ============================
+    // TOTAL ORDERS
+    // ============================
+    if (totalOrders) {
+   totalOrders.textContent = allOrders.length;
+    }
 
-</div>
+    // ============================
+    // TOTAL REVENUE
+    // ============================
+    if (totalRevenue) {
+      totalRevenue.textContent = formatPrice(revenue);
+    }
+    const pendingBox =
+  document.getElementById("pendingCount");
 
-<div id="bankArea"
-style="display:none;margin-top:20px;">
+const shippingBox =
+  document.getElementById("shippingCount");
 
-<img
-id="paymentQr"
-style="
-max-width:280px;
-width:100%;
-height:auto;
-">
+const completedBox =
+  document.getElementById("completedCount");
 
-<br><br>
+const cancelledBox =
+  document.getElementById("cancelledCount");
 
-<button id="confirmTransferBtn"
-style="
-padding:12px 20px;
-background:#ff9800;
-color:#fff;
-border:none;
-border-radius:8px;
-cursor:pointer;
-">
-Đã nhận tiền
-</button>
+if(pendingBox){
+  pendingBox.textContent = pendingCount;
+}
 
-</div>
+if(shippingBox){
+  shippingBox.textContent = shippingCount;
+}
 
-</div>
-</div>
-</html>
+if(completedBox){
+  completedBox.textContent = completedCount;
+}
+
+if(cancelledBox){
+  cancelledBox.textContent = cancelledCount;
+}
+const revenueBox =
+  document.getElementById("revenueByDate");
+
+if(revenueBox){
+
+  const todayDate =
+    filterDate?.value ||
+    new Date().toISOString().split("T")[0];
+
+  const todayRevenue =
+    revenueByDate[todayDate] || 0;
+
+  revenueBox.innerHTML = `
+    <div style="
+      padding:8px 0;
+      border-bottom:1px solid #eee;
+    ">
+      <b>
+        ${new Date(todayDate).toLocaleDateString("vi-VN")}
+      </b>
+      :
+      ${formatPrice(todayRevenue)}
+    </div>
+  `;
+}
+    bindEvents();
+
+  } catch (error) {
+
+    console.error(error);
+
+    ordersTable.innerHTML = `
+      <tr>
+        <td colspan="8"
+          style="text-align:center;padding:20px;color:red;">
+          Lỗi tải đơn hàng
+        </td>
+      </tr>
+    `;
+  }
+}
+
+// ============================
+// RENDER PRODUCTS
+// ============================
+function renderProducts(items) {
+
+  if (!items.length) return "-";
+
+  return items.map(item => {
+
+    return `
+      <div style="margin-bottom:6px;">
+        ${item.name || "Sản phẩm"} x${item.qty || 1}
+      </div>
+    `;
+
+  }).join("");
+}
+
+// ============================
+// BIND EVENTS
+// ============================
+function bindEvents() {
+const offlineSalesSection =
+document.getElementById("offlineSalesSection");
+  // UPDATE STATUS
+  document.querySelectorAll(".order-status").forEach(select => {
+
+  // chống bind trùng
+  if(select.dataset.bound === "true"){
+    return;
+  }
+
+  select.dataset.bound = "true";
+
+  select.addEventListener("change", async () => {
+
+      const id = select.dataset.id;
+      const status = select.value;
+
+      try {
+
+      const orderDoc = await db
+  .collection("orders")
+  .doc(id)
+  .get();
+
+if(!orderDoc.exists){
+
+  alert("Đơn hàng không tồn tại");
+  return;
+}
+
+const orderData = orderDoc.data();
+
+// khách đã hủy
+if(orderData.customerCancelled){
+
+  alert(
+    "Khách đã hủy đơn, không thể cập nhật trạng thái."
+  );
+
+  // reset select về cancelled
+  select.value = "cancelled";
+
+  // khóa luôn select
+  select.disabled = true;
+
+  return;
+}
+const updateData = {
+  status: status,
+  handledBy: document.getElementById("adminName").textContent
+};
+
+
+// nếu chuyển sang cancelled
+// thì khóa luôn
+if(status === "cancelled"){
+  updateData.adminCancelled = true;
+}
+
+
+if(
+  status === "completed" &&
+  orderData.status !== "completed"
+){
+for(const item of (orderData.items || [])){
+
+  try{
+
+   let productId =
+  item.productId ||
+  item.id ||
+  item._id;
+
+let productRef =
+  db.collection("products")
+  .doc(productId);
+
+let productDoc =
+  await productRef.get();
+
+// fallback tìm bằng slug
+if(!productDoc.exists && item.slug){
+
+  const slugSnap = await db
+    .collection("products")
+    .where("slug", "==", item.slug)
+    .limit(1)
+    .get();
+
+  if(!slugSnap.empty){
+
+    productDoc = slugSnap.docs[0];
+
+    productId = productDoc.id;
+
+    productRef =
+      db.collection("products")
+      .doc(productId);
+  }
+}
+
+if(!productDoc.exists){
+
+  console.error(
+    "Không tìm thấy sản phẩm:",
+    item
+  );
+
+  continue;
+}
+    const product =
+      productDoc.data();
+
+    const qty =
+      Number(item.qty || 0);
+
+    const currentStock =
+      Number(product.stock || 0);
+
+    if(currentStock < qty){
+
+      console.error(
+        "Không đủ tồn kho:",
+        item.name
+      );
+
+      continue;
+    }
+
+    const existed = await db
+      .collection("sales_history")
+      .where("orderId","==",id)
+      .where("productId","==",productId)
+      .limit(1)
+      .get();
+
+    if(!existed.empty){
+      continue;
+    }
+
+    const importPrice =
+      Number(product.importPrice || 0);
+
+    const sellPrice =
+      Number(item.price || product.price || 0);
+
+    const revenue =
+      sellPrice * qty;
+
+    const capital =
+      importPrice * qty;
+
+    const profit =
+      revenue - capital;
+
+    await db
+      .collection("sales_history")
+      .add({
+
+        orderId:id,
+
+        productId: productId,
+
+        productName:
+          item.name || product.name,
+
+        qty,
+
+        importPrice,
+
+        sellPrice,
+
+        revenue,
+
+        capital,
+
+        profit,
+
+        createdAt:
+          firebase.firestore
+          .FieldValue
+          .serverTimestamp()
+
+      });
+
+    const newStock =
+      currentStock - qty;
+
+    await productRef.update({
+      stock: newStock
+    });
+
+    await db
+      .collection("stock_movements")
+      .add({
+
+        productId: productId,
+
+        productName:
+          item.name || product.name,
+
+        type: "SALE",
+
+        qty: -qty,
+
+        reason: `Đơn hàng ${id}`,
+
+        stockAfter: newStock,
+
+        createdAt:
+          firebase.firestore
+          .FieldValue
+          .serverTimestamp()
+
+      });
+
+  }catch(err){
+
+    console.error(
+      "Lỗi xử lý sản phẩm:",
+      item,
+      err
+    );
+
+  }
+
+}
+} 
+await db
+  .collection("orders")
+  .doc(id)
+  .update(updateData);
+        // completed => khóa
+     if (
+  status === "completed" ||
+  status === "cancelled"
+) {
+
+  select.disabled = true;
+}
+        alert("Cập nhật trạng thái thành công");
+
+      } catch (error) {
+
+        console.error(error);
+        alert("Lỗi cập nhật trạng thái");
+      }
+    });
+  });
+}
+
+// ============================
+// REALTIME UPDATE
+// ============================
+db.collection("orders")
+  .orderBy("createdAt", "desc")
+  .onSnapshot(() => {
+
+    if (currentAdmin) {
+      loadOrders();
+    }
+
+  });
+// ============================
+// PAGINATION
+// ============================
+function renderPagination() {
+
+  const pagination =
+    document.getElementById("pagination");
+
+  if (!pagination) return;
+
+ const totalPages =
+  Math.ceil(allOrders.length / perPage) || 1;
+
+  let html = "";
+
+  for (let i = 1; i <= totalPages; i++) {
+
+    html += `
+      <button
+        class="page-btn"
+        data-page="${i}"
+        style="
+          margin:0 4px;
+          padding:6px 10px;
+          cursor:pointer;
+          ${i === currentPage
+            ? "background:black;color:white;"
+            : ""}
+        "
+      >
+        ${i}
+      </button>
+    `;
+  }
+
+  pagination.innerHTML = html;
+
+  document
+    .querySelectorAll(".page-btn")
+    .forEach(btn => {
+
+      btn.addEventListener("click", () => {
+
+        currentPage =
+          Number(btn.dataset.page);
+
+        loadOrders();
+
+      });
+
+    });
+}
+// ============================
+// LIVE DATE TIME
+// ============================
+
+function updateLiveDateTime() {
+
+  const el =
+    document.getElementById("liveDateTime");
+
+  if (!el) return;
+
+  const now = new Date();
+
+  const date =
+    now.toLocaleDateString("vi-VN");
+
+  const time =
+    now.toLocaleTimeString("vi-VN");
+
+  el.innerHTML = `
+    ${date} - ${time}
+  `;
+}
+
+// chạy ngay
+updateLiveDateTime();
+
+// cập nhật mỗi giây
+setInterval(updateLiveDateTime, 1000);    
+const logoutBtn =
+    document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+
+    logoutBtn.addEventListener("click", async () => {
+
+        try {
+
+            await auth.signOut();
+
+            window.location.href =
+                "login-admin.html";
+
+        } catch (err) {
+
+            console.error(err);
+            alert("Không thể đăng xuất");
+
+        }
+
+    });
+
+}
+// ============================
+// SWITCH MODULE
+// ============================
+
+document
+.querySelectorAll('input[name="adminView"]')
+.forEach(radio => {
+
+    radio.addEventListener("change", () => {
+
+        const value = radio.value;
+
+        document.getElementById("ordersSection").style.display =
+            value === "orders" ? "block" : "none";
+
+        document.getElementById("inventorySection").style.display =
+            value === "inventory" ? "block" : "none";
+
+        document.getElementById("importSection").style.display =
+            value === "import" ? "block" : "none";
+
+        document.getElementById("movementsSection").style.display =
+            value === "movements" ? "block" : "none";
+
+        document.getElementById("historySection").style.display =
+            value === "history" ? "block" : "none";
+
+        document.getElementById("lossSection").style.display =
+            value === "loss" ? "block" : "none";
+
+        document.getElementById("logsSection").style.display =
+            value === "logs" ? "block" : "none";
+
+        document.getElementById("salesSection").style.display =
+            value === "sales" ? "block" : "none";
+
+        // OFFLINE SALES
+        const offlineSection =
+            document.getElementById("offlineSalesSection");
+
+       if (offlineSection) {
+    offlineSection.style.display =
+        value === "offlineSales" ? "block" : "none";
+}
+    });
+
+});
+
+document.getElementById("changePasswordBtn")
+?.addEventListener("click", () => {
+    document.getElementById("changePasswordModal").style.display = "block";
+});
+
+document.getElementById("savePasswordBtn")
+?.addEventListener("click", async () => {
+
+    const newPassword =
+        document.getElementById("newPassword").value.trim();
+
+    if (newPassword.length < 6) {
+        alert("Mật khẩu tối thiểu 6 ký tự");
+        return;
+    }
+
+    try {
+
+        await auth.currentUser.updatePassword(newPassword);
+
+        alert("Đổi mật khẩu thành công");
+
+        document.getElementById("changePasswordModal").style.display = "none";
+
+    } catch (err) {
+
+        alert(err.message);
+
+    }
+
+});
+const settingBtn =
+document.getElementById("settingBtn");
+
+const settingMenu =
+document.getElementById("settingMenu");
+
+if(settingBtn){
+
+    settingBtn.addEventListener("click",()=>{
+
+        settingMenu.classList.toggle("show");
+
+    });
+
+}
