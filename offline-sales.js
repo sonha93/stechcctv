@@ -126,9 +126,7 @@ document.getElementById("offlinePhone").value.trim();
                     (Number(item.price || 0) -
                      Number(product.importPrice || 0)) * qty,
 
-                createdAt:
-                    firebase.firestore.FieldValue.serverTimestamp()
-
+                createdAt: new Date()
             });
 
             await db.collection("stock_movements").add({
@@ -149,8 +147,7 @@ document.getElementById("offlinePhone").value.trim();
                 stockAfter:
                     newStock,
 
-                createdAt:
-                    firebase.firestore.FieldValue.serverTimestamp()
+                createdAt: new Date()
 
             });
 
@@ -275,6 +272,34 @@ window.addOfflineItem = function(productId){
    document.getElementById("offlineSearchResults").innerHTML = "";
 
 }
+window.changeQty = function(productId, delta){
+
+    const item =
+        window.currentCart.find(
+            x => x.productId === productId
+        );
+
+    if(!item) return;
+
+    item.qty += delta;
+
+    if(item.qty <= 0){
+        window.removeOfflineItem(productId);
+        return;
+    }
+
+    renderOfflineCart();
+};
+
+window.removeOfflineItem = function(productId){
+
+    window.currentCart =
+        window.currentCart.filter(
+            x => x.productId !== productId
+        );
+
+    renderOfflineCart();
+};
 function renderOfflineCart(){
 
     let total = 0;
@@ -286,8 +311,7 @@ function renderOfflineCart(){
         total +=
             Number(item.price) *
             Number(item.qty);
-
-        return `
+return `
 <div style="
     padding:10px;
     border-bottom:1px solid #ddd;
@@ -304,34 +328,45 @@ function renderOfflineCart(){
     </div>
 
     <div>
-        <button onclick="window.currentCart.find(x=>x.productId==='${item.productId}').qty++;renderOfflineCart()">+</button>
 
-        <button onclick="
-        const p=window.currentCart.find(x=>x.productId==='${item.productId}');
-        p.qty--;
-        if(p.qty<=0){
-            removeOfflineItem('${item.productId}');
-        }else{
-            renderOfflineCart();
-        }
-        ">-</button>
+        <button onclick="window.changeQty('${item.productId}',1)">
+            +
+        </button>
 
-        <button onclick="removeOfflineItem('${item.productId}')">
+        <button onclick="window.changeQty('${item.productId}',-1)">
+            -
+        </button>
+
+        <button onclick="window.removeOfflineItem('${item.productId}')">
             X
         </button>
+
     </div>
 
 </div>
 `;
 
+  
     }).join("");
 
     document.getElementById(
         "offlineTotal"
     ).innerText =
         total.toLocaleString() + "đ";
+const paid =
+    Number(
+        document.getElementById("customerPaid")?.value || 0
+    );
 
+const changeBox =
+    document.getElementById("changeMoney");
+
+if(changeBox){
+    changeBox.value =
+        (paid - total).toLocaleString() + "đ";
 }
+}
+
 loadOfflineProducts();
 const saveBtn =
     document.getElementById("saveOfflineSale");
