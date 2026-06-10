@@ -181,12 +181,16 @@ document.addEventListener("input", e => {
 
     if (e.target.id !== "offlineSearch") return;
 
-    const keyword =
-        e.target.value.toLowerCase().trim();
+   const keyword =
+    e.target.value.toLowerCase().trim();
 
-    const box =
-        document.getElementById("offlineSearchResults");
+if (!keyword) {
+    document.getElementById("offlineSearchResults").innerHTML = "";
+    return;
+}
 
+const result =
+    window.offlineProducts.filter(p =>
     // CHƯA GÕ GÌ => KHÔNG HIỆN
     if (keyword.length < 1) {
 
