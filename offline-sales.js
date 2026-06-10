@@ -440,11 +440,9 @@ if(!window.currentCart.length){
 }
 
 paymentBtn.addEventListener("click",()=>{
-
 document.getElementById(
 "paymentModal"
-).style.display="flex";
-
+).style.display="block";
 });
 
 }
