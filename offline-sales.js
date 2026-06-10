@@ -277,17 +277,41 @@ function renderOfflineCart(){
             Number(item.qty);
 
         return `
-            <div style="
-                padding:10px;
-                border-bottom:1px solid #ddd;
-            ">
-                ${item.name}
-                x${item.qty}
-                =
-                ${(item.price * item.qty)
-                    .toLocaleString()}đ
-            </div>
-        `;
+<div style="
+    padding:10px;
+    border-bottom:1px solid #ddd;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+">
+
+    <div>
+        ${item.name}
+        x${item.qty}
+        =
+        ${(item.price * item.qty).toLocaleString()}đ
+    </div>
+
+    <div>
+        <button onclick="window.currentCart.find(x=>x.productId==='${item.productId}').qty++;renderOfflineCart()">+</button>
+
+        <button onclick="
+        const p=window.currentCart.find(x=>x.productId==='${item.productId}');
+        p.qty--;
+        if(p.qty<=0){
+            removeOfflineItem('${item.productId}');
+        }else{
+            renderOfflineCart();
+        }
+        ">-</button>
+
+        <button onclick="removeOfflineItem('${item.productId}')">
+            X
+        </button>
+    </div>
+
+</div>
+`;
 
     }).join("");
 
@@ -307,3 +331,20 @@ if (saveBtn) {
         createOfflineSale
     );
 }
+document.addEventListener("input", e => {
+
+    if(e.target.id !== "customerPaid") return;
+
+    const paid =
+        Number(e.target.value || 0);
+
+    const total =
+        window.currentCart.reduce(
+            (sum,item)=>
+                sum + Number(item.price)*Number(item.qty),
+            0
+        );
+
+    document.getElementById("changeMoney").value =
+        (paid - total).toLocaleString() + "đ";
+});
