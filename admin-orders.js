@@ -112,31 +112,35 @@ auth.onAuthStateChanged(async (user) => {
 
     currentAdmin = user;
 
-   const adminNameEl = document.getElementById("adminName");
+    const adminNameEl =
+        document.getElementById("adminName");
 
-try {
-    // Lấy tên admin từ collection "admins"
-try {
+    try {
 
-    const snap = await firebase.database()
-        .ref("users/" + user.uid)
-        .once("value");
+        const snap = await firebase.database()
+            .ref("users/" + user.uid)
+            .once("value");
 
-    const data = snap.val();
+        const data = snap.val();
 
-    adminNameEl.textContent =
-        data?.displayName ||
-        data?.fullName ||
-        user.email;
+        adminNameEl.textContent =
+            data?.displayName ||
+            data?.fullName ||
+            user.email;
 
-} catch (err) {
+    } catch (err) {
 
-    console.error(err);
+        console.error(err);
 
-    adminNameEl.textContent = user.email;
-}
+        adminNameEl.textContent =
+            user.email;
+
+    }
+
     loadOrders();
+
 });
+
 // ============================
 // FILTER DATE EVENT
 // ============================
