@@ -144,10 +144,14 @@ document.getElementById("offlinePhone").value.trim();
 
         }
 
-        alert("Đã tạo đơn bán offline");
+      alert("Đã tạo đơn bán offline");
 
-        window.currentCart = [];
+window.currentCart = [];
 
+renderOfflineCart();
+
+document.getElementById("offlineSearch").value = "";
+document.getElementById("offlineSearchResults").innerHTML = "";
     } catch (err) {
 
         console.error(err);
@@ -178,8 +182,8 @@ document.addEventListener("input", e => {
     if (e.target.id !== "offlineSearch") return;
 
     const keyword =
-        e.target.value.toLowerCase();
- 
+        e.target.value.toLowerCase().trim();
+
     const result =
         window.offlineProducts.filter(p =>
             (p.name || "")
@@ -187,28 +191,36 @@ document.addEventListener("input", e => {
             .includes(keyword)
         );
 
-    document.getElementById("offlineSearchResults").innerHTML =
-    result.map(p => `
+    const box =
+        document.getElementById("offlineSearchResults");
 
-    <button
-        type="button"
-        onclick="addOfflineItem('${p.id}')"
-        style="
-            width:100%;
-            text-align:left;
-            padding:12px;
-            border:1px solid #ddd;
-            background:#fff;
-            margin-bottom:5px;
-            cursor:pointer;
-        "
-    >
-        ${p.name}
-        - ${Number(p.price || 0).toLocaleString()}đ
-        - Tồn ${p.stock || 0}
-    </button>
+    box.innerHTML = "";
 
-    `).join("");
+    result.forEach(p => {
+
+        const btn =
+            document.createElement("button");
+
+        btn.type = "button";
+
+        btn.style.width = "100%";
+        btn.style.textAlign = "left";
+        btn.style.padding = "12px";
+        btn.style.border = "1px solid #ddd";
+        btn.style.background = "#fff";
+        btn.style.marginBottom = "5px";
+        btn.style.cursor = "pointer";
+
+        btn.innerText =
+            `${p.name} - ${Number(p.price || 0).toLocaleString()}đ - Tồn ${p.stock || 0}`;
+
+        btn.addEventListener("click", () => {
+            window.addOfflineItem(p.id);
+        });
+
+        box.appendChild(btn);
+
+    });
 
 });
 window.addOfflineItem = function(productId){
