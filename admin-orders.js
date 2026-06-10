@@ -125,8 +125,9 @@ console.log("EXISTS:", snap.exists());
 console.log("DATA:", snap.val());
 
         const data = snap.val();
-
+console.log("adminNameEl =", adminNameEl);
 adminNameEl.textContent =
+    data?.display ||
     data?.name ||
     data?.displayName ||
     data?.fullName ||
