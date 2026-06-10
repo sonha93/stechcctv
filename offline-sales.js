@@ -153,7 +153,9 @@ document.getElementById("offlinePhone").value.trim();
 
         }
 
-      alert("Đã tạo đơn bán offline");
+    await loadOfflineSales();
+
+alert("Đã tạo đơn bán offline");
 
 window.currentCart = [];
 
@@ -394,3 +396,44 @@ document.addEventListener("input", e => {
     document.getElementById("changeMoney").value =
         (paid - total).toLocaleString() + "đ";
 });
+async function loadOfflineSales(){
+
+    const snap = await db
+        .collection("orders")
+        .where("offlineSale","==",true)
+        .get();
+
+    const body =
+        document.getElementById("offlineSalesBody");
+
+    if(!body) return;
+
+    body.innerHTML = "";
+
+    snap.docs.forEach(doc => {
+
+        const o = doc.data();
+
+        let dateText = "-";
+
+        try{
+
+            dateText =
+                o.createdAt.toDate()
+                .toLocaleString("vi-VN");
+
+        }catch(err){}
+
+        body.innerHTML += `
+        <tr>
+            <td>${doc.id}</td>
+            <td>${o.customerName || ""}</td>
+            <td>${o.phone || ""}</td>
+            <td>${Number(o.total || 0).toLocaleString()}đ</td>
+            <td>${dateText}</td>
+        </tr>
+        `;
+    });
+
+}
+loadOfflineSales();
