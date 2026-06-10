@@ -23,36 +23,47 @@ document.getElementById("offlinePhone").value.trim();
         total += Number(item.price || 0) * Number(item.qty || 0);
     });
 
-    const orderData = {
+   const orderData = {
 
-        customerName:
-            customerName || "Khách lẻ",
+    customerName:
+        customerName || "Khách lẻ",
 
-        phone:
-            phone || "",
+    phone:
+        phone || "",
 
-        address: "Mua tại cửa hàng",
+    address: "Mua tại cửa hàng",
 
-        source: "offline",
+    source: "offline",
 
-        status: "completed",
+    status: "completed",
 
-        offlineSale: true,
+    offlineSale: true,
 
-     createdAt: new Date(),
-        items: items.map(i => ({
-    productId: String(i.productId),
-    name: String(i.name),
-    price: Number(i.price),
-    qty: Number(i.qty)
-})),
-        total,
+    createdAt: new Date(),
 
-        customerCancelled: false,
+    items: items.map(i => ({
+        productId: String(i.productId),
+        name: String(i.name),
+        price: Number(i.price),
+        qty: Number(i.qty)
+    })),
 
-        adminCancelled: false
-    };
+    total,
 
+    paidAmount:
+        Number(
+            document.getElementById("customerPaid")?.value || 0
+        ),
+
+    changeAmount:
+        Number(
+            document.getElementById("customerPaid")?.value || 0
+        ) - total,
+
+    customerCancelled: false,
+
+    adminCancelled: false
+};
    try {
 
     const orderRef =
