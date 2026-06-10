@@ -774,94 +774,74 @@ tr:hover{
 }
 
 .gear-btn{
-    width:56px;
-    height:56px;
+    width:48px;
+    height:48px;
     border:none;
-    border-radius:16px;
-    background:#fff;
+    border-radius:12px;
+    background:#2196f3;
+    color:#fff;
     cursor:pointer;
-
-    font-size:24px;
-
-    box-shadow:0 4px 15px rgba(0,0,0,.12);
-}
-   .gear-btn:hover{
-    transform:translateY(-2px);
+    font-size:20px;
 }
 
 .setting-menu{
     display:none;
-
     position:absolute;
-    top:70px;
     right:0;
+    top:60px;
 
-    width:320px;
+    width:220px;
 
     background:#fff;
+    border-radius:12px;
 
-    border-radius:20px;
+    box-shadow:0 5px 20px rgba(0,0,0,.15);
 
-    padding:20px;
-
-    box-shadow:
-        0 10px 30px rgba(0,0,0,.12);
+    padding:10px;
 
     z-index:9999;
-   }
+}
+
 .setting-menu.show{
     display:block;
 }
-.admin-name{
-    text-align:center;
-    font-size:20px;
-    font-weight:700;
-    color:#00acc1;
 
-    margin-bottom:20px;
 .setting-menu button{
     width:100%;
-
     border:none;
-
     background:#f5f5f5;
-
-    padding:16px;
-
-    border-radius:14px;
-
-    margin-bottom:12px;
-
+    padding:12px;
+    border-radius:8px;
+    margin-top:8px;
     cursor:pointer;
-
-    font-size:17px;
-    font-weight:600;
-
-    text-align:left;
 }
 
-
-#changePasswordBtn{
-    background:#e8f2ff;
-    color:#2196f3;
+.admin-name{
+    text-align:center;
+    font-weight:700;
+    color:#00acc1;
+    padding:10px;
 }
 
-#logoutBtn{
-    background:#fff0f0;
-    color:#f44336;
-}
 @media(min-width:769px){
 
     .gear-btn{
-        display:block;
-    }
-
-    .setting-menu{
         display:none;
     }
 
-    .setting-menu.show{
-        display:block;
+    .setting-menu{
+        display:flex !important;
+        position:static;
+        box-shadow:none;
+        background:transparent;
+        width:auto;
+        gap:12px;
+        padding:0;
+        align-items:center;
+    }
+
+    .setting-menu button{
+        margin:0;
     }
 }
 
