@@ -51,12 +51,13 @@ document.getElementById("offlinePhone").value.trim();
         adminCancelled: false
     };
 
-    try {
-         
-       const orderRef =
-    await db.collection("orders")
-    .add({
-        customerName: "TEST"
+   try {
+
+    const orderRef =
+        await db.collection("orders")
+        .add(orderData);
+
+    for (const item of items) {
     });
         for (const item of items) {
 
