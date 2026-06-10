@@ -1280,3 +1280,9 @@ if(settingBtn){
     });
 
 }
+const gearBtn = document.getElementById("mobileGearBtn");
+const menu = document.getElementById("mobileMenu");
+
+gearBtn?.addEventListener("click", () => {
+    menu.classList.toggle("show");
+});
