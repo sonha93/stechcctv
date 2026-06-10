@@ -605,18 +605,30 @@ ${
     </span>
   `
   : `
-    <span style="
-      background:#e8f5e9;
-      color:#2e7d32;
-      padding:5px 10px;
-      border-radius:20px;
-      font-size:12px;
-      font-weight:bold;
-      display:inline-block;
+   <div>
+  <span style="
+    background:#e8f5e9;
+    color:#2e7d32;
+    padding:5px 10px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+    display:inline-block;
+  ">
+    ${getStatusText(order.status)}
+  </span>
+
+  ${order.handledBy ? `
+    <div style="
+      margin-top:4px;
+      font-size:11px;
+      color:#666;
+      font-weight:600;
     ">
-   ${getStatusText(order.status)}
-    </span>
-  `
+      ${order.handledBy}
+    </div>
+  ` : ""}
+</div>
 }
 
       </td>
@@ -854,8 +866,10 @@ if(orderData.customerCancelled){
   return;
 }
 const updateData = {
-  status: status
+  status: status,
+  handledBy: document.getElementById("adminName").textContent
 };
+
 
 // nếu chuyển sang cancelled
 // thì khóa luôn
