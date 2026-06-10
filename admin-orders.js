@@ -553,7 +553,13 @@ const lockStatus =
   html += `
     <tr>
 
-      <td>${doc.id}</td>
+     <td>
+  ${doc.id}
+  <br>
+  <small style="color:#666;">
+    ${formatDate(order.createdAt)}
+  </small>
+</td>
 
       <td>
         ${order.customerName || "-"}<br>
@@ -634,7 +640,7 @@ ${
       </td>
 
       <td>
-        ${formatDate(order.createdAt)}
+         ${order.handledBy || "-"}
       </td>
 
       <td>
