@@ -117,18 +117,17 @@ auth.onAuthStateChanged(async (user) => {
 
     try {
 
-        const snap = await firebase.database()
-            .ref(user.uid)
-            .once("value");
+       const snap = await firebase.database()
+    .ref("users/" + user.uid)
+    .once("value");
 
-        const data = snap.val();
+const data = snap.val();
 
 adminNameEl.textContent =
     data?.name ||
     data?.displayName ||
     data?.fullName ||
     user.email;
-
     } catch (err) {
 
         console.error(err);
