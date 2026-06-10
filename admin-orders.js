@@ -116,7 +116,7 @@ auth.onAuthStateChanged(async (user) => {
 
 try {
     // Lấy tên admin từ collection "admins"
-  try {
+try {
 
     const snap = await firebase.database()
         .ref("users/" + user.uid)
@@ -131,10 +131,9 @@ try {
 
 } catch (err) {
 
-    console.error("Lỗi lấy tên admin:", err);
+    console.error(err);
 
     adminNameEl.textContent = user.email;
-
 }
     loadOrders();
 });
