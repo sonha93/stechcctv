@@ -162,7 +162,12 @@ const accountNo = "101005245058"; // STK của mày
 const qrUrl =
 `https://img.vietqr.io/image/${bankCode}-${accountNo}-compact2.png?amount=${total}&addInfo=${orderRef.id}`;
 
-document.getElementById("vietqrImage").src = qrUrl;
+const qrImg =
+document.getElementById("vietqrImage");
+
+if(qrImg){
+    qrImg.src = qrUrl;
+}
 document.getElementById("qrBox").style.display = "block";
 
 alert("Đã tạo đơn bán offline");
