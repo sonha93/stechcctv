@@ -286,8 +286,10 @@ tr:hover{
         150px
         140px
         140px;
+    gap:16px;
+    align-items:center;
+    width:100%;
 }
-
     gap:16px;
     align-items:center;
     width:100%;
@@ -1553,14 +1555,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
       🛒 Offline Sales
     </h2>
 <div style="margin-bottom:15px;">
-<div class="offline-layout">
-    <input
-        type="text"
-        id="offlineSearch"
-        placeholder="Tìm sản phẩm..."
-        style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;"
-    >
-
     <div id="offlineSearchResults"
          style="margin-top:10px;">
     </div>
@@ -1723,49 +1717,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 <script type="module" src="inventory-manager.js"></script>
 <script type="module" src="history.js"></script>
 <script type="module" src="offline-sales.js"></script>
-<div id="paymentModal" class="payment-modal">
-
-    <div class="payment-content">
-
-        <h2>Chọn phương thức thanh toán</h2>
-
-        <button id="cashBtn">
-            💵 Tiền mặt
-        </button>
-
-        <button id="bankBtn">
-            🏦 Chuyển khoản
-        </button>
-
-        <div
-            id="bankArea"
-            style="display:none;margin-top:20px;"
-        >
-
-            <img
-                id="paymentQr"
-                style="
-                    width:280px;
-                    display:block;
-                    margin:auto;
-                "
-            >
-
-            <button
-                id="confirmTransferBtn"
-                style="
-                    width:100%;
-                    margin-top:15px;
-                "
-            >
-                Đã nhận tiền
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
 </body>
 <div id="paymentModal" style="
 display:none;
