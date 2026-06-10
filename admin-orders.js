@@ -1,4 +1,3 @@
-
 import { auth, db } from "./firebase-init.js";
 let allSnapshotOrders = [];
 let allOrders = [];
@@ -119,7 +118,7 @@ auth.onAuthStateChanged(async (user) => {
     try {
 
         const snap = await firebase.database()
-          .ref(user.uid)
+            .ref("users/" + user.uid)
             .once("value");
 
         const data = snap.val();
