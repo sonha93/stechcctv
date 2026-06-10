@@ -116,18 +116,25 @@ auth.onAuthStateChanged(async (user) => {
 
 try {
     // Lấy tên admin từ collection "admins"
-    const adminDoc = await db.collection("admins").doc(user.uid).get();
+  try {
 
-    if (adminDoc.exists) {
-        // trường displayName trong document
-        adminNameEl.textContent = adminDoc.data().displayName || user.email;
-    } else {
-        // fallback nếu chưa tạo document
-        adminNameEl.textContent = user.email;
-    }
+    const snap = await firebase.database()
+        .ref("users/" + user.uid)
+        .once("value");
+
+    const data = snap.val();
+
+    adminNameEl.textContent =
+        data?.displayName ||
+        data?.fullName ||
+        user.email;
+
 } catch (err) {
+
     console.error("Lỗi lấy tên admin:", err);
+
     adminNameEl.textContent = user.email;
+
 }
     loadOrders();
 });
