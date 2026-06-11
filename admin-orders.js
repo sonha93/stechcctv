@@ -1280,3 +1280,9 @@ if(settingBtn){
     });
 
 }
+const closeModalBtn = document.getElementById('closePasswordModalBtn');
+const modal = document.getElementById('changePasswordModal');
+
+closeModalBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+});
