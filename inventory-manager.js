@@ -580,7 +580,10 @@ function bindInventoryEvents(){
         }
 
         btn.dataset.bound = "true";
-
+        if(!canManageStock){
+    alert("Bạn không có quyền nhập kho");
+    return;
+}
         btn.addEventListener("click", async () => {
 
             try{
@@ -1662,6 +1665,10 @@ for (const doc of productSnap.docs) {
             console.log(err);
         }
     });
+if(!canManageStock){
+    alert("Bạn không có quyền điều chỉnh tồn kho");
+    return;
+}
 manualPlusBtn.addEventListener("click", async () => {
 
     try {
@@ -1759,6 +1766,10 @@ manualPlusBtn.addEventListener("click", async () => {
 
 });
     // TRỪ STOCK KHI BẤM NÚT
+    if(!canManageStock){
+    alert("Bạn không có quyền điều chỉnh tồn kho");
+    return;
+}
     manualMinusBtn.addEventListener("click", async () => {
 
         try {
