@@ -702,7 +702,8 @@ if(qtyImport > 0){
     reason:"Nhập kho",
 
     importPrice: importPrice,
-
+    staffName:
+        document.getElementById("adminName")?.textContent || "",
     createdAt:
         firebase.firestore
         .FieldValue
