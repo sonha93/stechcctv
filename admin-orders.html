@@ -945,7 +945,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     </button>
 
     <div id="settingMenu" class="setting-menu">
- <button id="closeMenuBtn" class="close-btn">×</button> 
         <div class="admin-name">
             <span id="adminName">Admin</span>
         </div>
@@ -1753,7 +1752,7 @@ placeholder="Tiền thối">
 <script type="module" src="inventory-manager.js"></script>
 <script type="module" src="history.js"></script>
 <script type="module" src="offline-sales.js"></script>
-   <div id="changePasswordModal" style="
+  <div id="changePasswordModal" style="
 display:none;
 position:fixed;
 inset:0;
@@ -1761,44 +1760,63 @@ background:rgba(0,0,0,.6);
 z-index:99999;
 ">
 
-<div style="
-background:#fff;
-width:400px;
-max-width:95%;
-margin:80px auto;
-padding:20px;
-border-radius:12px;
-">
+    <div style="
+    background:#fff;
+    width:400px;
+    max-width:95%;
+    margin:80px auto;
+    padding:20px;
+    border-radius:12px;
+    position:relative; /* để nút X tuyệt đối trong modal */
+    ">
 
-<h3>Đổi mật khẩu</h3>
+        <!-- Nút X -->
+        <button id="closePasswordModalBtn" style="
+            position:absolute;
+            top:10px;
+            right:10px;
+            width:28px;
+            height:28px;
+            border:none;
+            border-radius:50%;
+            background:#eee;
+            font-size:18px;
+            font-weight:bold;
+            color:#333;
+            cursor:pointer;
+            line-height:28px;
+            text-align:center;
+            padding:0;
+        ">×</button>
 
-<input
-id="newPassword"
-type="password"
-placeholder="Mật khẩu mới"
-style="
-width:100%;
-padding:12px;
-margin:15px 0;
-border:1px solid #ddd;
-border-radius:8px;
-">
+        <h3>Đổi mật khẩu</h3>
 
-<button
-id="savePasswordBtn"
-style="
-width:100%;
-padding:12px;
-background:#2196f3;
-color:#fff;
-border:none;
-border-radius:8px;
-cursor:pointer;
-">
-Lưu mật khẩu
-</button>
+        <input
+        id="newPassword"
+        type="password"
+        placeholder="Mật khẩu mới"
+        style="
+        width:100%;
+        padding:12px;
+        margin:15px 0;
+        border:1px solid #ddd;
+        border-radius:8px;
+        ">
 
-</div>
+        <button
+        id="savePasswordBtn"
+        style="
+        width:100%;
+        padding:12px;
+        background:#2196f3;
+        color:#fff;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+        ">
+        Lưu mật khẩu
+        </button>
+    </div>
 </div>
 </body>
 <div id="paymentModal" style="
