@@ -1,8 +1,8 @@
 // ============================
 // PROFILE PAGE
 // ============================
-
-function loadProfilePage() {
+import { auth, db } from "./firebase-init.js";
+export function loadProfilePage() {
 
   document.getElementById("profileSection").innerHTML  = `
 
