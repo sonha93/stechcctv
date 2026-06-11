@@ -220,20 +220,21 @@ async function loadInventory(){
 
                     <td>
 
-                        <button
-                            class="saveImportBtn"
-                            data-id="${doc.id}"
-                            style="
-                                padding:8px 12px;
-                                border:none;
-                                border-radius:8px;
-                                background:#00acc1;
-                                color:white;
-                                cursor:pointer;
-                            "
-                        >
-                            Lưu
-                        </button>
+                       <button
+    class="saveImportBtn"
+    data-id="${doc.id}"
+    ${!canManageStock ? "disabled" : ""}
+    style="
+        padding:8px 12px;
+        border:none;
+        border-radius:8px;
+        background:${canManageStock ? "#00acc1" : "#999"};
+        color:white;
+        cursor:${canManageStock ? "pointer" : "not-allowed"};
+    "
+>
+    Lưu
+</button>
 
                     </td>
 
@@ -580,7 +581,10 @@ function bindInventoryEvents(){
         }
 
         btn.dataset.bound = "true";
-
+        if (!canManageStock) {
+    alert("Bạn không có quyền nhập kho");
+    return;
+}  
         btn.addEventListener("click", async () => {
 
             try{
@@ -1662,6 +1666,10 @@ for (const doc of productSnap.docs) {
             console.log(err);
         }
     });
+if (!canManageStock) {
+    alert("Bạn không có quyền cộng tồn kho");
+    return;
+}
 manualPlusBtn.addEventListener("click", async () => {
 
     try {
@@ -1759,6 +1767,11 @@ manualPlusBtn.addEventListener("click", async () => {
 
 });
     // TRỪ STOCK KHI BẤM NÚT
+
+    if (!canManageStock) {
+    alert("Bạn không có quyền trừ tồn kho");
+    return;
+}
     manualMinusBtn.addEventListener("click", async () => {
 
         try {
