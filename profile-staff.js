@@ -4,7 +4,7 @@
 
 function loadProfilePage() {
 
-    document.getElementById("mainContent").innerHTML = `
+  document.getElementById("profileSection").innerHTML  = `
 
     <div class="profile-page">
 
