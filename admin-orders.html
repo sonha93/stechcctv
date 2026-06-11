@@ -866,55 +866,26 @@ tr:hover{
 @media(min-width:769px){
 
     .gear-btn{
-        display:none;
+        display:block;
     }
 
     .setting-menu{
-        display:flex !important;
-        position:static;
-        box-shadow:none;
-        background:transparent;
-        width:auto;
-        gap:12px;
-        padding:0;
-        align-items:center;
+        display:none;
+        position:absolute;
+        top:55px;
+        right:0;
+        width:220px;
+        background:#fff;
+        border-radius:12px;
+        box-shadow:0 5px 20px rgba(0,0,0,.15);
+        padding:10px;
+        z-index:9999;
     }
 
-    .setting-menu button{
-        margin:0;
+    .setting-menu.show{
+        display:block;
     }
-   .setting-menu{
-    position:absolute;
-    top:55px;
-    right:0;
-    width:220px;
-    background:#fff;
-    border-radius:12px;
-    box-shadow:0 5px 20px rgba(0,0,0,.15);
-    padding:10px;
-    z-index:9999;
-    display:none;
 }
-
-.close-btn{
-    position:absolute;
-    top:8px;
-    right:8px;
-    width:24px;
-    height:24px;
-    border:none;
-    border-radius:50%;
-    background:#eee;
-    color:#333;
-    font-weight:bold;
-    font-size:16px;
-    cursor:pointer;
-    line-height:24px;
-    text-align:center;
-    padding:0;
-}
-}
-
 </style>
 <link
 rel="preconnect"
