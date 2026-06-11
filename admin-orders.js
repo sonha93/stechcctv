@@ -1282,35 +1282,6 @@ document.getElementById("settingBtn");
 
 const settingMenu =
 document.getElementById("settingMenu");
-const profileBtn =
-document.getElementById("profileBtn");
-
-if(profileBtn){
-
-    profileBtn.addEventListener("click", () => {
-
-        // đóng menu răng cưa
-        settingMenu?.classList.remove("show");
-
-        // ẩn tất cả section
-        document.getElementById("ordersSection").style.display = "none";
-        document.getElementById("inventorySection").style.display = "none";
-        document.getElementById("importSection").style.display = "none";
-        document.getElementById("movementsSection").style.display = "none";
-        document.getElementById("historySection").style.display = "none";
-        document.getElementById("lossSection").style.display = "none";
-        document.getElementById("logsSection").style.display = "none";
-        document.getElementById("salesSection").style.display = "none";
-        document.getElementById("offlineSalesSection").style.display = "none";
-
-        // hiện profile
-        document.getElementById("profileSection").style.display = "block";
-
-        loadProfilePage();
-
-    });
-
-}
 if(settingBtn){
 
     settingBtn.addEventListener("click",()=>{
