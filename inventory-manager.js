@@ -171,19 +171,25 @@ async function loadInventory(){
 </td>
 
 <td>
-    <input
-        type="number"
-        class="add-stock-input"
-        min="0"
-        value="0"
-        style="
-            width:80px;
-            padding:6px;
-            border:1px solid #ddd;
-            border-radius:6px;
-            text-align:center;
-        "
-    >
+    ${
+        canManageStock
+        ? `
+        <input
+            type="number"
+            class="add-stock-input"
+            min="0"
+            value="0"
+            style="
+                width:80px;
+                padding:6px;
+                border:1px solid #ddd;
+                border-radius:6px;
+                text-align:center;
+            "
+        >
+        `
+        : "-"
+    }
 </td>
 
 <td>
@@ -231,24 +237,30 @@ async function loadInventory(){
 
                     </td>
 
-                    <td>
+                  <td>
 
-                        <button
-                            class="saveImportBtn"
-                            data-id="${doc.id}"
-                            style="
-                                padding:8px 12px;
-                                border:none;
-                                border-radius:8px;
-                                background:#00acc1;
-                                color:white;
-                                cursor:pointer;
-                            "
-                        >
-                            Lưu
-                        </button>
+    ${
+        canManageStock
+        ? `
+        <button
+            class="saveImportBtn"
+            data-id="${doc.id}"
+            style="
+                padding:8px 12px;
+                border:none;
+                border-radius:8px;
+                background:#00acc1;
+                color:white;
+                cursor:pointer;
+            "
+        >
+            Lưu
+        </button>
+        `
+        : "-"
+    }
 
-                    </td>
+</td>
 
                 </tr>
             `);
