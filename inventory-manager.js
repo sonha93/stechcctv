@@ -3,7 +3,21 @@
 // ============================
 // INVENTORY MANAGER V8
 // ============================
+let canManageStock = false;
 
+firebase.auth().onAuthStateChanged(async (user) => {
+
+    if (!user) return;
+
+    const snap = await firebase
+        .database()
+        .ref(user.uid + "/permissions/manageStock")
+        .once("value");
+
+    canManageStock = snap.val() === true;
+
+    loadInventory();
+});
 const importDateFilter = document.getElementById("importDateFilter");
 const movementsDateFilter = document.getElementById("movementsDateFilter");
 const inventoryBody = document.getElementById("inventoryBody");
