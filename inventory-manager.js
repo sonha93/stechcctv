@@ -1682,6 +1682,18 @@ for (const doc of productSnap.docs) {
 manualPlusBtn.addEventListener("click", async () => {
 
     try {
+
+        const user = firebase.auth().currentUser;
+
+        const permissionSnap =
+        await firebase.database()
+        .ref(user.uid + "/permissions/manageStock")
+        .once("value");
+
+        if(permissionSnap.val() !== true){
+            alert("Bạn không có quyền quản lý kho");
+            return;
+        }
         const keyword = manualMinusSearch.value.trim().toLowerCase();
         const qty = Number(manualMinusQty.value);
         const reasonValue = manualMinusReason.value.trim();
