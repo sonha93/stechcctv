@@ -1763,9 +1763,8 @@ for (const doc of productSnap.docs) {
         qty: qty,
         reason: reasonValue,
 
-        staffName:
-            firebase.auth().currentUser.displayName ||
-            firebase.auth().currentUser.email,
+       staffName:
+    document.getElementById("adminName")?.textContent || "-",
 
         createdAt:
             firebase.firestore.FieldValue.serverTimestamp()
@@ -1867,9 +1866,8 @@ snap.forEach(doc => {
 
     reason: reasonValue,
 
-    staffName:
-        firebase.auth().currentUser.displayName ||
-        firebase.auth().currentUser.email,
+   staffName:
+    document.getElementById("adminName")?.textContent || "-",
 
     createdAt:
         firebase.firestore.FieldValue.serverTimestamp()
