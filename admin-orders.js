@@ -57,7 +57,7 @@ function getStatusText(status){
       return "Đã hủy";
 
     default:
-      return "-";
+      return "";
   }
 }
 // ============================
