@@ -1,20 +1,9 @@
 
+
 // ============================
 // INVENTORY MANAGER V8
 // ============================
-let canManageStock = false;
 
-firebase.auth().onAuthStateChanged(async (user) => {
-
-    if (!user) return;
-
-    const snap = await firebase
-        .database()
-        .ref(user.uid + "/permissions/manageStock")
-        .once("value");
-
-    canManageStock = snap.val() === true;
-});
 const importDateFilter = document.getElementById("importDateFilter");
 const movementsDateFilter = document.getElementById("movementsDateFilter");
 const inventoryBody = document.getElementById("inventoryBody");
@@ -231,21 +220,20 @@ async function loadInventory(){
 
                     <td>
 
-                       <button
-    class="saveImportBtn"
-    data-id="${doc.id}"
-    ${!canManageStock ? "disabled" : ""}
-    style="
-        padding:8px 12px;
-        border:none;
-        border-radius:8px;
-        background:${canManageStock ? "#00acc1" : "#999"};
-        color:white;
-        cursor:${canManageStock ? "pointer" : "not-allowed"};
-    "
->
-    Lưu
-</button>
+                        <button
+                            class="saveImportBtn"
+                            data-id="${doc.id}"
+                            style="
+                                padding:8px 12px;
+                                border:none;
+                                border-radius:8px;
+                                background:#00acc1;
+                                color:white;
+                                cursor:pointer;
+                            "
+                        >
+                            Lưu
+                        </button>
 
                     </td>
 
@@ -592,10 +580,7 @@ function bindInventoryEvents(){
         }
 
         btn.dataset.bound = "true";
-        if (!canManageStock) {
-    alert("Bạn không có quyền nhập kho");
-    return;
-}  
+
         btn.addEventListener("click", async () => {
 
             try{
@@ -1677,7 +1662,6 @@ for (const doc of productSnap.docs) {
             console.log(err);
         }
     });
-
 manualPlusBtn.addEventListener("click", async () => {
 
     try {
@@ -1774,15 +1758,8 @@ manualPlusBtn.addEventListener("click", async () => {
     }
 
 });
-
     // TRỪ STOCK KHI BẤM NÚT
-
-   manualMinusBtn.addEventListener("click", async () => {
-
-        if (!canManageStock) {
-            alert("Bạn không có quyền trừ tồn kho");
-            return;
-        }
+    manualMinusBtn.addEventListener("click", async () => {
 
         try {
             const keyword = manualMinusSearch.value.trim().toLowerCase();
