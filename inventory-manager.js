@@ -1,16 +1,3 @@
-let canManageStock = false;
-
-firebase.auth().onAuthStateChanged(async (user) => {
-
-    if (!user) return;
-
-    const snap = await firebase
-        .database()
-        .ref(user.uid + "/permissions/manageStock")
-        .once("value");
-
-    canManageStock = snap.val() === true;
-});
 
 // ============================
 // INVENTORY MANAGER V8
