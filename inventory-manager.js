@@ -1777,13 +1777,15 @@ manualPlusBtn.addEventListener("click", async () => {
     }
 
 });
+
     // TRỪ STOCK KHI BẤM NÚT
 
-    if (!canManageStock) {
-    alert("Bạn không có quyền trừ tồn kho");
-    return;
-}
-    manualMinusBtn.addEventListener("click", async () => {
+   manualMinusBtn.addEventListener("click", async () => {
+
+        if (!canManageStock) {
+            alert("Bạn không có quyền trừ tồn kho");
+            return;
+        }
 
         try {
             const keyword = manualMinusSearch.value.trim().toLowerCase();
