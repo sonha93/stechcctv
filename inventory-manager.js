@@ -15,8 +15,6 @@ firebase.auth().onAuthStateChanged(async (user) => {
         .once("value");
 
     canManageStock = snap.val() === true;
-
-    loadInventory();
 });
 const importDateFilter = document.getElementById("importDateFilter");
 const movementsDateFilter = document.getElementById("movementsDateFilter");
