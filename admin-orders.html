@@ -571,28 +571,41 @@ tr:hover{
     color:#fff;
     z-index:6;
 }
-   @media (min-width: 769px) {
+  @media(min-width:769px){
 
-  .admin-tools{
-      position: relative;
-      display:flex;
-      justify-content:flex-end;
-      align-items:center;
-  }
+    .gear-btn{
+        display:none;
+    }
 
-  .user-menu{
-      position:absolute;
-      top:60px;
-      right:0;
-      width:280px;
-      z-index:9999;
-  }
+    .admin-tools{
+        display:flex;
+        justify-content:flex-end;
+        align-items:center;
+    }
 
-  .user-menu .user-name{
-      text-align:center;
-  
-  }
-   }
+    .setting-menu{
+        display:flex !important;
+        position:static;
+        flex-direction:column;
+        align-items:flex-end;
+        gap:6px;
+        background:transparent;
+        box-shadow:none;
+        width:auto;
+        padding:0;
+    }
+
+    .admin-name{
+        padding:0;
+        text-align:right;
+    }
+
+    .setting-menu button{
+        margin:0;
+        width:auto;
+        padding:8px 12px;
+    }
+}
 /* =========================
    MOBILE
 ========================= */
