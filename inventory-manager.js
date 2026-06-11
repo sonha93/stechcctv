@@ -1680,14 +1680,6 @@ for (const doc of productSnap.docs) {
         const keyword = manualMinusSearch.value.trim().toLowerCase();
         const qty = Number(manualMinusQty.value);
         const reasonValue = manualMinusReason.value.trim();
-manualPlusBtn.addEventListener("click", async () => {
-
-    try {
-
-        const keyword = manualMinusSearch.value.trim().toLowerCase();
-        const qty = Number(manualMinusQty.value);
-        const reasonValue = manualMinusReason.value.trim();
-
         if (!keyword) {
             alert("Nhập tên sản phẩm");
             return;
