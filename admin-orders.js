@@ -570,7 +570,7 @@ const lockStatus =
       </td>
 
       <td>
-        ${order.address || "-"}
+        ${order.address || ""}
       </td>
 
       <td>
