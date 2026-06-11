@@ -14,7 +14,20 @@ const db = firebase.firestore();
 const importBody = document.getElementById("importBody");
 const movementsBody = document.getElementById("movementsBody");
 const inventorySearch = document.getElementById("inventorySearch");
+let canManageStock = false;
 
+firebase.auth().onAuthStateChanged(async (user) => {
+
+    if (!user) return;
+
+    const snap = await firebase
+        .database()
+        .ref(user.uid + "/permissions/manageStock")
+        .once("value");
+
+    canManageStock = snap.val() === true;
+
+});
 // ============================
 // FORMAT PRICE
 // ============================
