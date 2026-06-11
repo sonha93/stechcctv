@@ -1280,9 +1280,3 @@ if(settingBtn){
     });
 
 }
-const closeMenuBtn = document.getElementById('closeMenuBtn');
-const settingMenu = document.getElementById('settingMenu');
-
-closeMenuBtn.addEventListener('click', () => {
-    settingMenu.classList.remove('show');
-});
