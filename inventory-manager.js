@@ -593,10 +593,7 @@ function bindInventoryEvents(){
         }
 
         btn.dataset.bound = "true";
-        if(!canManageStock){
-    alert("Bạn không có quyền nhập kho");
-    return;
-}
+       
         btn.addEventListener("click", async () => {
         if(!canManageStock){
     alert("Bạn không có quyền nhập kho");
@@ -1781,7 +1778,7 @@ for (const doc of productSnap.docs) {
     }
 
 });
-    
+    // TRỪ STOCK KHI BẤM NÚT
     manualMinusBtn.addEventListener("click", async () => {
     if(!canManageStock){
     alert("Bạn không có quyền điều chỉnh tồn kho");
