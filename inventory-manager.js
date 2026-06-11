@@ -593,10 +593,6 @@ function bindInventoryEvents(){
         }
 
         btn.dataset.bound = "true";
-        if(!canManageStock){
-    alert("Bạn không có quyền quản lý kho");
-    return;
-}
        btn.addEventListener("click", async () => {
 
     if(!canManageStock){
@@ -1684,11 +1680,6 @@ for (const doc of productSnap.docs) {
         }
     });
 manualPlusBtn.addEventListener("click", async () => {
-
-    if(!canManageStock){
-        alert("Bạn không có quyền quản lý kho");
-        return;
-    }
 
     try {
         const keyword = manualMinusSearch.value.trim().toLowerCase();
