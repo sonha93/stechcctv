@@ -3,20 +3,7 @@
 // ============================
 // INVENTORY MANAGER V8
 // ============================
-let canManageStock = false;
 
-firebase.auth().onAuthStateChanged(async (user) => {
-
-    if(!user) return;
-
-    const snap = await firebase
-        .database()
-        .ref(user.uid + "/permissions/manageStock")
-        .once("value");
-
-    canManageStock = snap.val() === true;
-
-});
 const importDateFilter = document.getElementById("importDateFilter");
 const movementsDateFilter = document.getElementById("movementsDateFilter");
 const inventoryBody = document.getElementById("inventoryBody");
@@ -593,14 +580,10 @@ function bindInventoryEvents(){
         }
 
         btn.dataset.bound = "true";
-       btn.addEventListener("click", async () => {
 
-    if(!canManageStock){
-        alert("Bạn không có quyền quản lý kho");
-        return;
-    }
+        btn.addEventListener("click", async () => {
 
-    try{
+            try{
 
                 const id = btn.dataset.id;
 
@@ -1683,17 +1666,6 @@ manualPlusBtn.addEventListener("click", async () => {
 
     try {
 
-        const user = firebase.auth().currentUser;
-
-        const permissionSnap =
-        await firebase.database()
-        .ref(user.uid + "/permissions/manageStock")
-        .once("value");
-
-        if(permissionSnap.val() !== true){
-            alert("Bạn không có quyền quản lý kho");
-            return;
-        }
         const keyword = manualMinusSearch.value.trim().toLowerCase();
         const qty = Number(manualMinusQty.value);
         const reasonValue = manualMinusReason.value.trim();
@@ -1787,14 +1759,9 @@ manualPlusBtn.addEventListener("click", async () => {
 
 });
     // TRỪ STOCK KHI BẤM NÚT
-   manualMinusBtn.addEventListener("click", async () => {
+    manualMinusBtn.addEventListener("click", async () => {
 
-    if(!canManageStock){
-        alert("Bạn không có quyền quản lý kho");
-        return;
-    }
-
-    try {
+        try {
             const keyword = manualMinusSearch.value.trim().toLowerCase();
 const qty = Number(manualMinusQty.value);
 const reasonValue = manualMinusReason.value.trim();
