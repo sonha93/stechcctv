@@ -125,6 +125,9 @@ auth.onAuthStateChanged(async (user) => {
         const data = snap.val();
         currentPermissions =
   data?.permissions || {};
+      if (
+  currentPermissions.confirmOrders === false
+){
       console.log("UID:", user.uid);
 console.log("PERMISSIONS:", currentPermissions);
 adminNameEl.textContent =
