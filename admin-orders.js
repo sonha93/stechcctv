@@ -1034,7 +1034,7 @@ if(!productDoc.exists){
         reason: `Đơn hàng ${id}`,
 
         stockAfter: newStock,
-
+        staffName: document.getElementById("adminName")?.textContent || "",
         createdAt:
           firebase.firestore
           .FieldValue
