@@ -168,7 +168,7 @@ async function loadInventory(){
                     </td>
 
                     <td>
-                        ${oldPrice ? formatVND(oldPrice) : "---"}
+                        ${oldPrice ? formatVND(oldPrice) : ""}
                     </td>
 
                   <td>
@@ -449,7 +449,8 @@ if(inventoryFooter){
             </td>
 
             <td>
-                ---
+
+                
             </td>
 
             <td></td>
@@ -950,7 +951,7 @@ async function loadStockMovements(){
 <tr>
     <td>${productName}</td>
 
-    <td>${data.type || "---"}</td>
+    <td>${data.type || ""}</td>
 
     <td style="color:${data.qty < 0 ? "red" : "#00c853"};">
         ${data.qty > 0 ? "+" + data.qty : data.qty}
@@ -1355,7 +1356,7 @@ Object.entries(productMap).forEach(([id,p])=>{
             </td>
 
             <td>
-                ---
+                
             </td>
 
             <td>
