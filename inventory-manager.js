@@ -1775,16 +1775,6 @@ manualPlusBtn.addEventListener("click", async () => {
 
 });
     // TRỪ STOCK KHI BẤM NÚT
-    const permSnap = await firebase.database()
-  .ref("/" + currentAdmin.uid + "/permissions")
-  .once("value");
-
-const permissions = permSnap.val();
-
-if (permissions?.manageStock !== true) {
-    alert("Bạn không có quyền chỉnh tồn kho");
-    return;
-}
     manualMinusBtn.addEventListener("click", async () => {
 
         try {
