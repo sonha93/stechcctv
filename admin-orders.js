@@ -1032,9 +1032,8 @@ if(!productDoc.exists){
         qty: -qty,
 
         reason: `Đơn hàng ${id}`,
-
+         staffName: document.getElementById("adminName")?.textContent || "",
         stockAfter: newStock,
-        staffName: document.getElementById("adminName")?.textContent || "",
         createdAt:
           firebase.firestore
           .FieldValue
