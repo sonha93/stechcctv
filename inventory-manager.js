@@ -929,8 +929,6 @@ async function loadStockMovements(){
 
 }
             }catch{}
-html += `
-    <tr>
        html += `
 <tr>
     <td>${productName}</td>
