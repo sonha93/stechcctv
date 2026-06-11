@@ -125,6 +125,8 @@ auth.onAuthStateChanged(async (user) => {
         const data = snap.val();
         currentPermissions =
   data?.permissions || {};
+      console.log("UID:", user.uid);
+console.log("PERMISSIONS:", currentPermissions);
 adminNameEl.textContent =
     data?.display ||
     data?.name ||
