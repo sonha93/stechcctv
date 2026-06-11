@@ -1768,11 +1768,7 @@ for (const doc of productSnap.docs) {
     }
 
 });
-    // TRỪ STOCK KHI BẤM NÚT
-    if(!canManageStock){
-    alert("Bạn không có quyền điều chỉnh tồn kho");
-    return;
-}
+    
     manualMinusBtn.addEventListener("click", async () => {
     if(!canManageStock){
     alert("Bạn không có quyền điều chỉnh tồn kho");
