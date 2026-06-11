@@ -1680,10 +1680,7 @@ for (const doc of productSnap.docs) {
             console.log(err);
         }
     });
-if (!canManageStock) {
-    alert("Bạn không có quyền cộng tồn kho");
-    return;
-}
+
 manualPlusBtn.addEventListener("click", async () => {
 
     try {
