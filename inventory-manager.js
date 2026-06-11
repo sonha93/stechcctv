@@ -700,10 +700,9 @@ if(qtyImport > 0){
     qty:qtyImport,
     remainQty:qtyImport,
     reason:"Nhập kho",
-
-    importPrice: importPrice,
-    staffName:
+     staffName:
         document.getElementById("adminName")?.textContent || "",
+    importPrice: importPrice,
     createdAt:
         firebase.firestore
         .FieldValue
