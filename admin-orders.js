@@ -123,13 +123,10 @@ auth.onAuthStateChanged(async (user) => {
     .once("value");
 
         const data = snap.val();
-        currentPermissions =
-  data?.permissions || {};
+        
       if (
   currentPermissions.confirmOrders === false
 ){
-      console.log("UID:", user.uid);
-console.log("PERMISSIONS:", currentPermissions);
 adminNameEl.textContent =
     data?.display ||
     data?.name ||
