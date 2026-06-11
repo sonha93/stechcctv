@@ -1298,3 +1298,29 @@ const modal = document.getElementById('changePasswordModal');
 closeModalBtn.addEventListener('click', () => {
     modal.style.display = 'none';
 });
+const profileBtn =
+document.getElementById("profileBtn");
+
+if(profileBtn){
+
+    profileBtn.addEventListener("click",()=>{
+
+        document.getElementById("ordersSection").style.display = "none";
+        document.getElementById("inventorySection").style.display = "none";
+        document.getElementById("importSection").style.display = "none";
+        document.getElementById("movementsSection").style.display = "none";
+        document.getElementById("historySection").style.display = "none";
+        document.getElementById("lossSection").style.display = "none";
+        document.getElementById("logsSection").style.display = "none";
+        document.getElementById("salesSection").style.display = "none";
+        document.getElementById("offlineSalesSection").style.display = "none";
+
+        document.getElementById("profileSection").style.display = "block";
+
+        loadProfilePage();
+
+        settingMenu.classList.remove("show");
+
+    });
+
+}
