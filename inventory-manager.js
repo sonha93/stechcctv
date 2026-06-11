@@ -932,6 +932,7 @@ async function loadStockMovements(){
        html += `
 <tr>
     <td>${productName}</td>
+
     <td>${data.type || "---"}</td>
 
     <td style="color:${data.qty < 0 ? "red" : "#00c853"};">
@@ -949,6 +950,7 @@ async function loadStockMovements(){
             : "-"
         }
     </td>
+
 </tr>
 `;
         }
