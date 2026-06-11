@@ -1228,7 +1228,8 @@ document
 
         document.getElementById("salesSection").style.display =
             value === "sales" ? "block" : "none";
-
+        document.getElementById("profileSection").style.display =
+    value === "profile" ? "block" : "none";
         // OFFLINE SALES
         const offlineSection =
             document.getElementById("offlineSalesSection");
@@ -1236,6 +1237,9 @@ document
        if (offlineSection) {
     offlineSection.style.display =
         value === "offlineSales" ? "block" : "none";
+}
+      if (value === "profile") {
+    loadProfilePage();
 }
     });
 
