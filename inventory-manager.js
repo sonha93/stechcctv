@@ -624,7 +624,16 @@ if(
                 const newStock = currentStock + qtyImport;
 
                 const totalImport = qtyImport * importPrice;
+            const snap = await firebase.database()
+  .ref("/" + currentAdmin.uid + "/permissions")
+  .once("value");
 
+const permissions = snap.val();
+
+if (permissions?.manageStock !== true) {
+  alert("Bạn không có quyền chỉnh tồn kho");
+  return;
+}
               await productRef.update({
 
     stock:newStock,
