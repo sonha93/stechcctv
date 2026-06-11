@@ -931,20 +931,27 @@ async function loadStockMovements(){
             }catch{}
 html += `
     <tr>
-        <td>${productName}</td>
-        <td>${data.type || "---"}</td>       
-        <td style="color:${data.qty < 0 ? "red" : "#00c853"};">
-            ${data.qty > 0 ? "+" + data.qty : data.qty}
-        </td>                                 
-       <td>${data.reason || "Đơn hàng 0đ"}</td>    
-        <td>
-            ${
-                data.createdAt && typeof data.createdAt.toDate === "function"
-                ? data.createdAt.toDate().toLocaleString("vi-VN")
-                : "-"
-            }
-        </td>
-    </tr>
+       html += `
+<tr>
+    <td>${productName}</td>
+    <td>${data.type || "---"}</td>
+
+    <td style="color:${data.qty < 0 ? "red" : "#00c853"};">
+        ${data.qty > 0 ? "+" + data.qty : data.qty}
+    </td>
+
+    <td>${data.reason || "Đơn hàng 0đ"}</td>
+
+    <td>${data.staffName || "-"}</td>
+
+    <td>
+        ${
+            data.createdAt && typeof data.createdAt.toDate === "function"
+            ? data.createdAt.toDate().toLocaleString("vi-VN")
+            : "-"
+        }
+    </td>
+</tr>
 `;
         }
 
