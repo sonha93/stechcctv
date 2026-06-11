@@ -14,6 +14,7 @@ const totalOrders = document.getElementById("totalOrders");
 const totalRevenue = document.getElementById("totalRevenue");
 
 let currentAdmin = null;
+let currentPermissions = {};
 // ============================
 // SEARCH EVENT
 // ============================
@@ -122,7 +123,8 @@ auth.onAuthStateChanged(async (user) => {
     .once("value");
 
         const data = snap.val();
-
+        currentPermissions =
+  data?.permissions || {};
 adminNameEl.textContent =
     data?.display ||
     data?.name ||
@@ -831,7 +833,13 @@ document.getElementById("offlineSalesSection");
   select.dataset.bound = "true";
 
   select.addEventListener("change", async () => {
-
+  if (
+  currentPermissions.confirmOrders === false
+){
+  alert("Bạn không có quyền xác nhận đơn");
+  loadOrders();
+  return;
+}
       const id = select.dataset.id;
       const status = select.value;
 
