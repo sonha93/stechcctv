@@ -1754,18 +1754,22 @@ for (const doc of productSnap.docs) {
                 stock: newStock
             });
 
-        await db
-            .collection("stock_movements")
-            .add({
-                productId: foundDoc.id,
-                productName: product.name || "",
-                type: "MANUAL_PLUS",
-                qty: qty,
-                reason: reasonValue,
-                createdAt:
-                    firebase.firestore.FieldValue.serverTimestamp()
-            });
+       await db
+    .collection("stock_movements")
+    .add({
+        productId: foundDoc.id,
+        productName: product.name || "",
+        type: "MANUAL_PLUS",
+        qty: qty,
+        reason: reasonValue,
 
+        staffName:
+            firebase.auth().currentUser.displayName ||
+            firebase.auth().currentUser.email,
+
+        createdAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+    });
         alert(`Đã cộng ${qty} stock`);
 
         manualMinusSearch.value = "";
@@ -1854,10 +1858,21 @@ snap.forEach(doc => {
             await db.collection("products").doc(foundDoc.id).update({ stock: newStock })
             await db.collection("stock_movements").add({
     productId: foundDoc.id,
+
+    productName: product.name || "",
+
     type: "MANUAL_MINUS",
+
     qty: -qty,
+
     reason: reasonValue,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+
+    staffName:
+        firebase.auth().currentUser.displayName ||
+        firebase.auth().currentUser.email,
+
+    createdAt:
+        firebase.firestore.FieldValue.serverTimestamp()
 });
 
             alert(`Đã trừ ${qty} stock`);
