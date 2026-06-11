@@ -22,12 +22,15 @@ firebase.auth().onAuthStateChanged(async (user) => {
 
     if (!user) return;
 
-   const snap = await firebase
+   const permSnap = await firebase
     .database()
-    .ref(user.uid + "/permissions/manageStock")
+    .ref(user.uid + "/permissions")
     .once("value");
 
-canManageStock = snap.val() === true;
+const permissions = permSnap.val() || {};
+
+canManageStock = permissions.manageStock === true;
+canAddStock = permissions.addStock === true;
 
 });
 // ============================
