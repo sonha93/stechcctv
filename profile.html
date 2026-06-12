@@ -688,7 +688,12 @@ if(member.birthday){
     isBirthday &&
     !receivedThisYear
   ){
-
+         console.log({
+  oldLevel,
+  newSpent,
+  level,
+  bonusPoints
+});
     await memberRef.update({
 
       points:
@@ -741,7 +746,9 @@ if(member.level === "VIP"){
 
 }
 
+           
 // Mốc tiếp theo
+
 if(member.level === "Silver"){
 
   const remain =
