@@ -2190,14 +2190,7 @@ const lossPercent =
         100
     ).toFixed(2)
     : "0.00";
-    ? (
-        realProfit
-        /
-        revenue
-        *
-        100
-    ).toFixed(2)
-    : "0.00";
+  
 html += `
 <tr>
 
