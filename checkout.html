@@ -466,13 +466,13 @@ if(memberSnap.empty){
 }
 
 const cashbackAmount =
-  usePoints * 100;
+  Math.min(
+    usePoints * 100,
+    total
+  );
 
 const finalTotal =
-  Math.max(
-    0,
-    total - cashbackAmount
-  );
+  total - cashbackAmount;
 
 // ============================
 // ORDER
@@ -552,10 +552,25 @@ window.toggleUsePoints = function(){
       "useAllPointsToggle"
     )?.checked;
 
-  usePoints =
-    checked
-      ? memberPoints
-      : 0;
+  if(checked){
+
+    const total =
+      cart.reduce(
+        (sum,p)=>sum + p.price * (p.qty || 1),
+        0
+      );
+
+    usePoints =
+      Math.min(
+        memberPoints,
+        Math.floor(total / 100)
+      );
+
+  }else{
+
+    usePoints = 0;
+
+  }
 
   renderCart();
   updateBank();
