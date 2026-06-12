@@ -167,12 +167,12 @@ if(profileDoc.exists){
 document.getElementById("phone").addEventListener("input", function(){
   this.value = this.value.replace(/\D/g,"");
 });
+
 document.getElementById("usePoints")
 ?.addEventListener("input", () => {
   renderCart();
 });
-  document.getElementById("phone")
-.addEventListener(...)
+
 function renderCart(){
 
   const box = document.getElementById("cartBox");
@@ -183,6 +183,7 @@ function renderCart(){
     box.innerHTML = "🛒 Giỏ hàng trống";
     return;
   }
+
 
   let originalTotal = 0;
   let finalTotal = 0;
