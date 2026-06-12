@@ -87,10 +87,9 @@ let allMembers = [];
 
 async function loadMembers(){
 
-  const snap = await db
-    .collection("members")
-    .orderBy("totalSpent","desc")
-    .get();
+ const snap = await db
+  .collection("users")
+  .get();
 
   allMembers = snap.docs.map(doc => ({
     id: doc.id,
