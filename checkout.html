@@ -46,6 +46,9 @@ input, textarea, select{width:100%;padding:10px;margin-top:6px;margin-bottom:10p
   <input id="name" placeholder="Họ tên">
   <input id="phone" placeholder="Số điện thoại" maxlength="10">
   <textarea id="address" placeholder="Địa chỉ"></textarea>
+  <div id="memberPointsInfo"
+     style="margin-bottom:10px;color:#2e7d32;font-weight:bold">
+</div>
   <input
   id="usePoints"
   type="number"
@@ -142,7 +145,36 @@ if(profileDoc.exists){
 
   document.getElementById("phone").value =
     localProfile.phone || profile.phone || "";
+const phoneValue =
+  localProfile.phone || profile.phone || "";
 
+if(phoneValue){
+
+  const memberSnap = await db
+    .collection("members")
+    .where("phone","==",phoneValue)
+    .limit(1)
+    .get();
+
+  if(!memberSnap.empty){
+
+    const member =
+      memberSnap.docs[0].data();
+
+    const memberPoints =
+      Number(member.points || 0);
+
+    document.getElementById("memberPointsInfo").innerHTML =
+      `🎁 Điểm hiện có: ${memberPoints}`;
+
+  }else{
+
+    document.getElementById("memberPointsInfo").innerHTML =
+      `🎁 Điểm hiện có: 0`;
+
+  }
+
+}
   document.getElementById("address").value =
     localProfile.address || profile.address || "";
 }
