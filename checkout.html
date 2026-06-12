@@ -171,6 +171,8 @@ document.getElementById("usePoints")
 ?.addEventListener("input", () => {
   renderCart();
 });
+  document.getElementById("phone")
+.addEventListener(...)
 function renderCart(){
 
   const box = document.getElementById("cartBox");
@@ -367,7 +369,9 @@ if(memberSnap.empty){
 
   memberPoints =
     Number(memberData.points || 0);
-
+document.getElementById("usePoints")
+  .placeholder =
+  `Bạn có ${memberPoints} điểm`;
 }
 let usePoints =
   Number(
