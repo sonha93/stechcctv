@@ -435,7 +435,7 @@ if(memberSnap.empty){
   birthday: "",
   birthdayGiftYear: null,
 
-  points: 0,
+   points: 100,
   totalSpent: 0,
   level: "Silver",
 
@@ -443,7 +443,12 @@ if(memberSnap.empty){
 
 });
   memberId = newMemberRef.id;
-
+  await db.collection("member_history").add({
+  memberId: memberId,
+  type: "welcome_bonus",
+  points: 100,
+  createdAt: Date.now()
+});
 }else{
 
   const memberData =
