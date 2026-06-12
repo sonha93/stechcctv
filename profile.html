@@ -455,6 +455,15 @@ button:hover{
 <div class="info-fields">
 <p>Email: <b id="userEmail"></b></p>
 <p>Ngày đăng ký: <span id="userCreatedAt"></span></p>
+<p>
+  Hạng thành viên:
+  <b id="memberLevel">Silver</b>
+</p>
+
+<p>
+  Điểm tích lũy:
+  <b id="memberPoints">0</b>
+</p>
 <label for="name">Họ và tên:</label><input type="text" id="name">
 <label for="address">Địa chỉ:</label><input type="text" id="address">
 <label for="birthday">Ngày sinh:</label><input type="date" id="birthday">
@@ -513,6 +522,11 @@ const db = firebase.database();
 
 const userEmail = document.getElementById("userEmail");
 const userCreatedAt = document.getElementById("userCreatedAt");
+   const memberLevel =
+  document.getElementById("memberLevel");
+
+const memberPoints =
+  document.getElementById("memberPoints");
 const nameInput = document.getElementById("name");
 const phoneInput = document.getElementById("phone");
 const addressInput = document.getElementById("address");
@@ -616,7 +630,29 @@ auth.onAuthStateChanged(user=>{
     if(!doc.exists) return;
 
     const data = doc.data();
+      if(data.phone){
 
+  const memberSnap =
+    await firebase.firestore()
+    .collection("members")
+    .where("phone","==",data.phone)
+    .limit(1)
+    .get();
+
+  if(!memberSnap.empty){
+
+    const member =
+      memberSnap.docs[0].data();
+
+    memberLevel.textContent =
+      member.level || "Silver";
+
+    memberPoints.textContent =
+      Number(member.points || 0)
+      .toLocaleString();
+
+  }
+}
     nameInput.value = data.name || "";
     phoneInput.value = data.phone || "";
     addressInput.value = data.address || "";
