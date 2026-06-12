@@ -1057,8 +1057,11 @@ if(!productDoc.exists){
   // ============================
 // MEMBER POINTS
 // ============================
-
-
+console.log(
+  "MEMBER POINTS CHẠY",
+  status,
+  orderData.status
+);
 if(
   status === "completed" &&
   orderData.status !== "completed" &&
