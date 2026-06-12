@@ -464,6 +464,22 @@ button:hover{
   Điểm tích lũy:
   <b id="memberPoints">0</b>
 </p>
+   <div id="memberProgressBox" style="
+  margin-top:10px;
+  padding:12px;
+  background:#f7f7f7;
+  border-radius:10px;
+  border:1px solid #eee;
+">
+  <p>
+    🎁 Quà nâng hạng:
+    <b id="levelReward">Chưa có</b>
+  </p>
+
+  <p id="nextLevelText">
+    Đang tải...
+  </p>
+</div>
 <label for="name">Họ và tên:</label><input type="text" id="name">
 <label for="address">Địa chỉ:</label><input type="text" id="address">
 <label for="birthday">Ngày sinh:</label><input type="date" id="birthday">
@@ -650,6 +666,63 @@ auth.onAuthStateChanged(user=>{
             memberPoints.textContent =
             Number(member.points || 0)
             .toLocaleString();
+           const totalSpent =
+  Number(member.totalSpent || 0);
+
+const rewardEl =
+  document.getElementById("levelReward");
+
+const nextLevelEl =
+  document.getElementById("nextLevelText");
+
+// Hiện quà hạng
+if(member.level === "VIP"){
+
+  rewardEl.textContent =
+    "Đã nhận 20.000đ khi lên VIP";
+
+}else if(member.level === "Gold"){
+
+  rewardEl.textContent =
+    "Đã nhận 10.000đ khi lên Gold";
+
+}else{
+
+  rewardEl.textContent =
+    "Chưa nhận quà nâng hạng";
+
+}
+
+// Mốc tiếp theo
+if(member.level === "Silver"){
+
+  const remain =
+    Math.max(
+      0,
+      10000000 - totalSpent
+    );
+
+  nextLevelEl.innerHTML =
+    `💰 Còn <b>${remain.toLocaleString()}đ</b> để lên Gold`;
+
+}
+else if(member.level === "Gold"){
+
+  const remain =
+    Math.max(
+      0,
+      50000000 - totalSpent
+    );
+
+  nextLevelEl.innerHTML =
+    `👑 Còn <b>${remain.toLocaleString()}đ</b> để lên VIP`;
+
+}
+else{
+
+  nextLevelEl.innerHTML =
+    `🏆 Bạn đang ở hạng cao nhất`;
+}
         }
     }
 
