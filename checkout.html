@@ -304,6 +304,51 @@ async function placeOrder(){
   );
 const user = auth.currentUser;
 
+// ============================
+// MEMBER
+// ============================
+
+let memberId = null;
+
+const memberSnap = await db
+  .collection("members")
+  .where("phone", "==", phone)
+  .limit(1)
+  .get();
+
+if(memberSnap.empty){
+
+  const newMemberRef =
+    await db.collection("members").add({
+
+      name: name,
+
+      phone: phone,
+
+      address: address,
+
+      points: 0,
+
+      totalSpent: 0,
+
+      level: "Silver",
+
+      createdAt: Date.now()
+
+    });
+
+  memberId = newMemberRef.id;
+
+}else{
+
+  memberId = memberSnap.docs[0].id;
+
+}
+
+// ============================
+// ORDER
+// ============================
+
 await db.collection("orders").add({
 
   uid: user.uid,
@@ -322,6 +367,8 @@ await db.collection("orders").add({
   total: total,
 
   status: "pending",
+
+  memberId: memberId,
 
   createdAt: Date.now()
 
