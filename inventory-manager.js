@@ -2149,20 +2149,45 @@ moveSnap.forEach(doc => {
 
 });
 
+// FIFO bán trước
+let soldLeft = sold;
+
+for(const lot of importLots){
+
+    if(soldLeft <= 0) break;
+
+    const takeSold =
+        Math.min(
+            soldLeft,
+            lot.qty
+        );
+
+    lot.qty -= takeSold;
+    soldLeft -= takeSold;
+
+}
+
+// FIFO thất thoát sau bán
+let lossLeft = lossQty;
+let lossValue = 0;
+
 for(const lot of importLots){
 
     if(lossLeft <= 0) break;
 
-    const takeQty =
-        Math.min(lossLeft, lot.qty);
+    const takeLoss =
+        Math.min(
+            lossLeft,
+            lot.qty
+        );
 
     lossValue +=
-        takeQty * lot.price;
+        takeLoss * lot.price;
 
-    lossLeft -= takeQty;
+    lot.qty -= takeLoss;
+    lossLeft -= takeLoss;
 
 }
-
 const realProfit =
     profit - lossValue;
 
@@ -2181,8 +2206,14 @@ const lossPercent =
     ).toFixed(2)
     : "0.00";
 
-                const profitPercent =
-    revenue > 0
+              const profitPercent =
+    capital > 0
+    ? (
+        realProfit /
+        capital *
+        100
+    ).toFixed(2)
+    : "0.00";
     ? (
         realProfit
         /
