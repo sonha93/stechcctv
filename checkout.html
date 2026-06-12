@@ -27,7 +27,58 @@ input, textarea, select{width:100%;padding:10px;margin-top:6px;margin-bottom:10p
 @media (max-width:768px){.container{max-width:100%;margin:0;padding:10px;}}
 #loading{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;flex-direction:column;z-index:9999;color:#fff;}
 .spinner{width:40px;height:40px;border:4px solid #fff;border-top:4px solid transparent;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:10px;}
-@keyframes spin{to{ transform:rotate(360deg); }}
+@keyframes spin{
+  to{
+    transform:rotate(360deg);
+  }
+}
+
+.switch{
+  position:relative;
+  display:inline-block;
+  width:42px;
+  height:22px;
+  margin-left:10px;
+  vertical-align:middle;
+}
+
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+
+.slider{
+  position:absolute;
+  cursor:pointer;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:#ccc;
+  border-radius:30px;
+  transition:.3s;
+}
+
+.slider:before{
+  content:"";
+  position:absolute;
+  width:18px;
+  height:18px;
+  left:2px;
+  bottom:2px;
+  background:white;
+  border-radius:50%;
+  transition:.3s;
+}
+
+input:checked + .slider{
+  background:#4caf50;
+}
+
+input:checked + .slider:before{
+  transform:translateX(20px);
+}
 </style>
 </head>
 
@@ -46,15 +97,6 @@ input, textarea, select{width:100%;padding:10px;margin-top:6px;margin-bottom:10p
   <input id="name" placeholder="Họ tên">
   <input id="phone" placeholder="Số điện thoại" maxlength="10">
   <textarea id="address" placeholder="Địa chỉ"></textarea>
-  <div id="memberPointsInfo"
-     style="margin-bottom:10px;color:#2e7d32;font-weight:bold">
-</div>
-  <input
-  id="usePoints"
-  type="number"
-  min="0"
-  value="0"
-  placeholder="Điểm muốn sử dụng">
 </div>
 
 <div class="box">
@@ -114,7 +156,8 @@ function sendTelegramNotification(orderNumber, customerName, phone, address, car
 import { auth, db } from "./firebase-init.js";
 
 let cart = [];
-
+let memberPoints = 0;
+let usePoints = 0;
 auth.onAuthStateChanged(async user => {
 
   if(!user){
@@ -161,9 +204,8 @@ if(phoneValue){
     const member =
       memberSnap.docs[0].data();
 
-    const memberPoints =
-      Number(member.points || 0);
-
+   memberPoints =
+  Number(member.points || 0);
     document.getElementById("memberPointsInfo").innerHTML =
       `🎁 Điểm hiện có: ${memberPoints}`;
 
@@ -200,10 +242,6 @@ document.getElementById("phone").addEventListener("input", function(){
   this.value = this.value.replace(/\D/g,"");
 });
 
-document.getElementById("usePoints")
-?.addEventListener("input", () => {
-  renderCart();
-});
 
 function renderCart(){
 
@@ -262,10 +300,6 @@ function renderCart(){
   });
 
   let discount = originalTotal - finalTotal;
-let usePoints =
-  Number(
-    document.getElementById("usePoints")?.value
-  ) || 0;
 
 const cashbackAmount =
   usePoints * 100;
@@ -288,19 +322,32 @@ const finalAfterPoints =
       <b>-${discount.toLocaleString()}đ</b>
     </div>
 
-    <div class="row">
-      <span>Dùng điểm</span>
-      <b>-${cashbackAmount.toLocaleString()}đ</b>
-    </div>
+ <div class="row">
+  <span>
+    Dùng điểm
 
-    <div class="row final">
-      <span>Cần thanh toán</span>
-      <b>${finalAfterPoints.toLocaleString()}đ</b>
-    </div>
+    <label class="switch">
+      <input
+        type="checkbox"
+        id="useAllPointsToggle"
+        onchange="toggleUsePoints()"
+      >
+      <span class="slider"></span>
+    </label>
+  </span>
 
-  </div>
+  <b style="color:#e53935">
+    -${cashbackAmount.toLocaleString()}đ
+  </b>
+</div>
+
+<div class="row final">
+  <span>Cần thanh toán</span>
+  <b>${finalAfterPoints.toLocaleString()}đ</b>
+</div>
+
+</div>
 `;
-}
 document.getElementById("payment")
 .addEventListener("change", updateBank);
 
@@ -495,7 +542,20 @@ await db.collection("orders").add({
   });
 
 }
-  
+window.toggleUsePoints = function(){
+
+  const checked =
+    document.getElementById(
+      "useAllPointsToggle"
+    )?.checked;
+
+  usePoints =
+    checked
+      ? memberPoints
+      : 0;
+
+  renderCart();
+}
 window.placeOrder = placeOrder;
 </script>
 
