@@ -1081,11 +1081,19 @@ const finalTotal =
 
 const earnPoints =
   Math.floor(finalTotal / 10000);
+const usedPoints =
+  Number(orderData.usedPoints || 0);
 
+const currentPoints =
+  Number(member.points || 0);
+
+const afterUse =
+  Math.max(
+    currentPoints - usedPoints,
+    0
+  );
 const newPoints =
-  Number(member.points || 0)
-  - cashbackUsed
-  + earnPoints;
+  afterUse + earnPoints;
 
     const newSpent =
       Number(member.totalSpent || 0)
