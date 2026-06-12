@@ -1101,22 +1101,22 @@ let level = "Silver";
 let bonusPoints = 0;
 
 // VIP
-if(newSpent >= 50000000){
+if(newSpent >= 10000000){
 
   level = "VIP";
 
   if(oldLevel !== "VIP"){
-    bonusPoints = 200; // 20.000đ
+    bonusPoints = 200; // 20k
   }
 
 }
 // GOLD
-else if(newSpent >= 10000000){
+else if(newSpent >= 5000000){
 
   level = "Gold";
 
   if(oldLevel === "Silver"){
-    bonusPoints = 100; // 10.000đ
+    bonusPoints = 100; // 10k
   }
 
 }
