@@ -477,39 +477,42 @@ if(inventoryFooter){
 }
 
         bindInventoryEvents();
-document
-.getElementById("saveAllImportBtn")
-?.addEventListener("click", () => {
+const saveAllBtn =
+    document.getElementById("saveAllImportBtn");
 
-    let found = false;
+if(saveAllBtn){
 
-    document
-    .querySelectorAll(".saveImportBtn")
-    .forEach(btn => {
+    saveAllBtn.onclick = () => {
 
-        const row = btn.closest("tr");
+        let found = false;
 
-        const qty = Number(
-            row.querySelector(".add-stock-input")
-            ?.value || 0
-        );
+        document
+        .querySelectorAll(".saveImportBtn")
+        .forEach(btn => {
 
-        if(qty > 0){
+            const row = btn.closest("tr");
 
-            found = true;
-            btn.click();
+            const qty = Number(
+                row.querySelector(".add-stock-input")
+                ?.value || 0
+            );
 
+            if(qty > 0){
+
+                found = true;
+                btn.click();
+
+            }
+
+        });
+
+        if(!found){
+            alert("Chưa nhập số lượng đặt hàng");
         }
 
-    });
+    };
 
-    if(!found){
-
-        alert("Chưa nhập số lượng đặt hàng");
-
-    }
-
-});
+}
 // ============================
 // SAVE PRODUCT CHANGE LOG
 // ============================
