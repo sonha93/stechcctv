@@ -86,10 +86,10 @@ async function initProfilePage() {
 
     if (!user) return;
 
-    const snap = await firebase
-        .database()
-        .ref("users/" + user.uid)
-        .once("value");
+const snap = await firebase
+    .database()
+    .ref(user.uid)
+    .once("value");
 
     const data = snap.val() || {};
 
@@ -147,16 +147,14 @@ async function saveProfile() {
     const birthday =
         document.getElementById("profileBirthday").value;
 
-    await firebase
-        .database()
-        .ref("users/" + user.uid)
-        .update({
-
-            name,
-            phone,
-            birthday
-
-        });
+   await firebase
+    .database()
+    .ref(user.uid)
+    .update({
+        name,
+        phone,
+        birthday
+    });
 
     document.getElementById("profileTitle").textContent =
         name || "Chưa cập nhật";
