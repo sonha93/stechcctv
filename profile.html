@@ -682,20 +682,12 @@ if(member.birthday){
   const receivedThisYear =
 
     member.birthdayGiftYear === currentYear;
- member.birthdayGiftYear === currentYear;
 
-  console.log("Birthday:", member.birthday);
-  console.log("Birth:", birth);
-  console.log("Today:", today);
-  console.log("isBirthday:", isBirthday);
-  console.log("receivedThisYear:", receivedThisYear);
-  console.log("birthdayGiftYear:", member.birthdayGiftYear);
-  console.log("currentYear:", currentYear);
   if(
     isBirthday &&
     !receivedThisYear
   ){
-      console.log("🎂 ĐÃ VÀO ĐOẠN CỘNG ĐIỂM SINH NHẬT");
+      
     await memberRef.update({
 
       points:
