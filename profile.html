@@ -743,7 +743,11 @@ else{
     phoneInput.value = data.phone || "";
     addressInput.value = data.address || "";
     birthdayInput.value = data.birthday || "";
+   if(data.birthday){
 
+  birthdayInput.disabled = true;
+
+}
     avatarImg.src =
     data.avatar ||
     "https://i.ibb.co/Z1kv9nJj/logo.png";
@@ -776,6 +780,14 @@ updateInfoBtn.addEventListener("click", async () => {
     const name = nameInput.value.trim();
     const address = addressInput.value.trim();
     const birthday = birthdayInput.value;
+   const userDoc = await firebase
+  .firestore()
+  .collection("users")
+  .doc(currentUser.uid)
+  .get();
+
+const oldBirthday =
+  userDoc.data()?.birthday || "";
     const phone = phoneInput.value.trim();
 
     // =========================
@@ -813,14 +825,19 @@ updateInfoBtn.addEventListener("click", async () => {
 
     try {
 
-       await firebase.firestore()
+     await firebase.firestore()
   .collection("users")
   .doc(currentUser.uid)
   .set({
+
       name: name,
       phone: phone,
       address: address,
-      birthday: birthday
+
+      // chỉ cho lưu ngày sinh lần đầu
+      birthday:
+        oldBirthday || birthday
+
   }, { merge: true });
 
         currentName.innerText = name;
