@@ -487,30 +487,29 @@ function renderOrders(){
           : ""
         }
 
-     <div class="total-box">
+    <div class="total-box">
 
   <div class="row">
     <span>Tổng giá gốc</span>
-    <b>${originalTotal.toLocaleString()}đ</b>
+    <b>${format(originalTotal)}</b>
   </div>
 
   <div class="row discount">
     <span>Tiết kiệm</span>
-    <b>-${discount.toLocaleString()}đ</b>
+    <b>-${format(savings)}</b>
   </div>
 
   <div class="row">
     <span>Dùng điểm</span>
-    <b>-${(order.cashbackAmount || 0).toLocaleString()}đ</b>
+    <b>-${format(order.cashbackAmount || 0)}</b>
   </div>
 
   <div class="row final">
     <span>Cần thanh toán</span>
-    <b>${total.toLocaleString()}đ</b>
+    <b>${format(order.total || total)}</b>
   </div>
 
 </div>
-
 
         <!-- CANCEL BUTTON -->
         <div style="margin-top:18px;">
