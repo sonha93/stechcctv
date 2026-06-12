@@ -481,33 +481,35 @@ document
 .getElementById("saveAllImportBtn")
 ?.addEventListener("click", () => {
 
+    let found = false;
+
     document
     .querySelectorAll(".saveImportBtn")
-    .forEach(btn => btn.click());
+    .forEach(btn => {
 
-});
-    }catch(err){
+        const row = btn.closest("tr");
 
-        console.log(err);
+        const qty = Number(
+            row.querySelector(".add-stock-input")
+            ?.value || 0
+        );
 
-        inventoryBody.innerHTML = `
-            <tr>
-                <td
-                    colspan="10"
-                    style="
-                        text-align:center;
-                        color:red;
-                        padding:20px;
-                    "
-                >
-                    Lỗi tải inventory
-                </td>
-            </tr>
-        `;
+        if(qty > 0){
+
+            found = true;
+            btn.click();
+
+        }
+
+    });
+
+    if(!found){
+
+        alert("Chưa nhập số lượng đặt hàng");
 
     }
 
-}
+});
 // ============================
 // SAVE PRODUCT CHANGE LOG
 // ============================
