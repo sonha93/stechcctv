@@ -542,7 +542,7 @@ const logoutArrow = document.getElementById("logoutArrow");
 const cartCountEl = document.getElementById("cartCount");
 const ordersContainer = document.getElementById("ordersContainer");
 const ordersList = document.getElementById("ordersList");
-const orderHistoryBtn = document.getElementById("orderHistoryBtn");
+const orderHistoryBtn =document.getElementById("ordersBtn");
 const avatarImg = document.getElementById("avatarImg");
 const avatarUpload = document.getElementById("avatarUpload");
 const avatarBox = document.getElementById("avatarBox");
@@ -625,56 +625,56 @@ auth.onAuthStateChanged(user=>{
   .collection("users")
   .doc(uidToLoad)
   .get()
-  .then(doc => {
+.then(async doc => {
 
     if(!doc.exists) return;
 
     const data = doc.data();
-      if(data.phone){
 
-  const memberSnap =
-    await firebase.firestore()
-    .collection("members")
-    .where("phone","==",data.phone)
-    .limit(1)
-    .get();
+    if(data.phone){
 
-  if(!memberSnap.empty){
+        const memberSnap = await firebase.firestore()
+        .collection("members")
+        .where("phone","==",data.phone)
+        .limit(1)
+        .get();
 
-    const member =
-      memberSnap.docs[0].data();
+        if(!memberSnap.empty){
 
-    memberLevel.textContent =
-      member.level || "Silver";
+            const member =
+            memberSnap.docs[0].data();
 
-    memberPoints.textContent =
-      Number(member.points || 0)
-      .toLocaleString();
+            memberLevel.textContent =
+            member.level || "Silver";
 
-  }
-}
+            memberPoints.textContent =
+            Number(member.points || 0)
+            .toLocaleString();
+        }
+    }
+
     nameInput.value = data.name || "";
     phoneInput.value = data.phone || "";
     addressInput.value = data.address || "";
     birthdayInput.value = data.birthday || "";
 
     avatarImg.src =
-      data.avatar ||
-      "https://i.ibb.co/Z1kv9nJj/logo.png";
+    data.avatar ||
+    "https://i.ibb.co/Z1kv9nJj/logo.png";
 
     currentName.innerText =
-      data.name || "Chưa cập nhật";
+    data.name || "Chưa cập nhật";
 
     currentPhone.innerText =
-      data.phone || "Chưa cập nhật";
+    data.phone || "Chưa cập nhật";
 
     currentAddress.innerText =
-      data.address || "Chưa cập nhật";
+    data.address || "Chưa cập nhật";
 
     currentBirthday.innerText =
-      data.birthday || "Chưa cập nhật";
-});
+    data.birthday || "Chưa cập nhật";
 
+});
     db.ref('carts/'+currentUser.uid).on('value',snapshot=>{
         let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); 
         cartCountEl.innerText=count;
@@ -831,18 +831,20 @@ changePasswordBtn.addEventListener("click", async () => {
 // ==========================
 // LỊCH SỬ ĐƠN HÀNG
 // ==========================
-orderHistoryBtn.addEventListener("click", (e) => {
+if(orderHistoryBtn){
+    orderHistoryBtn.addEventListener("click",(e)=>{
+        e.preventDefault();
 
-    e.preventDefault();
-
-    ordersContainer.style.display =
+        ordersContainer.style.display =
         ordersContainer.style.display === "none"
         ? "block"
         : "none";
 
-    loadOrders();
+        loadOrders();
+    });
+}
 
-});
+
 
 // ==========================
 // LOAD ORDERS
