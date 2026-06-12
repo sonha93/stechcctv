@@ -199,27 +199,20 @@ if(phoneValue){
     .limit(1)
     .get();
 
-  if(!memberSnap.empty){
+ if(!memberSnap.empty){
 
-    const member =
-      memberSnap.docs[0].data();
+  const member =
+    memberSnap.docs[0].data();
 
-   memberPoints =
-  Number(member.points || 0);
-    document.getElementById("memberPointsInfo").innerHTML =
-      `🎁 Điểm hiện có: ${memberPoints}`;
+  memberPoints =
+    Number(member.points || 0);
 
-  }else{
+}else{
 
-    document.getElementById("memberPointsInfo").innerHTML =
-      `🎁 Điểm hiện có: 0`;
+  memberPoints = 0;
 
+}
   }
-
-}
-  document.getElementById("address").value =
-    localProfile.address || profile.address || "";
-}
   // LOAD CART
 
   const snapshot = await db
@@ -297,6 +290,7 @@ function renderCart(){
         </div>
       </div>
     `;
+    
   });
 
   let discount = originalTotal - finalTotal;
@@ -326,14 +320,15 @@ const finalAfterPoints =
   <span>
     Dùng điểm
 
-    <label class="switch">
-      <input
-        type="checkbox"
-        id="useAllPointsToggle"
-        onchange="toggleUsePoints()"
-      >
-      <span class="slider"></span>
-    </label>
+ <label class="switch">
+  <input
+    type="checkbox"
+    id="useAllPointsToggle"
+    ${usePoints > 0 ? "checked" : ""}
+    onchange="toggleUsePoints()"
+  >
+  <span class="slider"></span>
+</label>
   </span>
 
   <b style="color:#e53935">
@@ -348,6 +343,7 @@ const finalAfterPoints =
 
 </div>
 `;
+  }
 document.getElementById("payment")
 .addEventListener("change", updateBank);
 
@@ -357,9 +353,14 @@ function updateBank(){
 
   let bank = document.getElementById("bankInfo");
 
-  let total = cart.reduce((sum,p)=>
-    sum + p.price * (p.qty || 1),0
-  );
+ let total =
+  cart.reduce(
+    (sum,p)=>sum + p.price * (p.qty || 1),
+    0
+  ) - (usePoints * 100);
+
+if(total < 0) total = 0;
+
 
   if(payment === "bank"){
 
@@ -449,16 +450,9 @@ if(memberSnap.empty){
 
   memberPoints =
     Number(memberData.points || 0);
-document.getElementById("usePoints")
-  .placeholder =
-  `Bạn có ${memberPoints} điểm`;
-}
-let usePoints =
-  Number(
-    document.getElementById("usePoints").value
-  ) || 0;
 
-if(usePoints > memberPoints){
+}
+  if(usePoints > memberPoints){
   usePoints = memberPoints;
 }
 
@@ -470,6 +464,7 @@ const finalTotal =
     0,
     total - cashbackAmount
   );
+
 // ============================
 // ORDER
 // ============================
@@ -504,15 +499,14 @@ await db.collection("orders").add({
 
 });
   // TELEGRAM
-  sendTelegramNotification(
-    orderId,
-    name,
-    phone,
-    address,
-    cart,
-    total.toLocaleString() + "đ"
-  );
-
+ sendTelegramNotification(
+  orderId,
+  name,
+  phone,
+  address,
+  cart,
+  finalTotal.toLocaleString() + "đ"
+);
   // LOADING
   document.getElementById("loading").style.display = "flex";
 
@@ -555,6 +549,7 @@ window.toggleUsePoints = function(){
       : 0;
 
   renderCart();
+  updateBank();
 }
 window.placeOrder = placeOrder;
 </script>
