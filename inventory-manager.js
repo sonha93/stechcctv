@@ -2125,30 +2125,6 @@ const stockValue =
 
 const realLossQty = lossQty;
 
-// giá trị thất thoát thực tế
-let lossLeft = realLossQty;
-let lossValue = 0;
-
-const importLots = [];
-
-moveSnap.forEach(doc => {
-
-    const m = doc.data();
-
-    if(
-        normalizeId(m.productId) === id &&
-        m.type === "IMPORT"
-    ){
-
-        importLots.push({
-            qty: Number(m.qty || 0),
-            price: Number(m.importPrice || 0)
-        });
-
-    }
-
-});
-
 // FIFO bán trước
 let soldLeft = sold;
 
