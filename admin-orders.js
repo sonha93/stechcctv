@@ -1071,7 +1071,6 @@ if(orderData.memberId){
 
     const member =
       memberDoc.data();
-
 const cashbackUsed =
   Number(
     orderData.cashbackAmount ||
@@ -1079,16 +1078,23 @@ const cashbackUsed =
     0
   );
 
+const usedPoints =
+  Math.floor(cashbackUsed / 100);
+
 const finalTotal =
   Number(orderData.total || 0);
 
 const earnPoints =
   Math.floor(finalTotal / 10000);
+
 const currentPoints =
   Number(member.points || 0);
 
 const newPoints =
-  currentPoints + earnPoints;
+  Math.max(
+    0,
+    currentPoints - usedPoints + earnPoints
+  );
 
     const newSpent =
       Number(member.totalSpent || 0)
