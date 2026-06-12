@@ -665,7 +665,20 @@ auth.onAuthStateChanged(user=>{
   memberSnap.docs[0].ref;
 
 const today = new Date();
+console.log(
+  "Local:",
+  new Date().toString()
+);
 
+console.log(
+  "ISO:",
+  new Date().toISOString()
+);
+
+console.log(
+  "VN Date:",
+  new Date().toLocaleString("vi-VN")
+);
 const currentYear =
   today.getFullYear();
 
