@@ -426,18 +426,22 @@ const memberSnap = await db
 if(memberSnap.empty){
 
   const newMemberRef =
-    await db.collection("members").add({
+   await db.collection("members").add({
 
-      name: name,
-      phone: phone,
-      address: address,
-      points: 0,
-      totalSpent: 0,
-      level: "Silver",
-      createdAt: Date.now()
+  name: name,
+  phone: phone,
+  address: address,
 
-    });
+  birthday: "",
+  birthdayGiftYear: null,
 
+  points: 0,
+  totalSpent: 0,
+  level: "Silver",
+
+  createdAt: Date.now()
+
+});
   memberId = newMemberRef.id;
 
 }else{
