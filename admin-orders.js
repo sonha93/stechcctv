@@ -1058,8 +1058,12 @@ if(!productDoc.exists){
 // MEMBER POINTS
 // ============================
 
-if(orderData.memberId){
 
+if(
+  status === "completed" &&
+  orderData.status !== "completed" &&
+  orderData.memberId
+){
   const memberRef = db
     .collection("members")
     .doc(orderData.memberId);
