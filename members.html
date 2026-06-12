@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Quản lý Member</title>
+
+<style>
+body{
+  font-family:Arial;
+  background:#f5f5f5;
+  padding:20px;
+}
+
+.box{
+  background:#fff;
+  border-radius:10px;
+  padding:15px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:10px;
+  border-bottom:1px solid #eee;
+  text-align:left;
+}
+
+th{
+  background:#fafafa;
+}
+
+.search{
+  width:100%;
+  padding:10px;
+  margin-bottom:15px;
+  border:1px solid #ddd;
+  border-radius:8px;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+
+<h2>👑 Thành viên</h2>
+
+<input
+  id="search"
+  class="search"
+  placeholder="Tìm tên hoặc SĐT..."
+>
+
+<table>
+
+<thead>
+<tr>
+  <th>Tên</th>
+  <th>SĐT</th>
+  <th>Điểm</th>
+  <th>Tổng chi tiêu</th>
+  <th>Hạng</th>
+</tr>
+</thead>
+
+<tbody id="memberBody">
+<tr>
+<td colspan="5">Đang tải...</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script type="module">
+
+import { db } from "./firebase-init.js";
+
+let allMembers = [];
+
+async function loadMembers(){
+
+  const snap = await db
+    .collection("members")
+    .orderBy("totalSpent","desc")
+    .get();
+
+  allMembers = snap.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+
+  renderMembers();
+}
+
+function renderMembers(){
+
+  const keyword =
+    document
+      .getElementById("search")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const body =
+    document.getElementById("memberBody");
+
+  let html = "";
+
+  allMembers
+    .filter(m => {
+
+      const name =
+        (m.name || "")
+        .toLowerCase();
+
+      const phone =
+        (m.phone || "")
+        .toLowerCase();
+
+      return (
+        name.includes(keyword) ||
+        phone.includes(keyword)
+      );
+
+    })
+    .forEach(m => {
+
+      html += `
+      <tr>
+
+        <td>${m.name || "-"}</td>
+
+        <td>${m.phone || "-"}</td>
+
+        <td>
+          ${(m.points || 0).toLocaleString()}
+        </td>
+
+        <td>
+          ${Number(m.totalSpent || 0)
+            .toLocaleString("vi-VN")}đ
+        </td>
+
+        <td>
+          ${m.level || "Silver"}
+        </td>
+
+      </tr>
+      `;
+    });
+
+  if(!html){
+
+    html = `
+    <tr>
+      <td colspan="5">
+        Không có member
+      </td>
+    </tr>
+    `;
+  }
+
+  body.innerHTML = html;
+}
+
+document
+  .getElementById("search")
+  .addEventListener(
+    "input",
+    renderMembers
+  );
+
+loadMembers();
+
+</script>
+
+</body>
+</html>
