@@ -453,13 +453,39 @@ if(inventoryFooter){
 
             <td></td>
 
+               </tr>
+
+        <tr>
+            <td colspan="11" style="text-align:center;padding:15px;">
+                <button
+                    id="saveAllImportBtn"
+                    style="
+                        padding:10px 20px;
+                        border:none;
+                        border-radius:8px;
+                        background:#00acc1;
+                        color:white;
+                        cursor:pointer;
+                        font-weight:bold;
+                    "
+                >
+                    LƯU TẤT CẢ
+                </button>
+            </td>
         </tr>
     `;
-
 }
 
         bindInventoryEvents();
+document
+.getElementById("saveAllImportBtn")
+?.addEventListener("click", () => {
 
+    document
+    .querySelectorAll(".saveImportBtn")
+    .forEach(btn => btn.click());
+
+});
     }catch(err){
 
         console.log(err);
