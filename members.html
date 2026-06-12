@@ -87,8 +87,8 @@ let allMembers = [];
 
 async function loadMembers(){
 
- const snap = await db
-  .collection("users")
+const snap = await db
+  .collection("members")
   .get();
 
 allMembers = snap.docs.map(doc => ({
@@ -97,7 +97,7 @@ allMembers = snap.docs.map(doc => ({
 }));
   renderMembers();
 }
-console.log(allMembers);
+
 function renderMembers(){
 
   const keyword =
