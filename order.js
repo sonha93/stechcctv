@@ -499,10 +499,10 @@ function renderOrders(){
     <b>-${format(savings)}</b>
   </div>
 
-  <div class="row">
-    <span>Dùng điểm</span>
-    <b>-${format(order.cashbackAmount || 0)}</b>
-  </div>
+ <div class="row discount">
+  <span>Dùng điểm</span>
+  <b>-${format(order.cashbackAmount || 0)}</b>
+</div>
 
   <div class="row final">
     <span>Cần thanh toán</span>
