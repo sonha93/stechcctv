@@ -167,7 +167,10 @@ if(profileDoc.exists){
 document.getElementById("phone").addEventListener("input", function(){
   this.value = this.value.replace(/\D/g,"");
 });
-
+document.getElementById("usePoints")
+?.addEventListener("input", () => {
+  renderCart();
+});
 function renderCart(){
 
   const box = document.getElementById("cartBox");
@@ -224,28 +227,44 @@ function renderCart(){
   });
 
   let discount = originalTotal - finalTotal;
+let usePoints =
+  Number(
+    document.getElementById("usePoints")?.value
+  ) || 0;
 
-  box.innerHTML += `
-    <div class="total-box">
+const cashbackAmount =
+  usePoints * 100;
 
-      <div class="row">
-        <span>Tổng giá gốc</span>
-        <b>${originalTotal.toLocaleString()}đ</b>
-      </div>
+const finalAfterPoints =
+  Math.max(
+    0,
+    finalTotal - cashbackAmount
+  );
+ box.innerHTML += `
+  <div class="total-box">
 
-      <div class="row discount">
-        <span>Tiết kiệm</span>
-        <b>-${discount.toLocaleString()}đ</b>
-      </div>
-
-      <div class="row final">
-        <span>Cần thanh toán</span>
-        <b>${finalTotal.toLocaleString()}đ</b>
-      </div>
-
+    <div class="row">
+      <span>Tổng giá gốc</span>
+      <b>${originalTotal.toLocaleString()}đ</b>
     </div>
-  `;
-}
+
+    <div class="row discount">
+      <span>Tiết kiệm</span>
+      <b>-${discount.toLocaleString()}đ</b>
+    </div>
+
+    <div class="row">
+      <span>Dùng điểm</span>
+      <b>-${cashbackAmount.toLocaleString()}đ</b>
+    </div>
+
+    <div class="row final">
+      <span>Cần thanh toán</span>
+      <b>${finalAfterPoints.toLocaleString()}đ</b>
+    </div>
+
+  </div>
+`;
 
 document.getElementById("payment")
 .addEventListener("change", updateBank);
@@ -304,36 +323,16 @@ async function placeOrder(){
   }
 
   const orderId = Date.now();
-let usePoints =
-  Number(
-    document.getElementById("usePoints").value
-  ) || 0;
-
-if(usePoints > memberPoints){
-  usePoints = memberPoints;
-}
   const total = cart.reduce((sum,p)=>
     sum + p.price * (p.qty || 1),0
   );
-  let usePoints =
-  Number(
-    document.getElementById("usePoints").value
-  ) || 0;
-
-if(usePoints > memberPoints){
-  usePoints = memberPoints;
-}
-
-const cashbackAmount =
-  usePoints * 100;
-  
-const user = auth.currentUser;
+  const user = auth.currentUser;
 
 // ============================
 // MEMBER
 // ============================
-let memberPoints = 0;
 let memberId = null;
+let memberPoints = 0;
 
 const memberSnap = await db
   .collection("members")
@@ -345,29 +344,48 @@ if(memberSnap.empty){
 
   const newMemberRef =
     await db.collection("members").add({
-      name,
-      phone,
-      address,
-      points:0,
-      totalSpent:0,
-      level:"Silver",
-      createdAt:Date.now()
+
+      name: name,
+      phone: phone,
+      address: address,
+      points: 0,
+      totalSpent: 0,
+      level: "Silver",
+      createdAt: Date.now()
+
     });
 
   memberId = newMemberRef.id;
 
 }else{
 
-  const memberDoc =
-    memberSnap.docs[0];
+  const memberData =
+    memberSnap.docs[0].data();
 
-  memberId = memberDoc.id;
+  memberId =
+    memberSnap.docs[0].id;
 
   memberPoints =
-    Number(memberDoc.data().points || 0);
+    Number(memberData.points || 0);
 
 }
+let usePoints =
+  Number(
+    document.getElementById("usePoints").value
+  ) || 0;
 
+if(usePoints > memberPoints){
+  usePoints = memberPoints;
+}
+
+const cashbackAmount =
+  usePoints * 100;
+
+const finalTotal =
+  Math.max(
+    0,
+    total - cashbackAmount
+  );
 // ============================
 // ORDER
 // ============================
