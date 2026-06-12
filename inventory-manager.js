@@ -1,3 +1,4 @@
+
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -453,64 +454,33 @@ if(inventoryFooter){
 
             <td></td>
 
-               </tr>
-
-        <tr>
-            <td colspan="11" style="text-align:center;padding:15px;">
-                <button
-                    id="saveAllImportBtn"
-                    style="
-                        padding:10px 20px;
-                        border:none;
-                        border-radius:8px;
-                        background:#00acc1;
-                        color:white;
-                        cursor:pointer;
-                        font-weight:bold;
-                    "
-                >
-                    LƯU TẤT CẢ
-                </button>
-            </td>
         </tr>
     `;
+
 }
 
         bindInventoryEvents();
-const saveAllBtn =
-    document.getElementById("saveAllImportBtn");
 
-if(saveAllBtn){
+    }catch(err){
 
-    saveAllBtn.onclick = () => {
+        console.log(err);
 
-        let found = false;
+        inventoryBody.innerHTML = `
+            <tr>
+                <td
+                    colspan="10"
+                    style="
+                        text-align:center;
+                        color:red;
+                        padding:20px;
+                    "
+                >
+                    Lỗi tải inventory
+                </td>
+            </tr>
+        `;
 
-        document
-        .querySelectorAll(".saveImportBtn")
-        .forEach(btn => {
-
-            const row = btn.closest("tr");
-
-            const qty = Number(
-                row.querySelector(".add-stock-input")
-                ?.value || 0
-            );
-
-            if(qty > 0){
-
-                found = true;
-                btn.click();
-
-            }
-
-        });
-
-        if(!found){
-            alert("Chưa nhập số lượng đặt hàng");
-        }
-
-    };
+    }
 
 }
 // ============================
@@ -2840,5 +2810,4 @@ document
         "Product_Change_Logs.xlsx"
     );
 
-});
-}
+});    
