@@ -1304,6 +1304,8 @@ document
 
         document.getElementById("salesSection").style.display =
             value === "sales" ? "block" : "none";
+      document.getElementById("membersSection").style.display =
+    value === "members" ? "block" : "none";
         document.getElementById("profileSection").style.display =
     value === "profile" ? "block" : "none";
         // OFFLINE SALES
