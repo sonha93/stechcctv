@@ -1054,6 +1054,81 @@ if(!productDoc.exists){
 
 }
 } 
+  // ============================
+// MEMBER POINTS
+// ============================
+
+if(orderData.memberId){
+
+  const memberRef = db
+    .collection("members")
+    .doc(orderData.memberId);
+
+  const memberDoc =
+    await memberRef.get();
+
+  if(memberDoc.exists){
+
+    const member =
+      memberDoc.data();
+
+    const earnPoints =
+      Math.floor(
+        Number(orderData.total || 0) / 10000
+      );
+
+    const newPoints =
+      Number(member.points || 0)
+      + earnPoints;
+
+    const newSpent =
+      Number(member.totalSpent || 0)
+      + Number(orderData.total || 0);
+
+    let level = "Silver";
+
+    if(newSpent >= 50000000){
+
+      level = "VIP";
+
+    }else if(newSpent >= 10000000){
+
+      level = "Gold";
+
+    }
+
+    await memberRef.update({
+
+      points: newPoints,
+
+      totalSpent: newSpent,
+
+      level: level
+
+    });
+
+    await db
+      .collection("member_history")
+      .add({
+
+        memberId:
+          orderData.memberId,
+
+        orderId: id,
+
+        points: earnPoints,
+
+        total:
+          Number(orderData.total || 0),
+
+        createdAt:
+          Date.now()
+
+      });
+
+  }
+
+}
 await db
   .collection("orders")
   .doc(id)
