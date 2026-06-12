@@ -2124,7 +2124,25 @@ const stockValue =
     systemStock * importPrice;
 
 const realLossQty = lossQty;
+const importLots = [];
 
+moveSnap.forEach(doc => {
+
+    const m = doc.data();
+
+    if(
+        normalizeId(m.productId) === id &&
+        m.type === "IMPORT"
+    ){
+
+        importLots.push({
+            qty: Number(m.qty || 0),
+            price: Number(m.importPrice || 0)
+        });
+
+    }
+
+});
 // FIFO bán trước
 let soldLeft = sold;
 
