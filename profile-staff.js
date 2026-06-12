@@ -93,8 +93,8 @@ const snap = await firebase
 
     const data = snap.val() || {};
 
-    document.getElementById("profileTitle").textContent =
-        data.displayName || "Chưa cập nhật";
+   document.getElementById("profileTitle").textContent =
+    data.name || "Chưa cập nhật";
 
     document.getElementById("profilePositionBadge").textContent =
         data.position || "Nhân viên";
