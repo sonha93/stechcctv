@@ -1090,38 +1090,77 @@ const earnPoints =
 const currentPoints =
   Number(member.points || 0);
 
+const oldLevel =
+  member.level || "Silver";
+
+const newSpent =
+  Number(member.totalSpent || 0)
+  + Number(orderData.total || 0);
+
+let level = "Silver";
+let bonusPoints = 0;
+
+// VIP
+if(newSpent >= 50000000){
+
+  level = "VIP";
+
+  if(oldLevel !== "VIP"){
+    bonusPoints = 200; // 20.000đ
+  }
+
+}
+// GOLD
+else if(newSpent >= 10000000){
+
+  level = "Gold";
+
+  if(oldLevel === "Silver"){
+    bonusPoints = 100; // 10.000đ
+  }
+
+}
+
 const newPoints =
   Math.max(
     0,
-    currentPoints - usedPoints + earnPoints
-  );
-
-    const newSpent =
-      Number(member.totalSpent || 0)
-      + Number(orderData.total || 0);
-
-    let level = "Silver";
-
-    if(newSpent >= 50000000){
-
-      level = "VIP";
-
-    }else if(newSpent >= 10000000){
-
-      level = "Gold";
-
-    }
+    currentPoints - (cashbackUsed / 100)
+  )
+  + earnPoints
+  + bonusPoints;
 
     await memberRef.update({
 
-      points: newPoints,
+  points: newPoints,
 
-      totalSpent: newSpent,
+  totalSpent: newSpent,
 
-      level: level
+  level: level
+
+});
+
+if(bonusPoints > 0){
+
+  await db
+    .collection("member_history")
+    .add({
+
+      memberId:
+        orderData.memberId,
+
+      orderId: id,
+
+      type: "level_up",
+
+      level: level,
+
+      points: bonusPoints,
+
+      createdAt: Date.now()
 
     });
 
+}
     await db
       .collection("member_history")
       .add({
