@@ -549,21 +549,18 @@ console.log("PHONE =", phone);
 console.log("FOUND =", snap.size);
   if(snap.empty){
 
-  document.getElementById("memberPoints").value =
-    "0 điểm";
+ document.getElementById("memberPointsText").innerText = "0";
 
-  document.getElementById("memberCashback").value =
-    "0đ";
-
+document.getElementById("cashbackText").innerText = "0đ";
   return;
 }
 
 const m = snap.docs[0].data();
 
-document.getElementById("memberPoints").value =
-    `${Number(m.points || 0).toLocaleString()} điểm`;
+document.getElementById("memberPointsText").innerText =
+    Number(m.points || 0).toLocaleString();
 
-document.getElementById("memberCashback").value =
+document.getElementById("cashbackText").innerText =
     `${Number(m.cashback || 0).toLocaleString()}đ`;
 
 });
