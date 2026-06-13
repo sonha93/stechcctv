@@ -62,7 +62,15 @@ let memberId = null;
 
     memberId = memberSnap.docs[0].id;
     memberData = memberSnap.docs[0].data();
+    const currentPoints =
+    Number(memberData.points || 0);
 
+if(useCashbackPoints > currentPoints){
+
+    alert("Điểm không hợp lệ");
+    return;
+
+}
   }else{
 
     // tự tạo member mới
