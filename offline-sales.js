@@ -95,20 +95,21 @@ let memberId = null;
   const earnPoints =
     Math.floor(total / 10000);
 
-  await db
-    .collection("members")
-    .doc(memberId)
-    .update({
+await db
+  .collection("members")
+  .doc(memberId)
+  .update({
 
-      points:
-        Number(memberData.points || 0)
-        + earnPoints,
+    points:
+      Number(memberData.points || 0)
+      - useCashbackPoints
+      + earnPoints,
 
-      totalSpent:
-        Number(memberData.totalSpent || 0)
-        + total
+    totalSpent:
+      Number(memberData.totalSpent || 0)
+      + total
 
-    });
+  });
 
   await db
     .collection("member_history")
