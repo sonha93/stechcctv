@@ -456,7 +456,7 @@ const earnBox =
   document.getElementById("earnPoints");
 
 if(earnBox){
-  earnBox.value = earnPoints;
+  earnBox.value = `+${earnPoints} điểm`;
 }
 const paid =
     Number(
@@ -548,21 +548,22 @@ document.getElementById("offlinePhone")
 
   if(snap.empty){
 
-    document.getElementById("memberPoints").value = "0";
-
-    document.getElementById("memberCashback").value = "0đ";
-
-    return;
-  }
-
-  const m = snap.docs[0].data();
-
   document.getElementById("memberPoints").value =
-    m.points || 0;
+    "0 điểm";
 
   document.getElementById("memberCashback").value =
-    Number(m.cashback || 0)
-    .toLocaleString() + "đ";
+    "0đ";
+
+  return;
+}
+
+const m = snap.docs[0].data();
+
+document.getElementById("memberPoints").value =
+    `${Number(m.points || 0).toLocaleString()} điểm`;
+
+document.getElementById("memberCashback").value =
+    `${Number(m.cashback || 0).toLocaleString()}đ`;
 
 });
 loadOfflineSales();
