@@ -575,7 +575,21 @@ document.getElementById("offlinePhone")
 console.log("PHONE =", phone);
 console.log("FOUND =", snap.size);
  if(snap.empty){
-document.getElementById("offlineCustomer").value = "";
+   const orderSnap = await db
+    .collection("orders")
+    .where("phone","==",phone)
+    .limit(1)
+    .get();
+if(!orderSnap.empty){
+
+    document.getElementById("offlineCustomer").value =
+        orderSnap.docs[0].data().customerName || "";
+
+}else{
+
+    document.getElementById("offlineCustomer").value = "";
+
+}
  window.memberPoints = 0;
 const cashbackInput =
 document.getElementById("useCashback");
