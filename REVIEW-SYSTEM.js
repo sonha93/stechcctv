@@ -362,14 +362,9 @@ where(
 "productId",
 "==",
 productId
-),
-orderBy(
-"createdAt",
-"desc"
 )
 )
 );
-
 reviewList.innerHTML = "";
 
 let totalRating = 0;
