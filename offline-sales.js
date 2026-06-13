@@ -27,10 +27,7 @@ document.getElementById("offlinePhone").value.trim();
 // ============================
 
 let memberId = null;
-
-if(phone){
-
-  console.log("PHONE NHẬP:", phone);
+ if(phone){
 
   const memberSnap = await db
     .collection("members")
@@ -38,37 +35,78 @@ if(phone){
     .limit(1)
     .get();
 
-  console.log("FOUND MEMBER:", !memberSnap.empty);
+  let memberData = null;
 
-  if(!memberSnap.empty){
-    console.log("MEMBER DATA:", memberSnap.docs[0].data());
-  }
-
+  // đã có member
   if(!memberSnap.empty){
 
     memberId = memberSnap.docs[0].id;
+    memberData = memberSnap.docs[0].data();
 
-    const memberData =
-      memberSnap.docs[0].data();
+  }else{
 
-    const earnPoints =
-      Math.floor(total / 10000);
-
-    await db
+    // tự tạo member mới
+    const newMemberRef = await db
       .collection("members")
-      .doc(memberId)
-      .update({
+      .add({
 
-        points:
-          Number(memberData.points || 0)
-          + earnPoints,
+        name: customerName || "Khách hàng",
 
-        totalSpent:
-          Number(memberData.totalSpent || 0)
-          + total
+        phone: phone,
+
+        points: 0,
+
+        totalSpent: 0,
+
+        level: "Silver",
+
+        createdAt: new Date()
 
       });
 
+    memberId = newMemberRef.id;
+
+    memberData = {
+      points: 0,
+      totalSpent: 0
+    };
+  }
+
+  const earnPoints =
+    Math.floor(total / 10000);
+
+  await db
+    .collection("members")
+    .doc(memberId)
+    .update({
+
+      points:
+        Number(memberData.points || 0)
+        + earnPoints,
+
+      totalSpent:
+        Number(memberData.totalSpent || 0)
+        + total
+
+    });
+
+  await db
+    .collection("member_history")
+    .add({
+
+      memberId,
+
+      type: "offline_sale",
+
+      points: earnPoints,
+
+      total,
+
+      createdAt: Date.now()
+
+    });
+
+}
     await db
       .collection("member_history")
       .add({
