@@ -668,11 +668,13 @@ if(
 
 renderOfflineCart();
 });
-loadOfflineSales();
-const today = new Date();
+const dateInput =
+document.getElementById("offlineSaleDate");
 
-document.getElementById("offlineSaleDate").value =
-today.toISOString().split("T")[0];
+if(dateInput){
+    dateInput.value =
+    new Date().toISOString().split("T")[0];
+}
 
 loadOfflineSales();
 const paymentBtn =
