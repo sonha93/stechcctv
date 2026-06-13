@@ -1,4 +1,19 @@
 import { db } from "./firebase-init.js";
+function formatMoneyInput(el){
+
+    let value = el.value.replace(/\D/g,"");
+
+    if(!value){
+        el.value = "";
+        return;
+    }
+
+    el.value =
+        Number(value).toLocaleString("vi-VN");
+}
+
+window.currentCart = [];
+window.offlineProducts = [];
 window.currentCart = [];
 
 window.offlineProducts = [];
@@ -25,7 +40,9 @@ document.getElementById("offlinePhone").value.trim();
 const useCashbackPoints =
 Number(
 document.getElementById("useCashback")
-?.value || 0
+?.value
+.replace(/\D/g,"")
+|| 0
 );
 const useCashback =
 useCashbackPoints;
@@ -57,12 +74,6 @@ let memberId = null;
     memberData = memberSnap.docs[0].data();
    const currentPoints =
     Number(memberData.points || 0);
-if(useCashbackPoints > currentPoints * 100){
-
-    alert("Cashback không hợp lệ");
-    return;
-
-}
 if(useCashbackPoints > currentPoints * 100){
 
     alert("Cashback không hợp lệ");
@@ -136,6 +147,18 @@ await db
     });
 
 }
+  const paid =
+Number(
+    document.getElementById("customerPaid")
+    ?.value
+    .replace(/\D/g,"")
+    || 0
+);
+
+if(paid < total){
+    alert("Khách đưa chưa đủ tiền");
+    return;
+}
    const orderData = {
 
     customerName:
@@ -163,15 +186,21 @@ await db
 
     total,
 
-    paidAmount:
-        Number(
-            document.getElementById("customerPaid")?.value || 0
-        ),
+   paidAmount:
+    Number(
+        document.getElementById("customerPaid")
+        ?.value
+        .replace(/\D/g,"")
+        || 0
+    ),
 
-    changeAmount:
-        Number(
-            document.getElementById("customerPaid")?.value || 0
-        ) - total,
+   changeAmount:
+    Number(
+        document.getElementById("customerPaid")
+        ?.value
+        .replace(/\D/g,"")
+        || 0
+    ) - total,  
 
     customerCancelled: false,
 
@@ -463,13 +492,16 @@ return `
   
     }).join("");
 
- const cashback =
+const useCashbackPoints =
 Number(
-document.getElementById("useCashback")?.value || 0
+document.getElementById("useCashback")
+?.value
+.replace(/\D/g,"")
+|| 0
 );
 
 const finalTotal =
-Math.max(0, total - cashback);
+Math.max(0, total - useCashbackPoints);
 
 document.getElementById(
     "offlineTotal"
@@ -489,7 +521,10 @@ if(earnBox){
 
 const paid =
 Number(
-document.getElementById("customerPaid")?.value || 0
+document.getElementById("customerPaid")
+?.value
+.replace(/\D/g,"")
+|| 0
 );
 
 const changeBox =
@@ -504,8 +539,12 @@ loadOfflineProducts();
 document.addEventListener("input", e => {
 
     if(e.target.id !== "customerPaid") return;
-    const paid =
-        Number(e.target.value || 0);
+
+    formatMoneyInput(e.target);
+
+    const paid = Number(
+        e.target.value.replace(/\./g,"").replace(/,/g,"")
+    );
 
     const total =
 window.currentCart.reduce(
@@ -514,13 +553,15 @@ sum + Number(item.price)*Number(item.qty),
 0
 );
 
-const cashback =
+const useCashbackPoints =
 Number(
-document.getElementById("useCashback")?.value || 0
+document.getElementById("useCashback")
+?.value
+.replace(/\D/g,"")
+|| 0
 );
-
 const finalTotal =
-Math.max(0, total - cashback);
+Math.max(0, total - useCashbackPoints);
 
 document.getElementById("changeMoney").value =
     (paid - finalTotal).toLocaleString() + "đ";
@@ -603,22 +644,23 @@ window.memberCashback = 0;
 const cashbackInput =
 document.getElementById("useCashback");
 
-if(
-   Number(cashbackInput.value || 0)
-   > window.memberCashback
-){
-   cashbackInput.value =
-   window.memberCashback;
+const currentCashback = Number(
+    (cashbackInput.value || "")
+    .replace(/\D/g,"")
+);
+
+if(currentCashback > window.memberCashback){
+    cashbackInput.value =
+        window.memberCashback.toLocaleString("vi-VN");
 }
- document.getElementById("memberPointsText").innerText = "0";
 
- document.getElementById("cashbackText").innerText = "0đ";
+document.getElementById("memberPointsText").innerText = "0";
+document.getElementById("cashbackText").innerText = "0đ";
+document.getElementById("useCashback").value = 0;
 
- document.getElementById("useCashback").value = 0;
+renderOfflineCart();
 
- renderOfflineCart();
-
- return;
+return;
 }
 
 const m = snap.docs[0].data();
@@ -633,17 +675,18 @@ document.getElementById("memberPointsText").innerText =
     window.memberCashback.toLocaleString() + "đ";
 document.getElementById("cashbackText").innerText =
     window.memberCashback.toLocaleString() + "đ";
-  const cashbackInput =
+const cashbackInput =
 document.getElementById("useCashback");
 
 if(
-    Number(cashbackInput.value || 0)
-    > window.memberPoints
+    Number(
+        (cashbackInput.value || "")
+        .replace(/\D/g,"")
+    ) > window.memberCashback
 ){
     cashbackInput.value =
-        window.memberPoints;
+        window.memberCashback.toLocaleString("vi-VN");
 }
-
 renderOfflineCart();
 });
 loadOfflineSales();
@@ -719,26 +762,25 @@ await createOfflineSale();
 
 });
 document.getElementById("useCashback")
-?.addEventListener("input", (e) => {
+?.addEventListener("input",(e)=>{
 
-    let value =
-        Number(e.target.value || 0);
+    formatMoneyInput(e.target);
 
-   const maxPoints =
-    Number(window.memberCashback || 0);
+    let value = Number(
+        e.target.value.replace(/\D/g,"")
+    );
+
+    const maxPoints = Number(window.memberCashback || 0);
 
     if(value > maxPoints){
-
         value = maxPoints;
-        e.target.value = maxPoints;
-
+        e.target.value =
+            maxPoints.toLocaleString("vi-VN");
     }
 
     if(value < 0){
-
         value = 0;
-        e.target.value = 0;
-
+        e.target.value = "0";
     }
 
     renderOfflineCart();
