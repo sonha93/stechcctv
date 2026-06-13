@@ -464,10 +464,13 @@ document.getElementById(
 const earnPoints =
 Math.floor(finalTotal / 10000);
 
-document.getElementById(
-    "earnPoints"
-).innerText =
-    earnPoints.toLocaleString();
+const earnBox =
+document.getElementById("earnPointsText");
+
+if(earnBox){
+    earnBox.innerText =
+        earnPoints.toLocaleString();
+}
 
 const paid =
 Number(
