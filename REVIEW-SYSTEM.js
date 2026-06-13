@@ -312,8 +312,6 @@ userName:
 userData.displayName ||
 "Khách hàng",
 
-avatar:
-userData.avatar || "",
 
 verified:true,
 
