@@ -421,7 +421,7 @@ reviewList.innerHTML += `
 class="review-avatar"
 src="${
 r.avatar ||
-'https://i.ibb.co/Z1kv9nJj/logo.png'
+'https://cdn-icons-png.flaticon.com/512/149/149071.png'
 }"
 >
 
