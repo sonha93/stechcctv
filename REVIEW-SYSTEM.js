@@ -538,19 +538,29 @@ Gửi
 ${(r.replies || []).map(rep => `
 
 <div style="
-padding:8px;
-background:#f5f5f5;
-margin-top:5px;
+margin-top:8px;
+margin-left:40px;
+padding:10px;
+background:#f8f8f8;
+border-left:3px solid #00b894;
 border-radius:8px;
 ">
 
-<b>${rep.name}</b>
+<div style="
+font-weight:bold;
+color:#00b894;
+margin-bottom:4px;
+">
+↳ ${rep.name}
+</div>
 
-: ${rep.content}
+<div>
+${rep.content}
+</div>
 
 </div>
 
-`).join("")}
+`).join("")}}
 
 </div>
 
