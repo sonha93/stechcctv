@@ -553,7 +553,6 @@ async function loadOfflineSales(){
             .where("createdAt", ">=", start)
             .where("createdAt", "<=", end);
     }
-
     const snap = await query.get();
 
     const body =
@@ -587,6 +586,7 @@ async function loadOfflineSales(){
     });
 
 }
+window.loadOfflineSales = loadOfflineSales;
 document.getElementById("offlinePhone")
 .addEventListener("input", async () => {
 
