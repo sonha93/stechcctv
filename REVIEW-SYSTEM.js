@@ -570,8 +570,22 @@ border-radius:8px;
 });
 
 }
-window.likeReview =
-async function(id){
+window.toggleReply = function(id){
+
+const box =
+document.getElementById(
+`replyBox-${id}`
+);
+
+if(!box) return;
+
+box.style.display =
+box.style.display === "none"
+? "block"
+: "none";
+
+};
+
 window.replyReview =
 async function(id){
 
@@ -609,7 +623,7 @@ name:
 userData.name ||
 userData.displayName ||
 user.email ||
-"Admin",
+"Khách hàng",
 
 content:text,
 
@@ -623,7 +637,52 @@ input.value="";
 loadReviews();
 
 };
+
+window.likeReview =
+async function(id){
+
+const user =
+auth.currentUser;
+
+if(!user){
+
+alert("Đăng nhập trước");
+
+return;
+
 }
+
+const reviewRef =
+doc(db,"reviews",id);
+
+const reviewSnap =
+await getDoc(reviewRef);
+
+const review =
+reviewSnap.data();
+
+if(
+(review.likedBy || [])
+.includes(user.uid)
+){
+
+alert("Bạn đã thích rồi");
+
+return;
+
+}
+
+await updateDoc(
+reviewRef,
+{
+likes: increment(1),
+likedBy: arrayUnion(user.uid)
+}
+);
+
+loadReviews();
+
+};
 window.openImage=function(url){
 
 const popup =
@@ -663,18 +722,3 @@ await buildForm();
 await loadReviews();
 
 });
-window.toggleReply = function(id){
-
-const box =
-document.getElementById(
-`replyBox-${id}`
-);
-
-if(!box) return;
-
-box.style.display =
-box.style.display === "none"
-? "block"
-: "none";
-
-}
