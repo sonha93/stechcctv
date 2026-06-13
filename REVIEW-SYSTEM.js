@@ -252,7 +252,7 @@ doc(db,"users",user.uid)
 
 const userData =
 userDoc.data();
-
+console.log("USER DATA:", userData);
 const content =
 document
 .getElementById("reviewContent")
