@@ -107,22 +107,6 @@ let memberId = null;
     });
 
 }
-    await db
-      .collection("member_history")
-      .add({
-
-        memberId,
-        type: "offline_sale",
-        orderId: "offline",
-        points: earnPoints,
-        total,
-        createdAt: Date.now()
-
-      });
-
-  }
-
-}
    const orderData = {
 
     customerName:
