@@ -577,12 +577,14 @@ document.getElementById("cashbackText").innerText = "0đ";
 
 const m = snap.docs[0].data();
 
+window.memberPoints =
+    Number(m.points || 0);
+
 document.getElementById("memberPointsText").innerText =
-    Number(m.points || 0).toLocaleString();
+    window.memberPoints.toLocaleString();
 
 document.getElementById("cashbackText").innerText =
     `${Number(m.cashback || 0).toLocaleString()}đ`;
-
 });
 loadOfflineSales();
 const paymentBtn =
@@ -657,6 +659,28 @@ await createOfflineSale();
 
 });
 document.getElementById("useCashback")
-?.addEventListener("input", () => {
+?.addEventListener("input", (e) => {
+
+    let value =
+        Number(e.target.value || 0);
+
+    const maxPoints =
+        Number(window.memberPoints || 0);
+
+    if(value > maxPoints){
+
+        value = maxPoints;
+        e.target.value = maxPoints;
+
+    }
+
+    if(value < 0){
+
+        value = 0;
+        e.target.value = 0;
+
+    }
+
     renderOfflineCart();
+
 });
