@@ -531,7 +531,7 @@ async function loadOfflineSales(){
 
 }
 document.getElementById("offlinePhone")
-.addEventListener("blur", async () => {
+.addEventListener("input", async () => {
 
   const phone =
     document.getElementById("offlinePhone")
@@ -545,7 +545,8 @@ document.getElementById("offlinePhone")
     .where("phone","==",phone)
     .limit(1)
     .get();
-
+console.log("PHONE =", phone);
+console.log("FOUND =", snap.size);
   if(snap.empty){
 
   document.getElementById("memberPoints").value =
