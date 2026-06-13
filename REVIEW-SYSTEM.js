@@ -569,7 +569,7 @@ ${rep.content}
 `;
 
 });
-
+}
 
 window.toggleReply = function(id){
 
