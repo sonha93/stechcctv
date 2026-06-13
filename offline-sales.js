@@ -445,10 +445,18 @@ return `
   
     }).join("");
 
-    document.getElementById(
-        "offlineTotal"
-    ).innerText =
-        total.toLocaleString() + "đ";
+   const cashback =
+Number(
+document.getElementById("useCashback")?.value || 0
+);
+
+const finalTotal =
+Math.max(0, total - cashback);
+
+document.getElementById(
+    "offlineTotal"
+).innerText =
+    finalTotal.toLocaleString() + "đ";
   const earnPoints =
   Math.floor(total / 10000);
 
@@ -468,7 +476,7 @@ const changeBox =
 
 if(changeBox){
     changeBox.value =
-        (paid - total).toLocaleString() + "đ";
+        (paid - finalTotal).toLocaleString() + "đ";
 }
 }
 
@@ -476,7 +484,10 @@ loadOfflineProducts();
 document.addEventListener("input", e => {
 
     if(e.target.id !== "customerPaid") return;
-
+document.getElementById("useCashback")
+?.addEventListener("input", () => {
+    renderOfflineCart();
+});
     const paid =
         Number(e.target.value || 0);
 
