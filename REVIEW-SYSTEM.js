@@ -498,25 +498,48 @@ onclick="likeReview('${docu.id}')"
 </div>
 
 </div>
+<div class="review-actions">
 
-<div style="margin-top:10px;">
+<div
+class="review-like"
+onclick="likeReview('${docu.id}')"
+>
+👍 ${r.likes || 0}
+</div>
+
+<div
+class="reply-btn"
+onclick="toggleReply('${docu.id}')"
+>
+💬 Trả lời
+</div>
+
+</div>
+
+<div
+id="replyBox-${docu.id}"
+style="display:none;margin-top:10px;"
+>
 
 <input
 type="text"
-id="reply-${docu.id}"
-placeholder="Trả lời bình luận..."
+id="replyInput-${docu.id}"
+placeholder="Nhập trả lời..."
 style="
-width:250px;
-padding:6px;
+width:80%;
+padding:8px;
+border:1px solid #ddd;
+border-radius:8px;
 "
 >
 
 <button
 onclick="replyReview('${docu.id}')"
 >
-Trả lời
+Gửi
 </button>
 
+</div>
 </div>
 
 <div style="margin-top:10px;">
@@ -553,7 +576,9 @@ window.replyReview =
 async function(id){
 
 const input =
-document.getElementById(`reply-${id}`);
+document.getElementById(
+`replyInput-${id}`
+);
 
 const text =
 input.value.trim();
@@ -580,16 +605,15 @@ await updateDoc(
 doc(db,"reviews",id),
 {
 replies: arrayUnion({
-
 name:
 userData.name ||
 userData.displayName ||
+user.email ||
 "Admin",
 
 content:text,
 
 createdAt: Date.now()
-
 })
 }
 );
@@ -599,47 +623,6 @@ input.value="";
 loadReviews();
 
 };
-const user =
-auth.currentUser;
-
-if(!user){
-
-alert("Đăng nhập trước");
-
-return;
-
-}
-
-const reviewRef =
-doc(db,"reviews",id);
-
-const reviewSnap =
-await getDoc(reviewRef);
-
-const review =
-reviewSnap.data();
-
-if(
-(review.likedBy || [])
-.includes(user.uid)
-){
-
-alert("Bạn đã thích rồi");
-
-return;
-
-}
-
-await updateDoc(
-reviewRef,
-{
-likes: increment(1),
-likedBy: arrayUnion(user.uid)
-}
-);
-
-loadReviews();
-
 }
 window.openImage=function(url){
 
@@ -680,3 +663,18 @@ await buildForm();
 await loadReviews();
 
 });
+window.toggleReply = function(id){
+
+const box =
+document.getElementById(
+`replyBox-${id}`
+);
+
+if(!box) return;
+
+box.style.display =
+box.style.display === "none"
+? "block"
+: "none";
+
+}
