@@ -553,6 +553,7 @@ async function loadOfflineSales(){
             .where("createdAt", ">=", start)
             .where("createdAt", "<=", end);
     }
+
     const snap = await query.get();
 
     const body =
@@ -586,7 +587,6 @@ async function loadOfflineSales(){
     });
 
 }
-window.loadOfflineSales = loadOfflineSales;
 document.getElementById("offlinePhone")
 .addEventListener("input", async () => {
 
@@ -668,13 +668,11 @@ if(
 
 renderOfflineCart();
 });
-const dateInput =
-document.getElementById("offlineSaleDate");
+loadOfflineSales();
+const today = new Date();
 
-if(dateInput){
-    dateInput.value =
-    new Date().toISOString().split("T")[0];
-}
+document.getElementById("offlineSaleDate").value =
+today.toISOString().split("T")[0];
 
 loadOfflineSales();
 const paymentBtn =
