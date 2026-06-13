@@ -670,11 +670,8 @@ renderOfflineCart();
 });
 loadOfflineSales();
 const today = new Date();
-
 document.getElementById("offlineSaleDate").value =
 today.toISOString().split("T")[0];
-
-loadOfflineSales();
 const paymentBtn =
 document.getElementById("paymentBtn");
 
