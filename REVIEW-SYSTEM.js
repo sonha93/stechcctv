@@ -417,32 +417,19 @@ reviewList.innerHTML += `
 
 <div class="review-user">
 
-<img
-class="review-avatar"
-src="${
-r.avatar ||
-'https://cdn-icons-png.flaticon.com/512/149/149071.png'
-}"
->
-
 <div>
 
 <div class="review-name">
-
 ${r.userName}
 
 <span class="verified-badge">
-
 ✔ Đã mua hàng tại Stech
-
 </span>
 
 </div>
 
 <div class="review-time">
-
 ${timeAgo(r.createdAt)}
-
 </div>
 
 </div>
