@@ -22,11 +22,14 @@ document.getElementById("offlinePhone").value.trim();
     items.forEach(item => {
         total += Number(item.price || 0) * Number(item.qty || 0);
     });
-  const useCashback =
+const useCashbackPoints =
 Number(
 document.getElementById("useCashback")
 ?.value || 0
 );
+
+const useCashback =
+useCashbackPoints * 100;
 
 total -= useCashback;
 
@@ -445,11 +448,10 @@ return `
   
     }).join("");
 
-   const cashback =
+  const cashback =
 Number(
 document.getElementById("useCashback")?.value || 0
-);
-
+) * 100;
 const finalTotal =
 Math.max(0, total - cashback);
 
