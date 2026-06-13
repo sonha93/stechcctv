@@ -186,7 +186,7 @@ function renderMembers(){
         <td>${m.phone || "-"}</td>
 
         <td>
-          ${(m.points || 0).toLocaleString()}
+           ${(Number(m.points || 0) * 100).toLocaleString("vi-VN")}đ
         </td>
 
         <td>
