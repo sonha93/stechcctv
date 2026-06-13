@@ -455,6 +455,14 @@ document.getElementById("useCashback")?.value || 0
 const finalTotal =
 Math.max(0, total - cashback);
 
+const cashback =
+Number(
+document.getElementById("useCashback")?.value || 0
+) * 100;
+
+const finalTotal =
+Math.max(0, total - cashback);
+
 document.getElementById(
     "offlineTotal"
 ).innerText =
@@ -468,10 +476,10 @@ const earnBox =
 if(earnBox){
   earnBox.value = `+${earnPoints} điểm`;
 }
-const paid =
-    Number(
-        document.getElementById("customerPaid")?.value || 0
-    );
+if(changeBox){
+    changeBox.value =
+        (paid - finalTotal).toLocaleString() + "đ";
+}
 
 const changeBox =
     document.getElementById("changeMoney");
@@ -648,4 +656,8 @@ document.getElementById(
 
 await createOfflineSale();
 
+});
+document.getElementById("useCashback")
+?.addEventListener("input", () => {
+    renderOfflineCart();
 });
