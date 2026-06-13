@@ -22,7 +22,61 @@ document.getElementById("offlinePhone").value.trim();
     items.forEach(item => {
         total += Number(item.price || 0) * Number(item.qty || 0);
     });
+    // ============================
+// MEMBER OFFLINE
+// ============================
 
+let memberId = null;
+
+if(phone){
+
+  const memberSnap = await db
+    .collection("members")
+    .where("phone","==",phone)
+    .limit(1)
+    .get();
+
+  if(!memberSnap.empty){
+
+    memberId = memberSnap.docs[0].id;
+
+    const memberData =
+      memberSnap.docs[0].data();
+
+    const earnPoints =
+      Math.floor(total / 10000);
+
+    await db
+      .collection("members")
+      .doc(memberId)
+      .update({
+
+        points:
+          Number(memberData.points || 0)
+          + earnPoints,
+
+        totalSpent:
+          Number(memberData.totalSpent || 0)
+          + total
+
+      });
+
+    await db
+      .collection("member_history")
+      .add({
+
+        memberId,
+        type: "offline_sale",
+        orderId: "offline",
+        points: earnPoints,
+        total,
+        createdAt: Date.now()
+
+      });
+
+  }
+
+}
    const orderData = {
 
     customerName:
@@ -38,7 +92,7 @@ document.getElementById("offlinePhone").value.trim();
     status: "completed",
 
     offlineSale: true,
-
+    memberId: memberId,
     createdAt: new Date(),
 
     items: items.map(i => ({
