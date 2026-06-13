@@ -27,7 +27,13 @@ Number(
 document.getElementById("useCashback")
 ?.value || 0
 );
-
+if(
+    useCashbackPoints >
+    Number(window.memberPoints || 0)
+){
+    alert("Điểm cashback không hợp lệ");
+    return;
+}
 const useCashback =
 useCashbackPoints * 100;
 
@@ -567,12 +573,28 @@ document.getElementById("offlinePhone")
     .get();
 console.log("PHONE =", phone);
 console.log("FOUND =", snap.size);
-  if(snap.empty){
+ if(snap.empty){
 
+ window.memberPoints = 0;
+const cashbackInput =
+document.getElementById("useCashback");
+
+if(
+   Number(cashbackInput.value || 0)
+   > window.memberPoints
+){
+   cashbackInput.value =
+   window.memberPoints;
+}
  document.getElementById("memberPointsText").innerText = "0";
 
-document.getElementById("cashbackText").innerText = "0đ";
-  return;
+ document.getElementById("cashbackText").innerText = "0đ";
+
+ document.getElementById("useCashback").value = 0;
+
+ renderOfflineCart();
+
+ return;
 }
 
 const m = snap.docs[0].data();
