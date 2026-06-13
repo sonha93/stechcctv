@@ -303,7 +303,7 @@ videoFile,
 await addDoc(
 collection(db,"reviews"),
 {
-
+replies:[],
 productId,
 
 uid:user.uid,
@@ -498,6 +498,47 @@ onclick="likeReview('${docu.id}')"
 
 </div>
 
+<div style="margin-top:10px;">
+
+<input
+type="text"
+id="reply-${docu.id}"
+placeholder="Trả lời bình luận..."
+style="
+width:250px;
+padding:6px;
+"
+>
+
+<button
+onclick="replyReview('${docu.id}')"
+>
+Trả lời
+</button>
+
+</div>
+
+<div style="margin-top:10px;">
+
+${(r.replies || []).map(rep => `
+
+<div style="
+padding:8px;
+background:#f5f5f5;
+margin-top:5px;
+border-radius:8px;
+">
+
+<b>${rep.name}</b>
+
+: ${rep.content}
+
+</div>
+
+`).join("")}
+
+</div>
+
 </div>
 
 `;
@@ -507,7 +548,56 @@ onclick="likeReview('${docu.id}')"
 }
 window.likeReview =
 async function(id){
+window.replyReview =
+async function(id){
 
+const input =
+document.getElementById(`reply-${id}`);
+
+const text =
+input.value.trim();
+
+if(!text) return;
+
+const user =
+auth.currentUser;
+
+if(!user){
+alert("Đăng nhập trước");
+return;
+}
+
+const userDoc =
+await getDoc(
+doc(db,"users",user.uid)
+);
+
+const userData =
+userDoc.data();
+
+await updateDoc(
+doc(db,"reviews",id),
+{
+replies: arrayUnion({
+
+name:
+userData.name ||
+userData.displayName ||
+"Admin",
+
+content:text,
+
+createdAt: Date.now()
+
+})
+}
+);
+
+input.value="";
+
+loadReviews();
+
+};
 const user =
 auth.currentUser;
 
