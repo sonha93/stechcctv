@@ -498,15 +498,6 @@ onclick="likeReview('${docu.id}')"
 </div>
 
 </div>
-<div class="review-actions">
-
-<div
-class="review-like"
-onclick="likeReview('${docu.id}')"
->
-👍 ${r.likes || 0}
-</div>
-
 <div
 class="reply-btn"
 onclick="toggleReply('${docu.id}')"
