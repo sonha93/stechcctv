@@ -27,15 +27,8 @@ Number(
 document.getElementById("useCashback")
 ?.value || 0
 );
-if(
-    useCashbackPoints >
-    Number(window.memberPoints || 0)
-){
-    alert("Điểm cashback không hợp lệ");
-    return;
-}
 const useCashback =
-useCashbackPoints * 100;
+useCashbackPoints;
 
 total -= useCashback;
 
@@ -62,12 +55,17 @@ let memberId = null;
 
     memberId = memberSnap.docs[0].id;
     memberData = memberSnap.docs[0].data();
-    const currentPoints =
+   const currentPoints =
     Number(memberData.points || 0);
+if(useCashbackPoints > currentPoints * 100){
 
-if(useCashbackPoints > currentPoints){
+    alert("Cashback không hợp lệ");
+    return;
 
-    alert("Điểm không hợp lệ");
+}
+if(useCashbackPoints > currentPoints * 100){
+
+    alert("Cashback không hợp lệ");
     return;
 
 }
@@ -102,6 +100,8 @@ if(useCashbackPoints > currentPoints){
 
   const earnPoints =
     Math.floor(total / 10000);
+const usedPoints =
+    Number(useCashback) / 100;
 
 await db
   .collection("members")
@@ -110,7 +110,7 @@ await db
 
     points:
       Number(memberData.points || 0)
-      - useCashbackPoints
+      - usedPoints
       + earnPoints,
 
     totalSpent:
@@ -466,7 +466,7 @@ return `
  const cashback =
 Number(
 document.getElementById("useCashback")?.value || 0
-) * 100;
+);
 
 const finalTotal =
 Math.max(0, total - cashback);
@@ -517,7 +517,7 @@ sum + Number(item.price)*Number(item.qty),
 const cashback =
 Number(
 document.getElementById("useCashback")?.value || 0
-) * 100;
+);
 
 const finalTotal =
 Math.max(0, total - cashback);
@@ -598,16 +598,17 @@ if(!orderSnap.empty){
     document.getElementById("offlineCustomer").value = "";
 
 }
- window.memberPoints = 0;
+window.memberPoints = 0;
+window.memberCashback = 0;
 const cashbackInput =
 document.getElementById("useCashback");
 
 if(
    Number(cashbackInput.value || 0)
-   > window.memberPoints
+   > window.memberCashback
 ){
    cashbackInput.value =
-   window.memberPoints;
+   window.memberCashback;
 }
  document.getElementById("memberPointsText").innerText = "0";
 
@@ -626,12 +627,12 @@ document.getElementById("offlineCustomer").value =
 
 window.memberPoints =
     Number(m.points || 0);
-
+window.memberCashback =
+    Number(m.points || 0) * 100;
 document.getElementById("memberPointsText").innerText =
-    window.memberPoints.toLocaleString();
-
+    window.memberCashback.toLocaleString() + "đ";
 document.getElementById("cashbackText").innerText =
-    `${Number(m.cashback || 0).toLocaleString()}đ`;
+    window.memberCashback.toLocaleString() + "đ";
   const cashbackInput =
 document.getElementById("useCashback");
 
@@ -723,8 +724,8 @@ document.getElementById("useCashback")
     let value =
         Number(e.target.value || 0);
 
-    const maxPoints =
-        Number(window.memberPoints || 0);
+   const maxPoints =
+    Number(window.memberCashback || 0);
 
     if(value > maxPoints){
 
