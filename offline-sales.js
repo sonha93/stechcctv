@@ -522,10 +522,39 @@ document.getElementById("changeMoney").value =
 });
 async function loadOfflineSales(){
 
-    const snap = await db
+    const selectedDate =
+        document.getElementById("offlineSaleDate")?.value;
+
+    let query = db
         .collection("orders")
-        .where("offlineSale","==",true)
-        .get();
+        .where("offlineSale","==",true);
+
+    if(selectedDate){
+
+        const start = new Date(selectedDate);
+        start.setHours(0,0,0,0);
+
+        const end = new Date(selectedDate);
+        end.setHours(23,59,59,999);
+
+        query = query
+            .where("createdAt", ">=", start)
+            .where("createdAt", "<=", end);
+    }else{
+
+        // mặc định hôm nay
+        const start = new Date();
+        start.setHours(0,0,0,0);
+
+        const end = new Date();
+        end.setHours(23,59,59,999);
+
+        query = query
+            .where("createdAt", ">=", start)
+            .where("createdAt", "<=", end);
+    }
+
+    const snap = await query.get();
 
     const body =
         document.getElementById("offlineSalesBody");
@@ -541,11 +570,9 @@ async function loadOfflineSales(){
         let dateText = "-";
 
         try{
-
             dateText =
                 o.createdAt.toDate()
                 .toLocaleString("vi-VN");
-
         }catch(err){}
 
         body.innerHTML += `
@@ -642,6 +669,9 @@ if(
 renderOfflineCart();
 });
 loadOfflineSales();
+const today = new Date();
+document.getElementById("offlineSaleDate").value =
+today.toISOString().split("T")[0];
 const paymentBtn =
 document.getElementById("paymentBtn");
 
