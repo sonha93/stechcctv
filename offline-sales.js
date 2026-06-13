@@ -30,11 +30,19 @@ let memberId = null;
 
 if(phone){
 
+  console.log("PHONE NHẬP:", phone);
+
   const memberSnap = await db
     .collection("members")
     .where("phone","==",phone)
     .limit(1)
     .get();
+
+  console.log("FOUND MEMBER:", !memberSnap.empty);
+
+  if(!memberSnap.empty){
+    console.log("MEMBER DATA:", memberSnap.docs[0].data());
+  }
 
   if(!memberSnap.empty){
 
