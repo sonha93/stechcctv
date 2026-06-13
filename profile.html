@@ -710,9 +710,11 @@ if(member.birthday){
   }
 
 }
-            memberPoints.textContent =
-            Number(member.points || 0)
-            .toLocaleString();
+            const pointMoney =
+  Number(member.points || 0) * 100;
+
+memberPoints.textContent =
+  pointMoney.toLocaleString("vi-VN") + "đ";
            const totalSpent =
   Number(member.totalSpent || 0);
 
