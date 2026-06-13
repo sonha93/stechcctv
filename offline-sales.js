@@ -27,9 +27,16 @@ Number(
 document.getElementById("useCashback")
 ?.value || 0
 );
-
+if(
+    useCashbackPoints >
+    Number(window.memberPoints || 0)
+){
+    alert("Điểm cashback không hợp lệ");
+    return;
+}
 const useCashback =
-useCashbackPoints;
+useCashbackPoints * 100;
+
 total -= useCashback;
 
 if(total < 0){
@@ -55,11 +62,12 @@ let memberId = null;
 
     memberId = memberSnap.docs[0].id;
     memberData = memberSnap.docs[0].data();
-   const currentPoints =
+    const currentPoints =
     Number(memberData.points || 0);
-    if(useCashbackPoints > currentPoints * 100){
 
-    alert("Cashback không hợp lệ");
+if(useCashbackPoints > currentPoints){
+
+    alert("Điểm không hợp lệ");
     return;
 
 }
@@ -92,11 +100,8 @@ let memberId = null;
     };
   }
 
-const earnPoints =
+  const earnPoints =
     Math.floor(total / 10000);
-
-const usedPoints =
-    Number(useCashback) / 100;
 
 await db
   .collection("members")
@@ -105,7 +110,7 @@ await db
 
     points:
       Number(memberData.points || 0)
-      - usedPoints
+      - useCashbackPoints
       + earnPoints,
 
     totalSpent:
@@ -458,10 +463,10 @@ return `
   
     }).join("");
 
-const cashback =
+ const cashback =
 Number(
 document.getElementById("useCashback")?.value || 0
-);
+) * 100;
 
 const finalTotal =
 Math.max(0, total - cashback);
@@ -512,7 +517,7 @@ sum + Number(item.price)*Number(item.qty),
 const cashback =
 Number(
 document.getElementById("useCashback")?.value || 0
-);
+) * 100;
 
 const finalTotal =
 Math.max(0, total - cashback);
@@ -522,39 +527,10 @@ document.getElementById("changeMoney").value =
 });
 async function loadOfflineSales(){
 
-    const selectedDate =
-        document.getElementById("offlineSaleDate")?.value;
-
-    let query = db
+    const snap = await db
         .collection("orders")
-        .where("offlineSale","==",true);
-
-    if(selectedDate){
-
-        const start = new Date(selectedDate);
-        start.setHours(0,0,0,0);
-
-        const end = new Date(selectedDate);
-        end.setHours(23,59,59,999);
-
-        query = query
-            .where("createdAt", ">=", start)
-            .where("createdAt", "<=", end);
-    }else{
-
-        // mặc định hôm nay
-        const start = new Date();
-        start.setHours(0,0,0,0);
-
-        const end = new Date();
-        end.setHours(23,59,59,999);
-
-        query = query
-            .where("createdAt", ">=", start)
-            .where("createdAt", "<=", end);
-    }
-
-    const snap = await query.get();
+        .where("offlineSale","==",true)
+        .get();
 
     const body =
         document.getElementById("offlineSalesBody");
@@ -570,9 +546,11 @@ async function loadOfflineSales(){
         let dateText = "-";
 
         try{
+
             dateText =
                 o.createdAt.toDate()
                 .toLocaleString("vi-VN");
+
         }catch(err){}
 
         body.innerHTML += `
@@ -620,17 +598,16 @@ if(!orderSnap.empty){
     document.getElementById("offlineCustomer").value = "";
 
 }
-window.memberPoints = 0;
-window.memberCashback = 0;
+ window.memberPoints = 0;
 const cashbackInput =
 document.getElementById("useCashback");
 
 if(
-    Number(cashbackInput.value || 0)
-    > window.memberCashback
+   Number(cashbackInput.value || 0)
+   > window.memberPoints
 ){
-    cashbackInput.value =
-        window.memberCashback;
+   cashbackInput.value =
+   window.memberPoints;
 }
  document.getElementById("memberPointsText").innerText = "0";
 
@@ -649,29 +626,26 @@ document.getElementById("offlineCustomer").value =
 
 window.memberPoints =
     Number(m.points || 0);
-window.memberCashback =
-    Number(m.points || 0) * 100;
+
 document.getElementById("memberPointsText").innerText =
-    window.memberCashback.toLocaleString() + "đ";
+    window.memberPoints.toLocaleString();
+
 document.getElementById("cashbackText").innerText =
-    window.memberCashback.toLocaleString() + "đ";
+    `${Number(m.cashback || 0).toLocaleString()}đ`;
   const cashbackInput =
 document.getElementById("useCashback");
 
 if(
-   Number(cashbackInput.value || 0)
-   > window.memberCashback
+    Number(cashbackInput.value || 0)
+    > window.memberPoints
 ){
-   cashbackInput.value =
-   window.memberCashback;
+    cashbackInput.value =
+        window.memberPoints;
 }
 
 renderOfflineCart();
 });
 loadOfflineSales();
-const today = new Date();
-document.getElementById("offlineSaleDate").value =
-today.toISOString().split("T")[0];
 const paymentBtn =
 document.getElementById("paymentBtn");
 
@@ -749,8 +723,8 @@ document.getElementById("useCashback")
     let value =
         Number(e.target.value || 0);
 
-   const maxPoints =
-    Number(window.memberCashback || 0);
+    const maxPoints =
+        Number(window.memberPoints || 0);
 
     if(value > maxPoints){
 
