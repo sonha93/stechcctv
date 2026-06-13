@@ -309,9 +309,10 @@ productId,
 uid:user.uid,
 
 userName:
+userData.name ||
 userData.displayName ||
+user.email ||
 "Khách hàng",
-
 
 verified:true,
 
