@@ -448,14 +448,7 @@ return `
   
     }).join("");
 
-  const cashback =
-Number(
-document.getElementById("useCashback")?.value || 0
-) * 100;
-const finalTotal =
-Math.max(0, total - cashback);
-
-const cashback =
+ const cashback =
 Number(
 document.getElementById("useCashback")?.value || 0
 ) * 100;
@@ -467,49 +460,52 @@ document.getElementById(
     "offlineTotal"
 ).innerText =
     finalTotal.toLocaleString() + "đ";
-  const earnPoints =
-  Math.floor(total / 10000);
 
-const earnBox =
-  document.getElementById("earnPoints");
+const earnPoints =
+Math.floor(finalTotal / 10000);
 
-if(earnBox){
-  earnBox.value = `+${earnPoints} điểm`;
-}
-if(changeBox){
-    changeBox.value =
-        (paid - finalTotal).toLocaleString() + "đ";
-}
+document.getElementById(
+    "earnPoints"
+).innerText =
+    earnPoints.toLocaleString();
+
+const paid =
+Number(
+document.getElementById("customerPaid")?.value || 0
+);
 
 const changeBox =
-    document.getElementById("changeMoney");
+document.getElementById("changeMoney");
 
 if(changeBox){
     changeBox.value =
-        (paid - finalTotal).toLocaleString() + "đ";
+    (paid - finalTotal).toLocaleString() + "đ";
 }
 }
-
 loadOfflineProducts();
 document.addEventListener("input", e => {
 
     if(e.target.id !== "customerPaid") return;
-document.getElementById("useCashback")
-?.addEventListener("input", () => {
-    renderOfflineCart();
-});
     const paid =
         Number(e.target.value || 0);
 
     const total =
-        window.currentCart.reduce(
-            (sum,item)=>
-                sum + Number(item.price)*Number(item.qty),
-            0
-        );
+window.currentCart.reduce(
+(sum,item)=>
+sum + Number(item.price)*Number(item.qty),
+0
+);
 
-    document.getElementById("changeMoney").value =
-        (paid - total).toLocaleString() + "đ";
+const cashback =
+Number(
+document.getElementById("useCashback")?.value || 0
+) * 100;
+
+const finalTotal =
+Math.max(0, total - cashback);
+
+document.getElementById("changeMoney").value =
+    (paid - finalTotal).toLocaleString() + "đ";
 });
 async function loadOfflineSales(){
 
