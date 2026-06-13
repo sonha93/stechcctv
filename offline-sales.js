@@ -575,7 +575,7 @@ document.getElementById("offlinePhone")
 console.log("PHONE =", phone);
 console.log("FOUND =", snap.size);
  if(snap.empty){
-
+document.getElementById("offlineCustomer").value = "";
  window.memberPoints = 0;
 const cashbackInput =
 document.getElementById("useCashback");
@@ -599,6 +599,8 @@ if(
 }
 
 const m = snap.docs[0].data();
+document.getElementById("offlineCustomer").value =
+    m.name || "";
 
 window.memberPoints =
     Number(m.points || 0);
@@ -608,6 +610,18 @@ document.getElementById("memberPointsText").innerText =
 
 document.getElementById("cashbackText").innerText =
     `${Number(m.cashback || 0).toLocaleString()}đ`;
+  const cashbackInput =
+document.getElementById("useCashback");
+
+if(
+    Number(cashbackInput.value || 0)
+    > window.memberPoints
+){
+    cashbackInput.value =
+        window.memberPoints;
+}
+
+renderOfflineCart();
 });
 loadOfflineSales();
 const paymentBtn =
