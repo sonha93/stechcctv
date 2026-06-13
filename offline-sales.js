@@ -22,6 +22,17 @@ document.getElementById("offlinePhone").value.trim();
     items.forEach(item => {
         total += Number(item.price || 0) * Number(item.qty || 0);
     });
+  const useCashback =
+Number(
+document.getElementById("useCashback")
+?.value || 0
+);
+
+total -= useCashback;
+
+if(total < 0){
+  total = 0;
+}
     // ============================
 // MEMBER OFFLINE
 // ============================
@@ -438,6 +449,15 @@ return `
         "offlineTotal"
     ).innerText =
         total.toLocaleString() + "đ";
+  const earnPoints =
+  Math.floor(total / 10000);
+
+const earnBox =
+  document.getElementById("earnPoints");
+
+if(earnBox){
+  earnBox.value = earnPoints;
+}
 const paid =
     Number(
         document.getElementById("customerPaid")?.value || 0
@@ -510,6 +530,41 @@ async function loadOfflineSales(){
     });
 
 }
+document.getElementById("offlinePhone")
+.addEventListener("blur", async () => {
+
+  const phone =
+    document.getElementById("offlinePhone")
+    .value
+    .trim();
+
+  if(!phone) return;
+
+  const snap = await db
+    .collection("members")
+    .where("phone","==",phone)
+    .limit(1)
+    .get();
+
+  if(snap.empty){
+
+    document.getElementById("memberPoints").value = "0";
+
+    document.getElementById("memberCashback").value = "0đ";
+
+    return;
+  }
+
+  const m = snap.docs[0].data();
+
+  document.getElementById("memberPoints").value =
+    m.points || 0;
+
+  document.getElementById("memberCashback").value =
+    Number(m.cashback || 0)
+    .toLocaleString() + "đ";
+
+});
 loadOfflineSales();
 const paymentBtn =
 document.getElementById("paymentBtn");
