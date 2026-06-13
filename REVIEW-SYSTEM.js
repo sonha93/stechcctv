@@ -143,7 +143,7 @@ Bạn cần mua sản phẩm này
 `;
 
 return;
-}
+
 
 reviewForm.innerHTML=`
 
