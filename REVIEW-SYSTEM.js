@@ -570,7 +570,7 @@ ${rep.content}
 
 });
 
-}
+
 window.toggleReply = function(id){
 
 const box =
