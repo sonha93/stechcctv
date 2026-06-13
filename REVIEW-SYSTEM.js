@@ -560,7 +560,7 @@ ${rep.content}
 
 </div>
 
-`).join("")}}
+`).join("")}
 
 </div>
 
