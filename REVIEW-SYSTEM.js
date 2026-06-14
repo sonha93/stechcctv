@@ -313,7 +313,8 @@ videoFile,
 );
 
 }
-  console.log("position =", userData.position);
+console.log("USER DATA =", userData);
+console.log("POSITION =", userData.position);
 await addDoc(
 collection(db,"reviews"),
 {
