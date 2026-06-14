@@ -515,7 +515,7 @@ ${
   <div style="margin-top:15px">
     ${items.map(item => `
       <a
-       href="product.html?id=${item.productId || item.id}"
+       href="logo.html?id=${item.productId || item.id}"
         style="
           display:block;
           background:#ff9800;
