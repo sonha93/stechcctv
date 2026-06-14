@@ -119,7 +119,7 @@ return `${Math.floor(diff/86400)} ngày trước`;
 async function buildForm(){
 
 const user = auth.currentUser;
-
+console.log("photoURL =", user.photoURL);
 if(!user) return;
 
 const canReview =
