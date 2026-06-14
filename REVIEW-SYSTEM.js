@@ -588,6 +588,11 @@ color:#00b894;
 margin-bottom:4px;
 ">
 ↳ ${rep.name}
+${rep.position ? `
+<span class="admin-badge">
+${rep.position}
+</span>
+` : ""}
 </div>
 
 <div>
@@ -644,13 +649,11 @@ alert("Đăng nhập trước");
 return;
 }
 
-const userDoc =
-await getDoc(
-doc(db,"users",user.uid)
+const userSnap = await get(
+  ref(rtdb, user.uid)
 );
 
-const userData =
-userDoc.data();
+const userData = userSnap.val() || {};
 
 await updateDoc(
 doc(db,"reviews",id),
@@ -658,9 +661,11 @@ doc(db,"reviews",id),
 replies: arrayUnion({
 name:
 userData.name ||
-userData.displayName ||
 user.email ||
 "Khách hàng",
+
+position:
+userData.position || "",
 
 content:text,
 
