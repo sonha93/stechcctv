@@ -1,5 +1,5 @@
+import { app } from "./auth.js";
 
-import { app, rtdb } from "./auth.js";
 import {
 getFirestore,
 collection,
@@ -21,15 +21,9 @@ import {
 getAuth
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {
-getDatabase,
-ref,
-get
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
 const db = getFirestore(app);
 const auth = getAuth(app);
-
 
 const productId =
 new URLSearchParams(location.search).get("id");
@@ -262,13 +256,13 @@ alert("Bạn đã đánh giá rồi");
 return;
 
 }
-const userSnap =
-await get(
-ref(rtdb,user.uid)
+const userDoc =
+await getDoc(
+doc(db,"users",user.uid)
 );
 
 const userData =
-userSnap.val() || {};
+userDoc.data();
 const purchased =
 await hasPurchased(user.uid);
 console.log("USER DATA:", userData);
@@ -338,6 +332,9 @@ position: userData.position || "",
 
 avatar:
 userData.avatar || "",
+
+position:
+userData.position || "",
 
 verified:purchased,
 
@@ -442,7 +439,7 @@ src="${r.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
 <div class="review-name">
 ${r.userName}
 
-${["Quản lý","Quản trị viên","Admin"].includes(r.position) ? `
+${r.position ? `
 <span class="admin-badge">
 ${r.position}
 </span>
@@ -646,13 +643,14 @@ alert("Đăng nhập trước");
 return;
 }
 
-const userSnap =
-await get(
-ref(rtdb,user.uid)
+const userDoc =
+await getDoc(
+doc(db,"users",user.uid)
 );
 
 const userData =
-userSnap.val() || {};
+userDoc.data();
+
 await updateDoc(
 doc(db,"reviews",id),
 {
