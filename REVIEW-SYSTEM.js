@@ -324,7 +324,7 @@ productId,
 
 uid:user.uid,
 
-userName:
+name:
 userData.name ||
 userData.displayName ||
 user.email ||
