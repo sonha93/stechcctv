@@ -448,6 +448,11 @@ reviewList.innerHTML += `
 
 <div class="review-user">
 
+<img
+class="review-avatar"
+src="${r.avatar || 'https://i.imgur.com/7k12EPD.png'}"
+>
+
 <div>
 
 <div class="review-name">
