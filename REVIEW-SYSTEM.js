@@ -259,11 +259,14 @@ alert("Bạn đã đánh giá rồi");
 return;
 
 }
-const userSnap = await get(
-  ref(rtdb, user.uid)
+const userDoc = await getDoc(
+  doc(db,"users",user.uid)
 );
 
-const userData = userSnap.val() || {};
+const userData =
+  userDoc.exists()
+  ? userDoc.data()
+  : {};
 console.log("UID LOGIN =", user.uid);
 console.log("USER DATA =", userData);
 const purchased =
