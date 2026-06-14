@@ -347,30 +347,18 @@ user.email ||
 "Khách hàng",
 
 avatar:
-userData.avatar ||
-user.photoURL ||
-"https://i.imgur.com/7k12EPD.png",
+userData.avatar || "",
 
 verified:true,
-
 content,
-
 rating:selectedRating,
-
 likes:0,
-
 likedBy:[],
-
-createdAt:
-serverTimestamp(),
-
+createdAt:serverTimestamp(),
 images:images,
-
 video:video
-
 }
 );
-
 alert("Đã gửi đánh giá");
 
 document
