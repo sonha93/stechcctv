@@ -326,7 +326,6 @@ uid:user.uid,
 
 name:
 userData.name ||
-userData.displayName ||
 user.email ||
 "Khách hàng",
 position: userData.position || "",
