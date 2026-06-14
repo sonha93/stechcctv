@@ -47,7 +47,10 @@ export const auth =
   getAuth(app);
 
 export const rtdb =
-  getDatabase(app);
+  getDatabase(
+    app,
+    "https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app"
+  );
 
 // ==========================
 // AUTH FUNCTIONS
