@@ -524,21 +524,17 @@ border-radius:10px;
 class="review-like"
 onclick="likeReview('${docu.id}')"
 >
-
 👍 ${r.likes || 0}
-
 </div>
 
-</div>
 <div
 class="reply-btn"
 onclick="toggleReply('${docu.id}')"
 >
-💬 Trả lời
+Trả lời
 </div>
 
 </div>
-
 <div
 id="replyBox-${docu.id}"
 style="display:none;margin-top:10px;"
