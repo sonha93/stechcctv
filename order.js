@@ -32,7 +32,7 @@ STATE
 let currentPage = 1;
 const perPage = 10;
 let allOrders = [];
-
+let reviewedProducts = [];
 /* =========================
 FORMAT
 ========================= */
@@ -95,7 +95,20 @@ async function loadOrders(userUid){
       .where("uid", "==", userUid)
       .orderBy("createdAt", "desc")
       .get();
+const reviewSnap = await db
+  .collection("reviews")
+  .where("uid","==",userUid)
+  .get();
 
+reviewedProducts = [];
+
+reviewSnap.forEach(doc=>{
+
+  const r = doc.data();
+
+  reviewedProducts.push(r.productId);
+
+});
    allOrders = await Promise.all(
 
   snapshot.docs.map(async doc => {
@@ -513,7 +526,13 @@ ${
   order.status === "completed"
   ? `
   <div style="margin-top:15px">
-    ${items.map(item => `
+  ${items
+.filter(item =>
+  !reviewedProducts.includes(
+    item.productId || item.id
+  )
+)
+.map(item => `
       <a
        href="logo.html?id=${item.productId || item.id}"
         style="
