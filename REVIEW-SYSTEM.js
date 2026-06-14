@@ -328,6 +328,7 @@ collection(db,"reviews"),
   userName:
   userData.name ||
   userData.displayName ||
+  user.displayName ||
   user.email ||
   "Khách hàng",
   
