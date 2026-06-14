@@ -504,7 +504,7 @@ function renderOrders(){
   <b>-${format(order.cashbackAmount || 0)}</b>
 </div>
 
-<div class="final">
+<div class="row final">
   <span>Cần thanh toán</span>
   <b>${format(total)}</b>
 </div>
