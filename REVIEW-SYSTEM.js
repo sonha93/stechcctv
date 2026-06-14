@@ -267,7 +267,7 @@ const userData =
   userDoc.exists()
   ? userDoc.data()
   : {};
-  console.log(userData);
+
 console.log("UID LOGIN =", user.uid);
 console.log("USER DATA =", userData);
 const purchased =
