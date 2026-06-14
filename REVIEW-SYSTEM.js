@@ -264,6 +264,8 @@ const userSnap = await get(
 );
 
 const userData = userSnap.val() || {};
+console.log("UID LOGIN =", user.uid);
+console.log("USER DATA =", userData);
 const purchased =
 await hasPurchased(user.uid);
 console.log("USER DATA:", userData);
