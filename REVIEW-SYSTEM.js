@@ -637,8 +637,7 @@ box.style.display === "none"
 
 };
 
-window.replyReview =
-async function(id){
+window.replyReview = async function(id){
 
 const input =
 document.getElementById(
@@ -658,14 +657,12 @@ alert("Đăng nhập trước");
 return;
 }
 
-const userDoc = await getDoc(
-  doc(db,"users",user.uid)
+// LẤY TỪ REALTIME DATABASE
+const userSnap = await get(
+  ref(rtdb, user.uid)
 );
 
-const userData =
-  userDoc.exists()
-  ? userDoc.data()
-  : {};
+const userData = userSnap.val() || {};
 
 await updateDoc(
 doc(db,"reviews",id),
@@ -676,6 +673,7 @@ userData.name ||
 userData.displayName ||
 user.email ||
 "Khách hàng",
+
 position:
 userData.position || "",
 
