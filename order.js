@@ -504,10 +504,35 @@ function renderOrders(){
   <b>-${format(order.cashbackAmount || 0)}</b>
 </div>
 
-  <div class="row final">
-    <span>Cần thanh toán</span>
-    <b>${format(order.total || total)}</b>
+ <div class="final">
+  <span>Cần thanh toán</span>
+  <b>${formatPrice(total)}</b>
+</div>
+
+${
+  order.status === "completed"
+  ? `
+  <div style="margin-top:15px">
+    ${items.map(item => `
+      <a
+        href="product.html?id=${item.productId}"
+        style="
+          display:block;
+          background:#ff9800;
+          color:#fff;
+          text-align:center;
+          padding:10px;
+          border-radius:8px;
+          text-decoration:none;
+          margin-top:8px;
+        ">
+        ⭐ Đánh giá ${item.name}
+      </a>
+    `).join("")}
   </div>
+  `
+  : ""
+}
 
 </div>
 
