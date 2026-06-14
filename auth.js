@@ -2,6 +2,10 @@
 // ==========================
 // IMPORT FIREBASE
 // ==========================
+import {
+  getDatabase
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
@@ -39,6 +43,11 @@ const firebaseConfig = {
 export const app =
   initializeApp(firebaseConfig);
 
+export const auth =
+  getAuth(app);
+
+export const rtdb =
+  getDatabase(app);
 export const auth =
   getAuth(app);
 
