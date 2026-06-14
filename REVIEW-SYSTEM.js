@@ -424,7 +424,7 @@ reviewList.innerHTML += `
 
 <img
 class="review-avatar"
-src="${r.avatar || 'https://i.imgur.com/7k12EPD.png'}"
+src="${r.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
 >
 
 <div>
