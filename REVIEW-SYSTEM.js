@@ -326,7 +326,10 @@ userData.name ||
 userData.displayName ||
 user.email ||
 "Khách hàng",
+position:
+userData.position || "",
 
+verified:true,
 avatar:
 userData.avatar || "",
 
@@ -430,9 +433,15 @@ src="${r.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
 <div>
 
 <div class="review-name">
+
 ${r.userName}
 
-${r.verified ? `
+${r.position ? `
+<span class="staff-badge">
+${r.position}
+</span>
+` : ""}
+
 <span class="verified-badge">
 <svg class="verified-icon" viewBox="0 0 24 24">
 <path fill="#0aa06e"
