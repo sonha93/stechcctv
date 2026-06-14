@@ -329,7 +329,7 @@ user.email ||
 
 avatar:
 userData.avatar || "",
-
+"https://i.ibb.co/Z1kv9nJj/logo.png",
 verified:purchased,
 content,
 rating:selectedRating,
@@ -426,7 +426,6 @@ reviewList.innerHTML += `
 class="review-avatar"
 src="${r.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
 >
-
 <div>
 
 <div class="review-name">
