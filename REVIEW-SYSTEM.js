@@ -165,18 +165,28 @@ placeholder="Nhập đánh giá..."
 ></textarea>
 <div class="review-upload">
 
+<label class="upload-review-btn">
+
+📷 Thêm tối đa 5 ảnh và 1 video
+
 <input
 type="file"
 id="reviewImages"
 multiple
 accept="image/*"
+hidden
 >
 
 <input
 type="file"
 id="reviewVideo"
 accept="video/*"
+hidden
 >
+
+</label>
+
+<div id="uploadPreview"></div>
 
 <button
 class="review-btn"
@@ -196,7 +206,29 @@ Gửi đánh giá
 document
 .getElementById("submitReview")
 .onclick = submitReview;
+const imageInput =
+document.getElementById("reviewImages");
 
+imageInput.addEventListener("change",()=>{
+
+const preview =
+document.getElementById("uploadPreview");
+
+preview.innerHTML = "";
+
+[...imageInput.files].forEach(file=>{
+
+const img =
+document.createElement("img");
+
+img.src =
+URL.createObjectURL(file);
+
+preview.appendChild(img);
+
+});
+
+});
 document
 .querySelectorAll(".review-stars span")
 .forEach(star=>{
