@@ -1,5 +1,4 @@
-import { app } from "./auth.js";
-
+import { app, rtdb } from "./auth.js";
 import {
 getFirestore,
 collection,
@@ -21,7 +20,11 @@ import {
 getAuth
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
+import {
+ref,
+get
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 const db = getFirestore(app);
 const auth = getAuth(app);
 
@@ -256,13 +259,11 @@ alert("Bạn đã đánh giá rồi");
 return;
 
 }
-const userDoc =
-await getDoc(
-doc(db,"users",user.uid)
+const userSnap = await get(
+  ref(rtdb, user.uid)
 );
 
-const userData =
-userDoc.data();
+const userData = userSnap.val() || {};
 const purchased =
 await hasPurchased(user.uid);
 console.log("USER DATA:", userData);
