@@ -339,9 +339,6 @@ position: userData.position || "",
 avatar:
 userData.avatar || "",
 
-position:
-userData.position || "",
-
 verified:purchased,
 
 content,
@@ -656,7 +653,6 @@ ref(rtdb,user.uid)
 
 const userData =
 userSnap.val() || {};
-console.log("POSITION =", userData.position);
 await updateDoc(
 doc(db,"reviews",id),
 {
