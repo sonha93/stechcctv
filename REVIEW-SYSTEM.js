@@ -122,28 +122,7 @@ const user = auth.currentUser;
 console.log("photoURL =", user.photoURL);
 if(!user) return;
 
-const canReview =
-await hasPurchased(user.uid);
 
-if(!canReview){
-
-reviewForm.innerHTML=`
-
-<div style="
-padding:15px;
-background:#fff3cd;
-border-radius:12px;
-">
-
-Bạn cần mua sản phẩm này
-để đánh giá.
-
-</div>
-
-`;
-
-return;
-}
 
 reviewForm.innerHTML=`
 
@@ -284,6 +263,8 @@ doc(db,"users",user.uid)
 
 const userData =
 userDoc.data();
+const purchased =
+await hasPurchased(user.uid);
 console.log("USER DATA:", userData);
 const content =
 document
@@ -349,7 +330,7 @@ user.email ||
 avatar:
 userData.avatar || "",
 
-verified:true,
+verified:purchased,
 content,
 rating:selectedRating,
 likes:0,
@@ -451,9 +432,11 @@ src="${r.avatar || 'https://i.imgur.com/7k12EPD.png'}"
 <div class="review-name">
 ${r.userName}
 
+${r.verified ? `
 <span class="verified-badge">
 ✔ Đã mua hàng tại Stech
 </span>
+` : ""}
 
 </div>
 
