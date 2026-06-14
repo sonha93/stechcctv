@@ -48,8 +48,6 @@ export const auth =
 
 export const rtdb =
   getDatabase(app);
-export const auth =
-  getAuth(app);
 
 // ==========================
 // AUTH FUNCTIONS
