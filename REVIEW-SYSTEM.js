@@ -1,5 +1,4 @@
-import { app } from "./auth.js";
-
+import { app, rtdb } from "./auth.js";
 import {
 getFirestore,
 collection,
@@ -29,7 +28,7 @@ get
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 const db = getFirestore(app);
 const auth = getAuth(app);
-const rtdb = getDatabase(app);
+
 
 const productId =
 new URLSearchParams(location.search).get("id");
