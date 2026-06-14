@@ -37,7 +37,15 @@ const firebaseConfig = {
 // ==========================
 export const app =
   initializeApp(firebaseConfig);
+import {
+getDatabase
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+export const rtdb = getDatabase(
+app,
+"https://stech-73b89-default-rtdb.asia-southeast1.firebasedatabase.app"
+);
 export const auth =
   getAuth(app);
 
