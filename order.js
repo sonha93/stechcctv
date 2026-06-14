@@ -504,9 +504,9 @@ function renderOrders(){
   <b>-${format(order.cashbackAmount || 0)}</b>
 </div>
 
- <div class="final">
+<div class="final">
   <span>Cần thanh toán</span>
-  <b>${formatPrice(total)}</b>
+  <b>${format(total)}</b>
 </div>
 
 ${
@@ -515,7 +515,7 @@ ${
   <div style="margin-top:15px">
     ${items.map(item => `
       <a
-        href="product.html?id=${item.productId}"
+       href="product.html?id=${item.productId || item.id}"
         style="
           display:block;
           background:#ff9800;
