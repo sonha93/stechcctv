@@ -316,23 +316,21 @@ videoFile,
 );
 
 }
-console.log("USER DATA =", userData);
-console.log("POSITION =", userData.position);
+
 await addDoc(
 collection(db,"reviews"),
 {
-replies:[],
-productId,
+  replies:[],
+  productId,
 
-uid:user.uid,
+  uid:user.uid,
 
-name:
-userData.name ||
-userData.displayName ||
-user.email ||
-"Khách hàng",
+  userName: userData.name,
 
-position: userData.position || "",
+  avatar: userData.avatar || "",
+  position: userData.position || "",
+
+
 
 avatar:
 userData.avatar || "",
