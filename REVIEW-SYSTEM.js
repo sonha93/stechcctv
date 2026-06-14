@@ -357,7 +357,7 @@ images:images,
 video:video
 }
 );
-alert("Đã gửi đánh giá");
+alert("Cảm ơn Bạn đã đánh giá sản phẩm");
 
 document
 .getElementById("reviewContent")
