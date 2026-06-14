@@ -375,29 +375,9 @@ reviewList.innerHTML = "";
 let totalRating = 0;
 let totalReview = snap.size;
 
-for (const docu of snap.docs) {
+snap.forEach(docu=>{
 
-   const r = docu.data();
-
-   let avatar =
-   "https://i.ibb.co/Z1kv9nJj/logo.png";
-
-   try{
-
-      const userSnap =
-      await getDoc(
-         doc(db,"users",r.uid)
-      );
-
-      if(userSnap.exists()){
-         avatar =
-         userSnap.data().avatar ||
-         "https://i.ibb.co/Z1kv9nJj/logo.png";
-      }
-
-   }catch(e){}
-
-   reviewList.innerHTML += `
+const r = docu.data();
 
 totalRating += Number(
 r.rating || 5
@@ -444,7 +424,7 @@ reviewList.innerHTML += `
 
 <img
 class="review-avatar"
-src="${avatar}"
+src="${r.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
 >
 
 <div>
