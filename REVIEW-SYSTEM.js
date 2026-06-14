@@ -346,6 +346,11 @@ userData.displayName ||
 user.email ||
 "Khách hàng",
 
+avatar:
+userData.avatar ||
+user.photoURL ||
+"https://i.imgur.com/7k12EPD.png",
+
 verified:true,
 
 content,
