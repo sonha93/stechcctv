@@ -259,11 +259,14 @@ alert("Bạn đã đánh giá rồi");
 return;
 
 }
-const userSnap = await get(
-  ref(rtdb, user.uid)
+const userDoc = await getDoc(
+  doc(db,"users",user.uid)
 );
 
-const userData = userSnap.val() || {};
+const userData =
+  userDoc.exists()
+  ? userDoc.data()
+  : {};
 
 console.log("UID LOGIN =", user.uid);
 console.log("USER DATA =", userData);
@@ -655,28 +658,31 @@ return;
 }
 
 // LẤY TỪ REALTIME DATABASE
-const userSnap = await get(
-  ref(rtdb, user.uid)
+const userDoc = await getDoc(
+  doc(db,"users",user.uid)
 );
 
-const userData = userSnap.val() || {};
-
+const userData =
+  userDoc.exists()
+  ? userDoc.data()
+  : {};
 await updateDoc(
 doc(db,"reviews",id),
 {
 replies: arrayUnion({
-name:
-userData.name ||
-userData.displayName ||
-user.email ||
-"Khách hàng",
+  name:
+    userData.name ||
+    "Khách hàng",
 
-position:
-userData.position || "",
+  avatar:
+    userData.avatar || "",
 
-content:text,
+  position:
+    userData.position || "",
 
-createdAt: Date.now()
+  content:text,
+
+  createdAt: Date.now()
 })
 }
 );
