@@ -518,22 +518,29 @@ Trả lời
 </div>
 <div
 id="replyBox-${docu.id}"
-style="display:none;margin-top:10px;"
+class="reply-box"
+style="display:none;"
 >
 
-<input
-type="text"
-id="replyInput-${docu.id}"
-placeholder="Nhập trả lời..."
-style="
-width:80%;
-padding:8px;
-border:1px solid #ddd;
-border-radius:8px;
-"
+<div class="reply-header">
+↩ Đang trả lời:
+<b>${r.userName}</b>
+
+<span
+class="reply-close"
+onclick="toggleReply('${docu.id}')"
 >
+✕
+</span>
+</div>
+
+<textarea
+id="replyInput-${docu.id}"
+placeholder="Nhập nội dung trả lời..."
+></textarea>
 
 <button
+class="reply-send-btn"
 onclick="replyReview('${docu.id}')"
 >
 Gửi
