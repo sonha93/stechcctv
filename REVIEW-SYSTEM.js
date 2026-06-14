@@ -657,11 +657,14 @@ alert("Đăng nhập trước");
 return;
 }
 
-const userSnap = await get(
-  ref(rtdb, user.uid)
+const userDoc = await getDoc(
+  doc(db,"users",user.uid)
 );
 
-const userData = userSnap.val() || {};
+const userData =
+  userDoc.exists()
+  ? userDoc.data()
+  : {};
 
 await updateDoc(
 doc(db,"reviews",id),
@@ -669,9 +672,9 @@ doc(db,"reviews",id),
 replies: arrayUnion({
 name:
 userData.name ||
+userData.displayName ||
 user.email ||
 "Khách hàng",
-
 position:
 userData.position || "",
 
