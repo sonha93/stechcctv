@@ -21,9 +21,15 @@ import {
 getAuth
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
+import {
+getDatabase,
+ref,
+get
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 const db = getFirestore(app);
 const auth = getAuth(app);
+const rtdb = getDatabase(app);
 
 const productId =
 new URLSearchParams(location.search).get("id");
@@ -256,13 +262,13 @@ alert("Bạn đã đánh giá rồi");
 return;
 
 }
-const userDoc =
-await getDoc(
-doc(db,"users",user.uid)
+const userSnap =
+await get(
+ref(rtdb,user.uid)
 );
 
 const userData =
-userDoc.data();
+userSnap.val() || {};
 const purchased =
 await hasPurchased(user.uid);
 console.log("USER DATA:", userData);
@@ -643,14 +649,14 @@ alert("Đăng nhập trước");
 return;
 }
 
-const userDoc =
-await getDoc(
-doc(db,"users",user.uid)
+const userSnap =
+await get(
+ref(rtdb,user.uid)
 );
 
 const userData =
-userDoc.data();
-
+userSnap.val() || {};
+console.log("POSITION =", userData.position);
 await updateDoc(
 doc(db,"reviews",id),
 {
