@@ -142,7 +142,7 @@ reviewForm.innerHTML=`
 <div
 class="review-form"
 id="reviewFormBox"
-style="display:none"
+style="display:block"
 >
 
 
@@ -650,16 +650,7 @@ summary.innerHTML = `
   ${totalReview} lượt đánh giá
 </div>
 
-<div style="margin-top:15px">
 
-<button
-id="openReviewBtn"
-class="review-btn"
->
-Đánh giá sản phẩm
-</button>
-
-</div>
   </div>
 
   <div class="rating-bars">
@@ -781,31 +772,6 @@ class="${currentFilter==="1"?"active":""}">
       };
 
     });
-
-  const reviewBtn =
-  document.getElementById("openReviewBtn");
-
-  if(reviewBtn){
-
-    reviewBtn.onclick = ()=>{
-
-      const box =
-      document.getElementById("reviewFormBox");
-
-      if(box){
-
-        box.style.display = "block";
-
-        box.scrollIntoView({
-          behavior:"smooth",
-          block:"center"
-        });
-
-      }
-
-    };
-
-  }
 
 },50);
 allReviews.forEach(r=>{
