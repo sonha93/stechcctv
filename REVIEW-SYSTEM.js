@@ -331,18 +331,14 @@ collection(db,"reviews"),
 userName:
   userData.displayName ||
   userData.name ||
-  "Khách hàng",
-  
-  position: userData.position || "",
-
-
+  user.displayName ||
+  user.email,
 
 avatar:
-userData.avatar || "",
+  userData.avatar || "",
 
 position:
-userData.position || "",
-
+  userData.position || "",
 verified:purchased,
 
 content,
@@ -655,13 +651,13 @@ return;
 }
 
 // LẤY TỪ REALTIME DATABASE
-const userDoc = await getDoc(
-  doc(db,"users",user.uid)
+const snap = await get(
+  ref(rtdb, user.uid)
 );
 
 const userData =
-  userDoc.exists()
-  ? userDoc.data()
+  snap.exists()
+  ? snap.val()
   : {};
 await updateDoc(
 doc(db,"reviews",id),
