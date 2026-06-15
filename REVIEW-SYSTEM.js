@@ -351,8 +351,7 @@ const userData =
   ? userDoc.data()
   : {};
 
-console.log("UID LOGIN =", user.uid);
-console.log("USER DATA =", userData);
+
 const purchased =
 await hasPurchased(user.uid);
   if(!purchased){
