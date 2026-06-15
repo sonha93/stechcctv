@@ -1321,7 +1321,7 @@ padding-right:0;
     gap:6px;
     cursor:pointer;
 }
-	.review-top{
+	.review-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -1329,11 +1329,11 @@ padding-right:0;
     gap:15px;
 }
 
-.review-top #reviewSummary{
+.review-header #reviewSummary{
     margin-bottom:0;
 }
 
-.review-top .review-title{
+.review-title{
     margin:0;
 }
 }
@@ -1442,17 +1442,19 @@ padding-right:0;
 
 <div class="review-section">
 
-  <div class="review-top">
+ <div class="review-header">
+
     <h2 class="review-title" id="commentCount">
-      0 Bình luận
+        0 Bình luận
     </h2>
 
     <div id="reviewSummary"></div>
-  </div>
 
-  <div id="reviewForm"></div>
+</div>
 
-  <div id="reviewList"></div>
+<div id="reviewForm"></div>
+
+<div id="reviewList"></div>
 
 </div>
 <!-- REVIEW -->
