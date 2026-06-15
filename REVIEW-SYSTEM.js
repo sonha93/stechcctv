@@ -139,10 +139,11 @@ if(!user) return;
 
 reviewForm.innerHTML=`
 
-
-
-<div class="review-form">
-
+<div
+class="review-form"
+id="reviewFormBox"
+style="display:none"
+>
 
 
 <div class="review-stars">
@@ -452,7 +453,7 @@ alert("Cảm ơn Bạn đã đánh giá sản phẩm");
 document
 .getElementById("reviewContent")
 .value = "";
-previewRating = 5;
+formRating = 5;
 
 document
 .querySelectorAll(".review-stars span")
@@ -753,30 +754,16 @@ class="${currentFilter==="1"?"active":""}">
 }
 }
   setTimeout(()=>{
+const avgRound = Math.round(avg);
+
 document
 .querySelectorAll(".review-stars-top span")
 .forEach(star=>{
 
-star.style.color="#ffb400";
-
-star.onclick=()=>{
-
-selectedRating =
-Number(star.dataset.rate);
-
-document
-.querySelectorAll(".review-stars-top span")
-.forEach(s=>{
-
-s.style.color =
-Number(s.dataset.rate)
-<= selectedRating
+star.style.color =
+Number(star.dataset.rate) <= avgRound
 ? "#ffb400"
 : "#ccc";
-
-});
-
-};
 
 });
 document
@@ -799,21 +786,21 @@ if(reviewBtn){
 
 reviewBtn.onclick = ()=>{
 
-const form =
-document.getElementById("reviewForm");
+const box =
+document.getElementById("reviewFormBox");
 
-if(form){
+if(box){
 
-form.scrollIntoView({
+box.style.display = "block";
+
+box.scrollIntoView({
 behavior:"smooth",
-block:"start"
+block:"center"
 });
 
 }
 
 };
-
-}
 },50);
 allReviews.forEach(r=>{
 
@@ -1150,6 +1137,8 @@ doc(db,"reviews",id),
 replies: arrayUnion({
   name:
     userData.name ||
+    user.displayName ||
+    user.email ||
     "Khách hàng",
 
   avatar:
