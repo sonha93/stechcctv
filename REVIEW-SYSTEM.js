@@ -259,15 +259,17 @@ alert("Bạn đã đánh giá rồi");
 return;
 
 }
-const snap = await get(
-  ref(rtdb, user.uid)
+const userDoc = await getDoc(
+  doc(db,"users",user.uid)
 );
 
 const userData =
-  snap.exists()
-  ? snap.val()
+  userDoc.exists()
+  ? userDoc.data()
   : {};
-console.log(userData);
+
+console.log("UID LOGIN =", user.uid);
+console.log("USER DATA =", userData);
 const purchased =
 await hasPurchased(user.uid);
 console.log("USER DATA:", userData);
@@ -318,8 +320,7 @@ videoFile,
 );
 
 }
-console.log("UID =", user.uid);
-console.log("USER DATA =", userData);
+
 await addDoc(
 collection(db,"reviews"),
 {
@@ -328,17 +329,23 @@ collection(db,"reviews"),
 
   uid:user.uid,
 
-userName:
-  userData.displayName ||
+  userName:
   userData.name ||
+  userData.displayName ||
   user.displayName ||
-  user.email,
+  user.email ||
+  "Khách hàng",
+  
+  position: userData.position || "",
+
+
 
 avatar:
-  userData.avatar || "",
+userData.avatar || "",
 
 position:
-  userData.position || "",
+userData.position || "",
+
 verified:purchased,
 
 content,
@@ -651,13 +658,13 @@ return;
 }
 
 // LẤY TỪ REALTIME DATABASE
-const snap = await get(
-  ref(rtdb, user.uid)
+const userDoc = await getDoc(
+  doc(db,"users",user.uid)
 );
 
 const userData =
-  snap.exists()
-  ? snap.val()
+  userDoc.exists()
+  ? userDoc.data()
   : {};
 await updateDoc(
 doc(db,"reviews",id),
