@@ -1309,12 +1309,17 @@ justify-content:flex-start;
 padding-right:0;
 }
 .review-title{
-    font-size:42px;
+    font-size:22px;
     font-weight:700;
-    margin-top:20px;
-    margin-bottom:20px;
+    margin:15px 0;
 }
+.review-title{
+    font-size:18px;
+    font-weight:700;
+    margin:15px 0;
+  }
 
+}
 .review-filter{
     justify-content:center;
     padding-right:0;
@@ -1354,6 +1359,11 @@ padding-right:0;
 .score-line .avg{
     font-size:48px;
     color:#ff9800;
+}
+	.review-section{
+  display:flex;
+  flex-direction:column;
+  gap:15px;
 }
 }
 </style>
@@ -1463,9 +1473,9 @@ padding-right:0;
 
   <div id="reviewSummary"></div>
 
- <div class="review-title" id="commentCount"></div>
-    0 Bình luận
-  </h2>
+<h2 class="review-title" id="commentCount">
+  0 Bình luận
+</h2>
   <div id="reviewForm"></div>
 
   <div id="reviewList"></div>
