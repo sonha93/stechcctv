@@ -144,7 +144,7 @@ reviewForm.innerHTML=`
 
 <textarea
 id="reviewContent"
-placeholder="Nhập nội dung bình luận..."
+placeholder="Nhập nội dung đánh giá sản phẩm..."
 ></textarea>
 <div class="review-upload">
 
@@ -176,10 +176,9 @@ class="review-btn"
 id="submitReview"
 >
 
-Gửi bình luận
+Gửi đánh giá
 
 </button>
-
 </div>
 
 </div>
@@ -197,16 +196,14 @@ commentForm.innerHTML = `
 
 <textarea
 id="commentContent"
-placeholder="Nhập bình luận..."
+placeholder="Đặt câu hỏi hoặc trao đổi về sản phẩm..."
 ></textarea>
-
 <button
 id="submitComment"
 class="review-btn"
 >
 
-Gửi bình luận
-
+Gửi câu hỏi
 </button>
 
 </div>
@@ -305,7 +302,7 @@ await hasPurchased(user.uid);
   if(!purchased){
 
 alert(
-"Bạn cần mua sản phẩm trước khi bình luận"
+"Bạn cần mua sản phẩm trước khi đánh giá"
 );
 
 return;
