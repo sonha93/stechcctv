@@ -99,109 +99,46 @@ return purchased;
 }
 function timeAgo(timestamp){
 
-  if(!timestamp) return "Vừa xong";
+if(!timestamp) return "";
 
-  try{
+const now = Date.now();
 
-    const now = Date.now();
+const diff =
+Math.floor(
+(now - timestamp.toMillis())
+/1000
+);
 
-    const diff = Math.floor(
-      (now - timestamp.toMillis()) / 1000
-    );
+if(diff < 60)
+return `${diff} giây trước`;
 
-    if(diff < 60)
-      return `${diff} giây trước`;
+if(diff < 3600)
+return `${Math.floor(diff/60)} phút trước`;
 
-    if(diff < 3600)
-      return `${Math.floor(diff/60)} phút trước`;
+if(diff < 86400)
+return `${Math.floor(diff/3600)} giờ trước`;
 
-    if(diff < 86400)
-      return `${Math.floor(diff/3600)} giờ trước`;
-
-    return `${Math.floor(diff/86400)} ngày trước`;
-
-  }catch{
-
-    return "Vừa xong";
-
-  }
+return `${Math.floor(diff/86400)} ngày trước`;
 
 }
 async function buildForm(){
 
 const user = auth.currentUser;
-
-if(!user){
-
-reviewForm.innerHTML = `
-<div class="review-form">
-<button class="review-btn">
-Đăng nhập để bình luận
-</button>
-</div>
-`;
-
-return;
-}
-const purchased =
-await hasPurchased(user.uid);
+console.log("photoURL =", user.photoURL);
+if(!user) return;
 
 
-if(!purchased){
 
-reviewForm.innerHTML = `
+reviewForm.innerHTML=`
 
 <div class="review-form">
 
-<textarea
-id="reviewContent"
-placeholder="Bạn chưa mua sản phẩm. Chỉ được bình luận..."
-></textarea>
 
-<button
-class="review-btn"
-id="submitReview"
->
-Gửi bình luận
-</button>
-
-</div>
-
-`;
-
-}else{
-
-reviewForm.innerHTML = `
-
-<div class="review-form">
-
-<button
-class="review-btn"
-id="openReviewBtn"
->
-Đánh giá sản phẩm
-</button>
-
-<div
-id="reviewBox"
-style="display:none;"
->
-
-<div class="review-stars">
-
-<span data-rate="1">★</span>
-<span data-rate="2">★</span>
-<span data-rate="3">★</span>
-<span data-rate="4">★</span>
-<span data-rate="5">★</span>
-
-</div>
 
 <textarea
 id="reviewContent"
 placeholder="Nhập đánh giá..."
 ></textarea>
-
 <div class="review-upload">
 
 <label class="upload-review-btn">
@@ -231,10 +168,10 @@ hidden
 class="review-btn"
 id="submitReview"
 >
-Gửi đánh giá
-</button>
 
-</div>
+Gửi đánh giá
+
+</button>
 
 </div>
 
@@ -242,30 +179,11 @@ Gửi đánh giá
 
 `;
 
-}
 document
 .getElementById("submitReview")
 .onclick = submitReview;
-  const openBtn =
-document.getElementById("openReviewBtn");
-
-if(openBtn){
-
-openBtn.onclick = ()=>{
-
-document
-.getElementById("reviewBox")
-.style.display = "block";
-
-openBtn.style.display = "none";
-
-};
-
-}
 const imageInput =
 document.getElementById("reviewImages");
-
-if(imageInput){
 
 imageInput.addEventListener("change",()=>{
 
@@ -287,8 +205,6 @@ preview.appendChild(img);
 });
 
 });
-
-}
 document
 .querySelectorAll(".review-stars span")
 .forEach(star=>{
@@ -319,11 +235,6 @@ Number(s.dataset.rate)
 async function submitReview(){
 
 const user = auth.currentUser;
-
-if(!user){
-  alert("Đăng nhập trước");
-  return;
-}
 const oldReview =
 await getDocs(
 
@@ -369,18 +280,13 @@ alert("Nhập nội dung");
 return;
 
 }
-const imageInput =
-document.getElementById("reviewImages");
+  const imageFiles =
+document
+.getElementById("reviewImages")
+.files;
 
-const imageFiles =
-imageInput
-? imageInput.files
-: [];
-  if(imageFiles.length > 5){
-  alert("Chỉ được tối đa 5 ảnh");
-  return;
-}
-let images = [];
+let images=[];
+
 for(const file of imageFiles){
 
 const url =
@@ -392,13 +298,10 @@ file,
 images.push(url);
 
 }
- const videoInput =
-document.getElementById("reviewVideo");
-
-const videoFile =
-videoInput
-? videoInput.files[0]
-: null;
+  const videoFile =
+document
+.getElementById("reviewVideo")
+.files[0];
 
 let video="";
 
@@ -427,6 +330,7 @@ collection(db,"reviews"),
   user.email ||
   "Khách hàng",
   
+  position: userData.position || "",
 
 
 
@@ -439,7 +343,7 @@ userData.position || "",
 verified:purchased,
 
 content,
-rating:purchased ? selectedRating : 0,
+rating:selectedRating,
 likes:0,
 likedBy:[],
 createdAt:serverTimestamp(),
@@ -460,19 +364,8 @@ document
 s.style.color="#ffb400";
 });
 
-const reviewImages =
-document.getElementById("reviewImages");
-
-if(reviewImages){
-reviewImages.value="";
-}
-
-const reviewVideo =
-document.getElementById("reviewVideo");
-
-if(reviewVideo){
-reviewVideo.value="";
-}
+document.getElementById("reviewImages").value="";
+document.getElementById("reviewVideo").value="";
 loadReviews();
 }
 async function loadReviews(){
@@ -481,88 +374,84 @@ const snap =
 await getDocs(
 query(
 collection(db,"reviews"),
-where("productId","==",productId),
-orderBy("createdAt","desc")
+where(
+"productId",
+"==",
+productId
+)
 )
 );
-
 reviewList.innerHTML = "";
 
 let totalRating = 0;
-let ratedCount = 0;
+
+const allReviews = [];
+
+snap.forEach(docu=>{
+
+ const r = docu.data();
+
+ allReviews.push(r);
+
+ totalRating += Number(r.rating || 5);
+
+});
+
+const totalReview = allReviews.length;
+const commentCount =
+document.getElementById("commentCount");
+
+if(commentCount){
+    commentCount.textContent =
+        `${totalReview} Bình luận`;
+}
+const avg =
+totalReview
+? (
+totalRating /
+totalReview
+).toFixed(1)
+: 0;
 let count5 = 0;
 let count4 = 0;
 let count3 = 0;
 let count2 = 0;
 let count1 = 0;
 
-const allReviews = [];
-
-
-
-
 snap.forEach(docu => {
 
-  const r = {
-    id: docu.id,
-    ...docu.data()
-  };
+  const r = docu.data();
 
-  allReviews.push(r);
+  switch(Number(r.rating)){
 
-  const rating = Number(r.rating || 0);
+    case 5:
+      count5++;
+      break;
 
-  if(rating > 0){
+    case 4:
+      count4++;
+      break;
 
-    totalRating += rating;
-    ratedCount++;
+    case 3:
+      count3++;
+      break;
 
-    switch(rating){
+    case 2:
+      count2++;
+      break;
 
-      case 5:
-        count5++;
-        break;
-
-      case 4:
-        count4++;
-        break;
-
-      case 3:
-        count3++;
-        break;
-
-      case 2:
-        count2++;
-        break;
-
-      case 1:
-        count1++;
-        break;
-
-    }
+    case 1:
+      count1++;
+      break;
 
   }
 
 });
-  const totalReview = allReviews.length;
-
-const commentCount =
-document.getElementById("commentCount");
-
-if(commentCount){
-  commentCount.textContent =
-  `${totalReview} Bình luận`;
-}
-
-const avg =
-ratedCount
-? (totalRating / ratedCount).toFixed(1)
-: 0;
-const p5 = ratedCount ? (count5*100/ratedCount) : 0;
-const p4 = ratedCount ? (count4*100/ratedCount) : 0;
-const p3 = ratedCount ? (count3*100/ratedCount) : 0;
-const p2 = ratedCount ? (count2*100/ratedCount) : 0;
-const p1 = ratedCount ? (count1*100/ratedCount) : 0;
+  const p5 = totalReview ? (count5*100/totalReview) : 0;
+const p4 = totalReview ? (count4*100/totalReview) : 0;
+const p3 = totalReview ? (count3*100/totalReview) : 0;
+const p2 = totalReview ? (count2*100/totalReview) : 0;
+const p1 = totalReview ? (count1*100/totalReview) : 0;
 const summary = reviewSummary;
 
 if(summary){
@@ -581,8 +470,8 @@ summary.innerHTML = `
       ⭐⭐⭐⭐⭐
     </div>
 
-  <div class="count">
-  ${ratedCount} lượt đánh giá
+    <div class="count">
+  ${totalReview} lượt đánh giá
 </div>
 
 <div class="review-stars review-stars-top">
@@ -720,6 +609,23 @@ loadReviews();
 });
 
 },50);
+setTimeout(()=>{
+
+document
+.querySelectorAll(".review-filter button")
+.forEach(btn=>{
+
+btn.onclick = ()=>{
+
+currentFilter = btn.dataset.rate;
+
+loadReviews();
+
+};
+
+});
+
+},50);
 allReviews.forEach(r=>{
 
  if(
@@ -777,24 +683,8 @@ font-size:18px;
 margin:6px 0;
 ">
 
-${r.rating > 0 ? `
-<div style="
-color:#ffb400;
-font-size:18px;
-margin:6px 0;
-">
-${"★".repeat(r.rating)}
-${"☆".repeat(5-r.rating)}
-</div>
-` : `
-<div style="
-color:#666;
-font-size:14px;
-margin:6px 0;
-">
-💬 Bình luận
-</div>
-`}
+${"★".repeat(r.rating || 5)}
+${"☆".repeat(5 - (r.rating || 5))}
 </div>
 <div class="review-content">
 
@@ -967,7 +857,6 @@ if(!user){
 alert("Đăng nhập trước");
 return;
 }
-
 
 // LẤY TỪ REALTIME DATABASE
 const userDoc = await getDoc(
