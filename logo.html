@@ -1245,7 +1245,9 @@ transition:.3s;
 display:flex;
 gap:8px;
 flex-wrap:wrap;
-margin-top:15px;
+margin-top:10px;
+justify-content:flex-end;
+padding-right:10px;
 }
 
 .review-filter button{
@@ -1286,6 +1288,13 @@ border-right:none;
 border-bottom:1px solid #eee;
 padding-right:0;
 padding-bottom:15px;
+}
+
+@media(max-width:768px){
+
+.review-filter{
+justify-content:flex-start;
+padding-right:0;
 }
 
 }
