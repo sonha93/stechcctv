@@ -144,7 +144,7 @@ reviewForm.innerHTML=`
 
 <textarea
 id="reviewContent"
-placeholder="Nhập nội dung đánh giá..."
+placeholder="Nhập nội dung bình luận..."
 ></textarea>
 <div class="review-upload">
 
@@ -176,7 +176,7 @@ class="review-btn"
 id="submitReview"
 >
 
-Gửi đánh giá
+Gửi bình luận
 
 </button>
 
