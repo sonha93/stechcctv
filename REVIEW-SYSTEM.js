@@ -401,10 +401,6 @@ const totalReview = allReviews.length;
 const commentCount =
 document.getElementById("commentCount");
 
-if(commentCount){
-    commentCount.textContent =
-        `${totalReview} Bình luận`;
-}
 const avg =
 totalReview
 ? (
@@ -531,6 +527,13 @@ summary.innerHTML = `
 
 </div>
 
+`;
+
+if(commentCount){
+
+commentCount.innerHTML = `
+${totalReview} Bình luận
+
 <div class="review-filter">
 
 <button data-rate="all"
@@ -564,8 +567,9 @@ class="${currentFilter==="1"?"active":""}">
 </button>
 
 </div>
-
 `;
+
+}
 }
   setTimeout(()=>{
 document
