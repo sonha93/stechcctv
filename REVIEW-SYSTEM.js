@@ -406,7 +406,13 @@ snap.forEach(docu=>{
 });
 
 const totalReview = allReviews.length;
+const commentCount =
+document.getElementById("commentCount");
 
+if(commentCount){
+    commentCount.textContent =
+        `${totalReview} Bình luận`;
+}
 const avg =
 totalReview
 ? (
@@ -473,7 +479,7 @@ summary.innerHTML = `
     </div>
 
     <div class="count">
-      ${totalReview} đánh giá
+      ${totalReview} lượt đánh giá
     </div>
 
   </div>
@@ -526,34 +532,39 @@ summary.innerHTML = `
 
 <div class="review-filter">
 
-<button data-rate="all" class="${currentFilter==="all"?"active":""}">
+<button data-rate="all"
+class="${currentFilter==="all"?"active":""}">
 Tất cả
 </button>
 
-<button data-rate="5" class="${currentFilter==="5"?"active":""}">
-5⭐
+<button data-rate="5"
+class="${currentFilter==="5"?"active":""}">
+5 ⭐
 </button>
 
-<button data-rate="4" class="${currentFilter==="4"?"active":""}">
-4⭐
+<button data-rate="4"
+class="${currentFilter==="4"?"active":""}">
+4 ⭐
 </button>
 
-<button data-rate="3" class="${currentFilter==="3"?"active":""}">
-3⭐
+<button data-rate="3"
+class="${currentFilter==="3"?"active":""}">
+3 ⭐
 </button>
 
-<button data-rate="2" class="${currentFilter==="2"?"active":""}">
-2⭐
+<button data-rate="2"
+class="${currentFilter==="2"?"active":""}">
+2 ⭐
 </button>
 
-<button data-rate="1" class="${currentFilter==="1"?"active":""}">
-1⭐
+<button data-rate="1"
+class="${currentFilter==="1"?"active":""}">
+1 ⭐
 </button>
 
 </div>
 
 `;
-
 }
   setTimeout(()=>{
 
