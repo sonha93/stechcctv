@@ -640,15 +640,21 @@ summary.innerHTML = `
 
   <div class="rating-score">
 
-    <div class="avg">
-      ${avg}
-    </div>
+  <div class="avg">
+  ${avg}
+</div>
 
-    <div>
-      ⭐⭐⭐⭐⭐
-    </div>
+<div class="review-stars review-stars-top">
 
-    <div class="count">
+  <span data-rate="1">★</span>
+  <span data-rate="2">★</span>
+  <span data-rate="3">★</span>
+  <span data-rate="4">★</span>
+  <span data-rate="5">★</span>
+
+</div>
+
+<div class="count">
   ${totalReview} lượt đánh giá
 </div>
 
