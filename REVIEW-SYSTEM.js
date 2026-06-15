@@ -391,7 +391,7 @@ productId
 reviewList.innerHTML = "";
 
 let totalRating = 0;
-let totalReview = snap.size;
+let totalReview = 0;
 
 snap.forEach(docu=>{
 
@@ -404,25 +404,14 @@ Number(r.rating) !== Number(currentFilter)
 return;
 }
 
+totalReview++;
+
 totalRating += Number(
 r.rating || 5
 );
 
 });
-document
-.querySelectorAll(".review-filter button")
-.forEach(btn=>{
 
-btn.onclick = ()=>{
-
-currentFilter =
-btn.dataset.rate;
-
-loadReviews();
-
-};
-
-});
 const avg =
 totalReview
 ? (
@@ -571,9 +560,50 @@ Tất cả
 `;
 
 }
+  setTimeout(()=>{
+
+document
+.querySelectorAll(".review-filter button")
+.forEach(btn=>{
+
+btn.onclick = ()=>{
+
+currentFilter = btn.dataset.rate;
+
+loadReviews();
+
+};
+
+});
+
+},50);
+setTimeout(()=>{
+
+document
+.querySelectorAll(".review-filter button")
+.forEach(btn=>{
+
+btn.onclick = ()=>{
+
+currentFilter = btn.dataset.rate;
+
+loadReviews();
+
+};
+
+});
+
+},50);
 snap.forEach(docu=>{
 
 const r = docu.data();
+
+if(
+currentFilter !== "all" &&
+Number(r.rating) !== Number(currentFilter)
+){
+return;
+}
 
 reviewList.innerHTML += `
 
