@@ -155,15 +155,12 @@ if(!purchased){
 
     reviewForm.innerHTML = `
         <div class="review-card">
-           Gửi đánh giá không thành công!
-Quý khách vui lòng mua hàng để tham gia
-đánh giá sản phẩm.
+            Bạn cần mua sản phẩm để gửi đánh giá sao.
         </div>
     `;
 
     return;
 }
-
 
 
 reviewForm.innerHTML=`
