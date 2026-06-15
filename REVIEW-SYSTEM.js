@@ -1,3 +1,4 @@
+
 import { app, rtdb } from "./auth.js";
 import {
 getFirestore,
@@ -456,9 +457,7 @@ const p1 = totalReview ? (count1*100/totalReview) : 0;
 const summary = reviewSummary;
 
 if(summary){
-<button class="btn-review" id="openReviewForm">
-  Đánh giá sản phẩm
-</button>
+
 summary.innerHTML = `
 
 <div class="rating-overview">
@@ -941,12 +940,4 @@ await buildForm();
 
 await loadReviews();
 
-});
-document.addEventListener("click", (e) => {
-  if (e.target.id === "openReviewForm") {
-    document.querySelector(".review-form").scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
-  }
 });
