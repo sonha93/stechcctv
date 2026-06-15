@@ -327,12 +327,9 @@ collection(db,"reviews"),
 
   uid:user.uid,
 
- userName:
-  userData.display ||
+userName:
+  userData.displayName ||
   userData.name ||
-  userData.fullName ||
-  user.displayName ||
-  user.email ||
   "Khách hàng",
   
   position: userData.position || "",
