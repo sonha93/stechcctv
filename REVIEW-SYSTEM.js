@@ -532,7 +532,9 @@ summary.innerHTML = `
 if(commentCount){
 
 commentCount.innerHTML = `
-${totalReview} Bình luận
+<span class="comment-text">
+    ${totalReview} Bình luận
+</span>
 
 <div class="review-filter">
 
@@ -568,7 +570,6 @@ class="${currentFilter==="1"?"active":""}">
 
 </div>
 `;
-
 }
 }
   setTimeout(()=>{
