@@ -176,7 +176,9 @@ hidden
 class="review-btn"
 id="submitReview"
 >
-Đánh giá sản phẩm
+
+Gửi đánh giá
+
 </button>
 
 </div>
@@ -404,7 +406,7 @@ snap.forEach(docu=>{
 });
 
 const totalReview = allReviews.length;
-const totalComments = allReviews.length;
+
 const avg =
 totalReview
 ? (
@@ -521,9 +523,7 @@ summary.innerHTML = `
   </div>
 
 </div>
-<h2 class="review-title">
-  ${totalComments} Bình luận
-</h2>
+
 <div class="review-filter">
 
 <button data-rate="all" class="${currentFilter==="all"?"active":""}">
