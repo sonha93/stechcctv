@@ -459,30 +459,24 @@ const summary = reviewSummary;
 if(summary){
 
 summary.innerHTML = `
-setTimeout(() => {
-  const btn = document.getElementById("btnOpenReview");
 
-  if (btn) {
-    btn.onclick = () => {
-      document.getElementById("reviewForm")
-        .scrollIntoView({ behavior: "smooth" });
-    };
-  }
-}, 100);
 <div class="rating-overview">
 
-<div class="rating-score">
+  <div class="rating-score">
 
-  <div class="avg-line">
-    <span class="avg">${avg}⭐</span>
-    <span class="count">${totalReview} đánh giá</span>
+    <div class="avg">
+      ${avg}
+    </div>
+
+    <div>
+      ⭐⭐⭐⭐⭐
+    </div>
+
+    <div class="count">
+      ${totalReview} đánh giá
+    </div>
+
   </div>
-
-  <button id="btnOpenReview" class="btn-review">
-    Đánh giá sản phẩm
-  </button>
-
-</div>
 
   <div class="rating-bars">
 
@@ -646,7 +640,15 @@ ${timeAgo(r.createdAt)}
 </div>
 
 </div>
+<div style="
+color:#ffb400;
+font-size:18px;
+margin:6px 0;
+">
 
+${"★".repeat(r.rating || 5)}
+${"☆".repeat(5 - (r.rating || 5))}
+</div>
 <div class="review-content">
 
 ${r.content}
