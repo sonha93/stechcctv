@@ -1,4 +1,3 @@
-
 import { app, rtdb } from "./auth.js";
 import {
 getFirestore,
@@ -57,25 +56,10 @@ method:"POST",
 body:formData
 });
 
-if(!res.ok){
-
-    throw new Error(
-        "Cloudinary upload failed"
-    );
-
-}
-
 const data = await res.json();
 
-if(!data.secure_url){
-
-    throw new Error(
-        "Không lấy được URL upload"
-    );
-
-}
-
 return data.secure_url;
+
 }
 async function hasPurchased(uid){
 
@@ -139,42 +123,15 @@ return `${Math.floor(diff/86400)} ngày trước`;
 async function buildForm(){
 
 const user = auth.currentUser;
+console.log("photoURL =", user.photoURL);
+if(!user) return;
 
-if(!user){
-    reviewForm.innerHTML = `
-        <div class="review-card">
-            Vui lòng đăng nhập để đánh giá.
-        </div>
-    `;
-    return;
-}
-
-const purchased = await hasPurchased(user.uid);
-
-if(!purchased){
-
-    reviewForm.innerHTML = `
-        <div class="review-card">
-            Bạn cần mua sản phẩm để gửi đánh giá sao.
-        </div>
-    `;
-
-    return;
-}
 
 
 reviewForm.innerHTML=`
 
 <div class="review-form">
-<div class="review-stars">
 
-    <span data-rate="1">★</span>
-    <span data-rate="2">★</span>
-    <span data-rate="3">★</span>
-    <span data-rate="4">★</span>
-    <span data-rate="5">★</span>
-
-</div>
 
 
 <textarea
@@ -198,7 +155,7 @@ hidden
 <input
 type="file"
 id="reviewVideo"
-accept="video/mp4,video/webm"
+accept="video/*"
 hidden
 >
 
@@ -229,32 +186,22 @@ document.getElementById("reviewImages");
 
 imageInput.addEventListener("change",()=>{
 
-    // Giới hạn tối đa 5 ảnh
-    if(imageInput.files.length > 5){
+const preview =
+document.getElementById("uploadPreview");
 
-        alert("Chỉ được tải tối đa 5 ảnh");
+preview.innerHTML = "";
 
-        imageInput.value = "";
+[...imageInput.files].forEach(file=>{
 
-        return;
-    }
+const img =
+document.createElement("img");
 
-    const preview =
-    document.getElementById("uploadPreview");
+img.src =
+URL.createObjectURL(file);
 
-    preview.innerHTML = "";
+preview.appendChild(img);
 
-    [...imageInput.files].forEach(file=>{
-
-        const img =
-        document.createElement("img");
-
-        img.src =
-        URL.createObjectURL(file);
-
-        preview.appendChild(img);
-
-    });
+});
 
 });
 document
@@ -286,184 +233,139 @@ Number(s.dataset.rate)
 }
 async function submitReview(){
 
-    const user = auth.currentUser;
+const user = auth.currentUser;
+const oldReview =
+await getDocs(
 
-    if(!user){
-        alert("Đăng nhập trước");
-        return;
-    }
+query(
+collection(db,"reviews"),
+where("uid","==",user.uid),
+where("productId","==",productId)
+)
 
-    // KIỂM TRA ĐÃ MUA HÀNG CHƯA
-    const purchased = await hasPurchased(user.uid);
+);
 
-    if(!purchased){
-        alert(
-            "Gửi đánh giá không thành công!\n" +
-            "Quý khách vui lòng mua hàng để tham gia đánh giá sản phẩm."
-        );
-        return;
-    }
+if(!oldReview.empty){
 
-    // KIỂM TRA ĐÃ ĐÁNH GIÁ CHƯA
-    const oldReview = await getDocs(
-        query(
-            collection(db,"reviews"),
-            where("uid","==",user.uid),
-            where("productId","==",productId)
-        )
-    );
+alert("Bạn đã đánh giá rồi");
 
-    if(!oldReview.empty){
-        alert("Bạn đã đánh giá rồi");
-        return;
-    }
-
-    const userDoc = await getDoc(
-        doc(db,"users",user.uid)
-    );
-
-    const userData = userDoc.exists()
-        ? userDoc.data()
-        : {};
-
-    const content = document
-        .getElementById("reviewContent")
-        .value
-        .trim();
-
-    if(!content){
-        alert("Nhập nội dung");
-        return;
-    }
-
-    const imageFiles =
-        document.getElementById("reviewImages").files;
-for(const file of imageFiles){
-
-    if(file.size > 10 * 1024 * 1024){
-
-        alert("Mỗi ảnh tối đa 10MB");
-
-        return;
-    }
-
-}  
-   let images = [];
-
-for(const file of imageFiles){
-
-    try{
-
-        const url = await uploadToCloudinary(
-            file,
-            "image"
-        );
-
-        images.push(url);
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            "Tải ảnh lên thất bại. Vui lòng thử lại."
-        );
-
-        return;
-    }
+return;
 
 }
+const userDoc = await getDoc(
+  doc(db,"users",user.uid)
+);
 
+const userData =
+  userDoc.exists()
+  ? userDoc.data()
+  : {};
+
+console.log("UID LOGIN =", user.uid);
+console.log("USER DATA =", userData);
+const purchased =
+await hasPurchased(user.uid);
+console.log("USER DATA:", userData);
+const content =
+document
+.getElementById("reviewContent")
+.value
+.trim();
+
+if(!content){
+
+alert("Nhập nội dung");
+
+return;
+
+}
+  const imageFiles =
+document
+.getElementById("reviewImages")
+.files;
+
+let images=[];
+
+for(const file of imageFiles){
+
+const url =
+await uploadToCloudinary(
+file,
+"image"
+);
+
+images.push(url);
+
+}
   const videoFile =
 document
 .getElementById("reviewVideo")
 .files[0];
 
-let video = "";
-
-// Giới hạn video 100MB
-if(
-    videoFile &&
-    videoFile.size > 100 * 1024 * 1024
-){
-
-    alert("Video tối đa 100MB");
-
-    return;
-}
+let video="";
 
 if(videoFile){
 
-    try{
-
-        video =
-        await uploadToCloudinary(
-            videoFile,
-            "video"
-        );
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            "Tải video lên thất bại. Vui lòng thử lại."
-        );
-
-        return;
-    }
+video =
+await uploadToCloudinary(
+videoFile,
+"video"
+);
 
 }
-    await addDoc(
-        collection(db,"reviews"),
-        {
-            replies: [],
-            productId,
 
-            uid: user.uid,
+await addDoc(
+collection(db,"reviews"),
+{
+  replies:[],
+  productId,
 
-            userName:
-                userData.name ||
-                userData.displayName ||
-                user.displayName ||
-                user.email ||
-                "Khách hàng",
+  uid:user.uid,
 
-            avatar:
-                userData.avatar || "",
+  userName:
+  userData.name ||
+  userData.displayName ||
+  user.displayName ||
+  user.email ||
+  "Khách hàng",
+  
+  position: userData.position || "",
 
-            position:
-                userData.position || "",
 
-            verified: true,
 
-            content,
+avatar:
+userData.avatar || "",
 
-            rating: selectedRating,
+position:
+userData.position || "",
 
-            likes: 0,
+verified:purchased,
 
-            likedBy: [],
+content,
+rating:selectedRating,
+likes:0,
+likedBy:[],
+createdAt:serverTimestamp(),
+images:images,
+video:video
+}
+);
+alert("Cảm ơn Bạn đã đánh giá sản phẩm");
 
-            createdAt: serverTimestamp(),
+document
+.getElementById("reviewContent")
+.value = "";
+selectedRating = 5;
 
-            images,
+document
+.querySelectorAll(".review-stars span")
+.forEach(s=>{
+s.style.color="#ffb400";
+});
 
-            video
-        }
-    );
-
-    alert("Cảm ơn bạn đã đánh giá sản phẩm");
-
-    document.getElementById("reviewContent").value = "";
-
-    document.getElementById("reviewImages").value = "";
-
-    document.getElementById("reviewVideo").value = "";
-
-    selectedRating = 5;
-
-    loadReviews();
+document.getElementById("reviewImages").value="";
+document.getElementById("reviewVideo").value="";
+loadReviews();
 }
 async function loadReviews(){
 
@@ -486,10 +388,7 @@ const allReviews = [];
 
 snap.forEach(docu=>{
 
- const r = {
-   id: docu.id,
-   ...docu.data()
- };
+ const r = docu.data();
 
  allReviews.push(r);
 
@@ -501,6 +400,10 @@ const totalReview = allReviews.length;
 const commentCount =
 document.getElementById("commentCount");
 
+if(commentCount){
+    commentCount.textContent =
+        `${totalReview} Bình luận`;
+}
 const avg =
 totalReview
 ? (
@@ -627,15 +530,6 @@ summary.innerHTML = `
 
 </div>
 
-`;
-
-if(commentCount){
-
-commentCount.innerHTML = `
-<span class="comment-text">
-    ${totalReview} Bình luận
-</span>
-
 <div class="review-filter">
 
 <button data-rate="all"
@@ -669,8 +563,8 @@ class="${currentFilter==="1"?"active":""}">
 </button>
 
 </div>
+
 `;
-}
 }
   setTimeout(()=>{
 document
@@ -714,17 +608,23 @@ loadReviews();
 });
 
 },50);
-allReviews.sort((a,b)=>{
+setTimeout(()=>{
 
-    const timeA =
-        a.createdAt?.toMillis?.() || 0;
+document
+.querySelectorAll(".review-filter button")
+.forEach(btn=>{
 
-    const timeB =
-        b.createdAt?.toMillis?.() || 0;
+btn.onclick = ()=>{
 
-    return timeB - timeA;
+currentFilter = btn.dataset.rate;
+
+loadReviews();
+
+};
 
 });
+
+},50);
 allReviews.forEach(r=>{
 
  if(
