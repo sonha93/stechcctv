@@ -38,6 +38,7 @@ document.getElementById("reviewList");
 const reviewForm =
 document.getElementById("reviewForm");
 let selectedRating = 5;
+let currentFilter = "all";
 async function uploadToCloudinary(file,type="image"){
 
 const formData = new FormData();
@@ -396,12 +397,32 @@ snap.forEach(docu=>{
 
 const r = docu.data();
 
+if(
+currentFilter !== "all" &&
+Number(r.rating) !== Number(currentFilter)
+){
+return;
+}
+
 totalRating += Number(
 r.rating || 5
 );
 
 });
+document
+.querySelectorAll(".review-filter button")
+.forEach(btn=>{
 
+btn.onclick = ()=>{
+
+currentFilter =
+btn.dataset.rate;
+
+loadReviews();
+
+};
+
+});
 const avg =
 totalReview
 ? (
@@ -409,23 +430,144 @@ totalRating /
 totalReview
 ).toFixed(1)
 : 0;
+let count5 = 0;
+let count4 = 0;
+let count3 = 0;
+let count2 = 0;
+let count1 = 0;
 
+snap.forEach(docu => {
+
+  const r = docu.data();
+
+  switch(Number(r.rating)){
+
+    case 5:
+      count5++;
+      break;
+
+    case 4:
+      count4++;
+      break;
+
+    case 3:
+      count3++;
+      break;
+
+    case 2:
+      count2++;
+      break;
+
+    case 1:
+      count1++;
+      break;
+
+  }
+
+});
+  const p5 = totalReview ? (count5*100/totalReview) : 0;
+const p4 = totalReview ? (count4*100/totalReview) : 0;
+const p3 = totalReview ? (count3*100/totalReview) : 0;
+const p2 = totalReview ? (count2*100/totalReview) : 0;
+const p1 = totalReview ? (count1*100/totalReview) : 0;
 const summary = reviewSummary;
 
 if(summary){
 
 summary.innerHTML = `
-<div style="
-padding:15px;
-background:#fff;
-border-radius:12px;
-margin-bottom:15px;
-font-size:18px;
-font-weight:bold;
-">
-${avg} ⭐
-(${totalReview} đánh giá)
+
+<div class="rating-overview">
+
+  <div class="rating-score">
+
+    <div class="avg">
+      ${avg}
+    </div>
+
+    <div>
+      ⭐⭐⭐⭐⭐
+    </div>
+
+    <div class="count">
+      ${totalReview} đánh giá
+    </div>
+
+  </div>
+
+  <div class="rating-bars">
+
+    <div class="rating-row">
+      <span>5⭐</span>
+      <div class="bar">
+        <div class="fill" style="width:${p5}%"></div>
+      </div>
+      <span>${count5}</span>
+    </div>
+
+    <div class="rating-row">
+      <span>4⭐</span>
+      <div class="bar">
+        <div class="fill" style="width:${p4}%"></div>
+      </div>
+      <span>${count4}</span>
+    </div>
+
+    <div class="rating-row">
+      <span>3⭐</span>
+      <div class="bar">
+        <div class="fill" style="width:${p3}%"></div>
+      </div>
+      <span>${count3}</span>
+    </div>
+
+    <div class="rating-row">
+      <span>2⭐</span>
+      <div class="bar">
+        <div class="fill" style="width:${p2}%"></div>
+      </div>
+      <span>${count2}</span>
+    </div>
+
+    <div class="rating-row">
+      <span>1⭐</span>
+      <div class="bar">
+        <div class="fill" style="width:${p1}%"></div>
+      </div>
+      <span>${count1}</span>
+    </div>
+
+  </div>
+
 </div>
+
+<div class="review-filter">
+
+<button data-rate="all" class="${currentFilter==="all"?"active":""}">
+Tất cả
+</button>
+
+<button data-rate="5" class="${currentFilter==="5"?"active":""}">
+5⭐
+</button>
+
+<button data-rate="4" class="${currentFilter==="4"?"active":""}">
+4⭐
+</button>
+
+<button data-rate="3" class="${currentFilter==="3"?"active":""}">
+3⭐
+</button>
+
+<button data-rate="2" class="${currentFilter==="2"?"active":""}">
+2⭐
+</button>
+
+<button data-rate="1" class="${currentFilter==="1"?"active":""}">
+1⭐
+</button>
+
+</div>
+
 `;
 
 }
