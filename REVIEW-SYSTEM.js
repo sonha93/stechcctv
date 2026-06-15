@@ -137,7 +137,7 @@ reviewForm.innerHTML=`
 
 <textarea
 id="reviewContent"
-placeholder="Nhập đánh giá..."
+placeholder="Nhập nội dung bình luận..."
 ></textarea>
 <div class="review-upload">
 
