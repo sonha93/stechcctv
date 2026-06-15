@@ -391,26 +391,20 @@ productId
 reviewList.innerHTML = "";
 
 let totalRating = 0;
-let totalReview = 0;
+
+const allReviews = [];
 
 snap.forEach(docu=>{
 
-const r = docu.data();
+ const r = docu.data();
 
-if(
-currentFilter !== "all" &&
-Number(r.rating) !== Number(currentFilter)
-){
-return;
-}
+ allReviews.push(r);
 
-totalReview++;
-
-totalRating += Number(
-r.rating || 5
-);
+ totalRating += Number(r.rating || 5);
 
 });
+
+const totalReview = allReviews.length;
 
 const avg =
 totalReview
@@ -594,19 +588,16 @@ loadReviews();
 });
 
 },50);
-snap.forEach(docu=>{
+allReviews.forEach(r=>{
 
-const r = docu.data();
+ if(
+   currentFilter !== "all" &&
+   Number(r.rating) !== Number(currentFilter)
+ ){
+   return;
+ }
 
-if(
-currentFilter !== "all" &&
-Number(r.rating) !== Number(currentFilter)
-){
-return;
-}
-
-reviewList.innerHTML += `
-
+ reviewList.innerHTML += `
 <div class="review-card">
 
 <div class="review-user">
@@ -704,21 +695,21 @@ border-radius:10px;
 
 <div
 class="review-like"
-onclick="likeReview('${docu.id}')"
+onclick="likeReview('${r.id}')"
 >
 👍 ${r.likes || 0}
 </div>
 
 <div
 class="reply-btn"
-onclick="toggleReply('${docu.id}')"
+onclick="toggleReply('${r.id}')"
 >
 Trả lời
 </div>
 
 </div>
 <div
-id="replyBox-${docu.id}"
+id="replyBox-${r.id}"
 class="reply-box"
 style="display:none;"
 >
@@ -729,20 +720,20 @@ style="display:none;"
 
 <span
 class="reply-close"
-onclick="toggleReply('${docu.id}')"
+onclick="toggleReply('${r.id}')"
 >
 ✕
 </span>
 </div>
 
 <textarea
-id="replyInput-${docu.id}"
+id="replyInput-${r.id}"
 placeholder="Nhập nội dung trả lời..."
 ></textarea>
 
 <button
 class="reply-send-btn"
-onclick="replyReview('${docu.id}')"
+onclick="replyReview('${r.id}')"
 >
 Gửi
 </button>
