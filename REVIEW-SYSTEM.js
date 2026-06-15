@@ -126,23 +126,15 @@ return `${Math.floor(diff/3600)} giờ trước`;
 return `${Math.floor(diff/86400)} ngày trước`;
 
 }
-async function buildForm(user){
+async function buildForm(){
 
+const user = auth.currentUser;
 
-if (!user) return;
+if(!user) return;
 
 console.log("photoURL =", user.photoURL);
 
-await new Promise(r => setTimeout(r, 300));
 
-const purchased = await hasPurchased(user.uid);
-if (!purchased) {
-  reviewForm.innerHTML = `
-    <div style="padding:10px;color:#888;">
-      ⚠ Bạn chỉ có thể đánh giá sau khi đã mua sản phẩm.
-    </div>
-  `;
-}
 
 reviewForm.innerHTML=`
 
@@ -308,11 +300,16 @@ const userData =
 
 console.log("UID LOGIN =", user.uid);
 console.log("USER DATA =", userData);
-const purchased = await hasPurchased(user.uid);
+const purchased =
+await hasPurchased(user.uid);
+  if(!purchased){
 
-if (!purchased) {
-  alert("Bạn cần mua sản phẩm trước khi đánh giá");
-  return;
+alert(
+"Bạn cần mua sản phẩm trước khi bình luận"
+);
+
+return;
+
 }
 const content =
 document
@@ -384,7 +381,8 @@ collection(db,"reviews"),
 avatar:
 userData.avatar || "",
 
-
+position:
+userData.position || "",
 
 verified:purchased,
 
@@ -1191,7 +1189,8 @@ document.body.appendChild(popup);
 }
 auth.onAuthStateChanged(async user=>{
 
-await buildForm(user);
+await buildForm();
+
 await loadReviews();
 
 await loadComments();
