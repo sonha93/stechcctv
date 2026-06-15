@@ -169,7 +169,7 @@ class="review-btn"
 id="submitReview"
 >
 
-Gửi đánh giá
+Gửi bình luận
 
 </button>
 
