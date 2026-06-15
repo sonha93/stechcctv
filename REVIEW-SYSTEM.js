@@ -302,21 +302,25 @@ preview.appendChild(img);
 
 });
 document.querySelectorAll("#reviewForm .review-stars span")
-.forEach(star => {
+.forEach(star=>{
 
-  star.onclick = () => {
-    formRating = Number(star.dataset.rate);
+star.style.color="#ffb400";
 
-    document.querySelectorAll("#reviewForm .review-stars span")
+star.onclick = () => {
+  formRating = Number(star.dataset.rate);
+
+  document
+    .querySelectorAll("#reviewForm .review-stars span")
     .forEach(s => {
       s.style.color =
         Number(s.dataset.rate) <= formRating
           ? "#ffb400"
           : "#ccc";
     });
-  };
+};
 
 });
+}
 async function submitReview(){
 
 const user = auth.currentUser;
@@ -634,6 +638,14 @@ summary.innerHTML = `
   ${avg}
 </div>
 
+<div class="review-stars review-stars-top">
+  <span data-rate="1">★</span>
+  <span data-rate="2">★</span>
+  <span data-rate="3">★</span>
+  <span data-rate="4">★</span>
+  <span data-rate="5">★</span>
+</div>
+
 <div class="count">
   ${totalReview} lượt đánh giá
 </div>
@@ -741,6 +753,35 @@ class="${currentFilter==="1"?"active":""}">
 `;
 }
 }
+  setTimeout(()=>{
+document
+.querySelectorAll(".review-stars-top span")
+.forEach(star=>{
+
+star.style.color="#ffb400";
+
+star.onclick=()=>{
+
+selectedRating =
+Number(star.dataset.rate);
+
+document
+.querySelectorAll(".review-stars-top span")
+.forEach(s=>{
+
+s.style.color =
+Number(s.dataset.rate)
+<= selectedRating
+? "#ffb400"
+: "#ccc";
+
+});
+
+};
+
+});
+document
+.querySelectorAll(".review-filter button")
 .forEach(btn=>{
 
 btn.onclick = ()=>{
