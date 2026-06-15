@@ -169,7 +169,7 @@ reviewForm.innerHTML=`
 
 id="reviewContent"
 
-placeholder="Nhập nội dung đánh giá sản phẩm..."
+placeholder="Nhập nội dung bình luận sản phẩm..."
 
 ></textarea>
 
@@ -233,7 +233,7 @@ id="submitReview"
 
 >
 
-Gửi đánh giá
+Gửi bình luận
 
 </button>
 
