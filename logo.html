@@ -1289,6 +1289,7 @@ border-bottom:1px solid #eee;
 padding-right:0;
 padding-bottom:15px;
 }
+}
 
 @media(max-width:768px){
 
@@ -1313,13 +1314,35 @@ padding-right:0;
 .review-filter button{
     min-width:70px;
 }
-	.review-stars-top{
-    margin-top:15px;
-    font-size:32px;
+.review-stars-top{
     display:flex;
     justify-content:center;
-    gap:6px;
+    align-items:center;
+    gap:4px;
+    margin:12px 0;
+    font-size:30px;
+    line-height:1;
+}
+
+.review-stars-top span{
+    color:#ffb400;
     cursor:pointer;
+}
+	.rating-score{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+	.score-line{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+}
+
+.score-line .avg{
+    font-size:48px;
+    color:#ff9800;
 }
 }
 </style>
