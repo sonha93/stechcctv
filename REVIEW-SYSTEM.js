@@ -38,6 +38,11 @@ document.getElementById("reviewList");
 
 const reviewForm =
 document.getElementById("reviewForm");
+const commentForm =
+document.getElementById("commentForm");
+
+const commentList =
+document.getElementById("commentList");
 let selectedRating = 5;
 let currentFilter = "all";
 async function uploadToCloudinary(file,type="image"){
@@ -124,8 +129,10 @@ return `${Math.floor(diff/86400)} ngày trước`;
 async function buildForm(){
 
 const user = auth.currentUser;
-console.log("photoURL =", user.photoURL);
+
 if(!user) return;
+
+console.log("photoURL =", user.photoURL);
 
 
 
@@ -137,7 +144,7 @@ reviewForm.innerHTML=`
 
 <textarea
 id="reviewContent"
-placeholder="Nhập nội dung bình luận..."
+placeholder="Nhập nội dung đánh giá..."
 ></textarea>
 <div class="review-upload">
 
@@ -169,7 +176,7 @@ class="review-btn"
 id="submitReview"
 >
 
-Gửi bình luận
+Gửi đánh giá
 
 </button>
 
@@ -182,6 +189,35 @@ Gửi bình luận
 document
 .getElementById("submitReview")
 .onclick = submitReview;
+if(commentForm){
+
+commentForm.innerHTML = `
+
+<div class="comment-form">
+
+<textarea
+id="commentContent"
+placeholder="Nhập bình luận..."
+></textarea>
+
+<button
+id="submitComment"
+class="review-btn"
+>
+
+Gửi bình luận
+
+</button>
+
+</div>
+
+`;
+
+document
+.getElementById("submitComment")
+.onclick = submitComment;
+
+}
 const imageInput =
 document.getElementById("reviewImages");
 
@@ -266,7 +302,15 @@ console.log("UID LOGIN =", user.uid);
 console.log("USER DATA =", userData);
 const purchased =
 await hasPurchased(user.uid);
-console.log("USER DATA:", userData);
+  if(!purchased){
+
+alert(
+"Bạn cần mua sản phẩm trước khi đánh giá"
+);
+
+return;
+
+}
 const content =
 document
 .getElementById("reviewContent")
@@ -367,6 +411,82 @@ s.style.color="#ffb400";
 document.getElementById("reviewImages").value="";
 document.getElementById("reviewVideo").value="";
 loadReviews();
+}
+async function submitComment(){
+
+const user =
+auth.currentUser;
+
+if(!user){
+
+alert("Đăng nhập trước");
+
+return;
+
+}
+
+const content =
+document
+.getElementById("commentContent")
+.value
+.trim();
+
+if(!content){
+
+alert("Nhập nội dung");
+
+return;
+
+}
+
+const userDoc =
+await getDoc(
+doc(db,"users",user.uid)
+);
+
+const userData =
+userDoc.exists()
+? userDoc.data()
+: {};
+
+await addDoc(
+collection(db,"comments"),
+{
+
+productId,
+
+uid:user.uid,
+
+userName:
+userData.name ||
+user.displayName ||
+user.email ||
+"Khách hàng",
+
+avatar:
+userData.avatar || "",
+
+position:
+userData.position || "",
+
+content,
+
+likes:0,
+
+likedBy:[],
+
+createdAt:
+serverTimestamp()
+
+}
+);
+
+document
+.getElementById("commentContent")
+.value="";
+
+loadComments();
+
 }
 async function loadReviews(){
 
@@ -845,7 +965,95 @@ box.style.display === "none"
 : "none";
 
 };
+async function loadComments(){
 
+if(!commentList)
+return;
+
+const snap =
+await getDocs(
+
+query(
+
+collection(db,"comments"),
+
+where(
+"productId",
+"==",
+productId
+)
+
+)
+
+);
+
+commentList.innerHTML="";
+
+snap.forEach(docu=>{
+
+const c = {
+
+id: docu.id,
+
+...docu.data()
+
+};
+
+commentList.innerHTML += `
+
+<div class="review-card">
+
+<div class="review-user">
+
+<img
+class="review-avatar"
+src="${
+c.avatar ||
+'https://i.ibb.co/Z1kv9nJj/logo.png'
+}"
+>
+
+<div>
+
+<div class="review-name">
+
+${c.userName}
+
+${c.position ? `
+
+<span class="admin-badge">
+
+${c.position}
+
+</span>
+
+` : ""}
+
+</div>
+
+<div class="review-time">
+
+${timeAgo(c.createdAt)}
+
+</div>
+
+</div>
+
+</div>
+
+<div class="review-content">
+
+${c.content}
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
 window.replyReview = async function(id){
 
 const input =
@@ -984,5 +1192,7 @@ auth.onAuthStateChanged(async user=>{
 await buildForm();
 
 await loadReviews();
+
+await loadComments();
 
 });
