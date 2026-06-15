@@ -305,7 +305,7 @@ await hasPurchased(user.uid);
   if(!purchased){
 
 alert(
-"Bạn cần mua sản phẩm trước khi đánh giá"
+"Bạn cần mua sản phẩm trước khi bình luận"
 );
 
 return;
