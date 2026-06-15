@@ -459,15 +459,13 @@ summary.innerHTML = `
       ${avg}
     </div>
 
-    <div>
-      ⭐⭐⭐⭐⭐
-    </div>
+  <div>⭐⭐⭐⭐⭐</div>
 
-   <button class="review-btn-header">
-  Đánh giá sản phẩm
-</button>
-
-  </div>
+<div style="margin-top:10px;">
+  <button class="review-btn-header">
+    Đánh giá sản phẩm
+  </button>
+</div>
 
   <div class="rating-bars">
 
@@ -515,9 +513,6 @@ summary.innerHTML = `
 
 </div>
 
-<button class="review-btn-header">
-  Đánh giá sản phẩm
-</button>
 
 <div class="review-filter">
 
