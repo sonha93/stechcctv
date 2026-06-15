@@ -133,15 +133,7 @@ reviewForm.innerHTML=`
 
 <div class="review-form">
 
-<div class="review-stars">
 
-<span data-rate="1">★</span>
-<span data-rate="2">★</span>
-<span data-rate="3">★</span>
-<span data-rate="4">★</span>
-<span data-rate="5">★</span>
-
-</div>
 
 <textarea
 id="reviewContent"
@@ -479,9 +471,18 @@ summary.innerHTML = `
     </div>
 
     <div class="count">
-      ${totalReview} lượt đánh giá
-    </div>
+  ${totalReview} lượt đánh giá
+</div>
 
+<div class="review-stars review-stars-top">
+
+  <span data-rate="1">★</span>
+  <span data-rate="2">★</span>
+  <span data-rate="3">★</span>
+  <span data-rate="4">★</span>
+  <span data-rate="5">★</span>
+
+</div>
   </div>
 
   <div class="rating-bars">
@@ -567,7 +568,32 @@ class="${currentFilter==="1"?"active":""}">
 `;
 }
   setTimeout(()=>{
+document
+.querySelectorAll(".review-stars-top span")
+.forEach(star=>{
 
+star.style.color="#ffb400";
+
+star.onclick=()=>{
+
+selectedRating =
+Number(star.dataset.rate);
+
+document
+.querySelectorAll(".review-stars-top span")
+.forEach(s=>{
+
+s.style.color =
+Number(s.dataset.rate)
+<= selectedRating
+? "#ffb400"
+: "#ccc";
+
+});
+
+};
+
+});
 document
 .querySelectorAll(".review-filter button")
 .forEach(btn=>{
