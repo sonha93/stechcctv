@@ -822,23 +822,6 @@ block:"start"
 
 }
 },50);
-setTimeout(()=>{
-
-document
-.querySelectorAll(".review-filter button")
-.forEach(btn=>{
-
-btn.onclick = ()=>{
-
-currentFilter = btn.dataset.rate;
-
-loadReviews();
-
-};
-
-});
-
-},50);
 allReviews.forEach(r=>{
 
  if(
