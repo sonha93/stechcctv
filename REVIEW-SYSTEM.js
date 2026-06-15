@@ -142,7 +142,6 @@ if (!purchased) {
       ⚠ Bạn chỉ có thể đánh giá sau khi đã mua sản phẩm.
     </div>
   `;
-  return; // ⛔ chặn luôn không render form review nữa
 }
 
 reviewForm.innerHTML=`
