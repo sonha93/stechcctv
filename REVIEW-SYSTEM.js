@@ -133,7 +133,7 @@ const user = auth.currentUser;
 
 if(!user) return;
 
-console.log("photoURL =", user.photoURL);
+
 
 
 
