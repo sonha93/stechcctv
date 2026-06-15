@@ -640,18 +640,16 @@ summary.innerHTML = `
 
   <div class="rating-score">
 
-  <div class="avg">
+ <div class="avg">
   ${avg}
 </div>
 
 <div class="review-stars review-stars-top">
-
   <span data-rate="1">★</span>
   <span data-rate="2">★</span>
   <span data-rate="3">★</span>
   <span data-rate="4">★</span>
   <span data-rate="5">★</span>
-
 </div>
 
 <div class="count">
