@@ -43,7 +43,8 @@ document.getElementById("commentForm");
 
 const commentList =
 document.getElementById("commentList");
-let selectedRating = 5;
+let formRating = 5;
+let previewRating = 5;
 let currentFilter = "all";
 async function uploadToCloudinary(file,type="image"){
 
@@ -168,7 +169,7 @@ reviewForm.innerHTML=`
 
 id="reviewContent"
 
-placeholder="Nhập nội dung đánh giá sản phẩm..."
+placeholder="Nhập nội dung bình luận sản phẩm..."
 
 ></textarea>
 
@@ -232,7 +233,7 @@ id="submitReview"
 
 >
 
-Gửi đánh giá
+Gửi bình luận
 
 </button>
 
@@ -300,29 +301,22 @@ preview.appendChild(img);
 });
 
 });
-document
-.querySelectorAll(".review-stars span")
+document.querySelectorAll("#reviewForm .review-stars span")
 .forEach(star=>{
 
 star.style.color="#ffb400";
 
-star.onclick=()=>{
+star.onclick = () => {
+  formRating = Number(star.dataset.rate);
 
-selectedRating =
-Number(star.dataset.rate);
-
-document
-.querySelectorAll(".review-stars span")
-.forEach(s=>{
-
-s.style.color =
-Number(s.dataset.rate)
-<= selectedRating
-? "#ffb400"
-: "#ccc";
-
-});
-
+  document
+    .querySelectorAll("#reviewForm .review-stars span")
+    .forEach(s => {
+      s.style.color =
+        Number(s.dataset.rate) <= formRating
+          ? "#ffb400"
+          : "#ccc";
+    });
 };
 
 });
@@ -446,7 +440,7 @@ userData.position || "",
 verified:purchased,
 
 content,
-rating:selectedRating,
+rating: formRating,
 likes:0,
 likedBy:[],
 createdAt:serverTimestamp(),
@@ -459,7 +453,7 @@ alert("Cảm ơn Bạn đã đánh giá sản phẩm");
 document
 .getElementById("reviewContent")
 .value = "";
-selectedRating = 5;
+previewRating = 5;
 
 document
 .querySelectorAll(".review-stars span")
@@ -821,23 +815,6 @@ block:"start"
 };
 
 }
-},50);
-setTimeout(()=>{
-
-document
-.querySelectorAll(".review-filter button")
-.forEach(btn=>{
-
-btn.onclick = ()=>{
-
-currentFilter = btn.dataset.rate;
-
-loadReviews();
-
-};
-
-});
-
 },50);
 allReviews.forEach(r=>{
 
