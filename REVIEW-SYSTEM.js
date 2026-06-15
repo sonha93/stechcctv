@@ -129,62 +129,64 @@ if(!user) return;
 
 
 
-reviewForm.innerHTML = `
-<div class="review-wrapper">
+reviewForm.innerHTML=`
 
-  <div class="review-left">
-    <div class="review-stars">
-      <span data-rate="1">★</span>
-      <span data-rate="2">★</span>
-      <span data-rate="3">★</span>
-      <span data-rate="4">★</span>
-      <span data-rate="5">★</span>
-    </div>
-  </div>
+<div class="review-form">
 
-  <div class="review-right">
+<div class="review-stars">
 
-    <textarea
-      id="reviewContent"
-      placeholder="Nhập đánh giá..."
-    ></textarea>
-
-    <div class="review-upload">
-
-      <label class="upload-review-btn">
-        📷 Thêm tối đa 5 ảnh và 1 video
-
-        <input
-          type="file"
-          id="reviewImages"
-          multiple
-          accept="image/*"
-          hidden
-        >
-
-        <input
-          type="file"
-          id="reviewVideo"
-          accept="video/*"
-          hidden
-        >
-      </label>
-
-      <div id="uploadPreview"></div>
-
-      <button
-        class="review-btn"
-        id="submitReview"
-      >
-        Gửi đánh giá
-      </button>
-
-    </div>
-
-  </div>
+<span data-rate="1">★</span>
+<span data-rate="2">★</span>
+<span data-rate="3">★</span>
+<span data-rate="4">★</span>
+<span data-rate="5">★</span>
 
 </div>
+
+<textarea
+id="reviewContent"
+placeholder="Nhập đánh giá..."
+></textarea>
+<div class="review-upload">
+
+<label class="upload-review-btn">
+
+📷 Thêm tối đa 5 ảnh và 1 video
+
+<input
+type="file"
+id="reviewImages"
+multiple
+accept="image/*"
+hidden
+>
+
+<input
+type="file"
+id="reviewVideo"
+accept="video/*"
+hidden
+>
+
+</label>
+
+<div id="uploadPreview"></div>
+
+<button
+class="review-btn"
+id="submitReview"
+>
+
+Gửi đánh giá
+
+</button>
+
+</div>
+
+</div>
+
 `;
+
 document
 .getElementById("submitReview")
 .onclick = submitReview;
