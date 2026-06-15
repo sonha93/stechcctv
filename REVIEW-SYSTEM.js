@@ -267,7 +267,7 @@ const userData =
   snap.exists()
   ? snap.val()
   : {};
-
+console.log(userData);
 const purchased =
 await hasPurchased(user.uid);
 console.log("USER DATA:", userData);
@@ -318,7 +318,8 @@ videoFile,
 );
 
 }
-
+console.log("UID =", user.uid);
+console.log("USER DATA =", userData);
 await addDoc(
 collection(db,"reviews"),
 {
