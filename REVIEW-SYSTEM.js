@@ -389,7 +389,10 @@ const allReviews = [];
 
 snap.forEach(docu=>{
 
- const r = docu.data();
+ const r = {
+   id: docu.id,
+   ...docu.data()
+ };
 
  allReviews.push(r);
 
