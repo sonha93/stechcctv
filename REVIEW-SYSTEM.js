@@ -753,54 +753,60 @@ class="${currentFilter==="1"?"active":""}">
 `;
 }
 }
-  setTimeout(()=>{
-const avgRound = Math.round(avg);
+ setTimeout(()=>{
 
-document
-.querySelectorAll(".review-stars-top span")
-.forEach(star=>{
+  const avgRound = Math.round(avg);
 
-star.style.color =
-Number(star.dataset.rate) <= avgRound
-? "#ffb400"
-: "#ccc";
+  document
+    .querySelectorAll(".review-stars-top span")
+    .forEach(star=>{
 
-});
-document
-.querySelectorAll(".review-filter button")
-.forEach(btn=>{
+      star.style.color =
+      Number(star.dataset.rate) <= avgRound
+      ? "#ffb400"
+      : "#ccc";
 
-btn.onclick = ()=>{
+    });
 
-currentFilter = btn.dataset.rate;
+  document
+    .querySelectorAll(".review-filter button")
+    .forEach(btn=>{
 
-loadReviews();
+      btn.onclick = ()=>{
 
-};
+        currentFilter = btn.dataset.rate;
 
-});
-const reviewBtn =
-document.getElementById("openReviewBtn");
+        loadReviews();
 
-if(reviewBtn){
+      };
 
-reviewBtn.onclick = ()=>{
+    });
 
-const box =
-document.getElementById("reviewFormBox");
+  const reviewBtn =
+  document.getElementById("openReviewBtn");
 
-if(box){
+  if(reviewBtn){
 
-box.style.display = "block";
+    reviewBtn.onclick = ()=>{
 
-box.scrollIntoView({
-behavior:"smooth",
-block:"center"
-});
+      const box =
+      document.getElementById("reviewFormBox");
 
-}
+      if(box){
 
-};
+        box.style.display = "block";
+
+        box.scrollIntoView({
+          behavior:"smooth",
+          block:"center"
+        });
+
+      }
+
+    };
+
+  }
+
 },50);
 allReviews.forEach(r=>{
 
