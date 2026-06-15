@@ -259,17 +259,15 @@ alert("Bạn đã đánh giá rồi");
 return;
 
 }
-const userDoc = await getDoc(
-  doc(db,"users",user.uid)
+const snap = await get(
+  ref(rtdb, user.uid)
 );
 
 const userData =
-  userDoc.exists()
-  ? userDoc.data()
+  snap.exists()
+  ? snap.val()
   : {};
 
-console.log("UID LOGIN =", user.uid);
-console.log("USER DATA =", userData);
 const purchased =
 await hasPurchased(user.uid);
 console.log("USER DATA:", userData);
@@ -329,9 +327,10 @@ collection(db,"reviews"),
 
   uid:user.uid,
 
-  userName:
+ userName:
+  userData.display ||
   userData.name ||
-  userData.displayName ||
+  userData.fullName ||
   user.displayName ||
   user.email ||
   "Khách hàng",
