@@ -139,11 +139,10 @@ if(!user) return;
 
 reviewForm.innerHTML=`
 
-<div
-class="review-form"
-id="reviewFormBox"
-style="display:block"
->
+
+
+<div class="review-form">
+
 
 
 <div class="review-stars">
@@ -453,7 +452,7 @@ alert("Cảm ơn Bạn đã đánh giá sản phẩm");
 document
 .getElementById("reviewContent")
 .value = "";
-formRating = 5;
+previewRating = 5;
 
 document
 .querySelectorAll(".review-stars span")
@@ -650,7 +649,16 @@ summary.innerHTML = `
   ${totalReview} lượt đánh giá
 </div>
 
+<div style="margin-top:15px">
 
+<button
+id="openReviewBtn"
+class="review-btn"
+>
+Đánh giá sản phẩm
+</button>
+
+</div>
   </div>
 
   <div class="rating-bars">
@@ -744,35 +752,68 @@ class="${currentFilter==="1"?"active":""}">
 `;
 }
 }
- setTimeout(()=>{
+  setTimeout(()=>{
+document
+.querySelectorAll(".review-stars-top span")
+.forEach(star=>{
 
-  const avgRound = Math.round(avg);
+star.style.color="#ffb400";
 
-  document
-    .querySelectorAll(".review-stars-top span")
-    .forEach(star=>{
+star.onclick=()=>{
 
-      star.style.color =
-      Number(star.dataset.rate) <= avgRound
-      ? "#ffb400"
-      : "#ccc";
+selectedRating =
+Number(star.dataset.rate);
 
-    });
+document
+.querySelectorAll(".review-stars-top span")
+.forEach(s=>{
 
-  document
-    .querySelectorAll(".review-filter button")
-    .forEach(btn=>{
+s.style.color =
+Number(s.dataset.rate)
+<= selectedRating
+? "#ffb400"
+: "#ccc";
 
-      btn.onclick = ()=>{
+});
 
-        currentFilter = btn.dataset.rate;
+};
 
-        loadReviews();
+});
+document
+.querySelectorAll(".review-filter button")
+.forEach(btn=>{
 
-      };
+btn.onclick = ()=>{
 
-    });
+currentFilter = btn.dataset.rate;
 
+loadReviews();
+
+};
+
+});
+const reviewBtn =
+document.getElementById("openReviewBtn");
+
+if(reviewBtn){
+
+reviewBtn.onclick = ()=>{
+
+const form =
+document.getElementById("reviewForm");
+
+if(form){
+
+form.scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+
+}
+
+};
+
+}
 },50);
 allReviews.forEach(r=>{
 
@@ -1109,8 +1150,6 @@ doc(db,"reviews",id),
 replies: arrayUnion({
   name:
     userData.name ||
-    user.displayName ||
-    user.email ||
     "Khách hàng",
 
   avatar:
