@@ -138,53 +138,115 @@ console.log("photoURL =", user.photoURL);
 
 reviewForm.innerHTML=`
 
+
+
 <div class="review-form">
 
 
 
+<div class="review-stars">
+
+
+
+<span data-rate="1">★</span>
+
+<span data-rate="2">★</span>
+
+<span data-rate="3">★</span>
+
+<span data-rate="4">★</span>
+
+<span data-rate="5">★</span>
+
+
+
+</div>
+
+
+
 <textarea
+
 id="reviewContent"
+
 placeholder="Nhập nội dung đánh giá sản phẩm..."
+
 ></textarea>
+
+
+
 <div class="review-upload">
+
+
 
 <label class="upload-review-btn">
 
+
+
 📷 Thêm tối đa 5 ảnh và 1 video
 
-<input
-type="file"
-id="reviewImages"
-multiple
-accept="image/*"
-hidden
->
+
 
 <input
+
 type="file"
-id="reviewVideo"
-accept="video/*"
+
+id="reviewImages"
+
+multiple
+
+accept="image/*"
+
 hidden
+
 >
+
+
+
+<input
+
+type="file"
+
+id="reviewVideo"
+
+accept="video/*"
+
+hidden
+
+>
+
+
 
 </label>
 
+
+
 <div id="uploadPreview"></div>
 
+
+
 <button
+
 class="review-btn"
+
 id="submitReview"
+
 >
 
 Gửi đánh giá
 
 </button>
-</div>
+
+
 
 </div>
+
+
+
+</div>
+
+
 
 `;
-
 document
 .getElementById("submitReview")
 .onclick = submitReview;
@@ -590,13 +652,14 @@ summary.innerHTML = `
   ${totalReview} lượt đánh giá
 </div>
 
-<div class="review-stars review-stars-top">
+<div style="margin-top:15px">
 
-  <span data-rate="1">★</span>
-  <span data-rate="2">★</span>
-  <span data-rate="3">★</span>
-  <span data-rate="4">★</span>
-  <span data-rate="5">★</span>
+<button
+id="openReviewBtn"
+class="review-btn"
+>
+Đánh giá sản phẩm
+</button>
 
 </div>
   </div>
@@ -732,7 +795,28 @@ loadReviews();
 };
 
 });
+const reviewBtn =
+document.getElementById("openReviewBtn");
 
+if(reviewBtn){
+
+reviewBtn.onclick = ()=>{
+
+const form =
+document.getElementById("reviewForm");
+
+if(form){
+
+form.scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+
+}
+
+};
+
+}
 },50);
 setTimeout(()=>{
 
