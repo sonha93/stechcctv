@@ -133,28 +133,14 @@ reviewForm.innerHTML=`
 
 <div class="review-form">
 
-<div class="review-header-box">
-
-  <div class="review-title">
-    ⭐ Đánh giá sản phẩm
-  </div>
-
-  <div class="review-total-stars" id="avgStars">
-    ★★★★★
-  </div>
-
-  <div class="review-note">
-    Chọn số sao bên dưới
-  </div>
-
-</div>
-
 <div class="review-stars">
-  <span data-rate="1">★</span>
-  <span data-rate="2">★</span>
-  <span data-rate="3">★</span>
-  <span data-rate="4">★</span>
-  <span data-rate="5">★</span>
+
+<span data-rate="1">★</span>
+<span data-rate="2">★</span>
+<span data-rate="3">★</span>
+<span data-rate="4">★</span>
+<span data-rate="5">★</span>
+
 </div>
 
 <textarea
@@ -474,19 +460,26 @@ if(summary){
 
 summary.innerHTML = `
 
-<button class="btn-review" id="openReviewForm">
-  ⭐ Đánh giá sản phẩm
-</button>
-
 <div class="rating-overview">
 
   <div class="rating-score">
-    <div class="avg">${avg}</div>
-    <div>⭐⭐⭐⭐⭐</div>
-    <div class="count">${totalReview} đánh giá</div>
+
+    <div class="avg">
+      ${avg}
+    </div>
+
+    <div>
+      ⭐⭐⭐⭐⭐
+    </div>
+
+    <div class="count">
+      ${totalReview} đánh giá
+    </div>
+
   </div>
 
   <div class="rating-bars">
+
     <div class="rating-row">
       <span>5⭐</span>
       <div class="bar">
@@ -947,12 +940,4 @@ await buildForm();
 
 await loadReviews();
 
-});
-document.addEventListener("click", (e) => {
-  if (e.target.id === "openReviewForm") {
-    document.querySelector(".review-form").scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
-  }
 });
