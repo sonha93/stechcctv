@@ -133,7 +133,16 @@ reviewForm.innerHTML=`
 
 <div class="review-form">
 
-<div class="review-stars" style="display:none"></div>
+<div class="review-stars">
+
+<span data-rate="1">★</span>
+<span data-rate="2">★</span>
+<span data-rate="3">★</span>
+<span data-rate="4">★</span>
+<span data-rate="5">★</span>
+
+</div>
+
 <textarea
 id="reviewContent"
 placeholder="Nhập đánh giá..."
@@ -459,13 +468,15 @@ summary.innerHTML = `
       ${avg}
     </div>
 
-  <div>⭐⭐⭐⭐⭐</div>
+    <div>
+      ⭐⭐⭐⭐⭐
+    </div>
 
-<div style="margin-top:10px;">
-  <button class="review-btn-header">
-    Đánh giá sản phẩm
-  </button>
-</div>
+    <div class="count">
+      ${totalReview} đánh giá
+    </div>
+
+  </div>
 
   <div class="rating-bars">
 
@@ -512,7 +523,6 @@ summary.innerHTML = `
   </div>
 
 </div>
-
 
 <div class="review-filter">
 
