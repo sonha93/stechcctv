@@ -1,5 +1,7 @@
 
 import { app, rtdb } from "./auth.js";
+import { getVerifiedBadge }
+from "./verified-users.js";
 import {
 getFirestore,
 collection,
@@ -986,7 +988,7 @@ d="M10.2 15.8l-3-3 1.4-1.4 1.6 1.6 5-5 1.4 1.4z"/>
 Đã mua hàng tại Stech
 </span>
 ` : ""}
-
+${getVerifiedBadge(c.uid)}
 </div>
 
 <div class="review-time">
@@ -1211,7 +1213,7 @@ ${c.position ? `
 ${c.position}
 </span>
 ` : ""}
-
+${getVerifiedBadge(c.uid)}
 ${c.verified ? `
 <span class="verified-badge">
 <svg class="verified-icon" viewBox="0 0 24 24">
@@ -1223,7 +1225,7 @@ d="M10.2 15.8l-3-3 1.4-1.4 1.6 1.6 5-5 1.4 1.4z"/>
 Đã mua hàng tại Stech
 </span>
 ` : ""}
-
+${getVerifiedBadge(c.uid)}
 </div>
 
 <div class="review-time">
