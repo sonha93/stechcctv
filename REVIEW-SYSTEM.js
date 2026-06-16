@@ -302,7 +302,7 @@ placeholder="Đặt câu hỏi hoặc trao đổi về sản phẩm..."
 <div class="comment-upload">
 
 <label class="upload-review-btn">
-📷 Ảnh
+📷
 <input
 type="file"
 id="commentImages"
@@ -312,7 +312,7 @@ hidden>
 </label>
 
 <label class="upload-review-btn">
-🎥 Video
+🎥 
 <input
 type="file"
 id="commentVideo"
