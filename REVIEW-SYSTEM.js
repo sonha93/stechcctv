@@ -1086,16 +1086,13 @@ commentList.innerHTML="";
 snap.forEach(docu=>{
 
 const c = {
-
-id: docu.id,
-
-...docu.data()
-
+  id: docu.id,
+  ...docu.data()
 };
 
 commentList.innerHTML += `
 
-<div class="review-card">
+<div class="review-card question-card">
 
 <div class="review-user">
 
@@ -1104,8 +1101,7 @@ class="review-avatar"
 src="${
 c.avatar ||
 'https://i.ibb.co/Z1kv9nJj/logo.png'
-}"
->
+}">
 
 <div>
 
@@ -1114,30 +1110,62 @@ c.avatar ||
 ${c.userName}
 
 ${c.position ? `
-
 <span class="admin-badge">
-
 ${c.position}
-
 </span>
-
 ` : ""}
 
 </div>
 
 <div class="review-time">
-
 ${timeAgo(c.createdAt)}
-
 </div>
 
 </div>
 
 </div>
 
-<div class="review-content">
-
+<div class="review-content question-content">
 ${c.content}
+</div>
+
+<div class="review-actions">
+
+<div
+class="review-like"
+onclick="likeComment('${c.id}')">
+
+👍 ${c.likes || 0}
+
+</div>
+
+<div
+class="reply-btn"
+onclick="toggleCommentReply('${c.id}')">
+
+Trả lời
+
+</div>
+
+</div>
+
+<div
+id="commentReplyBox-${c.id}"
+class="reply-box"
+style="display:none;">
+
+<textarea
+id="commentReplyInput-${c.id}"
+placeholder="Nhập câu trả lời...">
+</textarea>
+
+<button
+class="reply-send-btn"
+onclick="replyComment('${c.id}')">
+
+Gửi
+
+</button>
 
 </div>
 
