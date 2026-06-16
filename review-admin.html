@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Reviews</title>
+  <style>
+    .card { border:1px solid #ccc; padding:10px; margin:10px 0; }
+    textarea { width:100%; height:60px; }
+    button { margin-top:5px; }
+  </style>
+</head>
+
+<body>
+  <h2>ADMIN REVIEWS</h2>
+  <div id="reviewBox"></div>
+
+  <script type="module">
+    import { app } from "./auth.js";
+    import {
+      getFirestore,
+      collectionGroup,
+      getDocs,
+      query,
+      orderBy,
+      doc,
+      updateDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const db = getFirestore(app);
+
+    // ================= LOAD ALL REVIEWS =================
+    async function loadReviews() {
+      const q = query(
+        collectionGroup(db, "reviews"),
+        orderBy("createdAt", "desc")
+      );
+
+      const snap = await getDocs(q);
+
+      const reviews = snap.docs.map(d => {
+        const productId = d.ref.parent.parent.id;
+
+        return {
+          id: d.id,
+          productId,
+          ...d.data()
+        };
+      });
+
+      render(reviews);
+    }
+
+    // ================= RENDER =================
+    function render(list) {
+      const box = document.getElementById("reviewBox");
+      box.innerHTML = "";
+
+      list.forEach(r => {
+        box.innerHTML += `
+          <div class="card">
+            <div><b>Product:</b> ${r.productId}</div>
+            <div><b>User:</b> ${r.userName || "unknown"}</div>
+            <div><b>Rating:</b> ${r.rating} ⭐</div>
+            <div><b>Comment:</b> ${r.comment}</div>
+
+            <div><b>Reply:</b></div>
+            <textarea id="reply-${r.id}">${r.reply || ""}</textarea>
+
+            <button onclick="reply('${r.productId}','${r.id}')">
+              Reply
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    // ================= REPLY =================
+    window.reply = async (productId, reviewId) => {
+      const text = document.getElementById(`reply-${reviewId}`).value;
+
+      const ref = doc(db, "products", productId, "reviews", reviewId);
+
+      await updateDoc(ref, {
+        reply: text,
+        replyAt: serverTimestamp(),
+        repliedBy: "admin"
+      });
+
+      alert("Đã reply");
+      loadReviews();
+    };
+
+    loadReviews();
+  </script>
+</body>
+</html>
