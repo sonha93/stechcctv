@@ -996,6 +996,14 @@ src="${r.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
     </span>
   ` : ""}
 </div>
+</div>
+
+</div>
+<div style="
+color:#ffb400;
+font-size:18px;
+margin:6px 0;
+">
 
 ${"★".repeat(r.rating || 5)}
 ${"☆".repeat(5 - (r.rating || 5))}
