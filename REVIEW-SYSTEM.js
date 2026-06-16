@@ -1115,21 +1115,21 @@ border-radius:8px;
 ">
 
 <div style="
-font-weight:bold;
-color:#00b894;
-margin-bottom:4px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  font-weight:bold;
+  color:#00b894;
+  margin-bottom:4px;
 ">
-↳ ${rep.name}
-${getVerifiedBadge(rep.uid)}
-${rep.position ? `
-<span class="admin-badge">
-${rep.position}
-</span>
-` : ""}
+  ↳ ${rep.name}
+  ${getVerifiedBadge(rep.uid)}
+  ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
 </div>
 
-<div>
-${rep.content}
+<div style="margin-left:18px;">
+  ${rep.content}
 </div>
 
 </div>
