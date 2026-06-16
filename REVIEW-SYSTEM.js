@@ -1205,34 +1205,33 @@ c.avatar ||
 }">
 
 <div>
+<div class="review-header">
 
-<div class="review-name">
+  <div class="review-name">
+    ${c.userName}
+    ${getVerifiedBadge(c.uid)}
+    ${c.position ? `
+      <span class="admin-badge">
+        ${c.position}
+      </span>
+    ` : ""}
 
-${c.userName}
-${getVerifiedBadge(c.uid)}
-${c.position ? `
-<span class="admin-badge">
-${c.position}
-</span>
-` : ""}
+    ${c.verified ? `
+      <span class="verified-badge">
+        <svg class="verified-icon" viewBox="0 0 24 24">
+          <path fill="#0aa06e"
+            d="M12 0l2.6 2.1 3.3-.6 1.6 3 3.3.7-.7 3.3 2.1 2.5-2.1 2.5.7 3.3-3.3.7-1.6 3-3.3-.6L12 24l-2.6-2.1-3.3.6-1.6-3-3.3-.7.7-3.3L0 12l2.1-2.5-.7-3.3 3.3-.7 1.6-3 3.3.6z"/>
+          <path fill="#fff"
+            d="M10.2 15.8l-3-3 1.4-1.4 1.6 1.6 5-5 1.4 1.4z"/>
+        </svg>
+        Đã mua tại Stech
+      </span>
+    ` : ""}
+  </div>
 
-${c.verified ? `
-<span class="verified-badge">
-<svg class="verified-icon" viewBox="0 0 24 24">
-<path fill="#0aa06e"
-d="M12 0l2.6 2.1 3.3-.6 1.6 3 3.3.7-.7 3.3 2.1 2.5-2.1 2.5.7 3.3-3.3.7-1.6 3-3.3-.6L12 24l-2.6-2.1-3.3.6-1.6-3-3.3-.7.7-3.3L0 12l2.1-2.5-.7-3.3 3.3-.7 1.6-3 3.3.6z"/>
-<path fill="#fff"
-d="M10.2 15.8l-3-3 1.4-1.4 1.6 1.6 5-5 1.4 1.4z"/>
-</svg>
-Đã mua hàng tại Stech
-</span>
-` : ""}
-
-</div>
-
-<div class="review-time">
-${timeAgo(c.createdAt)}
-</div>
+  <div class="review-time">
+    ${timeAgo(c.createdAt)}
+  </div>
 
 </div>
 
