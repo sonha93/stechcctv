@@ -970,6 +970,7 @@ src="${r.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
 
 <div class="review-name">
 ${r.userName}
+${getVerifiedBadge(r.uid)}
 ${r.position ? `
 <span class="admin-badge">
 ${r.position}
@@ -1118,6 +1119,7 @@ color:#00b894;
 margin-bottom:4px;
 ">
 ↳ ${rep.name}
+${getVerifiedBadge(rep.uid)}
 ${rep.position ? `
 <span class="admin-badge">
 ${rep.position}
@@ -1206,7 +1208,7 @@ c.avatar ||
 <div class="review-name">
 
 ${c.userName}
-  ${getVerifiedBadge(comment.uid)}
+${getVerifiedBadge(c.uid)}
 ${c.position ? `
 <span class="admin-badge">
 ${c.position}
@@ -1338,7 +1340,7 @@ color:#00b894;
 margin-bottom:4px;
 ">
 ↳ ${rep.name}
-
+${getVerifiedBadge(rep.uid)}
 ${rep.position ? `
 <span class="admin-badge">
 ${rep.position}
@@ -1393,6 +1395,9 @@ await updateDoc(
 doc(db,"reviews",id),
 {
 replies: arrayUnion({
+
+  uid:user.uid,
+
   name:
     userData.name ||
     "Khách hàng",
@@ -1581,11 +1586,18 @@ await updateDoc(
 doc(db,"comments",id),
 {
 replies: arrayUnion({
-name:userData.name || "Khách hàng",
-avatar:userData.avatar || "",
-position:userData.position || "",
-content:text,
-createdAt: Date.now()
+
+  uid:user.uid,
+
+  name:userData.name || "Khách hàng",
+
+  avatar:userData.avatar || "",
+
+  position:userData.position || "",
+
+  content:text,
+
+  createdAt: Date.now()
 })
 }
 );
