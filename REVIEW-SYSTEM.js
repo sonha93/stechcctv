@@ -141,35 +141,62 @@ reviewForm.innerHTML=`
 
 
 
-<div class="review-form">
+<div
+id="reviewPopup"
+style="
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.6);
+z-index:99999;
+overflow:auto;
+"
+>
 
+<div
+style="
+background:#fff;
+max-width:700px;
+margin:50px auto;
+padding:20px;
+border-radius:12px;
+"
+>
 
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
+">
 
-<div class="review-stars">
+<b>Đánh giá sản phẩm</b>
 
-
-
-<span data-rate="1">★</span>
-
-<span data-rate="2">★</span>
-
-<span data-rate="3">★</span>
-
-<span data-rate="4">★</span>
-
-<span data-rate="5">★</span>
-
-
+<span
+id="closeReviewPopup"
+style="
+cursor:pointer;
+font-size:24px;
+"
+>
+✕
+</span>
 
 </div>
+<div class="review-stars">
 
+<span data-rate="1">★</span>
+<span data-rate="2">★</span>
+<span data-rate="3">★</span>
+<span data-rate="4">★</span>
+<span data-rate="5">★</span>
 
-
+</div>
 <textarea
 
 id="reviewContent"
 
-placeholder="Nhập nội dung bình luận sản phẩm..."
+placeholder="Chia sẻ cảm nhận về sản phẩm..."
 
 ></textarea>
 
@@ -233,7 +260,7 @@ id="submitReview"
 
 >
 
-Gửi bình luận
+Gửi đánh giá
 
 </button>
 
@@ -241,16 +268,25 @@ Gửi bình luận
 
 </div>
 
-
+</div>
 
 </div>
 
-
+</div>
 
 `;
 document
 .getElementById("submitReview")
 .onclick = submitReview;
+document
+.getElementById("closeReviewPopup")
+.onclick = ()=>{
+
+document
+.getElementById("reviewPopup")
+.style.display = "none";
+
+};
 if(commentForm){
 
 commentForm.innerHTML = `
@@ -261,6 +297,7 @@ commentForm.innerHTML = `
 id="commentContent"
 placeholder="Đặt câu hỏi hoặc trao đổi về sản phẩm..."
 ></textarea>
+
 <button
 id="submitComment"
 class="review-btn"
@@ -463,6 +500,10 @@ s.style.color="#ffb400";
 document.getElementById("reviewImages").value="";
 document.getElementById("reviewVideo").value="";
 loadReviews();
+
+document
+.getElementById("reviewPopup")
+.style.display = "none";
 }
 async function submitComment(){
 
@@ -799,17 +840,9 @@ if(reviewBtn){
 
 reviewBtn.onclick = ()=>{
 
-const form =
-document.getElementById("reviewForm");
-
-if(form){
-
-form.scrollIntoView({
-behavior:"smooth",
-block:"start"
-});
-
-}
+document
+.getElementById("reviewPopup")
+.style.display = "block";
 
 };
 
