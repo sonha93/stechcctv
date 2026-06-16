@@ -75,9 +75,9 @@
 <div class="toolbar">
   <input id="searchPhone" placeholder="Tìm SĐT...">
   <input id="searchName" placeholder="Tìm tên...">
-  <button onclick="ui.search()">Search</button>
-  <button onclick="ui.reset()">Reset</button>
-  <button onclick="ui.stats()">Stats</button>
+ <button onclick="search()">Search</button>
+<button onclick="reset()">Reset</button>
+<button onclick="stats()">Stats</button>
 </div>
 
 <table>
@@ -175,7 +175,10 @@ const ui = {
   }
 };
 
-window.ui = ui;
+window.search = ui.search;
+window.reset = ui.reset;
+window.stats = ui.stats;
+window.del = ui.del;
 
 /* =========================
    RENDER ENGINE
@@ -209,7 +212,7 @@ function rowTemplate(r) {
           : ""
       }</td>
       <td>
-        <button class="del" onclick="ui.del('${r.id}')">Xoá</button>
+        <button class="del"onclick="del('${r.id}')">Xoá</button>
       </td>
     </tr>
   `;
