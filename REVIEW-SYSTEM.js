@@ -185,30 +185,11 @@ font-size:24px;
 </div>
 <div class="review-stars">
 
-  <div class="star-item" data-rate="1">
-    <span>☆</span>
-    <small>Rất tệ</small>
-  </div>
-
-  <div class="star-item" data-rate="2">
-    <span>☆</span>
-    <small>Tệ</small>
-  </div>
-
-  <div class="star-item" data-rate="3">
-    <span>☆</span>
-    <small>Tạm ổn</small>
-  </div>
-
-  <div class="star-item" data-rate="4">
-    <span>☆</span>
-    <small>Tốt</small>
-  </div>
-
-  <div class="star-item" data-rate="5">
-    <span>☆</span>
-    <small>Rất tốt</small>
-  </div>
+<span data-rate="1">★</span>
+<span data-rate="2">★</span>
+<span data-rate="3">★</span>
+<span data-rate="4">★</span>
+<span data-rate="5">★</span>
 
 </div>
 <textarea
@@ -294,32 +275,7 @@ Gửi đánh giá
 </div>
 
 `;
-const starItems =
-document.querySelectorAll(".star-item");
 
-let rating = 5;
-
-starItems.forEach(item=>{
-
-  item.onclick = ()=>{
-
-    rating = Number(item.dataset.rate);
-
-    starItems.forEach(star=>{
-
-      if(Number(star.dataset.rate) <= rating){
-        star.classList.add("active");
-      }else{
-        star.classList.remove("active");
-      }
-
-    });
-
-  };
-
-});
-
-starItems[4].click();
 document
 .getElementById("submitReview")
 .onclick = submitReview;
