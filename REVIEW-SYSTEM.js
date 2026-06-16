@@ -383,8 +383,7 @@ return;
 const userDoc = await getDoc(
   doc(db,"users",user.uid)
 );
-const purchased =
-await hasPurchased(user.uid);
+
 const userData =
   userDoc.exists()
   ? userDoc.data()
@@ -538,7 +537,8 @@ const userDoc =
 await getDoc(
 doc(db,"users",user.uid)
 );
-
+const purchased =
+await hasPurchased(user.uid);
 const userData =
 userDoc.exists()
 ? userDoc.data()
@@ -1131,6 +1131,7 @@ d="M10.2 15.8l-3-3 1.4-1.4 1.6 1.6 5-5 1.4 1.4z"/>
 ` : ""}
 
 </div>
+
 <div class="review-time">
 ${timeAgo(c.createdAt)}
 </div>
