@@ -1,141 +1,162 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Admin Reviews</title>
+  <meta charset="UTF-8">
+  <title>Admin Reviews</title>
 
-<style>
-body {
-  font-family: Arial;
-  background: #f5f5f5;
-  margin: 0;
-  padding: 20px;
-}
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+      background: #f5f5f5;
+    }
 
-h2 {
-  text-align: center;
-}
+    h2 {
+      margin-bottom: 15px;
+    }
 
-#box {
-  max-width: 900px;
-  margin: auto;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
 
-.card {
-  background: #fff;
-  border-radius: 10px;
-  padding: 15px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      font-size: 14px;
+      vertical-align: top;
+    }
 
-.card b {
-  color: #333;
-}
+    th {
+      background: #222;
+      color: white;
+    }
 
-.meta {
-  font-size: 13px;
-  color: #666;
-  margin-bottom: 5px;
-}
+    .star {
+      color: orange;
+      font-weight: bold;
+    }
 
-textarea {
-  width: 100%;
-  height: 60px;
-  margin-top: 8px;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  resize: none;
-}
+    button {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
 
-button {
-  margin-top: 8px;
-  padding: 6px 12px;
-  border: none;
-  background: #007bff;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-}
+    .del {
+      background: red;
+      color: white;
+      border: none;
+    }
 
-button:hover {
-  background: #0056b3;
-}
+    .top {
+      margin-bottom: 10px;
+    }
 
-.reply {
-  margin-top: 8px;
-  padding: 6px;
-  background: #e9ffe9;
-  border-left: 4px solid green;
-}
-</style>
+    input {
+      padding: 6px;
+    }
+  </style>
 </head>
 
 <body>
 
-<h2>ADMIN REVIEWS PANEL</h2>
-<div id="box"></div>
+<h2>📊 ADMIN - REVIEWS SYSTEM</h2>
+
+<div class="top">
+  <input id="search" placeholder="Tìm SĐT...">
+  <button onclick="filter()">Tìm</button>
+  <button onclick="reset()">Reset</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tên</th>
+      <th>SĐT</th>
+      <th>Email</th>
+      <th>Nội dung</th>
+      <th>Sao</th>
+      <th>Sản phẩm</th>
+      <th>Thời gian</th>
+      <th>Xoá</th>
+    </tr>
+  </thead>
+
+  <tbody id="list"></tbody>
+</table>
 
 <script type="module">
-import { app } from "./auth.js";
-import {
-  getFirestore,
-  collectionGroup,
-  getDocs,
-  query,
-  orderBy,
-  doc,
-  updateDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { db } from "./firebase-config.js";
+import { ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-const db = getFirestore(app);
+const list = document.getElementById("list");
 
-// ================= LOAD =================
-async function load() {
-  const q = query(
-    collectionGroup(db, "reviews"),
-    orderBy("createdAt", "desc")
-  );
+let allData = {};
 
-  const snap = await getDocs(q);
+// ==========================
+// LOAD REALTIME
+// ==========================
+const reviewRef = ref(db, "reviews");
 
-  const box = document.getElementById("box");
-  box.innerHTML = "";
+onValue(reviewRef, (snapshot) => {
+  allData = snapshot.val() || {};
+  render(allData);
+});
 
-  if (snap.empty) {
-    box.innerHTML = "<p>Chưa có review nào</p>";
-    return;
-  }
+// ==========================
+// RENDER TABLE
+// ==========================
+function render(data) {
+  list.innerHTML = "";
 
-snap.docs
-  .filter(d => d.ref.parent?.parent)
-  .map(d => {
-    const productId = d.ref.parent.parent.id;
-
-    return {
-      id: d.id,
-      productId,
-      ...d.data()
-    };
+  Object.entries(data).forEach(([id, r]) => {
+    list.innerHTML += `
+      <tr>
+        <td>${r.name || ""}</td>
+        <td>${r.phone || ""}</td>
+        <td>${r.email || ""}</td>
+        <td>${r.comment || ""}</td>
+        <td class="star">${"⭐".repeat(r.star || 0)}</td>
+        <td>${r.productId || ""}</td>
+        <td>${r.createdAt || ""}</td>
+        <td>
+          <button class="del" onclick="del('${id}')">Xoá</button>
+        </td>
+      </tr>
+    `;
   });
-// ================= REPLY =================
-window.reply = async (productId, reviewId) => {
-  const text = document.getElementById(`r-${reviewId}`).value;
+}
 
-  await updateDoc(
-    doc(db, "products", productId, "reviews", reviewId),
-    {
-      reply: text,
-      replyAt: serverTimestamp()
-    }
-  );
-
-  load();
+// ==========================
+// DELETE
+// ==========================
+window.del = async (id) => {
+  await remove(ref(db, "reviews/" + id));
 };
 
-load();
+// ==========================
+// FILTER SĐT
+// ==========================
+window.filter = () => {
+  const val = document.getElementById("search").value;
+
+  const filtered = Object.fromEntries(
+    Object.entries(allData).filter(([id, r]) =>
+      (r.phone || "").includes(val)
+    )
+  );
+
+  render(filtered);
+};
+
+// ==========================
+// RESET
+// ==========================
+window.reset = () => {
+  render(allData);
+};
+
 </script>
 
 </body>
