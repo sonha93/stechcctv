@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Reviews</title>
+  <title>Admin Reviews Firestore</title>
 
   <style>
     body {
@@ -61,7 +61,7 @@
 
 <body>
 
-<h2>📊 ADMIN - REVIEWS SYSTEM</h2>
+<h2>📊 ADMIN - REVIEWS (FIRESTORE)</h2>
 
 <div class="top">
   <input id="search" placeholder="Tìm SĐT...">
@@ -88,19 +88,35 @@
 
 <script type="module">
 import { db } from "./firebase-config.js";
-import { ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+import {
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+  deleteDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const list = document.getElementById("list");
 
-let allData = {};
+let allData = [];
 
 // ==========================
-// LOAD REALTIME
+// LOAD FIRESTORE REALTIME
 // ==========================
-const reviewRef = ref(db, "reviews");
+const q = query(
+  collection(db, "reviews"),
+  orderBy("createdAt", "desc")
+);
 
-onValue(reviewRef, (snapshot) => {
-  allData = snapshot.val() || {};
+onSnapshot(q, (snap) => {
+  allData = [];
+
+  snap.forEach(d => {
+    allData.push({ id: d.id, ...d.data() });
+  });
+
   render(allData);
 });
 
@@ -110,18 +126,22 @@ onValue(reviewRef, (snapshot) => {
 function render(data) {
   list.innerHTML = "";
 
-  Object.entries(data).forEach(([id, r]) => {
+  data.forEach(r => {
     list.innerHTML += `
       <tr>
-        <td>${r.name || ""}</td>
+        <td>${r.userName || ""}</td>
         <td>${r.phone || ""}</td>
         <td>${r.email || ""}</td>
-        <td>${r.comment || ""}</td>
-        <td class="star">${"⭐".repeat(r.star || 0)}</td>
+        <td>${r.content || ""}</td>
+        <td class="star">${"⭐".repeat(r.rating || 0)}</td>
         <td>${r.productId || ""}</td>
-        <td>${r.createdAt || ""}</td>
+        <td>${
+          r.createdAt?.toDate
+            ? r.createdAt.toDate().toLocaleString()
+            : ""
+        }</td>
         <td>
-          <button class="del" onclick="del('${id}')">Xoá</button>
+          <button class="del" onclick="del('${r.id}')">Xoá</button>
         </td>
       </tr>
     `;
@@ -132,7 +152,7 @@ function render(data) {
 // DELETE
 // ==========================
 window.del = async (id) => {
-  await remove(ref(db, "reviews/" + id));
+  await deleteDoc(doc(db, "reviews", id));
 };
 
 // ==========================
@@ -141,10 +161,8 @@ window.del = async (id) => {
 window.filter = () => {
   const val = document.getElementById("search").value;
 
-  const filtered = Object.fromEntries(
-    Object.entries(allData).filter(([id, r]) =>
-      (r.phone || "").includes(val)
-    )
+  const filtered = allData.filter(r =>
+    (r.phone || "").includes(val)
   );
 
   render(filtered);
