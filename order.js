@@ -1,4 +1,4 @@
-function calc(items){
+function calcOrder(items){
 
   let total = 0;
   let originalTotal = 0;
@@ -7,8 +7,12 @@ function calc(items){
 
     const qty = Number(item.qty || 1);
     const price = Number(item.price || 0);
-    const original = Number(item.originalPrice || item.oldPrice || price);
 
+   const original = Number(
+  item.originalPrice ||
+  item.oldPrice ||
+  price
+);
     total += price * qty;
     originalTotal += original * qty;
   });
@@ -290,7 +294,7 @@ function renderOrders(){
     items.slice(0,2).forEach(item => {
 
       const qty = Number(item.qty || 1);
-    const price = Number(item.price || item.originalPrice || item.oldPrice || 0);
+      const price = Number(item.price || 0);
       const sub = qty * price;
 
       itemsHTML += `
@@ -497,28 +501,7 @@ function renderOrders(){
         }
 
     <div class="total-box">
-${
-  order.status === "cancelled"
-  ? `
-    <button
-      onclick="reorderOrder('${order.id}')"
-      style="
-        margin-top:15px;
-        width:100%;
-        padding:12px;
-        border:none;
-        border-radius:10px;
-        background:#16a34a;
-        color:#fff;
-        font-weight:bold;
-        cursor:pointer;
-      "
-    >
-      🔁 Mua lại đơn hàng
-    </button>
-  `
-  : ""
-}
+
   <div class="row">
     <span>Tổng giá gốc</span>
     <b>${format(originalTotal)}</b>
@@ -727,68 +710,5 @@ window.toggleItems = function(id, itemsCount){
       btn.innerHTML =
         `và ${itemsCount} sản phẩm khác ▼`;
     }
-  }
-};
-window.reorderOrder = async function(orderId){
-
-  try{
-
-    const snap = await db.collection("orders").doc(orderId).get();
-    if(!snap.exists) return;
-
-    const order = snap.data();
-
-    const userSnap = await db.collection("users").doc(order.uid).get();
-    const user = userSnap.exists ? userSnap.data() : {};
-
-    let total = 0;
-    let originalTotal = 0;
-
-    const fixedItems = (order.items || []).map(item => {
-
-      const qty = Number(item.qty || 1);
-      const price = Number(item.price || item.originalPrice || item.oldPrice || 0);
-      const original = Number(item.originalPrice || item.oldPrice || price);
-
-      total += price * qty;
-      originalTotal += original * qty;
-
-      return {
-        ...item,
-        price,
-        originalPrice: original
-      };
-    });
-
-    if(total <= 0){
-      alert("❌ Lỗi: đơn hàng 0đ (sản phẩm thiếu giá)");
-      return;
-    }
-
-    await db.collection("orders").add({
-      uid: order.uid,
-      name: order.name || user.name || "",
-      phone: order.phone || user.phone || "",
-      address: order.address || user.address || "",
-
-      items: fixedItems,
-
-      total,
-      originalTotal,
-      savings: originalTotal - total,
-
-      cashbackAmount: order.cashbackAmount || 0,
-      status: "pending",
-
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      clonedFrom: orderId
-    });
-
-    alert("✔ Đặt lại đơn thành công");
-    location.reload();
-
-  }catch(err){
-    console.error(err);
-    alert("Lỗi reorder");
   }
 };
