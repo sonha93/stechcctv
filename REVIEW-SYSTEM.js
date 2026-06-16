@@ -793,7 +793,7 @@ summary.innerHTML = `
 id="openReviewBtn"
 class="review-btn"
 >
-Đánh giá sản phẩm
+Viết đánh giá
 </button>
 
 </div>
