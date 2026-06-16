@@ -1,4 +1,4 @@
-function calcOrder(items){
+function calc(items){
 
   let total = 0;
   let originalTotal = 0;
@@ -7,12 +7,8 @@ function calcOrder(items){
 
     const qty = Number(item.qty || 1);
     const price = Number(item.price || 0);
+    const original = Number(item.originalPrice || item.oldPrice || price);
 
-   const original = Number(
-  item.originalPrice ||
-  item.oldPrice ||
-  price
-);
     total += price * qty;
     originalTotal += original * qty;
   });
@@ -294,7 +290,7 @@ function renderOrders(){
     items.slice(0,2).forEach(item => {
 
       const qty = Number(item.qty || 1);
-      const price = Number(item.price || 0);
+    const price = Number(item.price || item.originalPrice || item.oldPrice || 0);
       const sub = qty * price;
 
       itemsHTML += `
@@ -737,32 +733,62 @@ window.reorderOrder = async function(orderId){
 
   try{
 
-    const orderRef = db.collection("orders").doc(orderId);
-    const doc = await orderRef.get();
+    const snap = await db.collection("orders").doc(orderId).get();
+    if(!snap.exists) return;
 
-    if(!doc.exists){
-      alert("Không tìm thấy đơn hàng");
+    const order = snap.data();
+
+    const userSnap = await db.collection("users").doc(order.uid).get();
+    const user = userSnap.exists ? userSnap.data() : {};
+
+    let total = 0;
+    let originalTotal = 0;
+
+    const fixedItems = (order.items || []).map(item => {
+
+      const qty = Number(item.qty || 1);
+      const price = Number(item.price || item.originalPrice || item.oldPrice || 0);
+      const original = Number(item.originalPrice || item.oldPrice || price);
+
+      total += price * qty;
+      originalTotal += original * qty;
+
+      return {
+        ...item,
+        price,
+        originalPrice: original
+      };
+    });
+
+    if(total <= 0){
+      alert("❌ Lỗi: đơn hàng 0đ (sản phẩm thiếu giá)");
       return;
     }
 
-    const order = doc.data();
-
-    // tạo đơn mới
     await db.collection("orders").add({
       uid: order.uid,
-      items: order.items,
+      name: order.name || user.name || "",
+      phone: order.phone || user.phone || "",
+      address: order.address || user.address || "",
+
+      items: fixedItems,
+
+      total,
+      originalTotal,
+      savings: originalTotal - total,
+
+      cashbackAmount: order.cashbackAmount || 0,
       status: "pending",
+
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      cashbackAmount: 0
+      clonedFrom: orderId
     });
 
-    alert("Đã tạo lại đơn hàng!");
-
-    // reload UI
+    alert("✔ Đặt lại đơn thành công");
     location.reload();
 
   }catch(err){
     console.error(err);
-    alert("Lỗi khi mua lại đơn");
+    alert("Lỗi reorder");
   }
 };
