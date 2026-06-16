@@ -545,7 +545,6 @@ userDoc.exists()
 await addDoc(
 collection(db,"comments"),
 {
-
 productId,
 
 uid:user.uid,
@@ -568,9 +567,9 @@ likes:0,
 
 likedBy:[],
 
-createdAt:
-serverTimestamp()
+replies:[],
 
+createdAt:serverTimestamp()
 }
 );
 
@@ -1307,6 +1306,67 @@ max-height:90%;
 popup.onclick=()=>popup.remove();
 
 document.body.appendChild(popup);
+
+}
+window.toggleCommentReply = function(id){
+
+const box =
+document.getElementById(
+`commentReplyBox-${id}`
+);
+
+if(!box) return;
+
+box.style.display =
+box.style.display === "none"
+? "block"
+: "none";
+
+}
+window.replyComment = async function(id){
+
+const user =
+auth.currentUser;
+
+if(!user){
+alert("Đăng nhập trước");
+return;
+}
+
+const input =
+document.getElementById(
+`commentReplyInput-${id}`
+);
+
+const text =
+input.value.trim();
+
+if(!text) return;
+
+const userDoc =
+await getDoc(
+doc(db,"users",user.uid)
+);
+
+const userData =
+userDoc.exists()
+? userDoc.data()
+: {};
+
+await updateDoc(
+doc(db,"comments",id),
+{
+replies: arrayUnion({
+name:userData.name || "Khách hàng",
+avatar:userData.avatar || "",
+position:userData.position || "",
+content:text,
+createdAt: Date.now()
+})
+}
+);
+
+loadComments();
 
 }
 auth.onAuthStateChanged(async user=>{
