@@ -275,6 +275,44 @@ Gửi đánh giá
 </div>
 
 `;
+  <div style="margin-top:10px;">
+
+${(c.replies || []).map(rep => `
+
+<div style="
+margin-top:8px;
+margin-left:40px;
+padding:10px;
+background:#f8f8f8;
+border-left:3px solid #00b894;
+border-radius:8px;
+">
+
+<div style="
+font-weight:bold;
+color:#00b894;
+margin-bottom:4px;
+">
+
+↳ ${rep.name}
+
+${rep.position ? `
+<span class="admin-badge">
+${rep.position}
+</span>
+` : ""}
+
+</div>
+
+<div>
+${rep.content}
+</div>
+
+</div>
+
+`).join("")}
+
+</div>
 document
 .getElementById("submitReview")
 .onclick = submitReview;
