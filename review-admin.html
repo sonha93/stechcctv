@@ -109,29 +109,17 @@ async function load() {
     return;
   }
 
-  snap.forEach(d => {
-    const r = d.data();
+snap.docs
+  .filter(d => d.ref.parent?.parent)
+  .map(d => {
     const productId = d.ref.parent.parent.id;
 
-    const div = document.createElement("div");
-    div.className = "card";
-
-    div.innerHTML = `
-      <div class="meta"><b>Sản phẩm:</b> ${productId}</div>
-      <div><b>User:</b> ${r.userName || "?"}</div>
-      <div><b>Comment:</b> ${r.comment || ""}</div>
-      <div><b>Rating:</b> ${r.rating || 0} ⭐</div>
-
-      ${r.reply ? `<div class="reply"><b>Reply:</b> ${r.reply}</div>` : ""}
-
-      <textarea id="r-${d.id}" placeholder="Reply...">${r.reply || ""}</textarea>
-      <button onclick="reply('${productId}','${d.id}')">Gửi reply</button>
-    `;
-
-    box.appendChild(div);
+    return {
+      id: d.id,
+      productId,
+      ...d.data()
+    };
   });
-}
-
 // ================= REPLY =================
 window.reply = async (productId, reviewId) => {
   const text = document.getElementById(`r-${reviewId}`).value;
