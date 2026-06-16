@@ -1336,23 +1336,22 @@ border-radius:8px;
 ">
 
 <div style="
+display:flex;
+align-items:center;
+gap:6px;
+flex-wrap:wrap;
 font-weight:bold;
 color:#00b894;
 margin-bottom:4px;
 ">
-↳ ${rep.name}
-${getVerifiedBadge(rep.uid)}
-${rep.position ? `
-<span class="admin-badge">
-${rep.position}
-</span>
-` : ""}
+  <span>↳ ${rep.name}</span>
+  ${getVerifiedBadge(rep.uid)}
+  ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
 </div>
 
-<div>
-${rep.content}
+<div style="word-break:break-word;">
+  ${rep.content}
 </div>
-
 </div>
 
 `).join("")}
