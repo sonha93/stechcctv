@@ -970,7 +970,6 @@ src="${r.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
 
 <div class="review-name">
 ${r.userName}
- ${getVerifiedBadge(c.uid)}
 ${r.position ? `
 <span class="admin-badge">
 ${r.position}
