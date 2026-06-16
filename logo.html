@@ -1465,24 +1465,23 @@ color:#00b894;
   .admin-badge{
     white-space:nowrap;
   }
-	.review-replies div{
-  display:flex !important;
+	.review-header{
+  display:flex;
+  justify-content:space-between;
   align-items:flex-start;
-  gap:6px;
-  flex-wrap:wrap;
+  gap:10px;
 }
 
-.review-replies div > div:first-child{
+.review-name{
   display:flex;
   align-items:center;
+  flex-wrap:wrap; /* nếu dài thì xuống dòng có kiểm soát */
   gap:6px;
-  flex-wrap:wrap;
 }
 
-.review-replies span,
-.admin-badge,
-.verified-badge{
-  display:inline-flex !important;
+.review-name span{
+  display:inline-flex;
+  align-items:center;
 }
 }
 </style>
