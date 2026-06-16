@@ -299,22 +299,76 @@ id="commentContent"
 placeholder="Đặt câu hỏi hoặc trao đổi về sản phẩm..."
 ></textarea>
 
+<div class="comment-upload">
+
+<label class="upload-review-btn">
+📷 Ảnh
+<input
+type="file"
+id="commentImages"
+multiple
+accept="image/*"
+hidden>
+</label>
+
+<label class="upload-review-btn">
+🎥 Video
+<input
+type="file"
+id="commentVideo"
+accept="video/*"
+hidden>
+</label>
+
+<div id="commentPreview"></div>
+
 <button
 id="submitComment"
 class="review-btn"
 >
-
 Gửi câu hỏi
 </button>
 
 </div>
 
-`;
+</div>
 
+`;
 document
 .getElementById("submitComment")
 .onclick = submitComment;
+const commentImageInput =
+document.getElementById("commentImages");
 
+if(commentImageInput){
+
+commentImageInput.addEventListener("change",()=>{
+
+const preview =
+document.getElementById("commentPreview");
+preview.innerHTML = "";
+
+[...commentImageInput.files].forEach(file=>{
+
+const img =
+document.createElement("img");
+
+img.src =
+URL.createObjectURL(file);
+
+img.style.width = "70px";
+img.style.height = "70px";
+img.style.objectFit = "cover";
+img.style.borderRadius = "8px";
+img.style.margin = "4px";
+
+preview.appendChild(img);
+
+});
+
+});
+
+}
 }
 const imageInput =
 document.getElementById("reviewImages");
@@ -482,7 +536,7 @@ likes:0,
 likedBy:[],
 createdAt:serverTimestamp(),
 images:images,
-video:video
+video:video,
 }
 );
 alert("Cảm ơn Bạn đã đánh giá sản phẩm");
@@ -543,7 +597,37 @@ const userData =
 userDoc.exists()
 ? userDoc.data()
 : {};
+const imageFiles =
+document.getElementById("commentImages").files;
 
+let images=[];
+
+for(const file of imageFiles){
+
+const url =
+await uploadToCloudinary(
+file,
+"image"
+);
+
+images.push(url);
+
+}
+
+const videoFile =
+document.getElementById("commentVideo").files[0];
+
+let video="";
+
+if(videoFile){
+
+video =
+await uploadToCloudinary(
+videoFile,
+"video"
+);
+
+}
 await addDoc(
 collection(db,"comments"),
 {
@@ -573,14 +657,24 @@ likedBy:[],
 
 replies:[],
 
-createdAt:serverTimestamp()
+createdAt:serverTimestamp(),
+images:images,
+video:video,
 }
 );
 
 document
 .getElementById("commentContent")
 .value="";
+document.getElementById("commentImages").value="";
+document.getElementById("commentVideo").value="";
 
+const preview =
+document.getElementById("commentPreview");
+
+if(preview){
+preview.innerHTML="";
+}
 loadComments();
 
 }
@@ -1143,6 +1237,45 @@ ${timeAgo(c.createdAt)}
 <div class="review-content question-content">
 ${c.content}
 </div>
+
+<div>
+
+${(c.images || [])
+.map(img=>`
+
+<img
+src="${img}"
+style="
+width:90px;
+height:90px;
+object-fit:cover;
+border-radius:10px;
+margin:5px;
+cursor:pointer;
+"
+onclick="openImage('${img}')"
+>
+
+`)
+.join("")}
+
+</div>
+
+${c.video ? `
+
+<video
+controls
+width="250"
+style="
+margin-top:10px;
+border-radius:10px;
+"
+>
+<source src="${c.video}">
+</video>
+
+` : ""}
+<div>
 
 <div class="review-actions">
 
