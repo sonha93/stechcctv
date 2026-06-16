@@ -1462,7 +1462,36 @@ color:#00b894;
     color:#666;
 }
 
-/* sao được chọn */
+.review-stars{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    margin:20px 0;
+}
+
+.star-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    cursor:pointer;
+    opacity:.5;
+    transition:.2s;
+}
+
+.star-item span{
+    font-size:56px;
+    line-height:1;
+}
+
+.star-item small{
+    margin-top:8px;
+    font-size:14px;
+}
+
+.star-item.active{
+    opacity:1;
+}
+
 .star-item.active span{
     color:#f5a623;
 }
