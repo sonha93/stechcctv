@@ -971,18 +971,11 @@ src="${r.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
 <div class="review-name">
 ${r.userName}
 ${getVerifiedBadge(r.uid)}
-
 ${r.position ? `
 <span class="admin-badge">
 ${r.position}
 </span>
 ` : ""}
-
-</div>
-
-<div class="review-time">
-
-${timeAgo(r.createdAt)}
 
 ${r.verified ? `
 <span class="verified-badge">
