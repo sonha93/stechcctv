@@ -1,97 +1,154 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Reviews</title>
-  <style>
-    .card { border:1px solid #ccc; padding:10px; margin:10px 0; }
-    textarea { width:100%; height:60px; }
-    button { margin-top:5px; }
-  </style>
+<meta charset="UTF-8">
+<title>Admin Reviews</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 20px;
+}
+
+h2 {
+  text-align: center;
+}
+
+#box {
+  max-width: 900px;
+  margin: auto;
+}
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.card b {
+  color: #333;
+}
+
+.meta {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+textarea {
+  width: 100%;
+  height: 60px;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+button {
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+.reply {
+  margin-top: 8px;
+  padding: 6px;
+  background: #e9ffe9;
+  border-left: 4px solid green;
+}
+</style>
 </head>
 
 <body>
-  <h2>ADMIN REVIEWS</h2>
-  <div id="reviewBox"></div>
 
-  <script type="module">
-    import { app } from "./auth.js";
-    import {
-      getFirestore,
-      collectionGroup,
-      getDocs,
-      query,
-      orderBy,
-      doc,
-      updateDoc,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<h2>ADMIN REVIEWS PANEL</h2>
+<div id="box"></div>
 
-    const db = getFirestore(app);
+<script type="module">
+import { app } from "./auth.js";
+import {
+  getFirestore,
+  collectionGroup,
+  getDocs,
+  query,
+  orderBy,
+  doc,
+  updateDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // ================= LOAD ALL REVIEWS =================
-    async function loadReviews() {
-      const q = query(
-        collectionGroup(db, "reviews"),
-        orderBy("createdAt", "desc")
-      );
+const db = getFirestore(app);
 
-      const snap = await getDocs(q);
+// ================= LOAD =================
+async function load() {
+  const q = query(
+    collectionGroup(db, "reviews"),
+    orderBy("createdAt", "desc")
+  );
 
-      const reviews = snap.docs.map(d => {
-        const productId = d.ref.parent.parent.id;
+  const snap = await getDocs(q);
 
-        return {
-          id: d.id,
-          productId,
-          ...d.data()
-        };
-      });
+  const box = document.getElementById("box");
+  box.innerHTML = "";
 
-      render(reviews);
+  if (snap.empty) {
+    box.innerHTML = "<p>Chưa có review nào</p>";
+    return;
+  }
+
+  snap.forEach(d => {
+    const r = d.data();
+    const productId = d.ref.parent.parent.id;
+
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <div class="meta"><b>Sản phẩm:</b> ${productId}</div>
+      <div><b>User:</b> ${r.userName || "?"}</div>
+      <div><b>Comment:</b> ${r.comment || ""}</div>
+      <div><b>Rating:</b> ${r.rating || 0} ⭐</div>
+
+      ${r.reply ? `<div class="reply"><b>Reply:</b> ${r.reply}</div>` : ""}
+
+      <textarea id="r-${d.id}" placeholder="Reply...">${r.reply || ""}</textarea>
+      <button onclick="reply('${productId}','${d.id}')">Gửi reply</button>
+    `;
+
+    box.appendChild(div);
+  });
+}
+
+// ================= REPLY =================
+window.reply = async (productId, reviewId) => {
+  const text = document.getElementById(`r-${reviewId}`).value;
+
+  await updateDoc(
+    doc(db, "products", productId, "reviews", reviewId),
+    {
+      reply: text,
+      replyAt: serverTimestamp()
     }
+  );
 
-    // ================= RENDER =================
-    function render(list) {
-      const box = document.getElementById("reviewBox");
-      box.innerHTML = "";
+  load();
+};
 
-      list.forEach(r => {
-        box.innerHTML += `
-          <div class="card">
-            <div><b>Product:</b> ${r.productId}</div>
-            <div><b>User:</b> ${r.userName || "unknown"}</div>
-            <div><b>Rating:</b> ${r.rating} ⭐</div>
-            <div><b>Comment:</b> ${r.comment}</div>
+load();
+</script>
 
-            <div><b>Reply:</b></div>
-            <textarea id="reply-${r.id}">${r.reply || ""}</textarea>
-
-            <button onclick="reply('${r.productId}','${r.id}')">
-              Reply
-            </button>
-          </div>
-        `;
-      });
-    }
-
-    // ================= REPLY =================
-    window.reply = async (productId, reviewId) => {
-      const text = document.getElementById(`reply-${reviewId}`).value;
-
-      const ref = doc(db, "products", productId, "reviews", reviewId);
-
-      await updateDoc(ref, {
-        reply: text,
-        replyAt: serverTimestamp(),
-        repliedBy: "admin"
-      });
-
-      alert("Đã reply");
-      loadReviews();
-    };
-
-    loadReviews();
-  </script>
 </body>
 </html>
