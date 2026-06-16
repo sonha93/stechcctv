@@ -787,7 +787,7 @@ summary.innerHTML = `
   ${totalReview} lượt đánh giá
 </div>
 
-<div style="margin-top:10px">
+<div style="margin-top:15px">
 
 <button
 id="openReviewBtn"
