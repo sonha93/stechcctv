@@ -296,7 +296,7 @@ commentForm.innerHTML = `
 
 <textarea
 id="commentContent"
-placeholder="Đặt câu hỏi hoặc trao đổi về sản phẩm..."
+placeholder="Nhập nội dung bình luận..."
 ></textarea>
 
 <div class="comment-upload">
@@ -326,7 +326,7 @@ hidden>
 id="submitComment"
 class="review-btn"
 >
-Gửi câu hỏi
+Gửi bình luận
 </button>
 
 </div>
