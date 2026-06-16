@@ -1170,8 +1170,6 @@ Gửi
 </div>
 
 </div>
-
-`;
 <div style="margin-top:10px;">
 
 ${(c.replies || []).map(rep => `
@@ -1208,6 +1206,8 @@ ${rep.content}
 `).join("")}
 
 </div>
+`;
+
 });
 
 }
