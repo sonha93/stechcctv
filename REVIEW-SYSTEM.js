@@ -1323,6 +1323,43 @@ box.style.display === "none"
 : "none";
 
 }
+window.likeComment = async function(id){
+
+const user = auth.currentUser;
+
+if(!user){
+alert("Đăng nhập trước");
+return;
+}
+
+const commentRef =
+doc(db,"comments",id);
+
+const commentSnap =
+await getDoc(commentRef);
+
+const comment =
+commentSnap.data();
+
+if(
+(comment.likedBy || [])
+.includes(user.uid)
+){
+alert("Bạn đã thích rồi");
+return;
+}
+
+await updateDoc(
+commentRef,
+{
+likes: increment(1),
+likedBy: arrayUnion(user.uid)
+}
+);
+
+loadComments();
+
+}
 window.replyComment = async function(id){
 
 const user =
