@@ -607,6 +607,35 @@ avatarUpload.addEventListener("change", async (e) => {
   .set({
       avatar: data.secure_url
   }, { merge: true });
+      // cập nhật avatar toàn bộ review
+
+const reviewsSnap = await firebase.firestore()
+  .collection("reviews")
+  .where("uid","==",currentUser.uid)
+  .get();
+
+for(const reviewDoc of reviewsSnap.docs){
+
+  await reviewDoc.ref.update({
+    avatar:data.secure_url
+  });
+
+}
+
+// cập nhật avatar toàn bộ comment
+
+const commentsSnap = await firebase.firestore()
+  .collection("comments")
+  .where("uid","==",currentUser.uid)
+  .get();
+
+for(const commentDoc of commentsSnap.docs){
+
+  await commentDoc.ref.update({
+    avatar:data.secure_url
+  });
+
+}
             alert("Upload avatar thành công!");
         }
 
@@ -879,7 +908,43 @@ const oldBirthday =
         oldBirthday || birthday
 
   }, { merge: true });
+// =====================
+// ĐỒNG BỘ REVIEW
+// =====================
 
+const reviewsSnap = await firebase.firestore()
+  .collection("reviews")
+  .where("uid","==",currentUser.uid)
+  .get();
+
+for(const reviewDoc of reviewsSnap.docs){
+
+  await reviewDoc.ref.update({
+    userName: name,
+    phone: phone,
+    avatar: avatarImg.src
+  });
+
+}
+
+// =====================
+// ĐỒNG BỘ COMMENT
+// =====================
+
+const commentsSnap = await firebase.firestore()
+  .collection("comments")
+  .where("uid","==",currentUser.uid)
+  .get();
+
+for(const commentDoc of commentsSnap.docs){
+
+  await commentDoc.ref.update({
+    userName: name,
+    phone: phone,
+    avatar: avatarImg.src
+  });
+
+}
         currentName.innerText = name;
         currentPhone.innerText = phone;
         currentAddress.innerText = address;
