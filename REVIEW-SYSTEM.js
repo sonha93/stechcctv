@@ -1143,7 +1143,7 @@ border-radius:8px;
   color:#00b894;
   margin-bottom:4px;
 ">
-↳ ${rep.name || rep.userName || ""}
+<span>↳ ${rep.name ?? "User"}</span>
   ${getVerifiedBadge(rep.uid)}
   ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
 </div>
@@ -1434,14 +1434,14 @@ const userData =
   userDoc.exists()
   ? userDoc.data()
   : {};
-await updateDoc(
-doc(db,"reviews",id),
-{
-replies: arrayUnion({
-  uid:user.uid,
-  content:text,
-  createdAt: Date.now()
-})
+await updateDoc(doc(db,"comments",id), {
+  replies: arrayUnion({
+    uid: user.uid,
+    name: userData.name || user.displayName || user.email || "User",
+    content: text,
+    createdAt: Date.now()
+  })
+});
 }
 );
 
