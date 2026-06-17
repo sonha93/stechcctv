@@ -109,7 +109,7 @@ productName =
 product.name || "";
 
 productLink =
-`../product.html?id=${r.productId}`;
+`../logo.html?id=${r.productId}`;
 
 }
 
