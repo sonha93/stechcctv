@@ -404,7 +404,7 @@ replies:arrayUnion({
 
 name:"StechCctv",
 
-position:"Admin",
+position:"Quản trị viên",
 
 content:text,
 
