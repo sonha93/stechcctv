@@ -432,9 +432,9 @@ doc(db,"comments",id),
 {
 replies:arrayUnion({
 
-name:"Quản trị viên",
+name:"Hoàng Anh Sơn",
 
-position:"Admin",
+position:"Quản trị viên",
 
 content:text,
 
