@@ -1143,14 +1143,7 @@ border-radius:8px;
   color:#00b894;
   margin-bottom:4px;
 ">
-const user = auth.currentUser;
-
-addDoc(collection(db, "replies"), {
-  text: replyText,
-  name: user?.displayName || user?.email || "Khách hàng",
-  userId: user?.uid,
-  createdAt: serverTimestamp()
-});
+ ↳ ${rep.name || rep.userName || "Khách hàng"}
   ${getVerifiedBadge(rep.uid)}
   ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
 </div>
