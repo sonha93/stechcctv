@@ -403,7 +403,7 @@ doc(db,"reviews",id),
 {
 replies:arrayUnion({
 
-name:"Quản trị viên",
+name:"StechCctv",
 
 position:"Admin",
 
