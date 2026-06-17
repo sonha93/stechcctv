@@ -1401,13 +1401,13 @@ margin-bottom:4px;
 ↳ ${rep.name || rep.userName || "Khách hàng"}
 </span>
 
+${getVerifiedBadge(rep.uid)}
+
 <span style="font-size:12px;color:#888;">
 ${rep.createdAt
   ? timeAgo({ toMillis:()=>rep.createdAt })
   : ""}
 </span>
-
-${getVerifiedBadge(rep.uid)}
   ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
 </div>
 
