@@ -151,8 +151,6 @@ ${productName}
 </a>
 </td>
 
-<td>${r.verified ? "✅" : "❌"}</td>
-
 <td>${r.rating || 0} ⭐</td>
 
 <td>
