@@ -89,7 +89,30 @@ id:docu.id,
 };
 
 let phone = "";
+let productName = "";
+let productLink = "#";
 
+if(r.productId){
+
+const productSnap =
+await getDoc(
+doc(db,"products",r.productId)
+);
+
+if(productSnap.exists()){
+
+const product =
+productSnap.data();
+
+productName =
+product.name || "";
+
+productLink =
+`../product.html?id=${r.productId}`;
+
+}
+
+}
 if(r.uid){
 
 const userSnap =
@@ -111,11 +134,27 @@ reviewsTable.innerHTML += `
 <tr>
 
 <td>
+<a
+href="${productLink}"
+target="_blank"
+style="
+color:#00b894;
+font-weight:bold;
+">
+${productName}
+</a>
+</td>
+
+<td>
 ${r.userName || ""}
 </td>
 
 <td>
 ${phone}
+</td>
+
+<td>
+${r.verified ? "✅" : "❌"}
 </td>
 
 <td>
@@ -162,10 +201,17 @@ ${r.createdAt?.toDate
 <td>
 
 <button
+onclick="adminReplyReview('${r.id}')">
+Reply
+</button>
+
+</td>
+
+<td>
+
+<button
 onclick="deleteReview('${r.id}')">
-
 Xóa
-
 </button>
 
 </td>
@@ -225,9 +271,11 @@ questionsTable.innerHTML += `
 <td>
 ${c.userName || ""}
 </td>
+
 <td>
 ${phone}
 </td>
+
 <td>
 ${c.content || ""}
 </td>
@@ -265,6 +313,17 @@ ${c.createdAt?.toDate
 ? c.createdAt.toDate().toLocaleString()
 : ""
 }
+
+</td>
+
+<td>
+
+<button
+onclick="adminReplyQuestion('${c.id}')">
+
+Reply
+
+</button>
 
 </td>
 
@@ -330,7 +389,61 @@ loadQuestions();
 };
 
 
-// =======================
+window.adminReplyReview =
+async function(id){
+
+const text =
+prompt("Nhập nội dung trả lời");
+
+if(!text) return;
+
+await updateDoc(
+doc(db,"reviews",id),
+{
+replies:arrayUnion({
+
+name:"Quản trị viên",
+
+position:"Admin",
+
+content:text,
+
+createdAt:Date.now()
+
+})
+}
+);
 
 loadReviews();
+
+};
+loadReviews();
 loadQuestions();
+window.adminReplyQuestion =
+async function(id){
+
+const text =
+prompt("Nhập câu trả lời");
+
+if(!text) return;
+
+await updateDoc(
+doc(db,"comments",id),
+{
+replies:arrayUnion({
+
+name:"Quản trị viên",
+
+position:"Admin",
+
+content:text,
+
+createdAt:Date.now()
+
+})
+}
+);
+
+loadQuestions();
+
+}
