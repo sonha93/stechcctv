@@ -193,12 +193,30 @@ collection(db,"comments")
 )
 );
 
-snap.forEach(docu=>{
+for(const docu of snap.docs){
 
 const c = {
 id:docu.id,
 ...docu.data()
 };
+
+let phone = "";
+
+if(c.uid){
+
+const userSnap =
+await getDoc(
+doc(db,"users",c.uid)
+);
+
+if(userSnap.exists()){
+
+phone =
+userSnap.data().phone || "";
+
+}
+
+}
 
 questionsTable.innerHTML += `
 
@@ -207,7 +225,9 @@ questionsTable.innerHTML += `
 <td>
 ${c.userName || ""}
 </td>
-
+<td>
+${phone}
+</td>
 <td>
 ${c.content || ""}
 </td>
@@ -263,7 +283,7 @@ Xóa
 
 `;
 
-});
+}
 
 }
 
