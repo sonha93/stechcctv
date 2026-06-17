@@ -947,7 +947,27 @@ document
 
 }
 },50);
-allReviews.forEach(r=>{
+for (const r of allReviews) {
+
+const userSnap = await getDoc(doc(db,"users",r.uid));
+
+if(userSnap.exists()){
+
+const latestUser = userSnap.data();
+
+r.userName =
+latestUser.name ||
+r.userName;
+
+r.avatar =
+latestUser.avatar ||
+r.avatar;
+
+r.position =
+latestUser.position ||
+r.position;
+
+}
 
  if(
    currentFilter !== "all" &&
@@ -1142,7 +1162,7 @@ border-radius:8px;
 
 `;
 
-});
+}
 }
 
 window.toggleReply = function(id){
@@ -1184,12 +1204,36 @@ productId
 
 commentList.innerHTML="";
 
-snap.forEach(docu=>{
+for (const docu of snap.docs){
 
 const c = {
-  id: docu.id,
-  ...docu.data()
+id: docu.id,
+...docu.data()
 };
+
+const userSnap =
+await getDoc(doc(db,"users",c.uid));
+
+if(userSnap.exists()){
+
+const latestUser =
+userSnap.data();
+
+c.userName =
+latestUser.name ||
+c.userName;
+
+c.avatar =
+latestUser.avatar ||
+c.avatar;
+
+c.position =
+latestUser.position ||
+c.position;
+
+}
+
+
 
 commentList.innerHTML += `
 
@@ -1359,8 +1403,7 @@ margin-bottom:4px;
 </div>
 `;
 
-});
-
+}
 }
 window.replyReview = async function(id){
 
@@ -1395,21 +1438,8 @@ await updateDoc(
 doc(db,"reviews",id),
 {
 replies: arrayUnion({
-
   uid:user.uid,
-
-  name:
-    userData.name ||
-    "Khách hàng",
-
-  avatar:
-    userData.avatar || "",
-
-  position:
-    userData.position || "",
-
   content:text,
-
   createdAt: Date.now()
 })
 }
