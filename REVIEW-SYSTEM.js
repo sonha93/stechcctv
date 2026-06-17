@@ -1143,8 +1143,15 @@ border-radius:8px;
   color:#00b894;
   margin-bottom:4px;
 ">
- ↳ ${rep.name || rep.userName || "Khách hàng"}
-  ${getVerifiedBadge(rep.uid)}
+↳ ${rep.name || rep.userName || "Khách hàng"}
+
+<span style="font-size:12px;color:#888;">
+${rep.createdAt
+  ? timeAgo({ toMillis:()=>rep.createdAt })
+  : ""}
+</span>
+
+${getVerifiedBadge(rep.uid)}
   ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
 </div>
 
@@ -1388,8 +1395,17 @@ font-weight:bold;
 color:#00b894;
 margin-bottom:4px;
 ">
-  <span>↳ ${rep.name || rep.userName || "Khách hàng"}</span>
-  ${getVerifiedBadge(rep.uid)}
+<span>
+↳ ${rep.name || rep.userName || "Khách hàng"}
+</span>
+
+<span style="font-size:12px;color:#888;">
+${rep.createdAt
+  ? timeAgo({ toMillis:()=>rep.createdAt })
+  : ""}
+</span>
+
+${getVerifiedBadge(rep.uid)}
   ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
 </div>
 
