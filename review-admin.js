@@ -12,7 +12,9 @@ doc,
 query,
 getDoc,
 updateDoc,
-arrayUnion
+arrayUnion,
+orderBy,
+limit
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -78,7 +80,9 @@ reviewsTable.innerHTML = "";
 const snap =
 await getDocs(
 query(
-collection(db,"reviews")
+collection(db,"reviews"),
+orderBy("createdAt","desc"),
+limit(100)
 )
 );
 
@@ -227,10 +231,11 @@ questionsTable.innerHTML = "";
 const snap =
 await getDocs(
 query(
-collection(db,"comments")
+collection(db,"comments"),
+orderBy("createdAt","desc"),
+limit(100)
 )
 );
-
 for(const docu of snap.docs){
 
 const c = {
