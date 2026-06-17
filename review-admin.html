@@ -1,224 +1,151 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Reviews Pro</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý đánh giá sản phẩm</title>
 
-  <style>
-    body {
-      font-family: Arial;
-      padding: 20px;
-      background: #f5f5f5;
-    }
+<link rel="stylesheet" href="./css/review-admin.css">
 
-    h2 { margin-bottom: 15px; }
+<style>
+body{
+margin:0;
+padding:20px;
+font-family:Arial,sans-serif;
+background:#f5f6fa;
+}
 
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
+.page-header{
+margin-bottom:20px;
+}
 
-    input {
-      padding: 6px;
-      width: 200px;
-    }
+.tabs{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+}
 
-    button {
-      padding: 6px 10px;
-      cursor: pointer;
-    }
+.tab-btn{
+padding:12px 20px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+background:#ddd;
+font-weight:bold;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-    }
+.tab-btn.active{
+background:#00b894;
+color:#fff;
+}
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      font-size: 14px;
-      vertical-align: top;
-    }
+.tab-content{
+display:none;
+}
 
-    th {
-      background: #222;
-      color: white;
-    }
+.tab-content.active{
+display:block;
+}
 
-    .star {
-      color: orange;
-      font-weight: bold;
-    }
+.table-wrapper{
+background:#fff;
+border-radius:12px;
+padding:15px;
+overflow:auto;
+}
 
-    .del {
-      background: red;
-      color: white;
-      border: none;
-    }
+table{
+width:100%;
+border-collapse:collapse;
+}
 
-    .badge {
-      background: #00b894;
-      color: white;
-      padding: 2px 6px;
-      border-radius: 5px;
-      font-size: 12px;
-    }
-  </style>
+th,td{
+padding:12px;
+border-bottom:1px solid #eee;
+text-align:left;
+}
+</style>
+
 </head>
 
 <body>
 
-<h2>📊 ADMIN REVIEWS SYSTEM (PRO)</h2>
-
-<div class="toolbar">
-  <input id="searchPhone" placeholder="Tìm SĐT...">
-  <input id="searchName" placeholder="Tìm tên...">
- <button onclick="search()">Search</button>
-<button onclick="reset()">Reset</button>
-<button onclick="stats()">Stats</button>
+<div class="page-header">
+<h2>⭐ Quản lý đánh giá & hỏi đáp</h2>
 </div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Khách</th>
-      <th>SĐT</th>
-      <th>Email</th>
-      <th>Nội dung</th>
-      <th>Sao</th>
-      <th>Sản phẩm</th>
-      <th>Thời gian</th>
-      <th>Action</th>
-    </tr>
-  </thead>
+<div class="tabs">
 
-  <tbody id="list"></tbody>
+<button
+class="tab-btn active"
+data-tab="reviews">
+Đánh giá sản phẩm
+</button>
+
+<button
+class="tab-btn"
+data-tab="questions">
+Hỏi đáp sản phẩm
+</button>
+
+</div>
+
+<div
+id="reviewsTab"
+class="tab-content active">
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+<tr>
+<th>Khách hàng</th>
+<th>Số sao</th>
+<th>Nội dung</th>
+<th>Media</th>
+<th>Ngày</th>
+<th>Thao tác</th>
+</tr>
+</thead>
+
+<tbody id="reviewsTable">
+</tbody>
+
 </table>
 
-<script type="module">
+</div>
 
-import { db } from "./firebase-config.js";
+</div>
 
-import {
-  collection,
-  onSnapshot,
-  query,
-  orderBy,
-  deleteDoc,
-  doc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<div
+id="questionsTab"
+class="tab-content">
 
-/* =========================
-   STATE
-========================= */
-let state = {
-  all: [],
-  filtered: []
-};
+<div class="table-wrapper">
 
-const el = {
-  list: document.getElementById("list"),
-  phone: document.getElementById("searchPhone"),
-  name: document.getElementById("searchName")
-};
+<table>
 
-/* =========================
-   FIREBASE LAYER
-========================= */
-const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+<thead>
+<tr>
+<th>Khách hàng</th>
+<th>Nội dung</th>
+<th>Media</th>
+<th>Ngày</th>
+<th>Thao tác</th>
+</tr>
+</thead>
 
-onSnapshot(q, (snap) => {
-  state.all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  state.filtered = state.all;
-  render();
-});
+<tbody id="questionsTable">
+</tbody>
 
-/* =========================
-   UI LAYER
-========================= */
-const ui = {
-  search() {
-    const phone = el.phone.value.toLowerCase();
-    const name = el.name.value.toLowerCase();
+</table>
 
-    state.filtered = state.all.filter(r => {
-      return (
-        (r.phone || "").toLowerCase().includes(phone) &&
-        (r.userName || "").toLowerCase().includes(name)
-      );
-    });
+</div>
 
-    render();
-  },
+</div>
 
-  reset() {
-    el.phone.value = "";
-    el.name.value = "";
-    state.filtered = state.all;
-    render();
-  },
+<script type="module" src="./js/review-admin.js"></script>
 
-  stats() {
-    const total = state.all.length;
-    const avg =
-      total > 0
-        ? (state.all.reduce((a, b) => a + (b.rating || 0), 0) / total).toFixed(1)
-        : 0;
-
-    alert(`Tổng review: ${total}\nRating TB: ${avg}`);
-  },
-
-  async del(id) {
-    await deleteDoc(doc(db, "reviews", id));
-  }
-};
-
-window.search = ui.search;
-window.reset = ui.reset;
-window.stats = ui.stats;
-window.del = ui.del;
-
-/* =========================
-   RENDER ENGINE
-========================= */
-function render() {
-  el.list.innerHTML = "";
-
-  state.filtered.forEach(r => {
-    el.list.innerHTML += rowTemplate(r);
-  });
-}
-
-/* =========================
-   TEMPLATE ENGINE
-========================= */
-function rowTemplate(r) {
-  return `
-    <tr>
-      <td>
-        ${r.userName || ""}
-        ${r.verified ? `<span class="badge">✔ VIP</span>` : ""}
-      </td>
-      <td>${r.phone || ""}</td>
-      <td>${r.email || ""}</td>
-      <td>${r.content || ""}</td>
-      <td class="star">${"⭐".repeat(r.rating || 0)}</td>
-      <td>${r.productId || ""}</td>
-      <td>${
-        r.createdAt?.toDate
-          ? r.createdAt.toDate().toLocaleString()
-          : ""
-      }</td>
-      <td>
-        <button class="del"onclick="del('${r.id}')">Xoá</button>
-      </td>
-    </tr>
-  `;
-}
-
-</script>
-<script type="module" src="REVIEW-SYSTEM.js"></script>
 </body>
 </html>
