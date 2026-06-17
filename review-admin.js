@@ -286,6 +286,14 @@ questionsTable.innerHTML += `
 <tr>
 
 <td>
+${c.userName || ""}
+</td>
+
+<td>
+${phone}
+</td>
+
+<td>
 <a
 href="${productLink}"
 target="_blank"
@@ -295,14 +303,6 @@ font-weight:bold;
 ">
 ${productName}
 </a>
-</td>
-
-<td>
-${c.userName || ""}
-</td>
-
-<td>
-${phone}
 </td>
 
 <td>
