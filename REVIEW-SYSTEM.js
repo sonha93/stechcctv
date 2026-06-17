@@ -1143,7 +1143,11 @@ border-radius:8px;
   color:#00b894;
   margin-bottom:4px;
 ">
- ↳ ${rep.name || rep.userName || "Khách hàng"}
+↳ ${
+  rep.name ||
+  rep.userName ||
+  (rep.uid ? "Khách hàng" : "Ẩn danh")
+}
   ${getVerifiedBadge(rep.uid)}
   ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
 </div>
@@ -1434,12 +1438,25 @@ const userData =
   userDoc.exists()
   ? userDoc.data()
   : {};
+const userDoc = await getDoc(doc(db,"users",user.uid));
+const userData = userDoc.exists() ? userDoc.data() : {};
+
 await updateDoc(
 doc(db,"reviews",id),
 {
 replies: arrayUnion({
-  uid:user.uid,
-  content:text,
+  uid: user.uid,
+
+  name:
+    userData.name ||
+    user.displayName ||
+    user.email ||
+    "Khách hàng",
+
+  avatar: userData.avatar || "",
+  position: userData.position || "",
+
+  content: text,
   createdAt: Date.now()
 })
 }
