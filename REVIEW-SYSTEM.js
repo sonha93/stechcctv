@@ -1143,7 +1143,7 @@ border-radius:8px;
   color:#00b894;
   margin-bottom:4px;
 ">
-  ↳ ${rep.name}
+ ↳ ${rep.name || rep.userName || "Khách hàng"}
   ${getVerifiedBadge(rep.uid)}
   ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
 </div>
@@ -1388,7 +1388,7 @@ font-weight:bold;
 color:#00b894;
 margin-bottom:4px;
 ">
-  <span>↳ ${rep.name}</span>
+  <span>↳ ${rep.name || rep.userName || "Khách hàng"}</span>
   ${getVerifiedBadge(rep.uid)}
   ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
 </div>
