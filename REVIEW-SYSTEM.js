@@ -1438,8 +1438,9 @@ await updateDoc(
 doc(db,"reviews",id),
 {
 replies: arrayUnion({
-  uid:user.uid,
-  content:text,
+  uid: user.uid,
+  name: userData.name || user.displayName || user.email || "Khách hàng",
+  content: text,
   createdAt: Date.now()
 })
 }
