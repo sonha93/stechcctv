@@ -10,7 +10,8 @@ getDocs,
 deleteDoc,
 doc,
 orderBy,
-query
+query,
+getDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -80,12 +81,30 @@ collection(db,"reviews")
 )
 );
 
-snap.forEach(docu=>{
+for(const docu of snap.docs){
 
 const r = {
 id:docu.id,
 ...docu.data()
 };
+
+let phone = "";
+
+if(r.uid){
+
+const userSnap =
+await getDoc(
+doc(db,"users",r.uid)
+);
+
+if(userSnap.exists()){
+
+phone =
+userSnap.data().phone || "";
+
+}
+
+}
 
 reviewsTable.innerHTML += `
 
@@ -94,7 +113,11 @@ reviewsTable.innerHTML += `
 <td>
 ${r.userName || ""}
 </td>
-<td>${phone}</td>
+
+<td>
+${phone}
+</td>
+
 <td>
 ${r.rating || 0} ⭐
 </td>
@@ -133,8 +156,7 @@ width="120">
 <td>
 ${r.createdAt?.toDate
 ? r.createdAt.toDate().toLocaleString()
-: ""
-}
+: ""}
 </td>
 
 <td>
@@ -152,10 +174,9 @@ Xóa
 
 `;
 
-});
-
 }
 
+}
 
 // =======================
 // LOAD COMMENTS
