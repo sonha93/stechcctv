@@ -1145,13 +1145,15 @@ border-radius:8px;
 ">
 ↳ ${rep.name || rep.userName || "Khách hàng"}
 
-<span style="font-size:12px;color:#888;">
-${rep.createdAt
-  ? timeAgo({ toMillis:()=>rep.createdAt })
-  : ""}
-</span>
-
 ${getVerifiedBadge(rep.uid)}
+
+<span style="
+font-size:12px;
+font-weight:400;
+color:#888;
+">
+${rep.createdAt ? timeAgo({toMillis:()=>rep.createdAt}) : ""}
+</span>
   ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
 </div>
 
