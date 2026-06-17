@@ -133,6 +133,12 @@ reviewsTable.innerHTML += `
 
 <tr>
 
+<tr>
+
+<td>${r.userName || ""}</td>
+
+<td>${phone}</td>
+
 <td>
 <a
 href="${productLink}"
@@ -145,21 +151,9 @@ ${productName}
 </a>
 </td>
 
-<td>
-${r.userName || ""}
-</td>
+<td>${r.verified ? "✅" : "❌"}</td>
 
-<td>
-${phone}
-</td>
-
-<td>
-${r.verified ? "✅" : "❌"}
-</td>
-
-<td>
-${r.rating || 0} ⭐
-</td>
+<td>${r.rating || 0} ⭐</td>
 
 <td>
 ${r.content || ""}
