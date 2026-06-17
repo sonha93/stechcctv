@@ -89,30 +89,7 @@ id:docu.id,
 };
 
 let phone = "";
-let productName = "";
-let productLink = "#";
 
-if(r.productId){
-
-const productSnap =
-await getDoc(
-doc(db,"products",r.productId)
-);
-
-if(productSnap.exists()){
-
-const product =
-productSnap.data();
-
-productName =
-product.name || "";
-
-productLink =
-`../product.html?id=${r.productId}`;
-
-}
-
-}
 if(r.uid){
 
 const userSnap =
@@ -136,9 +113,7 @@ reviewsTable.innerHTML += `
 <td>
 ${r.userName || ""}
 </td>
-<td>
-${phone}
-</td>
+
 <td>
 ${phone}
 </td>
@@ -359,31 +334,3 @@ loadQuestions();
 
 loadReviews();
 loadQuestions();
-window.adminReplyReview =
-async function(id){
-
-const text =
-prompt("Nhập nội dung trả lời");
-
-if(!text) return;
-
-await updateDoc(
-doc(db,"reviews",id),
-{
-replies:arrayUnion({
-
-name:"Quản trị viên",
-
-position:"Admin",
-
-content:text,
-
-createdAt:Date.now()
-
-})
-}
-);
-
-loadReviews();
-
-};
