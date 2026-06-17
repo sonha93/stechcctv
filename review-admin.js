@@ -247,7 +247,30 @@ id:docu.id,
 };
 
 let phone = "";
+let productName = "";
+let productLink = "#";
 
+if(c.productId){
+
+const productSnap =
+await getDoc(
+doc(db,"products",c.productId)
+);
+
+if(productSnap.exists()){
+
+const product =
+productSnap.data();
+
+productName =
+product.name || "";
+
+productLink =
+`https://sonha93.github.io/stechcctv/logo.html?id=${c.productId}`;
+
+}
+
+}
 if(c.uid){
 
 const userSnap =
@@ -267,6 +290,18 @@ userSnap.data().phone || "";
 questionsTable.innerHTML += `
 
 <tr>
+
+<td>
+<a
+href="${productLink}"
+target="_blank"
+style="
+color:#00b894;
+font-weight:bold;
+">
+${productName}
+</a>
+</td>
 
 <td>
 ${c.userName || ""}
