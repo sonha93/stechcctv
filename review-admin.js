@@ -9,9 +9,10 @@ collection,
 getDocs,
 deleteDoc,
 doc,
-orderBy,
 query,
-getDoc
+getDoc,
+updateDoc,
+arrayUnion
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -417,8 +418,7 @@ createdAt:Date.now()
 loadReviews();
 
 };
-loadReviews();
-loadQuestions();
+
 window.adminReplyQuestion =
 async function(id){
 
@@ -447,3 +447,5 @@ createdAt:Date.now()
 loadQuestions();
 
 }
+loadReviews();
+loadQuestions();
