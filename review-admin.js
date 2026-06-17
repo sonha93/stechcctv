@@ -109,8 +109,7 @@ productName =
 product.name || "";
 
 productLink =
-`/logo.html?id?id=${r.productId}`;
-
+`https://sonha93.github.io/stechcctv/logo.html?id=${r.productId}`;
 }
 
 }
