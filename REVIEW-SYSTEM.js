@@ -1292,7 +1292,7 @@ d="M10.2 15.8l-3-3 1.4-1.4 1.6 1.6 5-5 1.4 1.4z"/>
 </div>
 
 </div>
-
+</div>
 <div class="review-content question-content">
 ${c.content}
 </div>
