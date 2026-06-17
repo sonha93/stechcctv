@@ -93,7 +93,7 @@ reviewsTable.innerHTML += `
 <td>
 ${r.userName || ""}
 </td>
-
+<td>${phone}</td>
 <td>
 ${r.rating || 0} ⭐
 </td>
