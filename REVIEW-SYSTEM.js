@@ -1258,16 +1258,24 @@ c.avatar ||
 }">
 
 <div>
-
 <div class="review-name">
 
 ${c.userName}
 ${getVerifiedBadge(c.uid)}
+
 ${c.position ? `
 <span class="admin-badge">
 ${c.position}
 </span>
 ` : ""}
+
+</div>
+
+<div class="review-time-row">
+
+<span class="review-time-text">
+${timeAgo(c.createdAt)}
+</span>
 
 ${c.verified ? `
 <span class="verified-badge">
