@@ -1143,7 +1143,14 @@ border-radius:8px;
   color:#00b894;
   margin-bottom:4px;
 ">
- ↳ ${rep.name || rep.userName || "Khách hàng"}
+const user = auth.currentUser;
+
+addDoc(collection(db, "replies"), {
+  text: replyText,
+  name: user?.displayName || user?.email || "Khách hàng",
+  userId: user?.uid,
+  createdAt: serverTimestamp()
+});
   ${getVerifiedBadge(rep.uid)}
   ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
 </div>
