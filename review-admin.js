@@ -109,7 +109,7 @@ productName =
 product.name || "";
 
 productLink =
-`../logo.html?id=${r.productId}`;
+`../stechcctv/logo.html?id?id=${r.productId}`;
 
 }
 
