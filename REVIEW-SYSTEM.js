@@ -1147,6 +1147,12 @@ border-radius:8px;
 
 ${getVerifiedBadge(rep.uid)}
 
+${rep.position ? `
+<span class="admin-badge">
+${rep.position}
+</span>
+` : ""}
+
 <span style="
 font-size:12px;
 font-weight:400;
@@ -1154,7 +1160,7 @@ color:#888;
 ">
 ${rep.createdAt ? timeAgo({toMillis:()=>rep.createdAt}) : ""}
 </span>
-  ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
+
 </div>
 
 <div style="margin-left:18px;">
