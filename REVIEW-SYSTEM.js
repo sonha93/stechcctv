@@ -930,7 +930,7 @@ loadReviews();
 
 };
 
-});
+
 const reviewBtn =
 document.getElementById("openReviewBtn");
 
