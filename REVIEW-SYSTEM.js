@@ -1481,6 +1481,7 @@ doc(db,"reviews",id),
 replies: arrayUnion({
   uid: user.uid,
   name: userData.name || user.displayName || user.email || "Khách hàng",
+   position: userData.position || "",
   content: text,
   createdAt: Date.now()
 })
