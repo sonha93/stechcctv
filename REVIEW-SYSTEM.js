@@ -1591,7 +1591,6 @@ loadReviews();
 
 };
 
-};
 window.openImage=function(url){
 
 const popup =
