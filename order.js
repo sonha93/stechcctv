@@ -601,12 +601,11 @@ function bindCancelEvents(){
   if(btn.disabled) return;
         const id = btn.dataset.id;
 
-        const confirmCancel = confirm(
-          "Bạn có chắc muốn hủy đơn hàng này?"
-        );
+      const confirmCancel = await showConfirm(
+  "Bạn có chắc muốn hủy đơn hàng này?"
+);
 
 if(!confirmCancel) return;
-
 // khóa nút tránh spam click
 btn.disabled = true;
 btn.innerText = "Đang hủy...";
@@ -712,35 +711,71 @@ window.toggleItems = function(id, itemsCount){
     }
   }
 };
-if(!window.showToast){
+function showConfirm(message){
 
-window.showToast = function(message){
+return new Promise(resolve => {
 
-const toast = document.createElement("div");
+const result = document.createElement("div");
 
-toast.innerText = message;
-
-toast.style.cssText = `
+result.innerHTML = `
+<div style="
 position:fixed;
-left:50%;
-bottom:30px;
-transform:translateX(-50%);
-background:#222;
-color:#fff;
-padding:12px 20px;
-border-radius:8px;
-font-size:14px;
+inset:0;
+background:rgba(0,0,0,.5);
+display:flex;
+align-items:center;
+justify-content:center;
 z-index:999999;
+">
+
+<div style="
+background:#fff;
+padding:20px;
+border-radius:12px;
+width:90%;
+max-width:400px;
+text-align:center;
+">
+
+<p style="margin-bottom:20px;">
+${message}
+</p>
+
+<button id="confirmNo"
+style="
+padding:10px 20px;
+margin-right:10px;
+">
+Không
+</button>
+
+<button id="confirmYes"
+style="
+padding:10px 20px;
+background:#ef4444;
+color:#fff;
+border:none;
+border-radius:6px;
+">
+Đồng ý
+</button>
+
+</div>
+</div>
 `;
 
-document.body.appendChild(toast);
+document.body.appendChild(result);
 
-setTimeout(()=>{
-toast.remove();
-},2500);
-
+result.querySelector("#confirmNo").onclick = () => {
+result.remove();
+resolve(false);
 };
 
-window.alert = window.showToast;
+result.querySelector("#confirmYes").onclick = () => {
+result.remove();
+resolve(true);
+};
+
+});
 
 }
