@@ -204,7 +204,7 @@ if(actionBox){
 export async function addToCart(product) {
 
   if (!currentUser) {
-    alert("Bạn cần đăng nhập!");
+  showToast("Bạn cần đăng nhập!");
     return;
   }
 
@@ -366,3 +366,30 @@ await updateCartCount();
 });
 
 window.renderCart = renderCart;
+function showToast(message){
+
+const toast = document.createElement("div");
+
+toast.innerText = message;
+
+toast.style.cssText = `
+position:fixed;
+left:50%;
+bottom:30px;
+transform:translateX(-50%);
+background:#222;
+color:#fff;
+padding:12px 20px;
+border-radius:8px;
+font-size:14px;
+z-index:999999;
+box-shadow:0 4px 12px rgba(0,0,0,.3);
+`;
+
+document.body.appendChild(toast);
+
+setTimeout(()=>{
+toast.remove();
+},2500);
+
+}
