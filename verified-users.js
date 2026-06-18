@@ -48,7 +48,6 @@ export function getVerifiedBadge(uid){
   <span>Tài khoản đã xác minh</span>
 
 </div>
-    </div>
 
   </span>
   `;
