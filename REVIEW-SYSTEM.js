@@ -1382,15 +1382,6 @@ Gửi
 ${(c.replies || []).map(rep => `
 
 <div style="
-margin-top:8px;
-margin-left:40px;
-padding:10px;
-background:#f8f8f8;
-border-left:3px solid #00b894;
-border-radius:8px;
-">
-
-<div style="
 display:flex;
 align-items:center;
 gap:6px;
@@ -1405,12 +1396,18 @@ margin-bottom:4px;
 
 ${getVerifiedBadge(rep.uid)}
 
+${rep.position ? `
+<span class="admin-badge">
+${rep.position}
+</span>
+` : ""}
+
 <span style="font-size:12px;color:#888;">
 ${rep.createdAt
   ? timeAgo({ toMillis:()=>rep.createdAt })
   : ""}
 </span>
-  ${rep.position ? `<span class="admin-badge">${rep.position}</span>` : ""}
+
 </div>
 
 <div style="word-break:break-word;">
