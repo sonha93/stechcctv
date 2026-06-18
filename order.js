@@ -622,7 +622,7 @@ try{
 
   });
 
-alert("Đã hủy đơn hàng");
+showToast("Đã hủy đơn hàng");
 
 // update local UI luôn
 allOrders = allOrders.map(order => {
@@ -647,7 +647,7 @@ renderOrders();
 
   console.error(err);
 
-  alert("Lỗi hủy đơn hàng");
+ showToast("Lỗi hủy đơn hàng");
 
   // mở lại nút nếu lỗi
   btn.disabled = false;
