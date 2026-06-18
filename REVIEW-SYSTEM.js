@@ -48,8 +48,6 @@ document.getElementById("commentList");
 let formRating = 5;
 let previewRating = 5;
 let currentFilter = "all";
-let currentPage = 1;
-const REVIEWS_PER_PAGE = 6;
 async function uploadToCloudinary(file,type="image"){
 
 const formData = new FormData();
@@ -949,15 +947,7 @@ document
 
 }
 },50);
-const start =
-(currentPage - 1) * REVIEWS_PER_PAGE;
-
-const end =
-start + REVIEWS_PER_PAGE;
-
-const pageReviews =
-allReviews.slice(start, end);
-for (const r of pageReviews) {
+for (const r of allReviews) {
 
 const userSnap = await getDoc(doc(db,"users",r.uid));
 
@@ -1186,40 +1176,7 @@ ${rep.createdAt ? timeAgo({toMillis:()=>rep.createdAt}) : ""}
 </div>
 
 `;
-const totalPages =
-Math.ceil(
-allReviews.length / REVIEWS_PER_PAGE
-);
 
-if(totalPages > 1){
-
-reviewList.innerHTML += `
-
-<div class="review-pagination">
-
-<button
-onclick="changePage(${currentPage - 1})"
-${currentPage === 1 ? "disabled" : ""}
->
-◀
-</button>
-
-<span>
-Trang ${currentPage}/${totalPages}
-</span>
-
-<button
-onclick="changePage(${currentPage + 1})"
-${currentPage === totalPages ? "disabled" : ""}
->
-▶
-</button>
-
-</div>
-
-`;
-
-}
 }
 }
 
@@ -1730,21 +1687,6 @@ await loadReviews();
 await loadComments();
 
 });
-window.changePage = function(page){
-
-const totalPages =
-Math.ceil(
-document.querySelectorAll(".review-card").length /
-REVIEWS_PER_PAGE
-);
-
-if(page < 1) return;
-
-currentPage = page;
-
-loadReviews();
-
-}
 function showToast(message){
 
 const toast = document.createElement("div");
