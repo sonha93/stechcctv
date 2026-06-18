@@ -601,11 +601,12 @@ function bindCancelEvents(){
   if(btn.disabled) return;
         const id = btn.dataset.id;
 
-      const confirmCancel = await showConfirm(
-  "Bạn có chắc muốn hủy đơn hàng này?"
-);
+        const confirmCancel = confirm(
+          "Bạn có chắc muốn hủy đơn hàng này?"
+        );
 
 if(!confirmCancel) return;
+
 // khóa nút tránh spam click
 btn.disabled = true;
 btn.innerText = "Đang hủy...";
@@ -621,7 +622,7 @@ try{
 
   });
 
-window.showToast("Đã hủy đơn hàng");
+showToast("Đã hủy đơn hàng");
 
 // update local UI luôn
 allOrders = allOrders.map(order => {
@@ -646,7 +647,7 @@ renderOrders();
 
   console.error(err);
 
- window.showToast("Lỗi hủy đơn hàng");
+ showToast("Lỗi hủy đơn hàng");
 
   // mở lại nút nếu lỗi
   btn.disabled = false;
@@ -711,7 +712,9 @@ window.toggleItems = function(id, itemsCount){
     }
   }
 };
-function showToast(message){
+if(!window.showToast){
+
+window.showToast = function(message){
 
 const toast = document.createElement("div");
 
@@ -736,6 +739,8 @@ setTimeout(()=>{
 toast.remove();
 },2500);
 
-}
+};
 
-window.alert = showToast;
+window.alert = window.showToast;
+
+}
