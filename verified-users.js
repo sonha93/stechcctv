@@ -44,7 +44,7 @@ export function getVerifiedBadge(uid){
 </div>
 
       <div class="verified-popup-text">
-        Tài khoản này đã được Stech xác minh là chủ sở hữu chính thức.
+        Tài khoản này đã được StechCctv xác minh là chủ sở hữu chính thức.
       </div>
     </div>
 
