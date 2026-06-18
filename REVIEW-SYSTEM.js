@@ -431,7 +431,7 @@ where("productId","==",productId)
 
 if(!oldReview.empty){
 
-alert("Bạn đã đánh giá rồi");
+showToast("Bạn đã đánh giá rồi");
 
 return;
 
@@ -450,7 +450,7 @@ const purchased =
 await hasPurchased(user.uid);
   if(!purchased){
 
-alert(
+showToast(
 "Bạn cần mua sản phẩm trước khi đánh giá"
 );
 
@@ -465,7 +465,7 @@ document
 
 if(!content){
 
-alert("Nhập nội dung");
+showToast("Nhập nội dung");
 
 return;
 
@@ -541,7 +541,7 @@ images:images,
 video:video,
 }
 );
-alert("Cảm ơn Bạn đã đánh giá sản phẩm");
+showToast("Cảm ơn bạn đã đánh giá sản phẩm");
 
 document
 .getElementById("reviewContent")
@@ -569,7 +569,7 @@ auth.currentUser;
 
 if(!user){
 
-alert("Đăng nhập trước");
+showToast("Đăng nhập trước");
 
 return;
 
@@ -1500,7 +1500,7 @@ if(
 .includes(user.uid)
 ){
 
-alert("Bạn đã thích rồi");
+showToast("Bạn đã thích rồi");
 
 return;
 
@@ -1665,3 +1665,30 @@ await loadReviews();
 await loadComments();
 
 });
+function showToast(message){
+
+const toast = document.createElement("div");
+
+toast.innerText = message;
+
+toast.style.cssText = `
+position:fixed;
+left:50%;
+bottom:30px;
+transform:translateX(-50%);
+background:#222;
+color:#fff;
+padding:12px 20px;
+border-radius:8px;
+font-size:14px;
+z-index:999999;
+box-shadow:0 4px 12px rgba(0,0,0,.3);
+`;
+
+document.body.appendChild(toast);
+
+setTimeout(()=>{
+toast.remove();
+},2500);
+
+}
