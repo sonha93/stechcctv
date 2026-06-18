@@ -1123,8 +1123,7 @@ Gửi
 
 <div style="margin-top:10px;">
 
-${(r.replies || []).map(rep => `
-
+${(r.replies || []).map((rep,index) => `
 <div style="
 margin-top:8px;
 margin-left:40px;
@@ -1161,6 +1160,14 @@ ${rep.createdAt ? timeAgo({toMillis:()=>rep.createdAt}) : ""}
   ${rep.content}
 </div>
 
+<div style="
+margin-left:18px;
+margin-top:6px;
+font-size:13px;
+color:#666;
+">
+👍 ${rep.likes || 0}
+</div>
 </div>
 
 `).join("")}
@@ -1379,7 +1386,7 @@ Gửi
 </div>
 <div style="margin-top:10px;">
 
-${(c.replies || []).map(rep => `
+${(c.replies || []).map((rep,index) => `
 
 <div style="
 margin-top:8px;
@@ -1415,6 +1422,15 @@ ${rep.createdAt
 
 <div style="word-break:break-word;">
   ${rep.content}
+</div>
+
+<div style="
+margin-top:6px;
+font-size:13px;
+color:#666;
+cursor:pointer;
+">
+👍 ${rep.likes || 0}
 </div>
 </div>
 
