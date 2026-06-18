@@ -42,8 +42,8 @@ export function getVerifiedBadge(uid){
       </div>
 
       <div class="verified-popup-text">
-     ${label} đã được Stech xác minh là tài khoản chính thức.
-      </div>
+  Tài khoản này đã được Stech xác minh là tài khoản chính thức.
+</div>
     </div>
 
   </span>
