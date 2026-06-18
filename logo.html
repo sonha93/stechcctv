@@ -1547,11 +1547,11 @@ color:#00b894;
     left:50%;
     transform:translateX(-50%);
 
-    width:260px;
+    width:220px;
+    max-width:calc(100vw - 40px);
 
     background:#fff;
     border-radius:14px;
-
     padding:12px;
 
     box-shadow:0 8px 24px rgba(0,0,0,.15);
@@ -1561,6 +1561,9 @@ color:#00b894;
 
     transition:.2s;
     z-index:99999;
+
+    white-space:normal;
+    word-break:break-word;
 }
 
 .verified-popup-title{
@@ -1602,6 +1605,17 @@ color:#00b894;
 .verified-badge:hover .verified-popup{
   opacity:1;
   visibility:visible;
+}
+	@media(max-width:768px){
+
+  .verified-popup{
+      width:200px;
+      font-size:13px;
+      left:auto;
+      right:0;
+      transform:none;
+  }
+
 }
 </style>
 </head>
