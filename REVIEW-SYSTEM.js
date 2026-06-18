@@ -583,7 +583,7 @@ document
 
 if(!content){
 
-alert("Nhập nội dung");
+showToast("Nhập nội dung");
 
 return;
 
@@ -1441,7 +1441,7 @@ const user =
 auth.currentUser;
 
 if(!user){
-alert("Đăng nhập trước");
+showToast("Đăng nhập trước");
 return;
 }
 
@@ -1480,7 +1480,7 @@ auth.currentUser;
 
 if(!user){
 
-alert("Đăng nhập trước");
+showToast("Đăng nhập trước");
 
 return;
 
@@ -1571,7 +1571,7 @@ window.likeComment = async function(id){
 const user = auth.currentUser;
 
 if(!user){
-alert("Đăng nhập trước");
+showToast("Đăng nhập trước");
 return;
 }
 
@@ -1588,7 +1588,7 @@ if(
 (comment.likedBy || [])
 .includes(user.uid)
 ){
-alert("Bạn đã thích rồi");
+showToast("Bạn đã thích rồi");
 return;
 }
 
@@ -1609,7 +1609,7 @@ const user =
 auth.currentUser;
 
 if(!user){
-alert("Đăng nhập trước");
+showToast("Đăng nhập trước");
 return;
 }
 
