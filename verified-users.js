@@ -15,16 +15,9 @@ export const VERIFIED_USERS = {
 };
 
 // Kiểm tra có xác minh không
-export function isVerified(uid){
-  return !!VERIFIED_USERS[uid];
-}
-
-// Lấy tên huy hiệu
 export function getVerifiedBadge(uid){
 
   if(!VERIFIED_USERS[uid]) return "";
-
-  const label = VERIFIED_USERS[uid];
 
   return `
   <span class="verified-badge">
@@ -35,6 +28,16 @@ export function getVerifiedBadge(uid){
       <path fill="#fff"
       d="M10.2 15.8l-3-3 1.4-1.4 1.6 1.6 5-5 1.4 1.4z"/>
     </svg>
+
+    <div class="verified-popup">
+      <div class="verified-popup-title">
+        ✓ Tài khoản đã xác minh
+      </div>
+
+      <div class="verified-popup-text">
+        Tài khoản này đã được Stech xác minh là chủ sở hữu chính thức.
+      </div>
+    </div>
 
   </span>
   `;
