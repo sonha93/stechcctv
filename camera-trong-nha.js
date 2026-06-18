@@ -422,3 +422,35 @@ function initSearch(){
   });
 
 }
+if(!window.showToast){
+
+window.showToast = function(message){
+
+const toast = document.createElement("div");
+
+toast.innerText = message;
+
+toast.style.cssText = `
+position:fixed;
+left:50%;
+bottom:30px;
+transform:translateX(-50%);
+background:#222;
+color:#fff;
+padding:12px 20px;
+border-radius:8px;
+font-size:14px;
+z-index:999999;
+`;
+
+document.body.appendChild(toast);
+
+setTimeout(()=>{
+toast.remove();
+},2500);
+
+};
+
+window.alert = window.showToast;
+
+}
