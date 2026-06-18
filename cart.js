@@ -175,7 +175,7 @@ actionBox = document.getElementById("cartAction");
     });
 
     totalBox.innerHTML =
-      "Tổng tiền: " +
+      "Tạm tính: " +
       total.toLocaleString() +
       "đ";
 if(actionBox){
