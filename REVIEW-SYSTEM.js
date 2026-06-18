@@ -715,7 +715,15 @@ snap.forEach(docu=>{
 const totalReview = allReviews.length;
 const commentCount =
 document.getElementById("commentCount");
+const commentSnap = await getDocs(
+  query(
+    collection(db,"comments"),
+    where("productId","==",productId)
+  )
+);
 
+const totalComment = commentSnap.size;
+const totalInteraction = totalReview + totalComment;
 const avg =
 totalReview
 ? (
@@ -853,7 +861,7 @@ if(commentCount){
 
 commentCount.innerHTML = `
 <span class="comment-text">
-    ${totalReview} Bình luận
+    ${totalInteraction} Bình luận
 </span>
 
 <div class="review-filter">
