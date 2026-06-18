@@ -1,3 +1,4 @@
+
 import { app, rtdb } from "./auth.js";
 import { getVerifiedBadge }
 from "./verified-users.js";
@@ -930,7 +931,7 @@ loadReviews();
 
 };
 
-
+});
 const reviewBtn =
 document.getElementById("openReviewBtn");
 
@@ -1122,7 +1123,8 @@ Gửi
 
 <div style="margin-top:10px;">
 
-${(r.replies || []).map((rep,index) => `
+${(r.replies || []).map(rep => `
+
 <div style="
 margin-top:8px;
 margin-left:40px;
@@ -1159,18 +1161,6 @@ ${rep.createdAt ? timeAgo({toMillis:()=>rep.createdAt}) : ""}
   ${rep.content}
 </div>
 
-<div
-style="
-margin-left:18px;
-margin-top:6px;
-font-size:13px;
-color:#666;
-cursor:pointer;
-"
-onclick="likeReplyReview('${r.id}',${index})"
->
-👍 ${rep.likes || 0}
-</div>
 </div>
 
 `).join("")}
@@ -1389,7 +1379,7 @@ Gửi
 </div>
 <div style="margin-top:10px;">
 
-${(c.replies || []).map((rep,index) => `
+${(c.replies || []).map(rep => `
 
 <div style="
 margin-top:8px;
@@ -1425,15 +1415,6 @@ ${rep.createdAt
 
 <div style="word-break:break-word;">
   ${rep.content}
-</div>
-
-<div style="
-margin-top:6px;
-font-size:13px;
-color:#666;
-cursor:pointer;
-">
-👍 ${rep.likes || 0}
 </div>
 </div>
 
@@ -1480,9 +1461,7 @@ replies: arrayUnion({
   uid: user.uid,
   name: userData.name || user.displayName || user.email || "Khách hàng",
   content: text,
-createdAt: Date.now(),
-likes: 0,
-likedBy: []
+  createdAt: Date.now()
 })
 }
 );
@@ -1538,59 +1517,6 @@ likedBy: arrayUnion(user.uid)
 loadReviews();
 
 };
-window.likeReplyReview = async function(reviewId,index){
-
-const user = auth.currentUser;
-
-if(!user){
-showToast("Đăng nhập trước");
-return;
-}
-
-const reviewRef =
-doc(db,"reviews",reviewId);
-
-const snap =
-await getDoc(reviewRef);
-
-const data =
-snap.data();
-
-const replies =
-data.replies || [];
-
-if(!replies[index]) return;
-
-/* đã like rồi */
-if(
-(replies[index].likedBy || [])
-.includes(user.uid)
-){
-showToast("Bạn đã thích rồi");
-return;
-}
-
-/* tăng like */
-replies[index].likes =
-(replies[index].likes || 0) + 1;
-
-/* lưu uid người like */
-replies[index].likedBy = [
-...(replies[index].likedBy || []),
-user.uid
-];
-
-await updateDoc(
-reviewRef,
-{
-replies: replies
-}
-);
-
-loadReviews();
-
-};
-
 window.openImage=function(url){
 
 const popup =
@@ -1711,11 +1637,18 @@ await updateDoc(
 doc(db,"comments",id),
 {
 replies: arrayUnion({
-  uid: user.uid,
-  name: userData.name || user.displayName || user.email || "Khách hàng",
-  content: text,
-  createdAt: Date.now(),
-  likes: 0
+
+  uid:user.uid,
+
+  name:userData.name || "Khách hàng",
+
+  avatar:userData.avatar || "",
+
+  position:userData.position || "",
+
+  content:text,
+
+  createdAt: Date.now()
 })
 }
 );
