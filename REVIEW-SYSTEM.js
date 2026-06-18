@@ -1388,6 +1388,15 @@ Gửi
 ${(c.replies || []).map(rep => `
 
 <div style="
+margin-top:8px;
+margin-left:40px;
+padding:10px;
+background:#f8f8f8;
+border-left:3px solid #00b894;
+border-radius:8px;
+">
+
+<div style="
 display:flex;
 align-items:center;
 gap:6px;
@@ -1396,6 +1405,7 @@ font-weight:bold;
 color:#00b894;
 margin-bottom:4px;
 ">
+
 <span>
 ↳ ${rep.name || rep.userName || "Khách hàng"}
 </span>
@@ -1408,17 +1418,25 @@ ${rep.position}
 </span>
 ` : ""}
 
-<span style="font-size:12px;color:#888;">
+<span style="
+font-size:12px;
+font-weight:400;
+color:#888;
+">
 ${rep.createdAt
-  ? timeAgo({ toMillis:()=>rep.createdAt })
-  : ""}
+ ? timeAgo({ toMillis:()=>rep.createdAt })
+ : ""}
 </span>
 
 </div>
 
-<div style="word-break:break-word;">
-  ${rep.content}
+<div style="
+word-break:break-word;
+margin-left:18px;
+">
+${rep.content}
 </div>
+
 </div>
 
 `).join("")}
