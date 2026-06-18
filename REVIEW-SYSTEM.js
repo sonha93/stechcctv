@@ -1137,7 +1137,7 @@ border-radius:8px;
 <div style="
   display:flex;
   align-items:center;
-  gap:0px;
+  gap:2px;
   flex-wrap:wrap;
   font-weight:bold;
   color:#00b894;
@@ -1399,7 +1399,7 @@ border-radius:8px;
 <div style="
 display:flex;
 align-items:center;
-gap:0px;
+gap:2px;
 flex-wrap:wrap;
 font-weight:bold;
 color:#00b894;
