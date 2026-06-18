@@ -1480,7 +1480,9 @@ replies: arrayUnion({
   uid: user.uid,
   name: userData.name || user.displayName || user.email || "Khách hàng",
   content: text,
-  createdAt: Date.now()
+createdAt: Date.now(),
+likes: 0,
+likedBy: []
 })
 }
 );
@@ -1538,6 +1540,13 @@ loadReviews();
 };
 window.likeReplyReview = async function(reviewId,index){
 
+const user = auth.currentUser;
+
+if(!user){
+showToast("Đăng nhập trước");
+return;
+}
+
 const reviewRef =
 doc(db,"reviews",reviewId);
 
@@ -1552,8 +1561,24 @@ data.replies || [];
 
 if(!replies[index]) return;
 
+/* đã like rồi */
+if(
+(replies[index].likedBy || [])
+.includes(user.uid)
+){
+showToast("Bạn đã thích rồi");
+return;
+}
+
+/* tăng like */
 replies[index].likes =
 (replies[index].likes || 0) + 1;
+
+/* lưu uid người like */
+replies[index].likedBy = [
+...(replies[index].likedBy || []),
+user.uid
+];
 
 await updateDoc(
 reviewRef,
@@ -1563,6 +1588,8 @@ replies: replies
 );
 
 loadReviews();
+
+};
 
 };
 window.openImage=function(url){
