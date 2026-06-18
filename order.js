@@ -600,57 +600,60 @@ function bindCancelEvents(){
 
   if(btn.disabled) return;
         const id = btn.dataset.id;
-showConfirm(
-  "Bạn có chắc muốn hủy đơn hàng này?",
-  async () => {
 
-    btn.disabled = true;
-    btn.innerText = "Đang hủy...";
+        const confirmCancel = confirm(
+          "Bạn có chắc muốn hủy đơn hàng này?"
+        );
 
-    try{
+if(!confirmCancel) return;
 
-      await db
-        .collection("orders")
-        .doc(id)
-        .update({
-          customerCancelled: true,
-          status: "cancelled"
-        });
+// khóa nút tránh spam click
+btn.disabled = true;
+btn.innerText = "Đang hủy...";
 
-      showToast("Đã hủy đơn hàng");
+try{
+        await db
+  .collection("orders")
+  .doc(id)
+  .update({
 
-      allOrders = allOrders.map(order => {
+    customerCancelled: true,
+    status: "cancelled"
 
-        if(order.id === id){
-
-          return {
-            ...order,
-            status: "cancelled",
-            customerCancelled: true
-          };
-        }
-
-        return order;
-      });
-
-      renderOrders();
-
-    }catch(err){
-
-      console.error(err);
-
-      showToast("Lỗi hủy đơn hàng");
-
-      btn.disabled = false;
-      btn.innerText = "Hủy đơn hàng";
-
-    }
-
-  }
-);
-
-return;
   });
+
+showToast("Đã hủy đơn hàng");
+
+// update local UI luôn
+allOrders = allOrders.map(order => {
+
+  if(order.id === id){
+
+    return {
+      ...order,
+      status: "cancelled",
+      customerCancelled: true
+    };
+  }
+
+  return order;
+});
+
+// render lại
+renderOrders();
+
+
+       }catch(err){
+
+  console.error(err);
+
+ showToast("Lỗi hủy đơn hàng");
+
+  // mở lại nút nếu lỗi
+  btn.disabled = false;
+  btn.innerText = "Hủy đơn hàng";
+}
+      });
     });
 }
 /* =========================
