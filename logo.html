@@ -879,13 +879,12 @@ background:#e8e8e8;
   border-radius:10px;
 }
 .review-name{
-    gap:2px;
-}
-
-.verified-badge{
-    margin-left:-2px;
-    padding:0;
-    background:none;
+    display:flex;
+    align-items:center;
+    gap:3px; /* hoặc 2px */
+    flex-wrap:wrap;
+    font-size:22px;
+    font-weight:700;
 }
 
 .verified-badge{
@@ -1145,21 +1144,22 @@ background:#e8e8e8;
 
     cursor:pointer;
 }
-.verified-badge{
+	.verified-badge{
     display:inline-flex;
     align-items:center;
-
-    padding:0;
-    margin-left:-4px;
-
-    background:none;
-    border:none;
+    gap:6px;
+	background:none;
+    color:#00a86b;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:14px;
+    font-weight:600;
 }
 
 .verified-icon{
     width:18px;
     height:18px;
-    margin:0;
+    flex-shrink:0;
 }
 	.admin-badge{
 display:inline-block;
@@ -1533,14 +1533,13 @@ color:#00b894;
   }
 
 }
-	verified-badge{
+	.verified-badge{
     position:relative;
     display:inline-flex;
     align-items:center;
     cursor:pointer;
-
-    margin-left:8px;
 }
+
 .verified-popup{
     position:absolute;
 
