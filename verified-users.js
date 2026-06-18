@@ -42,7 +42,7 @@ export function getVerifiedBadge(uid){
       </div>
 
       <div class="verified-popup-text">
-        ${label} là tài khoản chính thức của Stech.
+     ${label} đã được Stech xác minh là tài khoản chính thức.
       </div>
     </div>
 
