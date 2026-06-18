@@ -1626,18 +1626,28 @@ color:#00b894;
 
     flex-shrink:0;
 }
-	}
-		.footer{
+	}.footer{
   background:#111;
   color:#fff;
   padding:30px 15px;
-  margin-top:40px;
   text-align:center;
+  width:100%;
+  display:block;
 }
 
 .footer-container{
   max-width:1000px;
-  margin:auto;
+  margin:0 auto;
+}
+
+body{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+.container{
+  flex:1;
 }
 
 </style>
