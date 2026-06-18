@@ -1509,7 +1509,7 @@ return;
 await updateDoc(
 reviewRef,
 {
-likes: increment(1),
+likes: increment(2),
 likedBy: arrayUnion(user.uid)
 }
 );
