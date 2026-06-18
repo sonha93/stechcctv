@@ -1,4 +1,3 @@
-
 import { app, rtdb } from "./auth.js";
 import { getVerifiedBadge }
 from "./verified-users.js";
@@ -1160,12 +1159,16 @@ ${rep.createdAt ? timeAgo({toMillis:()=>rep.createdAt}) : ""}
   ${rep.content}
 </div>
 
-<div style="
+<div
+style="
 margin-left:18px;
 margin-top:6px;
 font-size:13px;
 color:#666;
-">
+cursor:pointer;
+"
+onclick="likeReplyReview('${r.id}',${index})"
+>
 👍 ${rep.likes || 0}
 </div>
 </div>
@@ -1533,6 +1536,35 @@ likedBy: arrayUnion(user.uid)
 loadReviews();
 
 };
+window.likeReplyReview = async function(reviewId,index){
+
+const reviewRef =
+doc(db,"reviews",reviewId);
+
+const snap =
+await getDoc(reviewRef);
+
+const data =
+snap.data();
+
+const replies =
+data.replies || [];
+
+if(!replies[index]) return;
+
+replies[index].likes =
+(replies[index].likes || 0) + 1;
+
+await updateDoc(
+reviewRef,
+{
+replies: replies
+}
+);
+
+loadReviews();
+
+};
 window.openImage=function(url){
 
 const popup =
@@ -1653,18 +1685,11 @@ await updateDoc(
 doc(db,"comments",id),
 {
 replies: arrayUnion({
-
-  uid:user.uid,
-
-  name:userData.name || "Khách hàng",
-
-  avatar:userData.avatar || "",
-
-  position:userData.position || "",
-
-  content:text,
-
-  createdAt: Date.now()
+  uid: user.uid,
+  name: userData.name || user.displayName || user.email || "Khách hàng",
+  content: text,
+  createdAt: Date.now(),
+  likes: 0
 })
 }
 );
