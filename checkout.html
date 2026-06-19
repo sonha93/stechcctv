@@ -491,7 +491,27 @@ const cashbackAmount =
 
 const finalTotal =
   total - cashbackAmount;
+const memberRef =
+  db.collection("members")
+    .doc(memberId);
 
+await db.runTransaction(async (transaction) => {
+
+  const memberDoc =
+    await transaction.get(memberRef);
+
+  const currentPoints =
+    Number(memberDoc.data()?.points || 0);
+
+  if(usePoints > currentPoints){
+    throw new Error("Điểm không đủ");
+  }
+
+  transaction.update(memberRef,{
+    points: currentPoints - usePoints
+  });
+
+});
 // ============================
 // ORDER
 // ============================
