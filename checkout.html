@@ -510,6 +510,39 @@ if(memberId && usePoints > 0){
     });
 
 }
+  // KHÓA ĐIỂM NGAY KHI TẠO ĐƠN
+if(memberId && usePoints > 0){
+
+  const memberRef =
+    db.collection("members")
+      .doc(memberId);
+
+  const memberDoc =
+    await memberRef.get();
+
+  const currentPoints =
+    Number(
+      memberDoc.data()?.points || 0
+    );
+
+  // kiểm tra lại điểm thật
+  if(currentPoints < usePoints){
+
+    alert(
+      "Điểm thưởng không đủ, vui lòng tải lại trang."
+    );
+
+    return;
+  }
+
+  await memberRef.update({
+
+    points:
+      currentPoints - usePoints
+
+  });
+
+}
 await db.collection("orders").add({
 
   uid: user.uid,
