@@ -514,7 +514,24 @@ if(usePoints > 0){
 }
 const finalTotal =
   total - cashbackAmount;
+if(
+  memberId &&
+  usePoints > 0
+){
 
+  await db
+    .collection("members")
+    .doc(memberId)
+    .update({
+
+      lockedPoints:
+        firebase.firestore.FieldValue.increment(
+          usePoints
+        )
+
+    });
+
+}
 // ============================
 // ORDER
 // ============================
