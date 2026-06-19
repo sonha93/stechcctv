@@ -496,6 +496,7 @@ const finalTotal =
 // ORDER
 // ============================
 
+const orderRef =
 await db.collection("orders").add({
 
   uid: user.uid,
@@ -518,13 +519,31 @@ await db.collection("orders").add({
   usedPoints: usePoints,
 
   cashbackAmount: cashbackAmount,
+
   status: "pending",
 
   memberId: memberId,
 
+  pointsLocked: usePoints > 0,
+
   createdAt: Date.now()
 
 });
+if(usePoints > 0){
+
+  await db
+    .collection("members")
+    .doc(memberId)
+    .update({
+
+      points:
+      firebase.firestore.FieldValue.increment(
+        -usePoints
+      )
+
+    });
+
+}
   // TELEGRAM
  sendTelegramNotification(
   orderId,
