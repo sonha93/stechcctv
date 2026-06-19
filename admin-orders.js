@@ -886,9 +886,19 @@ if(status === "cancelled"){
 
   updateData.adminCancelled = true;
 
+  const cashbackUsed =
+    Number(
+      orderData.cashbackAmount ||
+      orderData.cashbackUsed ||
+      0
+    );
+
+  const usedPoints =
+    Math.floor(cashbackUsed / 100);
+
   if(
     orderData.memberId &&
-    orderData.usedPoints > 0
+    usedPoints > 0
   ){
 
     await db
@@ -898,7 +908,7 @@ if(status === "cancelled"){
 
         lockedPoints:
           firebase.firestore.FieldValue.increment(
-            -orderData.usedPoints
+            -usedPoints
           )
 
       });
@@ -1175,14 +1185,7 @@ const newPoints =
     )
 
 });
-  await memberRef.update({
-
-  lockedPoints:
-    firebase.firestore.FieldValue.increment(
-      -usedPoints
-    )
-
-});
+  
 updateData.pointsProcessed = true;
 if(bonusPoints > 0){
 
