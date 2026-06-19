@@ -495,80 +495,6 @@ const finalTotal =
 // ============================
 // ORDER
 // ============================
-if(memberId && usePoints > 0){
-
-  await db
-    .collection("members")
-    .doc(memberId)
-    .update({
-
-      points:
-        firebase.firestore
-        .FieldValue
-        .increment(-usePoints)
-
-    });
-
-}
-  // KHÓA ĐIỂM NGAY KHI TẠO ĐƠN
-if(memberId && usePoints > 0){
-
-  const memberRef =
-    db.collection("members")
-      .doc(memberId);
-
-  const memberDoc =
-    await memberRef.get();
-
-  const currentPoints =
-    Number(
-      memberDoc.data()?.points || 0
-    );
-
-  // kiểm tra lại điểm thật
-  if(currentPoints < usePoints){
-
-    alert(
-      "Điểm thưởng không đủ, vui lòng tải lại trang."
-    );
-
-    return;
-  }
-
-  await memberRef.update({
-
-    points:
-      currentPoints - usePoints
-
-  });
-
-}
-// KHÓA ĐIỂM NGAY
-if(memberId && usePoints > 0){
-
-  const memberRef =
-    db.collection("members")
-      .doc(memberId);
-
-  const memberDoc =
-    await memberRef.get();
-
-  const currentPoints =
-    Number(
-      memberDoc.data()?.points || 0
-    );
-
-  if(currentPoints < usePoints){
-
-    alert("Điểm không đủ");
-    return;
-  }
-
-  await memberRef.update({
-    points: currentPoints - usePoints
-  });
-
-}
 
 await db.collection("orders").add({
 
@@ -592,9 +518,6 @@ await db.collection("orders").add({
   usedPoints: usePoints,
 
   cashbackAmount: cashbackAmount,
-
-  pointsRefunded: false,
-
   status: "pending",
 
   memberId: memberId,
