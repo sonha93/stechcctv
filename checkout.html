@@ -222,8 +222,17 @@ if(phoneValue){
   const member =
     memberSnap.docs[0].data();
 
-  memberPoints =
-    Number(member.points || 0);
+ const totalPoints =
+  Number(member.points || 0);
+
+const lockedPoints =
+  Number(member.lockedPoints || 0);
+
+memberPoints =
+  Math.max(
+    0,
+    totalPoints - lockedPoints
+  );
 
 }else{
 
@@ -488,7 +497,21 @@ const cashbackAmount =
     usePoints * 100,
     total
   );
+if(usePoints > 0){
 
+  await db
+    .collection("members")
+    .doc(memberId)
+    .update({
+
+      lockedPoints:
+        firebase.firestore.FieldValue.increment(
+          usePoints
+        )
+
+    });
+
+}
 const finalTotal =
   total - cashbackAmount;
 
