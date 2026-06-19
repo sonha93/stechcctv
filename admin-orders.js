@@ -905,18 +905,15 @@ if(status === "cancelled"){
       .collection("members")
       .doc(orderData.memberId)
       .update({
-
         lockedPoints:
           firebase.firestore.FieldValue.increment(
             -usedPoints
           )
-
       });
 
   }
 
 }
-
 if(
   status === "completed" &&
   orderData.status !== "completed"
