@@ -883,37 +883,10 @@ const updateData = {
 // nếu chuyển sang cancelled
 // thì khóa luôn
 if(status === "cancelled"){
-
   updateData.adminCancelled = true;
-
-  const cashbackUsed =
-    Number(
-      orderData.cashbackAmount ||
-      orderData.cashbackUsed ||
-      0
-    );
-
-  const usedPoints =
-    Math.floor(cashbackUsed / 100);
-
-  if(
-    orderData.memberId &&
-    usedPoints > 0
-  ){
-
-    await db
-      .collection("members")
-      .doc(orderData.memberId)
-      .update({
-        lockedPoints:
-          firebase.firestore.FieldValue.increment(
-            -usedPoints
-          )
-      });
-
-  }
-
 }
+
+
 if(
   status === "completed" &&
   orderData.status !== "completed"
@@ -1087,8 +1060,7 @@ if(!productDoc.exists){
 if(
   status === "completed" &&
   orderData.status !== "completed" &&
-  orderData.memberId &&
-  !orderData.pointsProcessed
+  orderData.memberId
 ){
   const memberRef = db
     .collection("members")
@@ -1119,16 +1091,7 @@ const earnPoints =
 
 const currentPoints =
   Number(member.points || 0);
-if(currentPoints < usedPoints){
 
-  alert(
-    `Khách chỉ còn ${currentPoints} điểm nhưng đơn này cần ${usedPoints} điểm`
-  );
-
-  loadOrders();
-
-  return;
-}
 const oldLevel =
   member.level || "Silver";
 
@@ -1168,22 +1131,16 @@ const newPoints =
   + earnPoints
   + bonusPoints;
 
-   await memberRef.update({
+    await memberRef.update({
 
   points: newPoints,
 
   totalSpent: newSpent,
 
-  level: level,
-
-  lockedPoints:
-    firebase.firestore.FieldValue.increment(
-      -usedPoints
-    )
+  level: level
 
 });
-  
-updateData.pointsProcessed = true;
+
 if(bonusPoints > 0){
 
   await db
