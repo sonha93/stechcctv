@@ -495,7 +495,21 @@ const finalTotal =
 // ============================
 // ORDER
 // ============================
+if(memberId && usePoints > 0){
 
+  await db
+    .collection("members")
+    .doc(memberId)
+    .update({
+
+      points:
+        firebase.firestore
+        .FieldValue
+        .increment(-usePoints)
+
+    });
+
+}
 await db.collection("orders").add({
 
   uid: user.uid,
