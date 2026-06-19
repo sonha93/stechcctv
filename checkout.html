@@ -222,17 +222,8 @@ if(phoneValue){
   const member =
     memberSnap.docs[0].data();
 
- const totalPoints =
-  Number(member.points || 0);
-
-const lockedPoints =
-  Number(member.lockedPoints || 0);
-
-memberPoints =
-  Math.max(
-    0,
-    totalPoints - lockedPoints
-  );
+  memberPoints =
+    Number(member.points || 0);
 
 }else{
 
@@ -497,46 +488,14 @@ const cashbackAmount =
     usePoints * 100,
     total
   );
-if(usePoints > 0){
 
-  await db
-    .collection("members")
-    .doc(memberId)
-    .update({
-
-      lockedPoints:
-        firebase.firestore.FieldValue.increment(
-          usePoints
-        )
-
-    });
-
-}
 const finalTotal =
   total - cashbackAmount;
-if(
-  memberId &&
-  usePoints > 0
-){
 
-  await db
-    .collection("members")
-    .doc(memberId)
-    .update({
-
-      lockedPoints:
-        firebase.firestore.FieldValue.increment(
-          usePoints
-        )
-
-    });
-
-}
 // ============================
 // ORDER
 // ============================
 
-const orderRef =
 await db.collection("orders").add({
 
   uid: user.uid,
@@ -559,31 +518,13 @@ await db.collection("orders").add({
   usedPoints: usePoints,
 
   cashbackAmount: cashbackAmount,
-
   status: "pending",
 
   memberId: memberId,
 
-  pointsLocked: usePoints > 0,
-
   createdAt: Date.now()
 
 });
-if(usePoints > 0){
-
-  await db
-    .collection("members")
-    .doc(memberId)
-    .update({
-
-      points:
-      firebase.firestore.FieldValue.increment(
-        -usePoints
-      )
-
-    });
-
-}
   // TELEGRAM
  sendTelegramNotification(
   orderId,
