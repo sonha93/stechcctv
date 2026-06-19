@@ -883,7 +883,43 @@ const updateData = {
 // nếu chuyển sang cancelled
 // thì khóa luôn
 if(status === "cancelled"){
+
   updateData.adminCancelled = true;
+
+  if(
+    orderData.memberId &&
+    Number(orderData.usedPoints || 0) > 0 &&
+    !orderData.pointsRefunded
+  ){
+
+    const memberRef =
+      db.collection("members")
+        .doc(orderData.memberId);
+
+    const memberDoc =
+      await memberRef.get();
+
+    if(memberDoc.exists){
+
+      await memberRef.update({
+
+        points:
+          Number(
+            memberDoc.data().points || 0
+          )
+          +
+          Number(
+            orderData.usedPoints || 0
+          )
+
+      });
+
+    }
+
+    updateData.pointsRefunded = true;
+
+  }
+
 }
 
 
