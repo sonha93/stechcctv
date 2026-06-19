@@ -491,27 +491,7 @@ const cashbackAmount =
 
 const finalTotal =
   total - cashbackAmount;
-const memberRef =
-  db.collection("members")
-    .doc(memberId);
 
-await db.runTransaction(async (transaction) => {
-
-  const memberDoc =
-    await transaction.get(memberRef);
-
-  const currentPoints =
-    Number(memberDoc.data()?.points || 0);
-
-  if(usePoints > currentPoints){
-    throw new Error("Điểm không đủ");
-  }
-
-  transaction.update(memberRef,{
-    points: currentPoints - usePoints
-  });
-
-});
 // ============================
 // ORDER
 // ============================
@@ -560,21 +540,21 @@ await db.collection("orders").add({
   document.querySelector(".btn").disabled = true;
 
   // XÓA FIREBASE CART
- const currentUser = auth.currentUser;
+  auth.onAuthStateChanged(async user => {
 
-if(currentUser){
+    if(user){
 
-  const snapshot = await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .collection("cart")
-    .get();
+      const snapshot = await db
+        .collection("users")
+        .doc(user.uid)
+        .collection("cart")
+        .get();
 
-  for(const doc of snapshot.docs){
-    await doc.ref.delete();
-  }
+      snapshot.forEach(doc => {
+        doc.ref.delete();
+      });
 
-}
+    }
 
     setTimeout(()=>{
       window.location.href = "success.html";
