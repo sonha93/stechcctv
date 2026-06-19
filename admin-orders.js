@@ -1124,10 +1124,7 @@ else if(newSpent >= 5000000){
 }
 
 const newPoints =
-  Math.max(
-    0,
-    currentPoints - (cashbackUsed / 100)
-  )
+  currentPoints
   + earnPoints
   + bonusPoints;
 
