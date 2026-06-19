@@ -41,18 +41,17 @@ window.createMember = async function(){
 
     try{
 
-       await addDoc(
-    collection(db,"members"),
-    {
-        name,
-        phone,
-        points:0,
-        lockedPoints:0,
-        totalSpent:0,
-        level:"Thường",
-        createdAt:serverTimestamp()
-    }
-);
+        await addDoc(
+            collection(db,"members"),
+            {
+                name,
+                phone,
+                points:0,
+                totalSpent:0,
+                level:"Thường",
+                createdAt:serverTimestamp()
+            }
+        );
 
         alert("Đã tạo member");
 
@@ -106,9 +105,9 @@ window.loadMembers = async function(){
                         ${data.phone || "-"}
                     </td>
 
-                 <td>
-    ${(data.points || 0) - (data.lockedPoints || 0)}
-</td>
+                    <td>
+                        ${data.points || 0}
+                    </td>
 
                     <td>
                         ${formatVND(
