@@ -543,6 +543,33 @@ if(memberId && usePoints > 0){
   });
 
 }
+// KHÓA ĐIỂM NGAY
+if(memberId && usePoints > 0){
+
+  const memberRef =
+    db.collection("members")
+      .doc(memberId);
+
+  const memberDoc =
+    await memberRef.get();
+
+  const currentPoints =
+    Number(
+      memberDoc.data()?.points || 0
+    );
+
+  if(currentPoints < usePoints){
+
+    alert("Điểm không đủ");
+    return;
+  }
+
+  await memberRef.update({
+    points: currentPoints - usePoints
+  });
+
+}
+
 await db.collection("orders").add({
 
   uid: user.uid,
@@ -565,6 +592,9 @@ await db.collection("orders").add({
   usedPoints: usePoints,
 
   cashbackAmount: cashbackAmount,
+
+  pointsRefunded: false,
+
   status: "pending",
 
   memberId: memberId,
