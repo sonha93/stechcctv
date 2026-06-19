@@ -560,21 +560,21 @@ await db.collection("orders").add({
   document.querySelector(".btn").disabled = true;
 
   // XÓA FIREBASE CART
-  auth.onAuthStateChanged(async user => {
+ const currentUser = auth.currentUser;
 
-    if(user){
+if(currentUser){
 
-      const snapshot = await db
-        .collection("users")
-        .doc(user.uid)
-        .collection("cart")
-        .get();
+  const snapshot = await db
+    .collection("users")
+    .doc(currentUser.uid)
+    .collection("cart")
+    .get();
 
-      snapshot.forEach(doc => {
-        doc.ref.delete();
-      });
+  for(const doc of snapshot.docs){
+    await doc.ref.delete();
+  }
 
-    }
+}
 
     setTimeout(()=>{
       window.location.href = "success.html";
