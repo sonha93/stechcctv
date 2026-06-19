@@ -883,9 +883,29 @@ const updateData = {
 // nếu chuyển sang cancelled
 // thì khóa luôn
 if(status === "cancelled"){
-  updateData.adminCancelled = true;
-}
 
+  updateData.adminCancelled = true;
+
+  if(
+    orderData.memberId &&
+    orderData.usedPoints > 0
+  ){
+
+    await db
+      .collection("members")
+      .doc(orderData.memberId)
+      .update({
+
+        lockedPoints:
+          firebase.firestore.FieldValue.increment(
+            -orderData.usedPoints
+          )
+
+      });
+
+  }
+
+}
 
 if(
   status === "completed" &&
@@ -1141,13 +1161,26 @@ const newPoints =
   + earnPoints
   + bonusPoints;
 
-    await memberRef.update({
+   await memberRef.update({
 
   points: newPoints,
 
   totalSpent: newSpent,
 
-  level: level
+  level: level,
+
+  lockedPoints:
+    firebase.firestore.FieldValue.increment(
+      -usedPoints
+    )
+
+});
+  await memberRef.update({
+
+  lockedPoints:
+    firebase.firestore.FieldValue.increment(
+      -usedPoints
+    )
 
 });
 updateData.pointsProcessed = true;
