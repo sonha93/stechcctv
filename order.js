@@ -612,52 +612,13 @@ btn.disabled = true;
 btn.innerText = "Đang hủy...";
 
 try{
-       const order = allOrders.find(
-  o => o.id === id
-);
-
-if(
-  order?.memberId &&
-  order?.usedPoints > 0 &&
-  !order?.pointsRefunded
-){
-
-  const memberRef =
-    db.collection("members")
-      .doc(order.memberId);
-
-  const memberDoc =
-    await memberRef.get();
-
-  if(memberDoc.exists){
-
-    const currentPoints =
-      Number(
-        memberDoc.data().points || 0
-      );
-
-    await memberRef.update({
-
-      points:
-        currentPoints +
-        Number(order.usedPoints)
-
-    });
-
-  }
-
-}
-
-await db
+        await db
   .collection("orders")
   .doc(id)
   .update({
 
     customerCancelled: true,
-
-    status: "cancelled",
-
-    pointsRefunded: true
+    status: "cancelled"
 
   });
 
