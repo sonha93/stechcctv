@@ -1060,7 +1060,8 @@ if(!productDoc.exists){
 if(
   status === "completed" &&
   orderData.status !== "completed" &&
-  orderData.memberId
+  orderData.memberId &&
+  !orderData.pointsProcessed
 ){
   const memberRef = db
     .collection("members")
@@ -1091,7 +1092,16 @@ const earnPoints =
 
 const currentPoints =
   Number(member.points || 0);
+if(currentPoints < usedPoints){
 
+  alert(
+    `Khách chỉ còn ${currentPoints} điểm nhưng đơn này cần ${usedPoints} điểm`
+  );
+
+  loadOrders();
+
+  return;
+}
 const oldLevel =
   member.level || "Silver";
 
@@ -1140,7 +1150,7 @@ const newPoints =
   level: level
 
 });
-
+updateData.pointsProcessed = true;
 if(bonusPoints > 0){
 
   await db
