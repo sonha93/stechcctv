@@ -482,7 +482,32 @@ if(memberSnap.empty){
   if(usePoints > memberPoints){
   usePoints = memberPoints;
 }
+if(memberId && usePoints > 0){
 
+  const memberDoc = await db
+    .collection("members")
+    .doc(memberId)
+    .get();
+
+  const lockedPoints =
+    Number(memberDoc.data()?.lockedPoints || 0);
+
+  const availablePoints =
+    memberPoints - lockedPoints;
+
+  if(usePoints > availablePoints){
+    alert("Điểm không đủ");
+    return;
+  }
+
+  await db
+    .collection("members")
+    .doc(memberId)
+    .update({
+      lockedPoints: lockedPoints + usePoints
+    });
+
+}
 const cashbackAmount =
   Math.min(
     usePoints * 100,
