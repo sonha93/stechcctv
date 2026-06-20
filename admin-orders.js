@@ -1191,9 +1191,8 @@ if(bonusPoints > 0){
 if (
   status === "cancelled" &&
   orderData.status !== "cancelled" &&
-  orderData.memberId &&
-  orderData.pointsProcessed === true
-) {
+  orderData.memberId
+)
 
   const memberRef = db.collection("members").doc(orderData.memberId);
   const memberDoc = await memberRef.get();
@@ -1206,7 +1205,9 @@ if (
       Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
 
     const usedPoints = Math.floor(cashbackUsed / 100);
-
+    await memberRef.update({
+  lockedPoints: firebase.firestore.FieldValue.increment(-usedPoints)
+});
     const finalTotal = Number(orderData.total || 0);
 
     const earnPoints = Math.floor(finalTotal / 10000);
