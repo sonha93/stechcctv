@@ -222,9 +222,17 @@ if(phoneValue){
   const member =
     memberSnap.docs[0].data();
 
-  memberPoints =
-    Number(member.points || 0);
+ const totalPoints =
+  Number(memberData.points || 0);
 
+const lockedPoints =
+  Number(memberData.lockedPoints || 0);
+
+memberPoints =
+  Math.max(
+    0,
+    totalPoints - lockedPoints
+  );
 }else{
 
   memberPoints = 0;
@@ -497,7 +505,21 @@ const finalTotal =
 // ============================
 
 await db.collection("orders").add({
+if(usePoints > 0){
 
+  await db
+    .collection("members")
+    .doc(memberId)
+    .update({
+
+      lockedPoints:
+        firebase.firestore.FieldValue.increment(
+          usePoints
+        )
+
+    });
+
+}
   uid: user.uid,
 
   customerName: name,
