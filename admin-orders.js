@@ -889,7 +889,9 @@ if(status === "cancelled"){
 
 if(
   status === "completed" &&
-  orderData.status !== "completed"
+  orderData.status !== "completed" &&
+  orderData.memberId &&
+  !orderData.pointsProcessed
 ){
 for(const item of (orderData.items || [])){
 
@@ -1123,21 +1125,32 @@ else if(newSpent >= 5000000){
 
 }
 
+const cashbackUsed =
+  Number(orderData.cashbackAmount || 0);
+
+const usedPoints =
+  Math.floor(cashbackUsed / 100);
+
+const currentPoints =
+  Number(member.points || 0);
+
 const newPoints =
   currentPoints
+  - usedPoints
   + earnPoints
   + bonusPoints;
 
-    await memberRef.update({
-
-  points: newPoints,
-
+  await memberRef.update({
+  points: Math.max(0,newPoints),
   totalSpent: newSpent,
-
   level: level
-
 });
-
+await db
+  .collection("orders")
+  .doc(id)
+  .update({
+    pointsProcessed: true
+  });
 if(bonusPoints > 0){
 
   await db
