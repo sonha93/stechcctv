@@ -1223,12 +1223,10 @@ if (
     if (newPoints < 0) newPoints = 0;
     if (newSpent < 0) newSpent = 0;
 
-  await memberRef.update({
-  points: firebase.firestore.FieldValue.increment(
-    usedPoints - earnPoints
-  ),
+   await memberRef.update({
+  points: Math.max(0, currentPoints - earnPoints),
   totalSpent: newSpent,
-  lockedPoints: 0
+  lockedPoints: firebase.firestore.FieldValue.increment(-usedPoints)
 });
 
     await db.collection("member_history").add({
