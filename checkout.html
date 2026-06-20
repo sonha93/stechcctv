@@ -239,6 +239,7 @@ memberPoints =
 
 }
   }
+  
   // LOAD CART
 
   const snapshot = await db
@@ -483,8 +484,14 @@ if(memberSnap.empty){
   memberId =
     memberSnap.docs[0].id;
 
-  memberPoints =
-    Number(memberData.points || 0);
+ const totalPoints =
+  Number(memberData.points || 0);
+
+const lockedPoints =
+  Number(memberData.lockedPoints || 0);
+
+memberPoints =
+  Math.max(0, totalPoints - lockedPoints);
 
 }
   if(usePoints > memberPoints){
