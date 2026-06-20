@@ -1196,35 +1196,44 @@ if (
 
   const memberRef =
     db.collection("members")
-      .doc(orderData.memberId);
+    .doc(orderData.memberId);
 
-  const cashbackUsed =
-    Number(
-      orderData.cashbackAmount ||
-      orderData.cashbackUsed ||
-      0
-    );
+  const memberDoc =
+    await memberRef.get();
 
-  const usedPoints =
-    Math.floor(cashbackUsed / 100);
+  if (memberDoc.exists) {
 
-  await memberRef.update({
-    lockedPoints:
-      firebase.firestore.FieldValue.increment(
-        -usedPoints
-      )
-  });
+    const member = memberDoc.data();
 
-}
-    const finalTotal = Number(orderData.total || 0);
+    const cashbackUsed =
+      Number(
+        orderData.cashbackAmount ||
+        orderData.cashbackUsed ||
+        0
+      );
 
-    const earnPoints = Math.floor(finalTotal / 10000);
+    const usedPoints =
+      Math.floor(cashbackUsed / 100);
+
+    await memberRef.update({
+      lockedPoints:
+        firebase.firestore.FieldValue.increment(-usedPoints)
+    });
+
+    const finalTotal =
+      Number(orderData.total || 0);
+
+    const earnPoints =
+      Math.floor(finalTotal / 10000);
 
     const newPoints =
-      Number(member.points || 0) - earnPoints + usedPoints;
+      Number(member.points || 0)
+      - earnPoints
+      + usedPoints;
 
     const newSpent =
-      Number(member.totalSpent || 0) - finalTotal;
+      Number(member.totalSpent || 0)
+      - finalTotal;
 
     await memberRef.update({
       points: Math.max(0, newPoints),
@@ -1238,11 +1247,15 @@ if (
       points: -earnPoints + usedPoints,
       createdAt: Date.now()
     });
+
   }
 
-  await db.collection("orders").doc(id).update({
-    pointsProcessed: false
-  });
+  await db.collection("orders")
+    .doc(id)
+    .update({
+      pointsProcessed: false
+    });
+
 }
 await db
   .collection("orders")
