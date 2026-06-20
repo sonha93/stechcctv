@@ -1188,56 +1188,45 @@ if(bonusPoints > 0){
 
 }
         // CANCEL → rollback points
+// CANCEL → rollback points (FIXED)
 if (
   status === "cancelled" &&
   orderData.status !== "cancelled" &&
   orderData.memberId
 ) {
 
-  const memberRef =
-    db.collection("members")
-    .doc(orderData.memberId);
-
-  const memberDoc =
-    await memberRef.get();
+  const memberRef = db.collection("members").doc(orderData.memberId);
+  const memberDoc = await memberRef.get();
 
   if (memberDoc.exists) {
 
     const member = memberDoc.data();
 
     const cashbackUsed =
-      Number(
-        orderData.cashbackAmount ||
-        orderData.cashbackUsed ||
-        0
-      );
+      Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
 
-    const usedPoints =
-      Math.floor(cashbackUsed / 100);
+    const usedPoints = Math.floor(cashbackUsed / 100);
+    const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
 
-    await memberRef.update({
-      lockedPoints:
-        firebase.firestore.FieldValue.increment(-usedPoints)
-    });
+    const rollbackKey = orderData.rollbackProcessed;
+    if (rollbackKey === true) return;
 
-    const finalTotal =
-      Number(orderData.total || 0);
-
-    const earnPoints =
-      Math.floor(finalTotal / 10000);
-
-    const newPoints =
+    let newPoints =
       Number(member.points || 0)
       - earnPoints
       + usedPoints;
 
-    const newSpent =
+    let newSpent =
       Number(member.totalSpent || 0)
-      - finalTotal;
+      - Number(orderData.total || 0);
+
+    if (newPoints < 0) newPoints = 0;
+    if (newSpent < 0) newSpent = 0;
 
     await memberRef.update({
-      points: Math.max(0, newPoints),
-      totalSpent: Math.max(0, newSpent)
+      points: newPoints,
+      totalSpent: newSpent,
+      lockedPoints: firebase.firestore.FieldValue.increment(-usedPoints)
     });
 
     await db.collection("member_history").add({
@@ -1247,15 +1236,12 @@ if (
       points: -earnPoints + usedPoints,
       createdAt: Date.now()
     });
-
   }
 
-  await db.collection("orders")
-    .doc(id)
-    .update({
-      pointsProcessed: false
-    });
-
+  await db.collection("orders").doc(id).update({
+    pointsProcessed: false,
+    rollbackProcessed: true
+  });
 }
 await db
   .collection("orders")
