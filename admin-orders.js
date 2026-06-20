@@ -1187,7 +1187,7 @@ if(bonusPoints > 0){
   }
 
 }
-        // CANCEL → rollback points
+        
 // CANCEL → rollback points (FIXED)
 if (
   status === "cancelled" &&
@@ -1214,7 +1214,7 @@ if (
     let newPoints =
       Number(member.points || 0)
       - earnPoints
-      + usedPoints;
+     
 
     let newSpent =
       Number(member.totalSpent || 0)
@@ -1223,11 +1223,11 @@ if (
     if (newPoints < 0) newPoints = 0;
     if (newSpent < 0) newSpent = 0;
 
-    await memberRef.update({
-      points: newPoints,
-      totalSpent: newSpent,
-      lockedPoints: firebase.firestore.FieldValue.increment(-usedPoints)
-    });
+   await memberRef.update({
+  points: Math.max(0, currentPoints - earnPoints),
+  totalSpent: newSpent,
+  lockedPoints: firebase.firestore.FieldValue.increment(-usedPoints)
+});
 
     await db.collection("member_history").add({
       memberId: orderData.memberId,
