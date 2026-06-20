@@ -1125,15 +1125,6 @@ else if(newSpent >= 5000000){
 
 }
 
-const cashbackUsed =
-  Number(orderData.cashbackAmount || 0);
-
-const usedPoints =
-  Math.floor(cashbackUsed / 100);
-
-const currentPoints =
-  Number(member.points || 0);
-
 const newPoints =
   currentPoints
   - usedPoints
