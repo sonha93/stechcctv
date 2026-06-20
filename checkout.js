@@ -172,15 +172,20 @@ function renderOrders(){
       : [];
 
     items.forEach(p => {
+const qty =
+  Number(p.qty || 1);
 
-      const qty =
-        Number(p.qty || 1);
+const price =
+  Number(p.price || 0);
 
-      const price =
-        Number(p.price || 0);
-
-      const sub =
-        qty * price;
+const oldPrice =
+  Number(
+    p.oldPrice ||
+    p.originalPrice ||
+    price
+  );
+const sub =
+  qty * price;
 
       total += sub;
 
@@ -215,9 +220,38 @@ function renderOrders(){
               ${p.name || ""}
             </b>
 
-            <div>
-              ${qty} × ${format(price)}
-            </div>
+         <div class="calc">
+
+  <div style="
+    color:#e53935;
+    font-weight:bold;
+    font-size:16px;
+  ">
+    ${format(price)}
+  </div>
+
+  ${
+    oldPrice > price
+    ? `
+      <div style="
+        text-decoration:line-through;
+        color:#999;
+        font-size:13px;
+        margin-top:2px;
+      ">
+        ${format(oldPrice)}
+      </div>
+    `
+    : ""
+  }
+
+  <div>
+    ${qty} × ${format(price)}
+    =
+    ${format(sub)}
+  </div>
+
+</div>
 
             <div style="
               color:#d70018;
