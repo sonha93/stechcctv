@@ -228,7 +228,17 @@ const totalPoints =
 const lockedPoints =
   Number(member.lockedPoints || 0);
 
-memberPoints = totalPoints;
+const totalPoints =
+  Number(member.points || 0);
+
+const lockedPoints =
+  Number(member.lockedPoints || 0);
+
+memberPoints =
+  Math.max(
+    0,
+    totalPoints - lockedPoints
+  );
 }else{
 
   memberPoints = 0;
