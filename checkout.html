@@ -191,7 +191,7 @@ auth.onAuthStateChanged(async user => {
   .doc(user.uid)
   .get();
 
-
+console.log("PROFILE CHECKOUT:", profileDoc.data());
 
 if(profileDoc.exists){
 
@@ -219,20 +219,12 @@ if(phoneValue){
 
  if(!memberSnap.empty){
 
- const member =
-  memberSnap.docs[0].data();
+  const member =
+    memberSnap.docs[0].data();
 
-const totalPoints =
-  Number(member.points || 0);
+  memberPoints =
+    Number(member.points || 0);
 
-const lockedPoints =
-  Number(member.lockedPoints || 0);
-
-memberPoints =
-  Math.max(
-    0,
-    totalPoints - lockedPoints
-  );
 }else{
 
   memberPoints = 0;
@@ -504,22 +496,6 @@ const finalTotal =
 // ORDER
 // ============================
 
-if(usePoints > 0){
-
-  await db
-    .collection("members")
-    .doc(memberId)
-    .update({
-
-      lockedPoints:
-        firebase.firestore.FieldValue.increment(
-          usePoints
-        )
-
-    });
-
-}
-
 await db.collection("orders").add({
 
   uid: user.uid,
@@ -542,7 +518,6 @@ await db.collection("orders").add({
   usedPoints: usePoints,
 
   cashbackAmount: cashbackAmount,
-
   status: "pending",
 
   memberId: memberId,
