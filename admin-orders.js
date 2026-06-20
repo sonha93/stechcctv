@@ -1192,22 +1192,30 @@ if (
   status === "cancelled" &&
   orderData.status !== "cancelled" &&
   orderData.memberId
-)
+) {
 
-  const memberRef = db.collection("members").doc(orderData.memberId);
-  const memberDoc = await memberRef.get();
+  const memberRef =
+    db.collection("members")
+      .doc(orderData.memberId);
 
-  if (memberDoc.exists) {
+  const cashbackUsed =
+    Number(
+      orderData.cashbackAmount ||
+      orderData.cashbackUsed ||
+      0
+    );
 
-    const member = memberDoc.data();
+  const usedPoints =
+    Math.floor(cashbackUsed / 100);
 
-    const cashbackUsed =
-      Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
+  await memberRef.update({
+    lockedPoints:
+      firebase.firestore.FieldValue.increment(
+        -usedPoints
+      )
+  });
 
-    const usedPoints = Math.floor(cashbackUsed / 100);
-    await memberRef.update({
-  lockedPoints: firebase.firestore.FieldValue.increment(-usedPoints)
-});
+}
     const finalTotal = Number(orderData.total || 0);
 
     const earnPoints = Math.floor(finalTotal / 10000);
