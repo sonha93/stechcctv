@@ -504,7 +504,6 @@ const finalTotal =
 // ORDER
 // ============================
 
-await db.collection("orders").add({
 if(usePoints > 0){
 
   await db
@@ -520,6 +519,9 @@ if(usePoints > 0){
     });
 
 }
+
+await db.collection("orders").add({
+
   uid: user.uid,
 
   customerName: name,
@@ -540,12 +542,14 @@ if(usePoints > 0){
   usedPoints: usePoints,
 
   cashbackAmount: cashbackAmount,
+
   status: "pending",
 
   memberId: memberId,
 
   createdAt: Date.now()
 
+});
 });
   // TELEGRAM
  sendTelegramNotification(
