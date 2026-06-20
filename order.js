@@ -259,7 +259,14 @@ function renderOrders(){
       originalTotal,
       savings
     } = calcOrder(items);
+    const pointDiscount =
+  Number(order.cashbackAmount || 0);
 
+const finalTotal =
+  Math.max(
+    total - pointDiscount,
+    0
+  );
     // =========================
     // ORDER STATUS TEXT
     // =========================
@@ -519,7 +526,7 @@ function renderOrders(){
 
 <div class="row final">
   <span>Cần thanh toán</span>
-  <b>${format(total)}</b>
+ <b>${format(finalTotal)}</b>
 </div>
 
 ${
