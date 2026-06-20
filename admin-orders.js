@@ -887,11 +887,12 @@ if(status === "cancelled"){
 }
 
 
-if (
+if(
   status === "completed" &&
+  orderData.status !== "completed" &&
   orderData.memberId &&
-  orderData.pointState !== "earned"
-) {
+  !orderData.pointsProcessed
+){
 for(const item of (orderData.items || [])){
 
   try{
@@ -1190,9 +1191,10 @@ if(bonusPoints > 0){
 // CANCEL → rollback points (FIXED)
 if (
   status === "cancelled" &&
-  orderData.memberId &&
-  orderData.pointState !== "rolled_back"
+  orderData.status !== "cancelled" &&
+  orderData.memberId
 ) {
+
   const memberRef = db.collection("members").doc(orderData.memberId);
   const memberDoc = await memberRef.get();
 
@@ -1236,10 +1238,10 @@ if (
     });
   }
 
- await db.collection("orders").doc(id).update({
-  pointsProcessed: true,
-  pointState: "earned"
-});
+  await db.collection("orders").doc(id).update({
+    pointsProcessed: false,
+    rollbackProcessed: true
+  });
 }
 await db
   .collection("orders")
