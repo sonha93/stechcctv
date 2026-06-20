@@ -1194,26 +1194,50 @@ if (
   orderData.memberId
 ) {
 
-  const memberRef = db.collection("members").doc(orderData.memberId);
-  const memberDoc = await memberRef.get();
+  const memberRef =
+    db.collection("members")
+    .doc(orderData.memberId);
+
+  const memberDoc =
+    await memberRef.get();
 
   if (memberDoc.exists) {
 
     const member = memberDoc.data();
 
-    // 🔥 LẤY ĐÚNG DATA ĐÃ LƯU TRONG ORDER
-    const usedPoints = Number(orderData.usedPoints || 0);
-    const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
+    const cashbackUsed =
+      Number(
+        orderData.cashbackAmount ||
+        orderData.cashbackUsed ||
+        0
+      );
+
+    const usedPoints =
+      Math.floor(cashbackUsed / 100);
 
     await memberRef.update({
-      // trả lại điểm đã khóa
-      lockedPoints: firebase.firestore.FieldValue.increment(-usedPoints),
+      lockedPoints:
+        firebase.firestore.FieldValue.increment(-usedPoints)
+    });
 
-      // rollback tổng điểm
-      points: firebase.firestore.FieldValue.increment(-earnPoints + usedPoints),
+    const finalTotal =
+      Number(orderData.total || 0);
 
-      // rollback tổng chi tiêu
-      totalSpent: firebase.firestore.FieldValue.increment(-Number(orderData.total || 0))
+    const earnPoints =
+      Math.floor(finalTotal / 10000);
+
+    const newPoints =
+      Number(member.points || 0)
+      - earnPoints
+      + usedPoints;
+
+    const newSpent =
+      Number(member.totalSpent || 0)
+      - finalTotal;
+
+    await memberRef.update({
+      points: Math.max(0, newPoints),
+      totalSpent: Math.max(0, newSpent)
     });
 
     await db.collection("member_history").add({
@@ -1223,11 +1247,15 @@ if (
       points: -earnPoints + usedPoints,
       createdAt: Date.now()
     });
+
   }
 
-  await db.collection("orders").doc(id).update({
-    pointsProcessed: false
-  });
+  await db.collection("orders")
+    .doc(id)
+    .update({
+      pointsProcessed: false
+    });
+
 }
 await db
   .collection("orders")
