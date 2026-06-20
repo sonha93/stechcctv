@@ -228,7 +228,11 @@ const totalPoints =
 const lockedPoints =
   Number(member.lockedPoints || 0);
 
-memberPoints = totalPoints;
+memberPoints =
+  Math.max(
+    0,
+    totalPoints - lockedPoints
+  );
 }else{
 
   memberPoints = 0;
@@ -248,6 +252,7 @@ memberPoints = totalPoints;
     id: doc.id,
     ...doc.data()
   }));
+
   renderCart();
   updateBank();
 }
