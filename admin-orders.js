@@ -1127,8 +1127,10 @@ else if(newSpent >= 5000000){
 
 const newPoints =
   currentPoints
+  - usedPoints
   + earnPoints
   + bonusPoints;
+
   await memberRef.update({
   points: Math.max(0,newPoints),
   totalSpent: newSpent,
@@ -1210,7 +1212,7 @@ if (
     const earnPoints = Math.floor(finalTotal / 10000);
 
     const newPoints =
-  Number(member.points || 0) + usedPoints;
+      Number(member.points || 0) - earnPoints + usedPoints;
 
     const newSpent =
       Number(member.totalSpent || 0) - finalTotal;
