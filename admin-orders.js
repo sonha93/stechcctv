@@ -889,9 +889,7 @@ if(status === "cancelled"){
 
 if(
   status === "completed" &&
-  orderData.status !== "completed" &&
-  orderData.memberId &&
-  !orderData.pointsProcessed
+  orderData.status !== "completed"
 ){
 for(const item of (orderData.items || [])){
 
@@ -1126,23 +1124,23 @@ else if(newSpent >= 5000000){
 }
 
 const newPoints =
-  currentPoints
-  - usedPoints
+  Math.max(
+    0,
+    currentPoints - (cashbackUsed / 100)
+  )
   + earnPoints
   + bonusPoints;
 
-  await memberRef.update({
-  points: Math.max(0,newPoints),
+    await memberRef.update({
+
+  points: newPoints,
+
   totalSpent: newSpent,
+
   level: level
+
 });
-await db
-  .collection("orders")
-  .doc(id)
-  .update({
-    pointsProcessed: true
-  });
-    
+
 if(bonusPoints > 0){
 
   await db
@@ -1186,64 +1184,6 @@ if(bonusPoints > 0){
 
   }
 
-}
-        
-// CANCEL → rollback points (FIXED)
-if (
-  status === "cancelled" &&
-  orderData.status !== "cancelled" &&
-  orderData.memberId
-) {
-
-  const memberRef = db.collection("members").doc(orderData.memberId);
-  const memberDoc = await memberRef.get();
-
-  if (memberDoc.exists) {
-
-    const member = memberDoc.data();
-
-    const cashbackUsed =
-      Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
-
-    const usedPoints = Math.floor(cashbackUsed / 100);
-    const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
-
-    const rollbackKey = orderData.rollbackProcessed;
-    if (rollbackKey === true) return;
-
-    let newPoints =
-      Number(member.points || 0)
-      - earnPoints
-     
-
-    let newSpent =
-      Number(member.totalSpent || 0)
-      - Number(orderData.total || 0);
-
-    if (newPoints < 0) newPoints = 0;
-    if (newSpent < 0) newSpent = 0;
-
-  await memberRef.update({
-  points: firebase.firestore.FieldValue.increment(
-    usedPoints - earnPoints
-  ),
-  totalSpent: newSpent,
-  lockedPoints: 0
-});
-
-    await db.collection("member_history").add({
-      memberId: orderData.memberId,
-      orderId: id,
-      type: "rollback_cancel",
-      points: -earnPoints + usedPoints,
-      createdAt: Date.now()
-    });
-  }
-
-  await db.collection("orders").doc(id).update({
-    pointsProcessed: false,
-    rollbackProcessed: true
-  });
 }
 await db
   .collection("orders")
@@ -1487,11 +1427,9 @@ if(settingBtn){
 const closeModalBtn = document.getElementById('closePasswordModalBtn');
 const modal = document.getElementById('changePasswordModal');
 
-if (closeModalBtn && modal) {
-  closeModalBtn.addEventListener('click', () => {
+closeModalBtn.addEventListener('click', () => {
     modal.style.display = 'none';
-  });
-}
+});
 const profileBtn =
 document.getElementById("profileBtn");
 
