@@ -501,28 +501,7 @@ function renderOrders(){
         }
 
     <div class="total-box">
-${
-  order.status === "cancelled"
-  ? `
-    <button
-      onclick="reorderOrder('${order.id}')"
-      style="
-        margin-top:15px;
-        width:100%;
-        padding:12px;
-        border:none;
-        border-radius:10px;
-        background:#16a34a;
-        color:#fff;
-        font-weight:bold;
-        cursor:pointer;
-      "
-    >
-      🔁 Mua lại đơn hàng
-    </button>
-  `
-  : ""
-}
+
   <div class="row">
     <span>Tổng giá gốc</span>
     <b>${format(originalTotal)}</b>
@@ -731,38 +710,5 @@ window.toggleItems = function(id, itemsCount){
       btn.innerHTML =
         `và ${itemsCount} sản phẩm khác ▼`;
     }
-  }
-};
-window.reorderOrder = async function(orderId){
-
-  try{
-
-    const orderRef = db.collection("orders").doc(orderId);
-    const doc = await orderRef.get();
-
-    if(!doc.exists){
-      alert("Không tìm thấy đơn hàng");
-      return;
-    }
-
-    const order = doc.data();
-
-    // tạo đơn mới
-    await db.collection("orders").add({
-      uid: order.uid,
-      items: order.items,
-      status: "pending",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      cashbackAmount: 0
-    });
-
-    alert("Đã tạo lại đơn hàng!");
-
-    // reload UI
-    location.reload();
-
-  }catch(err){
-    console.error(err);
-    alert("Lỗi khi mua lại đơn");
   }
 };
