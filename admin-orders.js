@@ -1142,6 +1142,7 @@ await db
   .update({
     pointsProcessed: true
   });
+    
 if(bonusPoints > 0){
 
   await db
@@ -1185,6 +1186,54 @@ if(bonusPoints > 0){
 
   }
 
+}
+        // CANCEL → rollback points
+if (
+  status === "cancelled" &&
+  orderData.status !== "cancelled" &&
+  orderData.memberId &&
+  orderData.pointsProcessed === true
+) {
+
+  const memberRef = db.collection("members").doc(orderData.memberId);
+  const memberDoc = await memberRef.get();
+
+  if (memberDoc.exists) {
+
+    const member = memberDoc.data();
+
+    const cashbackUsed =
+      Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
+
+    const usedPoints = Math.floor(cashbackUsed / 100);
+
+    const finalTotal = Number(orderData.total || 0);
+
+    const earnPoints = Math.floor(finalTotal / 10000);
+
+    const newPoints =
+      Number(member.points || 0) - earnPoints + usedPoints;
+
+    const newSpent =
+      Number(member.totalSpent || 0) - finalTotal;
+
+    await memberRef.update({
+      points: Math.max(0, newPoints),
+      totalSpent: Math.max(0, newSpent)
+    });
+
+    await db.collection("member_history").add({
+      memberId: orderData.memberId,
+      orderId: id,
+      type: "rollback_cancel",
+      points: -earnPoints + usedPoints,
+      createdAt: Date.now()
+    });
+  }
+
+  await db.collection("orders").doc(id).update({
+    pointsProcessed: false
+  });
 }
 await db
   .collection("orders")
@@ -1428,9 +1477,11 @@ if(settingBtn){
 const closeModalBtn = document.getElementById('closePasswordModalBtn');
 const modal = document.getElementById('changePasswordModal');
 
-closeModalBtn.addEventListener('click', () => {
+if (closeModalBtn && modal) {
+  closeModalBtn.addEventListener('click', () => {
     modal.style.display = 'none';
-});
+  });
+}
 const profileBtn =
 document.getElementById("profileBtn");
 
