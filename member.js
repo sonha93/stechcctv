@@ -27,32 +27,32 @@ window.createMember = async function(){
         ?.value
         .trim();
 
-    const phone =
-        document.getElementById("memberPhone")
-        ?.value
-        .trim();
+   const email =
+    document.getElementById("memberEmail")
+    ?.value
+    .trim();
 
-    if(!name || !phone){
+if(!name || !phone || !email){
 
-        alert("Nhập thiếu dữ liệu");
-        return;
+    alert("Nhập thiếu dữ liệu");
+    return;
 
-    }
+}
 
     try{
 
         await addDoc(
-            collection(db,"members"),
-            {
-                name,
-                phone,
-                points:0,
-                totalSpent:0,
-                level:"Thường",
-                createdAt:serverTimestamp()
-            }
-        );
-
+    collection(db,"members"),
+    {
+        name,
+        email,
+        phone,
+        points:0,
+        totalSpent:0,
+        level:"Thường",
+        createdAt:serverTimestamp()
+    }
+);
         alert("Đã tạo member");
 
         loadMembers();
@@ -98,16 +98,16 @@ window.loadMembers = async function(){
                     </td>
 
                     <td>
-    ${data.name || "-"}
-</td>
+                      ${data.name || "-"}
+                    </td>
 
-<td>
-    ${data.email || "-"}
-</td>
+                    <td>
+                    ${data.email || "-"}
+                    </td>
 
-<td>
-    ${data.phone || "-"}
-</td>
+                    <td>
+                    ${data.phone || "-"}
+                    </td>
                     <td>
                         ${data.points || 0}
                     </td>
