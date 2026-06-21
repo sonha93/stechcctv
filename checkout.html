@@ -192,7 +192,7 @@ auth.onAuthStateChanged(async user => {
   .doc(user.uid)
   .get();
 
-console.log("PROFILE CHECKOUT:", profileDoc.data());
+
 
 if(profileDoc.exists){
 
