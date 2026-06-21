@@ -832,22 +832,22 @@ document.getElementById("offlineSalesSection");
   }
 
   select.dataset.bound = "true";
+select.addEventListener("change", async () => {
+  if (select.dataset.lock === "1") return;
+  select.dataset.lock = "1";
 
-  select.addEventListener("change", async () => {
-    if (select.dataset.lock === "1") return;
-select.dataset.lock = "1";
-  if (
-  currentPermissions.confirmOrders === false
-){
-  alert("Bạn không có quyền xác nhận đơn");
-  loadOrders();
-  return;
-}
-      const id = select.dataset.id;
-      const status = select.value;
+  const id = select.dataset.id;
+  const status = select.value;
 
-      try {
-  select.dataset.lock = "0";
+  if (currentPermissions.confirmOrders === false) {
+    alert("Bạn không có quyền xác nhận đơn");
+    loadOrders();
+    select.dataset.lock = "0";
+    return;
+  }
+
+  try {
+    
       const orderDoc = await db
   .collection("orders")
   .doc(id)
@@ -1120,10 +1120,7 @@ else if(newSpent >= 5000000){
 }
 
 const newPoints =
-  Math.max(
-    0,
-    currentPoints - earnPoints
-  )
+  Math.max(0, currentPoints - usedPoints)
   + earnPoints
   + bonusPoints;
 
@@ -1211,11 +1208,8 @@ if (
 
     let bonusPoints = 0;
 
-    const newPoints =
-      Math.max(
-        0,
-        currentPoints - earnPoints - bonusPoints
-      );
+   const newPoints =
+  Math.max(0, currentPoints - earnPoints - bonusPoints + usedPoints);
 
     await memberRef.update({
       points: newPoints,
@@ -1238,9 +1232,7 @@ await db
   select.disabled = true;
 }
         alert("Cập nhật trạng thái thành công");
-
       } catch (error) {
-
         console.error(error);
         alert("Lỗi cập nhật trạng thái");
       }
