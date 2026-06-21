@@ -377,7 +377,7 @@ const finalTotal =
 
   const sub = qty * price;
 
- hiddenHTML += `
+hiddenHTML += `
   <div style="
     display:flex;
     gap:14px;
@@ -400,7 +400,6 @@ const finalTotal =
     </a>
 
     <div>
-
       <div style="font-weight:700;">
         ${item.name || ""}
       </div>
@@ -422,7 +421,6 @@ const finalTotal =
       <div style="color:#d70018;font-weight:700;">
         ${format(sub)}
       </div>
-
     </div>
 
   </div>
