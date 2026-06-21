@@ -217,15 +217,22 @@ if(phoneValue){
     .limit(1)
     .get();
 
- if(!memberSnap.empty){
+if(!memberSnap.empty){
 
   const member =
     memberSnap.docs[0].data();
-console.log("MEMBER =", member);
-console.log("POINTS =", member.points);
-console.log("LOCKED =", member.lockedPoints);
-  memberPoints =
+
+  const totalPoints =
     Number(member.points || 0);
+
+  const lockedPoints =
+    Number(member.lockedPoints || 0);
+
+  memberPoints =
+    Math.max(
+      0,
+      totalPoints - lockedPoints
+    );
 
 }else{
 
@@ -497,7 +504,19 @@ const finalTotal =
 // ============================
 // ORDER
 // ============================
+if(usePoints > 0){
 
+  await db
+    .collection("members")
+    .doc(memberId)
+    .update({
+
+      lockedPoints:
+        firebase.firestore.FieldValue.increment(usePoints)
+
+    });
+
+}
 await db.collection("orders").add({
 
   uid: user.uid,
