@@ -1073,15 +1073,8 @@ if(
 
     const member =
       memberDoc.data();
-const cashbackUsed =
-  Number(
-    orderData.cashbackAmount ||
-    orderData.cashbackUsed ||
-    0
-  );
-
 const usedPoints =
-  Math.floor(cashbackUsed / 100);
+  Number(orderData.usedPoints || 0);
 
 const finalTotal =
   Number(orderData.total || 0);
@@ -1137,8 +1130,8 @@ const newPoints =
 
   totalSpent: newSpent,
 
-  level: level
-
+  lockedPoints:
+    firebase.firestore.FieldValue.increment(-usedPoints)
 });
 
 if(bonusPoints > 0){
