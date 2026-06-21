@@ -373,11 +373,17 @@ function updateBank(){
 
   let bank = document.getElementById("bankInfo");
 
- let total =
+const cartTotal =
   cart.reduce(
     (sum,p)=>sum + p.price * (p.qty || 1),
     0
-  ) - (usePoints * 100);
+  );
+
+const lockedDiscount = Number(usePoints || 0) * 100;
+
+let total = cartTotal - lockedDiscount;
+
+if(total < 0) total = 0;
 
 if(total < 0) total = 0;
 
@@ -504,16 +510,25 @@ const cashbackAmount =
 
 const finalTotal =
   total - cashbackAmount;
-if (usePoints > 0 && memberId) {
+const lockedPoints = Number(usePoints || 0);
+
+if (lockedPoints > 0 && memberId) {
 
   await db
     .collection("members")
     .doc(memberId)
     .update({
-      points: firebase.firestore.FieldValue.increment(
-        -usePoints
-      )
+      points: firebase.firestore.FieldValue.increment(-lockedPoints)
     });
+
+  await db.collection("member_history").add({
+    memberId,
+    type: "use_points",
+    points: -lockedPoints,
+    orderTotal: total,
+    createdAt: Date.now()
+  });
+}
 
   await db.collection("member_history").add({
     memberId,
@@ -587,7 +602,8 @@ await db.collection("orders").add({
       });
 
     }
-
+    usePoints = 0;
+memberPoints = memberPoints;  
     setTimeout(()=>{
       window.location.href = "success.html";
     },1000);
@@ -614,17 +630,16 @@ window.toggleUsePoints = function(){
 
   if(checked){
 
-    const total =
-      cart.reduce(
-        (sum,p)=>sum + p.price * (p.qty || 1),
-        0
-      );
+   const total =
+  cart.reduce(
+    (sum,p)=>sum + p.price * (p.qty || 1),
+    0
+  );
 
-    usePoints =
-      Math.min(
-        memberPoints,
-        Math.floor(total / 100)
-      );
+// LOCK an toàn theo từng lần toggle
+const maxCanUse = Math.floor(total / 100);
+
+usePoints = Math.min(memberPoints, maxCanUse);
 
   }else{
 
