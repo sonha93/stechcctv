@@ -511,7 +511,6 @@ const cashbackAmount =
 const finalTotal =
   total - cashbackAmount;
 const lockedPoints = Number(usePoints || 0);
-
 if (lockedPoints > 0 && memberId) {
 
   await db
@@ -528,15 +527,9 @@ if (lockedPoints > 0 && memberId) {
     orderTotal: total,
     createdAt: Date.now()
   });
+
 }
 
-  await db.collection("member_history").add({
-    memberId,
-    type: "use_points",
-    points: -usePoints,
-    orderTotal: total,
-    createdAt: Date.now()
-  });
 
 
 // ============================
@@ -587,27 +580,21 @@ await db.collection("orders").add({
   document.querySelector(".btn").disabled = true;
 
   // XÓA FIREBASE CART
-   auth.onAuthStateChanged(async user => {
+  const snapshot = await db
+  .collection("users")
+  .doc(user.uid)
+  .collection("cart")
+  .get();
 
-    if(user){
+for(const doc of snapshot.docs){
+  await doc.ref.delete();
+}
 
-      const snapshot = await db
-        .collection("users")
-        .doc(user.uid)
-        .collection("cart")
-        .get();
+usePoints = 0;
 
-      snapshot.forEach(doc => {
-        doc.ref.delete();
-      });
-
-    }
-    usePoints = 0;
-memberPoints = memberPoints;  
-    setTimeout(()=>{
-      window.location.href = "success.html";
-    },1000);
-
+setTimeout(()=>{
+  window.location.href = "success.html";
+},1000);
   });
 
 } catch(err){
