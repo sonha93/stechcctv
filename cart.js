@@ -163,12 +163,12 @@ actionBox = document.getElementById("cartAction");
 
   </div>
 
-  <button
-    class="remove"
-    onclick="removeItem('${docSnap.id}')"
-  >
-    🗑
-  </button>
+ <button
+  class="remove-x"
+  onclick="removeItem('${docSnap.id}')"
+>
+  ×
+</button>
 
 </div>
 `;
