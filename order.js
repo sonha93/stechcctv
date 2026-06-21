@@ -619,6 +619,38 @@ btn.disabled = true;
 btn.innerText = "Đang hủy...";
 
 try{
+  const order = allOrders.find(o => o.id === id);
+
+if(order?.memberId){
+
+  const cashbackUsed =
+    Number(order.cashbackAmount || 0);
+
+  const usedPoints =
+    Math.floor(cashbackUsed / 100);
+
+  if(usedPoints > 0){
+
+    await db
+      .collection("members")
+      .doc(order.memberId)
+      .update({
+
+        points:
+          firebase.firestore.FieldValue.increment(
+            usedPoints
+          ),
+
+        lockedPoints:
+          firebase.firestore.FieldValue.increment(
+            -usedPoints
+          )
+
+      });
+
+  }
+
+}
         await db
   .collection("orders")
   .doc(id)
