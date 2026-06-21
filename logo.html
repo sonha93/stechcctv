@@ -1755,17 +1755,18 @@ body{
   transition:.2s;
 }
 .review-section{
-  background:#f5f6f8;
-  padding:12px;
-  border-radius:16px;
+  background:#f5f6fa;
+  padding:14px;
+  border-radius:18px;
 }
 
+/* CARD CHÍNH */
 .review-card{
   background:#fff;
-  border-radius:16px;
+  border-radius:18px;
   padding:14px;
   margin-bottom:12px;
-  box-shadow:0 4px 14px rgba(0,0,0,.06);
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
   transition:.2s;
 }
 
@@ -1773,6 +1774,7 @@ body{
   transform:scale(0.99);
 }
 
+/* USER */
 .review-user{
   display:flex;
   align-items:center;
@@ -1780,12 +1782,13 @@ body{
 }
 
 .review-avatar{
-  width:44px;
-  height:44px;
+  width:42px;
+  height:42px;
   border-radius:50%;
   object-fit:cover;
 }
 
+/* NAME + TIME */
 .review-name{
   font-size:15px;
   font-weight:700;
@@ -1796,6 +1799,7 @@ body{
   color:#888;
 }
 
+/* CONTENT */
 .review-content{
   margin-top:10px;
   font-size:14px;
@@ -1803,6 +1807,7 @@ body{
   color:#222;
 }
 
+/* ACTIONS */
 .review-actions{
   display:flex;
   gap:10px;
@@ -1811,10 +1816,16 @@ body{
 
 .review-like,
 .reply-btn{
-  background:#f3f4f6;
+  background:#f1f2f6;
   padding:6px 10px;
-  border-radius:10px;
+  border-radius:12px;
   font-size:13px;
+  font-weight:600;
+}
+
+/* HIGHLIGHT LIKE */
+.review-like:hover{
+  background:#dfe4ea;
 }
 </style>
 </head>
