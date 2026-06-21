@@ -22,42 +22,37 @@ import { db } from "./firebase-init.js";
 
 window.createMember = async function(){
 
- const name =
-    document.getElementById("memberName")
-    ?.value
-    .trim();
+    const name =
+        document.getElementById("memberName")
+        ?.value
+        .trim();
 
-const email =
-    document.getElementById("memberEmail")
-    ?.value
-    .trim();
+    const phone =
+        document.getElementById("memberPhone")
+        ?.value
+        .trim();
 
-const phone =
-    document.getElementById("memberPhone")
-    ?.value
-    .trim();
+    if(!name || !phone){
 
-if(!name || !phone || !email){
+        alert("Nhập thiếu dữ liệu");
+        return;
 
-    alert("Nhập thiếu dữ liệu");
-    return;
-
-}
+    }
 
     try{
 
         await addDoc(
-    collection(db,"members"),
-    {
-        name,
-        email,
-        phone,
-        points:0,
-        totalSpent:0,
-        level:"Thường",
-        createdAt:serverTimestamp()
-    }
-);
+            collection(db,"members"),
+            {
+                name,
+                phone,
+                points:0,
+                totalSpent:0,
+                level:"Thường",
+                createdAt:serverTimestamp()
+            }
+        );
+
         alert("Đã tạo member");
 
         loadMembers();
@@ -87,26 +82,7 @@ window.loadMembers = async function(){
             await getDocs(
                 collection(db,"members")
             );
-const usersSnap =
-    await getDocs(
-        collection(db,"users")
-    );
 
-const emailMap = {};
-
-usersSnap.forEach(userDoc=>{
-
-    const user =
-        userDoc.data();
-
-    if(user.phone){
-
-        emailMap[user.phone] =
-            user.email || "-";
-
-    }
-
-});
         let html = "";
 
         snap.forEach(docSnap=>{
@@ -122,16 +98,13 @@ usersSnap.forEach(userDoc=>{
                     </td>
 
                     <td>
-                      ${data.name || "-"}
+                        ${data.name || "-"}
                     </td>
 
                     <td>
-                    ${emailMap[data.phone] || "-"}
+                        ${data.phone || "-"}
                     </td>
 
-                    <td>
-                    ${data.phone || "-"}
-                    </td>
                     <td>
                         ${data.points || 0}
                     </td>
@@ -170,7 +143,7 @@ usersSnap.forEach(userDoc=>{
             html = `
                 <tr>
                     <td
-                        colspan="8"
+                        colspan="7"
                         style="
                             text-align:center;
                             padding:20px;
