@@ -878,50 +878,15 @@ const updateData = {
   status: status,
   handledBy: document.getElementById("adminName").textContent
 };
+
+
+// nếu chuyển sang cancelled
+// thì khóa luôn
 if(status === "cancelled"){
   updateData.adminCancelled = true;
 }
 
-// nếu chuyển sang cancelled
-// thì khóa luôn
-if(
-  status === "cancelled" &&
-  orderData.memberId
-){
 
-  const cashbackUsed = Number(
-    orderData.cashbackAmount ||
-    orderData.cashbackUsed ||
-    0
-  );
-
-  const usedPoints =
-    Math.floor(cashbackUsed / 100);
-
-  if(usedPoints > 0){
-
-    await db
-      .collection("members")
-      .doc(orderData.memberId)
-      .update({
-
-        // trả lại điểm đã dùng
-        points:
-          firebase.firestore.FieldValue.increment(
-            usedPoints
-          ),
-
-        // mở khóa điểm đã giữ
-        lockedPoints:
-          firebase.firestore.FieldValue.increment(
-            -usedPoints
-          )
-
-      });
-
-  }
-
-}
 if(
   status === "completed" &&
   orderData.status !== "completed"
@@ -1166,18 +1131,13 @@ const newPoints =
   + earnPoints
   + bonusPoints;
 
-  await memberRef.update({
+    await memberRef.update({
 
   points: newPoints,
 
   totalSpent: newSpent,
 
-  level: level,
-
-  lockedPoints:
-    firebase.firestore.FieldValue.increment(
-      -usedPoints
-    )
+  level: level
 
 });
 
