@@ -125,7 +125,9 @@ actionBox = document.getElementById("cartAction");
  cartBox.innerHTML += `
 <div class="item">
 
-  <img src="${p.img || ''}">
+  <a href="logo.html?id=${item.productId || item.id}">
+  <img src="${item.img || ''}">
+</a>
 
   <div class="info">
 
