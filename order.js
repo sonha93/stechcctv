@@ -293,7 +293,10 @@ const finalTotal =
         statusText = "Đã hủy";
         statusColor = "#dc2626";
         break;
+   
     }
+    
+    
 
     let itemsHTML = "";
 
@@ -589,6 +592,30 @@ ${
     `;
   });
   bindCancelEvents();
+  renderPagination();
+}
+function renderPagination(){   
+  const box = document.getElementById("orders");
+
+  const totalPages = Math.ceil(allOrders.length / perPage);
+
+  const html = `
+    <div style="display:flex;gap:10px;justify-content:center;margin:20px 0;">
+      
+      <button onclick="prevPage()" ${currentPage === 1 ? "disabled" : ""}>
+        ◀
+      </button>
+
+      <span>Trang ${currentPage} / ${totalPages}</span>
+
+      <button onclick="nextPage()" ${currentPage === totalPages ? "disabled" : ""}>
+        ▶
+      </button>
+
+    </div>
+  `;
+
+  box.insertAdjacentHTML("beforeend", html);
 }
 // =========================
 // CANCEL ORDER
