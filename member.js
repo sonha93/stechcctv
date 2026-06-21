@@ -87,7 +87,26 @@ window.loadMembers = async function(){
             await getDocs(
                 collection(db,"members")
             );
+const usersSnap =
+    await getDocs(
+        collection(db,"users")
+    );
 
+const emailMap = {};
+
+usersSnap.forEach(userDoc=>{
+
+    const user =
+        userDoc.data();
+
+    if(user.phone){
+
+        emailMap[user.phone] =
+            user.email || "-";
+
+    }
+
+});
         let html = "";
 
         snap.forEach(docSnap=>{
@@ -107,7 +126,7 @@ window.loadMembers = async function(){
                     </td>
 
                     <td>
-                    ${data.email || "-"}
+                    ${emailMap[data.phone] || "-"}
                     </td>
 
                     <td>
