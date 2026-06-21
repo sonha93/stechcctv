@@ -881,13 +881,60 @@ const updateData = {
   handledBy: document.getElementById("adminName").textContent
 };
 
-
 // nếu chuyển sang cancelled
-// thì khóa luôn
 if(status === "cancelled"){
   updateData.adminCancelled = true;
 }
 
+// ============================
+// RELEASE LOCKED POINTS WHEN CANCELLED
+// Chỉ release nếu đơn chưa completed
+// ============================
+if (
+  status === "cancelled" &&
+  orderData.status !== "completed" &&
+  orderData.memberId
+) {
+  const memberRef = db
+    .collection("members")
+    .doc(orderData.memberId);
+
+  const memberDoc = await memberRef.get();
+
+  if (memberDoc.exists) {
+    const usedPoints = Number(orderData.usedPoints || 0);
+
+    if (usedPoints > 0) {
+      const member = memberDoc.data();
+      const currentLocked = Number(member.lockedPoints || 0);
+
+      await memberRef.update({
+        lockedPoints: Math.max(0, currentLocked - usedPoints)
+      });
+    }
+  }
+}
+if (
+  status === "cancelled" &&
+  orderData.status !== "completed" &&
+  orderData.memberId
+) {
+  const memberRef = db
+    .collection("members")
+    .doc(orderData.memberId);
+
+  const memberDoc = await memberRef.get();
+
+  if (memberDoc.exists) {
+    const usedPoints = Number(orderData.usedPoints || 0);
+
+    if (usedPoints > 0) {
+      await memberRef.update({
+        lockedPoints: firebase.firestore.FieldValue.increment(-usedPoints)
+      });
+    }
+  }
+}
 
 if(
   status === "completed" &&
@@ -1120,13 +1167,7 @@ else if(newSpent >= 5000000){
 }
 
 const newPoints =
-  Math.max(
-    0,
-    currentPoints - earnPoints
-  )
-  + earnPoints
-  + bonusPoints;
-
+  Math.max(0, currentPoints) + earnPoints + bonusPoints;
     await memberRef.update({
 
   points: newPoints,
