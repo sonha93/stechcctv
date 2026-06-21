@@ -490,15 +490,19 @@ const finalTotal =
           <div
  id="toggle-${order.id}"
  onclick="toggleItems('${order.id}', ${items.length - 2})"
-              style="
-                margin-top:10px;
-                cursor:pointer;
-                color:#0ea5e9;
-                font-weight:700;
-              "
-            >
-              và ${items.length - 2} sản phẩm khác ▼
-            </div>
+ style="
+   margin-top:10px;
+   cursor:pointer;
+   color:#0ea5e9;
+   font-weight:600;
+   display:flex;
+   align-items:center;
+   gap:6px;
+ "
+>
+  <span>và ${items.length - 2} sản phẩm khác</span>
+  <span style="font-size:12px;">▼</span>
+</div>
 
             <div
               id="more-${order.id}"
