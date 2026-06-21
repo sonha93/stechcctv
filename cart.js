@@ -185,7 +185,7 @@ if(actionBox){
       class="checkout"
       onclick="checkout()"
     >
-      Đặt hàng
+     Tạm tính
     </button>
   `;
 
