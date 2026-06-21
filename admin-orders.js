@@ -1061,7 +1061,6 @@ if(
   status === "completed" &&
   orderData.status !== "completed" &&
   orderData.memberId
- &&!orderData.pointsProcessed
 ){
   const memberRef = db
     .collection("members")
@@ -1141,12 +1140,7 @@ const newPoints =
   level: level
 
 });
-await db
-  .collection("orders")
-  .doc(id)
-  .update({
-    pointsProcessed: true  
-  });
+
 if(bonusPoints > 0){
 
   await db
