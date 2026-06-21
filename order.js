@@ -619,16 +619,59 @@ btn.disabled = true;
 btn.innerText = "Đang hủy...";
 
 try{
-        await db
+       const orderRef = db
   .collection("orders")
-  .doc(id)
-  .update({
+  .doc(id);
 
-    customerCancelled: true,
-    status: "cancelled"
+const orderDoc = await orderRef.get();
 
+if(!orderDoc.exists){
+  throw new Error("Không tìm thấy đơn");
+}
+
+const orderData = orderDoc.data();
+if(orderData.status === "cancelled"){
+  throw new Error("Đơn đã hủy");
+}
+// hoàn điểm nếu đơn có dùng điểm
+if(
+  orderData.memberId &&
+  Number(orderData.usedPoints || 0) > 0 &&
+    !orderData.pointsRefunded
+){
+
+  await db
+    .collection("members")
+    .doc(orderData.memberId)
+    .update({
+      points: firebase.firestore.FieldValue.increment(
+        Number(orderData.usedPoints)
+      )
+    });
+
+  await db.collection("member_history").add({
+    memberId: orderData.memberId,
+    type: "refund_points",
+    points: Number(orderData.usedPoints),
+    orderId: id,
+    createdAt: Date.now()
   });
+}
 
+// cập nhật trạng thái đơn
+const updateData = {
+  customerCancelled: true,
+  status: "cancelled"
+};
+
+if(
+  orderData.memberId &&
+  Number(orderData.usedPoints || 0) > 0
+){
+  updateData.pointsRefunded = true;
+}
+
+await orderRef.update(updateData);
 alert("Đã hủy đơn hàng");
 
 // update local UI luôn
