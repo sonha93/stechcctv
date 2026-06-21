@@ -541,17 +541,18 @@ pageOrders.forEach(doc => {
   const order = doc.data();
 
   const isCompleted =
-  order.status === "completed";
+    order.status === "completed";
 
-const isCustomerCancelled =
+  const isCustomerCancelled =
   order.customerCancelled === true;
 
 const isAdminCancelled =
   order.adminCancelled === true;
 
-// completed KHÔNG khóa nữa để admin có thể gạt ngược
 const lockStatus =
-  isCustomerCancelled || isAdminCancelled;
+  isCompleted ||
+  isCustomerCancelled ||
+  isAdminCancelled;
  
   html += `
     <tr>
@@ -833,8 +834,6 @@ document.getElementById("offlineSalesSection");
   select.dataset.bound = "true";
 
   select.addEventListener("change", async () => {
-    if (select.dataset.lock === "1") return;
-select.dataset.lock = "1";
   if (
   currentPermissions.confirmOrders === false
 ){
@@ -846,7 +845,7 @@ select.dataset.lock = "1";
       const status = select.value;
 
       try {
-  select.dataset.lock = "0";
+
       const orderDoc = await db
   .collection("orders")
   .doc(id)
@@ -881,35 +880,12 @@ const updateData = {
 };
 
 
-
-// ============================
-// RELEASE LOCKED POINTS WHEN CANCELLED
-// Chỉ release nếu đơn chưa completed
-// ============================
-if (
-  status === "cancelled" &&
-  orderData.status !== "completed" &&
-  orderData.memberId
-) {
-  const memberRef = db
-    .collection("members")
-    .doc(orderData.memberId);
-
-  const memberDoc = await memberRef.get();
-
-  if (memberDoc.exists) {
-    const usedPoints = Number(orderData.usedPoints || 0);
-
-    if (usedPoints > 0) {
-      const member = memberDoc.data();
-      const currentLocked = Number(member.lockedPoints || 0);
-
-      await memberRef.update({
-        lockedPoints: Math.max(0, currentLocked - usedPoints)
-      });
-    }
-  }
+// nếu chuyển sang cancelled
+// thì khóa luôn
+if(status === "cancelled"){
+  updateData.adminCancelled = true;
 }
+
 
 if(
   status === "completed" &&
@@ -1086,7 +1062,6 @@ if(
   orderData.status !== "completed" &&
   orderData.memberId
 ){
-  
   const memberRef = db
     .collection("members")
     .doc(orderData.memberId);
@@ -1098,8 +1073,15 @@ if(
 
     const member =
       memberDoc.data();
+const cashbackUsed =
+  Number(
+    orderData.cashbackAmount ||
+    orderData.cashbackUsed ||
+    0
+  );
+
 const usedPoints =
-  Number(orderData.usedPoints || 0);
+  Math.floor(cashbackUsed / 100);
 
 const finalTotal =
   Number(orderData.total || 0);
@@ -1142,12 +1124,21 @@ else if(newSpent >= 5000000){
 }
 
 const newPoints =
-  Math.max(0, currentPoints) + earnPoints + bonusPoints;
-  await memberRef.update({
+  Math.max(
+    0,
+    currentPoints - (cashbackUsed / 100)
+  )
+  + earnPoints
+  + bonusPoints;
+
+    await memberRef.update({
+
   points: newPoints,
+
   totalSpent: newSpent,
-  level: level,
-  lockedPoints: firebase.firestore.FieldValue.increment(-usedPoints)
+
+  level: level
+
 });
 
 if(bonusPoints > 0){
@@ -1194,106 +1185,16 @@ if(bonusPoints > 0){
   }
 
 }
-// ============================
-// REVERT MEMBER POINTS
-// completed -> trạng thái khác
-// ============================
-if (
-  status !== "completed" &&
-  orderData.status === "completed" &&
-  orderData.memberId
-) {
-  const memberRef = db
-    .collection("members")
-    .doc(orderData.memberId);
-
-  const memberDoc = await memberRef.get();
-
-  if (memberDoc.exists) {
-    const member = memberDoc.data();
-
-    const usedPoints = Number(orderData.usedPoints || 0);
-    const finalTotal = Number(orderData.total || 0);
-    const earnPoints = Math.floor(finalTotal / 10000);
-
-    const currentPoints = Number(member.points || 0);
-    const currentSpent = Number(member.totalSpent || 0);
-
-    // trừ lại điểm đã cộng khi completed
-    const newPoints = Math.max(0, currentPoints - earnPoints);
-
-    // hoàn lại tổng chi tiêu vì đơn không còn completed nữa
-    const newSpent = Math.max(0, currentSpent - finalTotal);
-
-    const updateMemberData = {
-      points: newPoints,
-      totalSpent: newSpent
-    };
-
-    // nếu gạt về cancelled thì hoàn lockedPoints luôn
-    // vì đơn đã không hoàn tất nữa
-  if (
-  status !== "completed" &&
-  orderData.status === "completed" &&
-  orderData.memberId
-) {
-  const memberRef = db.collection("members").doc(orderData.memberId);
-  const memberDoc = await memberRef.get();
-
-  if (memberDoc.exists) {
-    const member = memberDoc.data();
-
-    const finalTotal = Number(orderData.total || 0);
-    const earnPoints = Math.floor(finalTotal / 10000);
-
-    const currentPoints = Number(member.points || 0);
-    const currentSpent = Number(member.totalSpent || 0);
-
-    // totalSpent sau khi gỡ đơn completed này
-    const revertedSpent = Math.max(0, currentSpent - finalTotal);
-
-    // xác định level mới sau khi trừ đơn
-    let newLevel = "Silver";
-    if (revertedSpent >= 10000000) {
-      newLevel = "VIP";
-    } else if (revertedSpent >= 5000000) {
-      newLevel = "Gold";
-    }
-
-    const currentLevel = member.level || "Silver";
-
-    let bonusToRemove = 0;
-
-    // nếu hiện tại là VIP mà sau khi trừ đơn không còn VIP nữa => trừ 200
-    if (currentLevel === "VIP" && newLevel !== "VIP") {
-      bonusToRemove = 200;
-    }
-    // nếu hiện tại là Gold mà sau khi trừ đơn xuống Silver => trừ 100
-    else if (currentLevel === "Gold" && newLevel === "Silver") {
-      bonusToRemove = 100;
-    }
-
-    const newPoints = Math.max(
-      0,
-      currentPoints - earnPoints - bonusToRemove
-    );
-
-    await memberRef.update({
-      points: newPoints,
-      totalSpent: revertedSpent,
-      level: newLevel
-    });
-  }
-}
-    await memberRef.update(updateMemberData);
-  }
-}
 await db
   .collection("orders")
   .doc(id)
   .update(updateData);
         // completed => khóa
-if (status === "cancelled") {
+     if (
+  status === "completed" ||
+  status === "cancelled"
+) {
+
   select.disabled = true;
 }
         alert("Cập nhật trạng thái thành công");
