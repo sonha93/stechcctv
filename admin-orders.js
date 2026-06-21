@@ -1234,7 +1234,7 @@ if (
     rollbackProcessed: true,
     pointsProcessed: false
   });
-}
+
   const memberRef = db.collection("members").doc(orderData.memberId);
   const memberDoc = await memberRef.get();
 
