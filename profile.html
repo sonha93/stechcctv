@@ -911,7 +911,8 @@ const oldBirthday =
     }
 
     try {
-await firebase.firestore()
+
+     await firebase.firestore()
   .collection("users")
   .doc(currentUser.uid)
   .set({
@@ -919,8 +920,6 @@ await firebase.firestore()
       name: name,
       phone: phone,
       address: address,
-
-      email: currentUser.email,
 
       // chỉ cho lưu ngày sinh lần đầu
       birthday:
