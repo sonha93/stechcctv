@@ -1754,8 +1754,19 @@ body{
   transition:.2s;
 }
 
-.review-card:active{
-  transform:scale(0.99);
+.review-section{
+  background:#fff;
+  border-radius:18px;
+  padding:14px;
+}
+
+.review-card{
+  border-bottom:1px solid #eee;
+  padding:14px 0;
+}
+
+.review-card:last-child{
+  border-bottom:none;
 }
 
 .review-user{
@@ -1765,43 +1776,34 @@ body{
 }
 
 .review-avatar{
-  width:44px;
-  height:44px;
+  width:42px;
+  height:42px;
   border-radius:50%;
-  object-fit:cover;
 }
 
 .review-name{
-  font-size:15px;
+  font-size:14px;
   font-weight:700;
 }
 
 .review-time{
   font-size:12px;
-  color:#888;
+  color:#999;
 }
 
 .review-content{
-  margin-top:10px;
+  margin-top:8px;
   font-size:14px;
   line-height:1.6;
-  color:#222;
 }
 
 .review-actions{
+  margin-top:8px;
   display:flex;
-  gap:10px;
-  margin-top:10px;
-}
-
-.review-like,
-.reply-btn{
-  background:#f3f4f6;
-  padding:6px 10px;
-  border-radius:10px;
+  gap:12px;
   font-size:13px;
-}			
-
+  color:#666;
+}
 </style>
 </head>
 
