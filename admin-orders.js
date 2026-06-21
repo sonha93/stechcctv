@@ -1205,7 +1205,8 @@ if (
     const cashbackUsed =
       Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
 
-    const usedPoints = Math.floor(cashbackUsed / 100);
+  const usedPoints =
+  Number(orderData.usedPoints || 0);
     const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
 
     const rollbackKey = orderData.rollbackProcessed;
@@ -1225,17 +1226,16 @@ if (
 
   await memberRef.update({
   points: firebase.firestore.FieldValue.increment(
-    usedPoints - earnPoints
+    usedPoints
   ),
   totalSpent: newSpent,
   lockedPoints: 0
 });
-
     await db.collection("member_history").add({
       memberId: orderData.memberId,
       orderId: id,
       type: "rollback_cancel",
-      points: -earnPoints + usedPoints,
+      points: usedPoints,
       createdAt: Date.now()
     });
   }
