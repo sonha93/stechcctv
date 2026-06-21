@@ -377,67 +377,56 @@ const finalTotal =
 
   const sub = qty * price;
 
-  hiddenHTML += `
+ hiddenHTML += `
+  <div style="
+    display:flex;
+    gap:14px;
+    padding:12px 0;
+    border-bottom:1px solid #eee;
+  ">
 
-    <div style="
-      display:flex;
-      gap:14px;
-      padding:12px 0;
-      border-bottom:1px solid #eee;
-    ">
-
-     <a href="logo.html?id=${item.productId || item.id}">
-  <img
-    src="${item.img || "no-image.png"}"
-    width="72"
-    height="72"
-</a>
+    <a href="logo.html?id=${item.productId || item.id}">
+      <img
+        src="${item.img || 'no-image.png'}"
+        width="72"
+        height="72"
         style="
           object-fit:cover;
           border-radius:10px;
           border:1px solid #ddd;
+          cursor:pointer;
         "
       >
+    </a>
+
+    <div>
+
+      <div style="font-weight:700;">
+        ${item.name || ""}
+      </div>
+
+      <div style="color:#d70018;font-weight:700;">
+        ${format(price)}
+      </div>
+
+      ${original > price ? `
+        <div style="text-decoration:line-through;color:#999;font-size:13px;">
+          ${format(original)}
+        </div>
+      ` : ""}
 
       <div>
+        ${qty} × ${format(price)}
+      </div>
 
-        <div style="font-weight:700;">
-          ${item.name || ""}
-        </div>
-
-        <div style="
-          color:#d70018;
-          font-weight:700;
-        ">
-          ${format(price)}
-        </div>
-
-        ${original > price ? `
-          <div style="
-            text-decoration:line-through;
-            color:#999;
-            font-size:13px;
-          ">
-            ${format(original)}
-          </div>
-        ` : ""}
-
-        <div>
-          ${qty} × ${format(price)}
-        </div>
-
-        <div style="
-          color:#d70018;
-          font-weight:700;
-        ">
-          ${format(sub)}
-        </div>
-
+      <div style="color:#d70018;font-weight:700;">
+        ${format(sub)}
       </div>
 
     </div>
 
-  `;
+  </div>
+`;
 });
 }
     // =========================
