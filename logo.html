@@ -1725,12 +1725,15 @@ border:1px solid #
     align-items:center;
     gap:0px;
 }
+	.comment-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 	.verified-box {
-  position: absolute;
-  left: 0;        /* đổi từ right sang left */
-  right: auto;
-  transform: none;
   max-width: 100%;
+  word-break: break-word;
 }
 </style>
 </head>
