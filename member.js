@@ -98,13 +98,16 @@ window.loadMembers = async function(){
                     </td>
 
                     <td>
-                        ${data.name || "-"}
-                    </td>
+    ${data.name || "-"}
+</td>
 
-                    <td>
-                        ${data.phone || "-"}
-                    </td>
+<td>
+    ${data.email || "-"}
+</td>
 
+<td>
+    ${data.phone || "-"}
+</td>
                     <td>
                         ${data.points || 0}
                     </td>
@@ -143,7 +146,7 @@ window.loadMembers = async function(){
             html = `
                 <tr>
                     <td
-                        colspan="7"
+                        colspan="8"
                         style="
                             text-align:center;
                             padding:20px;
