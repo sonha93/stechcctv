@@ -192,7 +192,7 @@ reviewSnap.forEach(doc=>{
   })
 );
 
-    console.log(allOrders);
+ 
 
     if(allOrders.length === 0){
 
