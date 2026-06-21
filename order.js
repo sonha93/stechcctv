@@ -304,23 +304,28 @@ const finalTotal =
       const sub = qty * price;
 
       itemsHTML += `
+<div class="item">
 
-        <div class="item">
+  <a href="logo.html?id=${item.productId || item.id}"
+     style="display:flex;gap:10px;align-items:center;text-decoration:none;color:inherit;">
 
-          <img src="${item.img || ''}">
+    <img src="${item.img || ''}">
 
-          <div style="flex:1;">
+    <div style="flex:1;">
 
-            <div style="
-              font-weight:bold;
-              margin-bottom:5px;
-            ">
-              ${item.name || ""}
-            </div>
+      <div style="font-weight:bold;">
+        ${item.name || ""}
+      </div>
 
-            <div class="sale-price">
-              ${format(price)}
-            </div>
+      <div class="sale-price">
+        ${format(price)}
+      </div>
+
+    </div>
+
+  </a>
+
+</div>
 
             ${Number(item.originalPrice) > Number(price) ? `
               <div style="
