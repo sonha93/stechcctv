@@ -834,6 +834,8 @@ document.getElementById("offlineSalesSection");
   select.dataset.bound = "true";
 
   select.addEventListener("change", async () => {
+    if (select.dataset.lock === "1") return;
+select.dataset.lock = "1";
   if (
   currentPermissions.confirmOrders === false
 ){
@@ -845,7 +847,7 @@ document.getElementById("offlineSalesSection");
       const status = select.value;
 
       try {
-
+  select.dataset.lock = "0";
       const orderDoc = await db
   .collection("orders")
   .doc(id)
@@ -1062,6 +1064,7 @@ if(
   orderData.status !== "completed" &&
   orderData.memberId
 ){
+  
   const memberRef = db
     .collection("members")
     .doc(orderData.memberId);
@@ -1119,7 +1122,7 @@ else if(newSpent >= 5000000){
 const newPoints =
   Math.max(
     0,
-    currentPoints - (cashbackUsed / 100)
+    currentPoints - earnPoints
   )
   + earnPoints
   + bonusPoints;
@@ -1131,7 +1134,7 @@ const newPoints =
   totalSpent: newSpent,
 
   lockedPoints:
-    firebase.firestore.FieldValue.increment(-usedPoints)
+  firebase.firestore.FieldValue.increment(-usedPoints)
 });
 
 if(bonusPoints > 0){
@@ -1177,6 +1180,50 @@ if(bonusPoints > 0){
 
   }
 
+}
+if (
+  status !== "completed" &&
+  orderData.status === "completed" &&
+  orderData.memberId
+) {
+
+  const memberRef = db
+    .collection("members")
+    .doc(orderData.memberId);
+
+  const memberDoc = await memberRef.get();
+
+  if (memberDoc.exists) {
+
+    const member = memberDoc.data();
+
+    const usedPoints = Number(orderData.usedPoints || 0);
+    const finalTotal = Number(orderData.total || 0);
+
+    const earnPoints = Math.floor(finalTotal / 10000);
+
+    const currentPoints = Number(member.points || 0);
+
+    const oldLevel = member.level || "Silver";
+
+    const newSpent =
+      Number(member.totalSpent || 0) - finalTotal;
+
+    let bonusPoints = 0;
+
+    const newPoints =
+      Math.max(
+        0,
+        currentPoints - earnPoints - bonusPoints
+      );
+
+    await memberRef.update({
+      points: newPoints,
+      totalSpent: newSpent < 0 ? 0 : newSpent,
+      lockedPoints:
+        firebase.firestore.FieldValue.increment(usedPoints)
+    });
+  }
 }
 await db
   .collection("orders")
