@@ -214,26 +214,18 @@ if(phoneValue){
     .where("phone","==",phoneValue)
     .limit(1)
     .get();
-
 if(!memberSnap.empty){
 
-  const member =
-    memberSnap.docs[0].data();
+  const memberData = memberSnap.docs[0].data();
 
-  const totalPoints =
-    Number(member.points || 0);
+  const totalPoints = Number(memberData.points || 0);
+  const lockedPoints = Number(memberData.lockedPoints || 0);
 
-  const lockedPoints =
-    Number(member.lockedPoints || 0);
-
-  memberPoints =
-    Math.max(
-      0,
-      totalPoints - lockedPoints
-    );
+  memberPoints = Math.max(0, totalPoints - lockedPoints);
 
 }else{
-
+  memberPoints = 0;
+}
   memberPoints = 0;
 
 }
@@ -259,7 +251,35 @@ if(!memberSnap.empty){
 document.getElementById("phone").addEventListener("input", function(){
   this.value = this.value.replace(/\D/g,"");
 });
+document.getElementById("phone").addEventListener("change", async function () {
+  const phone = this.value.trim();
 
+  memberPoints = 0;
+
+  if(phone){
+    const memberSnap = await db
+      .collection("members")
+      .where("phone","==",phone)
+      .limit(1)
+      .get();
+
+    if(!memberSnap.empty){
+      const memberData = memberSnap.docs[0].data();
+
+      const totalPoints = Number(memberData.points || 0);
+      const lockedPoints = Number(memberData.lockedPoints || 0);
+
+      memberPoints = Math.max(0, totalPoints - lockedPoints);
+    }
+  }
+
+  if(usePoints > memberPoints){
+    usePoints = memberPoints;
+  }
+
+  renderCart();
+  updateBank();
+});
 
 function renderCart(){
 
@@ -346,12 +366,13 @@ const finalAfterPoints =
     Dùng điểm
 
  <label class="switch">
-  <input
-    type="checkbox"
-    id="useAllPointsToggle"
-    ${usePoints > 0 ? "checked" : ""}
-    onchange="toggleUsePoints()"
-  >
+ <input
+  type="checkbox"
+  id="useAllPointsToggle"
+  ${usePoints > 0 ? "checked" : ""}
+  ${memberPoints <= 0 ? "disabled" : ""}
+  onchange="toggleUsePoints()"
+>
   <span class="slider"></span>
 </label>
   </span>
@@ -476,15 +497,13 @@ if(memberSnap.empty){
 });
 }else{
 
-  const memberData =
-    memberSnap.docs[0].data();
+  const memberData = memberSnap.docs[0].data();
+  memberId = memberSnap.docs[0].id;
 
-  memberId =
-    memberSnap.docs[0].id;
+  const totalPoints = Number(memberData.points || 0);
+  const lockedPoints = Number(memberData.lockedPoints || 0);
 
-  memberPoints =
-    Number(memberData.points || 0);
-
+  memberPoints = Math.max(0, totalPoints - lockedPoints);
 }
   if(usePoints > memberPoints){
   usePoints = memberPoints;
