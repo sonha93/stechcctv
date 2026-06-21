@@ -785,3 +785,18 @@ window.toggleItems = function(id, itemsCount){
     }
   }
 };
+window.nextPage = function(){
+  const totalPages = Math.ceil(allOrders.length / perPage);
+
+  if(currentPage < totalPages){
+    currentPage++;
+    renderOrders();
+  }
+};
+
+window.prevPage = function(){
+  if(currentPage > 1){
+    currentPage--;
+    renderOrders();
+  }
+};
