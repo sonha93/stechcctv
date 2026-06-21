@@ -261,11 +261,12 @@ function renderCart(){
 
   box.innerHTML = "";
 
-  if(cart.length === 0){
-    box.innerHTML = "🛒 Giỏ hàng trống";
-    return;
-  }
-
+ if(cart.length === 0){
+  window.orderSubmitting = false;
+  document.querySelector(".btn").disabled = false;
+  alert("🛒 Giỏ hàng trống!");
+  return;
+}
 
   let originalTotal = 0;
   let finalTotal = 0;
@@ -398,6 +399,14 @@ if(total < 0) total = 0;
 }
 async function placeOrder(){
 
+if(window.orderSubmitting) return;
+
+window.orderSubmitting = true;
+
+document.querySelector(".btn").disabled = true;
+
+try{
+
   if(cart.length === 0){
     alert("🛒 Giỏ hàng trống!");
     return;
@@ -413,16 +422,19 @@ async function placeOrder(){
     document.getElementById("address").value.trim();
 
   if(!name || !phone || !address){
-    alert("⚠️ Nhập đầy đủ thông tin!");
-    return;
-  }
-
+  window.orderSubmitting = false;
+  document.querySelector(".btn").disabled = false;
+  alert("⚠️ Nhập đầy đủ thông tin!");
+  return;
+}
   const phoneRegex = /^(03|05|07|08|09)\d{8}$/;
 
-  if(!phoneRegex.test(phone)){
-    alert("⚠️ SĐT không hợp lệ!");
-    return;
-  }
+ if(!phoneRegex.test(phone)){
+  window.orderSubmitting = false;
+  document.querySelector(".btn").disabled = false;
+  alert("⚠️ SĐT không hợp lệ!");
+  return;
+}
 
   const orderId = Date.now();
   const total = cart.reduce((sum,p)=>
@@ -492,7 +504,26 @@ const cashbackAmount =
 
 const finalTotal =
   total - cashbackAmount;
+if (usePoints > 0 && memberId) {
 
+  await db
+    .collection("members")
+    .doc(memberId)
+    .update({
+      points: firebase.firestore.FieldValue.increment(
+        -usePoints
+      )
+    });
+
+  await db.collection("member_history").add({
+    memberId,
+    type: "use_points",
+    points: -usePoints,
+    orderTotal: total,
+    createdAt: Date.now()
+  });
+
+}
 // ============================
 // ORDER
 // ============================
@@ -541,7 +572,7 @@ await db.collection("orders").add({
   document.querySelector(".btn").disabled = true;
 
   // XÓA FIREBASE CART
-  auth.onAuthStateChanged(async user => {
+   auth.onAuthStateChanged(async user => {
 
     if(user){
 
@@ -563,9 +594,19 @@ await db.collection("orders").add({
 
   });
 
-}
-window.toggleUsePoints = function(){
+} catch(err){
 
+  console.error(err);
+  alert("Có lỗi xảy ra");
+
+  window.orderSubmitting = false;
+  document.querySelector(".btn").disabled = false;
+
+}
+
+} // <-- đóng hàm placeOrder ở đây
+
+window.toggleUsePoints = function(){
   const checked =
     document.getElementById(
       "useAllPointsToggle"
