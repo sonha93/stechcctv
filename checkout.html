@@ -177,21 +177,23 @@ let cart = [];
 let memberPoints = 0;
 let usePoints = 0;
 auth.onAuthStateChanged(async user => {
-
-  if(!user){
+  if (!user) {
     alert("Bạn chưa đăng nhập!");
     window.location.href = "login.html";
     return;
   }
 
   // LOAD PROFILE
-
   const profileDoc = await db
-  .collection("users")
-  .doc(user.uid)
-  .get();
+    .collection("users")
+    .doc(user.uid)
+    .get();
 
-if(profileDoc.exists){
+  if (!profileDoc.exists) {
+    renderCart();
+    updateBank();
+    return;
+  }
 
   const profile = profileDoc.data();
 
@@ -204,34 +206,30 @@ if(profileDoc.exists){
 
   document.getElementById("phone").value =
     localProfile.phone || profile.phone || "";
-const phoneValue =
-  localProfile.phone || profile.phone || "";
 
-if(phoneValue){
+  const phoneValue =
+    localProfile.phone || profile.phone || "";
 
-  const memberSnap = await db
-    .collection("members")
-    .where("phone","==",phoneValue)
-    .limit(1)
-    .get();
-if(!memberSnap.empty){
-
-  const memberData = memberSnap.docs[0].data();
-
-  const totalPoints = Number(memberData.points || 0);
-  const lockedPoints = Number(memberData.lockedPoints || 0);
-
-  memberPoints = Math.max(0, totalPoints - lockedPoints);
-
-}else{
-  memberPoints = 0;
-}
+  // LOAD MEMBER POINTS
   memberPoints = 0;
 
-}
+  if (phoneValue) {
+    const memberSnap = await db
+      .collection("members")
+      .where("phone", "==", phoneValue)
+      .limit(1)
+      .get();
+
+    if (!memberSnap.empty) {
+      const memberData = memberSnap.docs[0].data();
+      const totalPoints = Number(memberData.points || 0);
+      const lockedPoints = Number(memberData.lockedPoints || 0);
+
+      memberPoints = Math.max(0, totalPoints - lockedPoints);
+    }
   }
-  // LOAD CART
 
+  // LOAD CART
   const snapshot = await db
     .collection("users")
     .doc(user.uid)
@@ -245,7 +243,6 @@ if(!memberSnap.empty){
 
   renderCart();
   updateBank();
-}
 });
 
 document.getElementById("phone").addEventListener("input", function(){
