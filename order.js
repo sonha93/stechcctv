@@ -391,13 +391,6 @@ const finalTotal =
     src="${item.img || "no-image.png"}"
     width="72"
     height="72"
-    style="
-      object-fit:cover;
-      border-radius:10px;
-      border:1px solid #ddd;
-      cursor:pointer;
-    "
-  >
 </a>
         style="
           object-fit:cover;
