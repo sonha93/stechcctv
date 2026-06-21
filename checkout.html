@@ -221,7 +221,9 @@ if(phoneValue){
 
   const member =
     memberSnap.docs[0].data();
-
+console.log("MEMBER =", member);
+console.log("POINTS =", member.points);
+console.log("LOCKED =", member.lockedPoints);
   memberPoints =
     Number(member.points || 0);
 
