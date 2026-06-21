@@ -1189,12 +1189,52 @@ if(bonusPoints > 0){
 }
         
 // CANCEL → rollback points (FIXED)
+// CANCEL → rollback points (FIXED)
 if (
   status === "cancelled" &&
   orderData.status !== "cancelled" &&
   orderData.memberId
 ) {
 
+  // CHẶN: nếu chưa từng cộng điểm thì không rollback
+  if (!orderData.pointsProcessed) return;
+
+  const memberRef = db.collection("members").doc(orderData.memberId);
+  const memberDoc = await memberRef.get();
+
+  if (!memberDoc.exists) return;
+
+  const member = memberDoc.data();
+
+  const cashbackUsed =
+    Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
+
+  const usedPoints = Math.floor(cashbackUsed / 100);
+  const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
+
+  const rollbackPoints = usedPoints - earnPoints;
+
+  await memberRef.update({
+    points: firebase.firestore.FieldValue.increment(rollbackPoints),
+    totalSpent: firebase.firestore.FieldValue.increment(
+      -Number(orderData.total || 0)
+    ),
+    lockedPoints: 0
+  });
+
+  await db.collection("member_history").add({
+    memberId: orderData.memberId,
+    orderId: id,
+    type: "rollback_cancel",
+    points: rollbackPoints,
+    createdAt: Date.now()
+  });
+
+  await db.collection("orders").doc(id).update({
+    rollbackProcessed: true,
+    pointsProcessed: false
+  });
+}
   const memberRef = db.collection("members").doc(orderData.memberId);
   const memberDoc = await memberRef.get();
 
