@@ -1754,43 +1754,67 @@ body{
   box-shadow:0 4px 14px rgba(0,0,0,.06);
   transition:.2s;
 }
+.review-section{
+  background:#f5f6f8;
+  padding:12px;
+  border-radius:16px;
+}
 
 .review-card{
   background:#fff;
-  padding:12px;
-  border-radius:14px;
-  margin-bottom:10px;
-  border-left:3px solid #00b894;
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:0 4px 14px rgba(0,0,0,.06);
+  transition:.2s;
+}
+
+.review-card:active{
+  transform:scale(0.99);
 }
 
 .review-user{
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:10px;
 }
 
 .review-avatar{
-  width:36px;
-  height:36px;
+  width:44px;
+  height:44px;
   border-radius:50%;
+  object-fit:cover;
 }
 
 .review-name{
-  font-size:14px;
+  font-size:15px;
   font-weight:700;
 }
 
+.review-time{
+  font-size:12px;
+  color:#888;
+}
+
 .review-content{
-  margin-left:44px;
+  margin-top:10px;
   font-size:14px;
-  line-height:1.5;
-  margin-top:4px;
+  line-height:1.6;
+  color:#222;
 }
 
 .review-actions{
-  margin-left:44px;
-  font-size:12px;
-  color:#777;
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+.review-like,
+.reply-btn{
+  background:#f3f4f6;
+  padding:6px 10px;
+  border-radius:10px;
+  font-size:13px;
 }
 </style>
 </head>
