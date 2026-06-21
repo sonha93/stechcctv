@@ -1199,7 +1199,7 @@ if (
   // CHẶN: nếu chưa từng cộng điểm thì không rollback
   if (!orderData.pointsProcessed) return;
 
-  const memberRef = db.collection("members").doc(orderData.memberId);
+  const cancelMemberRef = db.collection("members").doc(orderData.memberId);
   const memberDoc = await memberRef.get();
 
   if (!memberDoc.exists) return;
