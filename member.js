@@ -22,13 +22,18 @@ import { db } from "./firebase-init.js";
 
 window.createMember = async function(){
 
-    const name =
-        document.getElementById("memberName")
-        ?.value
-        .trim();
+ const name =
+    document.getElementById("memberName")
+    ?.value
+    .trim();
 
-   const email =
+const email =
     document.getElementById("memberEmail")
+    ?.value
+    .trim();
+
+const phone =
+    document.getElementById("memberPhone")
     ?.value
     .trim();
 
