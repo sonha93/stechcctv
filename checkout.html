@@ -177,23 +177,23 @@ let cart = [];
 let memberPoints = 0;
 let usePoints = 0;
 auth.onAuthStateChanged(async user => {
-  if (!user) {
+
+  if(!user){
     alert("Bạn chưa đăng nhập!");
     window.location.href = "login.html";
     return;
   }
 
   // LOAD PROFILE
-  const profileDoc = await db
-    .collection("users")
-    .doc(user.uid)
-    .get();
 
-  if (!profileDoc.exists) {
-    renderCart();
-    updateBank();
-    return;
-  }
+  const profileDoc = await db
+  .collection("users")
+  .doc(user.uid)
+  .get();
+
+console.log("PROFILE CHECKOUT:", profileDoc.data());
+
+if(profileDoc.exists){
 
   const profile = profileDoc.data();
 
@@ -206,30 +206,33 @@ auth.onAuthStateChanged(async user => {
 
   document.getElementById("phone").value =
     localProfile.phone || profile.phone || "";
+const phoneValue =
+  localProfile.phone || profile.phone || "";
 
-  const phoneValue =
-    localProfile.phone || profile.phone || "";
+if(phoneValue){
 
-  // LOAD MEMBER POINTS
+  const memberSnap = await db
+    .collection("members")
+    .where("phone","==",phoneValue)
+    .limit(1)
+    .get();
+
+ if(!memberSnap.empty){
+
+  const member =
+    memberSnap.docs[0].data();
+
+  memberPoints =
+    Number(member.points || 0);
+
+}else{
+
   memberPoints = 0;
 
-  if (phoneValue) {
-    const memberSnap = await db
-      .collection("members")
-      .where("phone", "==", phoneValue)
-      .limit(1)
-      .get();
-
-    if (!memberSnap.empty) {
-      const memberData = memberSnap.docs[0].data();
-      const totalPoints = Number(memberData.points || 0);
-      const lockedPoints = Number(memberData.lockedPoints || 0);
-
-      memberPoints = Math.max(0, totalPoints - lockedPoints);
-    }
+}
   }
-
   // LOAD CART
+
   const snapshot = await db
     .collection("users")
     .doc(user.uid)
@@ -243,40 +246,13 @@ auth.onAuthStateChanged(async user => {
 
   renderCart();
   updateBank();
+}
 });
 
 document.getElementById("phone").addEventListener("input", function(){
   this.value = this.value.replace(/\D/g,"");
 });
-document.getElementById("phone").addEventListener("change", async function () {
-  const phone = this.value.trim();
 
-  memberPoints = 0;
-
-  if(phone){
-    const memberSnap = await db
-      .collection("members")
-      .where("phone","==",phone)
-      .limit(1)
-      .get();
-
-    if(!memberSnap.empty){
-      const memberData = memberSnap.docs[0].data();
-
-      const totalPoints = Number(memberData.points || 0);
-      const lockedPoints = Number(memberData.lockedPoints || 0);
-
-      memberPoints = Math.max(0, totalPoints - lockedPoints);
-    }
-  }
-
-  if(usePoints > memberPoints){
-    usePoints = memberPoints;
-  }
-
-  renderCart();
-  updateBank();
-});
 
 function renderCart(){
 
@@ -363,13 +339,12 @@ const finalAfterPoints =
     Dùng điểm
 
  <label class="switch">
- <input
-  type="checkbox"
-  id="useAllPointsToggle"
-  ${usePoints > 0 ? "checked" : ""}
-  ${memberPoints <= 0 ? "disabled" : ""}
-  onchange="toggleUsePoints()"
->
+  <input
+    type="checkbox"
+    id="useAllPointsToggle"
+    ${usePoints > 0 ? "checked" : ""}
+    onchange="toggleUsePoints()"
+  >
   <span class="slider"></span>
 </label>
   </span>
@@ -494,13 +469,15 @@ if(memberSnap.empty){
 });
 }else{
 
-  const memberData = memberSnap.docs[0].data();
-  memberId = memberSnap.docs[0].id;
+  const memberData =
+    memberSnap.docs[0].data();
 
-  const totalPoints = Number(memberData.points || 0);
-  const lockedPoints = Number(memberData.lockedPoints || 0);
+  memberId =
+    memberSnap.docs[0].id;
 
-  memberPoints = Math.max(0, totalPoints - lockedPoints);
+  memberPoints =
+    Number(memberData.points || 0);
+
 }
   if(usePoints > memberPoints){
   usePoints = memberPoints;
@@ -518,19 +495,7 @@ const finalTotal =
 // ============================
 // ORDER
 // ============================
-if(usePoints > 0){
 
-  await db
-    .collection("members")
-    .doc(memberId)
-    .update({
-
-      lockedPoints:
-        firebase.firestore.FieldValue.increment(usePoints)
-
-    });
-
-}
 await db.collection("orders").add({
 
   uid: user.uid,
