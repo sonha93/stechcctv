@@ -1657,8 +1657,22 @@ window.approveReturn = async function(orderId){
         Number(item.qty || 0)
       )
     });
-  }
+    const productDoc = await productRef.get();
 
+const currentStock = Number(productDoc.data()?.stock || 0);
+const qty = Number(item.qty || 0);
+
+await db.collection("stock_movements").add({
+  productId: item.productId,
+  productName: item.name || productDoc.data()?.name,
+  type: "RETURN",
+  qty: qty, // dương
+  reason: `Trả hàng đơn ${orderId}`,
+  staffName: document.getElementById("adminName")?.textContent || "",
+  stockAfter: currentStock + qty,
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
+  
   // =========================
   // 2. HOÀN ĐIỂM (QUAN TRỌNG)
   // trả lại đúng số đã dùng
