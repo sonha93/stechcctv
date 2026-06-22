@@ -1162,16 +1162,8 @@ const usedPoints =
 const finalTotal =
   Number(orderData.total || 0);
 
-const historySnap = await db
-  .collection("member_history")
-  .where("orderId", "==", order.id)
-  .where("type", "==", "earn_points")
-  .limit(1)
-  .get();
-
-const earned = historySnap.empty
-  ? 0
-  : historySnap.docs[0].data().points;
+const earnPoints =
+  Math.floor(finalTotal / 10000);
 
 const currentPoints =
   Number(member.points || 0);
@@ -1306,9 +1298,9 @@ if (
     if (newSpent < 0) newSpent = 0;
 
 await memberRef.update({
- points: firebase.firestore.FieldValue.increment(
-  usedPoints - earned
-)
+  points: firebase.firestore.FieldValue.increment(
+    usedPoints
+  ),
   totalSpent: newSpent,
   lockedPoints: firebase.firestore.FieldValue.increment(
     -usedPoints
@@ -1672,23 +1664,19 @@ window.approveReturn = async function(orderId){
   // trả lại đúng số đã dùng
   // =========================
 const usedPoints = Number(order.usedPoints || 0);
-
-// điểm đã được cộng khi mua
 const earnPoints = Math.floor(Number(order.total || 0) / 10000);
 
 if (order.memberId) {
-
   const memberRef = db.collection("members").doc(order.memberId);
 
   batch.update(memberRef, {
     points: firebase.firestore.FieldValue.increment(
-      -earnPoints + usedPoints
+      usedPoints - earnPoints
     ),
     totalSpent: firebase.firestore.FieldValue.increment(
       -Number(order.total || 0)
     )
   });
-
 }
 
     const historyRef = db.collection("member_history").doc();
