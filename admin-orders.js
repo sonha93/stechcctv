@@ -557,7 +557,6 @@ const lockStatus =
   isCompleted ||
   isCustomerCancelled ||
   isAdminCancelled ||
-  order.status === "return_requested" ||
   order.status === "returned";
  
   html += `
@@ -612,13 +611,36 @@ ${
         </option>
       </select>
   `
-  : (
-      order.returnStatus === "approved"
-      ? "Đã duyệt trả hàng"
-      : order.returnStatus === "rejected"
-      ? "Từ chối trả hàng"
-      : "-"
-    )
+ <td>
+
+${
+  order.returnStatus === "approved"
+  ? "Đã duyệt trả hàng"
+
+  : order.returnStatus === "rejected"
+  ? "Từ chối trả hàng"
+
+  : order.status === "return_requested"
+  ? `
+      <select
+        class="return-status"
+        data-id="${doc.id}"
+      >
+        <option value="pending" selected>
+          Chờ xử lý
+        </option>
+
+        <option value="approved">
+          Đã duyệt trả hàng
+        </option>
+
+        <option value="rejected">
+          Từ chối trả hàng
+        </option>
+      </select>
+    `
+  : "-"
+
 }
 
 </td>
@@ -664,7 +686,11 @@ ${
     font-weight:bold;
     display:inline-block;
   ">
-    ${getStatusText(order.status)}
+   ${
+  order.status === "return_requested"
+    ? "Đã giao thành công"
+    : getStatusText(order.status)
+}
   </span>
 
  
