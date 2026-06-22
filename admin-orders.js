@@ -1653,6 +1653,7 @@ batch.set(historyRef, {
   memberId: order.memberId,
   orderId,
   type: "refund_return",
+  earnPoints: earnPoints,
   points: usedPoints,
   createdAt: Date.now()
 });
@@ -1661,10 +1662,11 @@ batch.set(historyRef, {
   // =========================
   // 3. UPDATE ORDER STATUS
   // =========================
-  batch.update(orderRef, {
-    status: "returned",
-    returnApprovedAt: Date.now()
-  });
+ batch.update(orderRef, {
+  status: "returned",
+  returnApprovedAt: Date.now(),
+  pointsProcessed: false
+});
   
 const revenueRef = db.collection("revenue_adjustments").doc();
 
