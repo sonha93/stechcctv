@@ -1023,6 +1023,9 @@ if(!productDoc.exists){
       Number(product.stock || 0);
 
     if(currentStock < qty){
+
+      console.error(
+        "Không đủ tồn kho:",
         item.name
       );
 
@@ -1741,7 +1744,7 @@ batch.set(revenueRef, {
   alert("Đã duyệt trả hàng");
 
 loadOrders();
-};
+
 function loadReturns(){
 
   const body = document.getElementById("returnsBody");
