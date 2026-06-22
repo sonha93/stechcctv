@@ -1794,10 +1794,20 @@ function loadStockMovements() {
         body.innerHTML += `
           <tr>
             <td>${m.productName || "-"}</td>
-            <td>${m.type || "-"}</td>
-            <td style="color:${m.qty > 0 ? "green" : "red"}">
-              ${m.qty > 0 ? "+" : ""}${m.qty}
-            </td>
+            <td>
+  ${
+    m.type === "SALE"
+      ? "BÁN"
+      : m.type === "RETURN"
+      ? "TRẢ"
+      : m.type === "IMPORT"
+      ? "NHẬP"
+      : m.type || "-"
+  }
+</td>
+            <td style="color:${m.qty > 0 ? "green" : "red"};font-weight:bold;">
+  ${m.qty > 0 ? "+" : ""}${m.qty}
+</td>
             <td>${m.orderId || "-"}</td>
             <td>${m.reason || "-"}</td>
             <td>${m.staffName || "-"}</td>
