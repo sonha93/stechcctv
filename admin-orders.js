@@ -671,7 +671,7 @@ ${
             ${order.status === "cancelled" ? "selected" : ""}>
             Đã hủy
           </option>
-
+          
         </select>
 
    ${lockStatus ? `
@@ -698,7 +698,11 @@ ${
 ` : ""}
 
       </td>
-
+      <td>
+        <button onclick="returnOrder('${doc.id}')">
+          Trả hàng
+        </button>
+      </td>
     </tr>
   `;
 });
