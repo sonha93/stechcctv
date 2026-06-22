@@ -316,7 +316,7 @@ async function loadOrders() {
 
     ordersTable.innerHTML = `
       <tr>
-        <td colspan="9" style="text-align:center;padding:20px;">
+        <td colspan="8" style="text-align:center;padding:20px;">
           Đang tải đơn hàng...
         </td>
       </tr>
@@ -552,8 +552,7 @@ const isAdminCancelled =
 const lockStatus =
   isCompleted ||
   isCustomerCancelled ||
-  isAdminCancelled ||
-  order.status === "refund_completed";
+  isAdminCancelled;
  
   html += `
     <tr>
@@ -578,20 +577,7 @@ const lockStatus =
       <td>
         ${renderProducts(order.items || [])}
       </td>
-      <td>
-  ${
-    order.status === "return_requested"
-      ? `<span>KHÁCH YÊU CẦU TRẢ HÀNG</span>
-         <button onclick="approveReturn('${doc.id}')">Duyệt</button>`
-      : order.status === "return_approved"
-      ? `<span>ĐÃ DUYỆT TRẢ HÀNG</span>
-         <button onclick="confirmReturned('${doc.id}')">Đã nhận</button>`
-      : order.status === "returned"
-      ? `<span>ĐÃ TRẢ HÀNG</span>
-         <button onclick="refundOrder('${doc.id}')">Hoàn tiền</button>`
-      : "-"
-  }
-</td>
+
       <td>
         ${formatPrice(order.total)}
       </td>
@@ -1562,24 +1548,5 @@ toast.remove();
 };
 
 window.alert = window.showToast;
+
 }
-window.approveReturn = async (id) => {
-  await db.collection("orders").doc(id).update({
-    status: "return_approved"
-  });
-  loadOrders();
-};
-
-window.confirmReturned = async (id) => {
-  await db.collection("orders").doc(id).update({
-    status: "returned"
-  });
-  loadOrders();
-};
-
-window.refundOrder = async (id) => {
-  await db.collection("orders").doc(id).update({
-    status: "refund_completed"
-  });
-  loadOrders();
-};
