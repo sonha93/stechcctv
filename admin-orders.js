@@ -3,7 +3,53 @@ import { loadProfilePage } from "./profile-staff.js";
 let allSnapshotOrders = [];
 let allOrders = [];
 let revenueByDate = {};
+document.addEventListener("change", async (e) => {
+  const select = e.target;
+  if (!select.classList.contains("return-status")) return;
 
+  const orderId = select.dataset.id;
+  const value = select.value;
+
+  const orderRef = db.collection("orders").doc(orderId);
+  const orderSnap = await orderRef.get();
+
+  if (!orderSnap.exists) return;
+
+  const order = orderSnap.data();
+  if (
+  order.returnStatus === "approved" ||
+  order.returnStatus === "rejected"
+) {
+  select.disabled = true;
+  return;
+}
+  if (!order.returnRequested) {
+    alert("Chưa có yêu cầu trả hàng");
+    return;
+  }
+
+  const update = {
+    returnStatus: value,
+    returnHandledBy: document.getElementById("adminName")?.textContent || "",
+    returnUpdatedAt: Date.now()
+  };
+
+  if (value === "approved") {
+    update.status = "returned"; // OK
+    update.returnApprovedAt = Date.now();
+  }
+
+  if (value === "rejected") {
+    update.returnRejectedAt = Date.now();
+  }
+
+  await orderRef.update(update);
+
+  select.disabled = true;
+
+  alert("Cập nhật trả hàng thành công");
+  loadOrders();
+});
 let currentPage = 1;
 const perPage = 10;
 // ============================
@@ -1713,67 +1759,42 @@ function loadReturns(){
 }
 document.addEventListener("change", async (e) => {
   const select = e.target;
-
   if (!select.classList.contains("return-status")) return;
-
-  console.log("RETURN CHANGE OK");
 
   const orderId = select.dataset.id;
   const value = select.value;
 
-  console.log(orderId, value);
+  const orderRef = db.collection("orders").doc(orderId);
+  const orderSnap = await orderRef.get();
 
-  try {
-    const orderRef = db.collection("orders").doc(orderId);
-    const orderSnap = await orderRef.get();
+  if (!orderSnap.exists) return;
 
-    if (!orderSnap.exists) {
-      alert("Đơn không tồn tại");
-      loadOrders();
-      return;
-    }
+  const order = orderSnap.data();
 
-    const order = orderSnap.data();
-
-    if (order.returnRequested !== true) {
-      alert("Đơn này chưa có yêu cầu trả hàng");
-      loadOrders();
-      return;
-    }
-
-    if (
-      order.returnStatus === "approved" ||
-      order.returnStatus === "rejected"
-    ) {
-      select.disabled = true;
-      return;
-    }
-
-    const update = {
-      returnStatus: value,
-      returnHandledBy: document.getElementById("adminName")?.textContent || "",
-      returnUpdatedAt: Date.now()
-    };
-
-    if (value === "approved") {
-      update.status = "returned";
-      update.returnApprovedAt = Date.now();
-    }
-
-    if (value === "rejected") {
-      update.status = "completed";
-      update.returnRejectedAt = Date.now();
-    }
-
-    await orderRef.update(update);
-
-    select.disabled = (value === "approved" || value === "rejected");
-
-    alert("Đã cập nhật trạng thái trả hàng");
-    loadOrders();
-
-  } catch (err) {
-    console.error(err);
-    alert("Lỗi cập nhật trạng thái trả hàng");
+  if (!order.returnRequested) {
+    alert("Chưa có yêu cầu trả hàng");
+    return;
   }
+
+  const update = {
+    returnStatus: value,
+    returnHandledBy: document.getElementById("adminName")?.textContent || "",
+    returnUpdatedAt: Date.now()
+  };
+
+  if (value === "approved") {
+    update.status = "returned"; // OK
+    update.returnApprovedAt = Date.now();
+  }
+
+  if (value === "rejected") {
+    update.returnRejectedAt = Date.now();
+  }
+
+  await orderRef.update(update);
+
+  select.disabled = true;
+
+  alert("Cập nhật trả hàng thành công");
+  loadOrders();
 });
