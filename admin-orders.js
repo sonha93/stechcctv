@@ -1737,9 +1737,17 @@ document.addEventListener("change", async (e) => {
     };
 
     if (value === "approved") {
-      update.status = "returned";
-      update.returnApprovedAt = Date.now();
-    }
+  update.status = "returned";
+  update.returnApprovedAt = Date.now();
+
+  if (order.userId) {
+    const userRef = db.collection("users").doc(order.userId);
+
+    await userRef.update({
+      points: Number(order.pointsBeforeOrder || 0)
+    });
+  }
+}
 
     if (value === "rejected") {
       update.status = "completed";
