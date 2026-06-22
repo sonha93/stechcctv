@@ -1649,7 +1649,7 @@ if(order.memberId){
 
     const historyRef = db.collection("member_history").doc();
 
-batch.set(historyRef, {
+batch.set(historyRef,{
   memberId: order.memberId,
   orderId,
   type: "refund_return",
