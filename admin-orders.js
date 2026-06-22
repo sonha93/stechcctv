@@ -338,7 +338,7 @@ allSnapshotOrders = snapshot.docs;
 renderPagination();
       ordersTable.innerHTML = `
         <tr>
-          <td colspan="8" style="text-align:center;padding:20px;">
+          <td colspan="9" style="text-align:center;padding:20px;">
             Chưa có đơn hàng nào
           </td>
         </tr>
