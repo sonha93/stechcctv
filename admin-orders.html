@@ -1046,6 +1046,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
   <input type="radio" name="adminView" value="members">
   <span>Member</span>
 </label>
+   <label>
+  <input type="radio" name="adminView" value="returns">
+  <span>Return</span>
+</label>
   </div>
 
 </div>
@@ -1772,6 +1776,47 @@ placeholder="Tiền thối">
     "
   ></iframe>
 </div>
+   <div
+  id="returnsSection"
+  class="table-wrap"
+  style="display:none;margin-bottom:16px;"
+>
+
+  <div style="padding:16px;">
+
+    <h2 style="margin-bottom:15px;">
+      🔄 Return History
+    </h2>
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Ngày</th>
+          <th>Mã đơn</th>
+          <th>Khách hàng</th>
+          <th>Sản phẩm</th>
+          <th>SL trả</th>
+          <th>Tiền hoàn</th>
+          <th>Lý do</th>
+        </tr>
+      </thead>
+
+      <tbody id="returnsBody">
+
+        <tr>
+          <td colspan="7">
+            Chưa có dữ liệu
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
 <!-- TABLE -->
 <div class="table-wrap" id="ordersSection">
 
@@ -1822,6 +1867,7 @@ placeholder="Tiền thối">
 <script type="module" src="inventory-manager.js"></script>
 <script type="module" src="history.js"></script>
 <script type="module" src="offline-sales.js"></script>
+<script type="module" src="returns.js"></script>
   <div id="changePasswordModal" style="
 display:none;
 position:fixed;
