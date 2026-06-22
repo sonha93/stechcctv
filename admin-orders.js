@@ -1268,7 +1268,7 @@ await memberRef.update({
       points: +usedPoints,
       createdAt: Date.now()
     });
-  
+  }
 
   await db.collection("orders").doc(id).update({
     pointsProcessed: false,
