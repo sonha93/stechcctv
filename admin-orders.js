@@ -1663,31 +1663,22 @@ window.approveReturn = async function(orderId){
   // 2. HOÀN ĐIỂM (QUAN TRỌNG)
   // trả lại đúng số đã dùng
   // =========================
- const usedPoints =
-  Number(order.usedPoints || 0);
+const usedPoints = Number(order.usedPoints || 0);
 
-const earnPoints =
-  Math.floor(
-    Number(order.total || 0) / 10000
-  );
+// điểm đã được cộng khi mua
+const earnPoints = Math.floor(Number(order.total || 0) / 10000);
 
-if(order.memberId){
+if (order.memberId) {
 
-  const memberRef =
-    db.collection("members").doc(order.memberId);
+  const memberRef = db.collection("members").doc(order.memberId);
 
   batch.update(memberRef, {
-
-    points:
-      firebase.firestore.FieldValue.increment(
-        usedPoints - earnPoints
-      ),
-
-    totalSpent:
-      firebase.firestore.FieldValue.increment(
-        -Number(order.total || 0)
-      )
-
+    points: firebase.firestore.FieldValue.increment(
+      -earnPoints + usedPoints
+    ),
+    totalSpent: firebase.firestore.FieldValue.increment(
+      -Number(order.total || 0)
+    )
   });
 
 }
