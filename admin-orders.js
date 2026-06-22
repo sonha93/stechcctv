@@ -1237,7 +1237,7 @@ if(bonusPoints > 0){
       createdAt: Date.now()
 
     });
-}
+
     await db
       .collection("member_history")
       .add({
@@ -1314,7 +1314,7 @@ await memberRef.update({
       createdAt: Date.now()
     });
   }
-
+  
   await db.collection("orders").doc(id).update({
     pointsProcessed: false,
     rollbackProcessed: true
@@ -1724,7 +1724,7 @@ batch.set(revenueRef, {
   alert("Đã duyệt trả hàng");
 
 loadOrders();
-
+}
 function loadReturns(){
 
   const body = document.getElementById("returnsBody");
