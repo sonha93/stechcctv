@@ -1280,7 +1280,11 @@ if (
 
   const usedPoints =
   Number(orderData.usedPoints || 0);
-    const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
+    const total = Number(orderData.total || 0);
+const cashbackUsed = Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
+
+const paidAmount = total - cashbackUsed;
+const earnPoints = Math.floor(paidAmount / 10000);
 
     const rollbackKey = orderData.rollbackProcessed;
     if (rollbackKey === true) return;
