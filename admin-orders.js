@@ -316,7 +316,7 @@ async function loadOrders() {
 
     ordersTable.innerHTML = `
       <tr>
-        <td colspan="8" style="text-align:center;padding:20px;">
+        <td colspan="9" style="text-align:center;padding:20px;">
           Đang tải đơn hàng...
         </td>
       </tr>
