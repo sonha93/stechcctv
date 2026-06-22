@@ -1777,4 +1777,33 @@ function loadReturns(){
       });
     });
 }
+function loadStockMovements() {
 
+  const body = document.getElementById("movementsBody");
+  if (!body) return;
+
+  db.collection("stock_movements")
+    .orderBy("createdAt", "desc")
+    .onSnapshot(snapshot => {
+
+      body.innerHTML = "";
+
+      snapshot.forEach(doc => {
+        const m = doc.data();
+
+        body.innerHTML += `
+          <tr>
+            <td>${m.productName || "-"}</td>
+            <td>${m.type || "-"}</td>
+            <td style="color:${m.qty > 0 ? "green" : "red"}">
+              ${m.qty > 0 ? "+" : ""}${m.qty}
+            </td>
+            <td>${m.orderId || "-"}</td>
+            <td>${m.reason || "-"}</td>
+            <td>${m.staffName || "-"}</td>
+          </tr>
+        `;
+      });
+
+    });
+}
