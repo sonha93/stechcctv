@@ -1554,3 +1554,56 @@ toast.remove();
 window.alert = window.showToast;
 
 }
+window.returnOrder = async function(orderId) {
+
+  const dbRef = firebase.firestore();
+
+  const orderSnap = await dbRef.collection("orders").doc(orderId).get();
+
+  if (!orderSnap.exists) {
+    alert("Không tìm thấy đơn");
+    return;
+  }
+
+  const order = orderSnap.data();
+
+  if (!confirm("Xác nhận trả hàng?")) return;
+
+  const batch = dbRef.batch();
+
+  // 1. hoàn kho
+  order.items.forEach(item => {
+    const productRef = dbRef.collection("products").doc(item.id);
+
+    batch.update(productRef, {
+      stock: firebase.firestore.FieldValue.increment(item.qty || 1),
+      sold: firebase.firestore.FieldValue.increment(-(item.qty || 1))
+    });
+  });
+
+  // 2. hoàn điểm
+  if (order.usedPoints && order.usedPoints > 0 && order.memberId) {
+    const memberRef = dbRef.collection("members").doc(order.memberId);
+
+    batch.update(memberRef, {
+      points: firebase.firestore.FieldValue.increment(order.usedPoints)
+    });
+  }
+
+  // 3. log return
+  batch.set(dbRef.collection("returns").doc(), {
+    orderId,
+    items: order.items,
+    total: order.total,
+    createdAt: Date.now()
+  });
+
+  // 4. đổi trạng thái
+  batch.update(dbRef.collection("orders").doc(orderId), {
+    status: "returned"
+  });
+
+  await batch.commit();
+
+  alert("Đã trả hàng xong!");
+};
