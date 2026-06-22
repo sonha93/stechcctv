@@ -113,7 +113,6 @@ async function loadOrders(userUid){
 
 });
 
-    console.log(allOrders);
 
     if(allOrders.length === 0){
 
@@ -196,7 +195,7 @@ const sub =
     padding:12px 0;
     border-bottom:1px solid #eee;
   ">
-    console.log("LINK:", p.productId, p.id);
+  
    <a href="logo.html?id=${p.productId || p.id}">
   <img
     src="${p.img || 'no-image.png'}"
