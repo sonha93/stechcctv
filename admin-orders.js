@@ -619,27 +619,7 @@ ${
 }
 
 </td>
-${
-  order.status === "return_requested"
-  ? `
-      <select
-        class="return-status"
-        data-id="${doc.id}"
-      >
-        <option value="pending">
-          Chờ xử lý
-        </option>
 
-        <option value="approved">
-          Đã duyệt trả hàng
-        </option>
-
-        <option value="rejected">
-          Từ chối trả hàng
-        </option>
-      </select>
-  `
- <td>
 
 ${
   order.returnStatus === "approved"
