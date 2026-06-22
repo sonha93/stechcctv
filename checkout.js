@@ -171,103 +171,69 @@ function renderOrders(){
       ? order.items
       : [];
 
-    items.forEach(p => {
-const qty =
-  Number(p.qty || 1);
+  items.forEach(p => {
 
-const price =
-  Number(p.price || 0);
+  const qty = Number(p.qty || 1);
+  const price = Number(p.price || 0);
+  const oldPrice = Number(p.oldPrice || p.originalPrice || price);
 
-const oldPrice =
-  Number(
-    p.oldPrice ||
-    p.originalPrice ||
-    price
-  );
-const sub =
-  qty * price;
+  const sub = qty * price;
+  total += sub;
 
-      total += sub;
+  itemsHTML += `
+    <div style="
+      display:flex;
+      gap:14px;
+      padding:12px 0;
+      border-bottom:1px solid #eee;
+    ">
 
-  hiddenHTML += `
-  <div style="
-    display:flex;
-    gap:14px;
-    padding:12px 0;
-    border-bottom:1px solid #eee;
-  ">
+      <a href="logo.html?id=${p.productId || p.id}" style="display:inline-block;">
+        <img
+          src="${p.img || 'no-image.png'}"
+          width="72"
+          height="72"
+          style="
+            object-fit:cover;
+            border-radius:10px;
+            border:1px solid #ddd;
+            cursor:pointer;
+            display:block;
+          "
+        >
+      </a>
 
-    <a href="logo.html?id=${item.productId || item.id}">
-      <img
-        src="${item.img || 'no-image.png'}"
-        width="72"
-        height="72"
-        style="
-          object-fit:cover;
-          border-radius:10px;
-          border:1px solid #ddd;
-          cursor:pointer;
-        "
-      >
-    </a>
+      <div>
+        <b style="display:block;margin-bottom:6px;">
+          ${p.name || ""}
+        </b>
 
-          <div>
-
-            <b style="
-              display:block;
-              margin-bottom:6px;
-            ">
-              ${p.name || ""}
-            </b>
-
-         <div class="calc">
-
-  <div style="
-    color:#e53935;
-    font-weight:bold;
-    font-size:16px;
-  ">
-    ${format(price)}
-  </div>
-
-  ${
-    oldPrice > price
-    ? `
-      <div style="
-        text-decoration:line-through;
-        color:#999;
-        font-size:13px;
-        margin-top:2px;
-      ">
-        ${format(oldPrice)}
-      </div>
-    `
-    : ""
-  }
-
-  <div>
-    ${qty} × ${format(price)}
-    =
-    ${format(sub)}
-  </div>
-
-</div>
-
-            <div style="
-              color:#d70018;
-              font-weight:700;
-              margin-top:4px;
-            ">
-              ${format(sub)}
-            </div>
-
+        <div class="calc">
+          <div style="color:#e53935;font-weight:bold;font-size:16px;">
+            ${format(price)}
           </div>
 
+          ${
+            oldPrice > price
+              ? `<div style="text-decoration:line-through;color:#999;font-size:13px;">
+                   ${format(oldPrice)}
+                 </div>`
+              : ""
+          }
+
+          <div>
+            ${qty} × ${format(price)} = ${format(sub)}
+          </div>
         </div>
 
-      `;
-    });
+        <div style="color:#d70018;font-weight:700;margin-top:4px;">
+          ${format(sub)}
+        </div>
+      </div>
 
+    </div>
+  `;
+});
     box.innerHTML += `
 
       <div class="order-box" style="
