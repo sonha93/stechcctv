@@ -1630,7 +1630,7 @@ if(order.memberId){
   const memberRef =
     db.collection("members").doc(order.memberId);
 
- 
+  batch.update(memberRef, {
 
     points:
       firebase.firestore.FieldValue.increment(
