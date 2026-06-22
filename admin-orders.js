@@ -35,6 +35,7 @@ document.addEventListener("change", async (e) => {
   };
 
   if (value === "approved") {
+    console.log(order.items);
     update.status = "returned"; // OK
     update.returnApprovedAt = Date.now();
   }
