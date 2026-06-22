@@ -677,9 +677,6 @@ ${
           </option>
         
         </select>
-        // ============================
-// RETURN BUTTON (ADD HERE)
-// ============================
 ${
   order.status === "return_requested"
   ? `
