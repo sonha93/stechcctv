@@ -102,6 +102,10 @@ function getStatusText(status){
 
     case "cancelled":
       return "Đã hủy";
+       case "return_requested":
+  return "Chờ duyệt trả hàng";
+    default:
+      return "";
   }
 }
 // ============================
