@@ -1632,13 +1632,15 @@ window.approveReturn = async function(orderId){
       )
     });
 
-    await db.collection("member_history").add({
-      memberId: order.memberId,
-      orderId,
-      type: "refund_return",
-      points: usedPoints,
-      createdAt: Date.now()
-    });
+    const historyRef = db.collection("member_history").doc();
+
+batch.set(historyRef, {
+  memberId: order.memberId,
+  orderId,
+  type: "refund_return",
+  points: usedPoints,
+  createdAt: Date.now()
+});
   }
 
   // =========================
