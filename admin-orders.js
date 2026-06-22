@@ -1694,10 +1694,7 @@ if(order.memberId){
   const memberRef =
     db.collection("members")
       .doc(order.memberId);
-  console.log("memberId =", order.memberId);
-console.log("usedPoints =", usedPoints);
-console.log("earnPoints =", earnPoints);
-console.log("orderValue =", orderValue);
+
   batch.update(memberRef,{
 
     points:
