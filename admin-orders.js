@@ -585,10 +585,31 @@ const lockStatus =
       <td>
         ${formatPrice(order.total)}
       </td>
-           <td>
-      ${order.returnStatus || "-"}
-    </td>
-      <td>
+          <td>
+  ${order.returnStatus || "-"}
+
+  ${
+    order.status === "return_requested"
+    ? `
+      <button
+        onclick="approveReturn('${doc.id}')"
+        style="
+          margin-top:6px;
+          background:#2196f3;
+          color:#fff;
+          border:none;
+          padding:6px 10px;
+          border-radius:6px;
+          cursor:pointer;
+          width:100%;
+        "
+      >
+        ✅ Duyệt trả hàng
+      </button>
+    `
+    : ""
+  }
+</td>
 
     
 ${
@@ -679,27 +700,6 @@ ${
           </option>
         
         </select>
-${
-  order.status === "return_requested"
-  ? `
-    <button
-      onclick="approveReturn('${doc.id}')"
-      style="
-        margin-top:6px;
-        background:#2196f3;
-        color:#fff;
-        border:none;
-        padding:6px 10px;
-        border-radius:6px;
-        cursor:pointer;
-        width:100%;
-      "
-    >
-      ✅ Duyệt trả hàng
-    </button>
-  `
-  : ""
-}
    ${lockStatus ? `
   <div style="
     color:${
