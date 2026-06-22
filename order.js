@@ -310,10 +310,10 @@ const finalTotal =
 
         <div class="item">
 
-<a href="logo.html?id=${item.productId || item.id}">
+<a href="logo.html?id=${item.productId || item.id}" style="display:inline-block;">
   <img 
     src="${item.img || ''}" 
-    style="cursor:pointer"
+    style="cursor:pointer; display:block;"
   >
 </a>
           <div style="flex:1;">
