@@ -1683,12 +1683,24 @@ document.addEventListener("change", async (e) => {
     const orderId = e.target.dataset.id;
     const value = e.target.value;
 
-    await db
-      .collection("orders")
-      .doc(orderId)
-      .update({
-        returnStatus: value
-      });
+    const update = {
+      returnStatus: value
+    };
+
+    // 👇 THÊM LOGIC NÀY
+    if (value === "pending") {
+      update.status = "return_requested";
+    }
+
+    if (value === "approved") {
+      update.status = "returned";
+    }
+
+    if (value === "rejected") {
+      update.status = "completed";
+    }
+
+    await db.collection("orders").doc(orderId).update(update);
 
     alert("Đã cập nhật trạng thái trả hàng");
   }
