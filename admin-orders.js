@@ -1273,7 +1273,6 @@ await memberRef.update({
     pointsProcessed: false,
     rollbackProcessed: true
   });
-  await batch.commit();
 }
 await db
   .collection("orders")
