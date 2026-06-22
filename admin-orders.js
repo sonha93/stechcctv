@@ -556,7 +556,9 @@ const isAdminCancelled =
 const lockStatus =
   isCompleted ||
   isCustomerCancelled ||
-  isAdminCancelled;
+  isAdminCancelled ||
+  order.status === "return_requested" ||
+  order.status === "returned";
  
   html += `
     <tr>
@@ -588,27 +590,37 @@ const lockStatus =
           <td>
   ${order.returnStatus || "-"}
 
-  ${
-    order.status === "return_requested"
-    ? `
-      <button
-        onclick="approveReturn('${doc.id}')"
-        style="
-          margin-top:6px;
-          background:#2196f3;
-          color:#fff;
-          border:none;
-          padding:6px 10px;
-          border-radius:6px;
-          cursor:pointer;
-          width:100%;
-        "
+  <td>
+
+${
+  order.status === "return_requested"
+  ? `
+      <select
+        class="return-status"
+        data-id="${doc.id}"
       >
-        ✅ Duyệt trả hàng
-      </button>
-    `
-    : ""
-  }
+        <option value="pending">
+          Chờ xử lý
+        </option>
+
+        <option value="approved">
+          Đã duyệt trả hàng
+        </option>
+
+        <option value="rejected">
+          Từ chối trả hàng
+        </option>
+      </select>
+  `
+  : (
+      order.returnStatus === "approved"
+      ? "Đã duyệt trả hàng"
+      : order.returnStatus === "rejected"
+      ? "Từ chối trả hàng"
+      : "-"
+    )
+}
+
 </td>
 
     
@@ -851,7 +863,60 @@ const offlineSalesSection =
 document.getElementById("offlineSalesSection");
   // UPDATE STATUS
   document.querySelectorAll(".order-status").forEach(select => {
+document
+.querySelectorAll(".return-status")
+.forEach(select=>{
 
+  if(select.dataset.bound==="true"){
+    return;
+  }
+
+  select.dataset.bound="true";
+
+  select.addEventListener(
+    "change",
+    async ()=>{
+
+      const id = select.dataset.id;
+      const value = select.value;
+
+      try{
+
+        if(value==="approved"){
+
+          await approveReturn(id);
+
+        }
+
+        if(value==="rejected"){
+
+          await db
+            .collection("orders")
+            .doc(id)
+            .update({
+
+              returnStatus:"rejected"
+
+            });
+
+          alert("Đã từ chối trả hàng");
+
+        }
+
+        loadOrders();
+
+      }catch(err){
+
+        console.error(err);
+
+        alert("Lỗi xử lý trả hàng");
+
+      }
+
+    }
+  );
+
+});
   // chống bind trùng
   if(select.dataset.bound === "true"){
     return;
@@ -1643,9 +1708,10 @@ batch.set(historyRef, {
   // 3. UPDATE ORDER STATUS
   // =========================
   batch.update(orderRef, {
-    status: "returned",
-    returnApprovedAt: Date.now()
-  });
+  status: "returned",
+  returnStatus: "approved",
+  returnApprovedAt: Date.now()
+});
   
 const revenueRef = db.collection("revenue_adjustments").doc();
 
