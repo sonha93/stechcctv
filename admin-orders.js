@@ -544,15 +544,20 @@ pageOrders.forEach(doc => {
 
   const order = doc.data();
 
- const isCompleted =
+const isCompleted =
   order.status === "completed" ||
-  order.status === "returned"; // trả xong vẫn coi là đơn đã khóa
+  order.status === "returned";
 
 const isCustomerCancelled =
   order.customerCancelled === true;
 
 const isAdminCancelled =
   order.adminCancelled === true;
+
+const lockStatus =
+  isCompleted ||
+  isCustomerCancelled ||
+  isAdminCancelled;
 
 // nếu đơn đã completed rồi thì dù khách có bấm trả hàng
 // cột Hành động vẫn khóa ở "Đã giao thành công"
@@ -680,35 +685,30 @@ ${
   data-id="${doc.id}"
   ${lockStatus ? "disabled" : ""}
 >
+  <option value="pending" ${order.status === "pending" ? "selected" : ""}>
+    Chờ xử lý
+  </option>
 
-          <option value="pending"
-            ${order.status === "pending" ? "selected" : ""}>
-            Chờ xử lý
-          </option>
+  <option value="confirmed" ${order.status === "confirmed" ? "selected" : ""}>
+    Đã xác nhận
+  </option>
 
-          <option value="confirmed"
-            ${order.status === "confirmed" ? "selected" : ""}>
-            Đã xác nhận
-          </option>
+  <option value="shipping" ${order.status === "shipping" ? "selected" : ""}>
+    Đang giao
+  </option>
 
-          <option value="shipping"
-            ${order.status === "shipping" ? "selected" : ""}>
-            Đang giao
-          </option>
+  <option value="completed" ${order.status === "completed" ? "selected" : ""}>
+    Đã giao thành công
+  </option>
 
-          <option value="completed"
-            ${order.status === "completed" ? "selected" : ""}>
-            Đã giao thành công
-          </option>
-            <option value="returned" ${order.status === "returned" ? "selected" : ""}>
-                Đã trả hàng
-              </option>
-          <option value="cancelled"
-            ${order.status === "cancelled" ? "selected" : ""}>
-            Đã hủy
-          </option>
-        
-        </select>
+  <option value="returned" ${order.status === "returned" ? "selected" : ""}>
+    Đã trả hàng
+  </option>
+
+  <option value="cancelled" ${order.status === "cancelled" ? "selected" : ""}>
+    Đã hủy
+  </option>
+</select>
    ${lockStatus ? `
   <div style="
     color:${
