@@ -1646,92 +1646,61 @@ toast.remove();
 window.alert = window.showToast;
 
 }
-window.approveReturn = async function(orderId){
+window.approveReturn = async function(orderId) {
 
   const ok = confirm("Duyệt trả hàng đơn này?");
-  if(!ok) return;
+  if (!ok) return;
 
   const orderRef = db.collection("orders").doc(orderId);
   const orderSnap = await orderRef.get();
-
-  if(!orderSnap.exists) return;
+  if (!orderSnap.exists) return;
 
   const order = orderSnap.data();
 
-  if(order.status !== "return_requested"){
-    alert("Không hợp lệ");
-    return;
-  }
-
   const batch = db.batch();
 
-  // =========================
-  // 1. HOÀN STOCK (batch FULL)
-  // =========================
+  // 1. hoàn kho
   for (const item of order.items || []) {
 
     const productRef = db.collection("products").doc(item.productId);
+    const productSnap = await productRef.get();
 
-    const productDoc = await productRef.get();
+    if (!productSnap.exists) continue;
 
     const qty = Number(item.qty || 0);
 
-    const currentStock = Number(productDoc.data()?.stock || 0);
-
-    // update stock
     batch.update(productRef, {
       stock: firebase.firestore.FieldValue.increment(qty)
     });
 
-    // stock movement (FIX: đưa vào batch luôn)
+    // ❌ KHÔNG add ngoài batch nếu muốn nhất quán
     const movRef = db.collection("stock_movements").doc();
 
     batch.set(movRef, {
       productId: item.productId,
-      productName: item.name || productDoc.data()?.name,
+      productName: item.name,
       type: "RETURN",
       qty: qty,
       reason: `Trả hàng đơn ${orderId}`,
       orderId,
       staffName: document.getElementById("adminName")?.textContent || "",
-      stockAfter: currentStock + qty,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
   }
 
-  // =========================
-  // 2. HOÀN ĐIỂM (FIX CHUẨN 100%)
-  // =========================
+  // 2. hoàn điểm
   const usedPoints = Number(order.usedPoints || 0);
+  const earnPoints = Math.floor(Number(order.total || 0) / 10000);
 
-  const orderValue = Number(
-    order.originalTotal ||
-    order.total ||
-    0
-  );
-
-  const earnPoints = Math.floor(orderValue / 10000);
-
-  if(order.memberId){
-
+  if (order.memberId) {
     const memberRef = db.collection("members").doc(order.memberId);
 
     batch.update(memberRef, {
-
-      // 👉 HOÀN ĐÚNG:
-      // + usedPoints (trả lại điểm đã dùng)
-      // - earnPoints (trừ điểm đã cộng khi mua)
-      points: firebase.firestore.FieldValue.increment(
-        usedPoints - earnPoints
-      ),
-
-      totalSpent: firebase.firestore.FieldValue.increment(
-        -orderValue
-      )
+      points: firebase.firestore.FieldValue.increment(usedPoints - earnPoints),
+      totalSpent: firebase.firestore.FieldValue.increment(-Number(order.total || 0))
     });
 
     const histRef = db.collection("member_history").doc();
-
     batch.set(histRef, {
       memberId: order.memberId,
       orderId,
@@ -1742,19 +1711,24 @@ window.approveReturn = async function(orderId){
     });
   }
 
-  // =========================
-  // 3. UPDATE ORDER STATUS
-  // =========================
+  // 3. update order
   batch.update(orderRef, {
     status: "returned",
     returnApprovedAt: Date.now(),
-    pointsProcessed: false,
-    returnStatus: "approved"
+    pointsProcessed: false
+  });
+
+  // 4. revenue adjust
+  const revenueRef = db.collection("revenue_adjustments").doc();
+  batch.set(revenueRef, {
+    orderId,
+    type: "RETURN_REFUND",
+    amount: Number(order.total || 0),
+    createdAt: Date.now()
   });
 
   await batch.commit();
 
   alert("Đã duyệt trả hàng");
-
   loadOrders();
 };
