@@ -1712,7 +1712,7 @@ function loadReturns(){
       });
     });
 }
-ordersTable.addEventListener("change", async (e) => {
+document.addEventListener("change", async (e) => {
   const select = e.target;
 
   if (!select.classList.contains("return-status")) return;
@@ -1720,19 +1720,30 @@ ordersTable.addEventListener("change", async (e) => {
   const orderId = select.dataset.id;
   const value = select.value;
 
+
   try {
     const orderRef = db.collection("orders").doc(orderId);
     const orderSnap = await orderRef.get();
 
     if (!orderSnap.exists) {
       alert("Đơn không tồn tại");
+      loadOrders();
       return;
     }
 
     const order = orderSnap.data();
 
-    if (!order.returnRequested) {
-      alert("Chưa có yêu cầu trả hàng");
+    if (order.returnRequested !== true) {
+      alert("Đơn này chưa có yêu cầu trả hàng");
+      loadOrders();
+      return;
+    }
+
+    if (
+      order.returnStatus === "approved" ||
+      order.returnStatus === "rejected"
+    ) {
+      select.disabled = true;
       return;
     }
 
@@ -1754,13 +1765,13 @@ ordersTable.addEventListener("change", async (e) => {
 
     await orderRef.update(update);
 
-    select.disabled = true;
+    select.disabled = (value === "approved" || value === "rejected");
 
-    alert("OK");
+    alert("Đã cập nhật trạng thái trả hàng");
     loadOrders();
 
   } catch (err) {
     console.error(err);
-    alert("Lỗi return");
+    alert("Lỗi cập nhật trạng thái trả hàng");
   }
 });
