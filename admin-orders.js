@@ -586,7 +586,7 @@ const lockStatus =
         ${formatPrice(order.total)}
       </td>
           <td>
-  <select class="return-status" data-id="${order.id}">
+<select class="return-status" data-id="${doc.id}">
     <option value="pending" ${order.returnStatus === "pending" ? "selected" : ""}>Chờ xử lý</option>
     <option value="approved" ${order.returnStatus === "approved" ? "selected" : ""}>Duyệt trả</option>
     <option value="rejected" ${order.returnStatus === "rejected" ? "selected" : ""}>Từ chối</option>
@@ -635,7 +635,10 @@ ${
     font-weight:bold;
     display:inline-block;
   ">
-    ${getStatusText(order.status)}
+  ${order.status === "return_requested"
+  ? "Chờ duyệt trả hàng"
+  : getStatusText(order.status)
+}
   </span>
 
  
@@ -1676,12 +1679,16 @@ function loadReturns(){
 }
 document.addEventListener("change", async (e) => {
   if (e.target.classList.contains("return-status")) {
+
     const orderId = e.target.dataset.id;
     const value = e.target.value;
 
-    await updateDoc(doc(db, "orders", orderId), {
-      returnStatus: value
-    });
+    await db
+      .collection("orders")
+      .doc(orderId)
+      .update({
+        returnStatus: value
+      });
 
     alert("Đã cập nhật trạng thái trả hàng");
   }
