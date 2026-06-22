@@ -1237,7 +1237,7 @@ if(bonusPoints > 0){
       createdAt: Date.now()
 
     });
-
+}
     await db
       .collection("member_history")
       .add({
@@ -1719,12 +1719,13 @@ batch.set(revenueRef, {
   amount: Number(order.total || 0),
   createdAt: Date.now()
 });
+
   await batch.commit();
 
   alert("Đã duyệt trả hàng");
 
 loadOrders();
-}
+
 function loadReturns(){
 
   const body = document.getElementById("returnsBody");
