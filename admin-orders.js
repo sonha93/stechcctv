@@ -1657,6 +1657,7 @@ window.approveReturn = async function(orderId){
         Number(item.qty || 0)
       )
     });
+  }
     const productDoc = await productRef.get();
 
 const currentStock = Number(productDoc.data()?.stock || 0);
