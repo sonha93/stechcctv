@@ -1680,16 +1680,17 @@ window.approveReturn = async function(orderId){
     stock: firebase.firestore.FieldValue.increment(qty)
   });
 
-  await db.collection("stock_movements").add({
-    productId: item.productId,
-    productName: item.name || productDoc.data()?.name,
-    type: "RETURN",
-    qty: qty,
-    reason: `Trả hàng đơn ${orderId}`,
-    staffName: document.getElementById("adminName")?.textContent || "",
-    stockAfter: currentStock + qty,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
+ await db.collection("stock_movements").add({
+  productId: item.productId,
+  productName: item.name,
+  type: "RETURN",
+  qty: qty, // +5
+  reason: `Trả hàng đơn ${orderId}`,
+  orderId: orderId,
+  staffName: document.getElementById("adminName")?.textContent || "",
+  stockAfter: currentStock + qty,
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
 }
   // =========================
   // 2. HOÀN ĐIỂM (QUAN TRỌNG)
