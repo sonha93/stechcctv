@@ -1626,6 +1626,7 @@ window.alert = window.showToast;
 
 }
 window.approveReturn = async function(orderId){
+ console.log("approveReturn chạy", orderId);
 
   const ok = confirm("Duyệt trả hàng đơn này?");
   if(!ok) return;
