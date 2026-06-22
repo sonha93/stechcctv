@@ -577,17 +577,17 @@ const lockStatus =
       <td>
         ${order.address || ""}
       </td>
-          <td>
-      ${order.returnStatus || "-"}
-    </td>
+        
       <td>
         ${renderProducts(order.items || [])}
       </td>
-
+        
       <td>
         ${formatPrice(order.total)}
       </td>
-
+           <td>
+      ${order.returnStatus || "-"}
+    </td>
       <td>
 
     
@@ -639,7 +639,7 @@ ${
 `
 }
       </td>
-
+      
      <td>
   <span style="white-space:nowrap;">
     ${order.handledBy || "-"}
