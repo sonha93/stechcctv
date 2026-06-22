@@ -189,7 +189,7 @@ const sub =
 
       total += sub;
 
-       itemsHTML += `
+  hiddenHTML += `
   <div style="
     display:flex;
     gap:14px;
@@ -210,6 +210,7 @@ const sub =
         "
       >
     </a>
+
           <div>
 
             <b style="
