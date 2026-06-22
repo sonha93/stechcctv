@@ -269,32 +269,51 @@ const finalTotal =
     // =========================
     // ORDER STATUS TEXT
     // =========================
-    let statusText = "Chờ xử lý";
-    let statusColor = "#f59e0b";
+   let statusText = "Chờ xử lý";
+let statusColor = "#f59e0b";
 
-    switch(order.status){
+switch(order.status){
 
-      case "confirmed":
-        statusText = "Đã xác nhận";
-        statusColor = "#0ea5e9";
-        break;
+  case "confirmed":
+    statusText = "Đã xác nhận";
+    statusColor = "#0ea5e9";
+    break;
 
-      case "shipping":
-        statusText = "Đang giao";
-        statusColor = "#8b5cf6";
-        break;
+  case "shipping":
+    statusText = "Đang giao";
+    statusColor = "#8b5cf6";
+    break;
 
-      case "completed":
-        statusText = "Đơn hàng đã giao";
-        statusColor = "#16a34a";
-        break;
+  case "completed":
+    statusText = "Đơn hàng đã giao";
+    statusColor = "#16a34a";
+    break;
 
-      case "cancelled":
-        statusText = "Đã hủy";
-        statusColor = "#dc2626";
-        break;
-   
-    }
+  case "return_requested":
+    statusText = "Đã gửi yêu cầu trả hàng";
+    statusColor = "#ff9800";
+    break;
+
+  case "return_approved":
+    statusText = "Đã chấp nhận trả hàng";
+    statusColor = "#2196f3";
+    break;
+
+  case "returned":
+    statusText = "Đã trả hàng";
+    statusColor = "#9c27b0";
+    break;
+
+  case "refund_completed":
+    statusText = "Đã hoàn tiền";
+    statusColor = "#4caf50";
+    break;
+
+  case "cancelled":
+    statusText = "Đã hủy";
+    statusColor = "#dc2626";
+    break;
+}
     
     
 
