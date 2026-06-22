@@ -879,37 +879,27 @@ window.prevPage = function(){
 };
 window.requestReturn = async function(orderId){
 
-  const ok = confirm(
-    "Bạn muốn gửi yêu cầu trả hàng?"
-  );
-
+  const ok = confirm("Bạn muốn gửi yêu cầu trả hàng?");
   if(!ok) return;
 
-  await db
-    .collection("orders")
-    .doc(orderId)
-    .update({
-      returnRequested: true,
-      returnRequestedAt: Date.now()
-    });
+  await db.collection("orders").doc(orderId).update({
+    status: "return_requested",
+    returnRequested: true,
+    returnRequestedAt: Date.now()
+  });
 
   alert("Đã gửi yêu cầu trả hàng");
 
   allOrders = allOrders.map(order => {
-
     if(order.id === orderId){
-
       return {
         ...order,
+        status: "return_requested",
         returnRequested: true
       };
-
     }
-
     return order;
-
   });
 
   renderOrders();
-
 };
