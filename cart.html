@@ -463,25 +463,29 @@ body{
 }
    @media (min-width:769px){
 
-  .remove,
-  .remove-x{
-    width:40px;
-    height:40px;
+ .remove-x{
+  position: absolute;
+  top: 6px;
+  right: 6px;
 
-    border:1px solid #ddd;
-    border-radius:50%;
+  width: 22px;
+  height: 22px;
 
-    background:#fff;
+  border: 1px solid #ddd;
+  border-radius: 50%;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
+  background: #fff;
+  color: #333;
 
-    font-size:30px;
-    line-height:1;
+  font-size: 16px;
+  font-weight: bold;
 
-    top:8px;
-    right:8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  z-index: 10;
   }
 
 }
