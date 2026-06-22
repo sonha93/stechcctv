@@ -1225,38 +1225,43 @@ if (
   orderData.status !== "cancelled" &&
   orderData.memberId
 ) {
+
   const memberRef = db.collection("members").doc(orderData.memberId);
   const memberDoc = await memberRef.get();
 
   if (memberDoc.exists) {
+
     const member = memberDoc.data();
 
     const cashbackUsed =
       Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
 
-    // FIX: dùng cùng cách tính như lúc completed
-    const usedPoints =
-      Math.floor(cashbackUsed / 100);
-
-    const earnPoints =
-      Math.floor(Number(orderData.total || 0) / 10000);
+  const usedPoints =
+  Number(orderData.usedPoints || 0);
+    const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
 
     const rollbackKey = orderData.rollbackProcessed;
     if (rollbackKey === true) return;
 
-    let newSpent =
-      Number(member.totalSpent || 0) - Number(orderData.total || 0);
+    let newPoints =
+      Number(member.points || 0)
+      - earnPoints
+     
 
+    let newSpent =
+      Number(member.totalSpent || 0)
+      - Number(orderData.total || 0);
+
+    if (newPoints < 0) newPoints = 0;
     if (newSpent < 0) newSpent = 0;
 
-    await memberRef.update({
-      points: firebase.firestore.FieldValue.increment(
-        usedPoints - earnPoints
-      ),
-      totalSpent: newSpent,
-      lockedPoints: 0
-    });
-
+ await memberRef.update({
+  points: firebase.firestore.FieldValue.increment(
+    usedPoints - earnPoints
+  ),
+  totalSpent: newSpent,
+  lockedPoints: 0
+});
     await db.collection("member_history").add({
       memberId: orderData.memberId,
       orderId: id,
@@ -1692,3 +1697,67 @@ function loadReturns(){
     });
 }
 document.addEventListener("change", async (e) => {
+  if (!e.target.classList.contains("return-status")) return;
+
+  const select = e.target;
+  const orderId = select.dataset.id;
+  const value = select.value;
+
+  try {
+    const orderRef = db.collection("orders").doc(orderId);
+    const orderSnap = await orderRef.get();
+
+    if (!orderSnap.exists) {
+      alert("Đơn không tồn tại");
+      loadOrders();
+      return;
+    }
+
+    const order = orderSnap.data();
+
+    if (order.returnRequested !== true) {
+      alert("Đơn này chưa có yêu cầu trả hàng");
+      loadOrders();
+      return;
+    }
+
+    // đã xử lý rồi thì khóa luôn
+    if (
+      order.returnStatus === "approved" ||
+      order.returnStatus === "rejected"
+    ) {
+      select.disabled = true;
+      return;
+    }
+
+    const update = {
+      returnStatus: value,
+      returnHandledBy: document.getElementById("adminName")?.textContent || "",
+      returnUpdatedAt: Date.now()
+    };
+
+    if (value === "approved") {
+      update.status = "returned";
+      update.returnApprovedAt = Date.now();
+    }
+
+    if (value === "rejected") {
+      update.status = "completed";
+      update.returnRejectedAt = Date.now();
+    }
+
+    await orderRef.update(update);
+
+    if (value === "approved" || value === "rejected") {
+      select.disabled = true;
+    }
+
+    alert("Đã cập nhật trạng thái trả hàng");
+    loadOrders();
+
+  } catch (err) {
+    console.error(err);
+    alert("Lỗi cập nhật trạng thái trả hàng");
+    loadOrders();
+  }
+});
