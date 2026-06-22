@@ -54,6 +54,25 @@ function getStatusText(status){
     case "completed":
       return "Đã giao thành công";
 
+  case "return_requested":
+    statusText = "Đã gửi yêu cầu trả hàng";
+    statusColor = "#ff9800";
+    break;
+
+  case "return_approved":
+    statusText = "Đã chấp nhận trả hàng";
+    statusColor = "#2196f3";
+    break;
+
+  case "returned":
+    statusText = "Đã trả hàng";
+    statusColor = "#9c27b0";
+    break;
+
+  case "refund_completed":
+    statusText = "Đã hoàn tiền";
+    statusColor = "#4caf50";
+    break;
     case "cancelled":
       return "Đã hủy";
 
