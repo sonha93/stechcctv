@@ -1,4 +1,3 @@
-
 import { auth, db } from "./firebase-init.js";
 import { loadProfilePage } from "./profile-staff.js";
 let allSnapshotOrders = [];
@@ -1024,9 +1023,6 @@ if(!productDoc.exists){
       Number(product.stock || 0);
 
     if(currentStock < qty){
-
-      console.error(
-        "Không đủ tồn kho:",
         item.name
       );
 
@@ -1745,7 +1741,7 @@ batch.set(revenueRef, {
   alert("Đã duyệt trả hàng");
 
 loadOrders();
-
+};
 function loadReturns(){
 
   const body = document.getElementById("returnsBody");
@@ -1816,4 +1812,4 @@ document.addEventListener("change", async (e) => {
 
   alert("Cập nhật trả hàng thành công");
   loadOrders();
-
+});
