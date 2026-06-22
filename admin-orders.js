@@ -1191,7 +1191,7 @@ if(bonusPoints > 0){
       createdAt: Date.now()
 
     });
-
+}
     await db
       .collection("member_history")
       .add({
