@@ -586,11 +586,17 @@ const lockStatus =
         ${formatPrice(order.total)}
       </td>
           <td>
-<select class="return-status" data-id="${doc.id}">
-    <option value="pending" ${order.returnStatus === "pending" ? "selected" : ""}>Chờ xử lý</option>
-    <option value="approved" ${order.returnStatus === "approved" ? "selected" : ""}>Duyệt trả</option>
-    <option value="rejected" ${order.returnStatus === "rejected" ? "selected" : ""}>Từ chối</option>
-  </select>
+  ${
+    order.returnRequested === true
+      ? `
+        <select class="return-status" data-id="${doc.id}">
+          <option value="pending" ${order.returnStatus === "pending" ? "selected" : ""}>Chờ xử lý</option>
+          <option value="approved" ${order.returnStatus === "approved" ? "selected" : ""}>Duyệt trả</option>
+          <option value="rejected" ${order.returnStatus === "rejected" ? "selected" : ""}>Từ chối</option>
+        </select>
+      `
+      : `<span style="color:#999;">--</span>`
+  }
 </td>
       <td>
 
@@ -1678,30 +1684,41 @@ function loadReturns(){
     });
 }
 document.addEventListener("change", async (e) => {
-  if (e.target.classList.contains("return-status")) {
+  if (!e.target.classList.contains("return-status")) return;
 
-    const orderId = e.target.dataset.id;
-    const value = e.target.value;
+  const orderId = e.target.dataset.id;
+  const value = e.target.value;
 
-    const update = {
-      returnStatus: value
-    };
+  const orderRef = db.collection("orders").doc(orderId);
+  const orderSnap = await orderRef.get();
 
-    // 👇 THÊM LOGIC NÀY
-    if (value === "pending") {
-      update.status = "return_requested";
-    }
+  if (!orderSnap.exists) return;
 
-    if (value === "approved") {
-      update.status = "returned";
-    }
+  const order = orderSnap.data();
 
-    if (value === "rejected") {
-      update.status = "completed";
-    }
-
-    await db.collection("orders").doc(orderId).update(update);
-
-    alert("Đã cập nhật trạng thái trả hàng");
+  // Chỉ cho xử lý nếu khách đã yêu cầu trả hàng
+  if (order.returnRequested !== true) {
+    alert("Đơn này chưa có yêu cầu trả hàng");
+    loadOrders();
+    return;
   }
+
+  const update = {
+    returnStatus: value
+  };
+
+  if (value === "pending") {
+    update.status = "return_requested";
+  }
+
+  if (value === "approved") {
+    update.status = "returned";
+  }
+
+  if (value === "rejected") {
+    update.status = "completed";
+  }
+
+  await orderRef.update(update);
+  alert("Đã cập nhật trạng thái trả hàng");
 });
