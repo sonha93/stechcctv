@@ -1710,3 +1710,23 @@ toast.remove();
 window.alert = window.showToast;
 
 }
+window.approveReturn = async (id) => {
+  await db.collection("orders").doc(id).update({
+    status: "return_approved"
+  });
+  loadOrders();
+};
+
+window.confirmReturned = async (id) => {
+  await db.collection("orders").doc(id).update({
+    status: "returned"
+  });
+  loadOrders();
+};
+
+window.refundOrder = async (id) => {
+  await db.collection("orders").doc(id).update({
+    status: "refund_completed"
+  });
+  loadOrders();
+};
