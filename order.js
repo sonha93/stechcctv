@@ -532,17 +532,22 @@ ${
   order.status === "completed" &&
   (Date.now() - Number(order.createdAt)) <= 7 * 24 * 60 * 60 * 1000
   ? `
-  <div style="
-    margin-top:10px;
-    padding:10px;
-    background:#fff3cd;
-    border:1px solid #ffeeba;
-    border-radius:8px;
-    color:#856404;
-    font-size:13px;
-  ">
-    🔄 Có thể trả hàng trong vòng 7 ngày kể từ khi nhận hàng
-  </div>
+  <button
+    onclick="requestReturn('${order.id}')"
+    style="
+      width:100%;
+      margin-top:10px;
+      background:#ff9800;
+      color:#fff;
+      border:none;
+      padding:12px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:bold;
+    "
+  >
+    🔄 Yêu cầu trả hàng
+  </button>
   `
   : ""
 }
@@ -817,4 +822,26 @@ window.prevPage = function(){
     currentPage--;
     renderOrders();
   }
+};
+window.requestReturn = async function(orderId){
+
+  const ok = confirm(
+    "Bạn muốn gửi yêu cầu trả hàng?"
+  );
+
+  if(!ok) return;
+
+  await db
+    .collection("orders")
+    .doc(orderId)
+    .update({
+
+      returnRequested: true
+
+    });
+
+  alert("Đã gửi yêu cầu trả hàng");
+
+  location.reload();
+
 };
