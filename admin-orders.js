@@ -38,7 +38,28 @@ document.addEventListener("change", async (e) => {
     update.status = "returned"; // OK
     update.returnApprovedAt = Date.now();
   }
+    const items = order.items || [];
 
+  for (const item of items) {
+
+    const productId =
+      item.productId || item.id || item._id;
+
+    const productRef =
+      db.collection("products").doc(productId);
+
+    const productSnap = await productRef.get();
+
+    if (!productSnap.exists) continue;
+
+    const qty = Number(item.qty || 0);
+
+    await productRef.update({
+      stock: firebase.firestore.FieldValue.increment(qty),
+      sold: firebase.firestore.FieldValue.increment(-qty)
+    });
+  }
+}
   if (value === "rejected") {
     update.returnRejectedAt = Date.now();
   }
@@ -1755,44 +1776,4 @@ function loadReturns(){
       });
     });
 }
-document.addEventListener("change", async (e) => {
-  const select = e.target;
-  if (!select.classList.contains("return-status")) return;
 
-  const orderId = select.dataset.id;
-  const value = select.value;
-
-  const orderRef = db.collection("orders").doc(orderId);
-  const orderSnap = await orderRef.get();
-
-  if (!orderSnap.exists) return;
-
-  const order = orderSnap.data();
-
-  if (!order.returnRequested) {
-    alert("Chưa có yêu cầu trả hàng");
-    return;
-  }
-
-  const update = {
-    returnStatus: value,
-    returnHandledBy: document.getElementById("adminName")?.textContent || "",
-    returnUpdatedAt: Date.now()
-  };
-
-  if (value === "approved") {
-    update.status = "returned"; // OK
-    update.returnApprovedAt = Date.now();
-  }
-
-  if (value === "rejected") {
-    update.returnRejectedAt = Date.now();
-  }
-
-  await orderRef.update(update);
-
-  select.disabled = true;
-
-  alert("Cập nhật trả hàng thành công");
-  loadOrders();
-});
