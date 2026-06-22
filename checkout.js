@@ -199,8 +199,7 @@ const sub =
           border-bottom:1px solid #eee;
         ">
 
-         <a href="logo.html?id=${p.productId || p.id}">
-  <img
+        <a href="logo.html?id=${p.productId ?? p.id}" style="display:inline-block;">
     src="${p.img || 'no-image.png'}"
     width="72"
     height="72"
