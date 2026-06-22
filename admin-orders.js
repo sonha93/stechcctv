@@ -700,7 +700,9 @@ ${
             ${order.status === "completed" ? "selected" : ""}>
             Đã giao thành công
           </option>
-
+            <option value="returned" ${order.status === "returned" ? "selected" : ""}>
+                Đã trả hàng
+              </option>
           <option value="cancelled"
             ${order.status === "cancelled" ? "selected" : ""}>
             Đã hủy
