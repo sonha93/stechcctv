@@ -1158,10 +1158,8 @@ else if(newSpent >= 5000000){
 
 const newPoints =
   currentPoints
-  - usedPoints
   + earnPoints
   + bonusPoints;
-
   await memberRef.update({
   points: Math.max(0,newPoints),
   totalSpent: newSpent,
@@ -1230,46 +1228,67 @@ if (
 
   if (memberDoc.exists) {
     const member = memberDoc.data();
+const cashbackUsed =
+  Number(
+    orderData.cashbackAmount ||
+    orderData.cashbackUsed ||
+    0
+  );
 
-    const cashbackUsed =
-      Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
+// dùng để lưu lịch sử / rollback nếu cần
+const usedPoints =
+  Math.floor(cashbackUsed / 100);
 
-    // FIX: dùng cùng cách tính như lúc completed
-    const usedPoints =
-      Math.floor(cashbackUsed / 100);
+const finalTotal =
+  Number(orderData.total || 0);
 
-    const earnPoints =
-      Math.floor(Number(orderData.total || 0) / 10000);
+const earnPoints =
+  Math.floor(finalTotal / 10000);
 
-    const rollbackKey = orderData.rollbackProcessed;
-    if (rollbackKey === true) return;
+const currentPoints =
+  Number(member.points || 0);
 
-    let newSpent =
-      Number(member.totalSpent || 0) - Number(orderData.total || 0);
+const oldLevel =
+  member.level || "Silver";
 
-    if (newSpent < 0) newSpent = 0;
+const newSpent =
+  Number(member.totalSpent || 0) +
+  Number(orderData.total || 0);
 
-    await memberRef.update({
-      points: firebase.firestore.FieldValue.increment(
-        usedPoints - earnPoints
-      ),
-      totalSpent: newSpent,
-      lockedPoints: 0
-    });
+let level = "Silver";
+let bonusPoints = 0;
 
-    await db.collection("member_history").add({
-      memberId: orderData.memberId,
-      orderId: id,
-      type: "rollback_cancel",
-      points: usedPoints,
-      createdAt: Date.now()
-    });
+// VIP
+if (newSpent >= 10000000) {
+  level = "VIP";
+  if (oldLevel !== "VIP") {
+    bonusPoints = 200;
   }
+}
+// GOLD
+else if (newSpent >= 5000000) {
+  level = "Gold";
+  if (oldLevel === "Silver") {
+    bonusPoints = 100;
+  }
+}
 
-  await db.collection("orders").doc(id).update({
-    pointsProcessed: false,
-    rollbackProcessed: true
-  });
+// FIX: KHÔNG trừ usedPoints ở đây nữa
+// vì khách đã bị trừ ngay từ lúc đặt đơn
+const newPoints =
+  currentPoints +
+  earnPoints +
+  bonusPoints;
+
+await memberRef.update({
+  points: Math.max(0, newPoints),
+  totalSpent: newSpent,
+  level: level
+});
+
+await db.collection("orders").doc(id).update({
+  pointsProcessed: true
+});
 }
 await db
   .collection("orders")
