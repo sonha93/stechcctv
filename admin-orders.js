@@ -1713,7 +1713,9 @@ function loadReturns(){
     });
 }
 document.addEventListener("change", async (e) => {
-  if (!e.target.classList.contains("return-status")) return;
+  const select = e.target;
+
+  if (!select.classList.contains("return-status")) return;
 
   console.log("RETURN CHANGE OK");
 
@@ -1721,10 +1723,6 @@ document.addEventListener("change", async (e) => {
   const value = select.value;
 
   console.log(orderId, value);
-});
-  const select = e.target;
-  const orderId = select.dataset.id;
-  const value = select.value;
 
   try {
     const orderRef = db.collection("orders").doc(orderId);
@@ -1744,7 +1742,6 @@ document.addEventListener("change", async (e) => {
       return;
     }
 
-    // đã xử lý rồi thì khóa luôn
     if (
       order.returnStatus === "approved" ||
       order.returnStatus === "rejected"
@@ -1771,9 +1768,7 @@ document.addEventListener("change", async (e) => {
 
     await orderRef.update(update);
 
-    if (value === "approved" || value === "rejected") {
-      select.disabled = true;
-    }
+    select.disabled = (value === "approved" || value === "rejected");
 
     alert("Đã cập nhật trạng thái trả hàng");
     loadOrders();
@@ -1781,6 +1776,5 @@ document.addEventListener("change", async (e) => {
   } catch (err) {
     console.error(err);
     alert("Lỗi cập nhật trạng thái trả hàng");
-    loadOrders();
   }
 });
