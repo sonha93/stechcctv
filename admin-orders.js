@@ -699,10 +699,10 @@ ${
 
       </td>
       <td>
-        <button onclick="returnOrder('${doc.id}')">
-          Trả hàng
-        </button>
-      </td>
+  <button onclick="returnOrder('${doc.id}')">
+    Trả hàng
+  </button>
+</td>
     </tr>
   `;
 });
