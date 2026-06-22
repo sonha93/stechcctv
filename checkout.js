@@ -199,19 +199,19 @@ const sub =
           border-bottom:1px solid #eee;
         ">
 
-          <a href="logo.html?id=${item.productId || item.id}">
-      <img
-        src="${item.img || 'no-image.png'}"
-        width="72"
-        height="72"
-        style="
-          object-fit:cover;
-          border-radius:10px;
-          border:1px solid #ddd;
-          cursor:pointer;
-        "
-      >
-    </a>
+         <a href="logo.html?id=${p.productId || p.id}">
+  <img
+    src="${p.img || 'no-image.png'}"
+    width="72"
+    height="72"
+    style="
+      object-fit:cover;
+      border-radius:10px;
+      border:1px solid #ddd;
+      cursor:pointer;
+    "
+  >
+</a>
           <div>
 
             <b style="
