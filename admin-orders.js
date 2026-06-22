@@ -1661,3 +1661,33 @@ batch.set(revenueRef, {
 
 loadOrders();
 };
+function loadReturns(){
+
+  const body = document.getElementById("returnsBody");
+  if(!body) return;
+
+  db.collection("orders")
+    .where("returnRequested", "==", true)
+    .orderBy("returnRequestedAt", "desc")
+    .onSnapshot(snapshot => {
+
+      body.innerHTML = "";
+
+      snapshot.forEach(doc => {
+
+        const o = doc.data();
+
+        body.innerHTML += `
+          <tr>
+            <td>${new Date(o.returnRequestedAt || o.createdAt).toLocaleString()}</td>
+            <td>${doc.id}</td>
+            <td>${o.customerName || ""}</td>
+            <td>${(o.items || []).map(i => i.name).join(", ")}</td>
+            <td>${o.returnQty || 1}</td>
+            <td>${o.refundAmount || 0}</td>
+            <td>${o.returnReason || ""}</td>
+          </tr>
+        `;
+      });
+    });
+}
