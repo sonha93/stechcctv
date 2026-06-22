@@ -544,15 +544,18 @@ pageOrders.forEach(doc => {
 
   const order = doc.data();
 
-  const isCompleted =
-    order.status === "completed";
+ const isCompleted =
+  order.status === "completed" ||
+  order.status === "returned"; // trả xong vẫn coi là đơn đã khóa
 
-  const isCustomerCancelled =
+const isCustomerCancelled =
   order.customerCancelled === true;
 
 const isAdminCancelled =
   order.adminCancelled === true;
 
+// nếu đơn đã completed rồi thì dù khách có bấm trả hàng
+// cột Hành động vẫn khóa ở "Đã giao thành công"
 const lockStatus =
   isCompleted ||
   isCustomerCancelled ||
@@ -585,11 +588,20 @@ const lockStatus =
       <td>
         ${formatPrice(order.total)}
       </td>
-          <td>
+         <td>
   ${
     order.returnRequested === true
       ? `
-        <select class="return-status" data-id="${doc.id}">
+        <select 
+          class="return-status" 
+          data-id="${doc.id}"
+          ${
+            order.returnStatus === "approved" ||
+            order.returnStatus === "rejected"
+              ? "disabled"
+              : ""
+          }
+        >
           <option value="pending" ${order.returnStatus === "pending" ? "selected" : ""}>Chờ xử lý</option>
           <option value="approved" ${order.returnStatus === "approved" ? "selected" : ""}>Duyệt trả</option>
           <option value="rejected" ${order.returnStatus === "rejected" ? "selected" : ""}>Từ chối</option>
