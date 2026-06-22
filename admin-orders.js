@@ -56,7 +56,11 @@ function getStatusText(status){
 
     case "cancelled":
       return "Đã hủy";
+    case "return_requested":
+  return "Chờ duyệt trả hàng";
 
+case "returned":
+  return "Đã trả hàng";
     default:
       return "";
   }
@@ -316,7 +320,7 @@ async function loadOrders() {
 
     ordersTable.innerHTML = `
       <tr>
-        <td colspan="8" style="text-align:center;padding:20px;">
+        <td colspan="9" style="text-align:center;padding:20px;">
           Đang tải đơn hàng...
         </td>
       </tr>
@@ -671,9 +675,32 @@ ${
             ${order.status === "cancelled" ? "selected" : ""}>
             Đã hủy
           </option>
-
+        
         </select>
-
+        // ============================
+// RETURN BUTTON (ADD HERE)
+// ============================
+${
+  order.status === "return_requested"
+  ? `
+    <button
+      onclick="approveReturn('${doc.id}')"
+      style="
+        margin-top:6px;
+        background:#2196f3;
+        color:#fff;
+        border:none;
+        padding:6px 10px;
+        border-radius:6px;
+        cursor:pointer;
+        width:100%;
+      "
+    >
+      ✅ Duyệt trả hàng
+    </button>
+  `
+  : ""
+}
    ${lockStatus ? `
   <div style="
     color:${
@@ -1224,10 +1251,13 @@ if (
     if (newPoints < 0) newPoints = 0;
     if (newSpent < 0) newSpent = 0;
 
-  await memberRef.update({
+ await memberRef.update({
   points: firebase.firestore.FieldValue.increment(
-    usedPoints
+    usedPoints - earnPoints
   ),
+  totalSpent: newSpent,
+  lockedPoints: 0
+});
   totalSpent: newSpent,
   lockedPoints: 0
 });
@@ -1550,3 +1580,84 @@ toast.remove();
 window.alert = window.showToast;
 
 }
+window.approveReturn = async function(orderId){
+
+  const ok = confirm("Duyệt trả hàng đơn này?");
+  if(!ok) return;
+
+  const orderRef = db.collection("orders").doc(orderId);
+  const orderSnap = await orderRef.get();
+
+  if(!orderSnap.exists) return;
+
+  const order = orderSnap.data();
+
+  if(order.status !== "return_requested"){
+    alert("Không hợp lệ");
+    return;
+  }
+
+  const batch = db.batch();
+
+  // =========================
+  // 1. HOÀN STOCK
+  // =========================
+  for(const item of order.items || []){
+
+    const productRef =
+      db.collection("products").doc(item.productId);
+
+    batch.update(productRef, {
+      stock: firebase.firestore.FieldValue.increment(
+        Number(item.qty || 0)
+      )
+    });
+  }
+
+  // =========================
+  // 2. HOÀN ĐIỂM (QUAN TRỌNG)
+  // trả lại đúng số đã dùng
+  // =========================
+  const usedPoints =
+    Number(order.usedPoints || 0);
+
+  if(order.memberId && usedPoints > 0){
+
+    const memberRef =
+      db.collection("members").doc(order.memberId);
+
+    batch.update(memberRef, {
+      points: firebase.firestore.FieldValue.increment(
+        usedPoints
+      )
+    });
+
+    await db.collection("member_history").add({
+      memberId: order.memberId,
+      orderId,
+      type: "refund_return",
+      points: usedPoints,
+      createdAt: Date.now()
+    });
+  }
+
+  // =========================
+  // 3. UPDATE ORDER STATUS
+  // =========================
+  batch.update(orderRef, {
+    status: "returned",
+    returnApprovedAt: Date.now()
+  });
+
+  await batch.commit();
+
+  alert("Đã duyệt trả hàng");
+await db.collection("revenue_adjustments").add({
+  orderId,
+  type: "RETURN_REFUND",
+  amount: Number(order.total || 0),
+  createdAt: Date.now()
+});
+
+loadOrders();
+};
