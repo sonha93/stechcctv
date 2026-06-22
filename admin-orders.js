@@ -1684,11 +1684,11 @@ window.approveReturn = async function(orderId){
   productId: item.productId,
   productName: item.name,
   type: "RETURN",
-  qty: qty, // +5
+  qty: Number(item.qty || 0),
   reason: `Trả hàng đơn ${orderId}`,
   orderId: orderId,
   staffName: document.getElementById("adminName")?.textContent || "",
-  stockAfter: currentStock + qty,
+  stockAfter: currentStock + Number(item.qty || 0),
   createdAt: firebase.firestore.FieldValue.serverTimestamp()
 });
 }
