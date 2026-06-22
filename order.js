@@ -672,7 +672,7 @@ ${
   renderPagination();
 }
 function renderPagination(){   
-const box = document.getElementById("ordersTable");
+  const box = document.getElementById("orders");
 
   const totalPages = Math.ceil(allOrders.length / perPage);
 
