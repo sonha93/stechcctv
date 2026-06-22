@@ -189,29 +189,27 @@ const sub =
 
       total += sub;
 
-      itemsHTML += `
+     hiddenHTML += `
+  <div style="
+    display:flex;
+    gap:14px;
+    padding:12px 0;
+    border-bottom:1px solid #eee;
+  ">
 
-        <div class="item" style="
-          display:flex;
-          gap:12px;
-          margin-bottom:14px;
-          padding-bottom:14px;
-          border-bottom:1px solid #eee;
-        ">
-
-      <a href="logo.html?id=${p.productId || p.id}" style="display:inline-block;">
-  <img
-    src="${p.img || 'no-image.png'}"
-    width="72"
-    height="72"
-    style="
-      object-fit:cover;
-      border-radius:10px;
-      border:1px solid #ddd;
-      cursor:pointer;
-    "
-  >
-</a>
+    <a href="logo.html?id=${item.productId || item.id}">
+      <img
+        src="${item.img || 'no-image.png'}"
+        width="72"
+        height="72"
+        style="
+          object-fit:cover;
+          border-radius:10px;
+          border:1px solid #ddd;
+          cursor:pointer;
+        "
+      >
+    </a>
           <div>
 
             <b style="
