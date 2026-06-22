@@ -1278,39 +1278,43 @@ if (
     const cashbackUsed =
       Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
 
-const usedPoints =
+  const usedPoints =
   Number(orderData.usedPoints || 0);
+    const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
 
-const orderValue =
-  Number(
-    orderData.originalTotal ||
-    orderData.total ||
-    0
-  );
+    const rollbackKey = orderData.rollbackProcessed;
+    if (rollbackKey === true) return;
 
-const earnPoints =
-  Math.floor(orderValue / 10000);
+    let newPoints =
+      Number(member.points || 0)
+      - earnPoints
+     
+
+    let newSpent =
+      Number(member.totalSpent || 0)
+      - Number(orderData.total || 0);
+
+    if (newPoints < 0) newPoints = 0;
+    if (newSpent < 0) newSpent = 0;
 
 await memberRef.update({
   points: firebase.firestore.FieldValue.increment(
-    usedPoints - earnPoints
+    usedPoints
   ),
-  totalSpent: Math.max(
-    0,
-    Number(member.totalSpent || 0) - orderValue
+  totalSpent: newSpent,
+  lockedPoints: firebase.firestore.FieldValue.increment(
+    -usedPoints
   )
 });
-
-await db.collection("member_history").add({
-  memberId: orderData.memberId,
-  orderId: id,
-  type: "rollback_cancel",
-  pointsReturned: usedPoints,
-  pointsRemoved: earnPoints,
-  createdAt: Date.now()
-});
+    await db.collection("member_history").add({
+      memberId: orderData.memberId,
+      orderId: id,
+      type: "rollback_cancel",
+      points: +usedPoints,
+      createdAt: Date.now()
+    });
   }
-  
+
   await db.collection("orders").doc(id).update({
     pointsProcessed: false,
     rollbackProcessed: true
@@ -1670,56 +1674,33 @@ window.approveReturn = async function(orderId){
   // 2. HOÀN ĐIỂM (QUAN TRỌNG)
   // trả lại đúng số đã dùng
   // =========================
-const usedPoints =
-  Math.floor(
-    Number(order.cashbackAmount || 0) / 100
-  );
+const usedPoints = Number(order.usedPoints || 0);
+const earnPoints = Math.floor(Number(order.total || 0) / 10000);
 
-const orderValue =
-  Number(
-    order.originalTotal ||
-    (
-      Number(order.total || 0) +
-      Number(order.cashbackAmount || 0)
+if (order.memberId) {
+  const memberRef = db.collection("members").doc(order.memberId);
+
+  batch.update(memberRef, {
+    points: firebase.firestore.FieldValue.increment(
+      usedPoints - earnPoints
+    ),
+    totalSpent: firebase.firestore.FieldValue.increment(
+      -Number(order.total || 0)
     )
-  );
-
-const earnPoints =
-  Math.floor(orderValue / 10000);
-
-if(order.memberId){
-
-  const memberRef =
-    db.collection("members")
-      .doc(order.memberId);
-  batch.update(memberRef,{
-
-    points:
-      firebase.firestore.FieldValue.increment(
-        usedPoints - earnPoints
-      ),
-
-    totalSpent:
-      firebase.firestore.FieldValue.increment(
-        -orderValue
-      )
-
   });
-
-  const historyRef =
-    db.collection("member_history")
-      .doc();
-
-  batch.set(historyRef,{
-    memberId: order.memberId,
-    orderId,
-    type: "refund_return",
-    pointsReturned: usedPoints,
-    pointsRemoved: earnPoints,
-    createdAt: Date.now()
-  });
-
 }
+
+    const historyRef = db.collection("member_history").doc();
+
+batch.set(historyRef,{
+  memberId: order.memberId,
+  orderId,
+  type: "refund_return",
+  earnPoints: earnPoints,
+  points: usedPoints,
+  createdAt: Date.now()
+});
+  }
 
   // =========================
   // 3. UPDATE ORDER STATUS
@@ -1738,7 +1719,6 @@ batch.set(revenueRef, {
   amount: Number(order.total || 0),
   createdAt: Date.now()
 });
-
   await batch.commit();
 
   alert("Đã duyệt trả hàng");
