@@ -530,6 +530,7 @@ hiddenHTML += `
 
 ${
   order.status === "completed" &&
+  !order.returnRequested &&
   (Date.now() - Number(order.createdAt)) <= 7 * 24 * 60 * 60 * 1000
   ? `
   <button
@@ -548,6 +549,25 @@ ${
   >
     🔄 Yêu cầu trả hàng
   </button>
+  `
+  : ""
+}
+
+${
+  order.returnRequested
+  ? `
+  <div style="
+    margin-top:10px;
+    padding:12px;
+    background:#e8f5e9;
+    border:1px solid #4caf50;
+    color:#2e7d32;
+    border-radius:8px;
+    text-align:center;
+    font-weight:bold;
+  ">
+    ✅ Đã gửi yêu cầu trả hàng
+  </div>
   `
   : ""
 }
@@ -835,13 +855,27 @@ window.requestReturn = async function(orderId){
     .collection("orders")
     .doc(orderId)
     .update({
-
-      returnRequested: true
-
+      returnRequested: true,
+      returnRequestedAt: Date.now()
     });
 
   alert("Đã gửi yêu cầu trả hàng");
 
-  location.reload();
+  allOrders = allOrders.map(order => {
+
+    if(order.id === orderId){
+
+      return {
+        ...order,
+        returnRequested: true
+      };
+
+    }
+
+    return order;
+
+  });
+
+  renderOrders();
 
 };
