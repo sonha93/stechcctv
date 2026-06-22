@@ -652,7 +652,37 @@ ${
     ${order.handledBy || "-"}
   </span>
 </td>
-
+<td>
+  ${order.status === "return_requested"
+  ? `<span style="color:red;font-weight:bold;">
+      🔴 YÊU CẦU TRẢ HÀNG
+    </span>`
+  : ""}
+    : order.status === "return_approved"
+    ? `<span style="
+        background:#2196f3;
+        color:#fff;
+        padding:5px 10px;
+        border-radius:20px;
+        font-size:12px;
+        font-weight:bold;
+      ">
+        ĐÃ DUYỆT TRẢ
+      </span>`
+    : order.status === "returned"
+    ? `<span style="
+        background:#4caf50;
+        color:#fff;
+        padding:5px 10px;
+        border-radius:20px;
+        font-size:12px;
+        font-weight:bold;
+      ">
+        ĐÃ TRẢ HÀNG
+      </span>`
+    : "-"
+  }
+</td>
       <td>
     <select
   class="order-status status-${order.status}"
@@ -740,7 +770,7 @@ if (!html) {
 
   html = `
     <tr>
-      <td colspan="8"
+      <td colspan="9"
         style="text-align:center;padding:20px;">
         Không tìm thấy đơn hàng
       </td>
