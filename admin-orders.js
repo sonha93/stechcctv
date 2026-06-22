@@ -1225,38 +1225,43 @@ if (
   orderData.status !== "cancelled" &&
   orderData.memberId
 ) {
+
   const memberRef = db.collection("members").doc(orderData.memberId);
   const memberDoc = await memberRef.get();
 
   if (memberDoc.exists) {
+
     const member = memberDoc.data();
 
     const cashbackUsed =
       Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
 
-    // FIX: dùng cùng cách tính như lúc completed
-    const usedPoints =
-      Math.floor(cashbackUsed / 100);
-
-    const earnPoints =
-      Math.floor(Number(orderData.total || 0) / 10000);
+  const usedPoints =
+  Number(orderData.usedPoints || 0);
+    const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
 
     const rollbackKey = orderData.rollbackProcessed;
     if (rollbackKey === true) return;
 
-    let newSpent =
-      Number(member.totalSpent || 0) - Number(orderData.total || 0);
+    let newPoints =
+      Number(member.points || 0)
+      - earnPoints
+     
 
+    let newSpent =
+      Number(member.totalSpent || 0)
+      - Number(orderData.total || 0);
+
+    if (newPoints < 0) newPoints = 0;
     if (newSpent < 0) newSpent = 0;
 
-    await memberRef.update({
-      points: firebase.firestore.FieldValue.increment(
-        usedPoints - earnPoints
-      ),
-      totalSpent: newSpent,
-      lockedPoints: 0
-    });
-
+ await memberRef.update({
+  points: firebase.firestore.FieldValue.increment(
+    usedPoints - earnPoints
+  ),
+  totalSpent: newSpent,
+  lockedPoints: 0
+});
     await db.collection("member_history").add({
       memberId: orderData.memberId,
       orderId: id,
