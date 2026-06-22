@@ -1646,174 +1646,89 @@ toast.remove();
 window.alert = window.showToast;
 
 }
-window.approveReturn = async function(orderId){
+window.approveReturn = async function(orderId) {
 
   const ok = confirm("Duyệt trả hàng đơn này?");
-  if(!ok) return;
+  if (!ok) return;
 
   const orderRef = db.collection("orders").doc(orderId);
   const orderSnap = await orderRef.get();
-
-  if(!orderSnap.exists) return;
+  if (!orderSnap.exists) return;
 
   const order = orderSnap.data();
 
-  if(order.status !== "return_requested"){
-    alert("Không hợp lệ");
-    return;
-  }
-
   const batch = db.batch();
 
-  // =========================
-  // 1. HOÀN STOCK
-  // =========================
+  // 1. hoàn kho
   for (const item of order.items || []) {
 
-  const productRef = db.collection("products").doc(item.productId);
-  const productDoc = await productRef.get();
+    const productRef = db.collection("products").doc(item.productId);
+    const productSnap = await productRef.get();
 
-  const qty = Number(item.qty || 0);
-  const currentStock = Number(productDoc.data()?.stock || 0);
+    if (!productSnap.exists) continue;
 
-  batch.update(productRef, {
-    stock: firebase.firestore.FieldValue.increment(qty)
-  });
+    const qty = Number(item.qty || 0);
 
- await db.collection("stock_movements").add({
-  productId: item.productId,
-  productName: item.name,
-  type: "RETURN",
-  qty: Number(item.qty || 0),
-  reason: `Trả hàng đơn ${orderId}`,
-  orderId: orderId,
-  staffName: document.getElementById("adminName")?.textContent || "",
-  stockAfter: currentStock + Number(item.qty || 0),
-  createdAt: firebase.firestore.FieldValue.serverTimestamp()
-});
-}
-  // =========================
-  // 2. HOÀN ĐIỂM (QUAN TRỌNG)
-  // trả lại đúng số đã dùng
-  // =========================
-const usedPoints = Number(order.usedPoints || 0);
-const earnPoints = Math.floor(Number(order.total || 0) / 10000);
+    batch.update(productRef, {
+      stock: firebase.firestore.FieldValue.increment(qty)
+    });
 
-if (order.memberId) {
-  const memberRef = db.collection("members").doc(order.memberId);
+    // ❌ KHÔNG add ngoài batch nếu muốn nhất quán
+    const movRef = db.collection("stock_movements").doc();
 
-  batch.update(memberRef, {
-    points: firebase.firestore.FieldValue.increment(
-      usedPoints - earnPoints
-    ),
-    totalSpent: firebase.firestore.FieldValue.increment(
-      -Number(order.total || 0)
-    )
-  });
-}
-
-    const historyRef = db.collection("member_history").doc();
-
-batch.set(historyRef,{
-  memberId: order.memberId,
-  orderId,
-  type: "refund_return",
-  earnPoints: earnPoints,
-  points: usedPoints,
-  createdAt: Date.now()
-});
+    batch.set(movRef, {
+      productId: item.productId,
+      productName: item.name,
+      type: "RETURN",
+      qty: qty,
+      reason: `Trả hàng đơn ${orderId}`,
+      orderId,
+      staffName: document.getElementById("adminName")?.textContent || "",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
   }
 
-  // =========================
-  // 3. UPDATE ORDER STATUS
-  // =========================
- batch.update(orderRef, {
-  status: "returned",
-  returnApprovedAt: Date.now(),
-  pointsProcessed: false
-});
-  
-const revenueRef = db.collection("revenue_adjustments").doc();
+  // 2. hoàn điểm
+  const usedPoints = Number(order.usedPoints || 0);
+  const earnPoints = Math.floor(Number(order.total || 0) / 10000);
 
-batch.set(revenueRef, {
-  orderId: orderId,
-  type: "RETURN_REFUND",
-  amount: Number(order.total || 0),
-  createdAt: Date.now()
-});
+  if (order.memberId) {
+    const memberRef = db.collection("members").doc(order.memberId);
+
+    batch.update(memberRef, {
+      points: firebase.firestore.FieldValue.increment(usedPoints - earnPoints),
+      totalSpent: firebase.firestore.FieldValue.increment(-Number(order.total || 0))
+    });
+
+    const histRef = db.collection("member_history").doc();
+    batch.set(histRef, {
+      memberId: order.memberId,
+      orderId,
+      type: "refund_return",
+      usedPoints,
+      earnPoints,
+      createdAt: Date.now()
+    });
+  }
+
+  // 3. update order
+  batch.update(orderRef, {
+    status: "returned",
+    returnApprovedAt: Date.now(),
+    pointsProcessed: false
+  });
+
+  // 4. revenue adjust
+  const revenueRef = db.collection("revenue_adjustments").doc();
+  batch.set(revenueRef, {
+    orderId,
+    type: "RETURN_REFUND",
+    amount: Number(order.total || 0),
+    createdAt: Date.now()
+  });
+
   await batch.commit();
 
   alert("Đã duyệt trả hàng");
-
-loadOrders();
-
-function loadReturns(){
-
-  const body = document.getElementById("returnsBody");
-  if(!body) return;
-
-  db.collection("orders")
-    .where("returnRequested", "==", true)
-    .orderBy("returnRequestedAt", "desc")
-    .onSnapshot(snapshot => {
-
-      body.innerHTML = "";
-
-      snapshot.forEach(doc => {
-
-        const o = doc.data();
-
-        body.innerHTML += `
-          <tr>
-            <td>${new Date(o.returnRequestedAt || o.createdAt).toLocaleString()}</td>
-            <td>${doc.id}</td>
-            <td>${o.customerName || ""}</td>
-            <td>${(o.items || []).map(i => i.name).join(", ")}</td>
-            <td>${o.returnQty || 1}</td>
-            <td>${o.refundAmount || 0}</td>
-            <td>${o.returnReason || ""}</td>
-          </tr>
-        `;
-      });
-    });
-}
-function loadStockMovements() {
-
-  const body = document.getElementById("movementsBody");
-  if (!body) return;
-
-  db.collection("stock_movements")
-    .orderBy("createdAt", "desc")
-    .onSnapshot(snapshot => {
-
-      body.innerHTML = "";
-
-      snapshot.forEach(doc => {
-        const m = doc.data();
-
-        body.innerHTML += `
-          <tr>
-            <td>${m.productName || "-"}</td>
-            <td>
-  ${
-    m.type === "SALE"
-      ? "BÁN"
-      : m.type === "RETURN"
-      ? "TRẢ"
-      : m.type === "IMPORT"
-      ? "NHẬP"
-      : m.type || "-"
-  }
-</td>
-            <td style="color:${m.qty > 0 ? "green" : "red"};font-weight:bold;">
-  ${m.qty > 0 ? "+" : ""}${m.qty}
-</td>
-            <td>${m.orderId || "-"}</td>
-            <td>${m.reason || "-"}</td>
-            <td>${m.staffName || "-"}</td>
-          </tr>
-        `;
-      });
-
-    });
-}
+  loadOrders();
+};
