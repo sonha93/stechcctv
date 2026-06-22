@@ -1681,7 +1681,7 @@ batch.set(revenueRef, {
   alert("Đã duyệt trả hàng");
 
 loadOrders();
-}; 
+
 function loadReturns(){
 
   const body = document.getElementById("returnsBody");
