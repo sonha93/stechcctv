@@ -1310,12 +1310,6 @@ function renderPagination() {
             : ""}
         "
       >
-      <button
- class="return-btn"
- data-id="${doc.id}"
->
-🔄 Trả hàng
-</button>
         ${i}
       </button>
     `;
