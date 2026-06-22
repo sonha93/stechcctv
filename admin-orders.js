@@ -1591,10 +1591,10 @@ window.approveReturn = async function(orderId){
 
   const order = orderSnap.data();
 
- if(order.returnRequested !== true){
-  alert("Không hợp lệ");
-  return;
-}
+  if(order.status !== "return_requested"){
+    alert("Không hợp lệ");
+    return;
+  }
 
   const batch = db.batch();
 
@@ -1603,17 +1603,15 @@ window.approveReturn = async function(orderId){
   // =========================
   for(const item of order.items || []){
 
-  if(!item.productId) continue;
+    const productRef =
+      db.collection("products").doc(item.productId);
 
-  const productRef =
-    db.collection("products").doc(item.productId);
-
-  batch.update(productRef, {
-    stock: firebase.firestore.FieldValue.increment(
-      Number(item.qty || 0)
-    )
-  });
-}
+    batch.update(productRef, {
+      stock: firebase.firestore.FieldValue.increment(
+        Number(item.qty || 0)
+      )
+    });
+  }
 
   // =========================
   // 2. HOÀN ĐIỂM (QUAN TRỌNG)
