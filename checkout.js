@@ -200,6 +200,7 @@ const sub =
         ">
 
         <a href="logo.html?id=${p.productId ?? p.id}" style="display:inline-block;">
+  <img
     src="${p.img || 'no-image.png'}"
     width="72"
     height="72"
@@ -208,6 +209,7 @@ const sub =
       border-radius:10px;
       border:1px solid #ddd;
       cursor:pointer;
+      display:block;
     "
   >
 </a>
