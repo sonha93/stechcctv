@@ -620,40 +620,6 @@ ${
 
 </td>
 
-
-${
-  order.returnStatus === "approved"
-  ? "Đã duyệt trả hàng"
-
-  : order.returnStatus === "rejected"
-  ? "Từ chối trả hàng"
-
-  : order.status === "return_requested"
-  ? `
-      <select
-        class="return-status"
-        data-id="${doc.id}"
-      >
-        <option value="pending" selected>
-          Chờ xử lý
-        </option>
-
-        <option value="approved">
-          Đã duyệt trả hàng
-        </option>
-
-        <option value="rejected">
-          Từ chối trả hàng
-        </option>
-      </select>
-    `
-  : "-"
-
-}
-
-</td>
-
-    
 ${
   order.customerCancelled
   ? `
