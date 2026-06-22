@@ -560,11 +560,7 @@ const lockStatus =
   isAdminCancelled;
 
 // nếu đơn đã completed rồi thì dù khách có bấm trả hàng
-// cột Hành động vẫn khóa ở "Đã giao thành công"
-const lockStatus =
-  isCompleted ||
-  isCustomerCancelled ||
-  isAdminCancelled;
+// cột Hành động vẫn khóa ở "Đã giao thành công
  
   html += `
     <tr>
