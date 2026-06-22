@@ -1717,9 +1717,12 @@ document.addEventListener("change", async (e) => {
 
   if (!select.classList.contains("return-status")) return;
 
+  console.log("RETURN CHANGE OK");
+
   const orderId = select.dataset.id;
   const value = select.value;
 
+  console.log(orderId, value);
 
   try {
     const orderRef = db.collection("orders").doc(orderId);
