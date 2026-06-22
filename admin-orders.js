@@ -58,9 +58,6 @@ function getStatusText(status){
       return "Đã hủy";
     case "return_requested":
   return "Chờ duyệt trả hàng";
-
-case "returned":
-  return "Đã trả hàng";
     default:
       return "";
   }
