@@ -1278,37 +1278,41 @@ if (
     const cashbackUsed =
       Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
 
-const usedPoints =
+ const usedPoints =
   Number(orderData.usedPoints || 0);
+    const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
 
-const orderValue =
-  Number(
-    orderData.originalTotal ||
-    orderData.total ||
-    0
-  );
+    const rollbackKey = orderData.rollbackProcessed;
+    if (rollbackKey === true) return;
 
-const earnPoints =
-  Math.floor(orderValue / 10000);
+    let newPoints =
+      Number(member.points || 0)
+      - earnPoints
+     
+
+    let newSpent =
+      Number(member.totalSpent || 0)
+      - Number(orderData.total || 0);
+
+    if (newPoints < 0) newPoints = 0;
+    if (newSpent < 0) newSpent = 0;
 
 await memberRef.update({
   points: firebase.firestore.FieldValue.increment(
-    usedPoints - earnPoints
+    usedPoints
   ),
-  totalSpent: Math.max(
-    0,
-    Number(member.totalSpent || 0) - orderValue
+  totalSpent: newSpent,
+  lockedPoints: firebase.firestore.FieldValue.increment(
+    -usedPoints
   )
 });
-
-await db.collection("member_history").add({
-  memberId: orderData.memberId,
-  orderId: id,
-  type: "rollback_cancel",
-  pointsReturned: usedPoints,
-  pointsRemoved: earnPoints,
-  createdAt: Date.now()
-});
+    await db.collection("member_history").add({
+      memberId: orderData.memberId,
+      orderId: id,
+      type: "rollback_cancel",
+      points: +usedPoints,
+      createdAt: Date.now()
+    });
   }
   
   await db.collection("orders").doc(id).update({
@@ -1671,9 +1675,7 @@ window.approveReturn = async function(orderId){
   // trả lại đúng số đã dùng
   // =========================
 const usedPoints =
-  Math.floor(
-    Number(order.cashbackAmount || 0) / 100
-  );
+  Number(order.usedPoints || 0);
 
 const orderValue =
   Number(
@@ -1692,6 +1694,10 @@ if(order.memberId){
   const memberRef =
     db.collection("members")
       .doc(order.memberId);
+  console.log("memberId =", order.memberId);
+console.log("usedPoints =", usedPoints);
+console.log("earnPoints =", earnPoints);
+console.log("orderValue =", orderValue);
   batch.update(memberRef,{
 
     points:
