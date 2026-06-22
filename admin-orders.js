@@ -1162,8 +1162,16 @@ const usedPoints =
 const finalTotal =
   Number(orderData.total || 0);
 
-const earnPoints =
-  Math.floor(finalTotal / 10000);
+const historySnap = await db
+  .collection("member_history")
+  .where("orderId", "==", order.id)
+  .where("type", "==", "earn_points")
+  .limit(1)
+  .get();
+
+const earned = historySnap.empty
+  ? 0
+  : historySnap.docs[0].data().points;
 
 const currentPoints =
   Number(member.points || 0);
@@ -1298,9 +1306,9 @@ if (
     if (newSpent < 0) newSpent = 0;
 
 await memberRef.update({
-  points: firebase.firestore.FieldValue.increment(
-    usedPoints
-  ),
+ points: firebase.firestore.FieldValue.increment(
+  usedPoints - earned
+)
   totalSpent: newSpent,
   lockedPoints: firebase.firestore.FieldValue.increment(
     -usedPoints
