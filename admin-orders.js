@@ -54,6 +54,18 @@ function getStatusText(status){
     case "completed":
       return "Đã giao thành công";
 
+    case "return_requested":
+      return "Khách yêu cầu trả hàng";
+
+    case "return_approved":
+      return "Đã duyệt trả hàng";
+
+    case "returned":
+      return "Đã trả hàng";
+
+    case "refund_completed":
+      return "Đã hoàn tiền";
+
     case "cancelled":
       return "Đã hủy";
 
@@ -552,7 +564,8 @@ const isAdminCancelled =
 const lockStatus =
   isCompleted ||
   isCustomerCancelled ||
-  isAdminCancelled;
+  isAdminCancelled ||
+  order.status === "refund_completed";
  
   html += `
     <tr>
@@ -673,7 +686,26 @@ ${
           </option>
 
         </select>
+        ${order.status === "return_requested" ? `
+  <button onclick="approveReturn('${doc.id}')"
+    style="margin-top:6px;background:#2196f3;color:#fff;border:none;padding:6px 10px;border-radius:6px;width:100%;">
+    ✔ Duyệt trả hàng
+  </button>
+` : ""}
 
+${order.status === "return_approved" ? `
+  <button onclick="confirmReturned('${doc.id}')"
+    style="margin-top:6px;background:#9c27b0;color:#fff;border:none;padding:6px 10px;border-radius:6px;width:100%;">
+    📦 Đã nhận hàng
+  </button>
+` : ""}
+
+${order.status === "returned" ? `
+  <button onclick="refundOrder('${doc.id}')"
+    style="margin-top:6px;background:#4caf50;color:#fff;border:none;padding:6px 10px;border-radius:6px;width:100%;">
+    💸 Hoàn tiền
+  </button>
+` : ""}
    ${lockStatus ? `
   <div style="
     color:${
@@ -858,7 +890,11 @@ if(!orderDoc.exists){
 }
 
 const orderData = orderDoc.data();
-
+if (orderData.refundProcessed) {
+  alert("Đơn này đã hoàn trả rồi");
+  select.value = orderData.status;
+  return;
+}
 // khách đã hủy
 if(orderData.customerCancelled){
 
@@ -1231,6 +1267,12 @@ if (
   totalSpent: newSpent,
   lockedPoints: 0
 });
+    await db.collection("finance").add({
+  type: "REFUND",
+  orderId: id,
+  amount: -Number(orderData.total || 0),
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
     await db.collection("member_history").add({
       memberId: orderData.memberId,
       orderId: id,
@@ -1267,7 +1309,93 @@ await db
     });
   });
 }
+// ============================
+// RETURN / REFUND COMPLETED
+// ============================
+if (
+  status === "refund_completed" &&
+  orderData.status !== "refund_completed" &&
+  orderData.memberId &&
+  !orderData.refundProcessed
+) {
 
+  const memberRef = db.collection("members").doc(orderData.memberId);
+  const memberDoc = await memberRef.get();
+
+  if (memberDoc.exists) {
+
+    const member = memberDoc.data();
+
+    const total = Number(orderData.total || 0);
+
+   const usedPoints =
+  Number(orderData.usedPoints || 0);
+    const earnPoints =
+      Math.floor(total / 10000);
+
+    const newPoints =
+      Number(member.points || 0)
+      - earnPoints
+      + usedPoints;
+
+    const newSpent =
+      Number(member.totalSpent || 0)
+      - total;
+
+    await memberRef.update({
+      points: Math.max(0, newPoints),
+      totalSpent: Math.max(0, newSpent),
+      lockedPoints: 0
+    });
+
+    await db.collection("member_history").add({
+      memberId: orderData.memberId,
+      orderId: id,
+      type: "refund_return",
+      points: -earnPoints + usedPoints,
+      createdAt: Date.now()
+    });
+  }
+
+  // ============================
+  // HOÀN STOCK
+  // ============================
+  for (const item of (orderData.items || [])) {
+
+    let productId =
+      item.productId || item.id || item._id;
+
+    const productRef = db.collection("products").doc(productId);
+    const productDoc = await productRef.get();
+
+    if (!productDoc.exists) continue;
+
+    const product = productDoc.data();
+
+    const qty = Number(item.qty || 0);
+
+    const newStock =
+      Number(product.stock || 0) + qty;
+
+    await productRef.update({
+      stock: newStock
+    });
+
+    await db.collection("stock_movements").add({
+      productId,
+      productName: product.name,
+      type: "RETURN",
+      qty,
+      reason: `Hoàn trả đơn ${id}`,
+      stockAfter: newStock,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
+
+  await db.collection("orders").doc(id).update({
+    refundProcessed: true
+  });
+}
 // ============================
 // REALTIME UPDATE
 // ============================
