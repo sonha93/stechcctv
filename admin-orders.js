@@ -35,7 +35,6 @@ document.addEventListener("change", async (e) => {
   };
 
   if (value === "approved") {
-    console.log(order.items);
     update.status = "returned"; // OK
     update.returnApprovedAt = Date.now();
   }
@@ -1648,33 +1647,29 @@ window.approveReturn = async function(orderId){
   // =========================
   // 1. HOÀN STOCK
   // =========================
-  for(const item of order.items || []){
+  for (const item of order.items || []) {
 
-    const productRef =
-      db.collection("products").doc(item.productId);
+  const productRef = db.collection("products").doc(item.productId);
+  const productDoc = await productRef.get();
 
-    batch.update(productRef, {
-      stock: firebase.firestore.FieldValue.increment(
-        Number(item.qty || 0)
-      )
-    });
-  }
-    const productDoc = await productRef.get();
+  const qty = Number(item.qty || 0);
+  const currentStock = Number(productDoc.data()?.stock || 0);
 
-const currentStock = Number(productDoc.data()?.stock || 0);
-const qty = Number(item.qty || 0);
+  batch.update(productRef, {
+    stock: firebase.firestore.FieldValue.increment(qty)
+  });
 
-await db.collection("stock_movements").add({
-  productId: item.productId,
-  productName: item.name || productDoc.data()?.name,
-  type: "RETURN",
-  qty: qty, // dương
-  reason: `Trả hàng đơn ${orderId}`,
-  staffName: document.getElementById("adminName")?.textContent || "",
-  stockAfter: currentStock + qty,
-  createdAt: firebase.firestore.FieldValue.serverTimestamp()
-});
-  
+  await db.collection("stock_movements").add({
+    productId: item.productId,
+    productName: item.name || productDoc.data()?.name,
+    type: "RETURN",
+    qty: qty,
+    reason: `Trả hàng đơn ${orderId}`,
+    staffName: document.getElementById("adminName")?.textContent || "",
+    stockAfter: currentStock + qty,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
   // =========================
   // 2. HOÀN ĐIỂM (QUAN TRỌNG)
   // trả lại đúng số đã dùng
