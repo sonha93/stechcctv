@@ -34,11 +34,11 @@ document.addEventListener("change", async (e) => {
     returnUpdatedAt: Date.now()
   };
 
-  if (value === "approved") {
-    update.status = "returned"; // OK
-    update.returnApprovedAt = Date.now();
-  }
-    const items = order.items || [];
+if (value === "approved") {
+  update.status = "returned";
+  update.returnApprovedAt = Date.now();
+
+  const items = order.items || [];
 
   for (const item of items) {
 
@@ -60,10 +60,10 @@ document.addEventListener("change", async (e) => {
     });
   }
 }
-  if (value === "rejected") {
-    update.returnRejectedAt = Date.now();
-  }
 
+if (value === "rejected") {
+  update.returnRejectedAt = Date.now();
+}
   await orderRef.update(update);
 
   select.disabled = true;
