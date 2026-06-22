@@ -732,7 +732,7 @@ if (!html) {
 
   html = `
     <tr>
-      <td colspan="8"
+      <td colspan="9"
         style="text-align:center;padding:20px;">
         Không tìm thấy đơn hàng
       </td>
@@ -814,7 +814,7 @@ if(revenueBox){
 
     ordersTable.innerHTML = `
       <tr>
-        <td colspan="8"
+        <td colspan="9"
           style="text-align:center;padding:20px;color:red;">
           Lỗi tải đơn hàng
         </td>
