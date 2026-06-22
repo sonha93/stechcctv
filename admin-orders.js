@@ -1648,16 +1648,17 @@ window.approveReturn = async function(orderId){
     status: "returned",
     returnApprovedAt: Date.now()
   });
+const revenueRef = db.collection("revenue_adjustments").doc();
 
-  await batch.commit();
-
-  alert("Đã duyệt trả hàng");
-await db.collection("revenue_adjustments").add({
-  orderId,
+batch.set(revenueRef, {
+  orderId: orderId,
   type: "RETURN_REFUND",
   amount: Number(order.total || 0),
   createdAt: Date.now()
 });
+  await batch.commit();
+
+  alert("Đã duyệt trả hàng");
 
 loadOrders();
 };
