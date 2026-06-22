@@ -882,11 +882,11 @@ window.requestReturn = async function(orderId){
   const ok = confirm("Bạn muốn gửi yêu cầu trả hàng?");
   if(!ok) return;
 
-  await db.collection("orders").doc(orderId).update({
-    status: "return_requested",
-    returnRequested: true,
-    returnRequestedAt: Date.now()
-  });
+ await db.collection("orders").doc(orderId).update({
+  returnRequested: true,
+  returnRequestedAt: Date.now(),
+  returnStatus: "pending"
+});
 
   alert("Đã gửi yêu cầu trả hàng");
 
