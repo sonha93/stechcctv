@@ -1192,7 +1192,7 @@ if(bonusPoints > 0){
 
     });
 
-}
+
     await db
       .collection("member_history")
       .add({
