@@ -586,11 +586,39 @@ const lockStatus =
       <td>
         ${formatPrice(order.total)}
       </td>
-          <td>
-  ${order.returnStatus || "-"}
+      <td>
 
-  <td>
+${
+  order.returnStatus === "approved"
+    ? "Đã duyệt trả hàng"
 
+    : order.returnStatus === "rejected"
+    ? "Từ chối trả hàng"
+
+    : order.status === "return_requested"
+    ? `
+        <select
+          class="return-status"
+          data-id="${doc.id}"
+        >
+          <option value="pending" selected>
+            Chờ xử lý
+          </option>
+
+          <option value="approved">
+            Đã duyệt trả hàng
+          </option>
+
+          <option value="rejected">
+            Từ chối trả hàng
+          </option>
+        </select>
+      `
+    : "-"
+
+}
+
+</td>
 ${
   order.status === "return_requested"
   ? `
@@ -885,64 +913,61 @@ function renderProducts(items) {
 // BIND EVENTS
 // ============================
 function bindEvents() {
+document
+  .querySelectorAll(".return-status")
+  .forEach(select => {
+
+    if(select.dataset.bound === "true"){
+      return;
+    }
+
+    select.dataset.bound = "true";
+
+    select.addEventListener(
+      "change",
+      async () => {
+
+        const id = select.dataset.id;
+        const value = select.value;
+
+        try{
+
+          if(value === "approved"){
+
+            await approveReturn(id);
+
+          }
+
+          if(value === "rejected"){
+
+            await db
+              .collection("orders")
+              .doc(id)
+              .update({
+                returnStatus: "rejected"
+              });
+
+            alert("Đã từ chối trả hàng");
+          }
+
+          loadOrders();
+
+        }catch(err){
+
+          console.error(err);
+          alert("Lỗi xử lý trả hàng");
+
+        }
+
+      }
+    );
+
+  });
 const offlineSalesSection =
 document.getElementById("offlineSalesSection");
   // UPDATE STATUS
   document.querySelectorAll(".order-status").forEach(select => {
-document
-.querySelectorAll(".return-status")
-.forEach(select=>{
 
-  if(select.dataset.bound==="true"){
-    return;
-  }
-
-  select.dataset.bound="true";
-
-  select.addEventListener(
-    "change",
-    async ()=>{
-
-      const id = select.dataset.id;
-      const value = select.value;
-
-      try{
-
-        if(value==="approved"){
-
-          await approveReturn(id);
-
-        }
-
-        if(value==="rejected"){
-
-          await db
-            .collection("orders")
-            .doc(id)
-            .update({
-
-              returnStatus:"rejected"
-
-            });
-
-          alert("Đã từ chối trả hàng");
-
-        }
-
-        loadOrders();
-
-      }catch(err){
-
-        console.error(err);
-
-        alert("Lỗi xử lý trả hàng");
-
-      }
-
-    }
-  );
-
-});
   // chống bind trùng
   if(select.dataset.bound === "true"){
     return;
