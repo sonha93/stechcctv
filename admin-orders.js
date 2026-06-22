@@ -1719,30 +1719,17 @@ document.addEventListener("change", async (e) => {
   const orderId = select.dataset.id;
   const value = select.value;
 
-  try {
-    const orderRef = db.collection("orders").doc(orderId);
-    const orderSnap = await orderRef.get();
+  const orderRef = db.collection("orders").doc(orderId);
 
-    if (!orderSnap.exists) {
-      alert("Đơn không tồn tại");
-      loadOrders();
-      return;
-    }
+  try {
+    const orderSnap = await orderRef.get();
+    if (!orderSnap.exists) return;
 
     const order = orderSnap.data();
 
-    if (order.returnRequested !== true) {
-      alert("Đơn này chưa có yêu cầu trả hàng");
-      loadOrders();
-      return;
-    }
-
-    // đã xử lý rồi thì khóa luôn
-    if (
-      order.returnStatus === "approved" ||
-      order.returnStatus === "rejected"
-    ) {
-      select.disabled = true;
+    if (!order.returnRequested) {
+      alert("Chưa có yêu cầu trả hàng");
+      select.value = order.returnStatus || "pending";
       return;
     }
 
@@ -1764,16 +1751,11 @@ document.addEventListener("change", async (e) => {
 
     await orderRef.update(update);
 
-    if (value === "approved" || value === "rejected") {
-      select.disabled = true;
-    }
-
-    alert("Đã cập nhật trạng thái trả hàng");
+    alert("OK rồi");
     loadOrders();
 
   } catch (err) {
     console.error(err);
-    alert("Lỗi cập nhật trạng thái trả hàng");
-    loadOrders();
+    alert("Lỗi trả hàng");
   }
 });
