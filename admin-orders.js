@@ -1280,7 +1280,7 @@ if (
 
   const usedPoints =
   Number(orderData.usedPoints || 0);
-    const total = Number(orderData.total || 0);
+   const total = Number(orderData.total || 0);
 const cashbackUsed = Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
 
 const paidAmount = total - cashbackUsed;
