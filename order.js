@@ -527,16 +527,6 @@ hiddenHTML += `
   <span>Cần thanh toán</span>
  <b>${format(finalTotal)}</b>
 </div>
-${canReturn ? `
-<div style="
-  margin-top:8px;
-  color:#ff9800;
-  font-size:13px;
-  font-weight:bold;
-">
-  Còn ${remainDays} ngày để yêu cầu trả hàng
-</div>
-` : ""}
 ${
   order.status === "completed"
   ? `
