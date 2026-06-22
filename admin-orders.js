@@ -1715,6 +1715,13 @@ function loadReturns(){
 document.addEventListener("change", async (e) => {
   if (!e.target.classList.contains("return-status")) return;
 
+  console.log("RETURN CHANGE OK");
+
+  const orderId = select.dataset.id;
+  const value = select.value;
+
+  console.log(orderId, value);
+});
   const select = e.target;
   const orderId = select.dataset.id;
   const value = select.value;
