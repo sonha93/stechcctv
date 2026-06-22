@@ -585,9 +585,13 @@ const lockStatus =
       <td>
         ${formatPrice(order.total)}
       </td>
-           <td>
-      ${order.returnStatus || "-"}
-    </td>
+          <td>
+  <select class="return-status" data-id="${order.id}">
+    <option value="pending" ${order.returnStatus === "pending" ? "selected" : ""}>Chờ xử lý</option>
+    <option value="approved" ${order.returnStatus === "approved" ? "selected" : ""}>Duyệt trả</option>
+    <option value="rejected" ${order.returnStatus === "rejected" ? "selected" : ""}>Từ chối</option>
+  </select>
+</td>
       <td>
 
     
@@ -679,27 +683,6 @@ ${
           </option>
         
         </select>
-${
-  order.status === "return_requested"
-  ? `
-    <button
-      onclick="approveReturn('${doc.id}')"
-      style="
-        margin-top:6px;
-        background:#2196f3;
-        color:#fff;
-        border:none;
-        padding:6px 10px;
-        border-radius:6px;
-        cursor:pointer;
-        width:100%;
-      "
-    >
-      ✅ Duyệt trả hàng
-    </button>
-  `
-  : ""
-}
    ${lockStatus ? `
   <div style="
     color:${
@@ -1691,3 +1674,15 @@ function loadReturns(){
       });
     });
 }
+document.addEventListener("change", async (e) => {
+  if (e.target.classList.contains("return-status")) {
+    const orderId = e.target.dataset.id;
+    const value = e.target.value;
+
+    await updateDoc(doc(db, "orders", orderId), {
+      returnStatus: value
+    });
+
+    alert("Đã cập nhật trạng thái trả hàng");
+  }
+});
