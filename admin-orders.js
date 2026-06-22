@@ -680,7 +680,7 @@ ${
       isCustomerCancelled
         ? "red"
         : isAdminCancelled
-        ? "#ff9800"
+        ? "#ffffff"
         : "green"
     };
     font-size:12px;
