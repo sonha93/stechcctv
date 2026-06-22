@@ -589,7 +589,7 @@ ${
   order.customerCancelled
   ? `
     <span style="
-      background:#ffebee;
+      background:#ffffff;
       color:#d32f2f;
       padding:5px 10px;
       border-radius:20px;
