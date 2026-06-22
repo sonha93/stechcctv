@@ -1258,9 +1258,6 @@ if (
   totalSpent: newSpent,
   lockedPoints: 0
 });
-  totalSpent: newSpent,
-  lockedPoints: 0
-});
     await db.collection("member_history").add({
       memberId: orderData.memberId,
       orderId: id,
@@ -1650,6 +1647,7 @@ batch.set(historyRef, {
     status: "returned",
     returnApprovedAt: Date.now()
   });
+  
 const revenueRef = db.collection("revenue_adjustments").doc();
 
 batch.set(revenueRef, {
