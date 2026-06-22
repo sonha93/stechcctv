@@ -1278,7 +1278,7 @@ if (
     const cashbackUsed =
       Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
 
-  const usedPoints =
+ const usedPoints =
   Number(orderData.usedPoints || 0);
     const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
 
@@ -1674,33 +1674,55 @@ window.approveReturn = async function(orderId){
   // 2. HOÀN ĐIỂM (QUAN TRỌNG)
   // trả lại đúng số đã dùng
   // =========================
-const usedPoints = Number(order.usedPoints || 0);
-const earnPoints = Math.floor(Number(order.total || 0) / 10000);
+const usedPoints =
+  Number(order.usedPoints || 0);
 
-if (order.memberId) {
-  const memberRef = db.collection("members").doc(order.memberId);
-
-  batch.update(memberRef, {
-    points: firebase.firestore.FieldValue.increment(
-      usedPoints - earnPoints
-    ),
-    totalSpent: firebase.firestore.FieldValue.increment(
-      -Number(order.total || 0)
+const orderValue =
+  Number(
+    order.originalTotal ||
+    (
+      Number(order.total || 0) +
+      Number(order.cashbackAmount || 0)
     )
+  );
+
+const earnPoints =
+  Math.floor(orderValue / 10000);
+
+if(order.memberId){
+
+  const memberRef =
+    db.collection("members")
+      .doc(order.memberId);
+
+  batch.update(memberRef,{
+
+    points:
+      firebase.firestore.FieldValue.increment(
+        usedPoints - earnPoints
+      ),
+
+    totalSpent:
+      firebase.firestore.FieldValue.increment(
+        -orderValue
+      )
+
   });
+
+  const historyRef =
+    db.collection("member_history")
+      .doc();
+
+  batch.set(historyRef,{
+    memberId: order.memberId,
+    orderId,
+    type: "refund_return",
+    pointsReturned: usedPoints,
+    pointsRemoved: earnPoints,
+    createdAt: Date.now()
+  });
+
 }
-
-    const historyRef = db.collection("member_history").doc();
-
-batch.set(historyRef,{
-  memberId: order.memberId,
-  orderId,
-  type: "refund_return",
-  earnPoints: earnPoints,
-  points: usedPoints,
-  createdAt: Date.now()
-});
-  }
 
   // =========================
   // 3. UPDATE ORDER STATUS
