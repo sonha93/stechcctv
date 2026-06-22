@@ -653,9 +653,13 @@ ${
     font-weight:bold;
     display:inline-block;
   ">
-  ${order.status === "return_requested"
-  ? "Chờ duyệt trả hàng"
-  : getStatusText(order.status)
+ ${
+  order.returnRequested === true &&
+  order.returnStatus === "pending"
+    ? "Chờ duyệt trả hàng"
+    : order.returnStatus === "approved"
+    ? "Đã trả hàng"
+    : getStatusText(order.status)
 }
   </span>
 
@@ -1698,39 +1702,98 @@ function loadReturns(){
 document.addEventListener("change", async (e) => {
   if (!e.target.classList.contains("return-status")) return;
 
-  const orderId = e.target.dataset.id;
-  const value = e.target.value;
+  const select = e.target;
+  const orderId = select.dataset.id;
+  const value = select.value;
 
-  const orderRef = db.collection("orders").doc(orderId);
-  const orderSnap = await orderRef.get();
+  try {
+    const orderRef = db.collection("orders").doc(orderId);
+    const orderSnap = await orderRef.get();
 
-  if (!orderSnap.exists) return;
+    if (!orderSnap.exists) {
+      alert("Đơn hàng không tồn tại");
+      loadOrders();
+      return;
+    }
 
-  const order = orderSnap.data();
+    const order = orderSnap.data();
 
-  // Chỉ cho xử lý nếu khách đã yêu cầu trả hàng
-  if (order.returnRequested !== true) {
-    alert("Đơn này chưa có yêu cầu trả hàng");
+    // Chưa có yêu cầu trả thì không cho xử lý
+    if (order.returnRequested !== true) {
+      alert("Đơn này chưa có yêu cầu trả hàng");
+      loadOrders();
+      return;
+    }
+
+    // Nếu đã xử lý rồi thì khóa luôn
+    if (
+      order.returnStatus === "approved" ||
+      order.returnStatus === "rejected"
+    ) {
+      select.disabled = true;
+      return;
+    }
+
+    const update = {
+      returnStatus: value,
+      returnHandledBy: document.getElementById("adminName")?.textContent || "",
+      returnUpdatedAt: Date.now()
+    };
+
+    // =========================
+    // 1. KHÁCH VỪA YÊU CẦU TRẢ -> chỉ là trạng thái trả hàng
+    // KHÔNG đụng vào status đơn nếu đơn đang completed
+    // =========================
+    if (value === "pending") {
+      // nếu muốn có badge "Chờ duyệt trả hàng" thì set thêm cờ riêng
+      update.returnRequested = true;
+
+      // chỉ đổi status sang return_requested nếu đơn chưa completed
+      if (order.status !== "completed" && order.status !== "returned") {
+        update.status = "return_requested";
+      }
+    }
+
+    // =========================
+    // 2. DUYỆT TRẢ -> khóa luôn
+    // =========================
+    if (value === "approved") {
+      update.returnApprovedAt = Date.now();
+
+      // Nếu đơn trước đó đã giao thành công rồi thì chỉ đổi sang returned lúc duyệt
+      update.status = "returned";
+    }
+
+    // =========================
+    // 3. TỪ CHỐI -> nếu đơn gốc là completed thì giữ completed
+    // =========================
+    if (value === "rejected") {
+      update.returnRejectedAt = Date.now();
+
+      // khách xin trả sau khi đơn đã completed
+      // thì từ chối xong phải quay về completed, KHÔNG về pending
+      if (
+        order.status === "completed" ||
+        order.status === "returned" ||
+        order.returnRequested === true
+      ) {
+        update.status = "completed";
+      }
+    }
+
+    await orderRef.update(update);
+
+    // approved / rejected => khóa luôn select
+    if (value === "approved" || value === "rejected") {
+      select.disabled = true;
+    }
+
+    alert("Đã cập nhật trạng thái trả hàng");
     loadOrders();
-    return;
+
+  } catch (err) {
+    console.error(err);
+    alert("Lỗi cập nhật trạng thái trả hàng");
+    loadOrders();
   }
-
-  const update = {
-    returnStatus: value
-  };
-
-  if (value === "pending") {
-    update.status = "return_requested";
-  }
-
-  if (value === "approved") {
-    update.status = "returned";
-  }
-
-  if (value === "rejected") {
-    update.status = "completed";
-  }
-
-  await orderRef.update(update);
-  alert("Đã cập nhật trạng thái trả hàng");
 });
