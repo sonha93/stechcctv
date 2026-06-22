@@ -653,89 +653,91 @@ ${
   </span>
 </td>
 <td>
-  ${order.status === "return_requested"
-  ? `<span style="color:red;font-weight:bold;">
-      🔴 YÊU CẦU TRẢ HÀNG
-    </span>`
-  : ""}
-    : order.status === "return_approved"
-    ? `<span style="
-        background:#2196f3;
-        color:#fff;
-        padding:5px 10px;
-        border-radius:20px;
-        font-size:12px;
-        font-weight:bold;
-      ">
-        ĐÃ DUYỆT TRẢ
-      </span>`
-    : order.status === "returned"
-    ? `<span style="
-        background:#4caf50;
-        color:#fff;
-        padding:5px 10px;
-        border-radius:20px;
-        font-size:12px;
-        font-weight:bold;
-      ">
-        ĐÃ TRẢ HÀNG
-      </span>`
-    : "-"
+  ${
+    order.status === "return_requested"
+      ? `
+        <span style="
+          background:#ffebee;
+          color:#d32f2f;
+          padding:5px 10px;
+          border-radius:20px;
+          font-size:12px;
+          font-weight:bold;
+          display:inline-block;
+        ">
+          KHÁCH YÊU CẦU TRẢ HÀNG
+        </span>
+
+        <button onclick="approveReturn('${doc.id}')"
+          style="
+            margin-top:6px;
+            background:#2196f3;
+            color:#fff;
+            border:none;
+            padding:6px 10px;
+            border-radius:6px;
+            width:100%;
+          ">
+          ✔ Duyệt trả hàng
+        </button>
+      `
+      : order.status === "return_approved"
+      ? `
+        <span style="
+          background:#e3f2fd;
+          color:#1565c0;
+          padding:5px 10px;
+          border-radius:20px;
+          font-size:12px;
+          font-weight:bold;
+          display:inline-block;
+        ">
+          ĐÃ DUYỆT TRẢ HÀNG
+        </span>
+
+        <button onclick="confirmReturned('${doc.id}')"
+          style="
+            margin-top:6px;
+            background:#9c27b0;
+            color:#fff;
+            border:none;
+            padding:6px 10px;
+            border-radius:6px;
+            width:100%;
+          ">
+          📦 Đã nhận hàng
+        </button>
+      `
+      : order.status === "returned"
+      ? `
+        <span style="
+          background:#ede7f6;
+          color:#6a1b9a;
+          padding:5px 10px;
+          border-radius:20px;
+          font-size:12px;
+          font-weight:bold;
+          display:inline-block;
+        ">
+          ĐÃ TRẢ HÀNG
+        </span>
+
+        <button onclick="refundOrder('${doc.id}')"
+          style="
+            margin-top:6px;
+            background:#4caf50;
+            color:#fff;
+            border:none;
+            padding:6px 10px;
+            border-radius:6px;
+            width:100%;
+          ">
+          💸 Hoàn tiền
+        </button>
+      `
+      : `<span style="color:#999;">-</span>`
   }
 </td>
-      <td>
-    <select
-  class="order-status status-${order.status}"
-  data-id="${doc.id}"
-  ${lockStatus ? "disabled" : ""}
->
-
-          <option value="pending"
-            ${order.status === "pending" ? "selected" : ""}>
-            Chờ xử lý
-          </option>
-
-          <option value="confirmed"
-            ${order.status === "confirmed" ? "selected" : ""}>
-            Đã xác nhận
-          </option>
-
-          <option value="shipping"
-            ${order.status === "shipping" ? "selected" : ""}>
-            Đang giao
-          </option>
-
-          <option value="completed"
-            ${order.status === "completed" ? "selected" : ""}>
-            Đã giao thành công
-          </option>
-
-          <option value="cancelled"
-            ${order.status === "cancelled" ? "selected" : ""}>
-            Đã hủy
-          </option>
-
-        </select>
-        ${order.status === "return_requested" ? `
-  <button onclick="approveReturn('${doc.id}')"
-    style="margin-top:6px;background:#2196f3;color:#fff;border:none;padding:6px 10px;border-radius:6px;width:100%;">
-    ✔ Duyệt trả hàng
-  </button>
-` : ""}
-
-${order.status === "return_approved" ? `
-  <button onclick="confirmReturned('${doc.id}')"
-    style="margin-top:6px;background:#9c27b0;color:#fff;border:none;padding:6px 10px;border-radius:6px;width:100%;">
-    📦 Đã nhận hàng
-  </button>
-` : ""}
-
-${order.status === "returned" ? `
-  <button onclick="refundOrder('${doc.id}')"
-    style="margin-top:6px;background:#4caf50;color:#fff;border:none;padding:6px 10px;border-radius:6px;width:100%;">
-    💸 Hoàn tiền
-  </button>
-` : ""}
    ${lockStatus ? `
   <div style="
     color:${
