@@ -617,7 +617,7 @@ ${
   : `
    <div>
   <span style="
-    background:#e8f5e9;
+    background:#ffffff;
     color:#2e7d32;
     padding:5px 10px;
     border-radius:20px;
