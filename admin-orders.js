@@ -102,7 +102,7 @@ function getStatusText(status){
 
     case "cancelled":
       return "Đã hủy";
-    case "return_requested":
+       case "return_requested":
   return "Chờ duyệt trả hàng";
     default:
       return "";
@@ -1314,7 +1314,7 @@ await memberRef.update({
       createdAt: Date.now()
     });
   }
-  
+
   await db.collection("orders").doc(id).update({
     pointsProcessed: false,
     rollbackProcessed: true
@@ -1719,7 +1719,6 @@ batch.set(revenueRef, {
   amount: Number(order.total || 0),
   createdAt: Date.now()
 });
-
   await batch.commit();
 
   alert("Đã duyệt trả hàng");
