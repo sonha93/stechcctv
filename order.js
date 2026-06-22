@@ -440,44 +440,10 @@ hiddenHTML += `
     // =========================
     // HTML
     // =========================
-   if(order.completedAt){
-
-  const completedAt =
-    typeof order.completedAt?.toDate === "function"
-      ? order.completedAt.toDate()
-      : new Date(order.completedAt);
-
-  const diffDays =
-    (Date.now() - completedAt.getTime()) /
-    (1000 * 60 * 60 * 24);
-
-  const canReturn =
-    order.status === "completed" &&
-    diffDays <= 7;
-
-  const remainDays =
-    Math.ceil(7 - diffDays);
-
-}else{
-
-  const canReturn = false;
-
-}
-
-const diffDays =
-  (Date.now() - createdAt.getTime()) /
-  (1000 * 60 * 60 * 24);
-
-const canReturn =
-  order.status === "completed" &&
-  diffDays <= 7;
-
-const remainDays =
-  Math.ceil(7 - diffDays);
     box.innerHTML += `
 
       <div class="order-box">
-    
+
         <div class="order-title">
           🧾 Đơn #${order.id}
         </div>
@@ -561,42 +527,6 @@ const remainDays =
   <span>Cần thanh toán</span>
  <b>${format(finalTotal)}</b>
 </div>
-
-${canReturn ? `
-<div style="
-  margin-top:12px;
-  padding:10px;
-  background:#fff3e0;
-  border-radius:8px;
-">
-
-  <div style="
-    color:#ff9800;
-    font-size:13px;
-    font-weight:bold;
-    margin-bottom:8px;
-  ">
-    Còn ${remainDays} ngày để trả hàng
-  </div>
-
-  <button
-    class="return-order-btn"
-    data-id="${order.id}"
-    style="
-      width:100%;
-      background:#ff9800;
-      color:#fff;
-      border:none;
-      padding:10px;
-      border-radius:8px;
-      cursor:pointer;
-    "
-  >
-    ↩ Trả hàng
-  </button>
-
-</div>
-` : ""}
 ${
   order.status === "completed"
   ? `
