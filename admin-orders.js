@@ -603,7 +603,7 @@ ${
   : order.adminCancelled
   ? `
     <span style="
-      background:#fff3e0;
+      background:#ffffff;
       color:#ef6c00;
       padding:5px 10px;
       border-radius:20px;
