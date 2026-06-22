@@ -554,7 +554,22 @@ ${
 }
 
 ${
-  order.returnRequested
+  order.status === "returned"
+  ? `
+  <div style="
+    margin-top:10px;
+    padding:12px;
+    background:#f3e5f5;
+    border:1px solid #9c27b0;
+    color:#7b1fa2;
+    border-radius:8px;
+    text-align:center;
+    font-weight:bold;
+  ">
+    📦 Đã trả hàng
+  </div>
+  `
+  : order.returnRequested
   ? `
   <div style="
     margin-top:10px;
