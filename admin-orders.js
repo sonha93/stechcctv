@@ -1023,6 +1023,9 @@ if(!productDoc.exists){
       Number(product.stock || 0);
 
     if(currentStock < qty){
+
+      console.error(
+        "Không đủ tồn kho:",
         item.name
       );
 
