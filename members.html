@@ -106,7 +106,6 @@ th{
 <tr>
   <th>Tên</th>
   <th>SĐT</th>
-  <th>Gmail</th>
   <th>Điểm</th>
   <th>Tổng chi tiêu</th>
   <th>Hạng</th>
@@ -187,8 +186,6 @@ function renderMembers(){
   <td>${m.name || "-"}</td>
 
   <td>${m.phone || "-"}</td>
-
-  <td>${m.email || "-"}</td>
 
   <td>
     ${(Number(m.points || 0) * 100).toLocaleString("vi-VN")}đ
