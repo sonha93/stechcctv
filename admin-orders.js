@@ -47,37 +47,41 @@ async function refundMemberPoints(order, orderId) {
   // 🔥 CHỐNG DOUBLE REFUND
   if (orderData.refundProcessed) return;
 
-  const memberRef = db.collection("members").doc(order.memberId);
-  const memberSnap = await memberRef.get();
+const memberRef = db.collection("members").doc(order.memberId);
 
-  if (!memberSnap.exists) return;
+const memberSnap = await memberRef.get();
+if (!memberSnap.exists) return;
 
-  const member = memberSnap.data();
+const member = memberSnap.data();
 
-  const usedPoints = Number(order.usedPoints || 0);
-  const orderTotal = Number(order.total || 0);
-  const earnPoints = Math.floor(orderTotal / 100000);
+const usedPoints = Number(order.usedPoints || 0);
+const earnPoints = Math.floor(Number(order.total || 0) / 100000);
 
-  const refundPoints = usedPoints - earnPoints;
+const refundPoints = usedPoints - earnPoints;
 
-  await memberRef.update({
-    points: firebase.firestore.FieldValue.increment(refundPoints),
-    totalSpent: firebase.firestore.FieldValue.increment(-orderTotal)
-  });
+if (order.refundProcessed) return;
 
-  await db.collection("member_history").add({
-    memberId: order.memberId,
-    orderId,
-    type: "refund_return",
-    usedPoints,
-    earnPoints,
-    refundPoints,
-    createdAt: Date.now()
-  });
+// 1. update member
+await memberRef.update({
+  points: firebase.firestore.FieldValue.increment(refundPoints),
+  totalSpent: firebase.firestore.FieldValue.increment(-Number(order.total || 0))
+});
 
-  await orderRef.update({
-    refundProcessed: true
-  });
+// 2. log history
+await db.collection("member_history").add({
+  memberId: order.memberId,
+  orderId,
+  usedPoints,
+  earnPoints,
+  refundPoints,
+  type: "refund_return",
+  createdAt: Date.now()
+});
+
+// 3. lock order
+await orderRef.update({
+  refundProcessed: true
+});
 }
 
 await memberRef.update({
