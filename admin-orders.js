@@ -1803,13 +1803,13 @@ const earnPoints = Math.floor(
 
   await batch.commit();
 
-alert("Đã duyệt trả hàng");
-loadOrders();
+    alert("Đã duyệt trả hàng");
+    loadOrders();
 
-} catch (err) {
-  console.error(err);
-  alert("Lỗi duyệt trả hàng");
-}
-
+  } catch (err) {
+    console.error(err);
+    alert("Lỗi duyệt trả hàng");
+  }
+};
 loadOrders();
 };
