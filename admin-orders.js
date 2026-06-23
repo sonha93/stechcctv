@@ -80,19 +80,16 @@ if (value === "approved") {
     const usedPoints =
       Number(order.usedPoints || Math.floor(cashbackUsed / 100));
 
-    const earnPoints =
-      Math.floor(Number(order.total || 0) / 10000);
-
-    await memberRef.update({
-      points:
-        firebase.firestore.FieldValue.increment(
-          usedPoints - earnPoints
-        ),
-      totalSpent:
-        firebase.firestore.FieldValue.increment(
-          -Number(order.total || 0)
-        )
-    });
+  const usedPoints = Number(order.usedPoints || 0);
+const earnPoints = Number(order.earnPoints || 0);
+   await memberRef.update({
+  points: firebase.firestore.FieldValue.increment(
+    usedPoints - earnPoints
+  ),
+  totalSpent: firebase.firestore.FieldValue.increment(
+    -Number(order.total || 0)
+  )
+});
 
     await db.collection("member_history").add({
       memberId: order.memberId,
@@ -1728,13 +1725,15 @@ window.approveReturn = async function(orderId) {
 
   // 2. hoàn điểm
   const usedPoints = Number(order.usedPoints || 0);
-  const earnPoints = Math.floor(Number(order.total || 0) / 10000);
-
+  const usedPoints = Number(order.usedPoints || 0);
+const earnPoints = Number(order.earnPoints || 0);
   if (order.memberId) {
     const memberRef = db.collection("members").doc(order.memberId);
 
     batch.update(memberRef, {
-      points: firebase.firestore.FieldValue.increment(usedPoints - earnPoints),
+     points: firebase.firestore.FieldValue.increment(
+  usedPoints - earnPoints
+)
       totalSpent: firebase.firestore.FieldValue.increment(-Number(order.total || 0))
     });
 
