@@ -699,7 +699,7 @@ const lockStatus =
      <td>
 ${
   order.returnStatus === "approved"
-    ? `<span style="color:green;font-weight:bold;">Duyệt trả</span>`
+    ? `<span style="color:green;font-weight:bold;">Đã trả hàng</span>`
     : order.returnStatus === "rejected"
     ? `<span style="color:red;font-weight:bold;">Đã từ chối</span>`
     : order.returnRequested === true
@@ -1223,7 +1223,6 @@ const finalTotal =
 
 const earnPoints =
   Math.floor(finalTotal / 10000);
-  
 
 const currentPoints =
   Number(member.points || 0);
@@ -1711,34 +1710,25 @@ window.approveReturn = async function(orderId) {
     batch.update(productRef, {
       stock: firebase.firestore.FieldValue.increment(qty)
     });
-  
+
     // ❌ KHÔNG add ngoài batch nếu muốn nhất quán
-   const movRef = db.collection("stock_movements").doc();
+    const movRef = db.collection("stock_movements").doc();
 
-batch.set(movRef, {
-  productId: item.productId,
-  productName: item.name,
-  type: "RETURN",
-
-  qty: qty,
-  remainQty: qty,
-
-  reason: `Trả hàng đơn ${orderId}`,
-  orderId,
-
-  staffName:
-    document.getElementById("adminName")?.textContent || "",
-
-  createdAt:
-    firebase.firestore.FieldValue.serverTimestamp()
-});
+    batch.set(movRef, {
+      productId: item.productId,
+      productName: item.name,
+      type: "RETURN",
+      qty: qty,
+      reason: `Trả hàng đơn ${orderId}`,
+      orderId,
+      staffName: document.getElementById("adminName")?.textContent || "",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
   }
+
   // 2. hoàn điểm
   const usedPoints = Number(order.usedPoints || 0);
- const earnPoints =
-  Math.floor(
-    Number(order.originalTotal || order.total || 0) / 10000
-  );
+  const earnPoints = Math.floor(Number(order.total || 0) / 10000);
 
   if (order.memberId) {
     const memberRef = db.collection("members").doc(order.memberId);
