@@ -33,9 +33,9 @@
 }
 
 body{
-    background:#f3f4f6;
-    padding:24px;
-    font-family:Inter,"Segoe UI",sans-serif;
+    background:#f5f5f5;
+    padding:16px;
+    color:#111;
 }
 
 /* =========================
@@ -43,9 +43,8 @@ body{
 ========================= */
 
 h1{
-    font-size:48px;
-    font-weight:700;
-    margin-bottom:28px;
+    margin-bottom:16px;
+    font-size:22px;
 }
 
 /* =========================
@@ -114,27 +113,16 @@ h1{
 
 .stats-wrap{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:16px;
-    margin:20px 0;
+    grid-template-columns:repeat(6,1fr);
+    gap:12px;
+    margin-bottom:16px;
 }
 
 .stat-box{
     background:#fff;
-    border-radius:18px;
-    padding:24px;
-    box-shadow:0 4px 15px rgba(0,0,0,.06);
-}
-
-.stat-box h3{
-    font-size:15px;
-    color:#777;
-    margin-bottom:10px;
-}
-
-.stat-box span{
-    font-size:38px;
-    font-weight:700;
+    padding:14px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
 }
 .module-menu input[type="radio"]{
     display:none;
@@ -165,34 +153,34 @@ h1{
 
 .table-wrap{
     background:#fff;
-    border-radius:20px;
-    overflow:hidden;
-    box-shadow:0 4px 15px rgba(0,0,0,.06);
+    border-radius:12px;
+    overflow:auto;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
 }
-
+.table-wrap{
+    overflow-x:auto;
+}
 table{
     width:100%;
     border-collapse:collapse;
 }
 
-thead{
-    background:#111;
-}
-
 th{
+    background:#111;
     color:#fff;
-    padding:20px;
-    font-size:15px;
-    font-weight:600;
+    padding:14px;
+    font-size:13px;
+    text-align:left;
 }
 
 td{
-    padding:18px 20px;
-    border-bottom:1px solid #f1f1f1;
-    font-size:15px;
+    padding:14px;
+    border-bottom:1px solid #eee;
+    font-size:13px;
+    vertical-align:top;
 }
 
-tbody tr:hover{
+tr:hover{
     background:#fafafa;
 }
 
@@ -201,11 +189,12 @@ tbody tr:hover{
 ========================= */
 
 .order-status{
-    height:42px;
-    border-radius:12px;
+    padding:8px 10px;
+    border-radius:8px;
     border:1px solid #ddd;
-    padding:0 14px;
-    background:#f8f8f8;
+    background:#fff;
+    min-width:160px;
+    cursor:pointer;
 }
 .status-pending{
     color:#ff9800;
@@ -271,30 +260,39 @@ tbody tr:hover{
    REVENUE
 ========================= */
 
-#revenueByDate,
-#rangeRevenue{
-    background:#fff;
-    border-radius:18px;
-    padding:22px;
-    margin-bottom:18px;
-    box-shadow:0 2px 12px rgba(0,0,0,.06);
+#revenueByDate{
+    max-height:300px;
+    overflow:auto;
+    margin-top:10px;
+}
+.module-menu{
+    display:grid !important;
+    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+    gap:12px;
 }
 
 .module-menu label{
     background:#fff;
-    border-radius:18px;
-    height:82px;
+    border-radius:12px;
+    padding:16px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+    cursor:pointer;
     display:flex;
-    justify-content:center;
     align-items:center;
-    font-size:22px;
-    font-weight:700;
-    box-shadow:0 2px 12px rgba(0,0,0,.06);
+    justify-content:center;
+    gap:8px;
+    font-weight:600;
 }
-
-.module-menu input:checked+span{
-    color:#00acc1;
-}
+.manual-minus-wrap{
+    display:grid;
+    grid-template-columns:
+        170px
+        1fr
+        60px
+        150px
+        140px
+        140px;
+   }
     gap:16px;
     align-items:center;
     width:100%;
@@ -627,42 +625,24 @@ tbody tr:hover{
 @media(max-width:768px){
 
     body{
-        padding:14px;
+        padding:10px;
     }
 
-   h1{
-        font-size:28px;
+    h1{
+        font-size:18px;
     }
-   
-.top-bar,
+
+    .top-bar,
     .range-filter{
         flex-direction:column;
     }
 
-.top-bar input,
-.range-filter input{
-    height:52px;
-    border:1px solid #e5e7eb;
-    border-radius:14px;
-    padding:0 18px;
-    background:#fff;
-}
-
-.top-bar button,
-.range-filter button{
-    height:52px;
-    padding:0 22px;
-    border:none;
-    border-radius:14px;
-    background:#111;
-    color:#fff;
-    font-weight:600;
-    cursor:pointer;
-}
-
-.range-filter button{
-    background:#0ea5b7;
-}
+    .top-bar input,
+    .top-bar button,
+    .range-filter input,
+    .range-filter button{
+        width:100%;
+    }
 
    table{
     min-width:100%;
@@ -675,56 +655,27 @@ tbody tr:hover{
     }
 
    .stats-wrap{
-    display:grid;
-    grid-template-columns:repeat(6,1fr);
-    gap:18px;
-    margin-bottom:24px;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
 }
 
 .stat-box{
-    background:#fff;
-    border-radius:18px;
-    padding:24px;
-    box-shadow:0 2px 12px rgba(0,0,0,.06);
+    padding:12px;
 }
 
 .stat-box h3{
-    font-size:14px;
-    color:#777;
-    margin-bottom:10px;
+    font-size:12px;
+    line-height:1.4;
 }
 
-.stat-box span{
-    font-size:38px;
-    font-weight:700;
+.stat-box > span{
+    font-size:18px;
 }
 .stats-wrap{
     overflow-x:unset;
 }
- .module-menu{
-        grid-template-columns:1fr 1fr;
-    }
-
-
-.module-menu label{
-    background:#fff;
-    border-radius:18px;
-    padding:18px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:20px;
-    font-weight:600;
-    box-shadow:0 3px 12px rgba(0,0,0,.06);
-    transition:.2s;
-}
-
-.module-menu label:hover{
-    transform:translateY(-2px);
-}
-
-.module-menu input:checked+span{
-    color:#00acc1;
+   .module-menu{
+    grid-template-columns:repeat(2,1fr);
 }
    #importSection table,
 #movementsSection table{
@@ -772,27 +723,16 @@ tbody tr:hover{
 }
 
 .table-wrap{
-    background:#fff;
-    border-radius:20px;
-    overflow:hidden;
-    box-shadow:0 4px 20px rgba(0,0,0,.08);
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
 }
-
-th{
-    background:#111;
-    color:#fff;
-    padding:18px;
-    font-size:15px;
+   thead th{
+    position:sticky;
+    top:0;
+    z-index:2;
 }
-
-td{
-    padding:18px;
-    font-size:14px;
-    border-bottom:1px solid #eee;
-}
-
-tbody tr:hover{
-    background:#fafafa;
+   .module-menu input[type="radio"]:checked + span{
+    color:#00acc1;
 }
 
 .module-menu input:checked + span{
@@ -963,9 +903,6 @@ tbody tr:hover{
         justify-content:space-between;
     }
 
- table{
-        min-width:1200px;
-    
 }
 }
 </style>
