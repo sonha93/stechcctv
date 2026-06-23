@@ -57,20 +57,6 @@ if (member.level === "Gold") {
   percent = 1.5;
 }
 
-const memberSnap = await db
-  .collection("members")
-  .doc(order.memberId)
-  .get();
-
-const member = memberSnap.data();
-
-let percent = 0.5;
-
-if (member.level === "Gold") {
-  percent = 1.0;
-} else if (member.level === "VIP") {
-  percent = 1.5;
-}
 
 const earnPoints = Math.floor(
   Number(order.total || 0) * percent / 100
