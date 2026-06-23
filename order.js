@@ -580,7 +580,7 @@ ${
     padding:12px;
     background:#ffffff;
     border:1px solid #9c27b0;
-    color:#7b1fa2;
+    
     border-radius:8px;
     text-align:center;
     font-weight:bold;
