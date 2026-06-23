@@ -413,14 +413,12 @@ button:hover{
   position:relative !important;
 
 }
-}
 body{
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   margin: 0;
-}
- overflow-x:hidden;
+  overflow-x: hidden;
 }
 .container{
   flex: 1;
@@ -638,7 +636,7 @@ button{
   <p id="nextLevelText">
     Đang tải...
   </p>
-   
+   </div> 
 <div class="form-grid">
     <div>
         <label>Họ và tên:</label>
@@ -836,8 +834,7 @@ auth.onAuthStateChanged(user=>{
     updateInfoBtn.disabled = false;
 
     // Thêm UID vào URL nếu chưa có
-    const urlParams = new URLSearchParams(window.location.search);
-    let uidToLoad = urlParams.get('uid') || currentUser.uid;
+   const uidToLoad = currentUser.uid;
     if(!window.location.search.includes("uid=")){
         window.history.replaceState({}, "", `${window.location.pathname}?uid=${currentUser.uid}`);
     }
