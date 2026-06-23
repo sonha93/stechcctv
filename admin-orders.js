@@ -1859,4 +1859,4 @@ await batch.commit();
 
 alert("Duyệt trả hàng xong");
 loadOrders();
-}; 
+}
