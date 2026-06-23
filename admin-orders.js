@@ -582,64 +582,38 @@ snapshot.forEach(doc => {
 
   }
 
-// ============================
-// COUNT STATUS + REVENUE
+  // ============================
+// COUNT STATUS
 // ============================
 
-if (order.status === "pending") {
+if(order.status === "pending"){
   pendingCount++;
 }
 
-if (order.status === "shipping") {
+if(order.status === "shipping"){
   shippingCount++;
 }
 
-const isCompleted =
+if(
   order.status === "completed" &&
   !order.customerCancelled &&
-  !order.adminCancelled &&
-  order.returnStatus !== "approved";
-
-if (isCompleted) {
+  !order.adminCancelled
+){
   completedCount++;
-
-  // revenue
-  revenue += Number(order.total || 0);
-
-  let dateKey = "-";
-
-  try {
-    const dateObj =
-      typeof order.createdAt?.toDate === "function"
-        ? order.createdAt.toDate()
-        : new Date(order.createdAt);
-
-    const yyyy = dateObj.getFullYear();
-    const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
-    const dd = String(dateObj.getDate()).padStart(2, "0");
-
-    dateKey = `${yyyy}-${mm}-${dd}`;
-  } catch {}
-
-  if (!revenueByDate[dateKey]) {
-    revenueByDate[dateKey] = 0;
-  }
-
-  revenueByDate[dateKey] += Number(order.total || 0);
 }
 
-if (
+if(
   order.status === "cancelled" ||
   order.customerCancelled ||
   order.adminCancelled
-) {
+){
   cancelledCount++;
 }
-  // ============================
-  // REVENUE
-  // ============================
-
- 
+ if (
+  order.status === "completed" &&
+  !order.customerCancelled &&
+  !order.adminCancelled
+) {
 
     revenue += Number(order.total || 0);
 
@@ -652,11 +626,11 @@ if (
           ? order.createdAt.toDate()
           : new Date(order.createdAt);
 
-      const yyyy = dateObj.getFullYear();
-      const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
-      const dd = String(dateObj.getDate()).padStart(2, "0");
+   const yyyy = dateObj.getFullYear();
+const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+const dd = String(dateObj.getDate()).padStart(2, "0");
 
-      dateKey = `${yyyy}-${mm}-${dd}`;
+dateKey = `${yyyy}-${mm}-${dd}`;
 
     } catch {}
 
@@ -664,8 +638,12 @@ if (
       revenueByDate[dateKey] = 0;
     }
 
-    revenueByDate[dateKey] += Number(order.total || 0);
-  
+    revenueByDate[dateKey] +=
+      Number(order.total || 0);
+  }
+
+});
+
 // ============================
 // RENDER TABLE
 // ============================
@@ -1707,7 +1685,7 @@ window.alert = window.showToast;
 
 }
 window.approveReturn = async function(orderId) {
-  
+
   const ok = confirm("Duyệt trả hàng đơn này?");
   if (!ok) return;
 
@@ -1749,10 +1727,7 @@ window.approveReturn = async function(orderId) {
   }
 
   // 2. hoàn điểm
- const cashbackUsed = Number(order.cashbackAmount || order.cashbackUsed || 0);
-
-const usedPoints =
-  Number(order.usedPoints || Math.floor(cashbackUsed / 100));
+  const usedPoints = Number(order.usedPoints || 0);
   const earnPoints = Math.floor(Number(order.total || 0) / 10000);
 
   if (order.memberId) {
@@ -1780,6 +1755,7 @@ const usedPoints =
     returnApprovedAt: Date.now(),
     pointsProcessed: false
   });
+
   // 4. revenue adjust
   const revenueRef = db.collection("revenue_adjustments").doc();
   batch.set(revenueRef, {
@@ -1788,18 +1764,7 @@ const usedPoints =
     amount: Number(order.total || 0),
     createdAt: Date.now()
   });
-// 5. refund money
-const refundAmount = Number(order.total || 0);
 
-const refundRef = db.collection("refunds").doc();
-
-batch.set(refundRef, {
-  orderId,
-  memberId: order.memberId || null,
-  amount: refundAmount,
-  type: "RETURN_REFUND",
-  createdAt: Date.now()
-});
   await batch.commit();
 
   alert("Đã duyệt trả hàng");
