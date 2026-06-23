@@ -97,7 +97,7 @@ await memberRef.update({
     earnPoints,
     createdAt: Date.now()
   });
-}
+
 document.addEventListener("change", async (e) => {
   const select = e.target;
   if (!select.classList.contains("return-status")) return;
