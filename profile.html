@@ -851,7 +851,7 @@ auth.onAuthStateChanged(user=>{
   .get()
 .then(async doc => {
   console.log("Firestore UID:", uidToLoad);
-    console.log("Firestore data:", doc.data());
+console.log("Firestore data:", JSON.stringify(doc.data(), null, 2));
      console.log("DOC ID:", doc.id);
     if(!doc.exists) return;
 
