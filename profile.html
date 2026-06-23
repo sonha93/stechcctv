@@ -25,111 +25,11 @@
 }
 
 body{
-    background:#f2f4f7;
+    background:#f5f5f5;
+    color:#111;
+    overflow-x:hidden;
 }
 
-.profile-container{
-    width:min(1100px,95%);
-    margin:40px auto;
-}
-.profile-layout{
-    display:grid;
-    grid-template-columns:320px 1fr;
-    gap:25px;
-    align-items:start;
-}
-   @media(max-width:768px){
-
-.profile-layout{
-    grid-template-columns:1fr;
-}
-
-}
-   .profile-card{
-    background:#fff;
-    border:1px solid #ddd;
-    border-radius:18px;
-    padding:25px;
-}
-   .avatar{
-
-    width:120px;
-    height:120px;
-
-    border-radius:50%;
-
-    object-fit:cover;
-
-    border:4px solid #2fa6b3;
-
-    display:block;
-    margin:15px auto;
-}
-   .profile-card input{
-
-    width:100%;
-    height:48px;
-
-    border:1px solid #d7d7d7;
-
-    border-radius:10px;
-
-    padding:0 15px;
-
-    margin-top:6px;
-    margin-bottom:18px;
-
-    font-size:15px;
-}
-   .profile-card button{
-
-    width:100%;
-    height:48px;
-
-    border:none;
-
-    border-radius:10px;
-
-    background:#1b74e4;
-
-    color:#fff;
-
-    font-size:16px;
-
-    font-weight:600;
-
-    cursor:pointer;
-}
-
-.profile-card button:hover{
-
-    background:#1565c0;
-
-}
-   .vip-box{
-
-    background:#fff8e6;
-
-    border:1px solid #ffd76a;
-
-    border-radius:12px;
-
-    padding:15px;
-
-    margin:20px 0;
-}
-   .info-box{
-
-    background:#eef5ff;
-
-    border:1px solid #b9d5ff;
-
-    border-radius:12px;
-
-    padding:15px;
-
-    margin-top:20px;
-}
 /* =========================
    HEADER & NAVBAR
 ========================= */
@@ -295,14 +195,14 @@ header{
    CONTAINER
 ========================= */
 .container{
-    background:#fff;
-    padding:25px;
-    border-radius:12px;
+    width:100%;
     max-width:600px;
     margin:20px auto;
+    padding:20px;
+    background:#fff;
+    border-radius:12px;
     box-shadow:0 4px 20px rgba(0,0,0,.1);
 }
-
 
 h2{
     text-align:center;
@@ -532,6 +432,147 @@ body{
   text-align: center;
   padding: 20px 10px;
 }
+/* ===========================
+   PROFILE
+=========================== */
+
+.container{
+    width:100%;
+    max-width:900px;
+    margin:30px auto;
+    padding:20px;
+    background:#fff;
+    border-radius:16px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
+
+h2{
+    text-align:center;
+    font-size:28px;
+    margin-bottom:20px;
+}
+
+/* Avatar */
+
+.avatar-container{
+    width:120px;
+    height:120px;
+    margin:0 auto 20px;
+    border-radius:50%;
+    overflow:hidden;
+    border:3px solid #35b24a;
+    position:relative;
+}
+
+.avatar-container img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.camera-btn{
+    width:34px;
+    height:34px;
+    right:5px;
+    bottom:5px;
+    font-size:16px;
+}
+
+/* Form */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+    margin-top:20px;
+}
+
+.info-fields label{
+    display:block;
+    font-size:15px;
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.info-fields input{
+    width:100%;
+    height:44px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    padding:0 12px;
+    font-size:15px;
+}
+
+/* Button */
+
+button{
+    width:100%;
+    height:46px;
+    margin-top:18px;
+    border:none;
+    border-radius:8px;
+    background:#1976f3;
+    color:#fff;
+    font-size:15px;
+    font-weight:600;
+}
+
+/* Box */
+
+.updated-info,
+.password-section,
+.orders,
+#memberProgressBox{
+    margin-top:20px;
+    padding:15px;
+    border-radius:10px;
+}
+
+.updated-info p,
+#memberProgressBox p{
+    margin:8px 0;
+    font-size:15px;
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media (max-width:768px){
+
+    .container{
+        margin:12px;
+        padding:16px;
+    }
+
+    h2{
+        font-size:24px;
+    }
+
+    .avatar-container{
+        width:100px;
+        height:100px;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+        gap:14px;
+    }
+
+    .info-fields input{
+        height:42px;
+        font-size:14px;
+    }
+
+    button{
+        height:44px;
+        font-size:15px;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+}
 </style>
 </head>
 <body>
@@ -597,19 +638,35 @@ body{
   <p id="nextLevelText">
     Đang tải...
   </p>
-</div>
-<label for="name">Họ và tên:</label><input type="text" id="name">
-<label for="address">Địa chỉ:</label><input type="text" id="address">
-<label for="birthday">Ngày sinh:</label><input type="date" id="birthday">
-<label for="phone">Số điện thoại:</label>
+   
+<div class="form-grid">
+    <div>
+        <label>Họ và tên:</label>
+        <input type="text" id="name">
+    </div>
 
-<input
-type="tel"
-id="phone"
-maxlength="10"
-placeholder="VD: 0912345678">
-<button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
+    <div>
+        <label>Số điện thoại:</label>
+   <input
+    type="tel"
+    id="phone"
+    maxlength="10"
+    inputmode="numeric"
+    placeholder="0912345678">
+    </div>
+
+    <div>
+        <label>Địa chỉ:</label>
+        <input type="text" id="address">
+    </div>
+
+    <div>
+        <label>Ngày sinh:</label>
+        <input type="date" id="birthday">
+    </div>
 </div>
+
+<button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
 
 <div class="updated-info">
 <h3>Thông tin hiện tại:</h3>
@@ -663,6 +720,11 @@ const memberPoints =
   document.getElementById("memberPoints");
 const nameInput = document.getElementById("name");
 const phoneInput = document.getElementById("phone");
+phoneInput.addEventListener("input", function () {
+    this.value = this.value
+        .replace(/\D/g, "")   // chỉ cho số
+        .slice(0, 10);        // tối đa 10 số
+});
 const addressInput = document.getElementById("address");
 const birthdayInput = document.getElementById("birthday");
 const currentName = document.getElementById("currentName");
