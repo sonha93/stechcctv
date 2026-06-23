@@ -693,130 +693,175 @@ auth.onAuthStateChanged(user=>{
 
     const data = doc.data();
 
- if (data.phone) {
+    if(data.phone){
 
-    firebase.firestore()
-    .collection("members")
-    .where("phone", "==", data.phone)
-    .limit(1)
-    .onSnapshot(async (memberSnap) => {
+       firebase.firestore()
+.collection("members")
+.where("phone","==",data.phone)
+.limit(1)
+.onSnapshot(snapshot=>{
 
-        if (memberSnap.empty) return;
+    if(snapshot.empty) return;
 
-        const memberDoc = memberSnap.docs[0];
-        const memberRef = memberDoc.ref;
-        const member = memberDoc.data();
+    const member = snapshot.docs[0].data();
 
-        // Hạng thành viên
-        memberLevel.textContent = member.level || "Silver";
+    memberLevel.textContent = member.level || "Silver";
 
-        // Thưởng sinh nhật
-        const today = new Date();
-        const currentYear = today.getFullYear();
+    memberPoints.textContent =
+        (Number(member.points || 0) * 100)
+        .toLocaleString("vi-VN") + "đ";
 
-        if (member.birthday) {
+});
+        if(!memberSnap.empty){
 
-            const birth = new Date(member.birthday);
+            const member =
+            memberSnap.docs[0].data();
 
-            const isBirthday =
-                today.getDate() === birth.getDate() &&
-                today.getMonth() === birth.getMonth();
+            memberLevel.textContent =
+            member.level || "Silver";
+         const memberRef =
+  memberSnap.docs[0].ref;
 
-            const receivedThisYear =
-                member.birthdayGiftYear === currentYear;
+const today = new Date();
+const currentYear =
+  today.getFullYear();
 
-            if (isBirthday && !receivedThisYear) {
+if(member.birthday){
 
-                await memberRef.update({
-                    points: Number(member.points || 0) + 100,
-                    birthdayGiftYear: currentYear
-                });
+  const birth =
+    new Date(member.birthday);
 
-                member.points = Number(member.points || 0) + 100;
+  const isBirthday =
 
-                alert("🎂 Chúc mừng sinh nhật! Bạn nhận 10.000đ điểm thưởng");
-            }
-        }
+    today.getDate() === birth.getDate() &&
 
-        // Điểm
-        memberPoints.textContent =
-            (Number(member.points || 0) * 100).toLocaleString("vi-VN") + "đ";
+    today.getMonth() === birth.getMonth();
 
-        const totalSpent = Number(member.totalSpent || 0);
+  const receivedThisYear =
 
-        const rewardEl =
-            document.getElementById("levelReward");
+    member.birthdayGiftYear === currentYear;
 
-        const nextLevelEl =
-            document.getElementById("nextLevelText");
+  if(
+    isBirthday &&
+    !receivedThisYear
+  ){
+      
+    await memberRef.update({
 
-        if (member.level === "VIP") {
+      points:
+        Number(member.points || 0)
+        + 100,
 
-            rewardEl.textContent =
-                "Đã nhận 20.000đ khi lên VIP";
-
-        } else if (member.level === "Gold") {
-
-            rewardEl.textContent =
-                "Đã nhận 10.000đ khi lên Gold";
-
-        } else {
-
-            rewardEl.textContent =
-                "Chưa nhận quà nâng hạng";
-        }
-
-        if (member.level === "Silver") {
-
-            const remain =
-                Math.max(0, 5000000 - totalSpent);
-
-            nextLevelEl.innerHTML =
-                `💰 Còn <b>${remain.toLocaleString()}đ</b> để lên Gold`;
-
-        } else if (member.level === "Gold") {
-
-            const remain =
-                Math.max(0, 10000000 - totalSpent);
-
-            nextLevelEl.innerHTML =
-                `👑 Còn <b>${remain.toLocaleString()}đ</b> để lên VIP`;
-
-        } else {
-
-            nextLevelEl.innerHTML =
-                "🏆 Bạn đang ở hạng cao nhất";
-        }
+      birthdayGiftYear:
+        currentYear
 
     });
 
+    member.points =
+      Number(member.points || 0)
+      + 100;
+
+    alert(
+      "🎂 Chúc mừng sinh nhật! Bạn nhận 10.000đ điểm thưởng"
+    );
+
+  }
+
+}
+            const pointMoney =
+  Number(member.points || 0) * 100;
+
+memberPoints.textContent =
+  pointMoney.toLocaleString("vi-VN") + "đ";
+           const totalSpent =
+  Number(member.totalSpent || 0);
+
+const rewardEl =
+  document.getElementById("levelReward");
+
+const nextLevelEl =
+  document.getElementById("nextLevelText");
+
+// Hiện quà hạng
+if(member.level === "VIP"){
+
+  rewardEl.textContent =
+    "Đã nhận 20.000đ khi lên VIP";
+
+}else if(member.level === "Gold"){
+
+  rewardEl.textContent =
+    "Đã nhận 10.000đ khi lên Gold";
+
+}else{
+
+  rewardEl.textContent =
+    "Chưa nhận quà nâng hạng";
+
 }
 
-   nameInput.value = data.name || "";
-phoneInput.value = data.phone || "";
-addressInput.value = data.address || "";
-birthdayInput.value = data.birthday || "";
+           
+// Mốc tiếp theo
 
-if(data.birthday){
-    birthdayInput.disabled = true;
+if(member.level === "Silver"){
+
+  const remain =
+    Math.max(
+      0,
+      5000000 - totalSpent
+    );
+
+  nextLevelEl.innerHTML =
+    `💰 Còn <b>${remain.toLocaleString()}đ</b> để lên Gold`;
+
 }
+else if(member.level === "Gold"){
 
-avatarImg.src =
+  const remain =
+    Math.max(
+      0,
+      10000000 - totalSpent
+    );
+
+  nextLevelEl.innerHTML =
+    `👑 Còn <b>${remain.toLocaleString()}đ</b> để lên VIP`;
+
+}
+else{
+
+  nextLevelEl.innerHTML =
+    `🏆 Bạn đang ở hạng cao nhất`;
+}
+        }
+    }
+
+    nameInput.value = data.name || "";
+    phoneInput.value = data.phone || "";
+    addressInput.value = data.address || "";
+    birthdayInput.value = data.birthday || "";
+   if(data.birthday){
+
+  birthdayInput.disabled = true;
+
+}
+    avatarImg.src =
     data.avatar ||
     "https://i.ibb.co/Z1kv9nJj/logo.png";
 
-currentName.innerHTML =
-    (data.name || "Chưa cập nhật") +
-    getVerifiedBadge(uidToLoad);
+   currentName.innerHTML =
+(data.name || "Chưa cập nhật")
++
+getVerifiedBadge(uidToLoad);
 
-currentPhone.innerText =
+    currentPhone.innerText =
     data.phone || "Chưa cập nhật";
 
-currentAddress.innerText =
+    currentAddress.innerText =
     data.address || "Chưa cập nhật";
 
-currentBirthday.innerText =
+    currentBirthday.innerText =
     data.birthday || "Chưa cập nhật";
+
 });
     db.ref('carts/'+currentUser.uid).on('value',snapshot=>{
         let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); 
@@ -929,9 +974,7 @@ for(const commentDoc of commentsSnap.docs){
   });
 
 }
-       currentName.innerHTML =
-    name +
-    getVerifiedBadge(currentUser.uid);
+        currentName.innerText = name;
         currentPhone.innerText = phone;
         currentAddress.innerText = address;
         currentBirthday.innerText = birthday;
