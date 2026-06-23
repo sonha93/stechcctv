@@ -195,14 +195,14 @@ header{
    CONTAINER
 ========================= */
 .container{
-    width:100%;
+    background:#fff;
+    padding:25px;
+    border-radius:12px;
     max-width:600px;
     margin:20px auto;
-    padding:20px;
-    background:#fff;
-    border-radius:12px;
     box-shadow:0 4px 20px rgba(0,0,0,.1);
 }
+
 
 h2{
     text-align:center;
@@ -432,147 +432,6 @@ body{
   text-align: center;
   padding: 20px 10px;
 }
-/* ===========================
-   PROFILE
-=========================== */
-
-.container{
-    width:100%;
-    max-width:900px;
-    margin:30px auto;
-    padding:20px;
-    background:#fff;
-    border-radius:16px;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-}
-
-h2{
-    text-align:center;
-    font-size:28px;
-    margin-bottom:20px;
-}
-
-/* Avatar */
-
-.avatar-container{
-    width:120px;
-    height:120px;
-    margin:0 auto 20px;
-    border-radius:50%;
-    overflow:hidden;
-    border:3px solid #35b24a;
-    position:relative;
-}
-
-.avatar-container img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-.camera-btn{
-    width:34px;
-    height:34px;
-    right:5px;
-    bottom:5px;
-    font-size:16px;
-}
-
-/* Form */
-
-.form-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:18px;
-    margin-top:20px;
-}
-
-.info-fields label{
-    display:block;
-    font-size:15px;
-    font-weight:600;
-    margin-bottom:6px;
-}
-
-.info-fields input{
-    width:100%;
-    height:44px;
-    border:1px solid #ccc;
-    border-radius:8px;
-    padding:0 12px;
-    font-size:15px;
-}
-
-/* Button */
-
-button{
-    width:100%;
-    height:46px;
-    margin-top:18px;
-    border:none;
-    border-radius:8px;
-    background:#1976f3;
-    color:#fff;
-    font-size:15px;
-    font-weight:600;
-}
-
-/* Box */
-
-.updated-info,
-.password-section,
-.orders,
-#memberProgressBox{
-    margin-top:20px;
-    padding:15px;
-    border-radius:10px;
-}
-
-.updated-info p,
-#memberProgressBox p{
-    margin:8px 0;
-    font-size:15px;
-}
-
-/* ===========================
-   MOBILE
-=========================== */
-
-@media (max-width:768px){
-
-    .container{
-        margin:12px;
-        padding:16px;
-    }
-
-    h2{
-        font-size:24px;
-    }
-
-    .avatar-container{
-        width:100px;
-        height:100px;
-    }
-
-    .form-grid{
-        grid-template-columns:1fr;
-        gap:14px;
-    }
-
-    .info-fields input{
-        height:42px;
-        font-size:14px;
-    }
-
-    button{
-        height:44px;
-        font-size:15px;
-    }
-
-    .actions{
-        flex-direction:column;
-    }
-}
 </style>
 </head>
 <body>
@@ -638,35 +497,19 @@ button{
   <p id="nextLevelText">
     Đang tải...
   </p>
-   
-<div class="form-grid">
-    <div>
-        <label>Họ và tên:</label>
-        <input type="text" id="name">
-    </div>
-
-    <div>
-        <label>Số điện thoại:</label>
-   <input
-    type="tel"
-    id="phone"
-    maxlength="10"
-    inputmode="numeric"
-    placeholder="0912345678">
-    </div>
-
-    <div>
-        <label>Địa chỉ:</label>
-        <input type="text" id="address">
-    </div>
-
-    <div>
-        <label>Ngày sinh:</label>
-        <input type="date" id="birthday">
-    </div>
 </div>
+<label for="name">Họ và tên:</label><input type="text" id="name">
+<label for="address">Địa chỉ:</label><input type="text" id="address">
+<label for="birthday">Ngày sinh:</label><input type="date" id="birthday">
+<label for="phone">Số điện thoại:</label>
 
+<input
+type="tel"
+id="phone"
+maxlength="10"
+placeholder="VD: 0912345678">
 <button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
+</div>
 
 <div class="updated-info">
 <h3>Thông tin hiện tại:</h3>
@@ -720,11 +563,6 @@ const memberPoints =
   document.getElementById("memberPoints");
 const nameInput = document.getElementById("name");
 const phoneInput = document.getElementById("phone");
-phoneInput.addEventListener("input", function () {
-    this.value = this.value
-        .replace(/\D/g, "")   // chỉ cho số
-        .slice(0, 10);        // tối đa 10 số
-});
 const addressInput = document.getElementById("address");
 const birthdayInput = document.getElementById("birthday");
 const currentName = document.getElementById("currentName");
@@ -855,132 +693,175 @@ auth.onAuthStateChanged(user=>{
 
     const data = doc.data();
 
- if (data.phone) {
+    if(data.phone){
 
-    firebase.firestore()
-    .collection("members")
-    .where("phone", "==", data.phone)
-    .limit(1)
-    .onSnapshot(async (memberSnap) => {
+       firebase.firestore()
+.collection("members")
+.where("phone","==",data.phone)
+.limit(1)
+.onSnapshot(snapshot=>{
 
-        if (memberSnap.empty) return;
+    if(snapshot.empty) return;
 
-        const memberDoc = memberSnap.docs[0];
-        const memberRef = memberDoc.ref;
-        const member = memberDoc.data();
+    const member = snapshot.docs[0].data();
 
-        // Hạng thành viên
-        memberLevel.textContent = member.level || "Silver";
+    memberLevel.textContent = member.level || "Silver";
 
-        // Thưởng sinh nhật
-        const today = new Date();
-        const currentYear = today.getFullYear();
+    memberPoints.textContent =
+        (Number(member.points || 0) * 100)
+        .toLocaleString("vi-VN") + "đ";
 
-        if (member.birthday) {
+});
+        if(!memberSnap.empty){
 
-            const birth = new Date(member.birthday);
+            const member =
+            memberSnap.docs[0].data();
 
-            const isBirthday =
-                today.getDate() === birth.getDate() &&
-                today.getMonth() === birth.getMonth();
+            memberLevel.textContent =
+            member.level || "Silver";
+         const memberRef =
+  memberSnap.docs[0].ref;
 
-            const receivedThisYear =
-                member.birthdayGiftYear === currentYear;
+const today = new Date();
+const currentYear =
+  today.getFullYear();
 
-            if (isBirthday && !receivedThisYear) {
+if(member.birthday){
 
-                await memberRef.update({
-                    points: Number(member.points || 0) + 100,
-                    birthdayGiftYear: currentYear
-                });
+  const birth =
+    new Date(member.birthday);
 
-                member.points = Number(member.points || 0) + 100;
+  const isBirthday =
 
-                alert("🎂 Chúc mừng sinh nhật! Bạn nhận 10.000đ điểm thưởng");
-            }
-        }
+    today.getDate() === birth.getDate() &&
 
-        // Điểm
-        memberPoints.textContent =
-            (Number(member.points || 0) * 100).toLocaleString("vi-VN") + "đ";
+    today.getMonth() === birth.getMonth();
 
-        const totalSpent = Number(member.totalSpent || 0);
+  const receivedThisYear =
 
-        const rewardEl =
-            document.getElementById("levelReward");
+    member.birthdayGiftYear === currentYear;
 
-        const nextLevelEl =
-            document.getElementById("nextLevelText");
+  if(
+    isBirthday &&
+    !receivedThisYear
+  ){
+      
+    await memberRef.update({
 
-        if (member.level === "VIP") {
+      points:
+        Number(member.points || 0)
+        + 100,
 
-            rewardEl.textContent =
-                "Đã nhận 20.000đ khi lên VIP";
-
-        } else if (member.level === "Gold") {
-
-            rewardEl.textContent =
-                "Đã nhận 10.000đ khi lên Gold";
-
-        } else {
-
-            rewardEl.textContent =
-                "Chưa nhận quà nâng hạng";
-        }
-
-        if (member.level === "Silver") {
-
-            const remain =
-                Math.max(0, 5000000 - totalSpent);
-
-            nextLevelEl.innerHTML =
-                `💰 Còn <b>${remain.toLocaleString()}đ</b> để lên Gold`;
-
-        } else if (member.level === "Gold") {
-
-            const remain =
-                Math.max(0, 10000000 - totalSpent);
-
-            nextLevelEl.innerHTML =
-                `👑 Còn <b>${remain.toLocaleString()}đ</b> để lên VIP`;
-
-        } else {
-
-            nextLevelEl.innerHTML =
-                "🏆 Bạn đang ở hạng cao nhất";
-        }
+      birthdayGiftYear:
+        currentYear
 
     });
 
+    member.points =
+      Number(member.points || 0)
+      + 100;
+
+    alert(
+      "🎂 Chúc mừng sinh nhật! Bạn nhận 10.000đ điểm thưởng"
+    );
+
+  }
+
+}
+            const pointMoney =
+  Number(member.points || 0) * 100;
+
+memberPoints.textContent =
+  pointMoney.toLocaleString("vi-VN") + "đ";
+           const totalSpent =
+  Number(member.totalSpent || 0);
+
+const rewardEl =
+  document.getElementById("levelReward");
+
+const nextLevelEl =
+  document.getElementById("nextLevelText");
+
+// Hiện quà hạng
+if(member.level === "VIP"){
+
+  rewardEl.textContent =
+    "Đã nhận 20.000đ khi lên VIP";
+
+}else if(member.level === "Gold"){
+
+  rewardEl.textContent =
+    "Đã nhận 10.000đ khi lên Gold";
+
+}else{
+
+  rewardEl.textContent =
+    "Chưa nhận quà nâng hạng";
+
 }
 
-   nameInput.value = data.name || "";
-   console.log("uidToLoad =", uidToLoad);
-console.log("data =", data);
-phoneInput.value = data.phone || "";
-addressInput.value = data.address || "";
-birthdayInput.value = data.birthday || "";
+           
+// Mốc tiếp theo
 
-if(data.birthday){
-    birthdayInput.disabled = true;
+if(member.level === "Silver"){
+
+  const remain =
+    Math.max(
+      0,
+      5000000 - totalSpent
+    );
+
+  nextLevelEl.innerHTML =
+    `💰 Còn <b>${remain.toLocaleString()}đ</b> để lên Gold`;
+
 }
+else if(member.level === "Gold"){
 
-avatarImg.src =
+  const remain =
+    Math.max(
+      0,
+      10000000 - totalSpent
+    );
+
+  nextLevelEl.innerHTML =
+    `👑 Còn <b>${remain.toLocaleString()}đ</b> để lên VIP`;
+
+}
+else{
+
+  nextLevelEl.innerHTML =
+    `🏆 Bạn đang ở hạng cao nhất`;
+}
+        }
+    }
+
+    nameInput.value = data.name || "";
+    phoneInput.value = data.phone || "";
+    addressInput.value = data.address || "";
+    birthdayInput.value = data.birthday || "";
+   if(data.birthday){
+
+  birthdayInput.disabled = true;
+
+}
+    avatarImg.src =
     data.avatar ||
     "https://i.ibb.co/Z1kv9nJj/logo.png";
 
-currentName.innerHTML =
-    (data.name || "Chưa cập nhật") +
-    getVerifiedBadge(uidToLoad);
+   currentName.innerHTML =
+(data.name || "Chưa cập nhật")
++
+getVerifiedBadge(uidToLoad);
 
-currentPhone.innerText =
+    currentPhone.innerText =
     data.phone || "Chưa cập nhật";
 
-currentAddress.innerText =
+    currentAddress.innerText =
     data.address || "Chưa cập nhật";
 
-currentBirthday.innerText =
+    currentBirthday.innerText =
     data.birthday || "Chưa cập nhật";
+
 });
     db.ref('carts/'+currentUser.uid).on('value',snapshot=>{
         let count=0; snapshot.forEach(item=>{count+=parseInt(item.val().quantity)||1;}); 
@@ -1093,9 +974,7 @@ for(const commentDoc of commentsSnap.docs){
   });
 
 }
-       currentName.innerHTML =
-    name +
-    getVerifiedBadge(currentUser.uid);
+        currentName.innerText = name;
         currentPhone.innerText = phone;
         currentAddress.innerText = address;
         currentBirthday.innerText = birthday;
