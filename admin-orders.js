@@ -1809,5 +1809,6 @@ loadOrders();
   console.error(err);
   alert("Lỗi duyệt trả hàng");
 }
-  loadOrders();
+
+loadOrders();
 };
