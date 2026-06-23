@@ -63,7 +63,16 @@ if (value === "approved") {
       sold: firebase.firestore.FieldValue.increment(-qty)
     });
   }
-
+  await db.collection("stock_movements").add({
+  productId,
+  productName: item.name,
+  type: "RETURN",
+  qty,
+  reason: `Trả hàng đơn ${orderId}`,
+  orderId,
+  staffName: document.getElementById("adminName")?.textContent || "",
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
   // hoàn điểm
   if (order.memberId) {
 
