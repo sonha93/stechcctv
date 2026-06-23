@@ -82,12 +82,7 @@ if (value === "approved") {
 
     const earnPoints =
       Math.floor(Number(order.total || 0) / 10000);
- // 👇 THÊM ĐOẠN NÀY
   const memberSnap = await memberRef.get();
-
-  console.log("Điểm trước trả hàng:", memberSnap.data().points);
-  console.log("usedPoints:", usedPoints);
-  console.log("earnPoints:", earnPoints);
 
     await memberRef.update({
       points:
@@ -99,9 +94,8 @@ if (value === "approved") {
           -Number(order.total || 0)
         )
     });
-// 👇 THÊM ĐOẠN NÀY
   const afterSnap = await memberRef.get();
-  console.log("Điểm sau trả hàng:", afterSnap.data().points);
+
 
     await db.collection("member_history").add({
       memberId: order.memberId,
