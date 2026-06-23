@@ -44,36 +44,34 @@ async function refundMemberPoints(order, orderId) {
 
   const memberRef = db.collection("members").doc(order.memberId);
 
-  const memberSnap = await memberRef.get();
-  if (!memberSnap.exists) return;
-
-  const member = memberSnap.data();
-
   const usedPoints = Number(order.usedPoints || 0);
 
-  let percent = 0.5;
+const memberSnap = await memberRef.get();
+const member = memberSnap.data();
 
-  if (member.level === "Gold") {
-    percent = 1.0;
-  } else if (member.level === "VIP") {
-    percent = 1.5;
-  }
+let percent = 0.5;
 
-  const earnPoints = Math.floor(
-    Number(order.total || 0) * percent / 100
-  );
+if (member.level === "Gold") {
+  percent = 1.0;
+} else if (member.level === "VIP") {
+  percent = 1.5;
+}
 
-  await memberRef.update({
-    // trả lại điểm đã dùng, trừ điểm đã thưởng
-    points: firebase.firestore.FieldValue.increment(
-      usedPoints - earnPoints
-    ),
 
-    // trừ doanh số tích lũy
-    totalSpent: firebase.firestore.FieldValue.increment(
-      -Number(order.total || 0)
-    )
-  });
+const earnPoints = Math.floor(
+  Number(order.total || 0) * percent / 100
+);
+
+
+await memberRef.update({
+  points: firebase.firestore.FieldValue.increment(
+    usedPoints - earnPoints
+  
+  ),
+  
+  
+  totalSpent: newSpent
+});
 
   await db.collection("member_history").add({
     memberId: order.memberId,
@@ -1384,8 +1382,11 @@ if (
     if (newPoints < 0) newPoints = 0;
     if (newSpent < 0) newSpent = 0;
 
+await memberRef.update({
 
-         usedPoints - earnPoints
+    points:
+      firebase.firestore.FieldValue.increment(
+          usedPoints
       ),
 
     totalSpent: newSpent
@@ -1710,8 +1711,7 @@ window.alert = window.showToast;
 
 }
 window.approveReturn = async function(orderId) {
-  try {
-  
+
   const ok = confirm("Duyệt trả hàng đơn này?");
   if (!ok) return;
 
@@ -1801,13 +1801,7 @@ const earnPoints = Math.floor(
   });
 
   await batch.commit();
-
-    alert("Đã duyệt trả hàng");
-    loadOrders();
-
-  } catch (err) {
-    console.error(err);
-    alert("Lỗi duyệt trả hàng");
-  }
+  
+  alert("Đã duyệt trả hàng");
+  loadOrders();
 };
-loadOrders();
