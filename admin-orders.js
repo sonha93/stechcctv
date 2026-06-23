@@ -665,7 +665,7 @@ if (
     }
 
     revenueByDate[dateKey] += Number(order.total || 0);
-  }
+  
 // ============================
 // RENDER TABLE
 // ============================
