@@ -1226,11 +1226,17 @@ if(
 const usedPoints =
   Number(orderData.usedPoints || 0);
 
-const finalTotal =
-  Number(orderData.total || 0);
+const orderAmount =
+  Number(
+    orderData.subtotal ||
+    orderData.originalTotal ||
+    orderData.totalBeforeDiscount ||
+    orderData.total ||
+    0
+  );
 
 const earnPoints =
-  Math.floor(finalTotal / 100000);
+  Math.floor(orderAmount / 100000);
 const currentPoints =
   Number(member.points || 0);
 
