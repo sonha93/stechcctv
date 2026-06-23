@@ -80,14 +80,12 @@ if (value === "approved") {
     const usedPoints =
       Number(order.usedPoints || Math.floor(cashbackUsed / 100));
 
-  const usedPoints = Number(order.usedPoints || 0);
+ const usedPoints = Number(order.usedPoints || 0);
 const earnPoints = Number(order.earnPoints || 0);
-   await memberRef.update({
+
+await memberRef.update({
   points: firebase.firestore.FieldValue.increment(
     usedPoints - earnPoints
-  ),
-  totalSpent: firebase.firestore.FieldValue.increment(
-    -Number(order.total || 0)
   )
 });
 
