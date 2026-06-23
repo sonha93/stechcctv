@@ -48,7 +48,10 @@ async function refundMemberPoints(order, orderId) {
 
 const memberSnap = await memberRef.get();
 const member = memberSnap.data();
-
+const newSpent = Math.max(
+  0,
+  Number(member.totalSpent || 0) - Number(order.total || 0)
+);
 let percent = 0.5;
 
 if (member.level === "Gold") {
@@ -66,12 +69,11 @@ const earnPoints = Math.floor(
 await memberRef.update({
   points: firebase.firestore.FieldValue.increment(
     usedPoints - earnPoints
-  
   ),
-  
-  
   totalSpent: newSpent
 });
+  
+  
 
   await db.collection("member_history").add({
     memberId: order.memberId,
@@ -118,10 +120,10 @@ if (value === "approved") {
   update.status = "returned";
   update.returnApprovedAt = Date.now();
   update.pointsProcessed = false;
-
-  await restoreStock({ ...order, id: orderId });
-
-  await refundMemberPoints(order, orderId);
+  update.returnProcessed = false;
+  // Chỉ đánh dấu đã duyệt
+  // Chưa hoàn kho
+  // Chưa hoàn điểm
 
 }
 
@@ -138,6 +140,39 @@ select.disabled = true;
 alert("Cập nhật trả hàng thành công");
 
 loadOrders();
+});
+document.addEventListener("click", async (e) => {
+
+  if (!e.target.classList.contains("confirm-return")) return;
+
+  const orderId = e.target.dataset.id;
+
+  const orderRef = db.collection("orders").doc(orderId);
+  const orderSnap = await orderRef.get();
+
+  if (!orderSnap.exists) return;
+
+  const order = orderSnap.data();
+
+  if (order.returnProcessed) {
+    alert("Đơn đã xử lý trả hàng.");
+    return;
+  }
+
+  await restoreStock({ ...order, id: orderId });
+
+  await refundMemberPoints(order, orderId);
+
+  await orderRef.update({
+    status: "returned",
+    returnProcessed: true,
+    returnCompletedAt: Date.now()
+  });
+
+  alert("Đã xác nhận nhận hàng.");
+
+  loadOrders();
+
 });
 let currentPage = 1;
 const perPage = 10;
@@ -723,10 +758,10 @@ const lockStatus =
       </td>
      <td>
   ${
-    order.returnRequested === true
-      ? `
-        <select 
-          class="return-status" 
+  order.returnRequested === true
+    ? `
+        <select
+          class="return-status"
           data-id="${doc.id}"
           ${
             order.returnStatus === "approved" ||
@@ -739,9 +774,17 @@ const lockStatus =
           <option value="approved" ${order.returnStatus === "approved" ? "selected" : ""}>Duyệt trả</option>
           <option value="rejected" ${order.returnStatus === "rejected" ? "selected" : ""}>Từ chối</option>
         </select>
+
+        ${
+          order.returnStatus === "approved" && !order.returnProcessed
+            ? `<br><button class="confirm-return" data-id="${doc.id}">
+                Đã nhận hàng
+              </button>`
+            : ""
+        }
       `
-      : `<span style="color:#999;">--</span>`
-  }
+    : `<span style="color:#999;">--</span>`
+}
 </td>
       <td>
 
