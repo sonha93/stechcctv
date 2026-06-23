@@ -3,6 +3,70 @@ import { loadProfilePage } from "./profile-staff.js";
 let allSnapshotOrders = [];
 let allOrders = [];
 let revenueByDate = {};
+// Hàm hoàn kho
+async function restoreStock(order) {
+
+  const items = order.items || [];
+
+   for (const item of items) {
+    const productId =
+      item.productId || item.id || item._id;
+
+    if (!productId) continue;
+
+    const productRef = db.collection("products").doc(productId);
+    const productSnap = await productRef.get();
+
+    if (!productSnap.exists) continue;
+
+    const qty = Number(item.qty || 0);
+
+    await productRef.update({
+      stock: firebase.firestore.FieldValue.increment(qty),
+      sold: firebase.firestore.FieldValue.increment(-qty)
+    });
+
+    await db.collection("stock_movements").add({
+      productId,
+      productName: item.name || "",
+      type: "RETURN",
+      qty,
+      reason: `Trả hàng đơn ${order.id || ""}`,
+      staffName: document.getElementById("adminName")?.textContent || "",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
+}
+// Hàm hoàn điểm
+async function refundMemberPoints(order, orderId) {
+
+  if (!order.memberId) return;
+
+  const memberRef = db.collection("members").doc(order.memberId);
+
+  const usedPoints = Number(order.usedPoints || 0);
+
+const earnPoints =
+  Math.floor(Number(order.total || 0) / 100000);
+
+await memberRef.update({
+  points: firebase.firestore.FieldValue.increment(
+    usedPoints - earnPoints
+  ),
+  totalSpent: firebase.firestore.FieldValue.increment(
+    -Number(order.total || 0)
+  )
+});
+
+  await db.collection("member_history").add({
+    memberId: order.memberId,
+    orderId,
+    type: "refund_return",
+    usedPoints,
+    earnPoints,
+    createdAt: Date.now()
+  });
+}
 document.addEventListener("change", async (e) => {
   const select = e.target;
   if (!select.classList.contains("return-status")) return;
@@ -40,82 +104,25 @@ if (value === "approved") {
   update.returnApprovedAt = Date.now();
   update.pointsProcessed = false;
 
-  const items = order.items || [];
+  await restoreStock({ ...order, id: orderId });
 
-  // hoàn kho
-  for (const item of items) {
+  await refundMemberPoints(order, orderId);
 
-    const productId =
-      item.productId || item.id || item._id;
-
-    const productRef =
-      db.collection("products").doc(productId);
-
-    const productSnap =
-      await productRef.get();
-
-    if (!productSnap.exists) continue;
-
-    const qty = Number(item.qty || 0);
-
-    await productRef.update({
-      stock: firebase.firestore.FieldValue.increment(qty),
-      sold: firebase.firestore.FieldValue.increment(-qty)
-    });
-  }
-
-  // hoàn điểm
-  if (order.memberId) {
-
-    const memberRef =
-      db.collection("members").doc(order.memberId);
-
-    const cashbackUsed =
-      Number(
-        order.cashbackAmount ||
-        order.cashbackUsed ||
-        0
-      );
-
-    const usedPoints =
-      Number(order.usedPoints || Math.floor(cashbackUsed / 100));
-
-    const earnPoints =
-      Math.floor(Number(order.total || 0) / 10000);
-  const memberSnap = await memberRef.get();
-
-    await memberRef.update({
-      points:
-        firebase.firestore.FieldValue.increment(
-          usedPoints - earnPoints
-        ),
-      totalSpent:
-        firebase.firestore.FieldValue.increment(
-          -Number(order.total || 0)
-        )
-    });
-  const afterSnap = await memberRef.get();
-
-
-    await db.collection("member_history").add({
-      memberId: order.memberId,
-      orderId,
-      type: "refund_return",
-      usedPoints,
-      earnPoints,
-      createdAt: Date.now()
-    });
-  }
 }
+
 if (value === "rejected") {
+
   update.returnRejectedAt = Date.now();
+
 }
-  await orderRef.update(update);
 
-  select.disabled = true;
+await orderRef.update(update);
 
-  alert("Cập nhật trả hàng thành công");
-  loadOrders();
+select.disabled = true;
+
+alert("Cập nhật trả hàng thành công");
+
+loadOrders();
 });
 let currentPage = 1;
 const perPage = 10;
@@ -1216,22 +1223,14 @@ if(
 
     const member =
       memberDoc.data();
-const cashbackUsed =
-  Number(
-    orderData.cashbackAmount ||
-    orderData.cashbackUsed ||
-    0
-  );
-
 const usedPoints =
-  Math.floor(cashbackUsed / 100);
+  Number(orderData.usedPoints || 0);
 
 const finalTotal =
   Number(orderData.total || 0);
 
 const earnPoints =
-  Math.floor(finalTotal / 10000);
-
+  Math.floor(finalTotal / 100000);
 const currentPoints =
   Number(member.points || 0);
 
@@ -1268,14 +1267,13 @@ else if(newSpent >= 5000000){
 
 const newPoints =
   currentPoints
-  - usedPoints
   + earnPoints
   + bonusPoints;
 
-  await memberRef.update({
-  points: Math.max(0,newPoints),
-  totalSpent: newSpent,
-  level: level
+ await memberRef.update({
+    points: newPoints,
+    totalSpent: newSpent,
+    level: level
 });
 await db
   .collection("orders")
@@ -1342,12 +1340,11 @@ if (
 
     const member = memberDoc.data();
 
-    const cashbackUsed =
-      Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
+   
 
   const usedPoints =
   Number(orderData.usedPoints || 0);
-    const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
+    const earnPoints = Math.floor(Number(orderData.total || 0) / 100000);
 
     const rollbackKey = orderData.rollbackProcessed;
     if (rollbackKey === true) return;
@@ -1365,13 +1362,13 @@ if (
     if (newSpent < 0) newSpent = 0;
 
 await memberRef.update({
-  points: firebase.firestore.FieldValue.increment(
-    usedPoints
-  ),
-  totalSpent: newSpent,
-  lockedPoints: firebase.firestore.FieldValue.increment(
-    -usedPoints
-  )
+
+    points:
+      firebase.firestore.FieldValue.increment(
+          usedPoints
+      ),
+
+    totalSpent: newSpent
 });
     await db.collection("member_history").add({
       memberId: orderData.memberId,
@@ -1736,7 +1733,7 @@ window.approveReturn = async function(orderId) {
 
   // 2. hoàn điểm
   const usedPoints = Number(order.usedPoints || 0);
-  const earnPoints = Math.floor(Number(order.total || 0) / 10000);
+  const earnPoints = Math.floor(Number(order.total || 0) / 100000);
 
   if (order.memberId) {
     const memberRef = db.collection("members").doc(order.memberId);
