@@ -1711,6 +1711,7 @@ window.alert = window.showToast;
 
 }
 window.approveReturn = async function(orderId) {
+  try {
   
   const ok = confirm("Duyệt trả hàng đơn này?");
   if (!ok) return;
