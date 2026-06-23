@@ -46,16 +46,29 @@ async function refundMemberPoints(order, orderId) {
 
   const usedPoints = Number(order.usedPoints || 0);
 
-const earnPoints =
-  Math.floor(Number(order.total || 0) / 100000);
+const orderAmount = Number(
+  orderData.subtotal ||
+  orderData.originalTotal ||
+  orderData.totalBeforeDiscount ||
+  orderData.total ||
+  0
+);
+
+let percent = 0.5;
+
+if (member.level === "Gold") {
+  percent = 1.0;
+} else if (member.level === "VIP") {
+  percent = 1.5;
+}
+
+const earnPoints = Math.floor(orderAmount * percent / 100);
 
 await memberRef.update({
-  points: firebase.firestore.FieldValue.increment(
-    usedPoints - earnPoints
-  ),
-  totalSpent: firebase.firestore.FieldValue.increment(
-    -Number(order.total || 0)
-  )
+    points: firebase.firestore.FieldValue.increment(
+        usedPoints - earnPoints
+    ),
+    totalSpent: newSpent
 });
 
   await db.collection("member_history").add({
@@ -1357,8 +1370,15 @@ if (
 
   const usedPoints =
   Number(orderData.usedPoints || 0);
-    const earnPoints = Math.floor(Number(orderData.total || 0) / 100000);
+   let percent = 0.5;
 
+if (member.level === "Gold") {
+  percent = 1.0;
+} else if (member.level === "VIP") {
+  percent = 1.5;
+}
+
+const earnPoints = Math.floor(orderAmount * percent / 100);
     const rollbackKey = orderData.rollbackProcessed;
     if (rollbackKey === true) return;
 
@@ -1746,7 +1766,26 @@ window.approveReturn = async function(orderId) {
 
   // 2. hoàn điểm
   const usedPoints = Number(order.usedPoints || 0);
-  const earnPoints = Math.floor(Number(order.total || 0) / 100000);
+const memberSnap = await memberRef.get();
+const member = memberSnap.data() || {};
+
+const orderAmount = Number(
+  order.subtotal ||
+  order.originalTotal ||
+  order.totalBeforeDiscount ||
+  order.total ||
+  0
+);
+
+let percent = 0.5;
+
+if (member.level === "Gold") {
+  percent = 1.0;
+} else if (member.level === "VIP") {
+  percent = 1.5;
+}
+
+const earnPoints = Math.floor(orderAmount * percent / 100);
 
   if (order.memberId) {
     const memberRef = db.collection("members").doc(order.memberId);
