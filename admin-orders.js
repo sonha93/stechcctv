@@ -102,7 +102,7 @@ if (value === "approved") {
 // 👇 THÊM ĐOẠN NÀY
   const afterSnap = await memberRef.get();
   console.log("Điểm sau trả hàng:", afterSnap.data().points);
-}
+
     await db.collection("member_history").add({
       memberId: order.memberId,
       orderId,
