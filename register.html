@@ -30,11 +30,7 @@ button:hover{background:#0056b3;}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import {
-  getFirestore,
-  doc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 // Firebase config chuẩn
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -51,7 +47,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-const firestore = getFirestore(app);
 const nameInput = document.getElementById("name");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
@@ -90,15 +85,7 @@ registerBtn.addEventListener("click", async () => {
       avatar: "https://i.ibb.co/Z1kv9nJj/logo.png",
       createdAt: Date.now()
     });
-await setDoc(doc(firestore,"members",user.uid),{
-  name: name,
-  email: email,
-  phone: phone,
-  points: 0,
-  totalSpent: 0,
-  level: "Thường",
-  createdAt: new Date()
-});
+
     messageEl.style.color="green";
     messageEl.innerText="Đăng ký thành công! Chuyển tới profile...";
     
