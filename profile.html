@@ -695,12 +695,23 @@ auth.onAuthStateChanged(user=>{
 
     if(data.phone){
 
-        const memberSnap = await firebase.firestore()
-        .collection("members")
-        .where("phone","==",data.phone)
-        .limit(1)
-        .get();
+       firebase.firestore()
+.collection("members")
+.where("phone","==",data.phone)
+.limit(1)
+.onSnapshot(snapshot=>{
 
+    if(snapshot.empty) return;
+
+    const member = snapshot.docs[0].data();
+
+    memberLevel.textContent = member.level || "Silver";
+
+    memberPoints.textContent =
+        (Number(member.points || 0) * 100)
+        .toLocaleString("vi-VN") + "đ";
+
+});
         if(!memberSnap.empty){
 
             const member =
