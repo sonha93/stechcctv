@@ -368,11 +368,10 @@ const phoneValue =
 
 if(phoneValue){
 
-  const memberSnap = await db
-    .collection("members")
-    .where("phone","==",phoneValue)
-    .limit(1)
-    .get();
+ const user = auth.currentUser;
+
+const memberRef = db.collection("members").doc(user.uid);
+const memberDoc = await memberRef.get();
 
  if(!memberSnap.empty){
 
@@ -610,11 +609,34 @@ try{
 let memberId = null;
 let memberPoints = 0;
 
-const memberSnap = await db
-  .collection("members")
-  .where("phone", "==", phone)
-  .limit(1)
-  .get();
+const user = auth.currentUser;
+
+const memberRef = db.collection("members").doc(user.uid);
+const memberDoc = await memberRef.get();
+
+let memberId = user.uid;
+let memberPoints = 0;
+
+if(!memberDoc.exists){
+
+  await memberRef.set({
+    name: name,
+    phone: phone,
+    address: address,
+    birthday: "",
+    birthdayGiftYear: null,
+    points: 100,
+    totalSpent: 0,
+    level: "Silver",
+    createdAt: Date.now()
+  });
+
+  memberPoints = 100;
+
+} else {
+  const memberData = memberDoc.data();
+  memberPoints = Number(memberData.points || 0);
+}
 
 if(memberSnap.empty){
 
@@ -670,8 +692,11 @@ const lockedPoints = Number(usePoints || 0);
 if (lockedPoints > 0 && memberId) {
 
   await db
-    .collection("members")
-    .doc(memberId)
+    await db.collection("members")
+  .doc(user.uid)
+  .update({
+    points: firebase.firestore.FieldValue.increment(-lockedPoints)
+  });
     .update({
       points: firebase.firestore.FieldValue.increment(-lockedPoints)
     });
