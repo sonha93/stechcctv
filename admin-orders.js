@@ -9,7 +9,7 @@ document.addEventListener("change", async (e) => {
 
   const orderId = select.dataset.id;
   const value = select.value;
-  select.disabled = true;
+
   const orderRef = db.collection("orders").doc(orderId);
   const orderSnap = await orderRef.get();
 
@@ -88,6 +88,23 @@ if (value === "approved") {
       )
     });
   }
+  const usedPoints =
+      Number(order.usedPoints || Math.floor(cashbackUsed / 100));
+
+    const earnPoints =
+      Math.floor(Number(order.total || 0) / 10000);
+
+    await memberRef.update({
+      points:
+        firebase.firestore.FieldValue.increment(
+          usedPoints - earnPoints
+        ),
+      totalSpent:
+        firebase.firestore.FieldValue.increment(
+          -Number(order.total || 0)
+        )
+    });
+
     await db.collection("member_history").add({
       memberId: order.memberId,
       orderId,
