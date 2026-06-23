@@ -609,27 +609,30 @@ button:hover{
 
 /* mobile */
 
-@media(max-width:768px){
-
-.profile-card{
-    padding:20px;
-}
-
-.profile-card h2{
-    font-size:30px;
-}
-
-.avatar-container{
-    width:130px;
-    height:130px;
-}
+/* Form 2 cột trên laptop */
 .form-grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
     gap:20px;
+    margin-top:20px;
 }
 
+/* Mobile */
 @media (max-width:768px){
+
+    .profile-card{
+        padding:20px;
+    }
+
+    .profile-card h2{
+        font-size:30px;
+    }
+
+    .avatar-container{
+        width:130px;
+        height:130px;
+    }
+
     .form-grid{
         grid-template-columns:1fr;
     }
@@ -700,6 +703,7 @@ button:hover{
   <p id="nextLevelText">
     Đang tải...
   </p>
+   
 <div class="form-grid">
     <div>
         <label>Họ và tên:</label>
