@@ -119,19 +119,25 @@ window.loadMembers = async function(){
                         ${data.level || "Thường"}
                     </td>
 
-                    <td>
+                  <td>
 
-                        <button
-                            onclick="
-                                deleteMember(
-                                    '${docSnap.id}'
-                                )
-                            "
-                        >
-                            Xóa
-                        </button>
+    <button
+        onclick="giftPoints('${docSnap.id}')"
+    >
+        🎁 Tặng điểm
+    </button>
 
-                    </td>
+    <button
+        onclick="
+            deleteMember(
+                '${docSnap.id}'
+            )
+        "
+    >
+        Xóa
+    </button>
+
+</td>
 
                 </tr>
             `;
@@ -344,3 +350,55 @@ if(memberRadio){
     );
 
 }
+// ============================
+// GIFT POINTS
+// ============================
+
+window.giftPoints = async function(memberId){
+
+    const input = prompt("Nhập số điểm muốn tặng:");
+
+    if(input === null) return;
+
+    const points = Number(input);
+
+    if(isNaN(points) || points <= 0){
+
+        alert("Điểm không hợp lệ");
+        return;
+
+    }
+
+    try{
+
+        const ref = doc(db,"members",memberId);
+
+        const snap = await getDoc(ref);
+
+        if(!snap.exists()) return;
+
+        const data = snap.data();
+
+        await updateDoc(ref,{
+            points:Number(data.points || 0) + points
+        });
+
+        await addDoc(collection(db,"member_history"),{
+            memberId,
+            type:"gift_points",
+            points,
+            createdAt:serverTimestamp()
+        });
+
+        alert("Đã tặng " + points + " điểm");
+
+        loadMembers();
+
+    }catch(err){
+
+        console.log(err);
+        alert("Lỗi tặng điểm");
+
+    }
+
+};
