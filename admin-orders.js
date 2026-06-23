@@ -82,7 +82,6 @@ await db.collection("member_history").add({
 await orderRef.update({
   refundProcessed: true
 });
-}
 
 await memberRef.update({
   points: firebase.firestore.FieldValue.increment(
