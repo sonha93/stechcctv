@@ -1713,19 +1713,25 @@ window.approveReturn = async function(orderId) {
     });
 
     // ❌ KHÔNG add ngoài batch nếu muốn nhất quán
-    const movRef = db.collection("stock_movements").doc();
+   const movRef = db.collection("stock_movements").doc();
 
-    batch.set(movRef, {
-      productId: item.productId,
-      productName: item.name,
-      type: "RETURN",
-      qty: qty,
-      reason: `Trả hàng đơn ${orderId}`,
-      orderId,
-      staffName: document.getElementById("adminName")?.textContent || "",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  }
+batch.set(movRef, {
+  productId: item.productId,
+  productName: item.name,
+  type: "RETURN",
+
+  qty: qty,
+  remainQty: qty,
+
+  reason: `Trả hàng đơn ${orderId}`,
+  orderId,
+
+  staffName:
+    document.getElementById("adminName")?.textContent || "",
+
+  createdAt:
+    firebase.firestore.FieldValue.serverTimestamp()
+});
 
   // 2. hoàn điểm
   const usedPoints = Number(order.usedPoints || 0);
