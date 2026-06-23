@@ -39,49 +39,44 @@ async function refundMemberPoints(order, orderId) {
 
   const orderRef = db.collection("orders").doc(orderId);
   const orderSnap = await orderRef.get();
-
   if (!orderSnap.exists) return;
 
   const orderData = orderSnap.data();
-
-  // 🔥 CHỐNG DOUBLE REFUND
   if (orderData.refundProcessed) return;
 
-const memberRef = db.collection("members").doc(order.memberId);
+  const memberRef = db.collection("members").doc(order.memberId);
+  const memberSnap = await memberRef.get();
+  if (!memberSnap.exists) return;
 
-const memberSnap = await memberRef.get();
-if (!memberSnap.exists) return;
+  const member = memberSnap.data();
 
-const member = memberSnap.data();
+  const usedPoints = Number(order.usedPoints || 0);
+  const earnPoints = Math.floor(Number(order.total || 0) / 100000);
 
-const usedPoints = Number(order.usedPoints || 0);
-const earnPoints = Math.floor(Number(order.total || 0) / 100000);
+  const refundPoints = usedPoints - earnPoints;
 
-const refundPoints = usedPoints - earnPoints;
+  const newSpent =
+    Number(member.totalSpent || 0) - Number(order.total || 0);
 
-if (order.refundProcessed) return;
+  await memberRef.update({
+    points: firebase.firestore.FieldValue.increment(refundPoints),
+    totalSpent: newSpent < 0 ? 0 : newSpent
+  });
 
-// 1. update member
-await memberRef.update({
-  points: firebase.firestore.FieldValue.increment(refundPoints),
-  totalSpent: firebase.firestore.FieldValue.increment(-Number(order.total || 0))
-});
+  await db.collection("member_history").add({
+    memberId: order.memberId,
+    orderId,
+    type: "refund_return",
+    usedPoints,
+    earnPoints,
+    refundPoints,
+    createdAt: Date.now()
+  });
 
-// 2. log history
-await db.collection("member_history").add({
-  memberId: order.memberId,
-  orderId,
-  usedPoints,
-  earnPoints,
-  refundPoints,
-  type: "refund_return",
-  createdAt: Date.now()
-});
-
-// 3. lock order
-await orderRef.update({
-  refundProcessed: true
-});
+  await orderRef.update({
+    refundProcessed: true
+  });
+}
 
 await memberRef.update({
   points: firebase.firestore.FieldValue.increment(
