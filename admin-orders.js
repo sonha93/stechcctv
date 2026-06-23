@@ -1715,9 +1715,9 @@ window.approveReturn = async function(orderId) {
     batch.update(productRef, {
       stock: firebase.firestore.FieldValue.increment(qty)
     });
-
+    console.log("Đang tạo stockMoves", item.productId);
     // ❌ KHÔNG add ngoài batch nếu muốn nhất quán
-   const movRef = firebase.firestore().collection("stockMoves").doc();
+  const movRef = db.collection("stockMoves").doc();
     batch.set(movRef, {
       productId: item.productId,
       productName: item.name,
