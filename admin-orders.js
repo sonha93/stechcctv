@@ -44,26 +44,34 @@ async function refundMemberPoints(order, orderId) {
 
   const memberRef = db.collection("members").doc(order.memberId);
 
-  const usedPoints = Number(order.usedPoints || 0);
+if (order.memberId) {
+  const memberRef = db.collection("members").doc(order.memberId);
+  const memberSnap = await memberRef.get();
 
-const memberSnap = await memberRef.get();
-const member = memberSnap.data();
-const newSpent = Math.max(
-  0,
-  Number(member.totalSpent || 0) - Number(order.total || 0)
-);
-let percent = 0.5;
+  if (memberSnap.exists) {
+    const member = memberSnap.data();
 
-if (member.level === "Gold") {
-  percent = 1.0;
-} else if (member.level === "VIP") {
-  percent = 1.5;
+    const usedPoints = Number(order.usedPoints || 0);
+    const earnPoints = Math.floor(Number(order.total || 0) / 100000);
+
+    const refundPoints = usedPoints - earnPoints;
+
+    batch.update(memberRef, {
+      points: firebase.firestore.FieldValue.increment(refundPoints),
+      totalSpent: firebase.firestore.FieldValue.increment(-Number(order.total || 0))
+    });
+
+    const histRef = db.collection("member_history").doc();
+    batch.set(histRef, {
+      memberId: order.memberId,
+      orderId,
+      type: "refund_return",
+      usedPoints,
+      earnPoints,
+      createdAt: Date.now()
+    });
+  }
 }
-
-
-const earnPoints = Math.floor(
-  Number(order.total || 0) * percent / 100
-);
 
 
 await memberRef.update({
