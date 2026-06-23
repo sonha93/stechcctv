@@ -1814,4 +1814,3 @@ const earnPoints = Math.floor(
   }
 };
 loadOrders();
-};
