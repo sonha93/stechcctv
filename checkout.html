@@ -628,8 +628,8 @@ if(memberSnap.empty){
   birthday: "",
   birthdayGiftYear: null,
 
-   points: 100,
-  totalSpent: 0,
+   points: 100 + Math.floor(finalTotal / 10000),
+totalSpent: finalTotal,
   level: "Silver",
 
   createdAt: Date.now()
@@ -675,7 +675,26 @@ if (lockedPoints > 0 && memberId) {
     .update({
       points: firebase.firestore.FieldValue.increment(-lockedPoints)
     });
+  if (memberId) {
+  const earnPoints = Math.floor(finalTotal / 10000); // 10.000đ = 1 điểm
 
+  await db.collection("members")
+.doc(memberId)
+.update({
+  points: firebase.firestore.FieldValue.increment(
+    Math.floor(finalTotal / 10000)
+  ),
+  totalSpent: firebase.firestore.FieldValue.increment(finalTotal)
+});
+
+  await db.collection("member_history").add({
+    memberId,
+    type: "earn_points",
+    points: earnPoints,
+    orderTotal: finalTotal,
+    createdAt: Date.now()
+  });
+}
   await db.collection("member_history").add({
     memberId,
     type: "use_points",
