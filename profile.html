@@ -25,111 +25,11 @@
 }
 
 body{
-    background:#f2f4f7;
+    background:#f5f5f5;
+    color:#111;
+    overflow-x:hidden;
 }
 
-.profile-container{
-    width:min(1100px,95%);
-    margin:40px auto;
-}
-.profile-layout{
-    display:grid;
-    grid-template-columns:320px 1fr;
-    gap:25px;
-    align-items:start;
-}
-   @media(max-width:768px){
-
-.profile-layout{
-    grid-template-columns:1fr;
-}
-
-}
-   .profile-card{
-    background:#fff;
-    border:1px solid #ddd;
-    border-radius:18px;
-    padding:25px;
-}
-   .avatar{
-
-    width:120px;
-    height:120px;
-
-    border-radius:50%;
-
-    object-fit:cover;
-
-    border:4px solid #2fa6b3;
-
-    display:block;
-    margin:15px auto;
-}
-   .profile-card input{
-
-    width:100%;
-    height:48px;
-
-    border:1px solid #d7d7d7;
-
-    border-radius:10px;
-
-    padding:0 15px;
-
-    margin-top:6px;
-    margin-bottom:18px;
-
-    font-size:15px;
-}
-   .profile-card button{
-
-    width:100%;
-    height:48px;
-
-    border:none;
-
-    border-radius:10px;
-
-    background:#1b74e4;
-
-    color:#fff;
-
-    font-size:16px;
-
-    font-weight:600;
-
-    cursor:pointer;
-}
-
-.profile-card button:hover{
-
-    background:#1565c0;
-
-}
-   .vip-box{
-
-    background:#fff8e6;
-
-    border:1px solid #ffd76a;
-
-    border-radius:12px;
-
-    padding:15px;
-
-    margin:20px 0;
-}
-   .info-box{
-
-    background:#eef5ff;
-
-    border:1px solid #b9d5ff;
-
-    border-radius:12px;
-
-    padding:15px;
-
-    margin-top:20px;
-}
 /* =========================
    HEADER & NAVBAR
 ========================= */
@@ -531,6 +431,199 @@ body{
   color: #fff;
   text-align: center;
   padding: 20px 10px;
+}
+/* ===========================
+   PROFILE
+=========================== */
+
+body{
+    margin:0;
+    background:#f3f5f7;
+    font-family:Arial,sans-serif;
+}
+
+.container{
+    width:100%;
+    max-width:1100px;
+    margin:40px auto;
+    padding:0 20px;
+    background:none;
+    box-shadow:none;
+    border-radius:0;
+}
+
+.profile-card{
+    width:100%;
+    max-width:760px;
+    margin:auto;
+    background:#fff;
+    border:1px solid #dcdcdc;
+    border-radius:16px;
+    padding:35px;
+}
+
+.profile-card h2{
+    text-align:center;
+    font-size:42px;
+    margin-bottom:30px;
+}
+
+/* avatar */
+
+.avatar-container{
+    width:170px;
+    height:170px;
+    margin:0 auto 25px;
+    border-radius:50%;
+    overflow:hidden;
+    border:4px solid #35b24a;
+    position:relative;
+}
+
+.avatar-container img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.camera-btn{
+    position:absolute;
+    right:8px;
+    bottom:8px;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#0ea5c6;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:3px solid #fff;
+}
+
+/* thông tin */
+
+.profile-summary{
+    text-align:left;
+    font-size:17px;
+    line-height:1.7;
+    margin-bottom:20px;
+}
+
+.profile-summary b{
+    font-size:18px;
+}
+
+/* vip */
+
+.vip-box{
+    background:#fff8e7;
+    border:1px solid #ecd57c;
+    border-radius:12px;
+    padding:18px;
+    margin:25px 0;
+    font-size:17px;
+}
+
+/* form */
+
+.info-fields label{
+    display:block;
+    font-size:17px;
+    font-weight:700;
+    margin:18px 0 8px;
+}
+
+.info-fields input{
+    width:100%;
+    height:54px;
+    border:1px solid #cfcfcf;
+    border-radius:10px;
+    padding:0 16px;
+    font-size:17px;
+    background:#fff;
+}
+
+.info-fields input:focus{
+    outline:none;
+    border-color:#1b74e4;
+}
+
+/* button */
+
+button{
+    width:100%;
+    height:54px;
+    margin-top:22px;
+    border:none;
+    border-radius:10px;
+    background:#1976f3;
+    color:#fff;
+    font-size:18px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#1565d8;
+}
+
+/* info */
+
+.updated-info{
+    margin-top:28px;
+    background:#eef5ff;
+    border:1px solid #cfe1ff;
+    border-radius:12px;
+    padding:20px;
+}
+
+.updated-info h3{
+    margin-bottom:15px;
+}
+
+.updated-info p{
+    margin:10px 0;
+}
+
+/* password */
+
+.password-section{
+    margin-top:35px;
+    border-top:1px solid #e4e4e4;
+    padding-top:30px;
+}
+
+.password-section h3{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.password-section input{
+    width:100%;
+    height:54px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    padding:0 15px;
+}
+
+/* mobile */
+
+@media(max-width:768px){
+
+.profile-card{
+    padding:20px;
+}
+
+.profile-card h2{
+    font-size:30px;
+}
+
+.avatar-container{
+    width:130px;
+    height:130px;
+}
+
 }
 </style>
 </head>
