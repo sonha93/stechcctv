@@ -44,35 +44,36 @@ async function refundMemberPoints(order, orderId) {
 
   const memberRef = db.collection("members").doc(order.memberId);
 
+  const memberSnap = await memberRef.get();
+  if (!memberSnap.exists) return;
+
+  const member = memberSnap.data();
+
   const usedPoints = Number(order.usedPoints || 0);
 
-const memberSnap = await memberRef.get();
-const member = memberSnap.data();
+  let percent = 0.5;
 
-let percent = 0.5;
+  if (member.level === "Gold") {
+    percent = 1.0;
+  } else if (member.level === "VIP") {
+    percent = 1.5;
+  }
 
-if (member.level === "Gold") {
-  percent = 1.0;
-} else if (member.level === "VIP") {
-  percent = 1.5;
-}
+  const earnPoints = Math.floor(
+    Number(order.total || 0) * percent / 100
+  );
 
+  await memberRef.update({
+    // trả lại điểm đã dùng, trừ điểm đã thưởng
+    points: firebase.firestore.FieldValue.increment(
+      usedPoints - earnPoints
+    ),
 
-const earnPoints = Math.floor(
-  Number(order.total || 0) * percent / 100
-);
-
-const newSpent =
-  Number(member.totalSpent || 0) - Number(order.total || 0);
-await memberRef.update({
-  points: firebase.firestore.FieldValue.increment(
-    usedPoints - earnPoints
-  
-  ),
-  
-  
-  totalSpent: newSpent
-});
+    // trừ doanh số tích lũy
+    totalSpent: firebase.firestore.FieldValue.increment(
+      -Number(order.total || 0)
+    )
+  });
 
   await db.collection("member_history").add({
     memberId: order.memberId,
