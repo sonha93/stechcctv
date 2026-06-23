@@ -413,12 +413,14 @@ button:hover{
   position:relative !important;
 
 }
+}
 body{
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   margin: 0;
-  overflow-x: hidden;
+}
+ overflow-x:hidden;
 }
 .container{
   flex: 1;
@@ -636,7 +638,7 @@ button{
   <p id="nextLevelText">
     Đang tải...
   </p>
-   </div> 
+   
 <div class="form-grid">
     <div>
         <label>Họ và tên:</label>
@@ -831,13 +833,11 @@ let currentUser = null;
 auth.onAuthStateChanged(user=>{
     if(!user){window.location.href="index.html";return;}
     currentUser = user;
-    console.log("UID:", currentUser.uid);
-    console.log("EMAIL:", currentUser.email);
-
     updateInfoBtn.disabled = false;
 
     // Thêm UID vào URL nếu chưa có
-   const uidToLoad = currentUser.uid;
+    const urlParams = new URLSearchParams(window.location.search);
+    let uidToLoad = urlParams.get('uid') || currentUser.uid;
     if(!window.location.search.includes("uid=")){
         window.history.replaceState({}, "", `${window.location.pathname}?uid=${currentUser.uid}`);
     }
@@ -850,9 +850,7 @@ auth.onAuthStateChanged(user=>{
   .doc(uidToLoad)
   .get()
 .then(async doc => {
-  console.log("Firestore UID:", uidToLoad);
-console.log("Firestore data:", JSON.stringify(doc.data(), null, 2));
-     console.log("DOC ID:", doc.id);
+
     if(!doc.exists) return;
 
     const data = doc.data();
