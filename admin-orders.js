@@ -1719,7 +1719,7 @@ window.approveReturn = async function(orderId) {
     // ❌ KHÔNG add ngoài batch nếu muốn nhất quán
  const movRef = db.collection("stock_movements").doc();
     batch.set(movRef, {
-      console.log("Chuẩn bị ghi RETURN", {
+     
       productId: item.productId,
       productName: item.name,
       type: "RETURN",
@@ -1771,7 +1771,7 @@ window.approveReturn = async function(orderId) {
   });
 
   await batch.commit();
-  console.log("Batch commit xong");
+  
   alert("Đã duyệt trả hàng");
   loadOrders();
 };
