@@ -1854,14 +1854,13 @@ window.approveReturn = async function(orderId) {
     });
   }
 
-  batch.update(orderRef, {
-    status: "returned",
-    returnProcessed: true,
-    returnApprovedAt: Date.now()
-  });
+batch.update(orderRef, {
+  status: "returned",
+  returnProcessed: true,
+  returnApprovedAt: firebase.firestore.FieldValue.serverTimestamp()
+});
 
-  await batch.commit();
+await batch.commit();
 
-  alert("Duyệt trả hàng xong");
-  loadOrders();
-};
+alert("Duyệt trả hàng xong");
+loadOrders();
