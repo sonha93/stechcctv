@@ -623,6 +623,16 @@ button:hover{
     width:130px;
     height:130px;
 }
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+}
+
+@media (max-width:768px){
+    .form-grid{
+        grid-template-columns:1fr;
+    }
 
 }
 </style>
@@ -690,19 +700,29 @@ button:hover{
   <p id="nextLevelText">
     Đang tải...
   </p>
-</div>
-<label for="name">Họ và tên:</label><input type="text" id="name">
-<label for="address">Địa chỉ:</label><input type="text" id="address">
-<label for="birthday">Ngày sinh:</label><input type="date" id="birthday">
-<label for="phone">Số điện thoại:</label>
+<div class="form-grid">
+    <div>
+        <label>Họ và tên:</label>
+        <input type="text" id="name">
+    </div>
 
-<input
-type="tel"
-id="phone"
-maxlength="10"
-placeholder="VD: 0912345678">
-<button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
+    <div>
+        <label>Số điện thoại:</label>
+        <input type="tel" id="phone">
+    </div>
+
+    <div>
+        <label>Địa chỉ:</label>
+        <input type="text" id="address">
+    </div>
+
+    <div>
+        <label>Ngày sinh:</label>
+        <input type="date" id="birthday">
+    </div>
 </div>
+
+<button id="updateInfoBtn" disabled>Cập nhật thông tin</button>
 
 <div class="updated-info">
 <h3>Thông tin hiện tại:</h3>
