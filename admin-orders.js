@@ -1235,15 +1235,8 @@ const orderAmount =
     0
   );
 
-let percent = 0.5; // Silver mặc định
-
-if (member.level === "Gold") {
-  percent = 1.0;
-} else if (member.level === "VIP") {
-  percent = 1.5;
-}
-
-const earnPoints = Math.floor(orderAmount * percent / 100);
+const earnPoints =
+  Math.floor(orderAmount / 100000);
 const currentPoints =
   Number(member.points || 0);
 
