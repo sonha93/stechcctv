@@ -721,27 +721,22 @@ const lockStatus =
       <td>
         ${formatPrice(order.total)}
       </td>
-     <td>
-  ${
-    order.returnRequested === true
-      ? `
-        <select 
-          class="return-status" 
-          data-id="${doc.id}"
-          ${
-            order.returnStatus === "approved" ||
-            order.returnStatus === "rejected"
-              ? "disabled"
-              : ""
-          }
-        >
-          <option value="pending" ${order.returnStatus === "pending" ? "selected" : ""}>Chờ xử lý</option>
-          <option value="approved" ${order.returnStatus === "approved" ? "selected" : ""}>Duyệt trả</option>
-          <option value="rejected" ${order.returnStatus === "rejected" ? "selected" : ""}>Từ chối</option>
-        </select>
-      `
-      : `<span style="color:#999;">--</span>`
-  }
+  <td>
+${
+  order.returnStatus === "approved"
+    ? `<span style="color:green;font-weight:bold;">Đã trả hàng</span>`
+    : order.returnStatus === "rejected"
+    ? `<span style="color:red;font-weight:bold;">Đã từ chối</span>`
+    : order.returnRequested === true
+    ? `
+      <select class="return-status" data-id="${doc.id}">
+        <option value="pending" selected>Chờ xử lý</option>
+        <option value="approved">Duyệt trả</option>
+        <option value="rejected">Từ chối</option>
+      </select>
+    `
+    : `<span style="color:#999;">--</span>`
+}
 </td>
       <td>
 
