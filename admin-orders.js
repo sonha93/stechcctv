@@ -35,11 +35,14 @@ document.addEventListener("change", async (e) => {
   };
 
 if (value === "approved") {
+
   update.status = "returned";
   update.returnApprovedAt = Date.now();
+  update.pointsProcessed = false;
 
   const items = order.items || [];
 
+  // hoàn kho
   for (const item of items) {
 
     const productId =
@@ -48,7 +51,8 @@ if (value === "approved") {
     const productRef =
       db.collection("products").doc(productId);
 
-    const productSnap = await productRef.get();
+    const productSnap =
+      await productRef.get();
 
     if (!productSnap.exists) continue;
 
@@ -59,8 +63,47 @@ if (value === "approved") {
       sold: firebase.firestore.FieldValue.increment(-qty)
     });
   }
-}
 
+  // hoàn điểm
+  if (order.memberId) {
+
+    const memberRef =
+      db.collection("members").doc(order.memberId);
+
+    const cashbackUsed =
+      Number(
+        order.cashbackAmount ||
+        order.cashbackUsed ||
+        0
+      );
+
+    const usedPoints =
+      Number(order.usedPoints || Math.floor(cashbackUsed / 100));
+
+    const earnPoints =
+      Math.floor(Number(order.total || 0) / 10000);
+
+    await memberRef.update({
+      points:
+        firebase.firestore.FieldValue.increment(
+          usedPoints - earnPoints
+        ),
+      totalSpent:
+        firebase.firestore.FieldValue.increment(
+          -Number(order.total || 0)
+        )
+    });
+
+    await db.collection("member_history").add({
+      memberId: order.memberId,
+      orderId,
+      type: "refund_return",
+      usedPoints,
+      earnPoints,
+      createdAt: Date.now()
+    });
+  }
+}
 if (value === "rejected") {
   update.returnRejectedAt = Date.now();
 }
