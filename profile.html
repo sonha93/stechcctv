@@ -692,9 +692,7 @@ auth.onAuthStateChanged(user=>{
     if(!doc.exists) return;
 
     const data = doc.data();
-   console.log("===== USERS =====");
-console.log(data);
-console.log("Phone trong users:", data.phone);
+
  if (data.phone) {
 
     firebase.firestore()
@@ -703,23 +701,11 @@ console.log("Phone trong users:", data.phone);
     .limit(1)
     .onSnapshot(async (memberSnap) => {
 
-    console.log("===== MEMBERS =====");
+        if (memberSnap.empty) return;
 
-    if (memberSnap.empty) {
-        console.log("❌ Không tìm thấy member");
-        return;
-    }
-
-    const memberDoc = memberSnap.docs[0];
-    const member = memberDoc.data();
-
-    console.log(member);
-    console.log("Level:", member.level);
-    console.log("Points:", member.points);
-    console.log("TotalSpent:", member.totalSpent);
-
-    memberPoints.textContent =
-        (Number(member.points || 0) * 100).toLocaleString("vi-VN") + "đ";
+        const memberDoc = memberSnap.docs[0];
+        const memberRef = memberDoc.ref;
+        const member = memberDoc.data();
 
         // Hạng thành viên
         memberLevel.textContent = member.level || "Silver";
