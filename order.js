@@ -579,8 +579,8 @@ ${
     margin-top:10px;
     padding:12px;
     background:#ffffff;
-    border:1px solid #9c27b0;
-    
+    border:1px solid #ffffff;
+    color:#7b1fa2;
     border-radius:8px;
     text-align:center;
     font-weight:bold;
