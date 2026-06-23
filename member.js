@@ -31,10 +31,7 @@ window.createMember = async function(){
         document.getElementById("memberPhone")
         ?.value
         .trim();
-const email =
-    document.getElementById("memberEmail")
-    ?.value
-    .trim();
+
     if(!name || !phone){
 
         alert("Nhập thiếu dữ liệu");
@@ -46,10 +43,9 @@ const email =
 
         await addDoc(
             collection(db,"members"),
-           {
+            {
                 name,
                 phone,
-                email,
                 points:0,
                 totalSpent:0,
                 level:"Thường",
@@ -108,9 +104,7 @@ window.loadMembers = async function(){
                     <td>
                         ${data.phone || "-"}
                     </td>
-                   <td>
-                        ${data.email || "-"}
-                    </td>
+
                     <td>
                         ${data.points || 0}
                     </td>
