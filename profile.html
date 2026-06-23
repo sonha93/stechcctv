@@ -647,7 +647,12 @@ button{
 
     <div>
         <label>Số điện thoại:</label>
-        <input type="tel" id="phone">
+   <input
+    type="tel"
+    id="phone"
+    maxlength="10"
+    inputmode="numeric"
+    placeholder="0912345678">
     </div>
 
     <div>
@@ -715,6 +720,11 @@ const memberPoints =
   document.getElementById("memberPoints");
 const nameInput = document.getElementById("name");
 const phoneInput = document.getElementById("phone");
+phoneInput.addEventListener("input", function () {
+    this.value = this.value
+        .replace(/\D/g, "")   // chỉ cho số
+        .slice(0, 10);        // tối đa 10 số
+});
 const addressInput = document.getElementById("address");
 const birthdayInput = document.getElementById("birthday");
 const currentName = document.getElementById("currentName");
