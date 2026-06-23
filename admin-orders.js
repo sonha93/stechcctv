@@ -42,7 +42,7 @@ if (value === "approved") {
 
   const items = order.items || [];
 
- // hoàn kho
+  // hoàn kho
   for (const item of items) {
 
     const productId =
@@ -64,31 +64,20 @@ if (value === "approved") {
     });
   }
 
-  // ===== hoàn điểm (CHỈ 1 LẦN) =====
+  // hoàn điểm
   if (order.memberId) {
 
     const memberRef =
       db.collection("members").doc(order.memberId);
 
-    const earnPoints =
-      Math.floor(Number(order.total || 0) / 10000);
-
     const cashbackUsed =
-      Number(order.cashbackAmount || order.cashbackUsed || 0);
+      Number(
+        order.cashbackAmount ||
+        order.cashbackUsed ||
+        0
+      );
 
     const usedPoints =
-      Math.floor(cashbackUsed / 100);
-
-    await memberRef.update({
-      points: firebase.firestore.FieldValue.increment(
-        usedPoints - earnPoints
-      ),
-      totalSpent: firebase.firestore.FieldValue.increment(
-        -Number(order.total || 0)
-      )
-    });
-  }
-  const usedPoints =
       Number(order.usedPoints || Math.floor(cashbackUsed / 100));
 
     const earnPoints =
