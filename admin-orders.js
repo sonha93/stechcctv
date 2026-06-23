@@ -1223,6 +1223,7 @@ const finalTotal =
 
 const earnPoints =
   Math.floor(finalTotal / 10000);
+  
 
 const currentPoints =
   Number(member.points || 0);
@@ -1728,7 +1729,10 @@ window.approveReturn = async function(orderId) {
 
   // 2. hoàn điểm
   const usedPoints = Number(order.usedPoints || 0);
-  const earnPoints = Math.floor(Number(order.total || 0) / 10000);
+ const earnPoints =
+  Math.floor(
+    Number(order.originalTotal || order.total || 0) / 10000
+  );
 
   if (order.memberId) {
     const memberRef = db.collection("members").doc(order.memberId);
