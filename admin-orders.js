@@ -674,7 +674,19 @@ if(
 ){
   completedCount++;
 }
+// doanh thu chuẩn
+if (
+  order.status === "completed" &&
+  !order.customerCancelled &&
+  !order.adminCancelled
+) {
+  revenue += Number(order.total || 0);
+}
 
+// 🔥 TRỪ KHI TRẢ HÀNG
+if (order.status === "returned") {
+  revenue -= Number(order.total || 0);
+}
 if(
   order.status === "cancelled" ||
   order.customerCancelled ||
