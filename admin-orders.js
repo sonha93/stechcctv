@@ -66,11 +66,11 @@ const earnPoints = Math.floor(
 await memberRef.update({
   points: firebase.firestore.FieldValue.increment(
     usedPoints - earnPoints
-  
   ),
-  
-  
-  totalSpent: newSpent
+
+  totalSpent: firebase.firestore.FieldValue.increment(
+    -Number(order.total || 0)
+  )
 });
 
   await db.collection("member_history").add({
