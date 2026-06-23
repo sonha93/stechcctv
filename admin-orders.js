@@ -62,7 +62,8 @@ const earnPoints = Math.floor(
   Number(order.total || 0) * percent / 100
 );
 
-
+const newSpent =
+  Number(member.totalSpent || 0) - Number(order.total || 0);
 await memberRef.update({
   points: firebase.firestore.FieldValue.increment(
     usedPoints - earnPoints
