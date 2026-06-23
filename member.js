@@ -108,7 +108,9 @@ window.loadMembers = async function(){
                     <td>
                         ${data.phone || "-"}
                     </td>
-                    <td>${data.email || "-"}</td>
+                   <td>
+                        ${data.email || "-"}
+                    </td>
                     <td>
                         ${data.points || 0}
                     </td>
