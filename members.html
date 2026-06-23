@@ -180,15 +180,16 @@ function renderMembers(){
     })
     .forEach(m => {
 
-      html += `
 <tr>
 
   <td>${m.name || "-"}</td>
 
   <td>${m.phone || "-"}</td>
 
+  <td>${m.email || "-"}</td>
+
   <td>
-     ${(Number(m.points || 0) * 100).toLocaleString("vi-VN")}đ
+    ${(Number(m.points || 0) * 100).toLocaleString("vi-VN")}đ
   </td>
 
   <td>
