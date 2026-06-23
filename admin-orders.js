@@ -3,85 +3,6 @@ import { loadProfilePage } from "./profile-staff.js";
 let allSnapshotOrders = [];
 let allOrders = [];
 let revenueByDate = {};
-// Hàm hoàn kho
-async function restoreStock(order) {
-
-  const items = order.items || [];
-
-   for (const item of items) {
-    const productId =
-      item.productId || item.id || item._id;
-
-    if (!productId) continue;
-
-    const productRef = db.collection("products").doc(productId);
-    const productSnap = await productRef.get();
-
-    if (!productSnap.exists) continue;
-
-    const qty = Number(item.qty || 0);
-
-    await productRef.update({
-      stock: firebase.firestore.FieldValue.increment(qty),
-      sold: firebase.firestore.FieldValue.increment(-qty)
-    });
-
-    await db.collection("stock_movements").add({
-      productId,
-      productName: item.name || "",
-      type: "RETURN",
-      qty,
-      reason: `Trả hàng đơn ${order.id || ""}`,
-      staffName: document.getElementById("adminName")?.textContent || "",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  }
-}
-// Hàm hoàn điểm
-async function refundMemberPoints(order, orderId) {
-
-  if (!order.memberId) return;
-
-  const memberRef = db.collection("members").doc(order.memberId);
-
-  const usedPoints = Number(order.usedPoints || 0);
-
-const memberSnap = await memberRef.get();
-const member = memberSnap.data();
-
-let percent = 0.5;
-
-if (member.level === "Gold") {
-  percent = 1.0;
-} else if (member.level === "VIP") {
-  percent = 1.5;
-}
-
-
-const earnPoints = Math.floor(
-  Number(order.total || 0) * percent / 100
-);
-
-
-await memberRef.update({
-  points: firebase.firestore.FieldValue.increment(
-    usedPoints - earnPoints
-  ),
-
-  totalSpent: firebase.firestore.FieldValue.increment(
-    -Number(order.total || 0)
-  )
-});
-
-  await db.collection("member_history").add({
-    memberId: order.memberId,
-    orderId,
-    type: "refund_return",
-    usedPoints,
-    earnPoints,
-    createdAt: Date.now()
-  });
-}
 document.addEventListener("change", async (e) => {
   const select = e.target;
   if (!select.classList.contains("return-status")) return;
@@ -119,25 +40,79 @@ if (value === "approved") {
   update.returnApprovedAt = Date.now();
   update.pointsProcessed = false;
 
-  await restoreStock({ ...order, id: orderId });
+  const items = order.items || [];
 
-  await refundMemberPoints(order, orderId);
+  // hoàn kho
+  for (const item of items) {
 
+    const productId =
+      item.productId || item.id || item._id;
+
+    const productRef =
+      db.collection("products").doc(productId);
+
+    const productSnap =
+      await productRef.get();
+
+    if (!productSnap.exists) continue;
+
+    const qty = Number(item.qty || 0);
+
+    await productRef.update({
+      stock: firebase.firestore.FieldValue.increment(qty),
+      sold: firebase.firestore.FieldValue.increment(-qty)
+    });
+  }
+
+  // hoàn điểm
+  if (order.memberId) {
+
+    const memberRef =
+      db.collection("members").doc(order.memberId);
+
+    const cashbackUsed =
+      Number(
+        order.cashbackAmount ||
+        order.cashbackUsed ||
+        0
+      );
+
+    const usedPoints =
+      Number(order.usedPoints || Math.floor(cashbackUsed / 100));
+
+    const earnPoints =
+      Math.floor(Number(order.total || 0) / 10000);
+
+    await memberRef.update({
+      points:
+        firebase.firestore.FieldValue.increment(
+          usedPoints - earnPoints
+        ),
+      totalSpent:
+        firebase.firestore.FieldValue.increment(
+          -Number(order.total || 0)
+        )
+    });
+
+    await db.collection("member_history").add({
+      memberId: order.memberId,
+      orderId,
+      type: "refund_return",
+      usedPoints,
+      earnPoints,
+      createdAt: Date.now()
+    });
+  }
 }
-
 if (value === "rejected") {
-
   update.returnRejectedAt = Date.now();
-
 }
+  await orderRef.update(update);
 
-await orderRef.update(update);
+  select.disabled = true;
 
-select.disabled = true;
-
-alert("Cập nhật trả hàng thành công");
-
-loadOrders();
+  alert("Cập nhật trả hàng thành công");
+  loadOrders();
 });
 let currentPage = 1;
 const perPage = 10;
@@ -721,7 +696,7 @@ const lockStatus =
       <td>
         ${formatPrice(order.total)}
       </td>
-  <td>
+     <td>
 ${
   order.returnStatus === "approved"
     ? `<span style="color:green;font-weight:bold;">Đã trả hàng</span>`
@@ -1233,20 +1208,22 @@ if(
 
     const member =
       memberDoc.data();
-const usedPoints =
-  Number(orderData.usedPoints || 0);
-
-const orderAmount =
+const cashbackUsed =
   Number(
-    orderData.subtotal ||
-    orderData.originalTotal ||
-    orderData.totalBeforeDiscount ||
-    orderData.total ||
+    orderData.cashbackAmount ||
+    orderData.cashbackUsed ||
     0
   );
 
+const usedPoints =
+  Math.floor(cashbackUsed / 100);
+
+const finalTotal =
+  Number(orderData.total || 0);
+
 const earnPoints =
-  Math.floor(orderAmount / 100000);
+  Math.floor(finalTotal / 10000);
+
 const currentPoints =
   Number(member.points || 0);
 
@@ -1283,13 +1260,14 @@ else if(newSpent >= 5000000){
 
 const newPoints =
   currentPoints
+  - usedPoints
   + earnPoints
   + bonusPoints;
 
- await memberRef.update({
-    points: newPoints,
-    totalSpent: newSpent,
-    level: level
+  await memberRef.update({
+  points: Math.max(0,newPoints),
+  totalSpent: newSpent,
+  level: level
 });
 await db
   .collection("orders")
@@ -1356,11 +1334,12 @@ if (
 
     const member = memberDoc.data();
 
-   
+    const cashbackUsed =
+      Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
 
   const usedPoints =
   Number(orderData.usedPoints || 0);
-    const earnPoints = Math.floor(Number(orderData.total || 0) / 100000);
+    const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
 
     const rollbackKey = orderData.rollbackProcessed;
     if (rollbackKey === true) return;
@@ -1378,13 +1357,13 @@ if (
     if (newSpent < 0) newSpent = 0;
 
 await memberRef.update({
-
-    points:
-      firebase.firestore.FieldValue.increment(
-          usedPoints
-      ),
-
-    totalSpent: newSpent
+  points: firebase.firestore.FieldValue.increment(
+    usedPoints
+  ),
+  totalSpent: newSpent,
+  lockedPoints: firebase.firestore.FieldValue.increment(
+    -usedPoints
+  )
 });
     await db.collection("member_history").add({
       memberId: orderData.memberId,
@@ -1731,11 +1710,11 @@ window.approveReturn = async function(orderId) {
     batch.update(productRef, {
       stock: firebase.firestore.FieldValue.increment(qty)
     });
-   
+
     // ❌ KHÔNG add ngoài batch nếu muốn nhất quán
- const movRef = db.collection("stock_movements").doc();
+    const movRef = db.collection("stock_movements").doc();
+
     batch.set(movRef, {
-     
       productId: item.productId,
       productName: item.name,
       type: "RETURN",
@@ -1749,17 +1728,8 @@ window.approveReturn = async function(orderId) {
 
   // 2. hoàn điểm
   const usedPoints = Number(order.usedPoints || 0);
- let percent = 0.5;
+  const earnPoints = Math.floor(Number(order.total || 0) / 10000);
 
-if (member.level === "Gold") {
-  percent = 1.0;
-} else if (member.level === "VIP") {
-  percent = 1.5;
-}
-
-const earnPoints = Math.floor(
-  Number(orderData.total || 0) * percent / 100
-);
   if (order.memberId) {
     const memberRef = db.collection("members").doc(order.memberId);
 
@@ -1796,7 +1766,7 @@ const earnPoints = Math.floor(
   });
 
   await batch.commit();
-  
+
   alert("Đã duyệt trả hàng");
   loadOrders();
 };
