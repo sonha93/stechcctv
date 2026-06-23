@@ -749,6 +749,10 @@ if (newTotalSpent >= 10000000) {
 }
 
 // cập nhật
+  console.log("memberId:", memberId);
+console.log("earnPoints:", earnPoints);
+console.log("finalTotal:", finalTotal);
+console.log("memberData:", memberData);
 await memberRef.update({
 
   totalSpent: firebase.firestore.FieldValue.increment(finalTotal),
@@ -758,7 +762,7 @@ await memberRef.update({
   level: newLevel
 
 });
-
+console.log("Cập nhật member thành công");
 // lưu lịch sử điểm
 await db.collection("member_history").add({
 
