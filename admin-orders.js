@@ -699,7 +699,7 @@ const lockStatus =
      <td>
 ${
   order.returnStatus === "approved"
-    ? `<span style="color:green;font-weight:bold;">Đã trả hàng</span>`
+    ? `<span style="color:green;font-weight:bold;">Đã trả</span>`
     : order.returnStatus === "rejected"
     ? `<span style="color:red;font-weight:bold;">Đã từ chối</span>`
     : order.returnRequested === true
