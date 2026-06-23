@@ -1717,8 +1717,7 @@ window.approveReturn = async function(orderId) {
     });
 
     // ❌ KHÔNG add ngoài batch nếu muốn nhất quán
-    const movRef = db.collection("stock_movements").doc();
-
+   const movRef = firebase.firestore().collection("stockMoves").doc();
     batch.set(movRef, {
       productId: item.productId,
       productName: item.name,
