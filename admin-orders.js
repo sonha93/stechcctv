@@ -76,7 +76,7 @@ async function refundMemberPoints(order, orderId) {
   await orderRef.update({
     refundProcessed: true
   });
-}
+
 
 await memberRef.update({
   points: firebase.firestore.FieldValue.increment(
