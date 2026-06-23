@@ -109,7 +109,6 @@ th{
   <th>Điểm</th>
   <th>Tổng chi tiêu</th>
   <th>Hạng</th>
-  <th>Thao tác</th>
 </tr>
 </thead>
 
@@ -124,6 +123,9 @@ th{
 </div>
 
 
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script type="module">
 import { db } from "./firebase-init.js";
@@ -177,33 +179,29 @@ function renderMembers(){
     .forEach(m => {
 
       html += `
-<tr>
+      <tr>
 
-  <td>${m.name || "-"}</td>
+        <td>${m.name || "-"}</td>
 
-  <td>${m.phone || "-"}</td>
+        <td>${m.phone || "-"}</td>
 
-  <td>
-     ${(Number(m.points || 0) * 100).toLocaleString("vi-VN")}đ
-  </td>
+        <td>
+           ${(Number(m.points || 0) * 100).toLocaleString("vi-VN")}đ
+        </td>
 
-  <td>
-    ${Number(m.totalSpent || 0).toLocaleString("vi-VN")}đ
-  </td>
+        <td>
+          ${Number(m.totalSpent || 0)
+            .toLocaleString("vi-VN")}đ
+        </td>
 
-  <td>
-    ${m.level || "Silver"}
-  </td>
+        <td>
+          ${m.level || "Silver"}
+        </td>
 
-  <td>
-    <button onclick="giftPoints('${m.id}')">
-      🎁 Tặng điểm
-    </button>
-  </td>
+      </tr>
+      `;
+    });
 
-</tr>
-`;
-  });
   if(!html){
 
     html = `
@@ -224,42 +222,7 @@ document
     "input",
     renderMembers
   );
-window.giftPoints = async function(memberId){
 
-  const input = prompt("Nhập số điểm muốn tặng:");
-
-  if(input === null) return;
-
-  const points = Number(input);
-
-  if(isNaN(points) || points <= 0){
-    alert("Điểm không hợp lệ");
-    return;
-  }
-
-  const ref = db.collection("members").doc(memberId);
-
-  const snap = await ref.get();
-
-  if(!snap.exists) return;
-
-  const data = snap.data();
-
-  await ref.update({
-    points: Number(data.points || 0) + points
-  });
-
-  await db.collection("member_history").add({
-    memberId,
-    type: "gift_points",
-    points,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-
-  alert("Đã tặng " + points + " điểm");
-
-  loadMembers();
-};
 loadMembers();
 
 </script>
