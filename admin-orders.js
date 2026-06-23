@@ -5,18 +5,14 @@ let allOrders = [];
 let revenueByDate = {};
 // Hàm hoàn kho
 async function restoreStock(order) {
-
   const items = order.items || [];
 
-   for (const item of items) {
-    const productId =
-      item.productId || item.id || item._id;
-
+  for (const item of items) {
+    const productId = item.productId || item.id || item._id;
     if (!productId) continue;
 
     const productRef = db.collection("products").doc(productId);
     const productSnap = await productRef.get();
-
     if (!productSnap.exists) continue;
 
     const qty = Number(item.qty || 0);
@@ -31,7 +27,7 @@ async function restoreStock(order) {
       productName: item.name || "",
       type: "RETURN",
       qty,
-      reason: `Trả hàng đơn ${order.id || ""}`,
+      reason: `Trả hàng đơn ${order.id}`,
       staffName: document.getElementById("adminName")?.textContent || "",
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
@@ -39,40 +35,50 @@ async function restoreStock(order) {
 }
 // Hàm hoàn điểm
 async function refundMemberPoints(order, orderId) {
-
   if (!order.memberId) return;
 
-  const memberRef = db.collection("members").doc(order.memberId);
+  const orderRef = db.collection("orders").doc(orderId);
+  const orderSnap = await orderRef.get();
 
-if (order.memberId) {
+  if (!orderSnap.exists) return;
+
+  const orderData = orderSnap.data();
+
+  // 🔥 CHỐNG DOUBLE REFUND
+  if (orderData.refundProcessed) return;
+
   const memberRef = db.collection("members").doc(order.memberId);
   const memberSnap = await memberRef.get();
 
-  if (memberSnap.exists) {
-    const member = memberSnap.data();
+  if (!memberSnap.exists) return;
 
-    const usedPoints = Number(order.usedPoints || 0);
-    const earnPoints = Math.floor(Number(order.total || 0) / 100000);
+  const member = memberSnap.data();
 
-    const refundPoints = usedPoints - earnPoints;
+  const usedPoints = Number(order.usedPoints || 0);
+  const orderTotal = Number(order.total || 0);
+  const earnPoints = Math.floor(orderTotal / 100000);
 
-    batch.update(memberRef, {
-      points: firebase.firestore.FieldValue.increment(refundPoints),
-      totalSpent: firebase.firestore.FieldValue.increment(-Number(order.total || 0))
-    });
+  const refundPoints = usedPoints - earnPoints;
 
-    const histRef = db.collection("member_history").doc();
-    batch.set(histRef, {
-      memberId: order.memberId,
-      orderId,
-      type: "refund_return",
-      usedPoints,
-      earnPoints,
-      createdAt: Date.now()
-    });
-  }
+  await memberRef.update({
+    points: firebase.firestore.FieldValue.increment(refundPoints),
+    totalSpent: firebase.firestore.FieldValue.increment(-orderTotal)
+  });
+
+  await db.collection("member_history").add({
+    memberId: order.memberId,
+    orderId,
+    type: "refund_return",
+    usedPoints,
+    earnPoints,
+    refundPoints,
+    createdAt: Date.now()
+  });
+
+  await orderRef.update({
+    refundProcessed: true
+  });
 }
-
 
 await memberRef.update({
   points: firebase.firestore.FieldValue.increment(
@@ -150,7 +156,6 @@ alert("Cập nhật trả hàng thành công");
 loadOrders();
 });
 document.addEventListener("click", async (e) => {
-
   if (!e.target.classList.contains("confirm-return")) return;
 
   const orderId = e.target.dataset.id;
@@ -162,8 +167,9 @@ document.addEventListener("click", async (e) => {
 
   const order = orderSnap.data();
 
+  // 🔥 CHỐNG DOUBLE CLICK
   if (order.returnProcessed) {
-    alert("Đơn đã xử lý trả hàng.");
+    alert("Đã xử lý rồi");
     return;
   }
 
@@ -177,11 +183,10 @@ document.addEventListener("click", async (e) => {
     returnCompletedAt: Date.now()
   });
 
-  alert("Đã xác nhận nhận hàng.");
-
+  alert("Hoàn trả thành công");
   loadOrders();
-
 });
+
 let currentPage = 1;
 const perPage = 10;
 // ============================
@@ -1762,8 +1767,7 @@ window.alert = window.showToast;
 
 }
 window.approveReturn = async function(orderId) {
-
-  const ok = confirm("Duyệt trả hàng đơn này?");
+  const ok = confirm("Duyệt trả hàng?");
   if (!ok) return;
 
   const orderRef = db.collection("orders").doc(orderId);
@@ -1772,59 +1776,59 @@ window.approveReturn = async function(orderId) {
 
   const order = orderSnap.data();
 
+  if (order.returnProcessed) {
+    alert("Đã xử lý rồi");
+    return;
+  }
+
   const batch = db.batch();
 
-  // 1. hoàn kho
+  // hoàn kho
   for (const item of order.items || []) {
-
     const productRef = db.collection("products").doc(item.productId);
-    const productSnap = await productRef.get();
-
-    if (!productSnap.exists) continue;
-
-    const qty = Number(item.qty || 0);
 
     batch.update(productRef, {
-      stock: firebase.firestore.FieldValue.increment(qty)
+      stock: firebase.firestore.FieldValue.increment(Number(item.qty || 0))
     });
-   
-    // ❌ KHÔNG add ngoài batch nếu muốn nhất quán
- const movRef = db.collection("stock_movements").doc();
+
+    const movRef = db.collection("stock_movements").doc();
+
     batch.set(movRef, {
-     
       productId: item.productId,
       productName: item.name,
       type: "RETURN",
-      qty: qty,
-      reason: `Trả hàng đơn ${orderId}`,
+      qty: item.qty,
       orderId,
       staffName: document.getElementById("adminName")?.textContent || "",
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
   }
 
-  // 2. hoàn điểm
-  const usedPoints = Number(order.usedPoints || 0);
- let percent = 0.5;
+  // hoàn điểm chuẩn
+  const memberRef = order.memberId
+    ? db.collection("members").doc(order.memberId)
+    : null;
 
-if (member.level === "Gold") {
-  percent = 1.0;
-} else if (member.level === "VIP") {
-  percent = 1.5;
-}
+  if (memberRef) {
+    const memberSnap = await memberRef.get();
+    const member = memberSnap.exists ? memberSnap.data() : {};
 
-const earnPoints = Math.floor(
-  Number(orderData.total || 0) * percent / 100
-);
-  if (order.memberId) {
-    const memberRef = db.collection("members").doc(order.memberId);
+    const usedPoints = Number(order.usedPoints || 0);
+    const orderTotal = Number(order.total || 0);
+
+    let percent = 0.5;
+    if (member.level === "Gold") percent = 1;
+    if (member.level === "VIP") percent = 1.5;
+
+    const earnPoints = Math.floor(orderTotal * percent / 100);
 
     batch.update(memberRef, {
       points: firebase.firestore.FieldValue.increment(usedPoints - earnPoints),
-      totalSpent: firebase.firestore.FieldValue.increment(-Number(order.total || 0))
+      totalSpent: firebase.firestore.FieldValue.increment(-orderTotal)
     });
 
     const histRef = db.collection("member_history").doc();
+
     batch.set(histRef, {
       memberId: order.memberId,
       orderId,
@@ -1835,24 +1839,14 @@ const earnPoints = Math.floor(
     });
   }
 
-  // 3. update order
   batch.update(orderRef, {
     status: "returned",
-    returnApprovedAt: Date.now(),
-    pointsProcessed: false
-  });
-
-  // 4. revenue adjust
-  const revenueRef = db.collection("revenue_adjustments").doc();
-  batch.set(revenueRef, {
-    orderId,
-    type: "RETURN_REFUND",
-    amount: Number(order.total || 0),
-    createdAt: Date.now()
+    returnProcessed: true,
+    returnApprovedAt: Date.now()
   });
 
   await batch.commit();
-  
-  alert("Đã duyệt trả hàng");
+
+  alert("Duyệt trả hàng xong");
   loadOrders();
 };
