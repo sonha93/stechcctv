@@ -62,8 +62,7 @@ const earnPoints = Math.floor(
   Number(order.total || 0) * percent / 100
 );
 
-const newSpent =
-  Number(orderData.totalSpent || 0) - Number(orderData.total || 0);
+
 await memberRef.update({
   points: firebase.firestore.FieldValue.increment(
     usedPoints - earnPoints
@@ -1712,7 +1711,7 @@ window.alert = window.showToast;
 
 }
 window.approveReturn = async function(orderId) {
-
+  
   const ok = confirm("Duyệt trả hàng đơn này?");
   if (!ok) return;
 
@@ -1802,7 +1801,13 @@ const earnPoints = Math.floor(
   });
 
   await batch.commit();
-  
-  alert("Đã duyệt trả hàng");
+
+alert("Đã duyệt trả hàng");
+loadOrders();
+
+} catch (err) {
+  console.error(err);
+  alert("Lỗi duyệt trả hàng");
+}
   loadOrders();
 };
