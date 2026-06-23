@@ -721,71 +721,7 @@ await db.collection("orders").add({
   createdAt: Date.now()
 
 });
-  // ============================
-// CỘNG ĐIỂM THÀNH VIÊN
-// ============================
 
-const earnPoints = Math.floor(finalTotal / 100000); // 100.000đ = 1 điểm
-console.log({
-  total,
-  finalTotal,
-  usePoints,
-  earnPoints,
-  memberPoints,
-  memberId
-});
-const memberRef = db.collection("members").doc(memberId);
-
-// Đọc dữ liệu mới nhất
-const memberDoc = await memberRef.get();
-const memberData = memberDoc.data() || {};
-
-const newTotalSpent =
-  Number(memberData.totalSpent || 0) + finalTotal;
-
-let newLevel = "Silver";
-
-if (newTotalSpent >= 10000000) {
-
-  newLevel = "VIP";
-
-} else if (newTotalSpent >= 5000000) {
-
-  newLevel = "Gold";
-
-}
-
-// cập nhật
-  console.log("memberId:", memberId);
-console.log("earnPoints:", earnPoints);
-console.log("finalTotal:", finalTotal);
-console.log("memberData:", memberData);
-await memberRef.update({
-
-  totalSpent: firebase.firestore.FieldValue.increment(finalTotal),
-
-  points: firebase.firestore.FieldValue.increment(earnPoints),
-
-  level: newLevel
-
-});
-console.log("Cập nhật member thành công");
-  const after = await memberRef.get();
-console.log("Sau update:", after.data());
-// lưu lịch sử điểm
-await db.collection("member_history").add({
-
-  memberId,
-
-  type: "earn_points",
-
-  points: earnPoints,
-
-  orderTotal: finalTotal,
-
-  createdAt: Date.now()
-
-});
   // TELEGRAM
  sendTelegramNotification(
   orderId,
