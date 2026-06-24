@@ -1265,7 +1265,12 @@ const newPoints =
   totalSpent: newSpent,
   level: level
 });
-updateData.pointsProcessed = true;
+await db
+  .collection("orders")
+  .doc(id)
+  .update({
+    pointsProcessed: true
+  });
     
 if(bonusPoints > 0){
 
@@ -1371,14 +1376,15 @@ points: firebase.firestore.FieldValue.increment(
     });
   }
 
- updateData.pointsProcessed = false;
-updateData.rollbackProcessed = true;
-
+  await db.collection("orders").doc(id).update({
+    pointsProcessed: false,
+    rollbackProcessed: true
+  });
+}
 await db
   .collection("orders")
   .doc(id)
   .update(updateData);
-}
         // completed => khóa
      if (
   status === "completed" ||
