@@ -101,14 +101,29 @@ if (value === "approved") {
         )
     });
 
-    await db.collection("member_history").add({
-      memberId: order.memberId,
-      orderId,
-      type: "refund_return",
-      usedPoints,
-      earnPoints,
-      createdAt: Date.now()
-    });
+   await db.collection("member_history").add({
+    memberId: orderData.memberId,
+    orderId: id,
+    type: "purchase",
+
+    orderDate: Date.now(),
+
+    items: orderData.items || [],
+
+    subtotal: Number(orderData.subtotal || orderData.total || 0),
+
+    usedPoints: Number(orderData.usedPoints || 0),
+
+    discountAmount: Number(orderData.cashbackAmount || 0),
+
+    total: Number(orderData.total || 0),
+
+    earnPoints: earnPoints,
+
+    remainPoints: newPoints,
+
+    createdAt: Date.now()
+});
   }
 }
 if (value === "rejected") {
