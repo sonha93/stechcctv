@@ -794,7 +794,7 @@ ${
       
      <td>
   <span style="white-space:nowrap;">
-    ${order.handledBy || "-"}
+    ${order.handledBy || ""}
   </span>
 </td>
 
