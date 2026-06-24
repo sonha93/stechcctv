@@ -1378,6 +1378,7 @@ await db
   .collection("orders")
   .doc(id)
   .update(updateData);
+}
         // completed => khóa
      if (
   status === "completed" ||
