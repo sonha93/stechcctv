@@ -707,7 +707,7 @@ ${
         <option value="rejected">Từ chối</option>
       </select>
     `
-    : `<span style="color:#999;">--</span>`
+    : `<span style="color:#999;"></span>`
 }
 </td>
       <td>
