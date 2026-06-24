@@ -250,7 +250,6 @@ function renderMembers(){
   }
 
   body.innerHTML = html;
-  document.getElementById("historySection").style.display = "block";
 }
 
 document.getElementById("search").addEventListener("input", () => {
@@ -339,6 +338,11 @@ snap.docs
 
 const h = doc.data();
 
+const date =
+    h.createdAt?.toDate
+        ? h.createdAt.toDate()
+        : new Date(h.createdAt || h.orderDate || Date.now());
+
 const products =
 (h.items||[])
 .map(i=>`${i.name} x${i.qty}`)
@@ -348,7 +352,14 @@ html += `
 <tr>
 
 <td>
-${new Date(h.createdAt).toLocaleString("vi-VN")}
+${date.toLocaleString("vi-VN")}
+</td>
+<tr>
+
+<td>
+${h.createdAt
+    ? h.createdAt.toDate().toLocaleString("vi-VN")
+    : "-"}
 </td>
 
 <td>
