@@ -439,33 +439,36 @@ function renderCart(){
     finalTotal += subFinal;
     originalTotal += subOld;
 
-    box.innerHTML += `
-      <div class="item">
-        <img src="${p.img}">
-        <div>
-          <b>${p.name}</b>
+   box.innerHTML += `
+  <div class="item">
+    <a href="product.html?id=${p.id}">
+      <img src="${p.img}">
+    </a>
 
-          <div class="calc">
+    <div>
+      <b>${p.name}</b>
 
-            <div class="sale-price">
-              ${price.toLocaleString()}đ
-            </div>
+      <div class="calc">
 
-            ${old > price
-              ? `<div class="old-price">${old.toLocaleString()}đ</div>`
-              : ""
-            }
-
-            <div>
-              ${qty} × ${price.toLocaleString()}đ
-              =
-              ${subFinal.toLocaleString()}đ
-            </div>
-
-          </div>
+        <div class="sale-price">
+          ${price.toLocaleString()}đ
         </div>
+
+        ${old > price
+          ? `<div class="old-price">${old.toLocaleString()}đ</div>`
+          : ""
+        }
+
+        <div>
+          ${qty} × ${price.toLocaleString()}đ
+          =
+          ${subFinal.toLocaleString()}đ
+        </div>
+
       </div>
-    `;
+    </div>
+  </div>
+`;
     
   });
 
