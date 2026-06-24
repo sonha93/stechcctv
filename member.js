@@ -10,6 +10,9 @@ import {
     updateDoc,
     deleteDoc,
     getDoc,
+    query,
+    where,
+    orderBy,
     serverTimestamp
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -126,7 +129,9 @@ window.loadMembers = async function(){
     >
         🎁 Tặng điểm
     </button>
-
+        <button onclick="showMemberHistory('${docSnap.id}')">
+📜 Lịch sử
+</button>
     <button
         onclick="
             deleteMember(
@@ -400,5 +405,87 @@ window.giftPoints = async function(memberId){
         alert("Lỗi tặng điểm");
 
     }
+
+};
+window.showMemberHistory = async function(memberId){
+
+    const tbody =
+        document.getElementById("memberHistoryBody");
+
+    tbody.innerHTML =
+        "<tr><td colspan='8'>Đang tải...</td></tr>";
+
+    const q = query(
+        collection(db,"member_history"),
+        where("memberId","==",memberId),
+        orderBy("createdAt","desc")
+    );
+
+    const snap = await getDocs(q);
+
+    let html = "";
+
+    snap.forEach(docSnap=>{
+
+        const h = docSnap.data();
+
+        html += `
+        <tr>
+
+        <td>
+        ${
+            h.orderDate
+            ? new Date(h.orderDate).toLocaleString("vi-VN")
+            : "-"
+        }
+        </td>
+
+        <td>
+        ${
+            (h.items || [])
+            .map(i=>`${i.name} x${i.qty}`)
+            .join("<br>")
+        }
+        </td>
+
+        <td>
+        ${formatVND(h.subtotal || 0)}
+        </td>
+
+        <td style="color:red">
+        -${h.usedPoints || 0}
+        </td>
+
+        <td>
+        ${formatVND(h.discountAmount || 0)}
+        </td>
+
+        <td>
+        ${formatVND(h.total || 0)}
+        </td>
+
+        <td style="color:green">
+        +${h.earnPoints || 0}
+        </td>
+
+        <td>
+        ${h.remainPoints || 0}
+        </td>
+
+        </tr>
+        `;
+
+    });
+
+    if(!html){
+
+        html =
+        "<tr><td colspan='8'>Chưa có lịch sử</td></tr>";
+
+    }
+
+    tbody.innerHTML = html;
+
+    document.getElementById("memberHistoryBox").style.display="block";
 
 };
