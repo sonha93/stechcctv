@@ -81,13 +81,6 @@ if (value === "approved") {
 
     const earnPoints =
       Math.floor(Number(order.total || 0) / 10000);
-    console.log({
-  oldStatus: orderData.status,
-  usedPoints,
-  earnPoints,
-  currentPoints: member.points,
-  total: orderData.total
-});
 
     await memberRef.update({
       points:firebase.firestore.FieldValue.increment(
@@ -1340,31 +1333,38 @@ if (
 
     const cashbackUsed =
       Number(orderData.cashbackAmount || orderData.cashbackUsed || 0);
-
-  const usedPoints =
+const usedPoints =
   Number(orderData.usedPoints || 0);
-    const earnPoints = Math.floor(Number(orderData.total || 0) / 10000);
 
-    const rollbackKey = orderData.rollbackProcessed;
-    if (rollbackKey === true) return;
+const earnPoints =
+  Math.floor(Number(orderData.total || 0) / 10000);
 
-    let newPoints =
-      Number(member.points || 0)
-      - earnPoints
-     
+const rollbackKey = orderData.rollbackProcessed;
+if (rollbackKey === true) return;
 
-    let newSpent =
-      Number(member.totalSpent || 0)
-      - Number(orderData.total || 0);
+// Chỉ thu hồi điểm thưởng nếu đơn đã từng completed
+const rollbackEarnPoints =
+  orderData.pointsProcessed ? earnPoints : 0;
+
+// Chỉ giảm doanh số nếu đơn đã từng completed
+const rollbackSpent =
+  orderData.pointsProcessed
+    ? Number(orderData.total || 0)
+    : 0;
+
+let newSpent =
+  Number(member.totalSpent || 0) - rollbackSpent;
+
+if (newSpent < 0) newSpent = 0;
 
     if (newPoints < 0) newPoints = 0;
     if (newSpent < 0) newSpent = 0;
-
+  const rollbackEarnPoints =
+  orderData.pointsProcessed ? earnPoints : 0;
 await memberRef.update({
-  points: firebase.firestore.FieldValue.increment(
-    usedPoints - earnPoints
-  ),
-
+points: firebase.firestore.FieldValue.increment(
+  usedPoints - rollbackEarnPoints
+),
   totalSpent: newSpent,
 
   lockedPoints: firebase.firestore.FieldValue.increment(
