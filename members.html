@@ -317,7 +317,7 @@ window.giftPoints = async function(memberId){
 };
 loadMembers();
 window.showHistory = async function(memberId){
-
+console.log("showHistory", memberId);
 const snap = await db
 .collection("member_history")
 .where("memberId","==",memberId)
