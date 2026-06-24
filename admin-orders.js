@@ -3,7 +3,6 @@ import { loadProfilePage } from "./profile-staff.js";
 let allSnapshotOrders = [];
 let allOrders = [];
 let revenueByDate = {};
-console.log("CHANGE RETURN");
 document.addEventListener("change", async (e) => {
   const select = e.target;
   if (!select.classList.contains("return-status")) return;
@@ -1697,7 +1696,6 @@ toast.remove();
 window.alert = window.showToast;
 
 }
-console.log("APPROVE RETURN");
 window.approveReturn = async function(orderId) {
 
   const ok = confirm("Duyệt trả hàng đơn này?");
