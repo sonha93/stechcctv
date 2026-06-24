@@ -10,7 +10,10 @@ import {
     updateDoc,
     deleteDoc,
     getDoc,
-    serverTimestamp
+    serverTimestamp,
+    query,
+    where,
+    orderBy
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -126,7 +129,9 @@ window.loadMembers = async function(){
     >
         🎁 Tặng điểm
     </button>
-
+    <button onclick="viewMemberHistory('${docSnap.id}')">
+📜 Lịch sử
+</button>
     <button
         onclick="
             deleteMember(
@@ -398,6 +403,64 @@ window.giftPoints = async function(memberId){
 
         console.log(err);
         alert("Lỗi tặng điểm");
+
+    }
+
+};
+import {
+    query,
+    where,
+    orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+window.viewMemberHistory = async function(memberId){
+
+    try{
+
+        const q = query(
+            collection(db,"member_history"),
+            where("memberId","==",memberId),
+            orderBy("createdAt","desc")
+        );
+
+        const snap = await getDocs(q);
+
+        if(snap.empty){
+            alert("Member chưa có lịch sử điểm");
+            return;
+        }
+
+        let text = "";
+
+        snap.forEach(docSnap=>{
+
+            const d = docSnap.data();
+
+            let time = "-";
+
+            if(d.createdAt?.toDate){
+                time = d.createdAt.toDate().toLocaleString("vi-VN");
+            }else if(d.createdAt){
+                time = new Date(d.createdAt).toLocaleString("vi-VN");
+            }
+
+            text +=
+`${time}
+${d.type || ""}
+Điểm: ${d.points ?? d.usedPoints ?? ""}
+Đơn: ${d.orderId || "-"}
+-----------------------
+
+`;
+
+        });
+
+        alert(text);
+
+    }catch(err){
+
+        console.log(err);
+        alert("Không đọc được lịch sử");
 
     }
 
