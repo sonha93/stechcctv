@@ -253,11 +253,44 @@ function renderMembers(){
 }
 
 document
-  .getElementById("search")
-  .addEventListener(
-    "input",
-    renderMembers
-  );
+.getElementById("search")
+.addEventListener("input", async ()=>{
+
+    renderMembers();
+
+    const keyword =
+    document.getElementById("search")
+    .value
+    .trim()
+    .toLowerCase();
+
+    if(!keyword){
+
+        document.getElementById("memberHistoryBox").style.display="none";
+        return;
+
+    }
+
+    const member =
+    allMembers.find(m=>
+
+        (m.name||"").toLowerCase()==keyword ||
+
+        (m.phone||"")==keyword
+
+    );
+
+    if(member){
+
+        showMemberHistory(member.id);
+
+    }else{
+
+        document.getElementById("memberHistoryBox").style.display="none";
+
+    }
+
+});
 window.giftPoints = async function(memberId){
 
   const input = prompt("Nhập số điểm muốn tặng:");
