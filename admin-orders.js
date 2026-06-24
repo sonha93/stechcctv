@@ -639,7 +639,7 @@ if(
 
     revenue += Number(order.total || 0);
 
-    let dateKey = "-";
+    let dateKey = "";
 
     try {
 
