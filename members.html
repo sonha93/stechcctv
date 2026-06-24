@@ -213,7 +213,7 @@ function renderMembers(){
     })
     .forEach(m => {
  html += `
-<tr>
+<tr onclick="showHistory('${m.id}')" style="cursor:pointer">
   <td>${m.name || "-"}</td>
 
   <td>${m.phone || "-"}</td>
@@ -354,13 +354,6 @@ html += `
 <td>
 ${date.toLocaleString("vi-VN")}
 </td>
-<tr>
-
-<td>
-${h.createdAt
-    ? h.createdAt.toDate().toLocaleString("vi-VN")
-    : "-"}
-</td>
 
 <td>
 ${h.type}
@@ -371,28 +364,27 @@ ${products}
 </td>
 
 <td>
-${Number(h.total||0).toLocaleString("vi-VN")}đ
+${Number(h.total || 0).toLocaleString("vi-VN")}đ
 </td>
 
 <td>
-${h.usedPoints||0}
+${h.usedPoints || 0}
 </td>
 
 <td>
-${Number(h.discountAmount||0).toLocaleString("vi-VN")}đ
+${Number(h.discountAmount || 0).toLocaleString("vi-VN")}đ
 </td>
 
 <td>
-${h.earnPoints||0}
+${h.earnPoints || 0}
 </td>
 
 <td>
-${h.remainPoints||0}
+${h.remainPoints || 0}
 </td>
 
 </tr>
 `;
-
 });
 
 if(!html){
@@ -406,8 +398,8 @@ Chưa có lịch sử
 `;
 
 }
-
-body.innerHTML=html;
+body.innerHTML = html;
+document.getElementById("historySection").style.display = "block";
 
 };
 </script>
