@@ -1354,10 +1354,12 @@ if (
     if (newSpent < 0) newSpent = 0;
 
 await memberRef.update({
- points:FieldValue.increment(
+  points: firebase.firestore.FieldValue.increment(
     usedPoints - earnPoints
-),
+  ),
+
   totalSpent: newSpent,
+
   lockedPoints: firebase.firestore.FieldValue.increment(
     -usedPoints
   )
