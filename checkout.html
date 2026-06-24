@@ -635,9 +635,10 @@ if(memberSnap.empty){
   createdAt: Date.now()
 
 });
-  memberId = newMemberRef.id;
-  await db.collection("member_history").add({
-  memberId: memberId,
+ memberId = newMemberRef.id;
+memberPoints = 100;
+await db.collection("member_history").add({
+  memberId,
   type: "welcome_bonus",
   points: 100,
   createdAt: Date.now()
@@ -677,12 +678,14 @@ if (lockedPoints > 0 && memberId) {
     });
 
   await db.collection("member_history").add({
-    memberId,
-    type: "use_points",
-    points: -lockedPoints,
-    orderTotal: total,
-    createdAt: Date.now()
-  });
+  memberId,
+  type: "use_points",
+  points: -lockedPoints,
+  cashbackAmount,
+  orderTotal: total,
+  finalTotal,
+  createdAt: Date.now()
+});
 
 }
 
