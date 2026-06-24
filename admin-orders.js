@@ -91,40 +91,35 @@ if (value === "approved") {
 
     const earnPoints =
       Math.floor(Number(order.total || 0) / 10000);
-    await memberRef.update({
-      points:firebase.firestore.FieldValue.increment(
-          usedPoints - earnPoints
-        ),
-      totalSpent:
-        firebase.firestore.FieldValue.increment(
-          -Number(order.total || 0)
-        )
-    });
+   await memberRef.update({
+  points: firebase.firestore.FieldValue.increment(
+    usedPoints - earnPoints
+  ),
+  totalSpent: firebase.firestore.FieldValue.increment(
+    -Number(order.total || 0)
+  )
+});
 
- const memberSnap = await memberRef.get();
+const memberSnap = await memberRef.get();
 
 await db.collection("member_history").add({
-    memberId: order.memberId,
-    orderId: orderId,
-    type: "refund_return",
+  memberId: order.memberId,
+  orderId: id,
+  type: "refund_return",
 
-    orderDate: Date.now(),
+  orderDate: Date.now(),
+  items: order.items || [],
 
-    items: order.items || [],
+  total: Number(order.total || 0),
+  subtotal: Number(order.subtotal || order.total || 0),
 
-    subtotal: Number(order.subtotal || order.total || 0),
+  usedPoints,
+  discountAmount: Number(order.cashbackAmount || 0),
+  earnPoints,
 
-    usedPoints: Number(order.usedPoints || 0),
+  remainPoints: memberSnap.data().points,
 
-    discountAmount: Number(order.cashbackAmount || 0),
-
-    total: Number(order.total || 0),
-
-    earnPoints: earnPoints,
-
-    remainPoints: memberSnap.data().points,
-
-    createdAt: Date.now()
+  createdAt: Date.now()
 });
   }
 }
