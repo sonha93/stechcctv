@@ -573,37 +573,74 @@ ${
 }
 
 ${
-  order.status === "returned"
-  ? `
-  <div style="
-    margin-top:10px;
-    padding:12px;
-    background:#ffffff;
-    border:1px solid #ffffff;
-    color:#7b1fa2;
-    border-radius:8px;
-    text-align:center;
-    font-weight:bold;
-  ">
-    
-  </div>
-  `
-  : order.returnRequested
-  ? `
-  <div style="
-    margin-top:10px;
-    padding:12px;
-    background:#e8f5e9;
-    border:1px solid #4caf50;
-    color:#2e7d32;
-    border-radius:8px;
-    text-align:center;
-    font-weight:bold;
-  ">
-    ✅ Đã gửi yêu cầu trả hàng
-  </div>
-  `
-  : ""
+order.returnStatus === "pending"
+? `
+<div style="
+  margin-top:10px;
+  padding:12px;
+  background:#e8f5e9;
+  border:1px solid #4caf50;
+  color:#2e7d32;
+  border-radius:8px;
+  text-align:center;
+  font-weight:bold;
+">
+✅ Đã gửi yêu cầu trả hàng
+</div>
+`
+
+: order.returnStatus === "rejected"
+
+? `
+<div style="
+  margin-top:10px;
+  padding:12px;
+  background:#ffebee;
+  border:1px solid #f44336;
+  color:#c62828;
+  border-radius:8px;
+  text-align:center;
+  font-weight:bold;
+">
+❌ Đã từ chối yêu cầu trả hàng
+</div>
+`
+
+: order.returnStatus === "approved"
+
+? `
+<div style="
+  margin-top:10px;
+  padding:12px;
+  background:#e3f2fd;
+  border:1px solid #2196f3;
+  color:#1565c0;
+  border-radius:8px;
+  text-align:center;
+  font-weight:bold;
+">
+✅ Yêu cầu trả hàng đã được chấp nhận
+</div>
+`
+
+: order.status === "returned"
+
+? `
+<div style="
+  margin-top:10px;
+  padding:12px;
+  background:#f3e5f5;
+  border:1px solid #9c27b0;
+  color:#7b1fa2;
+  border-radius:8px;
+  text-align:center;
+  font-weight:bold;
+">
+📦 Đã trả hàng
+</div>
+`
+
+: ""
 }
 ${
   order.status === "completed"
