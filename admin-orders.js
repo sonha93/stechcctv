@@ -1694,35 +1694,36 @@ window.approveReturn = async function(orderId) {
 
   const batch = db.batch();
 
-  // 1. hoàn kho
-  for (const item of order.items || []) {
+  // Hàm hoàn kho
+async function restoreStock(order) {
+  const items = order.items || [];
 
-    const productRef = db.collection("products").doc(item.productId);
+  for (const item of items) {
+    const productId = item.productId || item.id || item._id;
+    if (!productId) continue;
+
+    const productRef = db.collection("products").doc(productId);
     const productSnap = await productRef.get();
-
     if (!productSnap.exists) continue;
 
     const qty = Number(item.qty || 0);
 
-    batch.update(productRef, {
-      stock: firebase.firestore.FieldValue.increment(qty)
+    await productRef.update({
+      stock: firebase.firestore.FieldValue.increment(qty),
+      sold: firebase.firestore.FieldValue.increment(-qty)
     });
 
-    // ❌ KHÔNG add ngoài batch nếu muốn nhất quán
-    const movRef = db.collection("stock_movements").doc();
-
-    batch.set(movRef, {
-      productId: item.productId,
-      productName: item.name,
+    await db.collection("stock_movements").add({
+      productId,
+      productName: item.name || "",
       type: "RETURN",
-      qty: qty,
-      reason: `Trả hàng đơn ${orderId}`,
-      orderId,
+      qty,
+      reason: `Trả hàng đơn ${order.id}`,
       staffName: document.getElementById("adminName")?.textContent || "",
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
   }
-
+}
   // 2. hoàn điểm
   const usedPoints = Number(order.usedPoints || 0);
   const earnPoints = Math.floor(Number(order.total || 0) / 10000);
