@@ -102,15 +102,15 @@ if (value === "approved") {
     });
 
    await db.collection("member_history").add({
-    memberId: orderData.memberId,
+   memberId: order.memberId,
     orderId: id,
-    type: "purchase",
+   type: "refund_return",
 
     orderDate: Date.now(),
 
-    items: orderData.items || [],
+    items: order.items || [],
 
-    subtotal: Number(orderData.subtotal || orderData.total || 0),
+    subtotal: Number(order.subtotal || order.total || 0),
 
     usedPoints: Number(orderData.usedPoints || 0),
 
@@ -120,7 +120,9 @@ if (value === "approved") {
 
     earnPoints: earnPoints,
 
-    remainPoints: newPoints,
+   const memberSnap = await memberRef.get();
+
+remainPoints: memberSnap.data().points,
 
     createdAt: Date.now()
 });
