@@ -128,13 +128,105 @@ if (value === "approved") {
 if (value === "rejected") {
   update.returnRejectedAt = Date.now();
 }
+  await sendMailbox(
+  order.memberId,
+  "Yêu cầu trả hàng bị từ chối",
+`
+Đơn hàng:
+${orderId}
+
+Ngày mua:
+${formatDate(order.createdAt)}
+
+Sản phẩm:
+
+${(order.items||[])
+.map(i=>`• ${i.name} x${i.qty}`)
+.join("\n")}
+
+Lý do từ chối:
+
+${order.returnReason || "Không có"}
+
+Vui lòng liên hệ cửa hàng nếu cần hỗ trợ thêm.
+`,
+orderId
+);
+  await sendMailbox(
+  order.memberId,
+  "Yêu cầu trả hàng được chấp nhận",
+`
+Đơn hàng:
+${orderId}
+
+Ngày mua:
+${formatDate(order.createdAt)}
+
+Các sản phẩm:
+
+${(order.items||[])
+.map(i=>`• ${i.name} x${i.qty}`)
+.join("\n")}
+
+Yêu cầu trả hàng của bạn đã được chấp nhận.
+`,
+orderId
+);
   await orderRef.update(update);
+  
+ // ======================
+// GỬI THƯ CHO KHÁCH
+// ======================
+if (order.memberId) {
 
-  select.disabled = true;
+  await db.collection("member_notifications").add({
 
-  alert("Cập nhật trả hàng thành công");
-  loadOrders();
-});
+    memberId: order.memberId,
+
+    title:
+      value === "approved"
+        ? "Yêu cầu trả hàng được chấp nhận"
+        : "Yêu cầu trả hàng bị từ chối",
+
+    content: {
+      orderId,
+
+      orderDate: order.createdAt || Date.now(),
+
+      products: order.items || [],
+
+      total: Number(order.total || 0),
+
+      reason: order.returnReason || "",
+
+      result:
+        value === "approved"
+          ? "Đã chấp nhận"
+          : "Đã từ chối",
+
+      admin:
+        document.getElementById("adminName")?.textContent || "",
+
+      handledAt: Date.now()
+    },
+
+    type:
+      value === "approved"
+        ? "return_approved"
+        : "return_rejected",
+
+    read: false,
+
+    createdAt: Date.now()
+
+  });
+
+}
+
+select.disabled = true;
+
+alert("Cập nhật trả hàng thành công");
+loadOrders();
 let currentPage = 1;
 const perPage = 10;
 // ============================
@@ -163,9 +255,24 @@ if (searchInput) {
   });
 
 }
+  
 // ============================
 // FORMAT PRICE
 // ============================
+async function sendMailbox(memberId, title, content, orderId = "") {
+
+  if (!memberId) return;
+
+  await db.collection("mailbox").add({
+    memberId,
+    title,
+    content,
+    orderId,
+    isRead: false,
+    createdAt: Date.now()
+  });
+
+}
 function formatPrice(number) {
   return Number(number || 0).toLocaleString("vi-VN") + "đ";
 }
@@ -1039,7 +1146,25 @@ const updateData = {
 if(status === "cancelled"){
   updateData.adminCancelled = true;
 }
+await sendMailbox(
+  orderData.memberId,
+  "Đơn hàng đã bị hủy",
+`
+Đơn hàng: ${id}
 
+Ngày đặt:
+${formatDate(orderData.createdAt)}
+
+Sản phẩm:
+${(orderData.items||[])
+.map(i=>`• ${i.name} x${i.qty}`)
+.join("\n")}
+
+Lý do:
+Đơn hàng đã bị Admin hủy.
+`,
+id
+);
 
 if(
   status === "completed" &&
@@ -1328,7 +1453,27 @@ await db
   .update({
     pointsProcessed: true
   });
-    
+  await sendMailbox(
+  orderData.memberId,
+  "Đơn hàng đã giao thành công",
+`
+Đơn hàng: ${id}
+
+Ngày mua:
+${formatDate(orderData.createdAt)}
+
+Sản phẩm:
+${(orderData.items||[])
+.map(i=>`• ${i.name} x${i.qty}`)
+.join("\n")}
+
+Tổng tiền:
+${formatPrice(orderData.total)}
+
+Cảm ơn bạn đã mua hàng ❤️
+`,
+id
+);  
 if(bonusPoints > 0){
 
   await db
