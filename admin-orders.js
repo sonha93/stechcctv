@@ -1265,12 +1265,7 @@ const newPoints =
   totalSpent: newSpent,
   level: level
 });
-await db
-  .collection("orders")
-  .doc(id)
-  .update({
-    pointsProcessed: true
-  });
+updateData.pointsProcessed = true;
     
 if(bonusPoints > 0){
 
@@ -1376,11 +1371,9 @@ points: firebase.firestore.FieldValue.increment(
     });
   }
 
-  await db.collection("orders").doc(id).update({
-    pointsProcessed: false,
-    rollbackProcessed: true
-  });
-}
+ updateData.pointsProcessed = false;
+updateData.rollbackProcessed = true;
+
 await db
   .collection("orders")
   .doc(id)
