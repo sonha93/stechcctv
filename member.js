@@ -472,9 +472,6 @@ window.showMemberHistory = async function(memberId){
 
     tbody.innerHTML=html;
 
-}
-    tbody.innerHTML = html;
-
     document.getElementById("memberHistoryBox").style.display="block";
 
 };
