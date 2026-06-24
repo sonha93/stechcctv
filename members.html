@@ -120,11 +120,13 @@ th{
 </tbody>
 
 </table>
-<h3 style="margin-top:30px">
-Lịch sử giao dịch
-</h3>
+<div id="historySection" style="display:none; margin-top:30px;">
+
+<h3>Lịch sử giao dịch</h3>
 
 <table>
+
+
 
 <thead>
 
@@ -234,9 +236,6 @@ function renderMembers(){
     <button onclick="giftPoints('${m.id}')">
       🎁 Tặng điểm
     </button>
-    <button onclick="showHistory('${m.id}')">
-    📋 Lịch sử
-  </button>
 </td>
   </td>
 
