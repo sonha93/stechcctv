@@ -120,7 +120,38 @@ th{
 </tbody>
 
 </table>
+<h3 style="margin-top:30px">
+Lịch sử giao dịch
+</h3>
 
+<table>
+
+<thead>
+
+<tr>
+<th>Ngày</th>
+<th>Loại</th>
+<th>Sản phẩm</th>
+<th>Tổng đơn</th>
+<th>Dùng điểm</th>
+<th>Giảm</th>
+<th>Được cộng</th>
+<th>Điểm còn</th>
+</tr>
+
+</thead>
+
+<tbody id="historyBody">
+
+<tr>
+<td colspan="8">
+Chọn thành viên để xem
+</td>
+</tr>
+
+</tbody>
+
+</table>
 </div>
 
 
@@ -203,6 +234,10 @@ function renderMembers(){
     <button onclick="giftPoints('${m.id}')">
       🎁 Tặng điểm
     </button>
+    <button onclick="showHistory('${m.id}')">
+    📋 Lịch sử
+  </button>
+</td>
   </td>
 
 </tr>
@@ -268,6 +303,87 @@ window.giftPoints = async function(memberId){
 loadMembers();
 
 </script>
+window.showHistory = async function(memberId){
 
+const snap = await db
+.collection("member_history")
+.where("memberId","==",memberId)
+.get();
+
+const body =
+document.getElementById("historyBody");
+
+let html = "";
+
+snap.docs
+.sort((a,b)=>
+(b.data().createdAt||0)
+-
+(a.data().createdAt||0)
+)
+.forEach(doc=>{
+
+const h = doc.data();
+
+const products =
+(h.items||[])
+.map(i=>`${i.name} x${i.qty}`)
+.join("<br>");
+
+html += `
+<tr>
+
+<td>
+${new Date(h.createdAt).toLocaleString("vi-VN")}
+</td>
+
+<td>
+${h.type}
+</td>
+
+<td>
+${products}
+</td>
+
+<td>
+${Number(h.total||0).toLocaleString("vi-VN")}đ
+</td>
+
+<td>
+${h.usedPoints||0}
+</td>
+
+<td>
+${Number(h.discountAmount||0).toLocaleString("vi-VN")}đ
+</td>
+
+<td>
+${h.earnPoints||0}
+</td>
+
+<td>
+${h.remainPoints||0}
+</td>
+
+</tr>
+`;
+
+});
+
+if(!html){
+
+html=`
+<tr>
+<td colspan="8">
+Chưa có lịch sử
+</td>
+</tr>
+`;
+
+}
+
+body.innerHTML=html;
+
+};
 </body>
 </html>
