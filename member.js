@@ -171,7 +171,7 @@ window.loadMembers = async function(){
 
     }catch(err){
 
-        console.log(err);
+       
 
     }
 
@@ -436,30 +436,31 @@ window.showMemberHistory = async function(memberId){
         html+=`
         <tr>
 
-        <td>${
-        h.orderDate
-        ? new Date(h.orderDate).toLocaleString("vi-VN")
-        : "-"
-        }</td>
+       <td>${
+h.createdAt
+? new Date(
+    h.createdAt.seconds
+      ? h.createdAt.seconds * 1000
+      : h.createdAt
+  ).toLocaleString("vi-VN")
+: "-"
+}</td>
 
-        <td>${
-        (h.items||[])
-        .map(i=>`${i.name} x${i.qty}`)
-        .join("<br>")
-        }</td>
+     <td>
+${h.type || "-"}
+</td>
 
-        <td>${formatVND(h.subtotal||0)}</td>
+      <td>${formatVND(h.subtotal || h.total || 0)}</td>
 
-        <td>${h.usedPoints||0}</td>
+<td>${h.usedPoints || 0}</td>
 
-        <td>${formatVND(h.discountAmount||0)}</td>
+<td>${formatVND(h.discountAmount || 0)}</td>
 
-        <td>${formatVND(h.total||0)}</td>
+<td>${formatVND(h.total || 0)}</td>
 
-        <td>${h.earnPoints||0}</td>
+<td>${h.earnPoints || 0}</td>
 
-        <td>${h.remainPoints||0}</td>
-
+<td>${h.points || 0}</td>
         </tr>
         `;
     });
