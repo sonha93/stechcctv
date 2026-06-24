@@ -101,29 +101,7 @@ if (value === "approved") {
         )
     });
 
- await db.collection("member_history").add({
-    memberId: order.memberId,
-    orderId: orderId,
-    type: "purchase",
-
-    orderDate: Date.now(),
-
-    items: order.items || [],
-
-    subtotal: Number(order.subtotal || order.total || 0),
-
-    usedPoints: Number(order.usedPoints || 0),
-
-    discountAmount: Number(order.cashbackAmount || 0),
-
-    total: Number(order.total || 0),
-
-    earnPoints: earnPoints,
-
-    createdAt: Date.now()
-});
-  }
-}
+    
 if (value === "rejected") {
   update.returnRejectedAt = Date.now();
 }
