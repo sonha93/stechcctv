@@ -245,10 +245,8 @@ const sub =
   }
 
   <div>
-    ${qty} × ${format(price)}
-    =
-    ${format(sub)}
-  </div>
+  ${qty} × ${format(price)}
+</div>
 
 </div>
 
