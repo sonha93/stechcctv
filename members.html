@@ -211,10 +211,8 @@ function renderMembers(){
 
     })
     .forEach(m => {
-     
-      html += `
-<tr>
-
+ html += `
+<tr onclick="showHistory('${m.id}')" style="cursor:pointer">
 
   <td>${m.name || "-"}</td>
 
@@ -228,18 +226,15 @@ function renderMembers(){
     ${Number(m.totalSpent || 0).toLocaleString("vi-VN")}đ
   </td>
 
-  <td>
-    ${m.level || "Silver"}
-  </td>
+  <td>${m.level || "Silver"}</td>
 
   <td>
-    <button onclick="giftPoints('${m.id}')">
-      🎁 Tặng điểm
-    </button>
-</td>
+      <button onclick="event.stopPropagation(); giftPoints('${m.id}')">
+          🎁 Tặng điểm
+      </button>
   </td>
 
-<tr onclick="showHistory('${m.id}')" style="cursor:pointer;">
+</tr>
 `;
       
   }); 
