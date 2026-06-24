@@ -213,8 +213,7 @@ function renderMembers(){
     })
     .forEach(m => {
  html += `
-<tr onclick="showHistory('${m.id}')" style="cursor:pointer">
-
+<tr>
   <td>${m.name || "-"}</td>
 
   <td>${m.phone || "-"}</td>
@@ -251,44 +250,33 @@ function renderMembers(){
   }
 
   body.innerHTML = html;
+  document.getElementById("historySection").style.display = "block";
 }
 
-document
-.getElementById("search")
-.addEventListener("input", async ()=>{
+document.getElementById("search").addEventListener("input", () => {
 
     renderMembers();
 
-    const keyword =
-    document.getElementById("search")
-    .value
-    .trim()
-    .toLowerCase();
+    const keyword = document
+        .getElementById("search")
+        .value
+        .trim()
+        .toLowerCase();
 
-    if(!keyword){
-
-        document.getElementById("memberHistoryBox").style.display="none";
+    if (!keyword) {
+        document.getElementById("historySection").style.display = "none";
         return;
-
     }
 
-    const member =
-    allMembers.find(m=>
-
-        (m.name||"").toLowerCase()==keyword ||
-
-        (m.phone||"")==keyword
-
+    const member = allMembers.find(m =>
+        (m.name || "").toLowerCase() === keyword ||
+        (m.phone || "") === keyword
     );
 
-    if(member){
-
-        showMemberHistory(member.id);
-
-    }else{
-
-        document.getElementById("memberHistoryBox").style.display="none";
-
+    if (member) {
+        showHistory(member.id);
+    } else {
+        document.getElementById("historySection").style.display = "none";
     }
 
 });
