@@ -1356,10 +1356,7 @@ let newSpent =
 
 if (newSpent < 0) newSpent = 0;
 
-    if (newPoints < 0) newPoints = 0;
-    if (newSpent < 0) newSpent = 0;
-  const rollbackEarnPoints =
-  orderData.pointsProcessed ? earnPoints : 0;
+
 await memberRef.update({
 points: firebase.firestore.FieldValue.increment(
   usedPoints - rollbackEarnPoints
