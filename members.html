@@ -337,12 +337,12 @@ snap.docs
 .forEach(doc=>{
 
 const h = doc.data();
-
-const date =
-    h.createdAt?.toDate
-        ? h.createdAt.toDate()
-        : new Date(h.createdAt || h.orderDate || Date.now());
-
+console.log(h.createdAt);
+const date = new Date(
+    h.createdAt?.seconds
+        ? h.createdAt.seconds * 1000
+        : h.createdAt || h.orderDate || Date.now()
+);
 const products =
 (h.items||[])
 .map(i=>`${i.name} x${i.qty}`)
