@@ -81,7 +81,14 @@ if (value === "approved") {
 
     const earnPoints =
       Math.floor(Number(order.total || 0) / 10000);
-
+    console.log(
+  "pointsProcessed:",
+  orderData.pointsProcessed,
+  "earnPoints:",
+  earnPoints,
+  "usedPoints:",
+  usedPoints
+);
     await memberRef.update({
       points:firebase.firestore.FieldValue.increment(
           usedPoints - earnPoints
