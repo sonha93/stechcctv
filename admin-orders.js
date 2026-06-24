@@ -41,6 +41,7 @@ if (value === "approved") {
   update.returnApprovedAt = Date.now();
   update.pointsProcessed = false;
 
+}
   const items = order.items || [];
 
   // hoàn kho
@@ -128,10 +129,39 @@ if (value === "approved") {
 if (value === "rejected") {
   update.returnRejectedAt = Date.now();
 }
+ if (value === "approved") {
+
   await sendMailbox(
-  order.memberId,
-  "Yêu cầu trả hàng bị từ chối",
-`
+    order.memberId,
+    "Yêu cầu trả hàng được chấp nhận",
+    `
+Đơn hàng:
+${orderId}
+
+Ngày mua:
+${formatDate(order.createdAt)}
+
+Các sản phẩm:
+
+${(order.items||[])
+.map(i=>`• ${i.name} x${i.qty}`)
+.join("\n")}
+
+Yêu cầu trả hàng của bạn đã được chấp nhận.
+`,
+    orderId
+  );
+
+}
+
+if (value === "rejected") {
+
+  update.returnRejectedAt = Date.now();
+
+  await sendMailbox(
+    order.memberId,
+    "Yêu cầu trả hàng bị từ chối",
+    `
 Đơn hàng:
 ${orderId}
 
@@ -150,78 +180,12 @@ ${order.returnReason || "Không có"}
 
 Vui lòng liên hệ cửa hàng nếu cần hỗ trợ thêm.
 `,
-orderId
-);
-  await sendMailbox(
-  order.memberId,
-  "Yêu cầu trả hàng được chấp nhận",
-`
-Đơn hàng:
-${orderId}
-
-Ngày mua:
-${formatDate(order.createdAt)}
-
-Các sản phẩm:
-
-${(order.items||[])
-.map(i=>`• ${i.name} x${i.qty}`)
-.join("\n")}
-
-Yêu cầu trả hàng của bạn đã được chấp nhận.
-`,
-orderId
-);
-  await orderRef.update(update);
-  
- // ======================
-// GỬI THƯ CHO KHÁCH
-// ======================
-if (order.memberId) {
-
-  await db.collection("member_notifications").add({
-
-    memberId: order.memberId,
-
-    title:
-      value === "approved"
-        ? "Yêu cầu trả hàng được chấp nhận"
-        : "Yêu cầu trả hàng bị từ chối",
-
-    content: {
-      orderId,
-
-      orderDate: order.createdAt || Date.now(),
-
-      products: order.items || [],
-
-      total: Number(order.total || 0),
-
-      reason: order.returnReason || "",
-
-      result:
-        value === "approved"
-          ? "Đã chấp nhận"
-          : "Đã từ chối",
-
-      admin:
-        document.getElementById("adminName")?.textContent || "",
-
-      handledAt: Date.now()
-    },
-
-    type:
-      value === "approved"
-        ? "return_approved"
-        : "return_rejected",
-
-    read: false,
-
-    createdAt: Date.now()
-
-  });
+    orderId
+  );
 
 }
+  await orderRef.update(update);
+  
 
 select.disabled = true;
 
