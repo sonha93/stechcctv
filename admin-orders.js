@@ -1290,6 +1290,39 @@ const newPoints =
   totalSpent: newSpent,
   level: level
 });
+    await db.collection("member_history").add({
+    memberId: orderData.memberId,
+    orderId: id,
+    type: "purchase",
+
+    orderDate: Date.now(),
+
+    items: orderData.items || [],
+
+    subtotal: Number(
+      orderData.subtotal ||
+      orderData.total ||
+      0
+    ),
+
+    usedPoints: Number(
+      orderData.usedPoints || 0
+    ),
+
+    discountAmount: Number(
+      orderData.cashbackAmount || 0
+    ),
+
+    total: Number(
+      orderData.total || 0
+    ),
+
+    earnPoints: earnPoints,
+
+    remainPoints: Math.max(0,newPoints),
+
+    createdAt: Date.now()
+});
 await db
   .collection("orders")
   .doc(id)
@@ -1318,24 +1351,39 @@ if(bonusPoints > 0){
 
     });
 }
-    await db
-      .collection("member_history")
-      .add({
+   await db.collection("member_history").add({
+    memberId: orderData.memberId,
+    orderId: id,
+    type: "purchase",
 
-        memberId:
-          orderData.memberId,
+    orderDate: Date.now(),
 
-        orderId: id,
+    items: orderData.items || [],
 
-        points: earnPoints,
+    subtotal: Number(
+      orderData.subtotal ||
+      orderData.total ||
+      0
+    ),
 
-        total:
-          Number(orderData.total || 0),
+    usedPoints: Number(
+      orderData.usedPoints || 0
+    ),
 
-        createdAt:
-          Date.now()
+    discountAmount: Number(
+      orderData.cashbackAmount || 0
+    ),
 
-      });
+    total: Number(
+      orderData.total || 0
+    ),
+
+    earnPoints: earnPoints,
+
+    remainPoints: Math.max(0, newPoints),
+
+    createdAt: Date.now()
+});
 
   }
 
@@ -1698,6 +1746,10 @@ padding:12px 20px;
 border-radius:8px;
 font-size:14px;
 z-index:999999;
+
+
+
+
 `;
 
 document.body.appendChild(toast);
