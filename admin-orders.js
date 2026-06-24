@@ -101,26 +101,24 @@ if (value === "approved") {
         )
     });
 
-   await db.collection("member_history").add({
-    memberId: orderData.memberId,
-    orderId: id,
+ await db.collection("member_history").add({
+    memberId: order.memberId,
+    orderId: orderId,
     type: "purchase",
 
     orderDate: Date.now(),
 
-    items: orderData.items || [],
+    items: order.items || [],
 
-    subtotal: Number(orderData.subtotal || orderData.total || 0),
+    subtotal: Number(order.subtotal || order.total || 0),
 
-    usedPoints: Number(orderData.usedPoints || 0),
+    usedPoints: Number(order.usedPoints || 0),
 
-    discountAmount: Number(orderData.cashbackAmount || 0),
+    discountAmount: Number(order.cashbackAmount || 0),
 
-    total: Number(orderData.total || 0),
+    total: Number(order.total || 0),
 
     earnPoints: earnPoints,
-
-    remainPoints: newPoints,
 
     createdAt: Date.now()
 });
