@@ -66,7 +66,6 @@ if (value === "approved") {
 
   // hoàn điểm
   if (order.memberId) {
-
     const memberRef =
       db.collection("members").doc(order.memberId);
 
@@ -84,8 +83,7 @@ if (value === "approved") {
       Math.floor(Number(order.total || 0) / 10000);
 
     await memberRef.update({
-      points:
-        firebase.firestore.FieldValue.increment(
+      points:firebase.firestore.FieldValue.increment(
           usedPoints - earnPoints
         ),
       totalSpent:
@@ -1260,7 +1258,6 @@ else if(newSpent >= 5000000){
 
 const newPoints =
   currentPoints
-  - usedPoints
   + earnPoints
   + bonusPoints;
 
@@ -1357,9 +1354,9 @@ if (
     if (newSpent < 0) newSpent = 0;
 
 await memberRef.update({
-  points: firebase.firestore.FieldValue.increment(
-    usedPoints
-  ),
+ points:FieldValue.increment(
+    usedPoints - earnPoints
+),
   totalSpent: newSpent,
   lockedPoints: firebase.firestore.FieldValue.increment(
     -usedPoints
