@@ -192,7 +192,7 @@ async function loadInventory(){
             "
         >
         `
-        : "-"
+        : ""
     }
 </td>
 
@@ -234,7 +234,7 @@ async function loadInventory(){
                             `
                             : `
                                 <span style="color:green;font-weight:bold;">
-                                    __
+                                    
                                 </span>
                             `
                         }
@@ -261,7 +261,7 @@ async function loadInventory(){
             Lưu
         </button>
         `
-        : "-"
+        : ""
     }
 
 </td>
