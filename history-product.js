@@ -176,8 +176,7 @@ document.getElementById("refund-amount").innerText =
   formatMoney(data.refundAmount || 0);
 
 document.getElementById("deducted-points").innerText =
-  data.returnUsedPoints ?? data.returnDeductPoints ?? 0;
-
+  data.returnDeductPoints ?? 0;
 document.getElementById("current-points").innerText =
   data.memberPoints || 0;
 } catch (err) {
