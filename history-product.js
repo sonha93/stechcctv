@@ -28,16 +28,15 @@ btn.addEventListener("click", async () => {
 // =========================
 async function loadOrderById(orderId) {
   try {
-    // 1. thử lấy theo doc.id trước
     let ref = doc(db, "orders", orderId);
     let snap = await getDoc(ref);
 
     let data = null;
+    let realId = orderId;
 
     if (snap.exists()) {
       data = snap.data();
     } else {
-      // 2. nếu không có → tìm theo field orderId
       const { collection, query, where, getDocs } =
         await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
@@ -56,19 +55,23 @@ async function loadOrderById(orderId) {
 
       res.forEach(d => {
         data = d.data();
-        orderId = d.id;
+        realId = d.id; // ✅ FIX đúng cách
       });
     }
 
-    // render UI
+    // =========================
+    // RENDER UI (FIXED)
+    // =========================
+    document.getElementById("order-id").innerText =
+      data.orderId || realId; // ✅ FIX
+
     document.getElementById("product-id").innerText =
-      data.productIds?.[0] || "";
+      data.productIds && data.productIds.length
+        ? data.productIds[0]
+        : "";
 
     document.getElementById("product-name").innerText =
-      data.productName || "";
-
-    document.getElementById("order-id").innerText =
-      data.orderId || orderId;
+      data.productName || "Không có dữ liệu";
 
     document.getElementById("purchase-date").innerText =
       formatDate(data.createdAt);
@@ -80,10 +83,10 @@ async function loadOrderById(orderId) {
       formatMoney(data.discount);
 
     document.getElementById("used-points").innerText =
-      data.usedPoints || 0;
+      data.usedPoints ?? 0;
 
     document.getElementById("earned-points").innerText =
-      data.earnedPoints || 0;
+      data.earnedPoints ?? 0;
 
     document.getElementById("final-price").innerText =
       formatMoney(data.total);
@@ -95,68 +98,4 @@ async function loadOrderById(orderId) {
     console.error(err);
     alert("Lỗi load đơn hàng");
   }
-}
-
-
-// =========================
-// LOAD RETURN THEO ORDER ID
-// =========================
-async function loadReturnByOrderId(orderId) {
-  const { collection, query, where, getDocs } =
-    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-
-  const q = query(
-    collection(db, "returns"),
-    where("orderId", "==", orderId)
-  );
-
-  const snap = await getDocs(q);
-
-  if (snap.empty) return;
-
-  snap.forEach(doc => {
-    const r = doc.data();
-
-    document.getElementById("return-request-date").innerText =
-      r.requestDate || "";
-
-    document.getElementById("return-approved-date").innerText =
-      r.approvedDate || "";
-
-    document.getElementById("return-status").innerText =
-      r.status || "";
-
-    document.getElementById("refund-amount").innerText =
-      formatMoney(r.refundAmount);
-
-    document.getElementById("deducted-points").innerText =
-      r.deductedPoints || 0;
-
-    document.getElementById("current-points").innerText =
-      r.currentPoints || 0;
-  });
-}
-
-
-// =========================
-// CLEAR UI
-// =========================
-function clearUI() {
-  document.querySelectorAll(".field div:last-child")
-    .forEach(el => el.innerText = "");
-}
-
-
-// =========================
-// FORMAT
-// =========================
-function formatMoney(v) {
-  if (!v) return "0";
-  return Number(v).toLocaleString("vi-VN") + " đ";
-}
-
-function formatDate(t) {
-  if (!t) return "";
-  if (t.toDate) return t.toDate().toLocaleString("vi-VN");
-  return new Date(t).toLocaleString("vi-VN");
 }
