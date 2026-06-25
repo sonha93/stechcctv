@@ -60,21 +60,16 @@ async function loadOrderById(orderId) {
     let data = null;
     let realId = orderId;
 
-    // 1. lấy theo document ID
-    const ref = doc(db, "orders", orderId);
-    const snap = await getDoc(ref);
+    const snap = await db.collection("orders").doc(orderId).get();
 
-    if (snap.exists()) {
+    if (snap.exists) {
       data = snap.data();
     } else {
-      // 2. fallback query theo field orderId
-      const q = query(
-        collection(db, "orders"),
-        where("orderId", "==", orderId),
-        limit(1)
-      );
-
-      const res = await getDocs(q);
+      const res = await db
+        .collection("orders")
+        .where("orderId", "==", orderId)
+        .limit(1)
+        .get();
 
       if (res.empty) {
         document.getElementById("order-status").innerText =
@@ -94,21 +89,35 @@ async function loadOrderById(orderId) {
       return;
     }
 
-    // ================= RENDER =================
-const item = data.items?.[0] || {};
+    // FIX chống undefined (QUAN TRỌNG)
+    document.getElementById("order-id").innerText = data.orderId || realId;
 
-// giá gốc
-const original =
-  Number(item.originalPrice || item.price || data.originalPrice || 0);
+  document.getElementById("product-id").innerText =
+  data.productIds?.[0] || data.productId || "Không có";
 
-// tiền giảm
-const discount =
-  Number(item.discount || data.discount || 0);
+    document.getElementById("product-name").innerText =
+      data.productName || (data.items && data.items[0]?.name) || "Không có dữ liệu";
 
-// giá cuối
+    document.getElementById("purchase-date").innerText =
+      formatDate(data.createdAt);
+
+    document.getElementById("original-price").innerText =
+      formatMoney(data.originalPrice || data.items?.[0]?.price || 0);
+
+    document.getElementById("discount").innerText =
+      formatMoney(data.discount || 0);
+
+   document.getElementById("used-points").innerText =
+  data.usedPoints ?? data.pointsUsed ?? 0;
+
+document.getElementById("earned-points").innerText =
+  data.earnedPoints ?? data.pointsEarned ?? 0;
+
+  const original = Number(data.originalPrice || 0);
+const discount = Number(data.discount || 0);
+
 const finalPrice = original - discount;
 
-// render
 document.getElementById("original-price").innerText =
   formatMoney(original);
 
@@ -117,18 +126,6 @@ document.getElementById("discount").innerText =
 
 document.getElementById("final-price").innerText =
   formatMoney(finalPrice);
-
-document.getElementById("discount").innerText =
-  formatMoney(original - finalPrice);
-
-document.getElementById("final-price").innerText =
-  formatMoney(finalPrice);
-    document.getElementById("used-points").innerText =
-      data.usedPoints ?? data.pointsUsed ?? 0;
-
-    document.getElementById("earned-points").innerText =
-      data.earnedPoints ?? data.pointsEarned ?? 0;
-
     document.getElementById("order-status").innerText =
       data.status || "";
 
