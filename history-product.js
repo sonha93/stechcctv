@@ -76,14 +76,13 @@ async function loadOrderById(orderId) {
           "Không tìm thấy đơn hàng";
         return;
       }
-console.log("ORDER DATA:", data);
-console.log("ITEM:", data.items?.[0]);
       res.forEach(d => {
         data = d.data();
         realId = d.id;
       });
     }
-
+console.log("ORDER DATA:", data);
+console.log("ITEM:", data.items?.[0]);
     if (!data) {
       document.getElementById("order-status").innerText =
         "Không có dữ liệu";
