@@ -647,6 +647,14 @@ await db.collection("member_history").add({
   points: 100,
   createdAt: Date.now()
 });
+await db.collection("notifications").add({
+  uid: user.uid,
+  type: "member_new",
+  title: "Chào mừng thành viên",
+  message: "Bạn đã trở thành thành viên Silver và nhận 100 điểm thưởng.",
+  read: false,
+  createdAt: Date.now()
+});
 }else{
 
   const memberData =
@@ -699,36 +707,30 @@ if (lockedPoints > 0 && memberId) {
 // ORDER
 // ============================
 
-await db.collection("orders").add({
-
+const orderRef = await db.collection("orders").add({
   uid: user.uid,
-
   customerName: name,
-
-  phone: phone,
-
-  address: address,
-
-  payment:
-    document.getElementById("payment").value,
-
+  phone,
+  address,
+  payment: document.getElementById("payment").value,
   items: cart,
-
   total: finalTotal,
-
   originalTotal: total,
-
   usedPoints: usePoints,
-
-  cashbackAmount: cashbackAmount,
+  cashbackAmount,
   status: "pending",
-
-  memberId: memberId,
-
+  memberId,
   createdAt: Date.now()
-
 });
-
+  await db.collection("notifications").add({
+  uid: user.uid,
+  type: "order_created",
+  title: "Đặt hàng thành công",
+  message: `Đơn hàng #${orderRef.id} đã được tạo và đang chờ xác nhận.`,
+  orderId: orderRef.id,
+  read: false,
+  createdAt: Date.now()
+});
   // TELEGRAM
  sendTelegramNotification(
   orderId,
