@@ -911,6 +911,26 @@ if(completedBox){
 if(cancelledBox){
   cancelledBox.textContent = cancelledCount;
 }
+  let totalReturnOrders = 0;
+let processedReturns = 0;
+
+snapshot.forEach(doc => {
+  const order = doc.data();
+
+  if (order.returnRequested === true) {
+    totalReturnOrders++;
+
+    if (
+      order.returnStatus === "approved" ||
+      order.returnStatus === "rejected"
+    ) {
+      processedReturns++;
+    }
+  }
+});
+
+document.getElementById("returnStatus").textContent =
+  `${processedReturns}/${totalReturnOrders} đơn`;
 const revenueBox =
   document.getElementById("revenueByDate");
 
