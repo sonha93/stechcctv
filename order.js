@@ -823,12 +823,11 @@ allOrders = allOrders.map(order => {
   }
 
   return order;
-});
+
 
 // render lại
 renderOrders();
 });
-
        }catch(err){
 
   console.error(err);
