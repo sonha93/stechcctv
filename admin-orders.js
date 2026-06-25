@@ -1319,8 +1319,7 @@ const newPoints =
     await db.collection("member_history").add({
     memberId: orderData.memberId,
     orderId: id,
-    type: "purchase",
-
+  type: "refund_return"
     orderDate: Date.now(),
 
     items: orderData.items || [],
