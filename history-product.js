@@ -60,16 +60,36 @@ async function loadOrderById(orderId) {
     let data = null;
     let realId = orderId;
 
-    const snap = await db.collection("orders").doc(orderId).get();
+ // 1. thử lấy theo document ID (v9/v10 chuẩn)
+const ref = doc(db, "orders", orderId);
+const snap = await getDoc(ref);
 
-    if (snap.exists) {
-      data = snap.data();
-    } else {
-      const res = await db
-        .collection("orders")
-        .where("orderId", "==", orderId)
-        .limit(1)
-        .get();
+let data = null;
+let realId = orderId;
+
+if (snap.exists()) {
+  data = snap.data();
+} else {
+  // 2. fallback search theo field orderId
+  const q = query(
+    collection(db, "orders"),
+    where("orderId", "==", orderId),
+    limit(1)
+  );
+
+  const res = await getDocs(q);
+
+  if (res.empty) {
+    document.getElementById("order-status").innerText =
+      "Không tìm thấy đơn hàng";
+    return;
+  }
+
+  res.forEach(d => {
+    data = d.data();
+    realId = d.id;
+  });
+}
 
       if (res.empty) {
         document.getElementById("order-status").innerText =
@@ -93,7 +113,7 @@ async function loadOrderById(orderId) {
     document.getElementById("order-id").innerText = data.orderId || realId;
 
   document.getElementById("product-id").innerText =
-  data.productIds?.[0] || data.productId || "Không có";
+  data.productId || data.productIds?.[0] || "Không có";
 
     document.getElementById("product-name").innerText =
       data.productName || (data.items && data.items[0]?.name) || "Không có dữ liệu";
