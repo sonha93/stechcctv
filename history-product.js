@@ -134,34 +134,47 @@ document.getElementById("earned-points").innerText =
   document.querySelector(".return-section").style.display = "none";
 }
 // =========================
-// RETURN INFO PANEL (FIX ĐÚNG CHỖ)
+// RETURN INFO PANEL (FIX CHUẨN)
 // =========================
 
+const returnSection = document.querySelector(".return-section");
+
+// CHẶN NULL AN TOÀN
 const hasReturn =
-  data.returnStatus ||
-  data.returnRequestedAt ||
-  data.refundAmount > 0;
+  !!data.returnStatus ||
+  !!data.returnRequestedAt ||
+  !!data.returnApprovedAt ||
+  (data.refundAmount && data.refundAmount > 0);
+
+// RESET UI TRƯỚC (QUAN TRỌNG)
+document.getElementById("return-request-date").innerText = "-";
+document.getElementById("return-approved-date").innerText = "-";
+document.getElementById("return-status").innerText = "-";
+document.getElementById("refund-amount").innerText = "0đ";
+document.getElementById("deducted-points").innerText = "0";
+document.getElementById("current-points").innerText = "0";
 
 if (!hasReturn) {
-  document.querySelector(".return-section").style.display = "none";
-} else {
-  document.querySelector(".return-section").style.display = "block";
-
-  document.getElementById("return-request-date").innerText =
-    data.returnRequestedAt ? formatDate(data.returnRequestedAt) : "-";
-
-  document.getElementById("return-approved-date").innerText =
-    data.returnApprovedAt ? formatDate(data.returnApprovedAt) : "-";
-
-  document.getElementById("return-status").innerText =
-    data.returnStatus || "-";
-
-  document.getElementById("refund-amount").innerText =
-    formatMoney(data.refundAmount || 0);
-
-  document.getElementById("deducted-points").innerText =
-    data.returnUsedPoints ?? data.returnDeductPoints ?? 0;
-
-  document.getElementById("current-points").innerText =
-    data.memberPoints || 0;
+  returnSection.style.display = "none";
+  return;
 }
+
+returnSection.style.display = "block";
+
+document.getElementById("return-request-date").innerText =
+  data.returnRequestedAt ? formatDate(data.returnRequestedAt) : "-";
+
+document.getElementById("return-approved-date").innerText =
+  data.returnApprovedAt ? formatDate(data.returnApprovedAt) : "-";
+
+document.getElementById("return-status").innerText =
+  data.returnStatus || "-";
+
+document.getElementById("refund-amount").innerText =
+  formatMoney(data.refundAmount || 0);
+
+document.getElementById("deducted-points").innerText =
+  data.returnUsedPoints ?? data.returnDeductPoints ?? 0;
+
+document.getElementById("current-points").innerText =
+  data.memberPoints || 0;
