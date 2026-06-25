@@ -57,77 +57,48 @@ btn.addEventListener("click", async () => {
 // =========================
 async function loadOrderById(orderId) {
   try {
-
     let data = null;
-    let realId = null;
+    let realId = orderId;
 
-    // 1. search theo document ID
-    const docRef = doc(db, "orders", orderId);
-    const snap = await getDoc(docRef);
+    // 1. get doc trực tiếp
+    const snap = await db.collection("orders").doc(orderId).get();
 
-    if (snap.exists()) {
+    if (snap.exists) {
       data = snap.data();
-      realId = snap.id;
-    }
+    } else {
+      // 2. query field orderId
+      const res = await db
+        .collection("orders")
+        .where("orderId", "==", orderId)
+        .limit(1)
+        .get();
 
-    // 2. nếu không có → search ALL field (an toàn hơn)
-    if (!data) {
-      const q = query(collection(db, "orders"));
-      const res = await getDocs(q);
+      if (res.empty) {
+        document.getElementById("order-status").innerText =
+          "Không tìm thấy đơn hàng";
+        return;
+      }
 
       res.forEach(d => {
-        const dData = d.data();
-
-        if (
-          dData.orderId === orderId ||
-          d.id === orderId
-        ) {
-          data = dData;
-          realId = d.id;
-        }
+        data = d.data();
+        realId = d.id;
       });
     }
 
-    // 3. không tìm thấy
-    if (!data) {
-      document.getElementById("order-status").innerText =
-        "Không tìm thấy đơn hàng";
-      return;
-    }
-
-    // ================= UI =================
-    document.getElementById("order-id").innerText =
-      data.orderId || realId;
-
-    document.getElementById("product-id").innerText =
-      data.productIds?.[0] || "";
-
-    document.getElementById("product-name").innerText =
-      data.productName || "Không có dữ liệu";
-
-    document.getElementById("purchase-date").innerText =
-      formatDate(data.createdAt);
-
-    document.getElementById("original-price").innerText =
-      formatMoney(data.originalPrice);
-
-    document.getElementById("discount").innerText =
-      formatMoney(data.discount);
-
-    document.getElementById("used-points").innerText =
-      data.usedPoints ?? 0;
-
-    document.getElementById("earned-points").innerText =
-      data.earnedPoints ?? 0;
-
-    document.getElementById("final-price").innerText =
-      formatMoney(data.total);
-
-    document.getElementById("order-status").innerText =
-      data.status || "";
+    // render
+    document.getElementById("order-id").innerText = data.orderId || realId;
+    document.getElementById("product-id").innerText = data.productIds?.[0] || "";
+    document.getElementById("product-name").innerText = data.productName || "Không có dữ liệu";
+    document.getElementById("purchase-date").innerText = formatDate(data.createdAt);
+    document.getElementById("original-price").innerText = formatMoney(data.originalPrice);
+    document.getElementById("discount").innerText = formatMoney(data.discount);
+    document.getElementById("used-points").innerText = data.usedPoints ?? 0;
+    document.getElementById("earned-points").innerText = data.earnedPoints ?? 0;
+    document.getElementById("final-price").innerText = formatMoney(data.total);
+    document.getElementById("order-status").innerText = data.status || "";
 
   } catch (err) {
-    console.error(err);
+    console.log(err);
     alert("Lỗi load đơn hàng");
   }
 }
