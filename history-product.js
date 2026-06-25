@@ -130,7 +130,7 @@ document.getElementById("discount").innerText =
 document.getElementById("used-points").innerText =
   formatMoney(usedPoints * 100);
 
-dconst earnedPoints =
+const earnedPoints =
   data.earnedPoints ??
   data.pointsEarned ??
   data.rewardPoints ??
