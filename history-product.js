@@ -133,24 +133,19 @@ document.getElementById("earned-points").innerText =
 // =========================
 // RETURN INFO PANEL (FIX ĐÚNG CHỖ)
 // =========================
-
 document.getElementById("return-request-date").innerText =
-  data.returnRequestedAt
-    ? formatDate(data.returnRequestedAt)
-    : "-";
+  data.returnRequestedAt ? formatDate(data.returnRequestedAt) : "-";
 
-document.getElementById("return-approve-date").innerText =
-  data.returnApprovedAt
-    ? formatDate(data.returnApprovedAt)
-    : "-";
+document.getElementById("return-approved-date").innerText =
+  data.returnApprovedAt ? formatDate(data.returnApprovedAt) : "-";
 
 document.getElementById("return-status").innerText =
   data.returnStatus || "-";
 
-document.getElementById("refund-money").innerText =
+document.getElementById("refund-amount").innerText =
   formatMoney(data.refundAmount || 0);
 
-document.getElementById("return-points").innerText =
+document.getElementById("deducted-points").innerText =
   data.usedPoints || 0;
 
 document.getElementById("current-points").innerText =
