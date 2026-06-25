@@ -82,11 +82,12 @@ async function loadOrderById(orderId) {
       });
     }
     if (!data) {
-      console.log(data);
+      
       document.getElementById("order-status").innerText =
         "Không có dữ liệu";
       return;
     }
+    console.log(data);
     // FIX chống undefined (QUAN TRỌNG)
     document.getElementById("order-id").innerText = data.orderId || realId;
 
