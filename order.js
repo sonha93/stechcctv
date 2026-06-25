@@ -867,76 +867,12 @@ auth.onAuthStateChanged(user => {
     return;
   }
 
-  loadOrders(user.uid);
+  db.collection("orders")
+    .where("uid", "==", user.uid)
+    .onSnapshot(() => {
+
+      loadOrders(user.uid);
+
+    });
 
 });
-window.toggleItems = function(id, itemsCount){
-
-  const box =
-    document.getElementById(`more-${id}`);
-
-  const btn =
-    document.getElementById(`toggle-${id}`);
-
-  if(!box) return;
-
-  if(box.style.display === "none"){
-
-    box.style.display = "block";
-
-    if(btn){
-      btn.innerHTML =
-        `và ${itemsCount} sản phẩm khác ▲`;
-    }
-
-  }else{
-
-    box.style.display = "none";
-
-    if(btn){
-      btn.innerHTML =
-        `và ${itemsCount} sản phẩm khác ▼`;
-    }
-  }
-};
-window.nextPage = function(){
-  const totalPages = Math.ceil(allOrders.length / perPage);
-
-  if(currentPage < totalPages){
-    currentPage++;
-    renderOrders();
-  }
-};
-
-window.prevPage = function(){
-  if(currentPage > 1){
-    currentPage--;
-    renderOrders();
-  }
-};
-window.requestReturn = async function(orderId){
-
-  const ok = confirm("Bạn muốn gửi yêu cầu trả hàng?");
-  if(!ok) return;
-
- await db.collection("orders").doc(orderId).update({
-  returnRequested: true,
-  returnRequestedAt: Date.now(),
-  returnStatus: "pending"
-});
-
-  alert("Đã gửi yêu cầu trả hàng");
-
-  allOrders = allOrders.map(order => {
-    if(order.id === orderId){
-      return {
-        ...order,
-        status: "return_requested",
-        returnRequested: true
-      };
-    }
-    return order;
-  });
-
-  renderOrders();
-};
