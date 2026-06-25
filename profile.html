@@ -792,7 +792,21 @@ avatarUpload.addEventListener("change", async (e) => {
   .where("phone", "==", phone)
   .limit(1)
   .get();
+console.log("memberSnap.empty =", memberSnap.empty);
 
+if (!memberSnap.empty) {
+    console.log("member id =", memberSnap.docs[0].id);
+    console.log("before =", memberSnap.docs[0].data());
+
+    await memberSnap.docs[0].ref.update({
+        name,
+        address,
+        birthday: oldBirthday || birthday
+    });
+
+    const after = await memberSnap.docs[0].ref.get();
+    console.log("after =", after.data());
+}
 if (!memberSnap.empty) {
 
   await memberSnap.docs[0].ref.update({
@@ -883,10 +897,7 @@ auth.onAuthStateChanged(user=>{
         const memberDoc = memberSnap.docs[0];
         const memberRef = memberDoc.ref;
         const member = memberDoc.data();
-         console.log("member =", member);
-console.log("member.birthday =", member.birthday);
-console.log("member.points =", member.points);
-console.log("birthdayGiftYear =", member.birthdayGiftYear);
+   
         // Hạng thành viên
         memberLevel.textContent = member.level || "Silver";
 
@@ -903,10 +914,6 @@ console.log("birthdayGiftYear =", member.birthdayGiftYear);
                 today.getMonth() === birth.getMonth();
 
             const receivedThisYear =
-               console.log("today =", today);
-console.log("birth =", birth);
-console.log("isBirthday =", isBirthday);
-console.log("receivedThisYear =", receivedThisYear);
             if (isBirthday && !receivedThisYear) {
 
                 await memberRef.update({
