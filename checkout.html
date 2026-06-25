@@ -619,7 +619,12 @@ const memberSnap = await db
   .where("phone", "==", phone)
   .limit(1)
   .get();
+const userProfile = await db
+  .collection("users")
+  .doc(user.uid)
+  .get();
 
+const profileData = userProfile.data() || {};
 if(memberSnap.empty){
 
   const newMemberRef =
@@ -629,7 +634,7 @@ if(memberSnap.empty){
   phone: phone,
   address: address,
 
-  birthday: "",
+birthday: profileData.birthday || "",
   birthdayGiftYear: null,
 
    points: 100,
