@@ -110,7 +110,6 @@ update.earnedPoints = earnPoints;
 update.memberPoints = memberSnap.data().points;
 
 await db.collection("member_history").add({
- await db.collection("member_history").add({
     memberId: order.memberId,
     orderId: orderId,
     type: "purchase",
