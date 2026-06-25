@@ -86,25 +86,6 @@ async function loadOrderById(orderId) {
         "Không có dữ liệu";
       return;
     }
-console.log("ORDER FULL DATA:", data);
-
-console.log("USED POINTS (điểm trừ):", data.usedPoints);
-
-console.log("EARNED POINTS (điểm cộng):",
-  data.earnedPoints ??
-  data.pointsEarned ??
-  data.rewardPoints ??
-  data.addedPoints ??
-  "KHÔNG CÓ FIELD"
-);
-    console.log("CASHBACK:", data.cashbackAmount);
-console.log("POINTS RAW OBJECT:", {
-  usedPoints: data.usedPoints,
-  earnedPoints: data.earnedPoints,
-  pointsEarned: data.pointsEarned,
-  rewardPoints: data.rewardPoints,
-  addedPoints: data.addedPoints
-});
     // FIX chống undefined (QUAN TRỌNG)
     document.getElementById("order-id").innerText = data.orderId || realId;
 
