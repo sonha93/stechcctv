@@ -105,6 +105,11 @@ update.earnedPoints = earnPoints;
           -Number(order.total || 0)
         )
     });
+    const memberSnap = await memberRef.get();
+
+update.memberPoints = memberSnap.data().points;
+
+await db.collection("member_history").add({
  await db.collection("member_history").add({
     memberId: order.memberId,
     orderId: orderId,
