@@ -868,7 +868,7 @@ auth.onAuthStateChanged(user => {
   }
 
   db.collection("orders")
-    .where("uid", "==", user.uid)
+    .where("uid","==",user.uid)
     .onSnapshot(() => {
 
       loadOrders(user.uid);
