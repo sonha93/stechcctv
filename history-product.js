@@ -95,32 +95,34 @@ async function loadOrderById(orderId) {
     }
 
     // ================= RENDER =================
+const item = data.items?.[0] || {};
 
-    document.getElementById("order-id").innerText =
-      data.orderId || realId;
+// giá gốc
+const original =
+  Number(item.originalPrice || item.price || data.originalPrice || 0);
 
-    document.getElementById("product-id").innerText =
-      data.productId || data.productIds?.[0] || "Không có";
+// tiền giảm
+const discount =
+  Number(item.discount || data.discount || 0);
 
-    document.getElementById("product-name").innerText =
-      data.productName || data.items?.[0]?.name || "Không có dữ liệu";
+// giá cuối
+const finalPrice = original - discount;
 
-    document.getElementById("purchase-date").innerText =
-      formatDate(data.createdAt);
+// render
+document.getElementById("original-price").innerText =
+  formatMoney(original);
 
-    const original = Number(data.originalPrice || data.items?.[0]?.price || 0);
-    const discount = Number(data.discount || 0);
-    const finalPrice = original - discount;
+document.getElementById("discount").innerText =
+  formatMoney(discount);
 
-    document.getElementById("original-price").innerText =
-      formatMoney(original);
+document.getElementById("final-price").innerText =
+  formatMoney(finalPrice);
 
-    document.getElementById("discount").innerText =
-      formatMoney(discount);
+document.getElementById("discount").innerText =
+  formatMoney(original - finalPrice);
 
-    document.getElementById("final-price").innerText =
-      formatMoney(finalPrice);
-
+document.getElementById("final-price").innerText =
+  formatMoney(finalPrice);
     document.getElementById("used-points").innerText =
       data.usedPoints ?? data.pointsUsed ?? 0;
 
