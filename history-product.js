@@ -60,36 +60,21 @@ async function loadOrderById(orderId) {
     let data = null;
     let realId = orderId;
 
- // 1. thử lấy theo document ID (v9/v10 chuẩn)
-const ref = doc(db, "orders", orderId);
-const snap = await getDoc(ref);
+    // 1. lấy theo document ID
+    const ref = doc(db, "orders", orderId);
+    const snap = await getDoc(ref);
 
-let data = null;
-let realId = orderId;
+    if (snap.exists()) {
+      data = snap.data();
+    } else {
+      // 2. fallback query theo field orderId
+      const q = query(
+        collection(db, "orders"),
+        where("orderId", "==", orderId),
+        limit(1)
+      );
 
-if (snap.exists()) {
-  data = snap.data();
-} else {
-  // 2. fallback search theo field orderId
-  const q = query(
-    collection(db, "orders"),
-    where("orderId", "==", orderId),
-    limit(1)
-  );
-
-  const res = await getDocs(q);
-
-  if (res.empty) {
-    document.getElementById("order-status").innerText =
-      "Không tìm thấy đơn hàng";
-    return;
-  }
-
-  res.forEach(d => {
-    data = d.data();
-    realId = d.id;
-  });
-}
+      const res = await getDocs(q);
 
       if (res.empty) {
         document.getElementById("order-status").innerText =
@@ -109,43 +94,39 @@ if (snap.exists()) {
       return;
     }
 
-    // FIX chống undefined (QUAN TRỌNG)
-    document.getElementById("order-id").innerText = data.orderId || realId;
+    // ================= RENDER =================
 
-  document.getElementById("product-id").innerText =
-  data.productId || data.productIds?.[0] || "Không có";
+    document.getElementById("order-id").innerText =
+      data.orderId || realId;
+
+    document.getElementById("product-id").innerText =
+      data.productId || data.productIds?.[0] || "Không có";
 
     document.getElementById("product-name").innerText =
-      data.productName || (data.items && data.items[0]?.name) || "Không có dữ liệu";
+      data.productName || data.items?.[0]?.name || "Không có dữ liệu";
 
     document.getElementById("purchase-date").innerText =
       formatDate(data.createdAt);
 
+    const original = Number(data.originalPrice || data.items?.[0]?.price || 0);
+    const discount = Number(data.discount || 0);
+    const finalPrice = original - discount;
+
     document.getElementById("original-price").innerText =
-      formatMoney(data.originalPrice || data.items?.[0]?.price || 0);
+      formatMoney(original);
 
     document.getElementById("discount").innerText =
-      formatMoney(data.discount || 0);
+      formatMoney(discount);
 
-   document.getElementById("used-points").innerText =
-  data.usedPoints ?? data.pointsUsed ?? 0;
+    document.getElementById("final-price").innerText =
+      formatMoney(finalPrice);
 
-document.getElementById("earned-points").innerText =
-  data.earnedPoints ?? data.pointsEarned ?? 0;
+    document.getElementById("used-points").innerText =
+      data.usedPoints ?? data.pointsUsed ?? 0;
 
-  const original = Number(data.originalPrice || 0);
-const discount = Number(data.discount || 0);
+    document.getElementById("earned-points").innerText =
+      data.earnedPoints ?? data.pointsEarned ?? 0;
 
-const finalPrice = original - discount;
-
-document.getElementById("original-price").innerText =
-  formatMoney(original);
-
-document.getElementById("discount").innerText =
-  formatMoney(discount);
-
-document.getElementById("final-price").innerText =
-  formatMoney(finalPrice);
     document.getElementById("order-status").innerText =
       data.status || "";
 
