@@ -787,20 +787,6 @@ avatarUpload.addEventListener("change", async (e) => {
   .set({
       avatar: data.secure_url
   }, { merge: true });
-   const memberSnap = await firebase.firestore()
-  .collection("members")
-  .where("phone", "==", phone)
-  .limit(1)
-  .get();
-if (!memberSnap.empty) {
-
-  await memberSnap.docs[0].ref.update({
-    name,
-    address,
-    birthday: oldBirthday || birthday
-  });
-
-}
       // cập nhật avatar toàn bộ review
 
 const reviewsSnap = await firebase.firestore()
@@ -882,7 +868,7 @@ auth.onAuthStateChanged(user=>{
         const memberDoc = memberSnap.docs[0];
         const memberRef = memberDoc.ref;
         const member = memberDoc.data();
-   
+
         // Hạng thành viên
         memberLevel.textContent = member.level || "Silver";
 
@@ -893,12 +879,14 @@ auth.onAuthStateChanged(user=>{
         if (member.birthday) {
 
             const birth = new Date(member.birthday);
-         
+
             const isBirthday =
                 today.getDate() === birth.getDate() &&
                 today.getMonth() === birth.getMonth();
 
             const receivedThisYear =
+                member.birthdayGiftYear === currentYear;
+
             if (isBirthday && !receivedThisYear) {
 
                 await memberRef.update({
