@@ -883,7 +883,10 @@ auth.onAuthStateChanged(user=>{
         const memberDoc = memberSnap.docs[0];
         const memberRef = memberDoc.ref;
         const member = memberDoc.data();
-
+         console.log("member =", member);
+console.log("member.birthday =", member.birthday);
+console.log("member.points =", member.points);
+console.log("birthdayGiftYear =", member.birthdayGiftYear);
         // Hạng thành viên
         memberLevel.textContent = member.level || "Silver";
 
@@ -900,15 +903,10 @@ auth.onAuthStateChanged(user=>{
                 today.getMonth() === birth.getMonth();
 
             const receivedThisYear =
-                member.birthdayGiftYear === currentYear;
-           console.log("member.birthday =", member.birthday);
+               console.log("today =", today);
 console.log("birth =", birth);
-console.log("today =", today);
-console.log("today day =", today.getDate(), "month =", today.getMonth() + 1);
-console.log("birth day =", birth.getDate(), "month =", birth.getMonth() + 1);
 console.log("isBirthday =", isBirthday);
-console.log("birthdayGiftYear =", member.birthdayGiftYear);
-console.log("currentYear =", currentYear);
+console.log("receivedThisYear =", receivedThisYear);
             if (isBirthday && !receivedThisYear) {
 
                 await memberRef.update({
