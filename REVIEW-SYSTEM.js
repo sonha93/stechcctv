@@ -1131,8 +1131,7 @@ Gửi
 
 <div style="margin-top:10px;">
 
-${(r.replies || []).map(rep => `
-
+${(r.replies || []).map((rep,index) =>`
 <div style="
 margin-top:8px;
 margin-left:40px;
@@ -1174,7 +1173,20 @@ ${rep.createdAt ? timeAgo({toMillis:()=>rep.createdAt}) : ""}
 <div style="margin-left:18px;">
   ${rep.content}
 </div>
+<div style="
+display:flex;
+gap:15px;
+margin-left:18px;
+margin-top:6px;
+">
 
+<span
+style="cursor:pointer;color:#666;"
+onclick="likeReviewReply('${r.id}', ${index})">
+👍 ${rep.likes || 0}
+</span>
+
+</div>
 </div>
 
 `).join("")}
@@ -1393,8 +1405,7 @@ Gửi
 </div>
 <div style="margin-top:10px;">
 
-${(c.replies || []).map(rep => `
-
+${(c.replies || []).map((rep,index) => `
 <div style="
 margin-top:8px;
 margin-left:40px;
@@ -1445,6 +1456,21 @@ margin-left:18px;
 ${rep.content}
 </div>
 
+<div style="
+display:flex;
+gap:15px;
+margin-left:18px;
+margin-top:6px;
+">
+
+<span
+style="cursor:pointer;color:#666;"
+onclick="likeCommentReply('${c.id}', ${index})">
+👍 ${rep.likes || 0}
+</span>
+
+</div>
+
 </div>
 
 `).join("")}
@@ -1491,7 +1517,9 @@ replies: arrayUnion({
   name: userData.name || user.displayName || user.email || "Khách hàng",
    position: userData.position || "",
   content: text,
-  createdAt: Date.now()
+  createdAt: Date.now(),
+  likes: 0,
+  likedBy: []
 })
 }
 );
@@ -1678,7 +1706,9 @@ replies: arrayUnion({
 
   content:text,
 
-  createdAt: Date.now()
+  createdAt: Date.now(),
+  likes: 0,
+likedBy: []
 })
 }
 );
@@ -1722,3 +1752,39 @@ toast.remove();
 },2500);
 
 }
+window.likeReviewReply = async function(reviewId, index){
+
+  const user = auth.currentUser;
+
+  if(!user){
+    showToast("Đăng nhập trước");
+    return;
+  }
+
+  const reviewRef = doc(db, "reviews", reviewId);
+  const snap = await getDoc(reviewRef);
+
+  if(!snap.exists()) return;
+
+  const data = snap.data();
+  const replies = data.replies || [];
+
+  if(!replies[index]) return;
+
+  if((replies[index].likedBy || []).includes(user.uid)){
+    showToast("Bạn đã thích rồi");
+    return;
+  }
+
+  replies[index].likes = (replies[index].likes || 0) + 1;
+  replies[index].likedBy = [
+    ...(replies[index].likedBy || []),
+    user.uid
+  ];
+
+  await updateDoc(reviewRef, {
+    replies: replies
+  });
+
+  loadReviews();
+};
