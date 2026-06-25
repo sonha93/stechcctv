@@ -188,10 +188,15 @@ document.getElementById("return-status").innerText =
 document.getElementById("refund-amount").innerText =
   formatMoney(data.refundAmount || 0);
 
+const deductedPoints = data.returnDeductPoints ?? 0;
+
 document.getElementById("deducted-points").innerText =
-  data.returnDeductPoints ?? 0;
+  formatMoney(deductedPoints * 100);
+
+const currentPoints = data.memberPoints ?? 0;
+
 document.getElementById("current-points").innerText =
-  data.memberPoints || 0;
+  formatMoney(currentPoints * 100);
 } catch (err) {
     console.log(err);
     alert("Lỗi load đơn hàng");
