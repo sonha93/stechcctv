@@ -90,107 +90,104 @@ async function loadOrders(userUid){
 
   try{
 
-   db.collection("orders")
-  .where("uid", "==", userUid)
-  .orderBy("createdAt", "desc")
-  .onSnapshot(async (snapshot) => {
-const reviewSnap = await db
+  const reviewSnap = await db
   .collection("reviews")
   .where("uid","==",userUid)
   .get();
 
 reviewedProducts = [];
 
-reviewSnap.forEach(doc=>{
+reviewSnap.forEach(doc => {
 
   const r = doc.data();
 
   reviewedProducts.push(r.productId);
 
 });
-   allOrders = await Promise.all(
 
-  snapshot.docs.map(async doc => {
+db.collection("orders")
+  .where("uid", "==", userUid)
+  .orderBy("createdAt", "desc")
+  .onSnapshot(async (snapshot) => {
 
-    const data = doc.data();
+    allOrders = await Promise.all(
 
-    // load thêm giá gốc
-    if(Array.isArray(data.items)){
+      snapshot.docs.map(async doc => {
 
-      data.items = await Promise.all(
+        const data = doc.data();
 
-        data.items.map(async item => {
+        if(Array.isArray(data.items)){
 
-          // nếu đã có originalPrice
-          // thì giữ nguyên
-        if(item.originalPrice || item.oldPrice){
+          data.items = await Promise.all(
 
-  return {
-    ...item,
-    originalPrice:
-      Number(
-        item.originalPrice ||
-        item.oldPrice ||
-        item.price
-      )
-  };
-}
+            data.items.map(async item => {
 
-          try{
+              if(item.originalPrice || item.oldPrice){
 
-            // lấy product từ collection products
-            const productDoc = await db
-              .collection("products")
-            .doc(item.productId || item.id)
-              .get();
+                return {
+                  ...item,
+                  originalPrice:
+                    Number(
+                      item.originalPrice ||
+                      item.oldPrice ||
+                      item.price
+                    )
+                };
 
-            if(productDoc.exists){
+              }
 
-              const product =
-                productDoc.data();
+              try{
+
+                const productDoc = await db
+                  .collection("products")
+                  .doc(item.productId || item.id)
+                  .get();
+
+                if(productDoc.exists){
+
+                  const product = productDoc.data();
+
+                  return {
+                    ...item,
+                    originalPrice:
+                      Number(
+                        product.originalPrice ||
+                        product.oldPrice ||
+                        product.price ||
+                        item.price
+                      )
+                  };
+
+                }
+
+              }catch(err){
+
+                console.error(
+                  "Lỗi load giá gốc:",
+                  err
+                );
+
+              }
 
               return {
-
                 ...item,
-
-                originalPrice:
-                  Number(
-                    product.originalPrice ||
-                    product.oldPrice ||
-                    product.price ||
-                    item.price
-                  )
+                originalPrice: item.price
               };
-            }
 
-          }catch(err){
+            })
 
-            console.error(
-              "Lỗi load giá gốc:",
-              err
-            );
-          }
+          );
 
-          // fallback nếu lỗi
-          return {
+        }
 
-            ...item,
-            originalPrice: item.price
-          };
+        return {
+          id: doc.id,
+          ...data
+        };
 
-        })
-      );
-    }
+      })
 
-    return {
-
-      id: doc.id,
-      ...data
-    };
-
-  })
-);
-
+    );
 
     if(allOrders.length === 0){
 
@@ -205,13 +202,14 @@ reviewSnap.forEach(doc=>{
       `;
 
       return;
+
     }
 
     currentPage = 1;
 
     renderOrders();
-  
-  }catch(err){
+
+  }, err => {
 
     console.error(err);
 
@@ -224,9 +222,8 @@ reviewSnap.forEach(doc=>{
         ❌ Lỗi tải đơn hàng
       </div>
     `;
-  }
-}
 
+  });
 /* =========================
 RENDER
 ========================= */
@@ -827,6 +824,7 @@ allOrders = allOrders.map(order => {
 
 // render lại
 renderOrders();
+
 
        }catch(err){
 
