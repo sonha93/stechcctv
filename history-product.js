@@ -87,7 +87,7 @@ async function loadOrderById(orderId) {
         "Không có dữ liệu";
       return;
     }
-    console.log(data);
+   
     // FIX chống undefined (QUAN TRỌNG)
     document.getElementById("order-id").innerText = data.orderId || realId;
 
