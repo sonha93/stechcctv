@@ -60,13 +60,11 @@ async function loadOrderById(orderId) {
     let data = null;
     let realId = orderId;
 
-    // 1. get doc trực tiếp
     const snap = await db.collection("orders").doc(orderId).get();
 
     if (snap.exists) {
       data = snap.data();
     } else {
-      // 2. query field orderId
       const res = await db
         .collection("orders")
         .where("orderId", "==", orderId)
@@ -85,17 +83,41 @@ async function loadOrderById(orderId) {
       });
     }
 
-    // render
+    if (!data) {
+      document.getElementById("order-status").innerText =
+        "Không có dữ liệu";
+      return;
+    }
+
+    // FIX chống undefined (QUAN TRỌNG)
     document.getElementById("order-id").innerText = data.orderId || realId;
-    document.getElementById("product-id").innerText = data.productIds?.[0] || "";
-    document.getElementById("product-name").innerText = data.productName || "Không có dữ liệu";
-    document.getElementById("purchase-date").innerText = formatDate(data.createdAt);
-    document.getElementById("original-price").innerText = formatMoney(data.originalPrice);
-    document.getElementById("discount").innerText = formatMoney(data.discount);
-    document.getElementById("used-points").innerText = data.usedPoints ?? 0;
-    document.getElementById("earned-points").innerText = data.earnedPoints ?? 0;
-    document.getElementById("final-price").innerText = formatMoney(data.total);
-    document.getElementById("order-status").innerText = data.status || "";
+
+    document.getElementById("product-id").innerText =
+      (data.productIds && data.productIds[0]) || "";
+
+    document.getElementById("product-name").innerText =
+      data.productName || (data.items && data.items[0]?.name) || "Không có dữ liệu";
+
+    document.getElementById("purchase-date").innerText =
+      formatDate(data.createdAt);
+
+    document.getElementById("original-price").innerText =
+      formatMoney(data.originalPrice || data.items?.[0]?.price || 0);
+
+    document.getElementById("discount").innerText =
+      formatMoney(data.discount || 0);
+
+    document.getElementById("used-points").innerText =
+      data.usedPoints ?? 0;
+
+    document.getElementById("earned-points").innerText =
+      data.earnedPoints ?? 0;
+
+    document.getElementById("final-price").innerText =
+      formatMoney(data.total || data.payment?.total || 0);
+
+    document.getElementById("order-status").innerText =
+      data.status || "";
 
   } catch (err) {
     console.log(err);
