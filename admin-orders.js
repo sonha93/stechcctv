@@ -129,38 +129,7 @@ if (value === "rejected") {
   update.returnRejectedAt = Date.now();
 }
   await orderRef.update(update);
-if (order.memberId) {
 
-  let message = "";
-
-  if (value === "approved") {
-    message = "Yêu cầu trả hàng của bạn đã được chấp nhận.";
-  }
-
-  if (value === "rejected") {
-    message = "Yêu cầu trả hàng của bạn đã bị từ chối.";
-  }
-
-  if (message) {
-
-    await db.collection("notifications").add({
-
-      memberId: order.memberId,
-      orderId: orderId,
-
-      title: "Thông báo trả hàng",
-
-      message: message,
-
-      isRead: false,
-
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-
-    });
-
-  }
-
-}
   select.disabled = true;
 
   alert("Cập nhật trả hàng thành công");
@@ -1474,46 +1443,6 @@ await db
   .collection("orders")
   .doc(id)
   .update(updateData);
-  if (orderData.memberId) {
-
-  let message = "";
-
-  if (status === "confirmed") {
-    message = "Đơn hàng của bạn đã được xác nhận.";
-  }
-
-  if (status === "shipping") {
-    message = "Đơn hàng của bạn đang được giao.";
-  }
-
-  if (status === "completed") {
-    message = "Đơn hàng của bạn đã giao thành công.";
-  }
-
-  if (status === "cancelled") {
-    message = "Đơn hàng của bạn đã bị hủy.";
-  }
-
-  if (message) {
-
-    await db.collection("notifications").add({
-
-      memberId: orderData.memberId,
-      orderId: id,
-
-      title: "Thông báo",
-
-      message: message,
-
-      isRead: false,
-
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-
-    });
-
-  }
-
-}
         // completed => khóa
      if (
   status === "completed" ||
