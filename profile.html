@@ -894,14 +894,21 @@ auth.onAuthStateChanged(user=>{
         if (member.birthday) {
 
             const birth = new Date(member.birthday);
-
+         
             const isBirthday =
                 today.getDate() === birth.getDate() &&
                 today.getMonth() === birth.getMonth();
 
             const receivedThisYear =
                 member.birthdayGiftYear === currentYear;
-
+           console.log("member.birthday =", member.birthday);
+console.log("birth =", birth);
+console.log("today =", today);
+console.log("today day =", today.getDate(), "month =", today.getMonth() + 1);
+console.log("birth day =", birth.getDate(), "month =", birth.getMonth() + 1);
+console.log("isBirthday =", isBirthday);
+console.log("birthdayGiftYear =", member.birthdayGiftYear);
+console.log("currentYear =", currentYear);
             if (isBirthday && !receivedThisYear) {
 
                 await memberRef.update({
