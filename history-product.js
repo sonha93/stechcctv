@@ -76,7 +76,8 @@ async function loadOrderById(orderId) {
           "Không tìm thấy đơn hàng";
         return;
       }
-
+console.log("ORDER DATA:", data);
+console.log("ITEM:", data.items?.[0]);
       res.forEach(d => {
         data = d.data();
         realId = d.id;
