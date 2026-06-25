@@ -1407,13 +1407,15 @@ Gửi
 <div style="margin-top:10px;">
 
 ${(c.replies || []).map((rep,index) => `
+${(c.replies || []).map((rep,index) => `
 <div style="
 margin-top:8px;
 margin-left:40px;
 padding:10px;
-background:#f8f8f8;
+background:#fff;
 border-left:3px solid #00b894;
-border-radius:8px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,.05);
 ">
 
 <div style="
