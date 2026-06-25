@@ -178,3 +178,8 @@ document.getElementById("deducted-points").innerText =
 
 document.getElementById("current-points").innerText =
   data.memberPoints || 0;
+} catch (err) {
+    console.log(err);
+    alert("Lỗi load đơn hàng");
+  }
+}
