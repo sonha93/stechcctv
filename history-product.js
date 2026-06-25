@@ -82,6 +82,7 @@ async function loadOrderById(orderId) {
       });
     }
     if (!data) {
+      console.log(data);
       document.getElementById("order-status").innerText =
         "Không có dữ liệu";
       return;
