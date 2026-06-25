@@ -125,15 +125,20 @@ const discount = (item?.originalPrice || 0) - (item?.price || 0);
 document.getElementById("discount").innerText =
   "-" + formatMoney(discount);
 
-   document.getElementById("used-points").innerText =
-  data.usedPoints ?? data.pointsUsed ?? 0;
+  const usedPoints = data.usedPoints ?? data.pointsUsed ?? 0;
 
-document.getElementById("earned-points").innerText =
+document.getElementById("used-points").innerText =
+  formatMoney(usedPoints * 100);
+
+dconst earnedPoints =
   data.earnedPoints ??
   data.pointsEarned ??
   data.rewardPoints ??
   data.addedPoints ??
   0;
+
+document.getElementById("earned-points").innerText =
+  formatMoney(earnedPoints * 100);
 
     document.getElementById("final-price").innerText =
       formatMoney(data.total || data.payment?.total || 0);
