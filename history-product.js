@@ -14,7 +14,15 @@ function formatDate(timestamp) {
 
   const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
 
-  return date.toLocaleDateString("vi-VN");
+  const ngay = date.toLocaleDateString("vi-VN");
+
+  const gio = date.toLocaleTimeString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+
+  return `${ngay}\n${gio}`;
 }
 
 function formatMoney(value) {
