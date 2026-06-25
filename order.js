@@ -90,104 +90,108 @@ async function loadOrders(userUid){
 
   try{
 
-  const reviewSnap = await db
+    const snapshot = await db
+      .collection("orders")
+      .where("uid", "==", userUid)
+      .orderBy("createdAt", "desc")
+      .get();
+const reviewSnap = await db
   .collection("reviews")
   .where("uid","==",userUid)
   .get();
 
 reviewedProducts = [];
 
-reviewSnap.forEach(doc => {
+reviewSnap.forEach(doc=>{
 
   const r = doc.data();
 
   reviewedProducts.push(r.productId);
 
 });
+   allOrders = await Promise.all(
 
-db.collection("orders")
-  .where("uid", "==", userUid)
-  .orderBy("createdAt", "desc")
-  .onSnapshot(async (snapshot) => {
+  snapshot.docs.map(async doc => {
 
-    allOrders = await Promise.all(
+    const data = doc.data();
 
-      snapshot.docs.map(async doc => {
+    // load thêm giá gốc
+    if(Array.isArray(data.items)){
 
-        const data = doc.data();
+      data.items = await Promise.all(
 
-        if(Array.isArray(data.items)){
+        data.items.map(async item => {
 
-          data.items = await Promise.all(
+          // nếu đã có originalPrice
+          // thì giữ nguyên
+        if(item.originalPrice || item.oldPrice){
 
-            data.items.map(async item => {
+  return {
+    ...item,
+    originalPrice:
+      Number(
+        item.originalPrice ||
+        item.oldPrice ||
+        item.price
+      )
+  };
+}
 
-              if(item.originalPrice || item.oldPrice){
+          try{
 
-                return {
-                  ...item,
-                  originalPrice:
-                    Number(
-                      item.originalPrice ||
-                      item.oldPrice ||
-                      item.price
-                    )
-                };
+            // lấy product từ collection products
+            const productDoc = await db
+              .collection("products")
+            .doc(item.productId || item.id)
+              .get();
 
-              }
+            if(productDoc.exists){
 
-              try{
-
-                const productDoc = await db
-                  .collection("products")
-                  .doc(item.productId || item.id)
-                  .get();
-
-                if(productDoc.exists){
-
-                  const product = productDoc.data();
-
-                  return {
-                    ...item,
-                    originalPrice:
-                      Number(
-                        product.originalPrice ||
-                        product.oldPrice ||
-                        product.price ||
-                        item.price
-                      )
-                  };
-
-                }
-
-              }catch(err){
-
-                console.error(
-                  "Lỗi load giá gốc:",
-                  err
-                );
-
-              }
+              const product =
+                productDoc.data();
 
               return {
+
                 ...item,
-                originalPrice: item.price
+
+                originalPrice:
+                  Number(
+                    product.originalPrice ||
+                    product.oldPrice ||
+                    product.price ||
+                    item.price
+                  )
               };
+            }
 
-            })
+          }catch(err){
 
-          );
+            console.error(
+              "Lỗi load giá gốc:",
+              err
+            );
+          }
 
-        }
+          // fallback nếu lỗi
+          return {
 
-        return {
-          id: doc.id,
-          ...data
-        };
+            ...item,
+            originalPrice: item.price
+          };
 
-      })
+        })
+      );
+    }
 
-    );
+    return {
+
+      id: doc.id,
+      ...data
+    };
+
+  })
+);
+
 
     if(allOrders.length === 0){
 
@@ -202,14 +206,13 @@ db.collection("orders")
       `;
 
       return;
-
     }
 
     currentPage = 1;
 
     renderOrders();
 
-  }, err => {
+  }catch(err){
 
     console.error(err);
 
@@ -222,9 +225,8 @@ db.collection("orders")
         ❌ Lỗi tải đơn hàng
       </div>
     `;
-
-  });
   }
+}
 
 /* =========================
 RENDER
