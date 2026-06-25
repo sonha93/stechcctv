@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lịch sử sản phẩm</title>
+
+<style>
+body{
+    font-family: Arial,sans-serif;
+    background:#f5f5f5;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+.card{
+    background:#fff;
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,.1);
+}
+
+h1{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.search-box{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.search-box input{
+    flex:1;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:8px;
+}
+
+.search-box button{
+    background:#009688;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.search-box button:hover{
+    opacity:.9;
+}
+
+.info-row{
+    display:flex;
+    justify-content:space-between;
+    padding:8px 0;
+    border-bottom:1px solid #eee;
+}
+
+.label{
+    font-weight:bold;
+}
+
+.return-box{
+    margin-top:20px;
+    border:2px solid #ff9800;
+    border-radius:10px;
+    padding:15px;
+}
+
+.return-box h3{
+    margin-top:0;
+    color:#ff9800;
+}
+
+.status{
+    font-weight:bold;
+    color:green;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📦 Tra cứu lịch sử sản phẩm</h1>
+
+<div class="card">
+
+<div class="search-box">
+<input
+type="text"
+id="productId"
+placeholder="Nhập ID sản phẩm">
+<button onclick="searchProduct()">
+Tìm kiếm
+</button>
+</div>
+
+</div>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+async function searchProduct(){
+
+const id = document.getElementById("productId").value.trim();
+
+if(!id){
+alert("Nhập ID sản phẩm");
+return;
+}
+
+const result = document.getElementById("result");
+
+result.innerHTML = `
+
+<div class="card">
+
+<h2>Thông tin sản phẩm</h2>
+
+<div class="info-row">
+<span class="label">ID sản phẩm</span>
+<span>${id}</span>
+</div>
+
+<div class="info-row">
+<span class="label">Tên sản phẩm</span>
+<span>Camera Hikvision DS-2CD</span>
+</div>
+
+<div class="info-row">
+<span class="label">Mã đơn hàng</span>
+<span>ST20260622001</span>
+</div>
+
+<div class="info-row">
+<span class="label">Ngày mua</span>
+<span>22/06/2026 14:35</span>
+</div>
+
+<div class="info-row">
+<span class="label">Giá gốc</span>
+<span>3.500.000đ</span>
+</div>
+
+<div class="info-row">
+<span class="label">Khuyến mãi</span>
+<span>-500.000đ</span>
+</div>
+
+<div class="info-row">
+<span class="label">Điểm đã dùng</span>
+<span>100 điểm</span>
+</div>
+
+<div class="info-row">
+<span class="label">Điểm được cộng</span>
+<span>30 điểm</span>
+</div>
+
+<div class="info-row">
+<span class="label">Tổng thanh toán</span>
+<span>3.000.000đ</span>
+</div>
+
+<div class="info-row">
+<span class="label">Trạng thái đơn</span>
+<span class="status">Đã giao hàng</span>
+</div>
+
+<div class="return-box">
+
+<h3>Thông tin hoàn hàng</h3>
+
+<div class="info-row">
+<span class="label">Ngày yêu cầu</span>
+<span>25/06/2026 09:15</span>
+</div>
+
+<div class="info-row">
+<span class="label">Ngày duyệt</span>
+<span>25/06/2026 10:32</span>
+</div>
+
+<div class="info-row">
+<span class="label">Trạng thái</span>
+<span>Đã hoàn tiền</span>
+</div>
+
+<div class="info-row">
+<span class="label">Số tiền hoàn</span>
+<span>3.000.000đ</span>
+</div>
+
+<div class="info-row">
+<span class="label">Điểm thu hồi</span>
+<span>30 điểm</span>
+</div>
+
+<div class="info-row">
+<span class="label">Điểm hiện tại</span>
+<span>570 điểm</span>
+</div>
+
+</div>
+
+</div>
+`;
+
+}
+
+</script>
+
+</body>
+</html>
