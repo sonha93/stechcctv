@@ -49,9 +49,8 @@ btn.addEventListener("click", async () => {
 
   clearUI();
 
-  await loadOrderById(orderId);
- async function loadReturnByOrderId(orderId) {
-});
+ await loadOrderById(orderId);
+await loadReturnByOrderId(orderId);
 
 
 // =========================
@@ -73,7 +72,7 @@ async function loadOrderById(orderId) {
 
       // 2. fallback search theo field orderId
       const q = query(
-     collection(db, "orders")
+     collection(db, "orders"),
         where("orderId", "==", orderId),
         limit(1)
       );
