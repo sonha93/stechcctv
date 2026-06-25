@@ -90,11 +90,10 @@ async function loadOrders(userUid){
 
   try{
 
-    const snapshot = await db
-      .collection("orders")
-      .where("uid", "==", userUid)
-      .orderBy("createdAt", "desc")
-      .get();
+   db.collection("orders")
+  .where("uid", "==", userUid)
+  .orderBy("createdAt", "desc")
+  .onSnapshot(async (snapshot) => {
 const reviewSnap = await db
   .collection("reviews")
   .where("uid","==",userUid)
@@ -211,7 +210,7 @@ reviewSnap.forEach(doc=>{
     currentPage = 1;
 
     renderOrders();
-
+  
   }catch(err){
 
     console.error(err);
@@ -828,7 +827,7 @@ allOrders = allOrders.map(order => {
 
 // render lại
 renderOrders();
-
+});
 
        }catch(err){
 
