@@ -92,15 +92,6 @@ if (value === "approved") {
 
     const earnPoints =
       Math.floor(Number(order.total || 0) / 10000);
-    const memberSnap = await memberRef.get();
-const currentPoints =
-  memberSnap.exists ? Number(memberSnap.data().points || 0) : 0;
-
-update.earnedPoints = earnPoints;
-update.returnDeductPoints = earnPoints;
-update.refundAmount = Number(order.total || 0);
-update.returnUsedPoints = usedPoints;
-update.memberPoints = currentPoints + usedPoints - earnPoints;
     await memberRef.update({
       points:firebase.firestore.FieldValue.increment(
           usedPoints - earnPoints
@@ -1319,7 +1310,8 @@ const newPoints =
     await db.collection("member_history").add({
     memberId: orderData.memberId,
     orderId: id,
- type: "purchase",
+    type: "purchase",
+
     orderDate: Date.now(),
 
     items: orderData.items || [],
