@@ -50,7 +50,6 @@ btn.addEventListener("click", async () => {
   clearUI();
 
  await loadOrderById(orderId);
-await loadReturnByOrderId(orderId);
 });
 
 // =========================
@@ -59,41 +58,44 @@ await loadReturnByOrderId(orderId);
 async function loadOrderById(orderId) {
   try {
 
-    // 1. thử lấy theo document ID
-    let ref = doc(db, "orders", orderId);
-    let snap = await getDoc(ref);
-
     let data = null;
-    let realId = orderId;
+    let realId = null;
+
+    // 1. search theo document ID
+    const docRef = doc(db, "orders", orderId);
+    const snap = await getDoc(docRef);
 
     if (snap.exists()) {
       data = snap.data();
-    } else {
+      realId = snap.id;
+    }
 
-      // 2. fallback search theo field orderId
-      const q = query(
-     collection(db, "orders"),
-        where("orderId", "==", orderId),
-        limit(1)
-      );
-
+    // 2. nếu không có → search ALL field (an toàn hơn)
+    if (!data) {
+      const q = query(collection(db, "orders"));
       const res = await getDocs(q);
 
-      if (res.empty) {
-        document.getElementById("order-status").innerText =
-          "Không tìm thấy đơn hàng";
-        return;
-      }
-
       res.forEach(d => {
-        data = d.data();
-        realId = d.id;
+        const dData = d.data();
+
+        if (
+          dData.orderId === orderId ||
+          d.id === orderId
+        ) {
+          data = dData;
+          realId = d.id;
+        }
       });
     }
 
-    // =========================
-    // RENDER UI
-    // =========================
+    // 3. không tìm thấy
+    if (!data) {
+      document.getElementById("order-status").innerText =
+        "Không tìm thấy đơn hàng";
+      return;
+    }
+
+    // ================= UI =================
     document.getElementById("order-id").innerText =
       data.orderId || realId;
 
@@ -125,6 +127,7 @@ async function loadOrderById(orderId) {
       data.status || "";
 
   } catch (err) {
+    console.error(err);
     alert("Lỗi load đơn hàng");
   }
 }
