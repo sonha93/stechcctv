@@ -113,19 +113,9 @@ async function loadOrderById(orderId) {
 document.getElementById("earned-points").innerText =
   data.earnedPoints ?? data.pointsEarned ?? 0;
 
-  const original = Number(data.originalPrice || 0);
-const discount = Number(data.discount || 0);
+    document.getElementById("final-price").innerText =
+      formatMoney(data.total || data.payment?.total || 0);
 
-const finalPrice = original - discount;
-
-document.getElementById("original-price").innerText =
-  formatMoney(original);
-
-document.getElementById("discount").innerText =
-  formatMoney(discount);
-
-document.getElementById("final-price").innerText =
-  formatMoney(finalPrice);
     document.getElementById("order-status").innerText =
       data.status || "";
 
