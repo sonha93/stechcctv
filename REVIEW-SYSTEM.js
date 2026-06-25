@@ -1132,15 +1132,7 @@ Gửi
 <div style="margin-top:10px;">
 
 ${(r.replies || []).map((rep,index) =>`
-<div style="
-margin-top:8px;
-margin-left:40px;
-padding:10px;
-background:#fff;
-border-left:3px solid #00b894;
-border-radius:12px;
-box-shadow:0 2px 8px rgba(0,0,0,.05);
-">
+<div class="review-card reply-card">
 
 <div style="
   display:flex;
@@ -1407,15 +1399,7 @@ Gửi
 <div style="margin-top:10px;">
 
 ${(c.replies || []).map((rep,index) => `
-<div style="
-margin-top:8px;
-margin-left:40px;
-padding:10px;
-background:#fff;
-border-left:3px solid #00b894;
-border-radius:12px;
-box-shadow:0 2px 8px rgba(0,0,0,.05);
-">
+<div class="review-card reply-card">
 
 <div style="
 display:flex;
