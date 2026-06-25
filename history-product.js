@@ -81,8 +81,6 @@ async function loadOrderById(orderId) {
         realId = d.id;
       });
     }
-console.log("ORDER DATA:", data);
-console.log("ITEM:", data.items?.[0]);
     if (!data) {
       document.getElementById("order-status").innerText =
         "Không có dữ liệu";
@@ -111,15 +109,17 @@ document.getElementById("product-id").innerText =
     data.originalPrice ??
     0
   );
-    document.getElementById("discount").innerText =
-  formatMoney(
-    data.discount ??
-    data.discountAmount ??
-    data.promotion ??
-    data.items?.[0]?.discount ??
-    data.items?.[0]?.promotion ??
-    0
-  );
+   const item = data.items?.[0];
+
+const discount =
+  data.discount ??
+  data.discountAmount ??
+  data.promotion ??
+  item?.discount ??
+  item?.promotion ??
+  ((item?.originalPrice || 0) - (item?.price || 0));
+
+document.getElementById("discount").innerText = formatMoney(discount);
 
    document.getElementById("used-points").innerText =
   data.usedPoints ?? data.pointsUsed ?? 0;
