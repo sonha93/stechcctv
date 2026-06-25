@@ -9,7 +9,19 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import { db } from "./firebase-init.js";
+function formatDate(timestamp) {
+  if (!timestamp) return "";
 
+  const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+
+  return date.toLocaleDateString("vi-VN");
+}
+
+function formatMoney(value) {
+  if (value === undefined || value === null) return "0đ";
+
+  return Number(value).toLocaleString("vi-VN") + "đ";
+}
 const btn = document.getElementById("searchBtn");
 const input = document.getElementById("productId");
 
