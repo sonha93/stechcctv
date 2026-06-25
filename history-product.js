@@ -92,8 +92,8 @@ async function loadOrderById(orderId) {
     // FIX chống undefined (QUAN TRỌNG)
     document.getElementById("order-id").innerText = data.orderId || realId;
 
-    document.getElementById("product-id").innerText =
-      (data.productIds && data.productIds[0]) || "";
+  document.getElementById("product-id").innerText =
+  data.productIds?.[0] || data.productId || "Không có";
 
     document.getElementById("product-name").innerText =
       data.productName || (data.items && data.items[0]?.name) || "Không có dữ liệu";
@@ -107,11 +107,11 @@ async function loadOrderById(orderId) {
     document.getElementById("discount").innerText =
       formatMoney(data.discount || 0);
 
-    document.getElementById("used-points").innerText =
-      data.usedPoints ?? 0;
+   document.getElementById("used-points").innerText =
+  data.usedPoints ?? data.pointsUsed ?? 0;
 
-    document.getElementById("earned-points").innerText =
-      data.earnedPoints ?? 0;
+document.getElementById("earned-points").innerText =
+  data.earnedPoints ?? data.pointsEarned ?? 0;
 
     document.getElementById("final-price").innerText =
       formatMoney(data.total || data.payment?.total || 0);
