@@ -1788,3 +1788,39 @@ window.likeReviewReply = async function(reviewId, index){
 
   loadReviews();
 };
+window.likeCommentReply = async function(commentId, index){
+
+  const user = auth.currentUser;
+
+  if(!user){
+    showToast("Đăng nhập trước");
+    return;
+  }
+
+  const commentRef = doc(db, "comments", commentId);
+  const snap = await getDoc(commentRef);
+
+  if(!snap.exists()) return;
+
+  const data = snap.data();
+  const replies = data.replies || [];
+
+  if(!replies[index]) return;
+
+  if((replies[index].likedBy || []).includes(user.uid)){
+    showToast("Bạn đã thích rồi");
+    return;
+  }
+
+  replies[index].likes = (replies[index].likes || 0) + 1;
+  replies[index].likedBy = [
+    ...(replies[index].likedBy || []),
+    user.uid
+  ];
+
+  await updateDoc(commentRef, {
+    replies: replies
+  });
+
+  loadComments();
+};
