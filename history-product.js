@@ -149,40 +149,33 @@ document.getElementById("earned-points").innerText =
 
     document.getElementById("order-status").innerText =
       data.status || "";
+// =========================
+// RETURN INFO PANEL (FIX ĐÚNG CHỖ)
+// =========================
 
+document.getElementById("return-request-date").innerText =
+  data.returnRequestedAt
+    ? formatDate(data.returnRequestedAt)
+    : "-";
+
+document.getElementById("return-approve-date").innerText =
+  data.returnApprovedAt
+    ? formatDate(data.returnApprovedAt)
+    : "-";
+
+document.getElementById("return-status").innerText =
+  data.returnStatus || "-";
+
+document.getElementById("refund-money").innerText =
+  formatMoney(data.refundAmount || 0);
+
+document.getElementById("return-points").innerText =
+  data.usedPoints || 0;
+
+document.getElementById("current-points").innerText =
+  data.memberPoints || 0;
   } catch (err) {
     console.log(err);
     alert("Lỗi load đơn hàng");
   }
 }
-// =========================
-// RETURN INFO PANEL (THÊM MỚI)
-// =========================
-
-document.getElementById("return-request-date") &&
-  (document.getElementById("return-request-date").innerText =
-    data.returnRequestedAt
-      ? formatDate(data.returnRequestedAt)
-      : "-");
-
-document.getElementById("return-approve-date") &&
-  (document.getElementById("return-approve-date").innerText =
-    data.returnApprovedAt
-      ? formatDate(data.returnApprovedAt)
-      : "-");
-
-document.getElementById("return-status") &&
-  (document.getElementById("return-status").innerText =
-    data.returnStatus || "-");
-
-document.getElementById("refund-money") &&
-  (document.getElementById("refund-money").innerText =
-    formatMoney(data.refundAmount || 0));
-
-document.getElementById("return-points") &&
-  (document.getElementById("return-points").innerText =
-    data.usedPoints || 0);
-
-document.getElementById("current-points") &&
-  (document.getElementById("current-points").innerText =
-    data.memberPoints || 0);
