@@ -125,7 +125,6 @@ async function loadOrderById(orderId) {
       data.status || "";
 
   } catch (err) {
-    console.error(err);
     alert("Lỗi load đơn hàng");
   }
 }
