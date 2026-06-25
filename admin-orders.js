@@ -402,34 +402,6 @@ Object.entries(revenueByDate)
 
 document.getElementById("rangeRevenueDetail").innerHTML =
   revenueHTML || "Không có doanh thu";
-  let totalReturnOrders = 0;
-let processedReturns = 0;
-
-allSnapshotOrders.forEach(doc => {
-  const order = doc.data();
-
-  if (!order.returnRequested) return;
-
-  const dateObj =
-    typeof order.createdAt?.toDate === "function"
-      ? order.createdAt.toDate()
-      : new Date(order.createdAt);
-
-  if (start && dateObj < start) return;
-  if (end && dateObj > end) return;
-
-  totalReturnOrders++;
-
-  if (
-    order.returnStatus === "approved" ||
-    order.returnStatus === "rejected"
-  ) {
-    processedReturns++;
-  }
-});
-
-document.getElementById("returnStatus").textContent =
-  `${processedReturns}/${totalReturnOrders} đơn`;
     const rangeRevenue =
       document.getElementById("rangeRevenue");
 
@@ -938,6 +910,24 @@ if(completedBox){
 
 if(cancelledBox){
   cancelledBox.textContent = cancelledCount;
+}
+  const totalReturnOrders = allOrders.filter(order => {
+  const o = order.data();
+  return o.returnRequested === true;
+}).length;
+
+const processedReturns = allOrders.filter(order => {
+  const o = order.data();
+  return (
+    o.returnStatus === "approved" ||
+    o.returnStatus === "rejected"
+  );
+}).length;
+
+const returnBox = document.getElementById("returnStatus");
+
+if (returnBox) {
+  returnBox.textContent = `${processedReturns}/${totalReturnOrders} đơn`;
 }
 const revenueBox =
   document.getElementById("revenueByDate");
