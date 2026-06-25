@@ -916,9 +916,7 @@ window.prevPage = function(){
 };
 window.requestReturn = async function(orderId){
 
-  const ok = confirm("Bạn muốn gửi yêu cầu trả hàng?");
-  if(!ok) return;
-
+  showToast("bạn muốn gửi yêu cầu trả hàng");
  await db.collection("orders").doc(orderId).update({
   returnRequested: true,
   returnRequestedAt: Date.now(),
