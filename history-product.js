@@ -86,7 +86,25 @@ async function loadOrderById(orderId) {
         "Không có dữ liệu";
       return;
     }
+console.log("ORDER FULL DATA:", data);
 
+console.log("USED POINTS (điểm trừ):", data.usedPoints);
+
+console.log("EARNED POINTS (điểm cộng):",
+  data.earnedPoints ??
+  data.pointsEarned ??
+  data.rewardPoints ??
+  data.addedPoints ??
+  "KHÔNG CÓ FIELD"
+);
+    console.log("CASHBACK:", data.cashbackAmount);
+console.log("POINTS RAW OBJECT:", {
+  usedPoints: data.usedPoints,
+  earnedPoints: data.earnedPoints,
+  pointsEarned: data.pointsEarned,
+  rewardPoints: data.rewardPoints,
+  addedPoints: data.addedPoints
+});
     // FIX chống undefined (QUAN TRỌNG)
     document.getElementById("order-id").innerText = data.orderId || realId;
 
@@ -109,14 +127,12 @@ document.getElementById("product-id").innerText =
     data.originalPrice ??
     0
   );
-   const item = data.items?.[0];
+  const item = data.items?.[0];
 
-const discount =
-  item?.discount ??
-  item?.promotion ??
-  ((item?.originalPrice || 0) - (item?.price || 0));
+const discount = (item?.originalPrice || 0) - (item?.price || 0);
 
-document.getElementById("discount").innerText = formatMoney(discount);
+document.getElementById("discount").innerText =
+  "-" + formatMoney(discount);
 
    document.getElementById("used-points").innerText =
   data.usedPoints ?? data.pointsUsed ?? 0;
