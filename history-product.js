@@ -1,11 +1,30 @@
-import { db } from "./firebase-init.js";
 import {
+  collection,
+  query,
+  where,
+  getDocs,
+  limit,
   doc,
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+import { db } from "./firebase-init.js";
+
 const btn = document.getElementById("searchBtn");
 const input = document.getElementById("productId");
+
+function clearUI(){
+  document.getElementById("order-id").innerText = "";
+  document.getElementById("product-id").innerText = "";
+  document.getElementById("product-name").innerText = "";
+  document.getElementById("purchase-date").innerText = "";
+  document.getElementById("original-price").innerText = "";
+  document.getElementById("discount").innerText = "";
+  document.getElementById("used-points").innerText = "";
+  document.getElementById("earned-points").innerText = "";
+  document.getElementById("final-price").innerText = "";
+  document.getElementById("order-status").innerText = "";
+}
 
 // CLICK SEARCH
 btn.addEventListener("click", async () => {
@@ -28,6 +47,8 @@ btn.addEventListener("click", async () => {
 // =========================
 async function loadOrderById(orderId) {
   try {
+
+    // 1. thử lấy theo document ID
     let ref = doc(db, "orders", orderId);
     let snap = await getDoc(ref);
 
@@ -37,12 +58,12 @@ async function loadOrderById(orderId) {
     if (snap.exists()) {
       data = snap.data();
     } else {
-      const { collection, query, where, getDocs } =
-        await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
+      // 2. fallback search theo field orderId
       const q = query(
         collection(db, "orders"),
-        where("orderId", "==", orderId)
+        where("orderId", "==", orderId),
+        limit(1)
       );
 
       const res = await getDocs(q);
@@ -55,20 +76,18 @@ async function loadOrderById(orderId) {
 
       res.forEach(d => {
         data = d.data();
-        realId = d.id; // ✅ FIX đúng cách
+        realId = d.id;
       });
     }
 
     // =========================
-    // RENDER UI (FIXED)
+    // RENDER UI
     // =========================
     document.getElementById("order-id").innerText =
-      data.orderId || realId; // ✅ FIX
+      data.orderId || realId;
 
     document.getElementById("product-id").innerText =
-      data.productIds && data.productIds.length
-        ? data.productIds[0]
-        : "";
+      data.productIds?.[0] || "";
 
     document.getElementById("product-name").innerText =
       data.productName || "Không có dữ liệu";
