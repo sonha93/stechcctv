@@ -110,13 +110,16 @@ document.getElementById("product-id").innerText =
     0
   );
    const item = data.items?.[0];
-
+    
 const discount =
   item?.discount ??
   item?.promotion ??
   ((item?.originalPrice || 0) - (item?.price || 0));
 
-document.getElementById("discount").innerText = formatMoney(discount);
+const item = data.items?.[0];
+
+document.getElementById("discount").innerText =
+  formatMoney(item?.price || 0);
 
    document.getElementById("used-points").innerText =
   data.usedPoints ?? data.pointsUsed ?? 0;
