@@ -40,7 +40,11 @@ if (value === "approved") {
   update.status = "returned";
   update.returnApprovedAt = Date.now();
   update.pointsProcessed = false;
+  const earnPoints = Math.floor(Number(order.total || 0) / 10000);
 
+update.refundAmount = Number(order.total || 0);
+update.returnDeductPoints = earnPoints;
+update.earnedPoints = earnPoints;
   const items = order.items || [];
 
   // hoàn kho
@@ -1340,12 +1344,10 @@ const newPoints =
 
     createdAt: Date.now()
 });
-await db
-  .collection("orders")
-  .doc(id)
-  .update({
-    pointsProcessed: true
-  });
+await db.collection("orders").doc(id).update({
+    pointsProcessed: true,
+    earnedPoints: earnPoints
+});
     
 if(bonusPoints > 0){
 
