@@ -112,9 +112,6 @@ document.getElementById("product-id").innerText =
    const item = data.items?.[0];
 
 const discount =
-  data.discount ??
-  data.discountAmount ??
-  data.promotion ??
   item?.discount ??
   item?.promotion ??
   ((item?.originalPrice || 0) - (item?.price || 0));
