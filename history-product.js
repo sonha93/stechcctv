@@ -92,26 +92,44 @@ async function loadOrderById(orderId) {
     // FIX chống undefined (QUAN TRỌNG)
     document.getElementById("order-id").innerText = data.orderId || realId;
 
-  document.getElementById("product-id").innerText =
-  data.productIds?.[0] || data.productId || "Không có";
-
+document.getElementById("product-id").innerText =
+  data.items?.[0]?.productId ||
+  data.items?.[0]?.id ||
+  data.productIds?.[0] ||
+  data.productId ||
+  "Không có";
     document.getElementById("product-name").innerText =
       data.productName || (data.items && data.items[0]?.name) || "Không có dữ liệu";
 
     document.getElementById("purchase-date").innerText =
       formatDate(data.createdAt);
 
-    document.getElementById("original-price").innerText =
-      formatMoney(data.originalPrice || data.items?.[0]?.price || 0);
-
+   document.getElementById("original-price").innerText =
+  formatMoney(
+    data.items?.[0]?.originalPrice ??
+    data.items?.[0]?.oldPrice ??
+    data.originalPrice ??
+    0
+  );
     document.getElementById("discount").innerText =
-      formatMoney(data.discount || 0);
+  formatMoney(
+    data.discount ??
+    data.discountAmount ??
+    data.promotion ??
+    data.items?.[0]?.discount ??
+    data.items?.[0]?.promotion ??
+    0
+  );
 
    document.getElementById("used-points").innerText =
   data.usedPoints ?? data.pointsUsed ?? 0;
 
 document.getElementById("earned-points").innerText =
-  data.earnedPoints ?? data.pointsEarned ?? 0;
+  data.earnedPoints ??
+  data.pointsEarned ??
+  data.rewardPoints ??
+  data.addedPoints ??
+  0;
 
     document.getElementById("final-price").innerText =
       formatMoney(data.total || data.payment?.total || 0);
