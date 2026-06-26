@@ -5,8 +5,7 @@
 /* =========================
    FIRESTORE INIT
 ========================= */
-import { onAuthStateChangedListener } from "./firebase-init.js";
-import { listenUnreadMessages } from "./firebase-init.js";
+
 import { addToCart as saveToCart } from "./cart.js";
 import { app } from "./auth.js";
 
@@ -459,20 +458,3 @@ toast.remove();
 window.alert = window.showToast;
 
 }
-onAuthStateChangedListener((user) => {
-  if (!user) return;
-
-  listenUnreadMessages(user.uid, (count) => {
-    const badge = document.getElementById("messageBadge");
-
-    if (!badge) return;
-
-    if (count <= 0) {
-      badge.style.display = "none";
-      return;
-    }
-
-    badge.style.display = "flex";
-    badge.innerText = count > 99 ? "99+" : count;
-  });
-});
