@@ -1,7 +1,7 @@
 // ==========================
 // FIREBASE INIT
 // ==========================
-
+import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 // Cấu hình Firebase của bạn
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
