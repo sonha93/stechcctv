@@ -665,6 +665,56 @@ button{
 .profile-notify-btn{
     margin:0 auto !important;
 }
+   .message-popup{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:1000000;
+}
+
+.message-box{
+    width:420px;
+    max-width:90%;
+    background:#fff;
+    border-radius:12px;
+    padding:20px;
+    position:relative;
+}
+
+#closeMessage{
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    background:#eee;
+    font-size:20px;
+}
+
+#msgTitle{
+    margin-bottom:15px;
+    font-size:22px;
+    font-weight:bold;
+}
+
+#msgContent{
+    font-size:16px;
+    line-height:1.7;
+}
+
+.msg-time{
+    margin-top:20px;
+    color:#888;
+    font-size:14px;
+}
 </style>
 </head>
 <body>
@@ -721,7 +771,21 @@ button{
                 ✖
             </span>
         </div>
+      <div id="messagePopup" class="message-popup">
 
+    <div class="message-box">
+
+        <span id="closeMessage">✖</span>
+
+        <h3 id="msgTitle"></h3>
+
+        <p id="msgContent"></p>
+
+        <div id="msgTime" class="msg-time"></div>
+
+    </div>
+
+</div>
         <div id="notificationList">
             Chưa có thông báo
         </div>
@@ -974,7 +1038,9 @@ document.getElementById("notificationPopup");
 document.getElementById("closeNotify").onclick = () => {
     notificationPopup.style.display = "none";
 };
-
+document.getElementById("closeMessage").onclick = () => {
+    document.getElementById("messagePopup").style.display = "none";
+};
 window.addEventListener("click",(e)=>{
     if(e.target===notificationPopup){
         notificationPopup.style.display="none";
@@ -1018,11 +1084,21 @@ firebase.firestore()
         ? data.createdAt.toDate().toLocaleString("vi-VN")
         : "";
 
-        html += `
-<div class="notification-item" data-id="${doc.id}">
-<div class="notification-title">${data.title}</div>
-<div class="notification-message">${data.message}</div>
-<div class="notification-time">${time}</div>
+       html += `
+<div class="notification-item"
+     data-title="${data.title}"
+     data-message="${data.message}"
+     data-time="${time}"
+     data-id="${doc.id}">
+
+    <div class="notification-title">
+        ${data.title}
+    </div>
+
+    <div class="notification-time">
+        ${time}
+    </div>
+
 </div>`;
     });
 
@@ -1035,25 +1111,32 @@ firebase.firestore()
 
 });
 
-notificationList.addEventListener("click", async (e) => {
+notificationList.onclick = async (e)=>{
 
-    const item = e.target.closest(".notification-item");
-    if (!item) return;
+    const item=e.target.closest(".notification-item");
+    if(!item) return;
 
-    const id = item.dataset.id;
+    const id=item.dataset.id;
 
-    const docRef = firebase.firestore()
-        .collection("notifications")
-        .doc(id);
-
-    const snap = await docRef.get();
-    if (!snap.exists) return;
-
-    const data = snap.data();
-
-    await docRef.update({
-        read: true
+    await firebase.firestore()
+    .collection("notifications")
+    .doc(id)
+    .update({
+        read:true
     });
+
+    document.getElementById("msgTitle").innerText=
+        item.dataset.title;
+
+    document.getElementById("msgContent").innerText=
+        item.dataset.message;
+
+    document.getElementById("msgTime").innerText=
+        item.dataset.time;
+
+    document.getElementById("messagePopup").style.display="flex";
+
+};
 
     notificationPopup.style.display = "none";
 
