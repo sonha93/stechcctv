@@ -665,17 +665,14 @@ button{
 .profile-notify-btn{
     margin:0 auto !important;
 }
-  .message-popup{
+   .message-popup{
     position:fixed;
     inset:0;
     background:rgba(0,0,0,.45);
     display:none;
     justify-content:center;
     align-items:center;
-    z-index:999999;
-}
-   .message-popup.show{
-    display:flex;
+    z-index:1000000;
 }
 .message-popup.show{
     display:flex;
@@ -775,6 +772,18 @@ button{
         <span id="notifyCount" class="notify-badge">0</span>
     </div>
 
+    <div id="notificationPopup" class="notification-popup">
+
+        <div class="notification-header">
+            <span>📩 Thông báo</span>
+
+            <span id="closeNotify"
+                  style="cursor:pointer;font-size:22px;">
+                ✖
+            </span>
+        </div>
+      <div id="messagePopup" class="message-popup">
+
     <div class="message-box">
 
         <span id="closeMessage">✖</span>
@@ -791,17 +800,7 @@ button{
         <div id="notificationList">
             Chưa có thông báo
         </div>
- <div id="notificationPopup" class="notification-popup">
 
-        <div class="notification-header">
-            <span>📩 Thông báo</span>
-
-            <span id="closeNotify"
-                  style="cursor:pointer;font-size:22px;">
-                ✖
-            </span>
-        </div>
-      <div id="messagePopup" class="message-popup">
     </div>
 
 </div>
