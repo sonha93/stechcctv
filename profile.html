@@ -674,7 +674,9 @@ button{
     align-items:center;
     z-index:1000000;
 }
-
+.message-popup.show{
+    display:flex;
+}
 .message-box{
     width:420px;
     max-width:90%;
@@ -1050,6 +1052,9 @@ document.getElementById("closeNotify").onclick = () => {
 document.getElementById("closeMessage").onclick = () => {
     document.getElementById("messagePopup").style.display = "none";
 };
+   document.getElementById("messagePopup").addEventListener("click", () => {
+    document.getElementById("messagePopup").style.display = "none";
+});
 document.querySelector(".message-box")
 .addEventListener("click", (e) => {
     e.stopPropagation();
