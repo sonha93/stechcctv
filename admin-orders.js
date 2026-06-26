@@ -296,7 +296,7 @@ function formatDate(timestamp) {
   }
 }
 async function createNotification(userId, orderId, title, message) {
-
+ console.log("Đang tạo notification cho:", userId);
   if (!userId) return;
 
   await db.collection("notifications").add({
@@ -316,6 +316,7 @@ async function createNotification(userId, orderId, title, message) {
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
   });
+ console.log("Đã tạo notification");
 
 }
 // ============================
@@ -1525,9 +1526,6 @@ await db
   .collection("orders")
   .doc(id)
   .update(updateData);
-      console.log("orderData =", orderData);
-console.log("userId =", orderData.userId);
-console.log("uid =", orderData.uid);
 
     if (orderData.userId || orderData.uid) {
 
