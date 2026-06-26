@@ -1135,32 +1135,33 @@ firebase.firestore()
 });
 notificationList.onclick = async (e) => {
 
-   const notifItem = e.target.closest(".notification-item");
-if (!notifItem) return;
+    const item = e.target.closest(".notification-item");
+    if (!item) return;
 
-const id = notifItem.dataset.id;
+    const id = item.dataset.id;
 
-// update read
-await firebase.firestore()
-.collection("notifications")
-.doc(id)
-.update({ read: true });
+    // update read
+    await firebase.firestore()
+    .collection("notifications")
+    .doc(id)
+    .update({ read: true });
 
-notifItem.classList.remove("unread");
-notifItem.classList.add("read");
+    // đổi màu ngay lập tức (không cần reload)
+    item.classList.remove("unread");
+    item.classList.add("read");
 
-document.getElementById("msgTitle").innerText =
-    notifItem.dataset.title;
+    document.getElementById("msgTitle").innerText =
+        item.dataset.title;
 
-document.getElementById("msgContent").innerText =
-    notifItem.dataset.message;
+    document.getElementById("msgContent").innerText =
+        item.dataset.message;
 
-document.getElementById("msgTime").innerText =
-    notifItem.dataset.time;
+    document.getElementById("msgTime").innerText =
+        item.dataset.time;
 
-document.getElementById("messagePopup").style.display = "flex";
+    document.getElementById("messagePopup").style.display = "flex";
 
-notificationPopup.style.display = "none";
+    notificationPopup.style.display = "none";
 };
     updateInfoBtn.disabled = false;
 
