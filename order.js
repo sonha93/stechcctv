@@ -704,33 +704,9 @@ ${
 
       </div>
     `;
-    ${
-order.status === "cancelled"
-? `
-<button
-  class="recall-order-btn"
-  data-id="${order.id}"
-  style="
-    margin-top:10px;
-    width:100%;
-    background:#16a34a;
-    color:#fff;
-    border:none;
-    padding:12px;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
-  "
->
-🔄 Đặt lại đơn
-</button>
-`
-: ""
-}
   });
- bindCancelEvents();
-bindRecallEvents();
-renderPagination();
+  bindCancelEvents();
+  renderPagination();
 }
 function renderPagination(){   
   const box = document.getElementById("orders");
@@ -789,77 +765,7 @@ const orderDoc = await orderRef.get();
 if(!orderDoc.exists){
   throw new Error("Không tìm thấy đơn");
 }
-function bindRecallEvents(){
 
-  document
-    .querySelectorAll(".recall-order-btn")
-    .forEach(btn=>{
-
-      btn.onclick = async ()=>{
-
-        const id = btn.dataset.id;
-
-        if(!confirm("Đặt lại đơn hàng này?")) return;
-
-        btn.disabled = true;
-        btn.innerText = "Đang xử lý...";
-
-        try{
-
-          const doc = await db
-            .collection("orders")
-            .doc(id)
-            .get();
-
-          if(!doc.exists){
-            alert("Không tìm thấy đơn.");
-            return;
-          }
-
-          const order = doc.data();
-
-          const newOrder = {
-            ...order,
-
-            status:"pending",
-            customerCancelled:false,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-
-            recalledFrom:id,
-
-            pointsRefunded:false,
-            returnRequested:false,
-            returnStatus:null
-          };
-
-          delete newOrder.adminCancelled;
-          delete newOrder.cancelReason;
-
-          await db
-            .collection("orders")
-            .add(newOrder);
-
-          alert("Đặt lại đơn thành công.");
-
-          loadOrders(auth.currentUser.uid);
-
-        }catch(err){
-
-          console.error(err);
-          alert("Không thể đặt lại đơn.");
-
-        }finally{
-
-          btn.disabled=false;
-          btn.innerText="🔄 Đặt lại đơn";
-
-        }
-
-      };
-
-    });
-
-}
 const orderData = orderDoc.data();
 if(orderData.status === "cancelled"){
   throw new Error("Đơn đã hủy");
