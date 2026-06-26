@@ -908,7 +908,6 @@ firebase.firestore()
 .collection("notifications")
 .where("userId","==",user.uid)
 .onSnapshot(snapshot=>{
- console.log("Số notification:", snapshot.size);
     let html="";
     let unread=0;
 
