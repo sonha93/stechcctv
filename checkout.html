@@ -334,6 +334,7 @@ import { auth, db } from "./firebase-init.js";
 let cart = [];
 let memberPoints = 0;
 let usePoints = 0;
+let productMap = {};
 auth.onAuthStateChanged(async user => {
 
   if(!user){
@@ -390,7 +391,11 @@ if(phoneValue){
 }
   }
   // LOAD CART
+const productSnap = await db.collection("products").get();
 
+productSnap.docs.forEach(doc => {
+  productMap[doc.id] = doc.data();
+});
   const snapshot = await db
     .collection("users")
     .doc(user.uid)
@@ -423,25 +428,28 @@ function renderCart(){
   document.querySelector(".btn").disabled = false;
   alert("🛒 Giỏ hàng trống!");
   return;
-   // khóa nút nếu vượt tồn
-let hasStockError = cart.some(p => (p.qty || 1) > (p.stock || 0));
-
-document.querySelector(".btn").disabled = hasStockError;
 }
 
   let originalTotal = 0;
   let finalTotal = 0;
 
   cart.forEach(p => {
+const stock = productMap[p.id]?.stock ?? 0;
+const qty = p.qty || 1;
 
-   let qty = p.qty || 1;
-let stock = Number(p.stock || 0);
+if (qty > stock) {
+  box.innerHTML += `
+    <div style="color:red;font-weight:bold;margin:8px 0;">
+      ⚠️ "${p.name}" vượt tồn (${qty}/${stock})
+    </div>
+  `;
+}
+    let qty = p.qty || 1;
     let price = Number(p.price) || 0;
     let old = Number(p.oldPrice) || price;
-let realQty = Math.min(qty, stock || qty);
 
-let subFinal = realQty * price;
-let subOld = realQty * old;
+    let subFinal = qty * price;
+    let subOld = qty * old;
 
     finalTotal += subFinal;
     originalTotal += subOld;
@@ -583,17 +591,14 @@ try{
     alert("🛒 Giỏ hàng trống!");
     return;
   }
-  // CHẶN VƯỢT TỒN KHO
 for (let p of cart) {
+  const stock = productMap[p.id]?.stock ?? 0;
   const qty = p.qty || 1;
-  const stock = Number(p.stock || 0);
 
   if (qty > stock) {
+    alert(`❌ ${p.name} chỉ còn ${stock} sản phẩm`);
     window.orderSubmitting = false;
     document.querySelector(".btn").disabled = false;
-
-    alert(`⚠️ "${p.name}" chỉ còn ${stock}, không đủ để đặt ${qty}`);
-
     return;
   }
 }
