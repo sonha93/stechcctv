@@ -136,6 +136,56 @@ await db.collection("member_history").add({
 if (value === "rejected") {
   update.returnRejectedAt = Date.now();
 }
+  // ===== THÔNG BÁO KHÁCH HÀNG =====
+if (order.memberId) {
+
+  let title = "";
+  let message = "";
+
+  switch (value) {
+
+    case "confirmed":
+      title = "Đơn hàng đã được xác nhận";
+      message = `Đơn hàng ${orderId} đã được cửa hàng xác nhận.`;
+      break;
+
+    case "shipping":
+      title = "Đơn hàng đang được giao";
+      message = `Đơn hàng ${orderId} đang trên đường giao đến bạn.`;
+      break;
+
+    case "completed":
+      title = "Đơn hàng đã giao thành công";
+      message = `Cảm ơn bạn đã mua hàng. Đơn hàng ${orderId} đã hoàn tất.`;
+      break;
+
+    case "cancelled":
+      title = "Đơn hàng đã bị hủy";
+      message = `Đơn hàng ${orderId} đã được hủy.`;
+      break;
+
+    case "approved":
+      title = "Yêu cầu trả hàng đã được duyệt";
+      message = `Yêu cầu trả hàng của đơn ${orderId} đã được chấp nhận.`;
+      break;
+
+    case "rejected":
+      title = "Yêu cầu trả hàng bị từ chối";
+      message = `Yêu cầu trả hàng của đơn ${orderId} đã bị từ chối.`;
+      break;
+
+  }
+
+  if (title) {
+    await createNotification(
+      order.memberId,
+      orderId,
+      title,
+      message
+    );
+  }
+
+}
   await orderRef.update(update);
 
   select.disabled = true;
