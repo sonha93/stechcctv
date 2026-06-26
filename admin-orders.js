@@ -181,12 +181,12 @@ if (order.memberId) {
 console.log("userId =", order.userId);
 console.log("uid =", order.uid);
 console.log(order);
-    await createNotification(
-      order.memberId,
-      orderId,
-      title,
-      message
-    );
+   await createNotification(
+    order.userId || order.uid,
+    orderId,
+    title,
+    message
+);
   }
 
 }
