@@ -715,15 +715,6 @@ button{
     color:#888;
     font-size:14px;
 }
-   .message-popup{
-    position: fixed;
-    inset: 0;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0,0,0,0.45);
-    z-index: 999999;
-}
 </style>
 </head>
 <body>
@@ -780,7 +771,8 @@ button{
                 ✖
             </span>
         </div>
-    
+      <div id="messagePopup" class="message-popup">
+
     <div class="message-box">
 
         <span id="closeMessage">✖</span>
@@ -1612,14 +1604,6 @@ function getVerifiedBadge(uid){
 
   </div>
 </footer>
-<div id="messagePopup" class="message-popup">
-    <div class="message-box">
-        <span id="closeMessage">✖</span>
-        <h3 id="msgTitle"></h3>
-        <p id="msgContent"></p>
-        <div id="msgTime" class="msg-time"></div>
-    </div>
-</div>
 </body>
 
 </html>
