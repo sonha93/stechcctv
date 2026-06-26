@@ -101,21 +101,20 @@ body{
     <div class="card">
 
         <div class="section-title">
-            Thông tin sản phẩm
-        </div>
+    Hóa đơn mua hàng
+</div>
 
         <div class="info-grid">
 
             <div class="field">
-                <div class="field-title">ID sản phẩm</div>
-                <div id="product-id"></div>
-            </div>
+    <div class="field-title">Khách hàng</div>
+    <div id="customer-name"></div>
+</div>
 
-            <div class="field">
-                <div class="field-title">Tên sản phẩm</div>
-                <div id="product-name"></div>
-            </div>
-
+<div class="field">
+    <div class="field-title">Số điện thoại</div>
+    <div id="customer-phone"></div>
+</div>
             <div class="field">
                 <div class="field-title">Mã đơn hàng</div>
                 <div id="order-id"></div>
@@ -155,7 +154,25 @@ body{
                 <div class="field-title">Trạng thái đơn hàng</div>
                 <div id="order-status"></div>
             </div>
+                <div class="field" style="grid-column:1 / span 2">
+    <div class="field-title">Danh sách sản phẩm</div>
 
+    <table style="width:100%;border-collapse:collapse">
+        <thead>
+            <tr>
+                <th align="left">Tên sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+
+        <tbody id="order-items">
+
+        </tbody>
+
+    </table>
+</div>
         </div>
 
     </div>
