@@ -177,6 +177,10 @@ if (order.memberId) {
   }
 
   if (title) {
+    console.log("memberId =", order.memberId);
+console.log("userId =", order.userId);
+console.log("uid =", order.uid);
+console.log(order);
     await createNotification(
       order.memberId,
       orderId,
