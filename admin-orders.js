@@ -1525,6 +1525,43 @@ await db
   .collection("orders")
   .doc(id)
   .update(updateData);
+    if (orderData.userId || orderData.uid) {
+
+  let title = "";
+  let message = "";
+
+  switch (status) {
+
+    case "confirmed":
+      title = "Đơn hàng đã được xác nhận";
+      message = `Đơn hàng ${id} đã được cửa hàng xác nhận.`;
+      break;
+
+    case "shipping":
+      title = "Đơn hàng đang được giao";
+      message = `Đơn hàng ${id} đang được giao tới bạn.`;
+      break;
+
+    case "completed":
+      title = "Đơn hàng đã giao thành công";
+      message = `Đơn hàng ${id} đã hoàn tất.`;
+      break;
+
+    case "cancelled":
+      title = "Đơn hàng đã bị hủy";
+      message = `Đơn hàng ${id} đã bị hủy.`;
+      break;
+  }
+
+  if (title) {
+    await createNotification(
+      orderData.userId || orderData.uid,
+      id,
+      title,
+      message
+    );
+  }
+}
         // completed => khóa
      if (
   status === "completed" ||
