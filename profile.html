@@ -571,32 +571,58 @@ button{
     .actions{
         flex-direction:column;
     }
- .notification-popup{
-
+.notification-popup{
     position:fixed;
-
-    top:250px;
-
+    top:50%;
     left:50%;
-
-    transform:translateX(-50%);
-
-    width:380px;
+    transform:translate(-50%,-50%);
+    width:420px;
     max-width:95%;
-
-    max-height:450px;
-
+    max-height:500px;
     overflow-y:auto;
-
     background:#fff;
-
     border-radius:12px;
-
-    box-shadow:0 10px 35px rgba(0,0,0,.25);
-
+    box-shadow:0 10px 35px rgba(0,0,0,.35);
     display:none;
-
     z-index:999999;
+}
+
+.notification-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px;
+    font-size:20px;
+    font-weight:bold;
+    border-bottom:1px solid #eee;
+    position:sticky;
+    top:0;
+    background:#fff;
+}
+
+.notification-item{
+    padding:14px;
+    border-bottom:1px solid #eee;
+    cursor:pointer;
+}
+
+.notification-item:hover{
+    background:#f5f5f5;
+}
+
+.notification-title{
+    font-weight:bold;
+    margin-bottom:6px;
+}
+
+.notification-message{
+    color:#444;
+    margin-bottom:6px;
+}
+
+.notification-time{
+    font-size:12px;
+    color:#888;
 }
 }
      .avatar-actions{
@@ -926,7 +952,15 @@ document.getElementById("notificationBtn");
 
 const notificationPopup =
 document.getElementById("notificationPopup");
+document.getElementById("closeNotify").onclick = () => {
+    notificationPopup.style.display = "none";
+};
 
+window.addEventListener("click",(e)=>{
+    if(e.target===notificationPopup){
+        notificationPopup.style.display="none";
+    }
+});
 const notifyCount =
 document.getElementById("notifyCount");
 
@@ -1481,13 +1515,16 @@ function getVerifiedBadge(uid){
 <div id="notificationPopup" class="notification-popup">
 
     <div class="notification-header">
-        Thông báo
+        <span>📩 Thông báo</span>
+
+        <span id="closeNotify"
+              style="cursor:pointer;font-size:22px;">
+            ✖
+        </span>
     </div>
 
     <div id="notificationList">
-
-        Chưa có thông báo.
-
+        Chưa có thông báo
     </div>
 
 </div>
