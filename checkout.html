@@ -423,6 +423,10 @@ function renderCart(){
   document.querySelector(".btn").disabled = false;
   alert("🛒 Giỏ hàng trống!");
   return;
+   // khóa nút nếu vượt tồn
+let hasStockError = cart.some(p => (p.qty || 1) > (p.stock || 0));
+
+document.querySelector(".btn").disabled = hasStockError;
 }
 
   let originalTotal = 0;
@@ -430,12 +434,14 @@ function renderCart(){
 
   cart.forEach(p => {
 
-    let qty = p.qty || 1;
+   let qty = p.qty || 1;
+let stock = Number(p.stock || 0);
     let price = Number(p.price) || 0;
     let old = Number(p.oldPrice) || price;
+let realQty = Math.min(qty, stock || qty);
 
-    let subFinal = qty * price;
-    let subOld = qty * old;
+let subFinal = realQty * price;
+let subOld = realQty * old;
 
     finalTotal += subFinal;
     originalTotal += subOld;
@@ -577,7 +583,20 @@ try{
     alert("🛒 Giỏ hàng trống!");
     return;
   }
+  // CHẶN VƯỢT TỒN KHO
+for (let p of cart) {
+  const qty = p.qty || 1;
+  const stock = Number(p.stock || 0);
 
+  if (qty > stock) {
+    window.orderSubmitting = false;
+    document.querySelector(".btn").disabled = false;
+
+    alert(`⚠️ "${p.name}" chỉ còn ${stock}, không đủ để đặt ${qty}`);
+
+    return;
+  }
+}
   let name =
     document.getElementById("name").value.trim();
 
