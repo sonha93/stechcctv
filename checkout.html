@@ -1,3 +1,6 @@
+
+
+
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
@@ -604,44 +607,7 @@ try{
     sum + p.price * (p.qty || 1),0
   );
   const user = auth.currentUser;
-// ============================
-// CHẶN BÁN VƯỢT TỒN KHO
-// ============================
-for (const item of cart) {
 
-  const productDoc = await db
-    .collection("products")
-    .doc(item.id)
-    .get();
-
-  if (!productDoc.exists) {
-    alert(`Sản phẩm "${item.name}" không tồn tại!`);
-    window.orderSubmitting = false;
-    document.querySelector(".btn").disabled = false;
-    return;
-  }
-
-  const stock = Number(productDoc.data().stock || 0);
-
-  if ((item.qty || 1) > stock) {
-    alert(
-      `"${item.name}" chỉ còn ${stock} sản phẩm trong kho!`
-    );
-
-    window.orderSubmitting = false;
-    document.querySelector(".btn").disabled = false;
-    return;
-  }
-}
-  // Trừ tồn kho
-for (const item of cart) {
-  await db
-    .collection("products")
-    .doc(item.id)
-    .update({
-      stock: firebase.firestore.FieldValue.increment(-(item.qty || 1))
-    });
-}
 // ============================
 // MEMBER
 // ============================
