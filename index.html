@@ -1014,6 +1014,27 @@ body{
     #featuredNext{
         right:5px;
     }
+   .notify-badge{
+    position:absolute;
+    top:-6px;
+    right:-6px;
+
+    min-width:20px;
+    height:20px;
+
+    border-radius:50%;
+    background:red;
+    color:#fff;
+
+    font-size:11px;
+    font-weight:bold;
+
+    display:none;
+    align-items:center;
+    justify-content:center;
+
+    z-index:9999;
+}
 }
 </style>
 
@@ -1108,6 +1129,11 @@ body{
 
 <a href="profile.html" class="icon-btn">
   <i class="fa-solid fa-user"></i>
+
+  <span id="profileNotifyCount" class="notify-badge">
+    0
+  </span>
+
 </a>
 
    <a href="cart.html"
