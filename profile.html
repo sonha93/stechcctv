@@ -1044,12 +1044,6 @@ document.getElementById("notificationBtn");
 
 const notificationPopup =
 document.getElementById("notificationPopup");
-notificationPopup.addEventListener("click", (e) => {
-    e.stopPropagation();
-});
-document.getElementById("messagePopup").addEventListener("click", (e) => {
-    e.stopPropagation();
-});
 document.getElementById("closeNotify").onclick = () => {
     notificationPopup.style.display = "none";
 };
@@ -1059,6 +1053,11 @@ document.getElementById("closeMessage").onclick = () => {
 document.querySelector(".message-box")
 .addEventListener("click", (e) => {
     e.stopPropagation();
+});
+window.addEventListener("click",(e)=>{
+    if(e.target===notificationPopup){
+        notificationPopup.style.display="none";
+    }
 });
 const notifyCount =
 document.getElementById("notifyCount");
@@ -1134,14 +1133,7 @@ firebase.firestore()
     notifyCount.style.display = unread > 0 ? "block" : "none";
 
 });
-notificationList.addEventListener("click", async (e) => {
-
-    const item = e.target.closest(".notification-item");
-    if (!item) return;
-
-    e.stopPropagation(); // 👈 CHẶN LAN CLICK
-
-    const id = item.dataset.id;
+notificationList.onclick = async (e) => {
 
     const item = e.target.closest(".notification-item");
     if (!item) return;
