@@ -890,11 +890,17 @@ let currentUser = null;
 auth.onAuthStateChanged(user=>{
     if(!user){window.location.href="index.html";return;}
     currentUser = user;
-   const notificationBtn =
+ const notificationBtn =
 document.getElementById("notificationBtn");
 
 const notificationPopup =
 document.getElementById("notificationPopup");
+
+const notifyCount =
+document.getElementById("notifyCount");
+
+const notificationList =
+document.getElementById("notificationList");
 
 notificationBtn.onclick = () => {
 
@@ -902,6 +908,79 @@ notificationBtn.onclick = () => {
 
         notificationPopup.style.display="none";
 
+    }else{
+
+        notificationPopup.style.display="block";
+
+    }
+
+};
+
+firebase.firestore()
+.collection("notifications")
+.where("userId","==",user.uid)
+.orderBy("createdAt","desc")
+.onSnapshot(snapshot=>{
+
+    let html="";
+    let unread=0;
+
+    snapshot.forEach(doc=>{
+
+        const data=doc.data();
+
+        if(!data.read) unread++;
+
+        const time =
+        data.createdAt?.toDate
+        ? data.createdAt.toDate().toLocaleString("vi-VN")
+        : "";
+
+        html += `
+<div class="notification-item" data-id="${doc.id}">
+<div class="notification-title">${data.title}</div>
+<div class="notification-message">${data.message}</div>
+<div class="notification-time">${time}</div>
+</div>`;
+    });
+
+    notificationList.innerHTML =
+        html || "Chưa có thông báo";
+
+    notifyCount.innerText = unread;
+    notifyCount.style.display =
+        unread > 0 ? "block" : "none";
+
+});
+
+notificationList.addEventListener("click", async (e) => {
+
+    const item = e.target.closest(".notification-item");
+    if (!item) return;
+
+    const id = item.dataset.id;
+
+    const docRef = firebase.firestore()
+        .collection("notifications")
+        .doc(id);
+
+    const snap = await docRef.get();
+    if (!snap.exists) return;
+
+    const data = snap.data();
+
+    await docRef.update({
+        read: true
+    });
+
+    notificationPopup.style.display = "none";
+
+    if (data.orderId) {
+        window.location.href =
+            "product-history.html?orderId=" + data.orderId;
+    }
+
+});
     }else{
 
         notificationPopup.style.display="block";
