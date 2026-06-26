@@ -665,14 +665,17 @@ button{
 .profile-notify-btn{
     margin:0 auto !important;
 }
-   .message-popup{
+  .message-popup{
     position:fixed;
     inset:0;
     background:rgba(0,0,0,.45);
     display:none;
     justify-content:center;
     align-items:center;
-    z-index:1000000;
+    z-index:999999;
+}
+   .message-popup.show{
+    display:flex;
 }
 .message-popup.show{
     display:flex;
