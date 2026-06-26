@@ -146,12 +146,12 @@ if (order.memberId) {
 
     case "confirmed":
       title = "Đơn hàng đã được xác nhận";
-      message = `Đơn hàng ${orderId} đã được cửa hàng xác nhận.`;
+      message = `Đơn hàng ${orderId}Của bạn đã được cửa hàng xác nhận.`;
       break;
 
     case "shipping":
       title = "Đơn hàng đang được giao";
-      message = `Đơn hàng ${orderId} đang trên đường giao đến bạn.`;
+     message = `Đơn ${id} đang được giao đến bạn. Bạn hãy chuẩn bị Số tiền cần thanh toán: ${money(orderData.total)}.`;
       break;
 
     case "completed":
@@ -166,12 +166,12 @@ if (order.memberId) {
 
     case "approved":
       title = "Yêu cầu trả hàng đã được duyệt";
-      message = `Yêu cầu trả hàng của đơn ${orderId} đã được chấp nhận.`;
+      message = `Yêu cầu trả hàng đơn ${orderId} đã được chấp nhận. Số tiền hoàn: ${money(order.total)}.`;
       break;
 
     case "rejected":
       title = "Yêu cầu trả hàng bị từ chối";
-      message = `Yêu cầu trả hàng của đơn ${orderId} đã bị từ chối.`;
+      message = `Xin lỗi hiện tại Yêu cầu trả hàng của đơn ${orderId} của bạn đã bị từ chối.`;
       break;
 
   }
@@ -1536,7 +1536,7 @@ await db
 
     case "shipping":
       title = "Đơn hàng đang được giao";
-      message = `Đơn hàng ${id} đang được giao tới bạn.`;
+message = `Đơn hàng ${id} đang được giao tới bạn. Hãy chuẩn bị sẵn số tiền ${money(orderData.total)} để thanh toán.`;
       break;
 
     case "completed":
