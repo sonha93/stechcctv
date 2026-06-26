@@ -1,3 +1,4 @@
+
 function updateNotify(count){
   localStorage.setItem("notifyCount", count);
   renderNotify();
