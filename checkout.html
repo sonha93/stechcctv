@@ -607,7 +607,45 @@ try{
     sum + p.price * (p.qty || 1),0
   );
   const user = auth.currentUser;
+  // ============================
+// KIỂM TRA TỒN KHO
+// ============================
 
+for (const item of cart) {
+
+  const productSnap = await db
+    .collection("products")
+    .doc(item.id)
+    .get();
+
+  if (!productSnap.exists) {
+
+    window.orderSubmitting = false;
+    document.querySelector(".btn").disabled = false;
+
+    alert(`Không tìm thấy sản phẩm: ${item.name}`);
+    return;
+  }
+
+  const product = productSnap.data();
+
+  const stock = Number(product.stock || 0);
+
+  const qty = Number(item.qty || 1);
+
+  if (qty > stock) {
+
+    window.orderSubmitting = false;
+    document.querySelector(".btn").disabled = false;
+
+    alert(
+      `❌ ${item.name}\nChỉ còn ${stock} sản phẩm trong kho.`
+    );
+
+    return;
+  }
+
+}
 // ============================
 // MEMBER
 // ============================
