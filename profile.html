@@ -919,7 +919,6 @@ notificationBtn.onclick = () => {
 firebase.firestore()
 .collection("notifications")
 .where("userId","==",user.uid)
-.orderBy("createdAt","desc")
 .onSnapshot(snapshot=>{
 
     let html="";
