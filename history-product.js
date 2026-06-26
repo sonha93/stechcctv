@@ -35,8 +35,10 @@ const input = document.getElementById("productId");
 
 function clearUI(){
   document.getElementById("order-id").innerText = "";
-  document.getElementById("product-id").innerText = "";
-  document.getElementById("product-name").innerText = "";
+ document.getElementById("customer-name").innerText="";
+document.getElementById("customer-phone").innerText="";
+document.getElementById("order-items").innerHTML="";
+  
   document.getElementById("purchase-date").innerText = "";
   document.getElementById("original-price").innerText = "";
   document.getElementById("discount").innerText = "";
@@ -99,14 +101,15 @@ async function loadOrderById(orderId) {
     // FIX chống undefined (QUAN TRỌNG)
     document.getElementById("order-id").innerText = data.orderId || realId;
 
-document.getElementById("product-id").innerText =
-  data.items?.[0]?.productId ||
-  data.items?.[0]?.id ||
-  data.productIds?.[0] ||
-  data.productId ||
-  "Không có";
-    document.getElementById("product-name").innerText =
-      data.productName || (data.items && data.items[0]?.name) || "Không có dữ liệu";
+document.getElementById("customer-name").innerText =
+    data.customerName ||
+    data.shippingAddress?.name ||
+    "-";
+
+document.getElementById("customer-phone").innerText =
+    data.phone ||
+    data.shippingAddress?.phone ||
+    "-";
 
     document.getElementById("purchase-date").innerText =
       formatDate(data.createdAt);
@@ -145,6 +148,24 @@ document.getElementById("earned-points").innerText =
 
     document.getElementById("order-status").innerText =
       data.status || "";
+    const tbody = document.getElementById("order-items");
+
+tbody.innerHTML="";
+
+(data.items || []).forEach(item=>{
+
+    const qty=item.quantity || 1;
+
+    const price=item.price || 0;
+
+    tbody.innerHTML+=`
+    <tr>
+        <td>${item.name}</td>
+        <td align="center">${qty}</td>
+        <td align="center">${formatMoney(price)}</td>
+        <td align="right">${formatMoney(price*qty)}</td>
+    </tr>`;
+});
   if (!data.returnStatus) {
   document.querySelector(".return-section").style.display = "none";
 }
