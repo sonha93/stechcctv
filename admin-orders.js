@@ -177,10 +177,6 @@ if (order.memberId) {
   }
 
   if (title) {
-    console.log("memberId =", order.memberId);
-console.log("userId =", order.userId);
-console.log("uid =", order.uid);
-console.log(order);
    await createNotification(
     order.userId || order.uid,
     orderId,
@@ -296,7 +292,7 @@ function formatDate(timestamp) {
   }
 }
 async function createNotification(userId, orderId, title, message) {
- console.log("Đang tạo notification cho:", userId);
+
   if (!userId) return;
 
   await db.collection("notifications").add({
@@ -316,7 +312,6 @@ async function createNotification(userId, orderId, title, message) {
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
   });
- console.log("Đã tạo notification");
 
 }
 // ============================
