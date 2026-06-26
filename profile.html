@@ -636,6 +636,8 @@ button{
 }
 
 .notification-popup{
+    position:absolute;
+    top:60px;
     left:50%;
     transform:translateX(-50%);
     width:420px;
@@ -745,7 +747,6 @@ button{
     <span class="cart-count" id="cartCount">0</span>
 </a>
 </div>
-
 </header>
 
 <div class="container">
@@ -779,7 +780,8 @@ button{
                 ✖
             </span>
         </div>
-     <div id="messagePopup" class="message-popup">
+      <div id="messagePopup" class="message-popup">
+
     <div class="message-box">
 
         <span id="closeMessage">✖</span>
@@ -1044,9 +1046,6 @@ const notificationPopup =
 document.getElementById("notificationPopup");
 document.getElementById("closeNotify").onclick = () => {
     notificationPopup.style.display = "none";
-    document.body.style.overflow = "auto";
-};
-   
 };
 document.getElementById("closeMessage").onclick = () => {
     document.getElementById("messagePopup").style.display = "none";
@@ -1067,9 +1066,6 @@ const notificationList =
 document.getElementById("notificationList");
 
 notificationBtn.onclick = () => {
-    notificationPopup.style.display = "block";
-    document.body.style.overflow = "hidden";
-};
 
     if(notificationPopup.style.display==="block"){
 
@@ -1113,7 +1109,7 @@ firebase.firestore()
             : "";
 
         html += `
-        <div class="notification-item ${data.read ? 'read' : 'unread'}
+        <div class="notification-item ${data.read ? "read" : "unread"}"
              data-title="${data.title}"
              data-message="${data.message}"
              data-time="${time}"
