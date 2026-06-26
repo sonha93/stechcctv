@@ -625,45 +625,31 @@ button{
     color:#888;
 }
 }
-     .avatar-actions{
+   .avatar-actions{
+    position:relative;
     display:flex;
     justify-content:center;
     margin-top:10px;
 }
 
-.profile-notify-btn{
-    width:46px;
-    height:46px;
-    border-radius:50%;
-    background:#1976f3;
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    position:relative;
-    font-size:22px;
-    box-shadow:0 4px 12px rgba(0,0,0,.2);
-    transition:.2s;
-}
-
-.profile-notify-btn:hover{
-    transform:scale(1.08);
-}
-
-.notify-badge{
+.notification-popup{
     position:absolute;
-    top:-5px;
-    right:-5px;
-    min-width:18px;
-    height:18px;
-    background:red;
-    color:#fff;
-    border-radius:50%;
-    font-size:11px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    top:60px;
+    left:50%;
+    transform:translateX(-50%);
+    width:420px;
+    max-width:95vw;
+    max-height:450px;
+    overflow-y:auto;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+    display:none;
+    z-index:9999;
+}
+
+.notification-popup.show{
+    display:block;
 }
 </style>
 </head>
@@ -705,10 +691,29 @@ button{
 </div>
 
 <div class="avatar-actions">
+
     <div id="notificationBtn" class="profile-notify-btn">
         ✉️
         <span id="notifyCount" class="notify-badge">0</span>
     </div>
+
+    <div id="notificationPopup" class="notification-popup">
+
+        <div class="notification-header">
+            <span>📩 Thông báo</span>
+
+            <span id="closeNotify"
+                  style="cursor:pointer;font-size:22px;">
+                ✖
+            </span>
+        </div>
+
+        <div id="notificationList">
+            Chưa có thông báo
+        </div>
+
+    </div>
+
 </div>
 
 <input type="file" id="avatarUpload" accept="image/*" hidden>
@@ -1512,22 +1517,6 @@ function getVerifiedBadge(uid){
 
   </div>
 </footer>
-<div id="notificationPopup" class="notification-popup">
-
-    <div class="notification-header">
-        <span>📩 Thông báo</span>
-
-        <span id="closeNotify"
-              style="cursor:pointer;font-size:22px;">
-            ✖
-        </span>
-    </div>
-
-    <div id="notificationList">
-        Chưa có thông báo
-    </div>
-
-</div>
 </body>
 
 </html>
