@@ -419,7 +419,6 @@ body{
   display: flex;
   flex-direction: column;
   margin: 0;
-}
  overflow-x:hidden;
 }
 .container{
@@ -599,7 +598,8 @@ button{
 
     z-index:999999;
 }
-   .avatar-actions{
+}
+     .avatar-actions{
     display:flex;
     justify-content:center;
     margin-top:10px;
@@ -639,7 +639,6 @@ button{
     align-items:center;
     justify-content:center;
 }
-}
 </style>
 </head>
 <body>
@@ -670,18 +669,20 @@ button{
 <div class="avatar-container">
 
     <img id="avatarImg"
-    src="https://i.ibb.co/Z1kv9nJj/logo.png"
-    alt="avatar">
+         src="https://i.ibb.co/Z1kv9nJj/logo.png"
+         alt="avatar">
 
     <div class="camera-btn" id="avatarBox">
         📷
     </div>
-   <div class="avatar-actions">
+
+</div>
+
+<div class="avatar-actions">
     <div id="notificationBtn" class="profile-notify-btn">
         ✉️
         <span id="notifyCount" class="notify-badge">0</span>
     </div>
-</div>
 </div>
 
 <input type="file" id="avatarUpload" accept="image/*" hidden>
