@@ -1525,6 +1525,10 @@ await db
   .collection("orders")
   .doc(id)
   .update(updateData);
+      console.log("orderData =", orderData);
+console.log("userId =", orderData.userId);
+console.log("uid =", orderData.uid);
+
     if (orderData.userId || orderData.uid) {
 
   let title = "";
