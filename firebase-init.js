@@ -55,23 +55,3 @@ export function listenUnreadMessages(userId, callback) {
     callback(count);
   });
 }
-export function listenUnreadMessages(userId, callback) {
-  if (!userId) return;
-
-  const msgRef = ref(rtdb, "messages");
-
-  onValue(msgRef, (snapshot) => {
-    let count = 0;
-
-    snapshot.forEach(child => {
-      const data = child.val();
-
-      // CHỈ ĐẾM TIN CHƯA ĐỌC CỦA USER
-      if (data.to === userId && data.read === false) {
-        count++;
-      }
-    });
-
-    callback(count);
-  });
-}
