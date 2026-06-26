@@ -715,21 +715,6 @@ button{
     color:#888;
     font-size:14px;
 }
-   .notification-item {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    cursor: pointer;
-}
-
-.notification-item.unread {
-    font-weight: bold;
-    background: #f5f9ff;
-}
-
-.notification-item.read {
-    font-weight: normal;
-    color: #888;
-}
 </style>
 </head>
 <body>
@@ -1084,8 +1069,7 @@ notificationBtn.onclick = () => {
 firebase.firestore()
 .collection("notifications")
 .where("userId","==",user.uid)
-.orderBy("createdAt", "desc")
-.onSnapshot(snapshot => {
+.onSnapshot(snapshot=>{
     let html="";
     let unread=0;
 
@@ -1095,10 +1079,13 @@ firebase.firestore()
 
         if(!data.read) unread++;
 
-        const isRead = data.read === true;
+        const time =
+        data.createdAt?.toDate
+        ? data.createdAt.toDate().toLocaleString("vi-VN")
+        : "";
 
-html += `
-<div class="notification-item ${isRead ? "read" : "unread"}"
+       html += `
+<div class="notification-item"
      data-title="${data.title}"
      data-message="${data.message}"
      data-time="${time}"
@@ -1137,8 +1124,7 @@ notificationList.onclick = async (e)=>{
     .update({
         read:true
     });
-   item.classList.remove("unread");
-item.classList.add("read");
+
     document.getElementById("msgTitle").innerText=
         item.dataset.title;
 
