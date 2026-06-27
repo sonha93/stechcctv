@@ -1234,7 +1234,10 @@ notificationList.onclick = async (e) => {
     if(!doc.exists) return;
 
     const data = doc.data();
-
+      // Kiểm tra quà sinh nhật
+if (data.phone) {
+    await checkBirthdayReward(data.phone);
+}
  if (data.phone) {
 
     firebase.firestore()
@@ -1310,6 +1313,9 @@ notificationList.onclick = async (e) => {
 
    nameInput.value = data.name || "";
 phoneInput.value = data.phone || "";
+if (data.phone) {
+    await checkBirthdayReward(data.phone);
+}
 addressInput.value = data.address || "";
 birthdayInput.value = data.birthday || "";
 
