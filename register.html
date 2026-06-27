@@ -86,14 +86,11 @@ registerBtn.addEventListener("click", async () => {
       createdAt: Date.now()
     });
 
-    messageEl.style.color="green";
-    messageEl.innerText="Đăng ký thành công! Chuyển tới profile...";
-    
-    // Reset form
-    nameInput.value=""; emailInput.value=""; passwordInput.value=""; phoneInput.value="";
+   messageEl.style.color = "green";
+messageEl.innerText = "Đăng ký thành công!";
 
-    // Chuyển sang profile.html sau 1s
-    setTimeout(()=>window.location.href="profile.html",1000);
+// Chuyển ngay sang profile
+window.location.href = "profile.html";
 
   }catch(err){
     if(err.code==="auth/email-already-in-use"){
