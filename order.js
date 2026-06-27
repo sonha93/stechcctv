@@ -678,27 +678,48 @@ ${
         <!-- CANCEL BUTTON -->
         <div style="margin-top:18px;">
 
-          <button
-            class="cancel-order-btn"
-            data-id="${order.id}"
-            ${disableCancel ? "disabled" : ""}
-            style="
-              background:${disableCancel ? "#fff" : "#ef4444"};
-              color:#fff;
-              border:none;
-              padding:10px 18px;
-              border-radius:8px;
-              cursor:${disableCancel ? "not-allowed" : "pointer"};
-              font-weight:bold;
-            "
-          >
-            ${order.status === "cancelled"
-  ? "Đơn đã hủy"
-  : disableCancel
-    ? ""
-    : "Hủy đơn hàng"
+        ${
+  order.customerCancelled
+  ? `
+    <button
+      class="recall-order-btn"
+      data-id="${order.id}"
+      style="
+        background:#16a34a;
+        color:#fff;
+        border:none;
+        padding:10px 18px;
+        border-radius:8px;
+        cursor:pointer;
+        font-weight:bold;
+      "
+    >
+      Đặt lại đơn
+    </button>
+  `
+  : `
+    <button
+      class="cancel-order-btn"
+      data-id="${order.id}"
+      ${disableCancel ? "disabled" : ""}
+      style="
+        background:${disableCancel ? "#fff" : "#ef4444"};
+        color:#fff;
+        border:none;
+        padding:10px 18px;
+        border-radius:8px;
+        cursor:${disableCancel ? "not-allowed" : "pointer"};
+        font-weight:bold;
+      "
+    >
+      ${
+        disableCancel
+          ? ""
+          : "Hủy đơn hàng"
+      }
+    </button>
+  `
 }
-          </button>
 
         </div>
 
@@ -706,7 +727,8 @@ ${
     `;
   });
   bindCancelEvents();
-  renderPagination();
+bindRecallEvents();
+renderPagination();;
 }
 function renderPagination(){   
   const box = document.getElementById("orders");
@@ -765,7 +787,48 @@ const orderDoc = await orderRef.get();
 if(!orderDoc.exists){
   throw new Error("Không tìm thấy đơn");
 }
+function bindRecallEvents(){
 
+  document
+    .querySelectorAll(".recall-order-btn")
+    .forEach(btn=>{
+
+      btn.addEventListener("click", async()=>{
+
+        const id = btn.dataset.id;
+
+        if(!confirm("Bạn muốn đặt lại đơn này?")) return;
+
+        try{
+
+          await db.collection("orders").doc(id).update({
+
+            status: "pending",
+            customerCancelled: false,
+            pointsRefunded: false,
+            recalledAt: Date.now()
+
+          });
+
+          alert("Đặt lại đơn thành công");
+
+          const user = auth.currentUser;
+          if(user){
+            loadOrders(user.uid);
+          }
+
+        }catch(err){
+
+          console.error(err);
+          alert("Không thể đặt lại đơn");
+
+        }
+
+      });
+
+    });
+
+}
 const orderData = orderDoc.data();
 if(orderData.status === "cancelled"){
   throw new Error("Đơn đã hủy");
