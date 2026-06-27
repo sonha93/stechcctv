@@ -878,15 +878,48 @@ function bindRecallEvents(){
 
         try{
 
-          await db.collection("orders").doc(id).update({
+        const orderRef = db.collection("orders").doc(id);
+const orderDoc = await orderRef.get();
 
-            status: "pending",
-            customerCancelled: false,
-            pointsRefunded: false,
-            recalledAt: Date.now()
+if (!orderDoc.exists) {
+  throw new Error("Không tìm thấy đơn");
+}
 
-          });
+const order = orderDoc.data();
 
+// Nếu đơn đã từng hoàn điểm thì trừ lại điểm trước
+if (
+  order.memberId &&
+  Number(order.usedPoints || 0) > 0 &&
+  order.pointsRefunded
+) {
+
+  const memberRef = db.collection("members").doc(order.memberId);
+  const memberDoc = await memberRef.get();
+
+  if (!memberDoc.exists) {
+    throw new Error("Không tìm thấy thành viên");
+  }
+
+  const member = memberDoc.data();
+
+  if (Number(member.points || 0) < Number(order.usedPoints)) {
+    throw new Error("Điểm hiện tại không đủ để đặt lại đơn");
+  }
+
+  await memberRef.update({
+    points: firebase.firestore.FieldValue.increment(
+      -Number(order.usedPoints)
+    )
+  });
+}
+
+await orderRef.update({
+  status: "pending",
+  customerCancelled: false,
+  pointsRefunded: false,
+  recalledAt: Date.now()
+});
           alert("Đặt lại đơn thành công");
 
           const user = auth.currentUser;
