@@ -1235,7 +1235,8 @@ notificationList.onclick = async (e) => {
     if(!doc.exists) return;
 
     const data = doc.data();
-
+console.log("User data:", data);
+console.log("Phone:", data.phone);
  if (data.phone) {
 
     firebase.firestore()
