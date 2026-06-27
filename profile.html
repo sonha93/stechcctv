@@ -1256,7 +1256,9 @@ notificationList.onclick = async (e) => {
         // Thưởng sinh nhật
         const today = new Date();
         const currentYear = today.getFullYear();
-
+console.log("Member:", member);
+console.log("Birthday:", member.birthday);
+console.log("Today:", new Date());
         if (member.birthday) {
 
             const birth = new Date(member.birthday);
@@ -1264,7 +1266,13 @@ notificationList.onclick = async (e) => {
             const isBirthday =
                 today.getDate() === birth.getDate() &&
                 today.getMonth() === birth.getMonth();
-
+            console.log({
+    todayDay: today.getDate(),
+    todayMonth: today.getMonth() + 1,
+    birthDay: birth.getDate(),
+    birthMonth: birth.getMonth() + 1,
+    isBirthday
+});
             const receivedThisYear =
                 member.birthdayGiftYear === currentYear;
 
