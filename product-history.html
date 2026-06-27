@@ -65,95 +65,107 @@ body{
     padding:10px;
 }
 
-/* ===== Desktop ===== */
+.field-title{
+    font-size:13px;
+    color:#777;
+    margin-bottom:5px;
+}
 
+.return-section{
+    margin-top:20px;
+}
+    table{
+    width:100%;
+    border-collapse:collapse;
+}
 .field{
     overflow-x:auto;
 }
 
 table{
-    width:100%;
-    border-collapse:collapse;
+    min-width:600px;
 }
-
 th,
 td{
-    padding:10px;
+    padding:10px 8px;
     border-bottom:1px solid #eee;
-}
-
-th{
-    background:#fafafa;
-    font-weight:600;
+    text-align:left;
+    vertical-align:middle;
 }
 
 th:nth-child(1),
 td:nth-child(1){
-    text-align:left;
+    width:45%;
 }
 
 th:nth-child(2),
 td:nth-child(2){
+    width:15%;
     text-align:center;
-    width:90px;
 }
 
 th:nth-child(3),
 td:nth-child(3){
+    width:20%;
     text-align:right;
-    width:140px;
-    white-space:nowrap;
 }
 
 th:nth-child(4),
 td:nth-child(4){
+    width:20%;
     text-align:right;
-    width:150px;
-    white-space:nowrap;
 }
-   @media (max-width:768px){
+    /* ===========================
+   Mobile Responsive Table
+=========================== */
 
-.info-grid{
-    grid-template-columns:1fr;
-}
+@media (max-width:768px){
 
-.field{
-    overflow:visible;
-}
-
-table,
-thead,
-tbody,
-tr,
-th,
-td{
-    display:block;
+table{
+    width:100%;
+    min-width:100%;
+    border-collapse:collapse;
 }
 
 thead{
     display:none;
 }
 
+tbody,
+tr,
+td{
+    display:block;
+    width:100%;
+}
+
 tbody tr{
     border:1px solid #e5e5e5;
     border-radius:10px;
-    padding:12px;
-    margin-bottom:12px;
+    padding:14px;
+    margin-bottom:15px;
+    background:#fff;
+    box-sizing:border-box;
 }
 
 tbody td{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+    display:grid;
+    grid-template-columns:110px auto;
+    align-items:start;
+    gap:12px;
     padding:8px 0;
     border:none;
-    width:auto !important;
-    white-space:normal;
 }
 
-.field[style]{
-        grid-column:auto !important;
-    }
+tbody td::before{
+    content:attr(data-label);
+    font-weight:600;
+    color:#666;
+    white-space:nowrap;
+}
+
+tbody td span{
+    text-align:right;
+}
 }
 </style>
 </head>
