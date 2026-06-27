@@ -89,11 +89,31 @@ th,
 td{
     padding:10px 8px;
     border-bottom:1px solid #eee;
+    text-align:left;
+    vertical-align:middle;
 }
 
-th{
-    background:#fafafa;
-    font-weight:600;
+th:nth-child(1),
+td:nth-child(1){
+    width:45%;
+}
+
+th:nth-child(2),
+td:nth-child(2){
+    width:15%;
+    text-align:center;
+}
+
+th:nth-child(3),
+td:nth-child(3){
+    width:20%;
+    text-align:right;
+}
+
+th:nth-child(4),
+td:nth-child(4){
+    width:20%;
+    text-align:right;
 }
     /* ===========================
    Mobile Responsive Table
