@@ -1028,21 +1028,6 @@ avatarUpload.addEventListener("change", async (e) => {
       avatar: data.secure_url
   }, { merge: true });
    const memberSnap = await firebase.firestore()
-    .collection("members")
-    .where("phone", "==", phone)
-    .limit(1)
-    .get();
-
-if (!memberSnap.empty) {
-
-    await memberSnap.docs[0].ref.update({
-        name: name,
-        address: address,
-        birthday: oldBirthday || birthday
-    });
-
-}
-   const memberSnap = await firebase.firestore()
   .collection("members")
   .where("phone", "==", phone)
   .limit(1)
@@ -1268,36 +1253,33 @@ notificationList.onclick = async (e) => {
         memberLevel.textContent = member.level || "Silver";
 
         // Thưởng sinh nhật
-       const today = new Date();
-const currentYear = today.getFullYear();
+        const today = new Date();
+        const currentYear = today.getFullYear();
 
-// Ưu tiên lấy ngày sinh trong members,
-// nếu chưa có thì lấy từ users
-const birthdayValue = member.birthday || data.birthday;
+        if (member.birthday) {
 
-if (birthdayValue) {
+            const birth = new Date(member.birthday);
 
-    const birth = new Date(birthdayValue);
+            const isBirthday =
+                today.getDate() === birth.getDate() &&
+                today.getMonth() === birth.getMonth();
 
-    const isBirthday =
-        today.getDate() === birth.getDate() &&
-        today.getMonth() === birth.getMonth();
+            const receivedThisYear =
+                member.birthdayGiftYear === currentYear;
 
-    const receivedThisYear =
-        Number(member.birthdayGiftYear || 0) === currentYear;
+            if (isBirthday && !receivedThisYear) {
 
-    if (isBirthday && !receivedThisYear) {
+                await memberRef.update({
+                    points: Number(member.points || 0) + 100,
+                    birthdayGiftYear: currentYear
+                });
 
-        await memberRef.update({
-            points: Number(member.points || 0) + 100,
-            birthdayGiftYear: currentYear
-        });
+                member.points = Number(member.points || 0) + 100;
 
-        member.points = Number(member.points || 0) + 100;
+                alert("🎂 Chúc mừng sinh nhật! Bạn nhận 10.000đ điểm thưởng");
+            }
+        }
 
-        alert("🎂 Chúc mừng sinh nhật! Bạn nhận 10.000đ điểm thưởng");
-    }
-}
         // Điểm
         memberPoints.textContent =
             (Number(member.points || 0) * 100).toLocaleString("vi-VN") + "đ";
