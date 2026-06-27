@@ -1200,16 +1200,6 @@ if(!productDoc.exists){
     const currentStock =
       Number(product.stock || 0);
 
-    if(currentStock < qty){
-
-      console.error(
-        "Không đủ tồn kho:",
-        item.name
-      );
-
-      continue;
-    }
-
     const existed = await db
       .collection("sales_history")
       .where("orderId","==",id)
@@ -1266,12 +1256,7 @@ if(!productDoc.exists){
 
       });
 
-    const newStock =
-      currentStock - qty;
-
-    await productRef.update({
-      stock: newStock
-    });
+   
 
     await db
       .collection("stock_movements")
