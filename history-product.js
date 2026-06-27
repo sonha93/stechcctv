@@ -149,7 +149,7 @@ tbody.innerHTML="";
    tbody.innerHTML += `
 <tr>
     <td data-label="Sản phẩm">${item.name}</td>
-    <td data-label="SL">${qty}</td>
+    <td data-label="Số lượng">${qty}</td>
     <td data-label="Đơn giá">${formatMoney(price)}</td>
     <td data-label="Thành tiền">${formatMoney(price * qty)}</td>
 </tr>`;
