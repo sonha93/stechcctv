@@ -74,18 +74,10 @@ body{
 .return-section{
     margin-top:20px;
 }
-
-/* ===========================
-   TABLE - DESKTOP
-=========================== */
-
-.field{
-    overflow-x:auto;
-}
-
-table{
+  table{
     width:100%;
     border-collapse:collapse;
+    table-layout:fixed;
 }
 
 th,
@@ -93,11 +85,6 @@ td{
     padding:10px;
     border-bottom:1px solid #eee;
     vertical-align:middle;
-}
-
-th{
-    background:#fafafa;
-    font-weight:600;
 }
 
 th:nth-child(1),
@@ -116,64 +103,49 @@ th:nth-child(3),
 td:nth-child(3){
     width:20%;
     text-align:right;
-    white-space:nowrap;
 }
 
 th:nth-child(4),
 td:nth-child(4){
     width:20%;
     text-align:right;
-    white-space:nowrap;
 }
-
-/* ===========================
-   MOBILE
+    /* ===========================
+   Mobile Responsive Table
 =========================== */
 
 @media (max-width:768px){
 
-body{
-    padding:12px;
-}
-
-.info-grid{
-    grid-template-columns:1fr;
-}
-
-.full-width{
-    grid-column:auto !important;
-}
-
-table,
-thead,
-tbody,
-tr,
-th,
-td{
-    display:block;
-}
-
-thead{
-    display:none;
-}
-
-tbody tr{
-    border:1px solid #e5e5e5;
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:12px;
-    background:#fff;
-}
-
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr{
+        display:block;
+    }
 tbody td{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
+    width:auto !important;
+    min-width:0;
+}
+    thead{
+        display:none;
+    }
+
+    tbody tr{
+        border:1px solid #e5e5e5;
+        border-radius:10px;
+        padding:12px;
+        margin-bottom:12px;
+        background:#fff;
+    }
+tbody td{
+    display:grid;
+    grid-template-columns:110px 1fr;
     gap:10px;
     padding:8px 0;
     border:none;
-    text-align:right;
-    white-space:normal;
+    align-items:start;
     word-break:break-word;
 }
 
@@ -181,12 +153,10 @@ tbody td::before{
     content:attr(data-label);
     font-weight:600;
     color:#666;
-    flex:0 0 90px;
-    white-space:nowrap;
 }
-tbody td span{
-    flex:1;
-    text-align:right;
+
+tbody td:last-child{
+    font-weight:bold;
 }
 }
 </style>
@@ -260,7 +230,7 @@ tbody td span{
                 <div class="field-title">Trạng thái đơn hàng</div>
                 <div id="order-status"></div>
             </div>
-          <div class="field full-width">
+            <div class="field" style="grid-column:1 / span 2">
                <div class="field-title">Danh sách sản phẩm</div>
 <hr style="border:none;border-top:1px solid #eee;margin:10px 0 15px;">
 
