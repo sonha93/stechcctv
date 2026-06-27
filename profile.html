@@ -1254,36 +1254,29 @@ notificationList.onclick = async (e) => {
 
         // Thưởng sinh nhật
         const today = new Date();
-        const currentYear = today.getFullYear();
-        if (member.birthday) {
+const currentYear = today.getFullYear();
 
-            const birth = new Date(member.birthday);
+if (member.birthday) {
+  const birth = new Date(member.birthday);
 
-            const isBirthday =
-                today.getDate() === birth.getDate() &&
-                today.getMonth() === birth.getMonth();
-          
-    todayDay: today.getDate(),
-    todayMonth: today.getMonth() + 1,
-    birthDay: birth.getDate(),
-    birthMonth: birth.getMonth() + 1,
-    isBirthday
-});
-            const receivedThisYear =
-                member.birthdayGiftYear === currentYear;
+  const isBirthday =
+    today.getDate() === birth.getDate() &&
+    today.getMonth() === birth.getMonth();
 
-            if (isBirthday && !receivedThisYear) {
+  const receivedThisYear =
+    Number(member.birthdayGiftYear) === currentYear;
 
-                await memberRef.update({
-    points: firebase.firestore.FieldValue.increment(100),
-    birthdayGiftYear: currentYear
-});
-                member.points = Number(member.points || 0) + 100;
+  if (isBirthday && !receivedThisYear) {
+    await memberRef.update({
+      points: firebase.firestore.FieldValue.increment(100),
+      birthdayGiftYear: currentYear
+    });
 
-                alert("🎂 Chúc mừng sinh nhật! Bạn nhận 10.000đ điểm thưởng");
-            }
-        }
+    member.points = Number(member.points || 0) + 100;
 
+    alert("🎂 Chúc mừng sinh nhật! Bạn nhận 100 điểm thưởng");
+  }
+}
         // Điểm
         memberPoints.textContent =
             (Number(member.points || 0) * 100).toLocaleString("vi-VN") + "đ";
