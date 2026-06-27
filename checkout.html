@@ -394,11 +394,27 @@ if(phoneValue){
     .collection("cart")
     .get();
 
-  cart = snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+ cart = snapshot.docs.map(doc => ({
+  cartId: doc.id,
+  ...doc.data()
+}));
 
+for (const item of cart) {
+
+  const productDoc = await db
+    .collection("products")
+    .doc(item.productId)
+    .get();
+
+  if (productDoc.exists) {
+
+    Object.assign(item, productDoc.data());
+
+    item.productId = item.productId || productDoc.id;
+
+  }
+
+}
   renderCart();
   updateBank();
 }
@@ -439,7 +455,7 @@ function renderCart(){
 
    box.innerHTML += `
   <div class="item">
-    <a href="logo.html?id=${p.id}">
+   <a href="logo.html?id=${p.productId}">
       <img src="${p.img}">
     </a>
 
