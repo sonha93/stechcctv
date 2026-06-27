@@ -75,6 +75,15 @@ await productRef.update({
   stock: firebase.firestore.FieldValue.increment(qty),
   sold: newSold
 });
+    const saleSnap = await db
+  .collection("sales_history")
+  .where("orderId", "==", orderId)
+  .where("productId", "==", productId)
+  .get();
+
+for (const doc of saleSnap.docs) {
+  await doc.ref.delete();
+}
     await db.collection("stock_movements").add({
       productId,
       productName: item.name || "",
