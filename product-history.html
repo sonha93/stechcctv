@@ -65,98 +65,95 @@ body{
     padding:10px;
 }
 
-.field-title{
-    font-size:13px;
-    color:#777;
-    margin-bottom:5px;
-}
+/* ===== Desktop ===== */
 
-.return-section{
-    margin-top:20px;
-}
-    table{
-    width:100%;
-    border-collapse:collapse;
-}
 .field{
     overflow-x:auto;
 }
 
 table{
-    min-width:600px;
+    width:100%;
+    border-collapse:collapse;
 }
+
 th,
 td{
-    padding:10px 8px;
+    padding:10px;
     border-bottom:1px solid #eee;
-    text-align:left;
-    vertical-align:middle;
+}
+
+th{
+    background:#fafafa;
+    font-weight:600;
 }
 
 th:nth-child(1),
 td:nth-child(1){
-    width:45%;
+    text-align:left;
 }
 
 th:nth-child(2),
 td:nth-child(2){
-    width:15%;
     text-align:center;
+    width:90px;
 }
 
 th:nth-child(3),
 td:nth-child(3){
-    width:20%;
     text-align:right;
+    width:140px;
+    white-space:nowrap;
 }
 
 th:nth-child(4),
 td:nth-child(4){
-    width:20%;
     text-align:right;
+    width:150px;
+    white-space:nowrap;
 }
-    /* ===========================
-   Mobile Responsive Table
-=========================== */
+   @media (max-width:768px){
 
-@media (max-width:768px){
+.info-grid{
+    grid-template-columns:1fr;
+}
+
+.field{
+    overflow:visible;
+}
+
+table,
+thead,
+tbody,
+tr,
+th,
+td{
+    display:block;
+}
 
 thead{
     display:none;
 }
 
-table,
-tbody,
-tr,
-td{
-    display:block;
-    width:100%;
-}
-
-.product-card{
+tbody tr{
     border:1px solid #e5e5e5;
-    border-radius:12px;
-    margin-bottom:15px;
-    overflow:hidden;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:12px;
 }
 
-.product-card td{
-    padding:15px;
-}
-
-.product-name{
-    font-size:18px;
-    font-weight:700;
-    margin-bottom:15px;
-}
-
-.product-info{
+tbody td{
     display:flex;
     justify-content:space-between;
+    align-items:center;
     padding:8px 0;
-    border-top:1px solid #eee;
+    border:none;
+    width:auto !important;
+    white-space:normal;
 }
 
+.field[style]{
+        grid-column:auto !important;
+    }
 }
 </style>
 </head>
