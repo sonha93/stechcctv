@@ -23,7 +23,7 @@ function loginAdmin() {
         return;
     }
 
-    const email = username + "@stechcctv.com";
+    const email = username + "@admin.com";
 
     firebase.auth()
         .signInWithEmailAndPassword(email, password)
