@@ -41,8 +41,8 @@ document.getElementById("customer-phone").innerText="";
 document.getElementById("order-items").innerHTML="";
   
   document.getElementById("purchase-date").innerText = "";
-  document.getElementById("original-price").innerText = "";
-  document.getElementById("discount").innerText = "";
+
+
   document.getElementById("used-points").innerText = "";
   document.getElementById("earned-points").innerText = "";
   document.getElementById("final-price").innerText = "";
@@ -115,19 +115,7 @@ document.getElementById("customer-phone").innerText =
     document.getElementById("purchase-date").innerText =
       formatDate(data.createdAt);
 
-   document.getElementById("original-price").innerText =
-  formatMoney(
-    data.items?.[0]?.originalPrice ??
-    data.items?.[0]?.oldPrice ??
-    data.originalPrice ??
-    0
-  );
-  const item = data.items?.[0];
 
-const discount = (item?.originalPrice || 0) - (item?.price || 0);
-
-document.getElementById("discount").innerText =
-  "-" + formatMoney(discount);
 
   const usedPoints = data.usedPoints ?? data.pointsUsed ?? 0;
 
