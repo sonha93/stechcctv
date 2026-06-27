@@ -1254,15 +1254,12 @@ notificationList.onclick = async (e) => {
 
         // Thưởng sinh nhật
         const today = new Date();
-const currentYear = today.getFullYear();
+const birth = new Date(member.birthday);
 
-if (member.birthday) {
-  const birth = new Date(member.birthday);
-
-  const isBirthday =
-    today.getDate() === birth.getDate() &&
-    today.getMonth() === birth.getMonth();
-
+// chỉ so ngày-tháng, bỏ năm
+const isBirthday =
+  today.getDate() === birth.getDate() &&
+  today.getMonth() === birth.getMonth();
   const receivedThisYear =
     Number(member.birthdayGiftYear) === currentYear;
 
