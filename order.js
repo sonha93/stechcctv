@@ -787,6 +787,10 @@ const orderDoc = await orderRef.get();
 if(!orderDoc.exists){
   throw new Error("Không tìm thấy đơn");
 }
+const orderData = orderDoc.data();
+if(orderData.status === "cancelled"){
+  throw new Error("Đơn đã hủy");
+}
 function bindRecallEvents(){
 
   document
@@ -828,10 +832,6 @@ function bindRecallEvents(){
 
     });
 
-}
-const orderData = orderDoc.data();
-if(orderData.status === "cancelled"){
-  throw new Error("Đơn đã hủy");
 }
 // hoàn điểm nếu đơn có dùng điểm
 if(
