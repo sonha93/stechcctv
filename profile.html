@@ -1311,7 +1311,11 @@ if (data.phone) {
 
 }
 
-  
+   nameInput.value = data.name || "";
+phoneInput.value = data.phone || "";
+if (data.phone) {
+    await checkBirthdayReward(data.phone);
+}
 addressInput.value = data.address || "";
 birthdayInput.value = data.birthday || "";
 
