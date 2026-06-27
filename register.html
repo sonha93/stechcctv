@@ -29,7 +29,7 @@ button:hover{background:#0056b3;}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 // Firebase config chuẩn
 const firebaseConfig = {
@@ -45,7 +45,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db = getDatabase(app);
 
 const nameInput = document.getElementById("name");
 const emailInput = document.getElementById("email");
@@ -77,14 +77,14 @@ registerBtn.addEventListener("click", async () => {
     await updateProfile(user,{displayName:name, photoURL:"https://i.ibb.co/Z1kv9nJj/logo.png"});
 
     // Lưu info vào Realtime Database
-    await setDoc(doc(db, "users", user.uid), {
-  uid: user.uid,
-  name,
-  email,
-  phone,
-  avatar: "https://i.ibb.co/Z1kv9nJj/logo.png",
-  createdAt: Date.now()
-});
+    await set(ref(db,'users/'+user.uid),{
+      uid: user.uid,
+      name: name,
+      email: email,
+      phone: phone,
+      avatar: "https://i.ibb.co/Z1kv9nJj/logo.png",
+      createdAt: Date.now()
+    });
 
     messageEl.style.color="green";
     messageEl.innerText="Đăng ký thành công! Chuyển tới profile...";
