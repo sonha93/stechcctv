@@ -150,9 +150,9 @@ tbody.innerHTML="";
     tbody.innerHTML+=`
     <tr>
         <td>${item.name}</td>
-        <td align="center">${qty}</td>
-        <td align="center">${formatMoney(price)}</td>
-        <td align="right">${formatMoney(price*qty)}</td>
+        <td>${qty}</td>
+<td>${formatMoney(price)}</td>
+<td>${formatMoney(price * qty)}</td>
     </tr>`;
 });
   if (!data.returnStatus) {
