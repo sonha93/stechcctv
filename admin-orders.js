@@ -798,47 +798,21 @@ const lockStatus =
         ${formatPrice(order.total)}
       </td>
      <td>
-  ${
-    order.status === "returned"
+${
+  order.returnStatus === "approved"
+    ? `<span style="color:green;font-weight:bold;">Đã trả</span>`
+    : order.returnStatus === "rejected"
+    ? `<span style="color:red;font-weight:bold;">Đã từ chối</span>`
+    : order.returnRequested === true
     ? `
-      <select
-        class="order-status status-returned"
-        data-id="${doc.id}"
-        disabled
-      >
-        <option value="returned" selected>
-          Đã trả hàng
-        </option>
+      <select class="return-status" data-id="${doc.id}">
+        <option value="pending" selected>Chờ xử lý</option>
+        <option value="approved">Duyệt trả</option>
+        <option value="rejected">Từ chối</option>
       </select>
     `
-    : `
-      <select
-        class="order-status status-${order.status}"
-        data-id="${doc.id}"
-        ${lockStatus ? "disabled" : ""}
-      >
-        <option value="pending" ${order.status==="pending"?"selected":""}>
-          Chờ xử lý
-        </option>
-
-        <option value="confirmed" ${order.status==="confirmed"?"selected":""}>
-          Đã xác nhận
-        </option>
-
-        <option value="shipping" ${order.status==="shipping"?"selected":""}>
-          Đang giao
-        </option>
-
-        <option value="completed" ${order.status==="completed"?"selected":""}>
-          Đã giao thành công
-        </option>
-
-        <option value="cancelled" ${order.status==="cancelled"?"selected":""}>
-          Đã hủy
-        </option>
-      </select>
-    `
-  }
+    : `<span style="color:#999;"></span>`
+}
 </td>
       <td>
 
@@ -905,31 +879,42 @@ ${
 </td>
 
       <td>
-    <select
+   <select
   class="order-status status-${order.status}"
   data-id="${doc.id}"
   ${lockStatus ? "disabled" : ""}
 >
-  <option value="pending" ${order.status === "pending" ? "selected" : ""}>
+
+  <option value="pending" ${order.status==="pending"?"selected":""}>
     Chờ xử lý
   </option>
 
-  <option value="confirmed" ${order.status === "confirmed" ? "selected" : ""}>
+  <option value="confirmed" ${order.status==="confirmed"?"selected":""}>
     Đã xác nhận
   </option>
 
-  <option value="shipping" ${order.status === "shipping" ? "selected" : ""}>
+  <option value="shipping" ${order.status==="shipping"?"selected":""}>
     Đang giao
   </option>
 
-  <option value="completed" ${order.status === "completed" ? "selected" : ""}>
+  <option value="completed" ${order.status==="completed"?"selected":""}>
     Đã giao thành công
   </option>
 
+  ${
+    order.status === "returned"
+      ? `
+        <option value="returned" selected>
+          Đã trả hàng
+        </option>
+      `
+      : ""
+  }
 
-  <option value="cancelled" ${order.status === "cancelled" ? "selected" : ""}>
+  <option value="cancelled" ${order.status==="cancelled"?"selected":""}>
     Đã hủy
   </option>
+
 </select>
    ${lockStatus ? `
   <div style="
