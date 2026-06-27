@@ -121,40 +121,41 @@ td:nth-child(4){
 =========================== */
 
 @media (max-width:768px){
-   table{
-    min-width:unset;
+
+table{
+    width:100%;
+    min-width:100%;
+    border-collapse:collapse;
+}
+
+thead{
+    display:none;
+}
+
+tbody,
+tr,
+td{
+    display:block;
     width:100%;
 }
-    table,
-    thead,
-    tbody,
-    th,
-    td,
-    tr{
-        display:block;
-    }
-tbody td{
-    width:auto !important;
-    min-width:0;
-}
-    thead{
-        display:none;
-    }
 
-    tbody tr{
-        border:1px solid #e5e5e5;
-        border-radius:10px;
-        padding:12px;
-        margin-bottom:12px;
-        background:#fff;
-    }
+tbody tr{
+    border:1px solid #e5e5e5;
+    border-radius:10px;
+    padding:14px;
+    margin-bottom:15px;
+    background:#fff;
+    box-sizing:border-box;
+}
+
 tbody td{
-    display:grid;
-    grid-template-columns:110px 1fr;
-    gap:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:15px;
     padding:8px 0;
     border:none;
-    align-items:start;
+    text-align:right !important;
     word-break:break-word;
 }
 
@@ -162,11 +163,26 @@ tbody td::before{
     content:attr(data-label);
     font-weight:600;
     color:#666;
+    text-align:left;
 }
 
-tbody td:last-child{
-    font-weight:bold;
+tbody td:first-child{
+    font-size:17px;
+    font-weight:600;
 }
+
+tbody td:first-child::before{
+    display:none;
+}
+
+tbody td:first-child{
+    display:block;
+    text-align:left !important;
+    padding-bottom:12px;
+    border-bottom:1px solid #eee;
+    margin-bottom:10px;
+}
+
 }
 </style>
 </head>
