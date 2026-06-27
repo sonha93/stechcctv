@@ -75,6 +75,33 @@ await productRef.update({
   stock: firebase.firestore.FieldValue.increment(qty),
   sold: newSold
 });
+    const inventorySnap = await db
+  .collection("inventory")
+  .where("productId", "==", productId)
+  .get();
+
+let remain = qty;
+
+for (const inv of inventorySnap.docs) {
+
+  if (remain <= 0) break;
+
+  const data = inv.data();
+
+  const sold = Number(data.sold || 0);
+
+  if (sold <= 0) continue;
+
+  const rollback = Math.min(remain, sold);
+
+  await inv.ref.update({
+    sold: sold - rollback,
+    stock: Number(data.stock || 0) + rollback
+  });
+
+  remain -= rollback;
+}
+
     await db.collection("stock_movements").add({
       productId,
       productName: item.name || "",
