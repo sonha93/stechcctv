@@ -2,6 +2,7 @@ import {
   getFirestore,
   collection,
   getDocs,
+  getDoc,
   doc,
   deleteDoc,
   setDoc,
@@ -111,12 +112,18 @@ actionBox = document.getElementById("cartAction");
 
     let total = 0;
 
-    snapshot.forEach(docSnap => {
+    for (const docSnap of snapshot.docs) {
 
       const p = docSnap.data();
+      const productSnap = await getDoc(
+  doc(db, "products", p.productId)
+);
 
+if (!productSnap.exists()) continue;
+
+const product = productSnap.data();
       const qty = Number(p.qty) || 1;
-      const price = Number(p.price) || 0;
+      const price = Number(product.price) || 0;
 
       const subTotal = qty * price;
 
@@ -126,18 +133,18 @@ actionBox = document.getElementById("cartAction");
 <div class="item">
 
  <a href="logo.html?id=${p.productId}">
-  <img src="${p.img || ''}">
+  <img src="${product.img || ''}">
 </a>
   <div class="info">
 
-    <b>${p.name || ''}</b>
+    <b>${product.name || ''}</b>
 
    <div class="price-row">
 
   ${
-    p.oldPrice
+    product.oldPrice
       ? `<div class="price-old">
-           ${Number(p.oldPrice).toLocaleString()}đ
+           ${Number(product.oldPrice).toLocaleString()}đ
          </div>`
       : ""
   }
@@ -173,7 +180,7 @@ actionBox = document.getElementById("cartAction");
 
 </div>
 `;
-    });
+}
 
     totalBox.innerHTML =
       "Tạm tính: " +
@@ -244,43 +251,10 @@ const productId =
 
     });
 
-  await setDoc(itemRef, {
-
-  id: product.id,
-
-  productId:
-    product.productId ||
-    product.id,
-
-  name: product.name || "",
-
-  price:
-    Number(product.price) || 0,
-
-  oldPrice:
-    Number(
-      product.oldPrice ||
-      product.price
-    ) || 0,
-
-  originalPrice:
-    Number(
-      product.originalPrice ||
-      product.oldPrice ||
-      product.price
-    ) || 0,
-
-  category:
-    product.category || "",
-
-  img:
-    product.img || "",
-
-  qty:
-    oldQty + 1
-
+ await setDoc(itemRef, {
+  productId: product.id,
+  qty: oldQty + 1
 });
-
 
 
   await renderCart();
