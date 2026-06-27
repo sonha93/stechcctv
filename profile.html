@@ -1254,25 +1254,39 @@ notificationList.onclick = async (e) => {
 
         // Thưởng sinh nhật
         const today = new Date();
-const birth = new Date(member.birthday);
 
-// chỉ so ngày-tháng, bỏ năm
+if (!member.birthday) return;
+
+// ===== normalize birthday =====
+let birth;
+
+if (member.birthday?.toDate) {
+  // Firestore Timestamp
+  birth = member.birthday.toDate();
+} else {
+  // string hoặc number
+  birth = new Date(member.birthday);
+}
+
+// ===== safety check =====
+if (isNaN(birth.getTime())) return;
+
+// ===== compare ONLY day + month (UTC để tránh lệch timezone) =====
 const isBirthday =
-  today.getDate() === birth.getDate() &&
-  today.getMonth() === birth.getMonth();
-  const receivedThisYear =
-    Number(member.birthdayGiftYear) === currentYear;
+  today.getUTCDate() === birth.getUTCDate() &&
+  today.getUTCMonth() === birth.getUTCMonth();
 
-  if (isBirthday && !receivedThisYear) {
-    await memberRef.update({
-      points: firebase.firestore.FieldValue.increment(100),
-      birthdayGiftYear: currentYear
-    });
+// ===== anti double claim =====
+const currentYear = today.getUTCFullYear();
+const receivedThisYear = Number(member.birthdayGiftYear) === currentYear;
 
-    member.points = Number(member.points || 0) + 100;
+if (isBirthday && !receivedThisYear) {
+  await memberRef.update({
+    points: firebase.firestore.FieldValue.increment(100),
+    birthdayGiftYear: currentYear
+  });
 
-    alert("🎂 Chúc mừng sinh nhật! Bạn nhận 100 điểm thưởng");
-  }
+  console.log("🎂 Birthday reward granted");
 }
         // Điểm
         memberPoints.textContent =
