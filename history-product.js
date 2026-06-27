@@ -146,13 +146,13 @@ tbody.innerHTML="";
 
     const price=item.price || 0;
 
-    tbody.innerHTML+=`
-    <tr>
-        <td>${item.name}</td>
-        <td>${qty}</td>
-<td>${formatMoney(price)}</td>
-<td>${formatMoney(price * qty)}</td>
-    </tr>`;
+   tbody.innerHTML += `
+<tr>
+    <td data-label="Sản phẩm">${item.name}</td>
+    <td data-label="SL">${qty}</td>
+    <td data-label="Đơn giá">${formatMoney(price)}</td>
+    <td data-label="Thành tiền">${formatMoney(price * qty)}</td>
+</tr>`;
 });
   if (!data.returnStatus) {
   document.querySelector(".return-section").style.display = "none";
