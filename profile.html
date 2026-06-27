@@ -1252,33 +1252,7 @@ notificationList.onclick = async (e) => {
         // Hạng thành viên
         memberLevel.textContent = member.level || "Silver";
 
-        // Thưởng sinh nhật
-        const today = new Date();
-        const currentYear = today.getFullYear();
-
-        if (member.birthday) {
-
-            const birth = new Date(member.birthday);
-
-            const isBirthday =
-                today.getDate() === birth.getDate() &&
-                today.getMonth() === birth.getMonth();
-
-            const receivedThisYear =
-                member.birthdayGiftYear === currentYear;
-
-            if (isBirthday && !receivedThisYear) {
-
-                await memberRef.update({
-                    points: Number(member.points || 0) + 100,
-                    birthdayGiftYear: currentYear
-                });
-
-                member.points = Number(member.points || 0) + 100;
-
-                alert("🎂 Chúc mừng sinh nhật! Bạn nhận 10.000đ điểm thưởng");
-            }
-        }
+      
 
         // Điểm
         memberPoints.textContent =
@@ -1678,6 +1652,6 @@ function getVerifiedBadge(uid){
   </div>
 </footer>
 </body>
-
+<script src="birthdayReward.js"></script>
 </html>
                     
