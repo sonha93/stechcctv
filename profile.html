@@ -1253,33 +1253,36 @@ notificationList.onclick = async (e) => {
         memberLevel.textContent = member.level || "Silver";
 
         // Thưởng sinh nhật
-        const today = new Date();
-        const currentYear = today.getFullYear();
+       const today = new Date();
+const currentYear = today.getFullYear();
 
-        if (member.birthday) {
+// Ưu tiên lấy ngày sinh trong members,
+// nếu chưa có thì lấy từ users
+const birthdayValue = member.birthday || data.birthday;
 
-            const birth = new Date(member.birthday);
+if (birthdayValue) {
 
-            const isBirthday =
-                today.getDate() === birth.getDate() &&
-                today.getMonth() === birth.getMonth();
+    const birth = new Date(birthdayValue);
 
-            const receivedThisYear =
-                member.birthdayGiftYear === currentYear;
+    const isBirthday =
+        today.getDate() === birth.getDate() &&
+        today.getMonth() === birth.getMonth();
 
-            if (isBirthday && !receivedThisYear) {
+    const receivedThisYear =
+        Number(member.birthdayGiftYear || 0) === currentYear;
 
-                await memberRef.update({
-                    points: Number(member.points || 0) + 100,
-                    birthdayGiftYear: currentYear
-                });
+    if (isBirthday && !receivedThisYear) {
 
-                member.points = Number(member.points || 0) + 100;
+        await memberRef.update({
+            points: Number(member.points || 0) + 100,
+            birthdayGiftYear: currentYear
+        });
 
-                alert("🎂 Chúc mừng sinh nhật! Bạn nhận 10.000đ điểm thưởng");
-            }
-        }
+        member.points = Number(member.points || 0) + 100;
 
+        alert("🎂 Chúc mừng sinh nhật! Bạn nhận 10.000đ điểm thưởng");
+    }
+}
         // Điểm
         memberPoints.textContent =
             (Number(member.points || 0) * 100).toLocaleString("vi-VN") + "đ";
