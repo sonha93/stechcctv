@@ -1234,10 +1234,7 @@ notificationList.onclick = async (e) => {
     if(!doc.exists) return;
 
     const data = doc.data();
-      // Kiểm tra quà sinh nhật
-if (data.phone) {
-    await checkBirthdayReward(data.phone);
-}
+
  if (data.phone) {
 
     firebase.firestore()
@@ -1255,7 +1252,33 @@ if (data.phone) {
         // Hạng thành viên
         memberLevel.textContent = member.level || "Silver";
 
-      
+        // Thưởng sinh nhật
+        const today = new Date();
+        const currentYear = today.getFullYear();
+
+        if (member.birthday) {
+
+            const birth = new Date(member.birthday);
+
+            const isBirthday =
+                today.getDate() === birth.getDate() &&
+                today.getMonth() === birth.getMonth();
+
+            const receivedThisYear =
+                member.birthdayGiftYear === currentYear;
+
+            if (isBirthday && !receivedThisYear) {
+
+                await memberRef.update({
+                    points: Number(member.points || 0) + 100,
+                    birthdayGiftYear: currentYear
+                });
+
+                member.points = Number(member.points || 0) + 100;
+
+                alert("🎂 Chúc mừng sinh nhật! Bạn nhận 10.000đ điểm thưởng");
+            }
+        }
 
         // Điểm
         memberPoints.textContent =
@@ -1313,9 +1336,6 @@ if (data.phone) {
 
    nameInput.value = data.name || "";
 phoneInput.value = data.phone || "";
-if (data.phone) {
-    await checkBirthdayReward(data.phone);
-}
 addressInput.value = data.address || "";
 birthdayInput.value = data.birthday || "";
 
@@ -1658,6 +1678,6 @@ function getVerifiedBadge(uid){
   </div>
 </footer>
 </body>
-<script src="birthdayReward.js"></script>
+
 </html>
                     
