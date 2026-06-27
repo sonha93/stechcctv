@@ -121,16 +121,11 @@ td:nth-child(4){
 
 @media (max-width:768px){
 
-table{
-    width:100%;
-    min-width:100%;
-    border-collapse:collapse;
-}
-
 thead{
     display:none;
 }
 
+table,
 tbody,
 tr,
 td{
@@ -138,34 +133,30 @@ td{
     width:100%;
 }
 
-tbody tr{
+.product-card{
     border:1px solid #e5e5e5;
-    border-radius:10px;
-    padding:14px;
+    border-radius:12px;
     margin-bottom:15px;
-    background:#fff;
-    box-sizing:border-box;
+    overflow:hidden;
 }
 
-tbody td{
-    display:grid;
-    grid-template-columns:110px auto;
-    align-items:start;
-    gap:12px;
+.product-card td{
+    padding:15px;
+}
+
+.product-name{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:15px;
+}
+
+.product-info{
+    display:flex;
+    justify-content:space-between;
     padding:8px 0;
-    border:none;
+    border-top:1px solid #eee;
 }
 
-tbody td::before{
-    content:attr(data-label);
-    font-weight:600;
-    color:#666;
-    white-space:nowrap;
-}
-
-tbody td span{
-    text-align:right;
-}
 }
 </style>
 </head>
