@@ -1138,73 +1138,7 @@ const updateData = {
   status: status,
   handledBy: document.getElementById("adminName").textContent
 };
-        // Không cho nhảy trạng thái
-if (status === "shipping" && orderData.status !== "confirmed") {
-  alert("Đơn hàng phải được xác nhận trước khi chuyển sang Đang giao.");
-  loadOrders();
-  return;
-}
 
-if (status === "completed" && orderData.status !== "shipping") {
-  alert("Đơn hàng phải ở trạng thái Đang giao trước khi hoàn thành.");
-  loadOrders();
-  return;
-}
-// Chặn xác nhận nếu tồn kho không đủ
-if (
-  status === "confirmed" &&
-  orderData.status === "pending"
-) {
-
-  for (const item of (orderData.items || [])) {
-
-    let productId =
-      item.productId ||
-      item.id ||
-      item._id;
-
-    let productRef =
-      db.collection("products")
-      .doc(productId);
-
-    let productDoc =
-      await productRef.get();
-
-    // fallback theo slug
-    if (!productDoc.exists && item.slug) {
-
-      const slugSnap = await db
-        .collection("products")
-        .where("slug", "==", item.slug)
-        .limit(1)
-        .get();
-
-      if (!slugSnap.empty) {
-        productDoc = slugSnap.docs[0];
-        productRef = productDoc.ref;
-      }
-    }
-
-    if (!productDoc.exists) {
-      alert(`Không tìm thấy sản phẩm: ${item.name}`);
-      loadOrders();
-      return;
-    }
-
-    const stock = Number(productDoc.data().stock || 0);
-    const qty = Number(item.qty || 0);
-
-    if (stock < qty) {
-      alert(
-        `${item.name} chỉ còn ${stock} sản phẩm, không đủ để xác nhận đơn.`
-      );
-      loadOrders();
-      return;
-    }
-
-  }
-
-}
 
 // nếu chuyển sang cancelled
 // thì khóa luôn
@@ -1214,8 +1148,10 @@ if(status === "cancelled"){
 
 
 if(
-  status === "confirmed" &&
-  orderData.status === "pending"
+  status === "completed" &&
+  orderData.status !== "completed" &&
+  orderData.memberId &&
+  !orderData.pointsProcessed
 ){
 for(const item of (orderData.items || [])){
 
