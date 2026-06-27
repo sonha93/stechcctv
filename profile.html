@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1235,6 +1234,7 @@ notificationList.onclick = async (e) => {
     if(!doc.exists) return;
 
     const data = doc.data();
+
  if (data.phone) {
 
     firebase.firestore()
@@ -1254,40 +1254,32 @@ notificationList.onclick = async (e) => {
 
         // Thưởng sinh nhật
         const today = new Date();
+        const currentYear = today.getFullYear();
 
-if (!member.birthday) return;
+        if (member.birthday) {
 
-// ===== normalize birthday =====
-let birth;
+            const birth = new Date(member.birthday);
 
-if (member.birthday?.toDate) {
-  // Firestore Timestamp
-  birth = member.birthday.toDate();
-} else {
-  // string hoặc number
-  birth = new Date(member.birthday);
-}
+            const isBirthday =
+                today.getDate() === birth.getDate() &&
+                today.getMonth() === birth.getMonth();
 
-// ===== safety check =====
-if (isNaN(birth.getTime())) return;
+            const receivedThisYear =
+                member.birthdayGiftYear === currentYear;
 
-// ===== compare ONLY day + month (UTC để tránh lệch timezone) =====
-const isBirthday =
-  today.getUTCDate() === birth.getUTCDate() &&
-  today.getUTCMonth() === birth.getUTCMonth();
+            if (isBirthday && !receivedThisYear) {
 
-// ===== anti double claim =====
-const currentYear = today.getUTCFullYear();
-const receivedThisYear = Number(member.birthdayGiftYear) === currentYear;
+                await memberRef.update({
+                    points: Number(member.points || 0) + 100,
+                    birthdayGiftYear: currentYear
+                });
 
-if (isBirthday && !receivedThisYear) {
-  await memberRef.update({
-    points: firebase.firestore.FieldValue.increment(100),
-    birthdayGiftYear: currentYear
-  });
+                member.points = Number(member.points || 0) + 100;
 
-  console.log("🎂 Birthday reward granted");
-}
+                alert("🎂 Chúc mừng sinh nhật! Bạn nhận 10.000đ điểm thưởng");
+            }
+        }
+
         // Điểm
         memberPoints.textContent =
             (Number(member.points || 0) * 100).toLocaleString("vi-VN") + "đ";
@@ -1441,25 +1433,6 @@ const oldBirthday =
         oldBirthday || birthday
 
   }, { merge: true });
-   // =====================
-// ĐỒNG BỘ MEMBER
-// =====================
-
-const memberSnap = await firebase.firestore()
-.collection("members")
-.where("phone","==",phone)
-.limit(1)
-.get();
-
-if(!memberSnap.empty){
-
-    await memberSnap.docs[0].ref.update({
-        name: name,
-        address: address,
-        birthday: oldBirthday || birthday
-    });
-
-}
 // =====================
 // ĐỒNG BỘ REVIEW
 // =====================
