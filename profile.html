@@ -1235,8 +1235,6 @@ notificationList.onclick = async (e) => {
     if(!doc.exists) return;
 
     const data = doc.data();
-console.log("User data:", data);
-console.log("Phone:", data.phone);
  if (data.phone) {
 
     firebase.firestore()
@@ -1257,9 +1255,6 @@ console.log("Phone:", data.phone);
         // Thưởng sinh nhật
         const today = new Date();
         const currentYear = today.getFullYear();
-console.log("Member:", member);
-console.log("Birthday:", member.birthday);
-console.log("Today:", new Date());
         if (member.birthday) {
 
             const birth = new Date(member.birthday);
@@ -1267,7 +1262,7 @@ console.log("Today:", new Date());
             const isBirthday =
                 today.getDate() === birth.getDate() &&
                 today.getMonth() === birth.getMonth();
-            console.log({
+          
     todayDay: today.getDate(),
     todayMonth: today.getMonth() + 1,
     birthDay: birth.getDate(),
