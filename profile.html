@@ -1271,10 +1271,9 @@ notificationList.onclick = async (e) => {
             if (isBirthday && !receivedThisYear) {
 
                 await memberRef.update({
-                    points: Number(member.points || 0) + 100,
-                    birthdayGiftYear: currentYear
-                });
-
+    points: firebase.firestore.FieldValue.increment(100),
+    birthdayGiftYear: currentYear
+});
                 member.points = Number(member.points || 0) + 100;
 
                 alert("🎂 Chúc mừng sinh nhật! Bạn nhận 10.000đ điểm thưởng");
@@ -1434,6 +1433,25 @@ const oldBirthday =
         oldBirthday || birthday
 
   }, { merge: true });
+   // =====================
+// ĐỒNG BỘ MEMBER
+// =====================
+
+const memberSnap = await firebase.firestore()
+.collection("members")
+.where("phone","==",phone)
+.limit(1)
+.get();
+
+if(!memberSnap.empty){
+
+    await memberSnap.docs[0].ref.update({
+        name: name,
+        address: address,
+        birthday: oldBirthday || birthday
+    });
+
+}
 // =====================
 // ĐỒNG BỘ REVIEW
 // =====================
