@@ -21,13 +21,11 @@ async function checkBirthdayReward(phone) {
         if (!member.birthday) return false;
 
         const today = new Date();
-        const birth = new Date(member.birthday);
+       const [year, month, day] = member.birthday.split("-").map(Number);
 
-        const currentYear = today.getFullYear();
-
-        const isBirthday =
-            today.getDate() === birth.getDate() &&
-            today.getMonth() === birth.getMonth();
+const isBirthday =
+    today.getDate() === day &&
+    today.getMonth() + 1 === month;
 
         const receivedThisYear =
             member.birthdayGiftYear === currentYear;
