@@ -74,26 +74,41 @@ body{
 .return-section{
     margin-top:20px;
 }
-    table{
+  table{
     width:100%;
     border-collapse:collapse;
-}
-.field{
-    overflow-x:auto;
+    table-layout:fixed;
 }
 
-table{
-    min-width:600px;
-}
 th,
 td{
-    padding:10px 8px;
+    padding:10px;
     border-bottom:1px solid #eee;
+    vertical-align:middle;
 }
 
-th{
-    background:#fafafa;
-    font-weight:600;
+th:nth-child(1),
+td:nth-child(1){
+    width:50%;
+    text-align:left;
+}
+
+th:nth-child(2),
+td:nth-child(2){
+    width:10%;
+    text-align:center;
+}
+
+th:nth-child(3),
+td:nth-child(3){
+    width:20%;
+    text-align:right;
+}
+
+th:nth-child(4),
+td:nth-child(4){
+    width:20%;
+    text-align:right;
 }
     /* ===========================
    Mobile Responsive Table
