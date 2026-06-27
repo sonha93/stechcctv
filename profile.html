@@ -1028,6 +1028,21 @@ avatarUpload.addEventListener("change", async (e) => {
       avatar: data.secure_url
   }, { merge: true });
    const memberSnap = await firebase.firestore()
+    .collection("members")
+    .where("phone", "==", phone)
+    .limit(1)
+    .get();
+
+if (!memberSnap.empty) {
+
+    await memberSnap.docs[0].ref.update({
+        name: name,
+        address: address,
+        birthday: oldBirthday || birthday
+    });
+
+}
+   const memberSnap = await firebase.firestore()
   .collection("members")
   .where("phone", "==", phone)
   .limit(1)
