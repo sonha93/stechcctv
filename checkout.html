@@ -604,7 +604,44 @@ try{
     sum + p.price * (p.qty || 1),0
   );
   const user = auth.currentUser;
+  // ============================
+// KIỂM TRA TỒN KHO
+// ============================
 
+for (const item of cart) {
+
+  const productRef = db.collection("products").doc(item.id);
+
+  const productSnap = await productRef.get();
+
+  if (!productSnap.exists) {
+
+    window.orderSubmitting = false;
+    document.querySelector(".btn").disabled = false;
+
+    alert(`Sản phẩm "${item.name}" không tồn tại!`);
+    return;
+
+  }
+
+  const product = productSnap.data();
+
+  const stock = Number(product.stock || 0);
+
+  const qty = Number(item.qty || 1);
+
+  if (stock < qty) {
+
+    window.orderSubmitting = false;
+    document.querySelector(".btn").disabled = false;
+
+    alert(`"${item.name}" chỉ còn ${stock} sản phẩm.`);
+
+    return;
+
+  }
+
+}
 // ============================
 // MEMBER
 // ============================
@@ -724,7 +761,24 @@ await db.collection("orders").add({
   createdAt: Date.now()
 
 });
+// ============================
+// TRỪ TỒN KHO
+// ============================
 
+for (const item of cart) {
+
+  await db
+    .collection("products")
+    .doc(item.id)
+    .update({
+
+      stock: firebase.firestore.FieldValue.increment(
+        -(item.qty || 1)
+      )
+
+    });
+
+}
   // TELEGRAM
  sendTelegramNotification(
   orderId,
