@@ -1130,6 +1130,18 @@ const updateData = {
   status: status,
   handledBy: document.getElementById("adminName").textContent
 };
+        // Không cho nhảy trạng thái
+if (status === "shipping" && orderData.status !== "confirmed") {
+  alert("Đơn hàng phải được xác nhận trước khi chuyển sang Đang giao.");
+  loadOrders();
+  return;
+}
+
+if (status === "completed" && orderData.status !== "shipping") {
+  alert("Đơn hàng phải ở trạng thái Đang giao trước khi hoàn thành.");
+  loadOrders();
+  return;
+}
 // Chặn xác nhận nếu tồn kho không đủ
 if (
   status === "confirmed" &&
