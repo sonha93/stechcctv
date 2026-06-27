@@ -791,48 +791,6 @@ const orderData = orderDoc.data();
 if(orderData.status === "cancelled"){
   throw new Error("Đơn đã hủy");
 }
-function bindRecallEvents(){
-
-  document
-    .querySelectorAll(".recall-order-btn")
-    .forEach(btn=>{
-
-      btn.addEventListener("click", async()=>{
-
-        const id = btn.dataset.id;
-
-        if(!confirm("Bạn muốn đặt lại đơn này?")) return;
-
-        try{
-
-          await db.collection("orders").doc(id).update({
-
-            status: "pending",
-            customerCancelled: false,
-            pointsRefunded: false,
-            recalledAt: Date.now()
-
-          });
-
-          alert("Đặt lại đơn thành công");
-
-          const user = auth.currentUser;
-          if(user){
-            loadOrders(user.uid);
-          }
-
-        }catch(err){
-
-          console.error(err);
-          alert("Không thể đặt lại đơn");
-
-        }
-
-      });
-
-    });
-
-}
 // hoàn điểm nếu đơn có dùng điểm
 if(
   orderData.memberId &&
@@ -905,6 +863,48 @@ renderOrders();
 }
       });
     });
+}
+function bindRecallEvents(){
+
+  document
+    .querySelectorAll(".recall-order-btn")
+    .forEach(btn=>{
+
+      btn.addEventListener("click", async()=>{
+
+        const id = btn.dataset.id;
+
+        if(!confirm("Bạn muốn đặt lại đơn này?")) return;
+
+        try{
+
+          await db.collection("orders").doc(id).update({
+
+            status: "pending",
+            customerCancelled: false,
+            pointsRefunded: false,
+            recalledAt: Date.now()
+
+          });
+
+          alert("Đặt lại đơn thành công");
+
+          const user = auth.currentUser;
+          if(user){
+            loadOrders(user.uid);
+          }
+
+        }catch(err){
+
+          console.error(err);
+          alert("Không thể đặt lại đơn");
+
+        }
+
+      });
+
+    });
+
 }
 /* =========================
 AUTH
