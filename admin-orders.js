@@ -1288,8 +1288,9 @@ if(!productDoc.exists){
       currentStock - qty;
 
     await productRef.update({
-      stock: newStock
-    });
+  stock: newStock,
+  sold: firebase.firestore.FieldValue.increment(qty)
+});
 
     await db
       .collection("stock_movements")
