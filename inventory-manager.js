@@ -1147,14 +1147,21 @@ for(let i=0;i<=batchIndex;i++){
 }
 
 remain = qty - soldInPeriod;
-
+const nextImport = imports[batchIndex + 1];
 // Điều chỉnh sau thời điểm nhập lô này
 productMoves.forEach(m=>{
 
-    if(
-        !m.createdAt ||
-        m.createdAt.toMillis() < data.createdAt.toMillis()
-    ) return;
+   if (!m.createdAt) return;
+
+const moveTime = m.createdAt.toMillis();
+
+if (moveTime < data.createdAt.toMillis()) return;
+
+// Không cho ăn sang lô nhập kế tiếp
+if (
+    nextImport &&
+    moveTime >= nextImport.createdAt.toMillis()
+) return;
 
     if(m.type==="MANUAL_PLUS"){
         plusInPeriod += Number(m.qty||0);
