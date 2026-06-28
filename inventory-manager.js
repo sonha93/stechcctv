@@ -1076,7 +1076,11 @@ Object.keys(returnMap).forEach(id => {
 
 });
    
-   
+    // FIFO SALES LEFT
+    const salesLeftMap = {
+        ...salesMap
+    };
+
     
     // LOOP IMPORT
     moveSnap.forEach(doc=>{
@@ -1107,11 +1111,10 @@ if(data.type !== "IMPORT"){
 
         const qty =
             Number(data.qty || 0);
-// Lấy movement của sản phẩm theo thời gian
+// Lấy tất cả movement của đúng sản phẩm
 const productMoves = moveSnap.docs
     .map(d => d.data())
-    .filter(m => m.productId === id)
-    .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
+    .filter(m => m.productId === id);
 
 // Các lô IMPORT của sản phẩm theo thời gian
 const imports = productMoves
@@ -1126,79 +1129,50 @@ const batchIndex = imports.findIndex(m =>
 let soldInPeriod = 0;
 let lossInPeriod = 0;
 let plusInPeriod = 0;
+let remain = qty;
+// FIFO
+let salesLeft = salesMap[id] || 0;
 
-const batches = imports.map(m => ({
-    time: m.createdAt.toMillis(),
-    importQty: Number(m.qty || 0),
-    remain: Number(m.qty || 0),
-    sold: 0,
-    loss: 0,
-    plus: 0
-}));
+for(let i=0;i<=batchIndex;i++){
 
-// Áp dụng toàn bộ movement theo FIFO
-for (const move of productMoves) {
+    const q = Number(imports[i].qty || 0);
 
-    if (!move.createdAt) continue;
+    const take = Math.min(q,salesLeft);
 
-    if (move.type === "SALE") {
-
-        let left = Math.abs(Number(move.qty || 0));
-
-        for (const b of batches) {
-
-            if (left <= 0) break;
-
-            const take = Math.min(b.remain, left);
-
-            b.remain -= take;
-            b.sold += take;
-
-            left -= take;
-        }
-
+    if(i===batchIndex){
+        soldInPeriod = take;
     }
 
-    if (move.type === "MANUAL_MINUS") {
-
-        let left = Math.abs(Number(move.qty || 0));
-
-        for (const b of batches) {
-
-            if (left <= 0) break;
-
-            const take = Math.min(b.remain, left);
-
-            b.remain -= take;
-            b.loss += take;
-
-            left -= take;
-        }
-
-    }
-
-    if (move.type === "MANUAL_PLUS") {
-
-        for (let i = batches.length - 1; i >= 0; i--) {
-
-            if (batches[i].remain > 0) {
-
-                batches[i].remain += Number(move.qty || 0);
-                batches[i].plus += Number(move.qty || 0);
-                break;
-            }
-
-        }
-
-    }
-
+    salesLeft -= take;
 }
 
-soldInPeriod = batches[batchIndex].sold;
-lossInPeriod = batches[batchIndex].loss;
-plusInPeriod = batches[batchIndex].plus;
-const remain = batches[batchIndex].remain;
+remain = qty - soldInPeriod;
 
+// Điều chỉnh sau thời điểm nhập lô này
+productMoves.forEach(m=>{
+
+    if(
+        !m.createdAt ||
+        m.createdAt.toMillis() < data.createdAt.toMillis()
+    ) return;
+
+    if(m.type==="MANUAL_PLUS"){
+        plusInPeriod += Number(m.qty||0);
+        remain += Number(m.qty||0);
+    }
+
+    if(m.type==="MANUAL_MINUS"){
+
+        const minus = Math.min(
+            remain,
+            Math.abs(Number(m.qty||0))
+        );
+
+        lossInPeriod += minus;
+        remain -= minus;
+    }
+
+});
 
         html += `
             <tr>
