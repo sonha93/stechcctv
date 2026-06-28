@@ -122,9 +122,7 @@ await memberRef.update({
   totalSpent: newSpent,
   level: newLevel
 });
-    const memberSnap = await memberRef.get();
-
-update.memberPoints = memberSnap.data().points;
+    update.memberPoints = member.points;
 
 await db.collection("member_history").add({
     memberId: order.memberId,
