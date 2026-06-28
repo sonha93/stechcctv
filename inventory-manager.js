@@ -1169,7 +1169,7 @@ const minusLeft =
 
 const lossInPeriod =
     Math.min(minusLeft, qtyAfterSold);
-    );
+  
 
 minusLeftMap[id] =
     minusLeft - lossInPeriod;
