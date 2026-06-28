@@ -128,8 +128,6 @@ async function loadInventory(){
             const oldPrice = Number(p.oldPrice || 0);
 
             // SOLD
-            console.log("Product ID:", doc.id);
-console.log("soldMap:", soldMap);
             const sold = Number(soldMap[String(doc.id)] || 0);
 
             // PROFIT
