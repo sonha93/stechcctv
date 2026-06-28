@@ -1191,8 +1191,7 @@ plusLeftMap[id] =
 const remain =
     qty
     - soldInPeriod
-    - lossInPeriod
-    + plusInPeriod;
+    - lossInPeriod;
 
         html += `
             <tr>
@@ -1225,19 +1224,15 @@ const remain =
                     ${remain}
                 </td>
 
-<td
-style="
-    color:red;
-    font-weight:bold;
-"
->
+<td style="font-weight:bold;">
     ${
-        lossInPeriod > 0
-        ? "-" + lossInPeriod
-        : 0
+        plusInPeriod > 0
+            ? `<span style="color:#00c853;">+${plusInPeriod}</span>`
+            : lossInPeriod > 0
+                ? `<span style="color:red;">-${lossInPeriod}</span>`
+                : 0
     }
 </td>
-
             </tr>
         `;
 
