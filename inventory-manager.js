@@ -1077,48 +1077,13 @@ Object.keys(returnMap).forEach(id => {
     );
 
 });
-   const minusMap = {};
-const plusMap = {};
-
-moveSnap.forEach(doc=>{
-
-    const data = doc.data();
-
-    const id = data.productId;
-
-    if(!id) return;
-
-    if(data.type === "MANUAL_MINUS"){
-
-        minusMap[id] =
-            (minusMap[id] || 0)
-            +
-            Math.abs(Number(data.qty || 0));
-
-    }
-
-    if(data.type === "MANUAL_PLUS"){
-
-        plusMap[id] =
-            (plusMap[id] || 0)
-            +
-            Number(data.qty || 0);
-
-    }
-
-});
+   
     // FIFO SALES LEFT
     const salesLeftMap = {
         ...salesMap
     };
 
-    const minusLeftMap = {
-    ...minusMap
-};
-
-const plusLeftMap = {
-    ...plusMap
-};
+    
     // LOOP IMPORT
     moveSnap.forEach(doc=>{
 
@@ -1148,50 +1113,58 @@ if(data.type !== "IMPORT"){
 
         const qty =
             Number(data.qty || 0);
-const salesLeft =
-    Number(salesLeftMap[id] || 0);
+let remain = qty;
+let soldInPeriod = 0;
+let lossInPeriod = 0;
+let plusInPeriod = 0;
 
-const soldInPeriod =
-    Math.min(
-        salesLeft,
-        qty
-    );
-    const qtyAfterSold = qty - soldInPeriod;
-salesLeftMap[id] =
-    salesLeft - soldInPeriod;
+moveSnap.forEach(m => {
 
+    const mv = m.data();
 
+    if (mv.productId !== id) return;
+    if (!mv.createdAt || !data.createdAt) return;
 
-const minusLeft =
-    Number(
-        minusLeftMap[id] || 0
-    );
+    // Chỉ tính các giao dịch sau khi lô này được nhập
+    if (
+        mv.createdAt.toMillis() <
+        data.createdAt.toMillis()
+    ) {
+        return;
+    }
 
-const lossInPeriod =
-    Math.min(minusLeft, qtyAfterSold);
-  
+    if (mv.type === "SALE") {
 
-minusLeftMap[id] =
-    minusLeft - lossInPeriod;
+        const take = Math.min(
+            remain,
+            Math.abs(Number(mv.qty || 0))
+        );
 
-const plusLeft =
-    Number(
-        plusLeftMap[id] || 0
-    );
+        soldInPeriod += take;
+        remain -= take;
 
-const plusInPeriod =
-    Math.min(
-        plusLeft,
-        qty
-    );
+    }
 
-plusLeftMap[id] =
-    plusLeft - plusInPeriod;
+    if (mv.type === "MANUAL_MINUS") {
 
-const remain =
-    qty
-    - soldInPeriod
-    - lossInPeriod;
+        const take = Math.min(
+            remain,
+            Math.abs(Number(mv.qty || 0))
+        );
+
+        lossInPeriod += take;
+        remain -= take;
+
+    }
+
+    if (mv.type === "MANUAL_PLUS") {
+
+        plusInPeriod += Number(mv.qty || 0);
+        remain += Number(mv.qty || 0);
+
+    }
+
+});
 
         html += `
             <tr>
