@@ -1146,13 +1146,8 @@ for(let i=0;i<=batchIndex;i++){
     salesLeft -= take;
 }
 
-const currentStock = Number(productMap[id].stock || 0);
+remain = qty - soldInPeriod;
 
-const importsAfter = imports
-    .slice(batchIndex + 1)
-    .reduce((sum, item) => sum + Number(item.qty || 0), 0);
-
-remain = currentStock - importsAfter;
 // Điều chỉnh sau thời điểm nhập lô này
 productMoves.forEach(m=>{
 
