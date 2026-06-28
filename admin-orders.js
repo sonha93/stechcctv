@@ -96,32 +96,15 @@ update.earnedPoints = earnPoints;
 
     const earnPoints =
       Math.floor(Number(order.total || 0) / 10000);
-   const memberSnap = await memberRef.get();
-const member = memberSnap.data();
-
-let newSpent =
-  Math.max(
-    0,
-    Number(member.totalSpent || 0) - Number(order.total || 0)
-  );
-
-let newLevel = "Silver";
-
-if (newSpent >= 10000000) {
-  newLevel = "VIP";
-} else if (newSpent >= 5000000) {
-  newLevel = "Gold";
-}
-
-await memberRef.update({
-  points: firebase.firestore.FieldValue.increment(
-    usedPoints -
-    earnPoints -
-    Number(order.bonusPoints || 0)
-  ),
-  totalSpent: newSpent,
-  level: newLevel
-});
+    await memberRef.update({
+      points:firebase.firestore.FieldValue.increment(
+          usedPoints - earnPoints
+        ),
+      totalSpent:
+        firebase.firestore.FieldValue.increment(
+          -Number(order.total || 0)
+        )
+    });
     const memberSnap = await memberRef.get();
 
 update.memberPoints = memberSnap.data().points;
@@ -1336,9 +1319,6 @@ if(!productDoc.exists){
   // ============================
 // MEMBER POINTS
 // ============================
-  await db.collection("orders").doc(id).update({
-    rollbackProcessed: false
-});
 if(
   status === "completed" &&
   orderData.status !== "completed" &&
@@ -1450,8 +1430,7 @@ const newPoints =
 });
 await db.collection("orders").doc(id).update({
     pointsProcessed: true,
-    earnedPoints: earnPoints,
-    bonusPoints: bonusPoints
+    earnedPoints: earnPoints
 });
     
 if(bonusPoints > 0){
@@ -1508,12 +1487,7 @@ if (rollbackKey === true) return;
 
 // Chỉ thu hồi điểm thưởng nếu đơn đã từng completed
 const rollbackEarnPoints =
-  orderData.pointsProcessed
-    ? (
-        earnPoints +
-        Number(orderData.bonusPoints || 0)
-      )
-    : 0;
+  orderData.pointsProcessed ? earnPoints : 0;
 
 // Chỉ giảm doanh số nếu đơn đã từng completed
 const rollbackSpent =
@@ -1525,20 +1499,13 @@ let newSpent =
   Number(member.totalSpent || 0) - rollbackSpent;
 
 if (newSpent < 0) newSpent = 0;
-let newLevel = "Silver";
 
-if (newSpent >= 10000000) {
-  newLevel = "VIP";
-} else if (newSpent >= 5000000) {
-  newLevel = "Gold";
-}
 
 await memberRef.update({
-  points: firebase.firestore.FieldValue.increment(
-    usedPoints - rollbackEarnPoints
-  ),
+points: firebase.firestore.FieldValue.increment(
+  usedPoints - rollbackEarnPoints
+),
   totalSpent: newSpent,
-  level: newLevel,
 
   lockedPoints: firebase.firestore.FieldValue.increment(
     -usedPoints
@@ -1555,10 +1522,8 @@ await memberRef.update({
 
   await db.collection("orders").doc(id).update({
     pointsProcessed: false,
-    rollbackProcessed: true,
-    earnedPoints: 0,
-    bonusPoints: 0
-});
+    rollbackProcessed: true
+  });
 }
 await db
   .collection("orders")
