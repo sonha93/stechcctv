@@ -87,7 +87,7 @@ async function loadInventory(){
 }
 
             (order.items || []).forEach(item => {
-
+            console.log("ORDER ITEM:", item.id, item.productId, item.qty);
              const id =
     String(
         item.id ||
