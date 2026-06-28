@@ -143,7 +143,7 @@ console.log("soldMap:", soldMap);
             totalOldPrice += oldPrice;
             totalStock += stock;
             totalSold += sold;
-            totalProfit += profit;
+            totalProfit += importPrice * stock;
 
             const negative = remain < 0;
             const lowStock = remain > 0 && remain <= 5;
