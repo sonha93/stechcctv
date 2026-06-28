@@ -79,9 +79,10 @@ async function loadInventory(){
             const order = orderDoc.data();
 
        if (
-    order.status !== "completed" ||
     order.customerCancelled ||
-    order.adminCancelled
+    order.adminCancelled ||
+    order.status === "cancelled" ||
+    order.status === "returned"
 ) {
     return;
 }
