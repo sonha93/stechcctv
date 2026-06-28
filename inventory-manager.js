@@ -206,11 +206,7 @@ console.log("soldMap:", soldMap);
         font-weight:bold;
     "
 >
-    ${formatVND(
-        Number(p.importPrice || 0)
-        *
-        Number(p.stock || 0)
-    )}
+    ${formatVND(profit)}
 </td>
 
                     <td>
