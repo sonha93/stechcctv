@@ -1131,7 +1131,7 @@ const batchIndex = imports.findIndex(m =>
 let soldInPeriod = 0;
 let lossInPeriod = 0;
 let plusInPeriod = 0;
-
+let remain = qty;
 // FIFO
 let salesLeft = salesMap[id] || 0;
 
