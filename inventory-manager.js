@@ -1148,24 +1148,29 @@ for(let i=0;i<=batchIndex;i++){
 
 remain = qty - soldInPeriod;
 
-// Điều chỉnh sau thời điểm nhập lô này
-productMoves.forEach(m=>{
+// Chỉ lấy điều chỉnh thuộc khoảng từ lô hiện tại đến trước lô kế tiếp
+const nextImport =
+    imports[batchIndex + 1];
 
-    if(
-        !m.createdAt ||
-        m.createdAt.toMillis() < data.createdAt.toMillis()
-    ) return;
+productMoves.forEach(m => {
 
-    if(m.type==="MANUAL_PLUS"){
-        plusInPeriod += Number(m.qty||0);
-        remain += Number(m.qty||0);
+    if (!m.createdAt) return;
+
+    const t = m.createdAt.toMillis();
+
+    if (t < data.createdAt.toMillis()) return;
+
+    if (nextImport && t >= nextImport.createdAt.toMillis()) return;
+
+    if (m.type === "MANUAL_PLUS") {
+        plusInPeriod += Number(m.qty || 0);
+        remain += Number(m.qty || 0);
     }
 
-    if(m.type==="MANUAL_MINUS"){
-
+    if (m.type === "MANUAL_MINUS") {
         const minus = Math.min(
             remain,
-            Math.abs(Number(m.qty||0))
+            Math.abs(Number(m.qty || 0))
         );
 
         lossInPeriod += minus;
