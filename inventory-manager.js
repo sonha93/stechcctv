@@ -1392,7 +1392,7 @@ style="
 
     historyBody.innerHTML = html;
 
-}
+
 
 // ============================
 // SEARCH
