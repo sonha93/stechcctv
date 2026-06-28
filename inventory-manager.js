@@ -70,40 +70,7 @@ async function loadInventory(){
             : "";
 
         const productSnap = await db.collection("products").get();
-        const orderSnap = await db.collection("orders").get();
-
-        const soldMap = {};
-
-        orderSnap.forEach(orderDoc => {
-
-            const order = orderDoc.data();
-
-           if(
-    order.status !== "completed" ||
-    order.customerCancelled ||
-    order.adminCancelled
-){
-    return;
-}
-
-            (order.items || []).forEach(item => {
-
-             const id =
-    String(
-        item.id ||
-        item.productId ||
-        ""
-    );
-
-                if(!soldMap[id]){
-                    soldMap[id] = 0;
-                }
-
-                soldMap[id] += Number(item.qty || 0);
-
-            });
-
-        });
+       
 
         let html = "";
         let rows = [];
@@ -134,8 +101,7 @@ async function loadInventory(){
             const oldPrice = Number(p.oldPrice || 0);
 
             // SOLD
-            const sold = Number(soldMap[String(doc.id)] || 0);
-
+            const sold = Number(p.sold || 0);
             // PROFIT
             const remain = stock;
             const revenue = price * sold;
