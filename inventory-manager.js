@@ -89,20 +89,13 @@ async function loadInventory(){
 
             (order.items || []).forEach(item => {
 
-             const id =
-    String(
-        item.id ||
-        item.productId ||
-        ""
-    );
+    const id = String(item.productId || "");
 
-                if(!soldMap[id]){
-                    soldMap[id] = 0;
-                }
+    if (!id) return;
 
-                soldMap[id] += Number(item.qty || 0);
+    soldMap[id] = (soldMap[id] || 0) + Number(item.qty || 0);
 
-            });
+});
 
         });
 
@@ -1654,8 +1647,7 @@ if (
 
     const id =
         String(
-            item.id ||
-            item.productId ||
+           item.productId || item.id
             ""
         );
 
@@ -1988,8 +1980,7 @@ async function loadLoss(){
             (order.items || []).forEach(item => {
 
                const id = normalizeId(
-                item.id ||
-                item.productId
+                item.productId || item.id
                 );
 
                 if(!id) return;
