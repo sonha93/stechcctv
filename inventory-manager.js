@@ -1111,45 +1111,66 @@ if(data.type !== "IMPORT"){
 
         const qty =
             Number(data.qty || 0);
-// Lấy tất cả movement của đúng sản phẩm
 const productMoves = moveSnap.docs
     .map(d => d.data())
-    .filter(m => m.productId === id);
-
-// Các lô IMPORT của sản phẩm theo thời gian
-const imports = productMoves
-    .filter(m => m.type === "IMPORT")
+    .filter(m => m.productId === id)
     .sort((a,b)=>a.createdAt.toMillis()-b.createdAt.toMillis());
 
-// Xác định lô hiện tại
+const imports = productMoves.filter(m=>m.type==="IMPORT");
+
 const batchIndex = imports.findIndex(m =>
     m.createdAt.toMillis() === data.createdAt.toMillis()
 );
 
-let soldInPeriod = 0;
-let lossInPeriod = 0;
-let plusInPeriod = 0;
-let remain = qty;
-// FIFO
-let salesLeft = salesMap[id] || 0;
+let remainList = imports.map(i => Number(i.qty || 0));
 
-for(let i=0;i<=batchIndex;i++){
+for(const mv of productMoves){
 
-    const q = Number(imports[i].qty || 0);
+    if(mv.type==="SALE"){
 
-    const take = Math.min(q,salesLeft);
+        let left = Math.abs(Number(mv.qty || 0));
 
-    if(i===batchIndex){
-        soldInPeriod = take;
+        for(let i=0;i<remainList.length && left>0;i++){
+
+            const take = Math.min(remainList[i], left);
+
+            remainList[i] -= take;
+
+            left -= take;
+        }
     }
 
-    salesLeft -= take;
+    if(mv.type==="MANUAL_MINUS"){
+
+        let left = Math.abs(Number(mv.qty || 0));
+
+        for(let i=0;i<remainList.length && left>0;i++){
+
+            const take = Math.min(remainList[i], left);
+
+            remainList[i] -= take;
+
+            left -= take;
+        }
+    }
+
+    if(mv.type==="MANUAL_PLUS"){
+
+        remainList[remainList.length-1] += Number(mv.qty || 0);
+
+    }
+
 }
 
-remain = qty - soldInPeriod;
+const remain = remainList[batchIndex];
 
-// Điều chỉnh sau thời điểm nhập lô này
-productMoves.forEach(m=>{
+const soldInPeriod =
+    qty - remain < 0
+        ? 0
+        : qty - remain;
+
+const plusInPeriod = 0;
+const lossInPeriod = 0;
 
     if(
         !m.createdAt ||
