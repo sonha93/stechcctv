@@ -1172,28 +1172,7 @@ const soldInPeriod =
 const plusInPeriod = 0;
 const lossInPeriod = 0;
 
-    if(
-        !m.createdAt ||
-        m.createdAt.toMillis() < data.createdAt.toMillis()
-    ) return;
 
-    if(m.type==="MANUAL_PLUS"){
-        plusInPeriod += Number(m.qty||0);
-        remain += Number(m.qty||0);
-    }
-
-    if(m.type==="MANUAL_MINUS"){
-
-        const minus = Math.min(
-            remain,
-            Math.abs(Number(m.qty||0))
-        );
-
-        lossInPeriod += minus;
-        remain -= minus;
-    }
-
-});
 
         html += `
             <tr>
