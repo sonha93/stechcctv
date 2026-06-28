@@ -1148,31 +1148,37 @@ for(let i=0;i<=batchIndex;i++){
 
 remain = qty - soldInPeriod;
 
-// Điều chỉnh sau thời điểm nhập lô này
-productMoves.forEach(m=>{
+// Chỉ tính adjustment phát sinh sau lô hiện tại
+const adjustments = productMoves
+    .filter(m =>
+        (m.type === "MANUAL_PLUS" || m.type === "MANUAL_MINUS") &&
+        m.createdAt &&
+        m.createdAt.toMillis() >= data.createdAt.toMillis()
+    )
+    .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
 
-    if(
-        !m.createdAt ||
-        m.createdAt.toMillis() < data.createdAt.toMillis()
-    ) return;
+let remain = qty - soldInPeriod;
 
-    if(m.type==="MANUAL_PLUS"){
-        plusInPeriod += Number(m.qty||0);
-        remain += Number(m.qty||0);
+for (const m of adjustments) {
+
+    if (remain <= 0) break;
+
+    if (m.type === "MANUAL_PLUS") {
+        remain += Number(m.qty || 0);
+        plusInPeriod += Number(m.qty || 0);
     }
 
-    if(m.type==="MANUAL_MINUS"){
+    if (m.type === "MANUAL_MINUS") {
 
         const minus = Math.min(
             remain,
-            Math.abs(Number(m.qty||0))
+            Math.abs(Number(m.qty || 0))
         );
 
-        lossInPeriod += minus;
         remain -= minus;
+        lossInPeriod += minus;
     }
-
-});
+}
 
         html += `
             <tr>
