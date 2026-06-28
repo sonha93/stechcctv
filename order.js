@@ -930,7 +930,7 @@ await orderRef.update({
         }catch(err){
 
           console.error(err);
-          alert("Không thể đặt lại đơn");
+          alert("Không thể đặt lại đơn, vui lòng liên hệ Hotline: 098.5678.245");
 
         }
 
