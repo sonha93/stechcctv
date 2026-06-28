@@ -1160,8 +1160,7 @@ const soldInPeriod =
 salesLeftMap[id] =
     salesLeft - soldInPeriod;
 
-const qtyAfterSold =
-    qty - soldInPeriod;
+
 
 const minusLeft =
     Number(
@@ -1171,7 +1170,7 @@ const minusLeft =
 const lossInPeriod =
     Math.min(
         minusLeft,
-        qtyAfterSold
+        qty
     );
 
 minusLeftMap[id] =
