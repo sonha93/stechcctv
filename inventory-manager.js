@@ -1291,30 +1291,25 @@ if(
 
     });
 
-    salesSnap.forEach(doc=>{
+    Object.keys(salesMap).forEach(id => {
 
-        const sale = doc.data();
+    const p = productMap[id];
 
-       const p =
-    productMap[sale.productId];
+    if(
+        keyword &&
+        !String(p?.name || "")
+            .toLowerCase()
+            .includes(keyword) &&
+        !String(id)
+            .toLowerCase()
+            .includes(keyword)
+    ){
+        return;
+    }
 
-if(
-    keyword &&
-    !String(p?.name || "")
-        .toLowerCase()
-        .includes(keyword) &&
-    !String(sale.productId)
-        .toLowerCase()
-        .includes(keyword)
-){
-    return;
-}
+    totalSold += Number(salesMap[id] || 0);
 
-        totalSold +=
-            Number(sale.qty || 0);
-
-    });
-
+});
    
 moveSnap.forEach(doc=>{
 
