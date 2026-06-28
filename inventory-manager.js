@@ -1645,12 +1645,12 @@ if (
                 if (order.status !== "completed" || order.customerCancelled || order.adminCancelled) return;
                (order.items || []).forEach(item => {
 
-    const id =
-        String(
-           item.productId || item.id
-            ""
-        );
-
+   const id =
+    String(
+        item.productId ||
+        item.id ||
+        ""
+    );
     if(!id) return;
 
     if(!soldMap[id]){
