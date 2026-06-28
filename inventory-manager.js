@@ -1111,66 +1111,45 @@ if(data.type !== "IMPORT"){
 
         const qty =
             Number(data.qty || 0);
+// Lấy tất cả movement của đúng sản phẩm
 const productMoves = moveSnap.docs
     .map(d => d.data())
-    .filter(m => m.productId === id)
+    .filter(m => m.productId === id);
+
+// Các lô IMPORT của sản phẩm theo thời gian
+const imports = productMoves
+    .filter(m => m.type === "IMPORT")
     .sort((a,b)=>a.createdAt.toMillis()-b.createdAt.toMillis());
 
-const imports = productMoves.filter(m=>m.type==="IMPORT");
-
+// Xác định lô hiện tại
 const batchIndex = imports.findIndex(m =>
     m.createdAt.toMillis() === data.createdAt.toMillis()
 );
 
-let remainList = imports.map(i => Number(i.qty || 0));
+let soldInPeriod = 0;
+let lossInPeriod = 0;
+let plusInPeriod = 0;
+let remain = qty;
+// FIFO
+let salesLeft = salesMap[id] || 0;
 
-for(const mv of productMoves){
+for(let i=0;i<=batchIndex;i++){
 
-    if(mv.type==="SALE"){
+    const q = Number(imports[i].qty || 0);
 
-        let left = Math.abs(Number(mv.qty || 0));
+    const take = Math.min(q,salesLeft);
 
-        for(let i=0;i<remainList.length && left>0;i++){
-
-            const take = Math.min(remainList[i], left);
-
-            remainList[i] -= take;
-
-            left -= take;
-        }
+    if(i===batchIndex){
+        soldInPeriod = take;
     }
 
-    if(mv.type==="MANUAL_MINUS"){
-
-        let left = Math.abs(Number(mv.qty || 0));
-
-        for(let i=0;i<remainList.length && left>0;i++){
-
-            const take = Math.min(remainList[i], left);
-
-            remainList[i] -= take;
-
-            left -= take;
-        }
-    }
-
-    if(mv.type==="MANUAL_PLUS"){
-
-        remainList[remainList.length-1] += Number(mv.qty || 0);
-
-    }
-
+    salesLeft -= take;
 }
 
-const remain = remainList[batchIndex];
+remain = qty - soldInPeriod;
 
-const soldInPeriod =
-    qty - remain < 0
-        ? 0
-        : qty - remain;
-
-const plusInPeriod = 0;
-const lossInPeriod = 0;
+// Điều chỉnh sau thời điểm nhập lô này
+productMoves.forEach(m=>{
 
     if(
         !m.createdAt ||
