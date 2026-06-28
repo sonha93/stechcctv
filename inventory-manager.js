@@ -1129,10 +1129,9 @@ const batchIndex = imports.findIndex(m =>
 let soldInPeriod = 0;
 let lossInPeriod = 0;
 let plusInPeriod = 0;
-let remain = qty;
+
 // FIFO
 let salesLeft = salesMap[id] || 0;
-
 for(let i=0;i<=batchIndex;i++){
 
     const q = Number(imports[i].qty || 0);
@@ -1146,7 +1145,7 @@ for(let i=0;i<=batchIndex;i++){
     salesLeft -= take;
 }
 
-remain = qty - soldInPeriod;
+
 
 // Chỉ tính adjustment phát sinh sau lô hiện tại
 const adjustments = productMoves
