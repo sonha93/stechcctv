@@ -87,7 +87,7 @@ async function loadInventory(){
 }
 
             (order.items || []).forEach(item => {
-            console.log("ORDER ITEM:", item.id, item.productId, item.qty);
+
              const id =
     String(
         item.id ||
@@ -104,10 +104,10 @@ async function loadInventory(){
             });
 
         });
-        console.log("SOLD MAP:", soldMap);
+
         let html = "";
         let rows = [];
-        
+
         let totalImportPrice = 0;
         let totalPrice = 0;
         let totalOldPrice = 0;
@@ -135,12 +135,7 @@ async function loadInventory(){
 
             // SOLD
             const sold = Number(soldMap[String(doc.id)] || 0);
-            console.log(
-    "PRODUCT:",
-    doc.id,
-    "SOLD:",
-    sold
-);
+
             // PROFIT
             const remain = stock;
             const revenue = price * sold;
@@ -1651,10 +1646,9 @@ if (
             const soldMap = {};
             orderSnap.forEach(orderDoc => {
                 const order = orderDoc.data();
-                console.log("ORDER:", order);
                 if (order.status !== "completed" || order.customerCancelled || order.adminCancelled) return;
                (order.items || []).forEach(item => {
-                console.log("ITEM:", item);
+
     const id =
         String(
             item.id ||
