@@ -1111,71 +1111,69 @@ if(data.type !== "IMPORT"){
 
         const qty =
             Number(data.qty || 0);
-// Các movement của sản phẩm
+// Lấy tất cả movement của đúng sản phẩm
 const productMoves = moveSnap.docs
     .map(d => d.data())
-    .filter(m => m.productId === id)
+    .filter(m => m.productId === id);
+
+// Các lô IMPORT của sản phẩm theo thời gian
+const imports = productMoves
+    .filter(m => m.type === "IMPORT")
     .sort((a,b)=>a.createdAt.toMillis()-b.createdAt.toMillis());
 
-let remain = 0;
-let soldInPeriod = 0;
-let plusInPeriod = 0;
-let lossInPeriod = 0;
+// Xác định lô hiện tại
+const batchIndex = imports.findIndex(m =>
+    m.createdAt.toMillis() === data.createdAt.toMillis()
+);
 
+let soldInPeriod = 0;
+let lossInPeriod = 0;
+let plusInPeriod = 0;
+let remain = qty;
+// FIFO
 let salesLeft = salesMap[id] || 0;
 
-for(const m of productMoves){
+for(let i=0;i<=batchIndex;i++){
 
-    if(m.type==="IMPORT"){
+    const q = Number(imports[i].qty || 0);
 
-        const importQty = Number(m.qty||0);
+    const take = Math.min(q,salesLeft);
 
-        const sold = Math.min(importQty,salesLeft);
-
-        salesLeft -= sold;
-
-        remain += importQty;
-        remain -= sold;
-
-        // Đúng lô đang render
-        if(
-            m.createdAt.toMillis()===data.createdAt.toMillis()
-        ){
-            soldInPeriod = sold;
-        }
-
+    if(i===batchIndex){
+        soldInPeriod = take;
     }
 
-    else if(m.type==="MANUAL_PLUS"){
+    salesLeft -= take;
+}
 
+remain = qty - soldInPeriod;
+
+// Điều chỉnh sau thời điểm nhập lô này
+productMoves.forEach(m=>{
+
+    if(
+        !m.createdAt ||
+        m.createdAt.toMillis() < data.createdAt.toMillis()
+    ) return;
+
+    if(m.type==="MANUAL_PLUS"){
+        plusInPeriod += Number(m.qty||0);
         remain += Number(m.qty||0);
-
-        if(
-            m.createdAt.toMillis()>=data.createdAt.toMillis()
-        ){
-            plusInPeriod += Number(m.qty||0);
-        }
-
     }
 
-    else if(m.type==="MANUAL_MINUS"){
+    if(m.type==="MANUAL_MINUS"){
 
         const minus = Math.min(
             remain,
             Math.abs(Number(m.qty||0))
         );
 
+        lossInPeriod += minus;
         remain -= minus;
-
-        if(
-            m.createdAt.toMillis()>=data.createdAt.toMillis()
-        ){
-            lossInPeriod += minus;
-        }
-
     }
 
-}
+});
+
         html += `
             <tr>
 
@@ -1203,7 +1201,9 @@ for(const m of productMoves){
                     ${soldInPeriod}
                 </td>
 
-                <td>${Math.max(0, remain)}</td>
+                <td>
+                    ${remain}
+                </td>
 
 <td style="font-weight:bold;">
     ${
