@@ -206,7 +206,7 @@ console.log("soldMap:", soldMap);
         font-weight:bold;
     "
 >
-    ${formatVND(profit)}
+    ${formatVND(importPrice * stock)}
 </td>
 
                     <td>
