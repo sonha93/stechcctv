@@ -1197,6 +1197,7 @@ for (const move of productMoves) {
 soldInPeriod = batches[batchIndex].sold;
 lossInPeriod = batches[batchIndex].loss;
 plusInPeriod = batches[batchIndex].plus;
+let remain = batches[batchIndex].remain;
 remain = batches[batchIndex].remain;
 const nextImport = imports[batchIndex + 1];
 // Điều chỉnh sau thời điểm nhập lô này
