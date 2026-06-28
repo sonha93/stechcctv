@@ -1053,6 +1053,34 @@ salesSnap.forEach(doc => {
         + Number(sale.qty || 0);
 
 });
+    // GROUP RETURN
+const returnMap = {};
+
+moveSnap.forEach(doc => {
+
+    const data = doc.data();
+
+    if(data.type !== "RETURN") return;
+
+    const id = String(data.productId || "");
+
+    if(!id) return;
+
+    returnMap[id] =
+        (returnMap[id] || 0)
+        + Math.abs(Number(data.qty || 0));
+
+});
+
+// TRỪ HÀNG ĐÃ TRẢ KHỎI SỐ ĐÃ BÁN
+Object.keys(returnMap).forEach(id => {
+
+    salesMap[id] = Math.max(
+        0,
+        (salesMap[id] || 0) - returnMap[id]
+    );
+
+});
    const minusMap = {};
 const plusMap = {};
 
