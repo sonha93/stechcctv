@@ -1148,31 +1148,37 @@ for(let i=0;i<=batchIndex;i++){
 
 remain = qty - soldInPeriod;
 
-// Điều chỉnh sau thời điểm nhập lô này
-productMoves.forEach(m=>{
+// Chỉ áp dụng điều chỉnh cho lô CUỐI CÙNG còn tồn
+const isLastBatch = batchIndex === imports.length - 1;
 
-    if(
-        !m.createdAt ||
-        m.createdAt.toMillis() < data.createdAt.toMillis()
-    ) return;
+if (isLastBatch) {
 
-    if(m.type==="MANUAL_PLUS"){
-        plusInPeriod += Number(m.qty||0);
-        remain += Number(m.qty||0);
-    }
+    productMoves.forEach(m => {
 
-    if(m.type==="MANUAL_MINUS"){
+        if (!m.createdAt) return;
 
-        const minus = Math.min(
-            remain,
-            Math.abs(Number(m.qty||0))
-        );
+        if (m.createdAt.toMillis() < data.createdAt.toMillis()) return;
 
-        lossInPeriod += minus;
-        remain -= minus;
-    }
+        if (m.type === "MANUAL_PLUS") {
+            plusInPeriod += Number(m.qty || 0);
+        }
 
-});
+        if (m.type === "MANUAL_MINUS") {
+            lossInPeriod += Math.abs(Number(m.qty || 0));
+        }
+
+    });
+
+}
+
+// tồn cuối của lô
+remain =
+    qty
+    - soldInPeriod
+    + plusInPeriod
+    - lossInPeriod;
+
+if (remain < 0) remain = 0;
 
         html += `
             <tr>
@@ -1362,13 +1368,14 @@ Object.entries(productMap).forEach(([id,p])=>{
                 ${totalRemain}
             </td>
 
-          <td
-style="
-    color:red;
-    font-weight:bold;
-"
->
-    ${totalMinus > 0 ? "-" + totalMinus : 0}
+          <td style="font-weight:bold;">
+    ${
+        totalPlus > 0
+            ? `<span style="color:#00c853;">+${totalPlus}</span>`
+            : totalMinus > 0
+                ? `<span style="color:red;">-${totalMinus}</span>`
+                : 0
+    }
 </td>
 
         </tr>
