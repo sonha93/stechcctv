@@ -1032,9 +1032,10 @@ moveSnap.forEach(doc => {
     }
 
 });
-    const orderSnap =
-    await db.collection("orders")
-    .get();
+    const salesSnap =
+        await db.collection("sales_history")
+        .orderBy("createdAt","asc")
+        .get();
 
     const productSnap =
         await db.collection("products")
@@ -1051,33 +1052,21 @@ moveSnap.forEach(doc => {
 
     });
 
-  // GROUP SALES
+   // GROUP SALES
 const salesMap = {};
+salesSnap.forEach(doc => {
 
-orderSnap.forEach(orderDoc => {
+    const sale = doc.data();
 
-    const order = orderDoc.data();
+    const id = String(
+        sale.productId || ""
+    );
 
-    if (
-        order.customerCancelled ||
-        order.adminCancelled ||
-        order.status === "cancelled" ||
-        order.status === "returned"
-    ) {
-        return;
-    }
+    if(!id) return;
 
-    (order.items || []).forEach(item => {
-
-        const id = String(item.productId || "");
-
-        if (!id) return;
-
-        salesMap[id] =
-            (salesMap[id] || 0)
-            + Number(item.qty || 0);
-
-    });
+    salesMap[id] =
+        (salesMap[id] || 0)
+        + Number(sale.qty || 0);
 
 });
     // GROUP RETURN
@@ -1099,6 +1088,15 @@ moveSnap.forEach(doc => {
 
 });
 
+// TRỪ HÀNG ĐÃ TRẢ KHỎI SỐ ĐÃ BÁN
+Object.keys(returnMap).forEach(id => {
+
+    salesMap[id] = Math.max(
+        0,
+        (salesMap[id] || 0) - returnMap[id]
+    );
+
+});
    
     // FIFO SALES LEFT
     const salesLeftMap = {
@@ -1210,32 +1208,11 @@ const lossInPeriod =
 const plusInPeriod =
     plusPerBatch[batchIndex] || 0;
 
-let returnLeft = returnMap[id] || 0;
-const returnPerBatch = [];
-
-imports.forEach((im, index) => {
-
-    const sold = soldPerBatch[index] || 0;
-
-    const take = Math.min(returnLeft, sold);
-
-    returnPerBatch.push(take);
-
-    returnLeft -= take;
-
-});
-
-const returnInPeriod =
-    returnPerBatch[batchIndex] || 0;
-
 let remain =
     qty
     - soldInPeriod
-    + returnInPeriod
     - lossInPeriod
     + plusInPeriod;
-
-remain = Math.max(remain, 0);
 
 remain = Math.max(remain,0);
         html += `
