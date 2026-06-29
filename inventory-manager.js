@@ -1099,15 +1099,6 @@ moveSnap.forEach(doc => {
 
 });
 
-// TRỪ HÀNG ĐÃ TRẢ KHỎI SỐ ĐÃ BÁN
-Object.keys(returnMap).forEach(id => {
-
-    salesMap[id] = Math.max(
-        0,
-        (salesMap[id] || 0) - returnMap[id]
-    );
-
-});
    
     // FIFO SALES LEFT
     const salesLeftMap = {
@@ -1219,11 +1210,32 @@ const lossInPeriod =
 const plusInPeriod =
     plusPerBatch[batchIndex] || 0;
 
+let returnLeft = returnMap[id] || 0;
+const returnPerBatch = [];
+
+imports.forEach((im, index) => {
+
+    const sold = soldPerBatch[index] || 0;
+
+    const take = Math.min(returnLeft, sold);
+
+    returnPerBatch.push(take);
+
+    returnLeft -= take;
+
+});
+
+const returnInPeriod =
+    returnPerBatch[batchIndex] || 0;
+
 let remain =
     qty
     - soldInPeriod
+    + returnInPeriod
     - lossInPeriod
     + plusInPeriod;
+
+remain = Math.max(remain, 0);
 
 remain = Math.max(remain,0);
         html += `
