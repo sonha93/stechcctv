@@ -1940,40 +1940,7 @@ for(const d of fifoImportSnap.docs){
 
 }
             const newStock = currentStock - qty;
-            let needMinus = qty;
-
-const importSnap = await db
-    .collection("stock_movements")
-    .where("productId","==",foundDoc.id)
-    .where("type","==","IMPORT")
-    .orderBy("createdAt","asc")
-    .get();
-
-const batchIds = [];
-
-for(const d of importSnap.docs){
-
-    if(needMinus<=0) break;
-
-    const m = d.data();
-
-    const remain = Number(m.remainQty ?? m.qty ?? 0);
-
-    if(remain<=0) continue;
-
-    const take = Math.min(remain,needMinus);
-
-    await d.ref.update({
-        remainQty: remain - take
-    });
-
-    batchIds.push({
-        batchId:d.id,
-        qty:take
-    });
-
-    needMinus -= take;
-}
+         
             // UPDATE STOCK
             await db.collection("products").doc(foundDoc.id).update({ stock: newStock })
             
