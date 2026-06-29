@@ -1148,8 +1148,8 @@ const batchIndex = imports.findIndex(m =>
     m.createdAt.toMillis() === data.createdAt.toMillis()
 );
 let soldInPeriod = 0;
-let lossInPeriod = manualMinusMap[id] || 0;
-let plusInPeriod = manualPlusMap[id] || 0;
+let lossInPeriod = lossMap[id] || 0;
+let plusInPeriod = plusMap[id] || 0;
 
 // clone sales
 let salesLeft = salesMap[id] || 0;
