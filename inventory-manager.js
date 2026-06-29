@@ -1164,13 +1164,13 @@ moveSnap.forEach(x=>{
 
 let salesLeft = salesMap[id] || 0;
 
-
+for (let i = 0; i <= batchIndex; i++) {
 
     const q = Number(imports[i].qty || 0);
 
     const take = Math.min(q, salesLeft);
 
-    if(i === batchIndex){
+    if (i === batchIndex) {
         soldInPeriod = take;
     }
 
