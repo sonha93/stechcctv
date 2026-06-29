@@ -1147,10 +1147,9 @@ const imports = productMoves
 const batchIndex = imports.findIndex(m =>
     m.createdAt.toMillis() === data.createdAt.toMillis()
 );
-
 let soldInPeriod = 0;
-let lossInPeriod = manualMinusMap[id] || 0;
-let plusInPeriod = manualPlusMap[id] || 0;
+let lossInPeriod = lossMap[id] || 0;
+let plusInPeriod = plusMap[id] || 0;
 
 // clone sales
 let salesLeft = salesMap[id] || 0;
@@ -1169,13 +1168,7 @@ for (let i = 0; i <= batchIndex; i++) {
     salesLeft -= take;
 }
 
-// Chỉ hiển thị điều chỉnh ở lô nhập cuối
-if (batchIndex !== imports.length - 1) {
-    lossInPeriod = 0;
-    plusInPeriod = 0;
-}
-
-// Tính tồn
+// ✅ tính tồn cuối lô (CHỈ 1 LẦN)
 let remain =
     qty
     - soldInPeriod
@@ -1183,6 +1176,7 @@ let remain =
     + plusInPeriod;
 
 if (remain < 0) remain = 0;
+
         html += `
             <tr>
 
