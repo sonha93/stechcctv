@@ -1106,7 +1106,11 @@ Object.keys(returnMap).forEach(id => {
     
     // LOOP IMPORT
     moveSnap.forEach(doc=>{
-
+console.table(
+    moveSnap.docs
+        .map(d=>d.data())
+        .filter(d=>d.productId==="f7nLQ1zvDEDbkScd3tk1")
+);
         const data = doc.data();
 if(data.type !== "IMPORT"){
     return;
