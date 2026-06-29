@@ -1109,53 +1109,65 @@ if(data.type !== "IMPORT"){
             return;
         }
 
-        const qty =
-            Number(data.qty || 0);
-// Lấy tất cả movement của đúng sản phẩm
-const productMoves = moveSnap.docs
-    .map(d => d.data())
-    .filter(m => m.productId === id);
-
-// Các lô IMPORT của sản phẩm theo thời gian
-const imports = productMoves
-    .filter(m => m.type === "IMPORT")
-    .sort((a,b)=>a.createdAt.toMillis()-b.createdAt.toMillis());
-
-// Xác định lô hiện tại
-const batchIndex = imports.findIndex(m =>
-    m.createdAt.toMillis() === data.createdAt.toMillis()
-);
-
-let soldInPeriod = 0;
+        let soldInPeriod = 0;
 let lossInPeriod = 0;
 let plusInPeriod = 0;
-let remain = qty;
-// FIFO
+
+// lấy số cộng/trừ của đúng lô
+moveSnap.forEach(x=>{
+
+    const m = x.data();
+
+    if(m.productId !== id) return;
+
+    if(m.type === "MANUAL_MINUS"){
+
+        (m.batches || []).forEach(b=>{
+
+            if(b.batchId === doc.id){
+                lossInPeriod += Number(b.qty || 0);
+            }
+
+        });
+
+    }
+
+    if(m.type === "MANUAL_PLUS"){
+
+        (m.batches || []).forEach(b=>{
+
+            if(b.batchId === doc.id){
+                plusInPeriod += Number(b.qty || 0);
+            }
+
+        });
+
+    }
+
+});
+
 let salesLeft = salesMap[id] || 0;
 
 for(let i=0;i<=batchIndex;i++){
 
     const q = Number(imports[i].qty || 0);
 
-    const take = Math.min(q,salesLeft);
+    const take = Math.min(q, salesLeft);
 
-    if(i===batchIndex){
+    if(i === batchIndex){
         soldInPeriod = take;
     }
 
     salesLeft -= take;
 }
 
-remain = qty - soldInPeriod;
-
-// tồn cuối của lô
-remain =
+let remain =
     qty
     - soldInPeriod
-    + plusInPeriod
-    - lossInPeriod;
+    - lossInPeriod
+    + plusInPeriod;
 
-if (remain < 0) remain = 0;
+if(remain < 0) remain = 0;
 
         html += `
             <tr>
@@ -1848,25 +1860,61 @@ snap.forEach(doc => {
     return;
 }
             const newStock = currentStock - qty;
+            let needMinus = qty;
 
+const importSnap = await db
+    .collection("stock_movements")
+    .where("productId","==",foundDoc.id)
+    .where("type","==","IMPORT")
+    .orderBy("createdAt","asc")
+    .get();
+
+const batchIds = [];
+
+for(const d of importSnap.docs){
+
+    if(needMinus<=0) break;
+
+    const m = d.data();
+
+    const remain = Number(m.remainQty ?? m.qty ?? 0);
+
+    if(remain<=0) continue;
+
+    const take = Math.min(remain,needMinus);
+
+    await d.ref.update({
+        remainQty: remain - take
+    });
+
+    batchIds.push({
+        batchId:d.id,
+        qty:take
+    });
+
+    needMinus -= take;
+}
             // UPDATE STOCK
             await db.collection("products").doc(foundDoc.id).update({ stock: newStock })
             await db.collection("stock_movements").add({
-    productId: foundDoc.id,
 
-    productName: product.name || "",
+    productId:foundDoc.id,
+    productName:product.name,
 
-    type: "MANUAL_MINUS",
+    type:"MANUAL_MINUS",
 
-    qty: -qty,
+    qty:-qty,
 
-    reason: reasonValue,
+    batches:batchIds,
 
-   staffName:
-    document.getElementById("adminName")?.textContent || "-",
+    reason:reasonValue,
+
+    staffName:
+        document.getElementById("adminName")?.textContent || "-",
 
     createdAt:
         firebase.firestore.FieldValue.serverTimestamp()
+
 });
 
             alert(`Đã trừ ${qty} stock`);
