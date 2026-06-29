@@ -1,5 +1,4 @@
 
-
 // ============================
 // INVENTORY MANAGER V8
 // ============================
@@ -1095,37 +1094,22 @@ if(data.type !== "IMPORT"){
 
         const p = productMap[id];
 
-       if(
-    keyword &&
-    !String(p.name || "")
-        .toLowerCase()
-        .includes(keyword) &&
-    !String(id)
-        .toLowerCase()
-        .includes(keyword)
-){
-    return;
-}
+        if(!p)
+            return;
 
-const qty = Number(data.qty || 0);
+        if(
+            keyword &&
+            !String(p.name || "")
+                .toLowerCase()
+                .includes(keyword) &&
+            !String(id)
+                .toLowerCase()
+                .includes(keyword)
+        ){
+            return;
+        }
 
-const productMoves = moveSnap.docs
-    .map(d => d.data())
-    .filter(m => m.productId === id);
-
-const imports = productMoves
-    .filter(m => m.type === "IMPORT")
-    .sort((a,b)=>a.createdAt.toMillis()-b.createdAt.toMillis());
-
-const batchIndex = imports.findIndex(m =>
-    m.createdAt &&
-    data.createdAt &&
-    m.createdAt.toMillis() === data.createdAt.toMillis()
-);
-
-if(batchIndex === -1) return;
-
-let soldInPeriod = 0;
+        let soldInPeriod = 0;
 let lossInPeriod = 0;
 
 moveSnap.forEach(x=>{
@@ -1177,15 +1161,16 @@ moveSnap.forEach(x=>{
     }
 
 });
+
 let salesLeft = salesMap[id] || 0;
 
-for (let i = 0; i <= batchIndex; i++) {
+for(let i=0;i<=batchIndex;i++){
 
     const q = Number(imports[i].qty || 0);
 
     const take = Math.min(q, salesLeft);
 
-    if (i === batchIndex) {
+    if(i === batchIndex){
         soldInPeriod = take;
     }
 
@@ -1205,7 +1190,7 @@ if(remain < 0) remain = 0;
 
                 <td>${id}</td>
 
-             <td>${p?.name || "-"}</td>
+                <td>${p.name || "-"}</td>
 
                 <td>
                     ${
@@ -1890,7 +1875,7 @@ snap.forEach(doc => {
 
     return;
 }
-            const fifoImportSnap = await db.collection("stock_movements")
+            const importSnap = await db.collection("stock_movements")
 
     .where("productId","==",foundDoc.id)
 
@@ -1908,7 +1893,8 @@ const batches = [];
 
 
 
-for(const d of fifoImportSnap.docs){
+for(const d of importSnap.docs){
+
 
 
     if(remainMinus <= 0) break;
@@ -1955,7 +1941,40 @@ for(const d of fifoImportSnap.docs){
 
 }
             const newStock = currentStock - qty;
-         
+            let needMinus = qty;
+
+const importSnap = await db
+    .collection("stock_movements")
+    .where("productId","==",foundDoc.id)
+    .where("type","==","IMPORT")
+    .orderBy("createdAt","asc")
+    .get();
+
+const batchIds = [];
+
+for(const d of importSnap.docs){
+
+    if(needMinus<=0) break;
+
+    const m = d.data();
+
+    const remain = Number(m.remainQty ?? m.qty ?? 0);
+
+    if(remain<=0) continue;
+
+    const take = Math.min(remain,needMinus);
+
+    await d.ref.update({
+        remainQty: remain - take
+    });
+
+    batchIds.push({
+        batchId:d.id,
+        qty:take
+    });
+
+    needMinus -= take;
+}
             // UPDATE STOCK
             await db.collection("products").doc(foundDoc.id).update({ stock: newStock })
             
@@ -2276,7 +2295,7 @@ html += `
 
     <td>${id}</td>
 
-    <td>${p?.name || "-"}</td>
+    <td>${p.name || "-"}</td>
 
     <td>
         ${formatVND(importPrice)}
