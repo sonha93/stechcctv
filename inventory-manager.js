@@ -1010,17 +1010,6 @@ async function loadHistory(){
         await db.collection("stock_movements")
         .orderBy("createdAt","asc")
         .get();
-   moveSnap.forEach(doc=>{
-
-    const d = doc.data();
-
-    if(d.productId === "f7nLQ1zvDEDbkScd3tk1"){
-
-        console.log(d);
-
-    }
-
-});
 // ===== FIX MANUAL MAP =====
 const manualMinusMap = {};
 const manualPlusMap = {};
@@ -1224,6 +1213,18 @@ let remain =
     + plusInPeriod;
 
 remain = Math.max(remain,0);
+    if(id === "f7nLQ1zvDEDbkScd3tk1"){
+
+    console.log({
+        batch: batchIndex + 1,
+        importQty: qty,
+        soldInPeriod,
+        lossInPeriod,
+        plusInPeriod,
+        remain
+    });
+
+}
         html += `
             <tr>
 
