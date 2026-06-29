@@ -78,24 +78,30 @@ async function loadInventory(){
 
             const order = orderDoc.data();
 
-       if (
+           if(
+    order.status !== "completed" ||
     order.customerCancelled ||
-    order.adminCancelled ||
-    order.status === "cancelled" ||
-    order.status === "returned"
-) {
+    order.adminCancelled
+){
     return;
 }
 
             (order.items || []).forEach(item => {
 
-    const id = String(item.productId || "");
+             const id =
+    String(
+        item.id ||
+        item.productId ||
+        ""
+    );
 
-    if (!id) return;
+                if(!soldMap[id]){
+                    soldMap[id] = 0;
+                }
 
-    soldMap[id] = (soldMap[id] || 0) + Number(item.qty || 0);
+                soldMap[id] += Number(item.qty || 0);
 
-});
+            });
 
         });
 
@@ -141,7 +147,7 @@ async function loadInventory(){
             totalOldPrice += oldPrice;
             totalStock += stock;
             totalSold += sold;
-            totalProfit += importPrice * stock;
+            totalProfit += profit;
 
             const negative = remain < 0;
             const lowStock = remain > 0 && remain <= 5;
@@ -204,7 +210,11 @@ async function loadInventory(){
         font-weight:bold;
     "
 >
-    ${formatVND(importPrice * stock)}
+    ${formatVND(
+        Number(p.importPrice || 0)
+        *
+        Number(p.stock || 0)
+    )}
 </td>
 
                     <td>
@@ -1047,41 +1057,48 @@ salesSnap.forEach(doc => {
         + Number(sale.qty || 0);
 
 });
-    // GROUP RETURN
-const returnMap = {};
+   const minusMap = {};
+const plusMap = {};
 
-moveSnap.forEach(doc => {
+moveSnap.forEach(doc=>{
 
     const data = doc.data();
 
-    if(data.type !== "RETURN") return;
-
-    const id = String(data.productId || "");
+    const id = data.productId;
 
     if(!id) return;
 
-    returnMap[id] =
-        (returnMap[id] || 0)
-        + Math.abs(Number(data.qty || 0));
+    if(data.type === "MANUAL_MINUS"){
+
+        minusMap[id] =
+            (minusMap[id] || 0)
+            +
+            Math.abs(Number(data.qty || 0));
+
+    }
+
+    if(data.type === "MANUAL_PLUS"){
+
+        plusMap[id] =
+            (plusMap[id] || 0)
+            +
+            Number(data.qty || 0);
+
+    }
 
 });
-
-// TRỪ HÀNG ĐÃ TRẢ KHỎI SỐ ĐÃ BÁN
-Object.keys(returnMap).forEach(id => {
-
-    salesMap[id] = Math.max(
-        0,
-        (salesMap[id] || 0) - returnMap[id]
-    );
-
-});
-   
     // FIFO SALES LEFT
     const salesLeftMap = {
         ...salesMap
     };
 
-    
+    const minusLeftMap = {
+    ...minusMap
+};
+
+const plusLeftMap = {
+    ...plusMap
+};
     // LOOP IMPORT
     moveSnap.forEach(doc=>{
 
@@ -1111,68 +1128,54 @@ if(data.type !== "IMPORT"){
 
         const qty =
             Number(data.qty || 0);
-// Lấy tất cả movement của đúng sản phẩm
-const productMoves = moveSnap.docs
-    .map(d => d.data())
-    .filter(m => m.productId === id);
+const salesLeft =
+    Number(salesLeftMap[id] || 0);
 
-// Các lô IMPORT của sản phẩm theo thời gian
-const imports = productMoves
-    .filter(m => m.type === "IMPORT")
-    .sort((a,b)=>a.createdAt.toMillis()-b.createdAt.toMillis());
+const soldInPeriod =
+    Math.min(
+        salesLeft,
+        qty
+    );
 
-// Xác định lô hiện tại
-const batchIndex = imports.findIndex(m =>
-    m.createdAt.toMillis() === data.createdAt.toMillis()
-);
+salesLeftMap[id] =
+    salesLeft - soldInPeriod;
 
-let soldInPeriod = 0;
-let lossInPeriod = 0;
-let plusInPeriod = 0;
-let remain = qty;
-// FIFO
-let salesLeft = salesMap[id] || 0;
+const qtyAfterSold =
+    qty - soldInPeriod;
 
-for(let i=0;i<=batchIndex;i++){
+const minusLeft =
+    Number(
+        minusLeftMap[id] || 0
+    );
 
-    const q = Number(imports[i].qty || 0);
+const lossInPeriod =
+    Math.min(
+        minusLeft,
+        qtyAfterSold
+    );
 
-    const take = Math.min(q,salesLeft);
+minusLeftMap[id] =
+    minusLeft - lossInPeriod;
 
-    if(i===batchIndex){
-        soldInPeriod = take;
-    }
+const plusLeft =
+    Number(
+        plusLeftMap[id] || 0
+    );
 
-    salesLeft -= take;
-}
+const plusInPeriod =
+    Math.min(
+        plusLeft,
+        qty
+    );
 
-remain = qty - soldInPeriod;
+plusLeftMap[id] =
+    plusLeft - plusInPeriod;
 
-// Điều chỉnh sau thời điểm nhập lô này
-productMoves.forEach(m=>{
-
-    if(
-        !m.createdAt ||
-        m.createdAt.toMillis() < data.createdAt.toMillis()
-    ) return;
-
-    if(m.type==="MANUAL_PLUS"){
-        plusInPeriod += Number(m.qty||0);
-        remain += Number(m.qty||0);
-    }
-
-    if(m.type==="MANUAL_MINUS"){
-
-        const minus = Math.min(
-            remain,
-            Math.abs(Number(m.qty||0))
-        );
-
-        lossInPeriod += minus;
-        remain -= minus;
-    }
-
-});
+const remain =
+    qty
+    - soldInPeriod
+    - lossInPeriod
+    + plusInPeriod;
 
         html += `
             <tr>
@@ -1205,15 +1208,19 @@ productMoves.forEach(m=>{
                     ${remain}
                 </td>
 
-<td style="font-weight:bold;">
+<td
+style="
+    color:red;
+    font-weight:bold;
+"
+>
     ${
-        plusInPeriod > 0
-            ? `<span style="color:#00c853;">+${plusInPeriod}</span>`
-            : lossInPeriod > 0
-                ? `<span style="color:red;">-${lossInPeriod}</span>`
-                : 0
+        lossInPeriod > 0
+        ? "-" + lossInPeriod
+        : 0
     }
 </td>
+
             </tr>
         `;
 
@@ -1260,25 +1267,30 @@ if(
 
     });
 
-    Object.keys(salesMap).forEach(id => {
+    salesSnap.forEach(doc=>{
 
-    const p = productMap[id];
+        const sale = doc.data();
 
-    if(
-        keyword &&
-        !String(p?.name || "")
-            .toLowerCase()
-            .includes(keyword) &&
-        !String(id)
-            .toLowerCase()
-            .includes(keyword)
-    ){
-        return;
-    }
+       const p =
+    productMap[sale.productId];
 
-    totalSold += Number(salesMap[id] || 0);
+if(
+    keyword &&
+    !String(p?.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+    !String(sale.productId)
+        .toLowerCase()
+        .includes(keyword)
+){
+    return;
+}
 
-});
+        totalSold +=
+            Number(sale.qty || 0);
+
+    });
+
    
 moveSnap.forEach(doc=>{
 
@@ -1637,12 +1649,13 @@ if (
                 if (order.status !== "completed" || order.customerCancelled || order.adminCancelled) return;
                (order.items || []).forEach(item => {
 
-   const id =
-    String(
-        item.productId ||
-        item.id ||
-        ""
-    );
+    const id =
+        String(
+            item.id ||
+            item.productId ||
+            ""
+        );
+
     if(!id) return;
 
     if(!soldMap[id]){
@@ -1972,7 +1985,8 @@ async function loadLoss(){
             (order.items || []).forEach(item => {
 
                const id = normalizeId(
-                item.productId || item.id
+                item.id ||
+                item.productId
                 );
 
                 if(!id) return;
