@@ -1009,47 +1009,7 @@ async function loadHistory(){
         await db.collection("stock_movements")
         .orderBy("createdAt","asc")
         .get();
-    // ============================
-// FIX STOCK REALTIME (NEW LOGIC)
-// ============================
 
-const events = moveSnap.docs.map(d => d.data());
-
-events.sort((a,b)=>
-    a.createdAt.toMillis() - b.createdAt.toMillis()
-);
-
-const stockMap = {};
-
-for(const e of events){
-
-    const id = e.productId;
-    if(!id) continue;
-
-    if(!stockMap[id]) stockMap[id] = 0;
-
-    const qty = Number(e.qty || 0);
-
-    if(e.type === "IMPORT"){
-        stockMap[id] += qty;
-    }
-
-    else if(e.type === "SALE"){
-        stockMap[id] -= qty;
-    }
-
-    else if(e.type === "RETURN"){
-        stockMap[id] += Math.abs(qty);
-    }
-
-    else if(e.type === "MANUAL_MINUS"){
-        stockMap[id] -= Math.abs(qty);
-    }
-
-    else if(e.type === "MANUAL_PLUS"){
-        stockMap[id] += qty;
-    }
-}
     const salesSnap =
         await db.collection("sales_history")
         .orderBy("createdAt","asc")
@@ -1151,7 +1111,42 @@ if(data.type !== "IMPORT"){
 
         const qty =
             Number(data.qty || 0);
+// Lấy tất cả movement của đúng sản phẩm
+const productMoves = moveSnap.docs
+    .map(d => d.data())
+    .filter(m => m.productId === id);
 
+// Các lô IMPORT của sản phẩm theo thời gian
+const imports = productMoves
+    .filter(m => m.type === "IMPORT")
+    .sort((a,b)=>a.createdAt.toMillis()-b.createdAt.toMillis());
+
+// Xác định lô hiện tại
+const batchIndex = imports.findIndex(m =>
+    m.createdAt.toMillis() === data.createdAt.toMillis()
+);
+
+let soldInPeriod = 0;
+let lossInPeriod = 0;
+let plusInPeriod = 0;
+let remain = qty;
+// FIFO
+let salesLeft = salesMap[id] || 0;
+
+for(let i=0;i<=batchIndex;i++){
+
+    const q = Number(imports[i].qty || 0);
+
+    const take = Math.min(q,salesLeft);
+
+    if(i===batchIndex){
+        soldInPeriod = take;
+    }
+
+    salesLeft -= take;
+}
+
+remain = qty - soldInPeriod;
 
 // tồn cuối của lô
 remain =
@@ -2060,8 +2055,8 @@ async function loadLoss(){
                 plusMap[id] || 0;
 
             // TỒN HỆ THỐNG
-          const systemStock =
-    stockMap[id] || 0;
+            const systemStock =
+                Number(p.stock || 0);
 
             // TỒN ĐÁNG LẼ PHẢI CÓ
         const expectedStock =
