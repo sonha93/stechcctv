@@ -1204,7 +1204,7 @@ if(remain < 0) remain = 0;
 
                 <td>${id}</td>
 
-                <td>${p.name || "-"}</td>
+             <td>${p?.name || "-"}</td>
 
                 <td>
                     ${
@@ -2275,7 +2275,7 @@ html += `
 
     <td>${id}</td>
 
-    <td>${p.name || "-"}</td>
+    <td>${p?.name || "-"}</td>
 
     <td>
         ${formatVND(importPrice)}
