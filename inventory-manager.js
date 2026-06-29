@@ -1147,7 +1147,22 @@ for(let i=0;i<=batchIndex;i++){
 }
 
 remain = qty - soldInPeriod;
+productMoves.forEach(m => {
 
+    if (!m.createdAt) return;
+
+    if (m.createdAt.toMillis() < data.createdAt.toMillis()) return;
+
+    if (m.type === "MANUAL_MINUS") {
+        lossInPeriod += Math.abs(Number(m.qty || 0));
+    }
+
+    if (m.type === "MANUAL_PLUS") {
+        plusInPeriod += Number(m.qty || 0);
+    }
+
+});
+    
 // tồn cuối của lô
 remain =
     qty
