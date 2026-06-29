@@ -63,10 +63,18 @@ update.earnedPoints = earnPoints;
 
     const qty = Number(item.qty || 0);
 
-    await productRef.update({
-      stock: firebase.firestore.FieldValue.increment(qty),
-      sold: firebase.firestore.FieldValue.increment(-qty)
-    });
+   const product = productSnap.data();
+
+const newSold =
+Math.max(
+0,
+Number(product.sold || 0) - qty
+);
+
+await productRef.update({
+  stock: firebase.firestore.FieldValue.increment(qty),
+  sold: newSold
+});
     await db.collection("stock_movements").add({
       productId,
       productName: item.name || "",
@@ -112,7 +120,7 @@ update.memberPoints = memberSnap.data().points;
 await db.collection("member_history").add({
     memberId: order.memberId,
     orderId: orderId,
-    type: "purchase",
+    type: "refund_return",
 
     orderDate: Date.now(),
 
@@ -128,7 +136,9 @@ await db.collection("member_history").add({
 
     earnPoints: earnPoints,
 
-    createdAt: Date.now()
+remainPoints: memberSnap.data().points,
+
+createdAt: Date.now()
 });
   }
 }
@@ -1138,73 +1148,7 @@ const updateData = {
   status: status,
   handledBy: document.getElementById("adminName").textContent
 };
-        // Không cho nhảy trạng thái
-if (status === "shipping" && orderData.status !== "confirmed") {
-  alert("Đơn hàng phải được xác nhận trước khi chuyển sang Đang giao.");
-  loadOrders();
-  return;
-}
 
-if (status === "completed" && orderData.status !== "shipping") {
-  alert("Đơn hàng phải ở trạng thái Đang giao trước khi hoàn thành.");
-  loadOrders();
-  return;
-}
-// Chặn xác nhận nếu tồn kho không đủ
-if (
-  status === "confirmed" &&
-  orderData.status === "pending"
-) {
-
-  for (const item of (orderData.items || [])) {
-
-    let productId =
-      item.productId ||
-      item.id ||
-      item._id;
-
-    let productRef =
-      db.collection("products")
-      .doc(productId);
-
-    let productDoc =
-      await productRef.get();
-
-    // fallback theo slug
-    if (!productDoc.exists && item.slug) {
-
-      const slugSnap = await db
-        .collection("products")
-        .where("slug", "==", item.slug)
-        .limit(1)
-        .get();
-
-      if (!slugSnap.empty) {
-        productDoc = slugSnap.docs[0];
-        productRef = productDoc.ref;
-      }
-    }
-
-    if (!productDoc.exists) {
-      alert(`Không tìm thấy sản phẩm: ${item.name}`);
-      loadOrders();
-      return;
-    }
-
-    const stock = Number(productDoc.data().stock || 0);
-    const qty = Number(item.qty || 0);
-
-    if (stock < qty) {
-      alert(
-        `${item.name} chỉ còn ${stock} sản phẩm, không đủ để xác nhận đơn.`
-      );
-      loadOrders();
-      return;
-    }
-
-  }
-
-}
 
 // nếu chuyển sang cancelled
 // thì khóa luôn
@@ -1214,8 +1158,10 @@ if(status === "cancelled"){
 
 
 if(
-  status === "confirmed" &&
-  orderData.status === "pending"
+  status === "completed" &&
+  orderData.status !== "completed" &&
+  orderData.memberId &&
+  !orderData.pointsProcessed
 ){
 for(const item of (orderData.items || [])){
 
@@ -1565,23 +1511,35 @@ let newSpent =
 if (newSpent < 0) newSpent = 0;
 
 
-await memberRef.update({
-points: firebase.firestore.FieldValue.increment(
-  usedPoints - rollbackEarnPoints
-),
-  totalSpent: newSpent,
+let level = "Silver";
 
+if (newSpent >= 10000000) {
+  level = "VIP";
+}
+else if (newSpent >= 5000000) {
+  level = "Gold";
+}
+
+await memberRef.update({
+  points: firebase.firestore.FieldValue.increment(
+    usedPoints - rollbackEarnPoints
+  ),
+  totalSpent: newSpent,
+  level: level,
   lockedPoints: firebase.firestore.FieldValue.increment(
     -usedPoints
   )
 });
-    await db.collection("member_history").add({
-      memberId: orderData.memberId,
-      orderId: id,
-      type: "rollback_cancel",
-      points: +usedPoints,
-      createdAt: Date.now()
-    });
+    const memberAfter = await memberRef.get();
+
+await db.collection("member_history").add({
+  memberId: orderData.memberId,
+  orderId: id,
+  type: "rollback_cancel",
+  points: usedPoints,
+  remainPoints: memberAfter.data().points,
+  createdAt: Date.now()
+});
   }
 
   await db.collection("orders").doc(id).update({
@@ -1973,12 +1931,13 @@ async function restoreStock(order) {
       productName: item.name || "",
       type: "RETURN",
       qty,
-      reason: `Trả hàng đơn ${order.id}`,
+      reason: `Trả hàng đơn ${orderId}`,
       staffName: document.getElementById("adminName")?.textContent || "",
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
   }
 }
+  await restoreStock(order);
   // 2. hoàn điểm
   const usedPoints = Number(order.usedPoints || 0);
   const earnPoints = Math.floor(Number(order.total || 0) / 10000);
