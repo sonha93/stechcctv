@@ -1129,48 +1129,53 @@ const batchIndex = imports.findIndex(m =>
 let soldInPeriod = 0;
 let lossInPeriod = 0;
 let plusInPeriod = 0;
-let remain = qty;
-// FIFO
-let salesLeft = salesMap[id] || 0;
 
-for(let i=0;i<=batchIndex;i++){
+const salesTotal = salesMap[id] || 0;
 
-    const q = Number(imports[i].qty || 0);
+let salesLeft = salesTotal;
 
-    const take = Math.min(q,salesLeft);
+// FIFO bán
+for (let i = 0; i <= batchIndex; i++) {
 
-    if(i===batchIndex){
-        soldInPeriod = take;
+    const importQty = Number(imports[i].qty || 0);
+
+    const sold = Math.min(importQty, salesLeft);
+
+    if (i === batchIndex) {
+        soldInPeriod = sold;
     }
 
-    salesLeft -= take;
+    salesLeft -= sold;
 }
 
-remain = qty - soldInPeriod;
-productMoves.forEach(m => {
+let remain = qty - soldInPeriod;
 
-    if (!m.createdAt) return;
+// CHỈ lô cuối mới nhận điều chỉnh
+const isLastBatch = batchIndex === imports.length - 1;
 
-    if (m.createdAt.toMillis() < data.createdAt.toMillis()) return;
+if (isLastBatch) {
 
-    if (m.type === "MANUAL_MINUS") {
-        lossInPeriod += Math.abs(Number(m.qty || 0));
-    }
+    productMoves.forEach(m => {
 
-    if (m.type === "MANUAL_PLUS") {
-        plusInPeriod += Number(m.qty || 0);
-    }
+        if (!m.createdAt) return;
 
-});
-    
-// tồn cuối của lô
-remain =
-    qty
-    - soldInPeriod
-    + plusInPeriod
-    - lossInPeriod;
+        if (m.createdAt.toMillis() < data.createdAt.toMillis()) return;
 
-if (remain < 0) remain = 0;
+        if (m.type === "MANUAL_PLUS") {
+            plusInPeriod += Number(m.qty || 0);
+        }
+
+        if (m.type === "MANUAL_MINUS") {
+            lossInPeriod += Math.abs(Number(m.qty || 0));
+        }
+
+    });
+
+    remain += plusInPeriod;
+    remain -= lossInPeriod;
+
+    if (remain < 0) remain = 0;
+}
 
         html += `
             <tr>
