@@ -1164,7 +1164,7 @@ moveSnap.forEach(x=>{
 
 let salesLeft = salesMap[id] || 0;
 
-for(let i=0;i<=batchIndex;i++){
+
 
     const q = Number(imports[i].qty || 0);
 
