@@ -1129,65 +1129,48 @@ const batchIndex = imports.findIndex(m =>
 let soldInPeriod = 0;
 let lossInPeriod = 0;
 let plusInPeriod = 0;
+let remain = qty;
+// FIFO
+let salesLeft = salesMap[id] || 0;
 
-// movement của đúng sản phẩm
-const movements = productMoves
-    .filter(m =>
-        m.type === "MANUAL_PLUS" ||
-        m.type === "MANUAL_MINUS"
-    )
-    .sort((a,b)=>a.createdAt.toMillis()-b.createdAt.toMillis());
+for(let i=0;i<=batchIndex;i++){
 
-// chỉ tính adjustment xảy ra SAU lô import này
-const currentImportTime = data.createdAt.toMillis();
+    const q = Number(imports[i].qty || 0);
 
-movements.forEach(m=>{
+    const take = Math.min(q,salesLeft);
 
-    if(m.createdAt.toMillis() < currentImportTime){
-        return;
+    if(i===batchIndex){
+        soldInPeriod = take;
     }
 
-    if(m.type==="MANUAL_PLUS"){
-        plusInPeriod += Number(m.qty||0);
+    salesLeft -= take;
+}
+
+remain = qty - soldInPeriod;
+productMoves.forEach(m => {
+
+    if (!m.createdAt) return;
+
+    if (m.createdAt.toMillis() < data.createdAt.toMillis()) return;
+
+    if (m.type === "MANUAL_MINUS") {
+        lossInPeriod += Math.abs(Number(m.qty || 0));
     }
 
-    if(m.type==="MANUAL_MINUS"){
-        lossInPeriod += Math.abs(Number(m.qty||0));
+    if (m.type === "MANUAL_PLUS") {
+        plusInPeriod += Number(m.qty || 0);
     }
 
 });
-
-let remain = qty;
-
-// CHỈ lô cuối mới nhận điều chỉnh
-const isLastBatch = batchIndex === imports.length - 1;
-
-if (isLastBatch) {
-
-    productMoves.forEach(m => {
-
-        if (!m.createdAt) return;
-
-        if (m.createdAt.toMillis() < data.createdAt.toMillis()) return;
-
-        if (m.type === "MANUAL_PLUS") {
-            plusInPeriod += Number(m.qty || 0);
-        }
-
-        if (m.type === "MANUAL_MINUS") {
-            lossInPeriod += Math.abs(Number(m.qty || 0));
-        }
-
-    });
-
-   let remain =
+    
+// tồn cuối của lô
+remain =
     qty
     - soldInPeriod
     + plusInPeriod
     - lossInPeriod;
 
 if (remain < 0) remain = 0;
-}
 
         html += `
             <tr>
