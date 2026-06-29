@@ -1094,22 +1094,37 @@ if(data.type !== "IMPORT"){
 
         const p = productMap[id];
 
-        if(!p)
-            return;
+       if(
+    keyword &&
+    !String(p.name || "")
+        .toLowerCase()
+        .includes(keyword) &&
+    !String(id)
+        .toLowerCase()
+        .includes(keyword)
+){
+    return;
+}
 
-        if(
-            keyword &&
-            !String(p.name || "")
-                .toLowerCase()
-                .includes(keyword) &&
-            !String(id)
-                .toLowerCase()
-                .includes(keyword)
-        ){
-            return;
-        }
+const qty = Number(data.qty || 0);
 
-        let soldInPeriod = 0;
+const productMoves = moveSnap.docs
+    .map(d => d.data())
+    .filter(m => m.productId === id);
+
+const imports = productMoves
+    .filter(m => m.type === "IMPORT")
+    .sort((a,b)=>a.createdAt.toMillis()-b.createdAt.toMillis());
+
+const batchIndex = imports.findIndex(m =>
+    m.createdAt &&
+    data.createdAt &&
+    m.createdAt.toMillis() === data.createdAt.toMillis()
+);
+
+if(batchIndex === -1) return;
+
+let soldInPeriod = 0;
 let lossInPeriod = 0;
 
 moveSnap.forEach(x=>{
