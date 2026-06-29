@@ -1032,10 +1032,9 @@ moveSnap.forEach(doc => {
     }
 
 });
-    const salesSnap =
-        await db.collection("sales_history")
-        .orderBy("createdAt","asc")
-        .get();
+    const orderSnap =
+    await db.collection("orders")
+    .get();
 
     const productSnap =
         await db.collection("products")
@@ -1052,21 +1051,33 @@ moveSnap.forEach(doc => {
 
     });
 
-   // GROUP SALES
+  // GROUP SALES
 const salesMap = {};
-salesSnap.forEach(doc => {
 
-    const sale = doc.data();
+orderSnap.forEach(orderDoc => {
 
-    const id = String(
-        sale.productId || ""
-    );
+    const order = orderDoc.data();
 
-    if(!id) return;
+    if (
+        order.customerCancelled ||
+        order.adminCancelled ||
+        order.status === "cancelled" ||
+        order.status === "returned"
+    ) {
+        return;
+    }
 
-    salesMap[id] =
-        (salesMap[id] || 0)
-        + Number(sale.qty || 0);
+    (order.items || []).forEach(item => {
+
+        const id = String(item.productId || "");
+
+        if (!id) return;
+
+        salesMap[id] =
+            (salesMap[id] || 0)
+            + Number(item.qty || 0);
+
+    });
 
 });
     // GROUP RETURN
