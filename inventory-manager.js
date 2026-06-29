@@ -123,7 +123,7 @@ async function loadInventory(){
                 return;
             }
 
-            const stock = Number(p.stock || 0);
+           const stock = calculateStockByProduct(allMoves, doc.id);
             const importPrice = Number(p.importPrice || 0);
             const price = Number(p.price || 0);
             const oldPrice = Number(p.oldPrice || 0);
@@ -1023,7 +1023,7 @@ moveSnap.forEach(doc => {
 
     if(d.type === "MANUAL_MINUS"){
         manualMinusMap[id] =
-            (manualMinusMap[id] || 0) + Math.abs(Number(d.qty || 0));
+            (manualMinusMap[id] || 0) + Number(d.qty || 0);
     }
 
     if(d.type === "MANUAL_PLUS"){
@@ -1145,7 +1145,7 @@ const imports = productMoves
 
 // Xác định lô hiện tại
 const batchIndex = imports.findIndex(m =>
-    m.createdAt.toMillis() === data.createdAt.toMillis()
+   m.createdAt?.seconds === data.createdAt.toMillis()
 );
 let soldInPeriod = 0;
 let lossInPeriod = lossMap[id] || 0;
@@ -1929,6 +1929,29 @@ function normalizeId(id){
         .trim()
         .toLowerCase();
 
+}
+function calculateStockByProduct(moves, productId) {
+    let stock = 0;
+
+    moves
+        .filter(m => normalizeId(m.productId) === normalizeId(productId))
+        .sort((a, b) => {
+            const ta = a.createdAt?.seconds || 0;
+            const tb = b.createdAt?.seconds || 0;
+            return ta - tb;
+        })
+        .forEach(m => {
+
+            const qty = Number(m.qty || 0);
+
+            if (m.type === "IMPORT") stock += qty;
+            if (m.type === "SALE") stock -= qty;
+            if (m.type === "MANUAL_MINUS") stock -= Math.abs(qty);
+            if (m.type === "MANUAL_PLUS") stock += qty;
+
+        });
+
+    return stock;
 }
 async function loadLoss(){
 
