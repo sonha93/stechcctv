@@ -1149,34 +1149,43 @@ for(let i=0;i<=batchIndex;i++){
 remain = qty - soldInPeriod;
 
 // Chỉ áp dụng điều chỉnh cho lô CUỐI CÙNG còn tồn
-const isLastBatch = batchIndex === imports.length - 1;
+remain = qty - soldInPeriod;
 
-if (isLastBatch) {
+// FIFO điều chỉnh
+let minusLeft = 0;
+let plusLeft = 0;
 
-    productMoves.forEach(m => {
+productMoves.forEach(m => {
 
-        if (!m.createdAt) return;
+    if (!m.createdAt) return;
 
-        if (m.createdAt.toMillis() < data.createdAt.toMillis()) return;
+    if (m.createdAt.toMillis() < data.createdAt.toMillis()) return;
 
-        if (m.type === "MANUAL_PLUS") {
-            plusInPeriod += Number(m.qty || 0);
-        }
+    if (m.type === "MANUAL_MINUS") {
+        minusLeft += Math.abs(Number(m.qty || 0));
+    }
 
-        if (m.type === "MANUAL_MINUS") {
-            lossInPeriod += Math.abs(Number(m.qty || 0));
-        }
+    if (m.type === "MANUAL_PLUS") {
+        plusLeft += Number(m.qty || 0);
+    }
 
-    });
+});
+
+// trừ FIFO
+const minusTake = Math.min(remain, minusLeft);
+
+lossInPeriod = minusTake;
+
+remain -= minusTake;
+
+// cộng chỉ vào batch cuối
+if (batchIndex === imports.length - 1) {
+
+    plusInPeriod = plusLeft;
+
+    remain += plusLeft;
 
 }
-
-// tồn cuối của lô
-remain =
-    qty
-    - soldInPeriod
-    + plusInPeriod
-    - lossInPeriod;
 
 if (remain < 0) remain = 0;
 
