@@ -16,8 +16,7 @@ const inventorySearch = document.getElementById("inventorySearch");
 
 let canManageStock = false;
 let canAddStock = false;
-let lossMap = {};
-let plusMap = {};
+
 firebase.auth().onAuthStateChanged(async (user) => {
 
     if (!user) return;
@@ -1010,28 +1009,7 @@ async function loadHistory(){
         await db.collection("stock_movements")
         .orderBy("createdAt","asc")
         .get();
-// ===== FIX MANUAL MAP =====
-const manualMinusMap = {};
-const manualPlusMap = {};
 
-moveSnap.forEach(doc => {
-
-    const d = doc.data();
-    const id = normalizeId(d.productId);
-
-    if(!id) return;
-
-    if(d.type === "MANUAL_MINUS"){
-        manualMinusMap[id] =
-            (manualMinusMap[id] || 0) + Math.abs(Number(d.qty || 0));
-    }
-
-    if(d.type === "MANUAL_PLUS"){
-        manualPlusMap[id] =
-            (manualPlusMap[id] || 0) + Number(d.qty || 0);
-    }
-
-});
     const salesSnap =
         await db.collection("sales_history")
         .orderBy("createdAt","asc")
@@ -1147,35 +1125,54 @@ const imports = productMoves
 const batchIndex = imports.findIndex(m =>
     m.createdAt.toMillis() === data.createdAt.toMillis()
 );
-let soldInPeriod = 0;
-let lossInPeriod = lossMap[id] || 0;
-let plusInPeriod = plusMap[id] || 0;
 
-// clone sales
+let soldInPeriod = 0;
+let lossInPeriod = 0;
+let plusInPeriod = 0;
+let remain = qty;
+// FIFO
 let salesLeft = salesMap[id] || 0;
 
-// FIFO tính sold tới batch hiện tại
-for (let i = 0; i <= batchIndex; i++) {
+for(let i=0;i<=batchIndex;i++){
 
     const q = Number(imports[i].qty || 0);
 
-    const take = Math.min(q, salesLeft);
+    const take = Math.min(q,salesLeft);
 
-    if (i === batchIndex) {
+    if(i===batchIndex){
         soldInPeriod = take;
     }
 
     salesLeft -= take;
 }
 
-// ✅ tính tồn cuối lô (CHỈ 1 LẦN)
-let remain =
-    qty
-    - soldInPeriod
-    - lossInPeriod
-    + plusInPeriod;
+remain = qty - soldInPeriod;
 
-if (remain < 0) remain = 0;
+// Điều chỉnh sau thời điểm nhập lô này
+productMoves.forEach(m=>{
+
+    if(
+        !m.createdAt ||
+        m.createdAt.toMillis() < data.createdAt.toMillis()
+    ) return;
+
+    if(m.type==="MANUAL_PLUS"){
+        plusInPeriod += Number(m.qty||0);
+        remain += Number(m.qty||0);
+    }
+
+    if(m.type==="MANUAL_MINUS"){
+
+        const minus = Math.min(
+            remain,
+            Math.abs(Number(m.qty||0))
+        );
+
+        lossInPeriod += minus;
+        remain -= minus;
+    }
+
+});
 
         html += `
             <tr>
@@ -1365,14 +1362,13 @@ Object.entries(productMap).forEach(([id,p])=>{
                 ${totalRemain}
             </td>
 
-          <td style="font-weight:bold;">
-    ${
-        totalPlus > 0
-            ? `<span style="color:#00c853;">+${totalPlus}</span>`
-            : totalMinus > 0
-                ? `<span style="color:red;">-${totalMinus}</span>`
-                : 0
-    }
+          <td
+style="
+    color:red;
+    font-weight:bold;
+"
+>
+    ${totalMinus > 0 ? "-" + totalMinus : 0}
 </td>
 
         </tr>
@@ -2808,4 +2804,4 @@ document
         "Product_Change_Logs.xlsx"
     );
 
-});    s
+});    
