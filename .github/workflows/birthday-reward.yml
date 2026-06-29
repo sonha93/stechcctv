@@ -1,1 +1,29 @@
 
+name: Birthday Reward
+
+on:
+  schedule:
+    - cron: '5 17 * * *'
+  workflow_dispatch:
+
+jobs:
+  birthday:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install firebase-admin
+        run: npm install firebase-admin
+
+      - name: Create service account
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > serviceAccountKey.json
+
+      - name: Run birthday reward
+        run: node birthday-reward.js
