@@ -142,34 +142,18 @@ tbody.innerHTML="";
 
 (data.items || []).forEach(item=>{
 
-    const qty=item.quantity || 1;
+   const qty =
+  Number(item.qty || item.quantity || 1);
 
-    const price=item.price || 0;
+const price =
+  Number(item.price || 0);
 
-  tbody.innerHTML += `
-<tr class="product-card">
-    <td colspan="4">
-
-        <div class="product-name">
-            ${item.name}
-        </div>
-
-        <div class="product-info">
-            <span>Số lượng</span>
-            <span>${qty}</span>
-        </div>
-
-        <div class="product-info">
-            <span>Đơn giá</span>
-            <span>${formatMoney(price)}</span>
-        </div>
-
-        <div class="product-info">
-            <span>Thành tiền</span>
-            <span>${formatMoney(price * qty)}</span>
-        </div>
-
-    </td>
+tbody.innerHTML += `
+<tr>
+    <td data-label="Sản phẩm">${item.name}</td>
+    <td data-label="Số lượng">${qty}</td>
+    <td data-label="Đơn giá">${formatMoney(price)}</td>
+    <td data-label="Thành tiền">${formatMoney(price * qty)}</td>
 </tr>`;
 });
   if (!data.returnStatus) {
@@ -220,7 +204,20 @@ const deductedPoints = data.returnDeductPoints ?? 0;
 document.getElementById("deducted-points").innerText =
   formatMoney(deductedPoints * 100);
 
-const currentPoints = data.memberPoints ?? 0;
+let currentPoints = 0;
+
+if (data.memberId) {
+
+  const memberSnap = await db
+    .collection("members")
+    .doc(data.memberId)
+    .get();
+
+  if (memberSnap.exists) {
+    currentPoints =
+      Number(memberSnap.data().points || 0);
+  }
+}
 
 document.getElementById("current-points").innerText =
   formatMoney(currentPoints * 100);
