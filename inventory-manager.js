@@ -1111,6 +1111,22 @@ if(data.type !== "IMPORT"){
 
         let soldInPeriod = 0;
 let lossInPeriod = 0;
+
+moveSnap.forEach(x=>{
+
+    const m = x.data();
+
+    if(m.type !== "MANUAL_MINUS") return;
+
+    (m.batches || []).forEach(b=>{
+
+        if(b.batchId === doc.id){
+            lossInPeriod += Number(b.qty || 0);
+        }
+
+    });
+
+});
 let plusInPeriod = 0;
 
 // lấy số cộng/trừ của đúng lô
@@ -1859,6 +1875,71 @@ snap.forEach(doc => {
 
     return;
 }
+            const importSnap = await db.collection("stock_movements")
+
+    .where("productId","==",foundDoc.id)
+
+    .where("type","==","IMPORT")
+
+    .orderBy("createdAt","asc")
+
+    .get();
+
+
+
+let remainMinus = qty;
+
+const batches = [];
+
+
+
+for(const d of importSnap.docs){
+
+
+
+    if(remainMinus <= 0) break;
+
+
+
+    const lot = d.data();
+
+
+
+    const remain =
+
+        Number(lot.remainQty || lot.qty || 0);
+
+
+
+    if(remain <= 0) continue;
+
+
+
+    const take = Math.min(remain, remainMinus);
+
+
+
+    await d.ref.update({
+
+        remainQty: remain - take
+
+    });
+
+
+
+    batches.push({
+
+        batchId: d.id,
+
+        qty: take
+
+    });
+
+
+
+    remainMinus -= take;
+
+}
             const newStock = currentStock - qty;
             let needMinus = qty;
 
@@ -1896,24 +1977,17 @@ for(const d of importSnap.docs){
 }
             // UPDATE STOCK
             await db.collection("products").doc(foundDoc.id).update({ stock: newStock })
-            await db.collection("stock_movements").add({
+            
+           await db.collection("stock_movements").add({
 
-    productId:foundDoc.id,
-    productName:product.name,
-
-    type:"MANUAL_MINUS",
-
-    qty:-qty,
-
-    batches:batchIds,
-
-    reason:reasonValue,
-
-    staffName:
-        document.getElementById("adminName")?.textContent || "-",
-
-    createdAt:
-        firebase.firestore.FieldValue.serverTimestamp()
+    productId: foundDoc.id,
+    productName: product.name || "",
+    type: "MANUAL_MINUS",
+    qty: -qty,
+    batches,
+    reason: reasonValue,
+    staffName: document.getElementById("adminName")?.textContent || "-",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
 });
 
