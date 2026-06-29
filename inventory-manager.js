@@ -1161,7 +1161,17 @@ moveSnap.forEach(x=>{
     }
 
 });
+// Các lô IMPORT của sản phẩm theo thời gian
+const imports = productMoves
+    .filter(m => m.type === "IMPORT")
+    .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
 
+// Xác định lô hiện tại
+const batchIndex = imports.findIndex(m =>
+    m.createdAt &&
+    data.createdAt &&
+    m.createdAt.toMillis() === data.createdAt.toMillis()
+);
 let salesLeft = salesMap[id] || 0;
 
 for (let i = 0; i <= batchIndex; i++) {
