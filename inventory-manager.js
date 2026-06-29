@@ -1148,11 +1148,13 @@ const batchIndex = imports.findIndex(m =>
     m.createdAt.toMillis() === data.createdAt.toMillis()
 );
 let soldInPeriod = 0;
-
-const importId = normalizeId(id);
-
-const loss = manualMinusMap[importId] || 0;
-const plus = manualPlusMap[importId] || 0;
+console.log("manualMinusMap", manualMinusMap);
+let lossInPeriod = manualMinusMap[normalizeId(id)] || 0;
+let plusInPeriod = manualPlusMap[normalizeId(id)] || 0;
+console.log(
+    "IMPORT ID:", normalizeId(id),
+    "LOSS:", manualMinusMap[normalizeId(id)]
+);
 // clone sales
 let salesLeft = salesMap[id] || 0;
 
@@ -1174,8 +1176,8 @@ for (let i = 0; i <= batchIndex; i++) {
 let remain =
     qty
     - soldInPeriod
-    - loss
-    + plus;
+    - lossInPeriod
+    + plusInPeriod;
 
 if (remain < 0) remain = 0;
 
