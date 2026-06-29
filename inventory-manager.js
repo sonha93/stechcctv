@@ -1166,6 +1166,7 @@ imports.forEach(im => {
 
 // ===== FIFO MANUAL_MINUS =====
 let minusLeft = manualMinusMap[id] || 0;
+console.log("manualMinusMap", id, manualMinusMap[id]);
 const minusPerBatch = [];
 
 imports.forEach((im,index)=>{
@@ -1184,7 +1185,8 @@ imports.forEach((im,index)=>{
     minusLeft -= take;
 
 });
-
+console.log("soldPerBatch", soldPerBatch);
+console.log("minusPerBatch", minusPerBatch);
 // ===== FIFO MANUAL_PLUS =====
 // cộng vào lô cuối cùng
 const plusPerBatch =
@@ -1213,18 +1215,6 @@ let remain =
     + plusInPeriod;
 
 remain = Math.max(remain,0);
-    if(id === "f7nLQ1zvDEDbkScd3tk1"){
-
-    console.log({
-        batch: batchIndex + 1,
-        importQty: qty,
-        soldInPeriod,
-        lossInPeriod,
-        plusInPeriod,
-        remain
-    });
-
-}
         html += `
             <tr>
 
