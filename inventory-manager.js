@@ -1111,7 +1111,15 @@ const qty = Number(data.qty || 0);
 const productMoves = moveSnap.docs
     .map(d => d.data())
     .filter(m => m.productId === id);
+const productMoves = [];
 
+moveSnap.forEach(x => {
+    const m = x.data();
+
+    if (m.productId === id) {
+        productMoves.push(m);
+    }
+});
 const imports = productMoves
     .filter(m => m.type === "IMPORT")
     .sort((a,b)=>a.createdAt.toMillis()-b.createdAt.toMillis());
@@ -1176,17 +1184,6 @@ moveSnap.forEach(x=>{
     }
 
 });
-// Các lô IMPORT của sản phẩm theo thời gian
-const imports = productMoves
-    .filter(m => m.type === "IMPORT")
-    .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
-
-// Xác định lô hiện tại
-const batchIndex = imports.findIndex(m =>
-    m.createdAt &&
-    data.createdAt &&
-    m.createdAt.toMillis() === data.createdAt.toMillis()
-);
 let salesLeft = salesMap[id] || 0;
 
 for (let i = 0; i <= batchIndex; i++) {
