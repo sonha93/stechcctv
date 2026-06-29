@@ -1144,39 +1144,76 @@ const imports = productMoves
     .sort((a,b)=>a.createdAt.toMillis()-b.createdAt.toMillis());
 
 // Xác định lô hiện tại
+// Xác định lô hiện tại
 const batchIndex = imports.findIndex(m =>
     m.createdAt.toMillis() === data.createdAt.toMillis()
 );
-let soldInPeriod = 0;
-let lossInPeriod = lossMap[id] || 0;
-let plusInPeriod = plusMap[id] || 0;
 
-// clone sales
+// ===== FIFO SALE =====
 let salesLeft = salesMap[id] || 0;
+const soldPerBatch = [];
 
-// FIFO tính sold tới batch hiện tại
-for (let i = 0; i <= batchIndex; i++) {
+imports.forEach(im => {
 
-    const q = Number(imports[i].qty || 0);
+    const q = Number(im.qty || 0);
 
     const take = Math.min(q, salesLeft);
 
-    if (i === batchIndex) {
-        soldInPeriod = take;
-    }
+    soldPerBatch.push(take);
 
     salesLeft -= take;
+
+});
+
+// ===== FIFO MANUAL_MINUS =====
+let minusLeft = manualMinusMap[id] || 0;
+const minusPerBatch = [];
+
+imports.forEach((im,index)=>{
+
+    const available =
+        Number(im.qty || 0) - soldPerBatch[index];
+
+    const take =
+        Math.min(
+            Math.max(available,0),
+            minusLeft
+        );
+
+    minusPerBatch.push(take);
+
+    minusLeft -= take;
+
+});
+
+// ===== FIFO MANUAL_PLUS =====
+// cộng vào lô cuối cùng
+const plusPerBatch =
+    new Array(imports.length).fill(0);
+
+if(imports.length){
+
+    plusPerBatch[imports.length-1] =
+        manualPlusMap[id] || 0;
+
 }
 
-// ✅ tính tồn cuối lô (CHỈ 1 LẦN)
+const soldInPeriod =
+    soldPerBatch[batchIndex] || 0;
+
+const lossInPeriod =
+    minusPerBatch[batchIndex] || 0;
+
+const plusInPeriod =
+    plusPerBatch[batchIndex] || 0;
+
 let remain =
     qty
     - soldInPeriod
     - lossInPeriod
     + plusInPeriod;
 
-if (remain < 0) remain = 0;
-
+remain = Math.max(remain,0);
         html += `
             <tr>
 
