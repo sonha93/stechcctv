@@ -1875,7 +1875,7 @@ snap.forEach(doc => {
 
     return;
 }
-            const importSnap = await db.collection("stock_movements")
+            const fifoImportSnap = await db.collection("stock_movements")
 
     .where("productId","==",foundDoc.id)
 
@@ -1893,8 +1893,7 @@ const batches = [];
 
 
 
-for(const d of importSnap.docs){
-
+for(const d of fifoImportSnap.docs){
 
 
     if(remainMinus <= 0) break;
