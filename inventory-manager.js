@@ -1032,7 +1032,12 @@ moveSnap.forEach(doc => {
     }
 
 });
-
+    console.log("manualAdjustments", manualAdjustments);
+console.log("manualMinusMap", manualMinusMap);
+console.log(
+    "manualMinusMap[f7nLQ1zvDEDbkScd3tk1]",
+    manualMinusMap["f7nLQ1zvDEDbkScd3tk1"]
+);
     const salesSnap =
         await db.collection("sales_history")
         .orderBy("createdAt","asc")
@@ -1049,7 +1054,8 @@ moveSnap.forEach(doc => {
 
     productSnap.forEach(doc=>{
 
-       productMap[normalizeId(doc.id)] = doc.data();
+        productMap[doc.id] = doc.data();
+
     });
 
    // GROUP SALES
@@ -1058,7 +1064,8 @@ salesSnap.forEach(doc => {
 
     const sale = doc.data();
 
-    const id = normalizeId(sale.productId);
+    const id = String(
+        sale.productId || ""
     );
 
     if(!id) return;
@@ -1077,7 +1084,7 @@ moveSnap.forEach(doc => {
 
     if(data.type !== "RETURN") return;
 
-  const id = normalizeId(data.productId);
+    const id = String(data.productId || "");
 
     if(!id) return;
 
@@ -1110,7 +1117,8 @@ if(data.type !== "IMPORT"){
     return;
 }
 
-       const id = normalizeId(data.productId);
+        const id = data.productId;
+
         const p = productMap[id];
 
         if(!p)
@@ -1169,18 +1177,14 @@ const minusPerBatch = [];
 
 imports.forEach((im,index)=>{
 
-    // số còn lại sau khi bán của lô này
-    let remainInLot =
+    const available =
         Number(im.qty || 0) - soldPerBatch[index];
 
-    // cộng lại nếu lô này từng được cộng tay
-    if(index === imports.length - 1){
-        remainInLot += manualPlusMap[id] || 0;
-    }
-
-    remainInLot = Math.max(remainInLot,0);
-
-    const take = Math.min(remainInLot, minusLeft);
+    const take =
+        Math.min(
+            Math.max(available,0),
+            minusLeft
+        );
 
     minusPerBatch.push(take);
 
@@ -1189,14 +1193,17 @@ imports.forEach((im,index)=>{
 });
 
 // ===== FIFO MANUAL_PLUS =====
+// cộng vào lô cuối cùng
 const plusPerBatch =
     new Array(imports.length).fill(0);
 
-// chỉ để HIỂN THỊ
 if(imports.length){
+
     plusPerBatch[imports.length-1] =
         manualPlusMap[id] || 0;
+
 }
+
 const soldInPeriod =
     soldPerBatch[batchIndex] || 0;
 
@@ -1209,11 +1216,8 @@ const plusInPeriod =
 let remain =
     qty
     - soldInPeriod
-    - lossInPeriod;
-
-if(batchIndex === imports.length - 1){
-    remain += manualPlusMap[id] || 0;
-}
+    - lossInPeriod
+    + plusInPeriod;
 
 remain = Math.max(remain,0);
         html += `
