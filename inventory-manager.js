@@ -16,7 +16,8 @@ const inventorySearch = document.getElementById("inventorySearch");
 
 let canManageStock = false;
 let canAddStock = false;
-
+let lossMap = {};
+let plusMap = {};
 firebase.auth().onAuthStateChanged(async (user) => {
 
     if (!user) return;
