@@ -192,7 +192,7 @@ async function loadInventory(){
             "
         >
         `
-        : ""
+        : "-"
     }
 </td>
 
@@ -234,7 +234,7 @@ async function loadInventory(){
                             `
                             : `
                                 <span style="color:green;font-weight:bold;">
-                                    
+                                    __
                                 </span>
                             `
                         }
@@ -261,7 +261,7 @@ async function loadInventory(){
             Lưu
         </button>
         `
-        : ""
+        : "-"
     }
 
 </td>
@@ -950,15 +950,7 @@ async function loadStockMovements(){
 <tr>
     <td>${productName}</td>
 
-   <td>
-${
-  data.type === "SALE"
-    ? "SALE"
-    : data.type === "RETURN"
-    ? "RETURN"
-    : data.type || ""
-}
-</td>
+    <td>${data.type || ""}</td>
 
     <td style="color:${data.qty < 0 ? "red" : "#00c853"};">
         ${data.qty > 0 ? "+" + data.qty : data.qty}
