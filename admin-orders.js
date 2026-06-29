@@ -1905,21 +1905,10 @@ toast.remove();
 window.alert = window.showToast;
 
 }
-window.approveReturn = async function(orderId) {
-
-  const ok = confirm("Duyệt trả hàng đơn này?");
-  if (!ok) return;
-
-  const orderRef = db.collection("orders").doc(orderId);
-  const orderSnap = await orderRef.get();
-  if (!orderSnap.exists) return;
-
-  const order = orderSnap.data();
-
   const batch = db.batch();
 
   // Hàm hoàn kho
-async function restoreStock(order) {
+async function restoreStock(order, orderId) {
   const items = order.items || [];
 
   for (const item of items) {
@@ -1942,12 +1931,13 @@ async function restoreStock(order) {
       productName: item.name || "",
       type: "RETURN",
       qty,
-      reason: `Trả hàng đơn ${order.id}`,
+     reason: `Trả hàng đơn ${orderId}`,
       staffName: document.getElementById("adminName")?.textContent || "",
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
   }
 }
+  await restoreStock(order, orderId);
   // 2. hoàn điểm
   const usedPoints = Number(order.usedPoints || 0);
   const earnPoints = Math.floor(Number(order.total || 0) / 10000);
@@ -1972,11 +1962,13 @@ async function restoreStock(order) {
   }
 
   // 3. update order
-  batch.update(orderRef, {
+ batch.update(orderRef, {
     status: "returned",
+    returnStatus: "approved",
     returnApprovedAt: Date.now(),
-    pointsProcessed: false
-  });
+    pointsProcessed: false,
+    stockRestored: true
+});
 
   // 4. revenue adjust
   const revenueRef = db.collection("revenue_adjustments").doc();
@@ -1991,4 +1983,4 @@ async function restoreStock(order) {
 
   alert("Đã duyệt trả hàng");
   loadOrders();
-};
+}
