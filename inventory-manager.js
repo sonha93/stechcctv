@@ -1010,6 +1010,17 @@ async function loadHistory(){
         await db.collection("stock_movements")
         .orderBy("createdAt","asc")
         .get();
+   moveSnap.forEach(doc=>{
+
+    const d = doc.data();
+
+    if(d.productId === "f7nLQ1zvDEDbkScd3tk1"){
+
+        console.log(d);
+
+    }
+
+});
 // ===== FIX MANUAL MAP =====
 const manualMinusMap = {};
 const manualPlusMap = {};
@@ -1106,11 +1117,6 @@ Object.keys(returnMap).forEach(id => {
     
     // LOOP IMPORT
     moveSnap.forEach(doc=>{
-console.table(
-    moveSnap.docs
-        .map(d=>d.data())
-        .filter(d=>d.productId==="f7nLQ1zvDEDbkScd3tk1")
-);
         const data = doc.data();
 if(data.type !== "IMPORT"){
     return;
