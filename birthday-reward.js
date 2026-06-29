@@ -26,11 +26,8 @@ async function rewardBirthday() {
 
         if (!member.birthday) continue;
 
-        const birthday = new Date(member.birthday);
-
-        const birthDay = birthday.getDate();
-        const birthMonth = birthday.getMonth() + 1;
-
+       const [birthYear, birthMonth, birthDay] =
+    member.birthday.split("-").map(Number);
         if (birthDay !== day || birthMonth !== month)
             continue;
 
