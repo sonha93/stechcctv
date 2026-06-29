@@ -1009,7 +1009,28 @@ async function loadHistory(){
         await db.collection("stock_movements")
         .orderBy("createdAt","asc")
         .get();
+// ===== FIX MANUAL MAP =====
+const manualMinusMap = {};
+const manualPlusMap = {};
 
+moveSnap.forEach(doc => {
+
+    const d = doc.data();
+    const id = normalizeId(d.productId);
+
+    if(!id) return;
+
+    if(d.type === "MANUAL_MINUS"){
+        manualMinusMap[id] =
+            (manualMinusMap[id] || 0) + Math.abs(Number(d.qty || 0));
+    }
+
+    if(d.type === "MANUAL_PLUS"){
+        manualPlusMap[id] =
+            (manualPlusMap[id] || 0) + Number(d.qty || 0);
+    }
+
+});
     const salesSnap =
         await db.collection("sales_history")
         .orderBy("createdAt","asc")
@@ -1125,35 +1146,33 @@ const imports = productMoves
 const batchIndex = imports.findIndex(m =>
     m.createdAt.toMillis() === data.createdAt.toMillis()
 );
-
 let soldInPeriod = 0;
-let lossInPeriod = 0;
-let plusInPeriod = 0;
-let remain = qty;
-// FIFO
+let lossInPeriod = lossMap[id] || 0;
+let plusInPeriod = plusMap[id] || 0;
+
+// clone sales
 let salesLeft = salesMap[id] || 0;
 
-for(let i=0;i<=batchIndex;i++){
+// FIFO tính sold tới batch hiện tại
+for (let i = 0; i <= batchIndex; i++) {
 
     const q = Number(imports[i].qty || 0);
 
-    const take = Math.min(q,salesLeft);
+    const take = Math.min(q, salesLeft);
 
-    if(i===batchIndex){
+    if (i === batchIndex) {
         soldInPeriod = take;
     }
 
     salesLeft -= take;
 }
 
-remain = qty - soldInPeriod;
-
-// tồn cuối của lô
-remain =
+// ✅ tính tồn cuối lô (CHỈ 1 LẦN)
+let remain =
     qty
     - soldInPeriod
-    + plusInPeriod
-    - lossInPeriod;
+    - lossInPeriod
+    + plusInPeriod;
 
 if (remain < 0) remain = 0;
 
