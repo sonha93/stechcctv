@@ -1049,8 +1049,7 @@ moveSnap.forEach(doc => {
 
     productSnap.forEach(doc=>{
 
-        productMap[doc.id] = doc.data();
-
+       productMap[normalizeId(doc.id)] = doc.data();
     });
 
    // GROUP SALES
@@ -1059,8 +1058,7 @@ salesSnap.forEach(doc => {
 
     const sale = doc.data();
 
-    const id = String(
-        sale.productId || ""
+    const id = normalizeId(sale.productId);
     );
 
     if(!id) return;
@@ -1079,7 +1077,7 @@ moveSnap.forEach(doc => {
 
     if(data.type !== "RETURN") return;
 
-    const id = String(data.productId || "");
+  const id = normalizeId(data.productId);
 
     if(!id) return;
 
@@ -1112,8 +1110,7 @@ if(data.type !== "IMPORT"){
     return;
 }
 
-        const id = data.productId;
-
+       const id = normalizeId(data.productId);
         const p = productMap[id];
 
         if(!p)
