@@ -64,19 +64,14 @@ async function getProducts(){
 
     let arr = [];
 
-   querySnapshot.forEach(doc => {
-  const data = doc.data();
-
+    querySnapshot.forEach(doc => {
+      const data = doc.data();
   arr.push({
-    id: doc.id,
-    name: data.name || "Không tên",
-    img: data.img || "",
-    category: data.category || "",
-    price: Number(data.price) || 0,
-    oldPrice: Number(data.oldPrice) || 0,
-    featured: data.featured || false,
-    spec: data.spec || {}
+
+ id: doc.id,
+    ...data
   });
+
 });
   
 
@@ -187,17 +182,29 @@ String(p.id);
           ${p.name || "Không tên"}
         </h4>
 
-       <div class="price-box">
+        <div class="price-box">
 
-  <span class="price">
-    ${price.toLocaleString()}đ
-  </span>
+          <span class="price">
+            ${price.toLocaleString()}đ
+          </span>
 
-  <span class="old-price">
-    ${oldPrice ? oldPrice.toLocaleString() + "đ" : ""}
-  </span>
+          ${
+            hasDiscount
 
-</div>
+            ? `
+
+            <span class="old-price">
+              ${oldPrice.toLocaleString()}đ
+            </span>
+
+            `
+
+            : ""
+
+          }
+
+        </div>
+
 <button
   class="cart-btn"
  onclick="addToCart('${p.id}')"
@@ -241,42 +248,40 @@ if (!product) {
    SEARCH
 ========================= */
 
-function initSearch(){
+const search =
+document.getElementById("search");
 
-  const input = document.getElementById("searchInput");
-  const box = document.getElementById("searchResults");
+if(search){
 
-  if(!input || !box) return;
+  search.addEventListener(
+    "input",
+    e => {
 
-  input.addEventListener("input",e=>{
+      const key =
+      e.target.value.toLowerCase();
 
-    const key=e.target.value.trim().toLowerCase();
+let data =
+allProducts.filter(
+p => p.category === "logo"
+);
 
-    if(!key){
-      box.innerHTML="";
-      render(allProducts);
-      return;
+      render(
+
+        data.filter(
+          p =>
+            p.name &&
+            p.name
+            .toLowerCase()
+            .includes(key)
+        )
+
+      );
+
     }
-
-    const result=allProducts.filter(p=>
-      p.category==="logo" &&
-      p.name.toLowerCase().includes(key)
-    );
-
-    render(result);
-    renderSearchResults(result);
-
-  });
-
-  document.addEventListener("click",e=>{
-
-    if(!e.target.closest(".search-box")){
-      box.innerHTML="";
-    }
-
-  });
+  );
 
 }
+
 /* =========================
    MENU
 ========================= */
@@ -310,7 +315,7 @@ document.addEventListener(
     await getProducts();
 
     render(allProducts);
-    initSearch();
+
     onAuthStateChanged(auth, async(user)=>{
 
       if(user){
@@ -350,54 +355,4 @@ async function updateCartCount() {
   } catch (err) {
     console.error("Lỗi updateCartCount:", err);
   }
-}
-function formatPrice(n){
-  return Number(n || 0).toLocaleString() + "đ";
-}
-
-function renderSearchResults(list){
-
-  const box = document.getElementById("searchResults");
-  if(!box) return;
-
-  box.innerHTML = "";
-
-  if(list.length === 0){
-    box.innerHTML = `<div style="padding:10px;">Không tìm thấy sản phẩm</div>`;
-    return;
-  }
-
-  list.forEach(p=>{
-
-    const div = document.createElement("div");
-    div.className = "search-item";
-
-    div.innerHTML = `
-      <img src="${p.img}" onerror="this.src='https://via.placeholder.com/100'">
-
-      <div class="search-info">
-
-        <div class="search-name">${p.name}</div>
-
-        <div class="search-price">
-          ${formatPrice(p.price)}
-        </div>
-
-        ${
-          p.oldPrice > p.price
-          ? `<div class="search-oldprice">${formatPrice(p.oldPrice)}</div>`
-          : ""
-        }
-
-      </div>
-    `;
-
-    div.onclick = ()=>{
-      window.location.href=`logo.html?id=${p.id}`;
-    };
-
-    box.appendChild(div);
-
-  });
-
 }
