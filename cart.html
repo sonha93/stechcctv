@@ -70,50 +70,31 @@ body{
    HEADER (FIX PRO)
 ========================= */
 .top-header{
+    height:84px;
+
     display:flex;
     align-items:center;
-    justify-content:space-between;
 
-    padding:12px 18px;
-    height:90px;
+    padding:0 18px;
 
-    background:linear-gradient(90deg,#26b7c8,#2d9eb0);
+    background:linear-gradient(90deg,#2cb8c8,#299fb2);
 }
 
-/* Bên trái */
 .header-left{
     display:flex;
     align-items:center;
-    gap:14px;
+    gap:10px;
 }
 
 .menu-btn{
-    width:72px;
-    height:72px;
-
-    border-radius:20px;
-
-    background:#111;
-    color:#fff;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:34px;
-    cursor:pointer;
+    width:56px;
+    height:56px;
+    border-radius:18px;
 }
 
 .logo{
-    width:72px;
-    height:72px;
-
-    border-radius:18px;
-    background:#fff;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    width:56px;
+    height:56px;
 }
 
 .logo img{
@@ -122,83 +103,54 @@ body{
     object-fit:contain;
 }
 
-/* Search */
-
 .search-box{
     flex:1;
     display:flex;
     justify-content:center;
-    padding:0 40px;
+    padding:0 30px;
 }
 
 .search-box input{
 
     width:100%;
-    max-width:680px;
+    max-width:520px;   /* đừng kéo dài */
 
-    height:70px;
+    height:52px;
 
     border:none;
-    outline:none;
+    border-radius:26px;
 
-    border-radius:20px;
+    padding:0 22px;
 
-    padding:0 24px;
-
-    font-size:18px;
+    font-size:17px;
 }
 
-/* Bên phải */
-
 .header-icons{
-
     display:flex;
-    gap:12px;
+    gap:10px;
 }
 
 .icon-btn{
 
-    width:72px;
-    height:72px;
+    width:48px;
+    height:48px;
 
-    background:#111;
+    border-radius:16px;
 
-    color:#fff;
-
-    border-radius:20px;
+    background:rgba(0,0,0,.18);
 
     display:flex;
     align-items:center;
     justify-content:center;
 
+    color:#fff;
     text-decoration:none;
 
-    font-size:30px;
-
-    position:relative;
+    transition:.2s;
 }
 
-.cart-badge{
-
-    position:absolute;
-
-    top:-5px;
-    right:-5px;
-
-    width:28px;
-    height:28px;
-
-    background:red;
-    color:#fff;
-
-    border-radius:50%;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:13px;
-    font-weight:bold;
+.icon-btn:hover{
+    background:rgba(0,0,0,.28);
 }
 /* ICON GROUP */
 .header-icons{
@@ -241,12 +193,20 @@ body{
   align-items:center;
   justify-content:center;
 }
+.top-header{
 
+    position:sticky;
+    top:0;
+
+    z-index:999;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.12);
+}
 /* =========================
    CART UI
 ========================= */
 .container{
-  max-width:900px;
+  width:min(1180px,95%);
   margin:auto;
   padding:15px;
 }
