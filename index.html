@@ -16,6 +16,8 @@
 <link rel="manifest" href="site.webmanifest?v=20260523" />
 <link rel="stylesheet" href="styletrong-nha.css">
 
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 /* =========================
@@ -1025,6 +1027,8 @@ body{
     padding-top:0;
     margin-top:-10px;
 }
+}
+   
    .install-policy{
     display:grid;
     grid-template-columns:repeat(4,1fr);
@@ -1060,12 +1064,81 @@ body{
 @media(max-width:768px){
     .install-policy{
         grid-template-columns:1fr;
+       .extra-section{
+    width:100%;
+    max-width:1800px;
+    margin:0 auto 30px;
+    padding:0 30px;
+    box-sizing:border-box;
+}
+
+.install-policy{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    background:#f3f3f3;
+    padding:30px 20px;
+    border-radius:10px;
+}
+
+.policy-item{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+}
+
+.policy-item i{
+    width:55px;
+    font-size:42px;
+    color:#ef4444;
+    text-align:center;
+    flex-shrink:0;
+}
+
+.policy-item b{
+    display:block;
+    font-size:20px;
+    margin-bottom:5px;
+    color:#111;
+}
+
+.policy-item span{
+    display:block;
+    font-size:15px;
+    color:#666;
+    line-height:1.4;
+}
+
+@media(max-width:768px){
+
+    .extra-section{
+        padding:0 10px;
     }
+
+    .install-policy{
+        grid-template-columns:1fr;
+        gap:18px;
+        padding:20px 15px;
+    }
+
+    .policy-item{
+        justify-content:flex-start;
+    }
+
+    .policy-item b{
+        font-size:17px;
+    }
+
+    .policy-item span{
+        font-size:14px;
+    }
+
 }
 </style>
 
 </head>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <body>
 
 <div id="overlay" onclick="toggleMenu()"></div>
