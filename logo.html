@@ -1910,11 +1910,15 @@ body{
   <div class="search-box">
 
     <input
-      type="text"
-      placeholder="Tìm kiếm sản phẩm..."
-      id="searchInput"
-      oninput="searchProduct()"
-    >
+  type="text"
+  id="searchInput"
+  placeholder="Tìm kiếm sản phẩm..."
+  oninput="searchProduct()"
+  autocomplete="off"
+  autocorrect="off"
+  autocapitalize="off"
+  spellcheck="false"
+>
 
     <div id="searchResults" class="search-results"></div>
 
