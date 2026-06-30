@@ -187,29 +187,17 @@ String(p.id);
           ${p.name || "Không tên"}
         </h4>
 
-        <div class="price-box">
+       <div class="price-box">
 
-          <span class="price">
-            ${price.toLocaleString()}đ
-          </span>
+  <span class="price">
+    ${price.toLocaleString()}đ
+  </span>
 
-          ${
-            hasDiscount
+  <span class="old-price">
+    ${oldPrice ? oldPrice.toLocaleString() + "đ" : ""}
+  </span>
 
-            ? `
-
-            <span class="old-price">
-              ${oldPrice.toLocaleString()}đ
-            </span>
-
-            `
-
-            : ""
-
-          }
-
-        </div>
-
+</div>
 <button
   class="cart-btn"
  onclick="addToCart('${p.id}')"
