@@ -1393,6 +1393,18 @@ const oldBirthday =
         oldBirthday || birthday
 
   }, { merge: true });
+   // Đồng bộ ngày sinh sang members
+const memberSnap = await firebase.firestore()
+  .collection("members")
+  .where("phone", "==", phone)
+  .limit(1)
+  .get();
+
+if (!memberSnap.empty) {
+  await memberSnap.docs[0].ref.update({
+    birthday: oldBirthday || birthday
+  });
+}
 // =====================
 // ĐỒNG BỘ REVIEW
 // =====================
