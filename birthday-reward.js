@@ -24,11 +24,15 @@ async function rewardBirthday() {
     for (const doc of members.docs) {
 
         const member = doc.data();
-
+        console.log(member.phone, member.birthday);
         if (!member.birthday) continue;
 
        const [birthYear, birthMonth, birthDay] =
     member.birthday.split("-").map(Number);
+    console.log(
+  "Today:", day, month,
+  "Birthday:", birthDay, birthMonth
+);
         if (birthDay !== day || birthMonth !== month)
             continue;
 
