@@ -835,29 +835,28 @@ body{
 #viewedPrev,
 #viewedNext{
     position:absolute;
-
     top:50%;
     transform:translateY(-50%);
-
-    z-index:999;
 
     width:42px;
     height:42px;
 
+    z-index:9999;   /* tăng lên */
+
     border:none;
     border-radius:50%;
-
     background:#fff;
     box-shadow:0 2px 10px rgba(0,0,0,.15);
-
     cursor:pointer;
 }
 
-#featuredPrev{
+#featuredPrev,
+#viewedPrev{
     left:10px;
 }
 
-#featuredNext{
+#featuredNext,
+#viewedNext{
     right:10px;
 }
 
