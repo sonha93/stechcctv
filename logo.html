@@ -2152,15 +2152,21 @@ import {
   collection,
   getDocs,
   doc,
-  getDoc
+  getDoc,
+  setDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getAuth
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
   addToCart as addToCartFirebase
 } from "./cart.js";
 
 const db = getFirestore(app);
-
+const auth = getAuth(app);
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 console.log("ID:", id);
@@ -2210,7 +2216,34 @@ async function loadProducts(){
   });
 
 }
+async function saveViewedProduct(product){
 
+  const user = auth.currentUser;
+
+  if(!user || !product) return;
+
+  await setDoc(
+
+    doc(
+      db,
+      "users",
+      user.uid,
+      "viewedProducts",
+      product.id
+    ),
+
+    {
+      id: product.id,
+      name: product.name,
+      img: product.img,
+      price: product.price,
+      oldPrice: product.oldPrice || 0,
+      viewedAt: serverTimestamp()
+    }
+
+  );
+
+}
 // LOAD PRODUCT DETAIL
 async function loadProduct(){
 
@@ -2256,7 +2289,7 @@ async function loadProduct(){
       0
     )
 };
-
+await saveViewedProduct(product);
   // IMAGE
  // IMAGE GALLERY
 
