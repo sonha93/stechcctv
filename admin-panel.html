@@ -187,8 +187,16 @@ button{
   </label>
 
   <button id="btnAdd" class="full">
-    ➕ Thêm sản phẩm
-  </button>
+➕ Thêm sản phẩm
+</button>
+
+<button
+id="btnCancelEdit"
+class="full"
+style="display:none;background:#888;"
+>
+❌ Hủy chỉnh sửa
+</button>
 <div style="margin-top:10px;">
 <input
     type="text"
@@ -245,6 +253,7 @@ window.addEventListener("load", function(){
 
 let products = [];
 let filteredProducts = [];
+let editingId = null;
 const nameMap = {
 
   sd:"Thẻ nhớ",
@@ -469,15 +478,43 @@ importPrice,
       kichthuoc:getVal("kichthuoc"),
       Tlsp:getVal("Tlsp")
     };
-   await setDoc(
-  doc(db,"products",slug),
-  productData
+  if(editingId){
+
+await updateDoc(
+doc(db,"products",editingId),
+{
+...productData,
+img
+}
 );
-showToast("✔ Thêm sản phẩm thành công");
+
+showToast("Đã cập nhật sản phẩm");
+
+editingId=null;
+
+btnAdd.innerHTML="➕ Thêm sản phẩm";
+
+document.getElementById("btnCancelEdit").style.display="none";
 
 await loadProducts();
 
+return;
+
 }
+
+await setDoc(
+doc(db,"products",slug),
+{
+...productData,
+img
+}
+);
+
+showToast("✔ Thêm sản phẩm thành công");
+
+await loadProducts();
+}
+  
   /* =========================
      LINK CLOUDINARY
   ========================= */
@@ -641,14 +678,27 @@ filteredProducts.slice(start, end);
   placeholder="Giá nhập"
   style="width:150px;margin-top:2px;"
 >
-        <button class="updateBtn" style="margin-top:6px;">
-          Cập nhật
-        </button>
+        <button class="updateBtn">
+Cập nhật
+</button>
 
-        <button class="deleteBtn"
-          style="background:red;margin-top:6px;">
-          Xóa
-        </button>
+<button
+class="editBtn"
+style="
+background:#f59e0b;
+margin-top:6px;
+">
+✏️ Sửa thông tin
+</button>
+
+<button
+class="deleteBtn"
+style="
+background:red;
+margin-top:6px;
+">
+Xóa
+</button>
 
       </div>
     </div>
@@ -850,7 +900,95 @@ showToast("Cập nhật thành công");
 loadProducts();
   });
      });
+  /* =========================
+   EDIT
+========================= */
 
+document.querySelectorAll(".editBtn").forEach(btn=>{
+
+btn.addEventListener("click", async e=>{
+
+const item=e.target.closest(".item");
+
+const id=item.dataset.id;
+
+const snap=await getDoc(doc(db,"products",id));
+
+const p=snap.data();
+
+editingId=id;
+
+// load dữ liệu cơ bản
+document.getElementById("name").value=p.name||"";
+document.getElementById("price").value=p.price||"";
+document.getElementById("oldPrice").value=p.oldPrice||"";
+document.getElementById("importPrice").value=p.importPrice||"";
+document.getElementById("desc").value=p.desc||"";
+document.getElementById("imgUrl").value=p.img||"";
+
+document.getElementById("featured").checked=
+p.featured||false;
+
+categoryEl.value=p.category;
+
+// tạo lại form thông số
+categoryEl.dispatchEvent(new Event("change"));
+
+setTimeout(()=>{
+
+[
+"model",
+"xuatXu",
+"Namsx",
+"Hdsd",
+"mauSac",
+"baoHanh",
+"Kichthuoc",
+"trongLuongsp",
+"chatLieu",
+"loaiCamera",
+"doPhanGiai",
+"dienAp",
+"gocOngKinh",
+"hongNgoai",
+"kieuKetNoi",
+"sDtoiDa",
+"sDNgoai",
+"ungDungKetNoi",
+
+"hdbq",
+"hdsudung",
+"dungLuong",
+"tocDo",
+"kichthuoc",
+"Tlsp"
+
+].forEach(key=>{
+
+const el=document.getElementById(key);
+
+if(el){
+
+el.value=p[key]||"";
+
+}
+
+});
+
+},50);
+
+btnAdd.innerHTML="💾 Lưu thay đổi";
+
+document.getElementById("btnCancelEdit").style.display="block";
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+});
+
+});
   /* =========================
      DELETE
   ========================= */
@@ -880,7 +1018,31 @@ loadProducts();
 ========================= */
 
 loadProducts();
+document
+.getElementById("btnCancelEdit")
+.addEventListener("click",()=>{
 
+editingId=null;
+
+btnAdd.innerHTML="➕ Thêm sản phẩm";
+
+document.getElementById("btnCancelEdit").style.display="none";
+
+document.getElementById("name").value="";
+document.getElementById("price").value="";
+document.getElementById("oldPrice").value="";
+document.getElementById("importPrice").value="";
+document.getElementById("desc").value="";
+document.getElementById("imgUrl").value="";
+document.getElementById("fileImg").value="";
+
+document.getElementById("featured").checked=false;
+
+categoryEl.value="sd";
+
+categoryEl.dispatchEvent(new Event("change"));
+
+});
 const searchProduct =
 document.getElementById("searchProduct");
 
