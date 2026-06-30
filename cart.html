@@ -70,79 +70,135 @@ body{
    HEADER (FIX PRO)
 ========================= */
 .top-header{
-  display:flex;
-  align-items:center;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 
-  justify-content:flex-start; /* 👈 QUAN TRỌNG NHẤT */
+    padding:12px 18px;
+    height:90px;
 
-  gap:10px;
-  padding:8px 12px;
-
-  background:linear-gradient(90deg,#1fb4c7,#159aaa);
+    background:linear-gradient(90deg,#26b7c8,#2d9eb0);
 }
-/* MENU BUTTON */
+
+/* Bên trái */
+.header-left{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
 .menu-btn{
-  width:48px;
-  height:48px;
-  border-radius:14px;
-  background:#159aaa;
+    width:72px;
+    height:72px;
+
+    border-radius:20px;
+
+    background:#111;
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:34px;
+    cursor:pointer;
 }
 
-/* LOGO (đẩy sát trái hơn) */
 .logo{
-  width:52px;
-  height:52px;
-  min-width:52px;
-  border-radius:14px;
-  background:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+    width:72px;
+    height:72px;
 
-  margin-right:0px; /* 👈 kéo sát menu */
+    border-radius:18px;
+    background:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
+.logo img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+/* Search */
 
 .search-box{
-  width:100%;
-  display:flex;
-  justify-content:center;
-  margin-left:40px;
-  margin-right:10px;
+    flex:1;
+    display:flex;
+    justify-content:center;
+    padding:0 40px;
 }
+
 .search-box input{
-  width:100%;
-  max-width:400px;
+
+    width:100%;
+    max-width:680px;
+
+    height:70px;
+
+    border:none;
+    outline:none;
+
+    border-radius:20px;
+
+    padding:0 24px;
+
+    font-size:18px;
 }
-.search-box input{
-  width:100%;
-  height:46px;
-  border:none;
-  outline:none;
-  border-radius:14px;
-  padding:0 16px;
-  background:#ffffff;
-  font-weight:600;
+
+/* Bên phải */
+
+.header-icons{
+
+    display:flex;
+    gap:12px;
 }
-.search-item{
-  display:flex;
-  gap:10px;
-  padding:10px;
-  border-bottom:1px solid #eee;
-  cursor:pointer;
+
+.icon-btn{
+
+    width:72px;
+    height:72px;
+
+    background:#111;
+
+    color:#fff;
+
+    border-radius:20px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-decoration:none;
+
+    font-size:30px;
+
+    position:relative;
 }
-.search-item img{
-  width:60px;
-  height:60px;
-  object-fit:cover;
-  border-radius:6px;
-}
-.search-name{font-weight:bold;}
-.search-price{color:red;font-weight:bold;}
-.search-oldprice{
-  font-size:12px;
-  color:#888;
-  text-decoration:line-through;
+
+.cart-badge{
+
+    position:absolute;
+
+    top:-5px;
+    right:-5px;
+
+    width:28px;
+    height:28px;
+
+    background:red;
+    color:#fff;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:13px;
+    font-weight:bold;
 }
 /* ICON GROUP */
 .header-icons{
@@ -487,7 +543,46 @@ body{
   cursor: pointer;
   z-index: 10;
   }
+@media(max-width:768px){
 
+.top-header{
+
+    height:72px;
+    padding:8px;
+}
+
+.menu-btn,
+.logo,
+.icon-btn{
+
+    width:48px;
+    height:48px;
+
+    border-radius:14px;
+
+    font-size:22px;
+}
+
+.search-box{
+
+    padding:0 10px;
+}
+
+.search-box input{
+
+    height:46px;
+    border-radius:14px;
+
+    font-size:15px;
+}
+
+.cart-badge{
+
+    width:18px;
+    height:18px;
+
+    font-size:10px;
+}
 }
 </style>
 </head>
@@ -506,14 +601,39 @@ body{
 
 <div class="top-header">
 
-  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+    <div class="header-left">
 
-  <div class="logo">
-    <img src="https://i.ibb.co/Z1kv9nJj/logo.png" alt="Stech">
-  </div>
+        <div class="menu-btn" onclick="toggleMenu()">
+            ☰
+        </div>
 
+        <div class="logo">
+            <img src="https://i.ibb.co/Z1kv9nJj/logo.png">
+        </div>
 
-</div> <!-- ❗ PHẢI ĐÓNG HEADER Ở ĐÂY -->
+    </div>
+
+    <div class="search-box">
+        <input
+            type="text"
+            placeholder="Tìm sản phẩm..."
+        >
+    </div>
+
+    <div class="header-icons">
+
+        <a href="profile.html" class="icon-btn">
+            👤
+        </a>
+
+        <a href="cart.html" class="icon-btn">
+            🛒
+            <span class="cart-badge">1</span>
+        </a>
+
+    </div>
+
+</div>
 
 <!-- GIỎ HÀNG PHẢI RA NGOÀI -->
 <div class="container">
