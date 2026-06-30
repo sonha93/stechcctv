@@ -824,14 +824,21 @@ body{
 .featured-slider{
     position:relative;
     overflow:hidden;
+
+    display:flex;
+    align-items:center;
 }
 
 /* NÚT */
 #featuredPrev,
-#featuredNext{
+#featuredNext,
+#viewedPrev,
+#viewedNext{
     position:absolute;
+
     top:50%;
     transform:translateY(-50%);
+
     z-index:999;
 
     width:42px;
