@@ -241,40 +241,42 @@ if (!product) {
    SEARCH
 ========================= */
 
-const search =
-document.getElementById("search");
+function initSearch(){
 
-if(search){
+  const input = document.getElementById("searchInput");
+  const box = document.getElementById("searchResults");
 
-  search.addEventListener(
-    "input",
-    e => {
+  if(!input || !box) return;
 
-      const key =
-      e.target.value.toLowerCase();
+  input.addEventListener("input",e=>{
 
-let data =
-allProducts.filter(
-p => p.category === "logo"
-);
+    const key=e.target.value.trim().toLowerCase();
 
-      render(
-
-        data.filter(
-          p =>
-            p.name &&
-            p.name
-            .toLowerCase()
-            .includes(key)
-        )
-
-      );
-
+    if(!key){
+      box.innerHTML="";
+      render(allProducts);
+      return;
     }
-  );
+
+    const result=allProducts.filter(p=>
+      p.category==="logo" &&
+      p.name.toLowerCase().includes(key)
+    );
+
+    render(result);
+    renderSearchResults(result);
+
+  });
+
+  document.addEventListener("click",e=>{
+
+    if(!e.target.closest(".search-box")){
+      box.innerHTML="";
+    }
+
+  });
 
 }
-
 /* =========================
    MENU
 ========================= */
@@ -308,7 +310,7 @@ document.addEventListener(
     await getProducts();
 
     render(allProducts);
-
+    initSearch();
     onAuthStateChanged(auth, async(user)=>{
 
       if(user){
@@ -348,4 +350,54 @@ async function updateCartCount() {
   } catch (err) {
     console.error("Lỗi updateCartCount:", err);
   }
+}
+function formatPrice(n){
+  return Number(n || 0).toLocaleString() + "đ";
+}
+
+function renderSearchResults(list){
+
+  const box = document.getElementById("searchResults");
+  if(!box) return;
+
+  box.innerHTML = "";
+
+  if(list.length === 0){
+    box.innerHTML = `<div style="padding:10px;">Không tìm thấy sản phẩm</div>`;
+    return;
+  }
+
+  list.forEach(p=>{
+
+    const div = document.createElement("div");
+    div.className = "search-item";
+
+    div.innerHTML = `
+      <img src="${p.img}" onerror="this.src='https://via.placeholder.com/100'">
+
+      <div class="search-info">
+
+        <div class="search-name">${p.name}</div>
+
+        <div class="search-price">
+          ${formatPrice(p.price)}
+        </div>
+
+        ${
+          p.oldPrice > p.price
+          ? `<div class="search-oldprice">${formatPrice(p.oldPrice)}</div>`
+          : ""
+        }
+
+      </div>
+    `;
+
+    div.onclick = ()=>{
+      window.location.href=`logo.html?id=${p.id}`;
+    };
+
+    box.appendChild(div);
+
+  });
+
 }
