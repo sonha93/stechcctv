@@ -1025,6 +1025,42 @@ body{
     padding-top:0;
     margin-top:-10px;
 }
+   .install-policy{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    background:#fff;
+    padding:25px;
+    border-radius:12px;
+}
+
+.policy-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.policy-item i{
+    font-size:42px;
+    color:#e53935;
+    width:50px;
+    text-align:center;
+}
+
+.policy-item b{
+    display:block;
+    margin-bottom:4px;
+}
+
+.policy-item span{
+    color:#666;
+    font-size:14px;
+}
+
+@media(max-width:768px){
+    .install-policy{
+        grid-template-columns:1fr;
+    }
 }
 </style>
 
@@ -1190,7 +1226,43 @@ body{
     </div>
 
 </section>
-<div class="extra-section"></div>
+<div class="extra-section">
+    <div class="install-policy">
+
+        <div class="policy-item">
+            <i class="fa-solid fa-shield-halved"></i>
+            <div>
+                <b>Thương hiệu đảm bảo</b>
+                <span>Nhập khẩu, bảo hành chính hãng</span>
+            </div>
+        </div>
+
+        <div class="policy-item">
+            <i class="fa-solid fa-arrow-rotate-left"></i>
+            <div>
+                <b>Đổi trả dễ dàng</b>
+                <span>Theo chính sách đổi trả</span>
+            </div>
+        </div>
+
+        <div class="policy-item">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+            <div>
+                <b>Lắp đặt tận nơi</b>
+                <span>Hỗ trợ lắp đặt toàn quốc</span>
+            </div>
+        </div>
+
+        <div class="policy-item">
+            <i class="fa-solid fa-award"></i>
+            <div>
+                <b>Sản phẩm chất lượng</b>
+                <span>Đảm bảo tương thích và độ bền cao</span>
+            </div>
+        </div>
+
+    </div>
+</div>
 
 <!-- FOOTER -->
 
