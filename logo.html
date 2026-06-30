@@ -245,7 +245,6 @@ header{
   color:#555;
   text-decoration:line-through;
   font-size:18px;
-	
 }
 
 .sale{
@@ -1636,7 +1635,6 @@ color:#00b894;
   width:100%;
   display:block;
 }
-
 .footer{
   margin-top:auto;
 }
@@ -1675,22 +1673,6 @@ margin:20px 0;
 .review-pagination button{
 padding:6px 12px;
 border:1px solid #
-}
-	.review-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:15px;
-    flex-wrap:wrap;
-}
-
-.review-header .review-title{
-    margin:0;
-}
-
-.review-header .review-filter{
-    margin:0;
-    justify-content:flex-end;
 }
 	.review-name{
     display:flex;
@@ -1872,18 +1854,7 @@ body{
     border-left:4px solid #00b894;
     box-shadow:0 2px 10px rgba(0,0,0,.06);
 		}
-	.review-header{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:10px;
-}
-
-.review-header .review-filter{
-    width:100%;
-    justify-content:flex-start;
-}
-
-}
+	
 </style>
 </head>
 
@@ -1991,23 +1962,21 @@ body{
 
   <div id="reviewSummary"></div>
 
-<div class="review-header">
+<h2 class="review-title" id="commentCount">
+  0 Đánh giá & Bình luận
+</h2>
 
-    <h2 class="review-title" id="commentCount">
-        0 Đánh giá & Bình luận
-    </h2>
-
-    <div id="reviewFilter"></div>
-
-</div>
 <div id="reviewForm"></div>
-<div id="commentForm"></div>
 
-<div id="reviewList"></div>
+<h2 class="review-title">
+Đánh giá và Bình luận
+</h2>
+
+<div id="commentForm"></div>
 
 <div id="commentList"></div>
 
-
+<div id="reviewList"></div>
 </div>
 <!-- REVIEW -->
 
@@ -2183,21 +2152,15 @@ import {
   collection,
   getDocs,
   doc,
-  getDoc,
-  setDoc,
-  serverTimestamp
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-  getAuth
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
   addToCart as addToCartFirebase
 } from "./cart.js";
 
 const db = getFirestore(app);
-const auth = getAuth(app);
+
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 console.log("ID:", id);
@@ -2247,34 +2210,7 @@ async function loadProducts(){
   });
 
 }
-async function saveViewedProduct(product){
 
-  const user = auth.currentUser;
-
-  if(!user || !product) return;
-
-  await setDoc(
-
-    doc(
-      db,
-      "users",
-      user.uid,
-      "viewedProducts",
-      product.id
-    ),
-
-    {
-      id: product.id,
-      name: product.name,
-      img: product.img,
-      price: product.price,
-      oldPrice: product.oldPrice || 0,
-      viewedAt: serverTimestamp()
-    }
-
-  );
-
-}
 // LOAD PRODUCT DETAIL
 async function loadProduct(){
 
@@ -2320,8 +2256,7 @@ async function loadProduct(){
       0
     )
 };
-product.oldPrice = product.oldPrice || product.originalPrice || 0;
-await saveViewedProduct(product);
+
   // IMAGE
  // IMAGE GALLERY
 
@@ -2391,23 +2326,10 @@ thumb.onclick = ()=>{
   document.getElementById("detailPrice").innerText =
     Number(product.price || 0).toLocaleString() + "đ";
 
- const oldPrice =
-  product.oldPrice || product.originalPrice;
-
-const oldPriceEl =
-  document.getElementById("detailOldPrice");
-
-if (
-  oldPrice &&
-  Number(oldPrice) > 0 &&
-  Number(oldPrice) > Number(product.price)
-) {
-  oldPriceEl.style.display = "inline-block";
-  oldPriceEl.innerText =
-    Number(oldPrice).toLocaleString() + "đ";
-} else {
-  oldPriceEl.style.display = "none";
-}
+  document.getElementById("detailOldPrice").innerText =
+    product.oldPrice
+      ? Number(product.oldPrice).toLocaleString() + "đ"
+      : "";
 
   // DESC
   document.getElementById("detailDesc").innerText =
