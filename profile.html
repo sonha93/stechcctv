@@ -1399,11 +1399,9 @@ const memberSnap = await firebase.firestore()
   .where("phone","==",phone)
   .limit(1)
   .get();
-console.log("Tìm member:", phone);
-console.log("Có member:", !memberSnap.empty);
-console.log("Birthday sẽ lưu:", oldBirthday || birthday);
+
 if(!memberSnap.empty){
- console.log("Đang update member");
+
   await memberSnap.docs[0].ref.update({
 
     name: name,
@@ -1412,7 +1410,7 @@ if(!memberSnap.empty){
     birthday: oldBirthday || birthday
 
   });
- console.log("Update xong");
+ 
 }
 // =====================
 // ĐỒNG BỘ REVIEW
