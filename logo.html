@@ -2390,9 +2390,7 @@ thumb.onclick = ()=>{
     Number(product.price || 0).toLocaleString() + "đ";
 
   document.getElementById("detailOldPrice").innerText =
-    product.oldPrice
-      ? Number(product.oldPrice).toLocaleString() + "đ"
-      : "";
+  Number(product.oldPrice || product.originalPrice || 0).toLocaleString() + "đ";
 
   // DESC
   document.getElementById("detailDesc").innerText =
