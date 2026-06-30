@@ -1270,7 +1270,33 @@ c.position;
 }
 
 
+if (c.replies?.length) {
 
+    for (const rep of c.replies) {
+
+        if (!rep.uid) continue;
+
+        const repSnap = await getDoc(doc(db, "users", rep.uid));
+
+        if (repSnap.exists()) {
+
+            const latest = repSnap.data();
+
+            rep.name =
+                latest.name ||
+                rep.name;
+
+            rep.avatar =
+                latest.avatar ||
+                rep.avatar;
+
+            rep.position =
+                latest.position ||
+                rep.position;
+        }
+    }
+
+}
 commentList.innerHTML += `
 
 <div class="review-card question-card">
