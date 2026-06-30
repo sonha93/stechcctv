@@ -36,6 +36,15 @@ members.docs.forEach(d => {
     console.log(
   "Today:", day, month,
   "Birthday:", birthDay, birthMonth
+);        console.log(
+  member.phone,
+  "birthday =", member.birthday,
+  "=>",
+  birthDay,
+  birthMonth,
+  "today =",
+  day,
+  month
 );
         if (birthDay !== day || birthMonth !== month)
             continue;
