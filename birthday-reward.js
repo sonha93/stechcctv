@@ -18,7 +18,11 @@ async function rewardBirthday() {
     const year = today.getFullYear();
 
     const members = await db.collection("members").get();
+        console.log("Tổng members:", members.size);
 
+members.docs.forEach(d => {
+  console.log("ID:", d.id);
+});
     let count = 0;
 
     for (const doc of members.docs) {
