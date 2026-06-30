@@ -64,14 +64,19 @@ async function getProducts(){
 
     let arr = [];
 
-    querySnapshot.forEach(doc => {
-      const data = doc.data();
+   querySnapshot.forEach(doc => {
+  const data = doc.data();
+
   arr.push({
-
- id: doc.id,
-    ...data
+    id: doc.id,
+    name: data.name || "Không tên",
+    img: data.img || "",
+    category: data.category || "",
+    price: Number(data.price) || 0,
+    oldPrice: Number(data.oldPrice) || 0,
+    featured: data.featured || false,
+    spec: data.spec || {}
   });
-
 });
   
 
