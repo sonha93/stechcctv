@@ -28,7 +28,12 @@ members.docs.forEach(d => {
     for (const doc of members.docs) {
 
         const member = doc.data();
-        console.log(member.phone, member.birthday);
+       console.log(
+  "Phone:",
+  member.phone,
+  "| Birthday:",
+  JSON.stringify(member.birthday)
+);
         if (!member.birthday) continue;
 
        const [birthYear, birthMonth, birthDay] =
