@@ -25,28 +25,6 @@ let currentUser = null;
 let cartBox = null;
 let totalBox = null;
 let actionBox = null;
-let allProducts = [];
-async function loadProducts(){
-
-  const snap = await getDocs(collection(db,"products"));
-
-  allProducts = [];
-
-  snap.forEach(doc=>{
-
-    const d = doc.data();
-
-    allProducts.push({
-      id:doc.id,
-      name:d.name || "",
-      img:d.img || "",
-      price:Number(d.price)||0,
-      oldPrice:Number(d.oldPrice)||0
-    });
-
-  });
-
-}
 // ============================
 // UPDATE CART COUNT
 // ============================
@@ -355,111 +333,14 @@ onAuthStateChanged(auth, async user => {
 
   currentUser = user;
 
-  await loadProducts();   // thêm
 
-  initSearch();           // thêm
 
-  await renderCart();
-  await updateCartCount();
+ await renderCart();
+await updateCartCount();
 
 });
 
 window.renderCart = renderCart;
-function formatPrice(n){
-  return Number(n).toLocaleString()+"đ";
-}
-
-function renderSearchResults(list){
-
-  const box=document.getElementById("searchResults");
-
-  if(!box) return;
-
-  box.innerHTML="";
-
-  if(list.length===0){
-
-    box.innerHTML="<div style='padding:10px'>Không tìm thấy sản phẩm</div>";
-    return;
-
-  }
-
-  list.forEach(p=>{
-
-    box.innerHTML+=`
-
-<div class="search-item">
-
-<img src="${p.img}" onerror="this.src='https://via.placeholder.com/100'">
-
-<div class="search-info">
-
-<div class="search-name">${p.name}</div>
-
-<div class="search-price">${formatPrice(p.price)}</div>
-
-${p.oldPrice>p.price?
-`<div class="search-oldprice">${formatPrice(p.oldPrice)}</div>`:""}
-
-</div>
-
-</div>
-
-`;
-
-  });
-
-  box.querySelectorAll(".search-item").forEach((item,index)=>{
-
-      item.onclick=()=>{
-
-          location.href=`logo.html?id=${list[index].id}`;
-
-      };
-
-  });
-
-}
-
-function initSearch(){
-
-  const input=document.getElementById("searchInput");
-  const box=document.getElementById("searchResults");
-
-  if(!input || !box) return;
-
-  input.addEventListener("input",()=>{
-
-      const key=input.value.trim().toLowerCase();
-
-      if(!key){
-
-          box.innerHTML="";
-          return;
-
-      }
-
-      const result=allProducts.filter(p=>
-
-          p.name.toLowerCase().includes(key)
-
-      );
-
-      renderSearchResults(result);
-
-  });
-
-  document.addEventListener("click",(e)=>{
-
-      if(!e.target.closest(".search-box")){
-
-          box.innerHTML="";
-
-      }
-
-  });
-
-}
 function showToast(message){
 
 const toast = document.createElement("div");
