@@ -2389,11 +2389,15 @@ thumb.onclick = ()=>{
   document.getElementById("detailPrice").innerText =
     Number(product.price || 0).toLocaleString() + "đ";
 
-  document.getElementById("detailOldPrice").innerText =
-  product.oldPrice
-    ? Number(product.oldPrice).toLocaleString() + "đ"
-    : "";
+ const oldPrice =
+  product.oldPrice ||
+  product.originalPrice ||
+  0;
 
+document.getElementById("detailOldPrice").innerText =
+  oldPrice && oldPrice > product.price
+    ? Number(oldPrice).toLocaleString() + "đ"
+    : "";
   // DESC
   document.getElementById("detailDesc").innerText =
     product.desc || "Không có mô tả";
