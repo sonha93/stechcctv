@@ -1999,7 +1999,7 @@ body{
     <div id="reviewFilter"></div>
 
 </div>
-
+<div id="reviewForm"></div>
 <div id="commentForm"></div>
 
 <div id="reviewList"></div>
@@ -2390,9 +2390,7 @@ thumb.onclick = ()=>{
     Number(product.price || 0).toLocaleString() + "đ";
 
   document.getElementById("detailOldPrice").innerText =
-    product.oldPrice
-      ? Number(product.oldPrice).toLocaleString() + "đ"
-      : "";
+  Number(product.oldPrice || product.originalPrice || 0).toLocaleString() + "đ";
 
   // DESC
   document.getElementById("detailDesc").innerText =
