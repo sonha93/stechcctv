@@ -245,6 +245,7 @@ header{
   color:#555;
   text-decoration:line-through;
   font-size:18px;
+	display:inline-block;
 }
 
 .sale{
@@ -2319,6 +2320,7 @@ async function loadProduct(){
       0
     )
 };
+product.oldPrice = product.oldPrice || product.originalPrice || 0;
 await saveViewedProduct(product);
   // IMAGE
  // IMAGE GALLERY
@@ -2389,11 +2391,24 @@ thumb.onclick = ()=>{
   document.getElementById("detailPrice").innerText =
     Number(product.price || 0).toLocaleString() + "đ";
 
-const price = Number(product.price || 0);
-const oldPrice = Number(product.oldPrice || product.originalPrice || 0);
+ const oldPrice =
+  product.oldPrice || product.originalPrice;
 
-document.getElementById("detailOldPrice").innerText =
-  oldPrice > price ? oldPrice.toLocaleString() + "đ" : "";
+const oldPriceEl =
+  document.getElementById("detailOldPrice");
+
+if (
+  oldPrice &&
+  Number(oldPrice) > 0 &&
+  Number(oldPrice) > Number(product.price)
+) {
+  oldPriceEl.style.display = "inline-block";
+  oldPriceEl.innerText =
+    Number(oldPrice).toLocaleString() + "đ";
+} else {
+  oldPriceEl.style.display = "none";
+}
+
   // DESC
   document.getElementById("detailDesc").innerText =
     product.desc || "Không có mô tả";
