@@ -976,15 +976,39 @@ latestUser.position ||
 r.position;
 
 }
+if (r.replies?.length) {
 
+  for (const rep of r.replies) {
+
+    if (!rep.uid) continue;
+
+    const repSnap = await getDoc(doc(db, "users", rep.uid));
+
+    if (repSnap.exists()) {
+
+      const latest = repSnap.data();
+
+      rep.name =
+        latest.name || rep.name;
+
+      rep.avatar =
+        latest.avatar || rep.avatar;
+
+      rep.position =
+        latest.position || rep.position;
+    }
+  }
+
+}
  if(
    currentFilter !== "all" &&
    Number(r.rating) !== Number(currentFilter)
  ){
    return;
  }
-
+  
  reviewList.innerHTML += `
+ 
 <div class="review-card">
 
 <div class="review-user">
