@@ -607,6 +607,8 @@ body{
   border-bottom:1px solid #ccc;
   border-radius:4px;
   object-fit:cover;
+
+  transition: transform .3s ease;
 }
 
 /* MÁY TÍNH 4 CỘT */
@@ -1133,8 +1135,12 @@ body{
     .policy-item span{
         font-size:14px;
     }
-
+/* Hover ảnh */
+.product-card:hover img{
+    transform: translateY(-12px);
 }
+}
+       
 </style>
 
 </head>
