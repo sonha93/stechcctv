@@ -2213,7 +2213,7 @@ let products = [];
 let product = null;
 
 let currentIndex = 0;
-let images = [];
+let medias = [];
 // MENU
 function toggleMenu(){
 
@@ -2343,23 +2343,88 @@ const thumbList =
   document.getElementById("thumbList");
 
 // danh sách ảnh
-images = [
-  product.img,
-  ...(product.images || []).filter(
-    img => img !== product.img
-  )
-];
+medias = [];
+
+if(product.img){
+
+    medias.push({
+        type:"image",
+        url:product.img
+    });
+
+}
+
+(product.images || []).forEach(img=>{
+
+    if(img !== product.img){
+
+        medias.push({
+            type:"image",
+            url:img
+        });
+
+    }
+
+});
+
+(product.videos || []).forEach(video=>{
+
+    medias.push({
+        type:"video",
+        url:video
+    });
+
+});
 
 currentIndex = 0;
-mainImg.src = images[0] || "";
 
-thumbList.innerHTML = "";
+thumbList.innerHTML="";
+	if(medias.length){
 
-images.forEach((img,index)=>{
+    if(medias[0].type==="image"){
 
-  const thumb = document.createElement("img");
+        mainImg.outerHTML=`
+        <img
+        id="detailImg"
+        src="${medias[0].url}">
+        `;
 
-  thumb.src = img;
+    }else{
+
+        mainImg.outerHTML=`
+        <video
+        id="detailImg"
+        controls
+        autoplay
+        muted
+        style="width:100%;border-radius:10px;">
+        <source src="${medias[0].url}">
+        </video>
+        `;
+
+    }
+
+}
+
+medias.forEach((item,index)=>{
+
+  let thumb;
+
+if(item.type==="image"){
+
+    thumb=document.createElement("img");
+
+    thumb.src=item.url;
+
+}else{
+
+    thumb=document.createElement("video");
+
+    thumb.src=item.url;
+
+    thumb.muted=true;
+
+}
 
   if(index === 0){
     thumb.classList.add("active");
@@ -2370,7 +2435,29 @@ thumb.onclick = ()=>{
   currentIndex = index;
 
   // đổi ảnh chính
-  mainImg.src = img;
+ const box=document.getElementById("detailImg");
+
+if(item.type==="image"){
+
+    box.outerHTML=`
+    <img
+    id="detailImg"
+    src="${item.url}">
+    `;
+
+}else{
+
+    box.outerHTML=`
+    <video
+    id="detailImg"
+    controls
+    autoplay
+    style="width:100%">
+    <source src="${item.url}">
+    </video>
+    `;
+
+}
 
   document
     .querySelectorAll(".thumb-list img")
