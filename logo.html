@@ -2393,14 +2393,9 @@ thumb.onclick = ()=>{
   document.getElementById("detailPrice").innerText =
     Number(product.price || 0).toLocaleString() + "đ";
 
-const oldPriceEl = document.getElementById("detailOldPrice");
+  document.getElementById("detailOldPrice").innerText =
+  Number(product.oldPrice || product.originalPrice || 0).toLocaleString() + "đ";
 
-if (product.oldPrice && Number(product.oldPrice) > Number(product.price)) {
-    oldPriceEl.style.display = "inline";
-    oldPriceEl.innerText = Number(product.oldPrice).toLocaleString() + "đ";
-} else {
-    oldPriceEl.style.display = "none";
-}
   // DESC
   document.getElementById("detailDesc").innerText =
     product.desc || "Không có mô tả";
@@ -2473,13 +2468,17 @@ document.getElementById("detailtocDo").innerText =
   // SALE
   const saleBox = document.getElementById("detailSale");
 
- const oldPrice = Number(product.oldPrice || product.originalPrice || 0);
+  if(
+    product.oldPrice &&
+    Number(product.oldPrice) > Number(product.price)
+  ){
 
-if (oldPrice > Number(product.price)) {
-
-   const sale = Math.round(
-  ((oldPrice - Number(product.price)) / oldPrice) * 100
-);
+    const sale = Math.round(
+      (
+        (Number(product.oldPrice) - Number(product.price))
+        / Number(product.oldPrice)
+      ) * 100
+    );
 
     saleBox.style.display = "inline-block";
     saleBox.innerText = "-" + sale + "%";
