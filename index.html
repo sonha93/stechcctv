@@ -638,7 +638,35 @@ body{
 .item{
   position:relative;
 }
+.product-image{
 
+    height:220px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    overflow:hidden;
+
+}
+.item img{
+
+    width:100%;
+
+    max-height:190px;
+
+    object-fit:contain;
+
+    transition:transform .35s ease;
+
+}
+.item:hover .product-image img{
+
+transform:translateY(-10px) scale(1.06);
+
+}
 #loadMoreBtn{
   display:block;
   margin:20px auto;
