@@ -134,118 +134,64 @@ userSnap.data().phone || "";
 }
 
 reviewsTable.innerHTML += `
-
 <tr>
+  <td>${r.userName || ""}</td>
 
-<tr>
+  <td>${phone}</td>
 
-<td>${r.userName || ""}</td>
+  <td>
+    <a href="${productLink}" target="_blank" style="color:#00b894;font-weight:bold;">
+      ${productName}
+    </a>
+  </td>
 
-<td>${phone}</td>
+  <td>${r.rating || 0} ⭐</td>
 
-<td>
-<a
-href="${productLink}"
-target="_blank"
-style="
-color:#00b894;
-font-weight:bold;
-">
-${productName}
-</a>
-</td>
+  <td>${r.content || ""}</td>
 
-<td>${r.rating || 0} ⭐</td>
+  <!-- ⭐ REPLY HIỂN THỊ ĐÚNG 1 CỘT -->
+  <td>
+    ${(r.replies || [])
+      .map(rep => `
+        <div style="
+          background:#f1f1f1;
+          padding:6px;
+          margin:4px 0;
+          border-radius:6px;
+          font-size:12px;
+        ">
+          <b>${rep.name}</b>: ${rep.content}
+        </div>
+      `)
+      .join("")}
+  </td>
 
-<td>
-<td>
-  ${(r.replies || [])
-    .map(rep => `
-      <div style="
-        background:#f1f1f1;
-        padding:6px;
-        margin:4px 0;
-        border-radius:6px;
-        font-size:12px;
-      ">
-        <b>${rep.name}</b>: ${rep.content}
-      </div>
-    `)
-    .join("")}
-</td>
-${r.content || ""}
-<td>
-  ${(r.replies || [])
-    .map(rep => `
-      <div style="
-        background:#f1f1f1;
-        padding:6px;
-        margin:4px 0;
-        border-radius:6px;
-        font-size:12px;
-      ">
-        <b>${rep.name}</b>: ${rep.content}
-      </div>
-    `)
-    .join("")}
-</td>
-</td>
+  <td>
+    ${(r.images || [])
+      .map(img => `
+        <img src="${img}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;margin:2px;">
+      `)
+      .join("")}
 
-<td>
+    ${r.video ? `
+      <br>
+      <video src="${r.video}" controls width="120"></video>
+    ` : ""}
+  </td>
 
-${(r.images || [])
-.map(img=>`
-<img
-src="${img}"
-style="
-width:60px;
-height:60px;
-object-fit:cover;
-border-radius:6px;
-margin:2px;
-">
-`)
-.join("")}
+  <td>
+    ${r.createdAt?.toDate ? r.createdAt.toDate().toLocaleString() : ""}
+  </td>
 
-${r.video ? `
-<br>
-<video
-src="${r.video}"
-controls
-width="120">
-</video>
-` : ""}
+  <td>
+    <button onclick="adminReplyReview('${r.id}')">Reply</button>
+  </td>
 
-</td>
-
-<td>
-${r.createdAt?.toDate
-? r.createdAt.toDate().toLocaleString()
-: ""}
-</td>
-
-<td>
-
-<button
-onclick="adminReplyReview('${r.id}')">
-Reply
-</button>
-
-</td>
-
-<td>
-
-<button
-onclick="deleteReview('${r.id}')">
-Xóa
-</button>
-
-</td>
-
+  <td>
+    <button onclick="deleteReview('${r.id}')">Xóa</button>
+  </td>
 </tr>
-
 `;
-
 }
 
 }
@@ -338,9 +284,8 @@ ${productName}
 </a>
 </td>
 
-<td>
-${c.content || ""}
-</td>
+<td>${c.content || ""}</td>
+
 <td>
   ${(c.replies || [])
     .map(rep => `
