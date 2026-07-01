@@ -270,7 +270,17 @@ header{
       >
 
     </div>
+<button
+id="loadImagesBtn"
+class="upload-btn"
+style="margin-bottom:15px;background:#444">
+Tải ảnh hiện có
+</button>
 
+<div
+id="oldImages"
+class="preview">
+</div>
     <div class="input-box">
 
       <label>Chọn nhiều ảnh</label>
@@ -283,7 +293,7 @@ header{
       >
 
     </div>
-
+    
     <button
       class="upload-btn"
       id="uploadBtn"
@@ -313,7 +323,8 @@ import {
   getFirestore,
   doc,
   updateDoc,
-  arrayUnion
+  arrayUnion,
+  getDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -338,7 +349,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
-
+let currentImages = [];
 /* MENU */
 
 function toggleMenu(){
@@ -398,7 +409,50 @@ input.addEventListener("change",()=>{
   }
 
 });
+document
+.getElementById("loadImagesBtn")
+.onclick = async ()=>{
 
+    const id =
+    document.getElementById("productId")
+    .value
+    .trim();
+
+    if(!id){
+        alert("Nhập ID");
+        return;
+    }
+
+    const snap =
+    await getDoc(doc(db,"products",id));
+
+    if(!snap.exists()){
+        alert("Không tìm thấy sản phẩm");
+        return;
+    }
+
+    currentImages =
+    snap.data().images || [];
+
+    const box =
+    document.getElementById("oldImages");
+
+    box.innerHTML="";
+
+    currentImages.forEach((img,index)=>{
+
+        const url =
+        typeof img==="string"
+        ? img
+        : img.url;
+
+        box.innerHTML+=`
+        <div style="
+        width:120px;
+        position:relative;
+        ">
+
+            <
 /* UPLOAD CLOUDINARY */
 
 document
