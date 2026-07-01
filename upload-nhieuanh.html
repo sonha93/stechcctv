@@ -427,7 +427,29 @@ document
 
   }
 
-  const files = input.files;
+const files = input.files;
+const videoFile = videoInput.files[0];
+
+let urls = [];
+let videoUrl = "";
+
+if(videoFile){
+
+  const formData = new FormData();
+  formData.append("file", videoFile);
+  formData.append("upload_preset", "stech_up");
+
+  const res = await fetch(
+    "https://api.cloudinary.com/v1_1/dmz9gpp1b/video/upload",
+    {
+      method: "POST",
+      body: formData
+    }
+  );
+
+  const data = await res.json();
+  videoUrl = data.secure_url;
+}
 
   if(files.length === 0){
 
