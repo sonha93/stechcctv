@@ -1,3 +1,10 @@
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  updateDoc,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 // user.js - quản lý đăng ký, đăng nhập, logout, load thông tin user
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -15,7 +22,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-
+const db = getFirestore(app);
 // ELEMENTS
 const loginLink = document.getElementById("loginLink");
 const logoutLink = document.getElementById("logoutLink");
@@ -80,12 +87,28 @@ authLoginBtn.addEventListener("click", ()=>{
     authMessage.innerText="Vui lòng nhập email và mật khẩu!";
     return;
   }
-  signInWithEmailAndPassword(auth,email,pass)
-    .then(()=>{
-      authMessage.style.color="green";
-      authMessage.innerText="Đăng nhập thành công!";
-      authModal.style.display="none";
-    })
+signInWithEmailAndPassword(auth,email,pass)
+.then(async(userCredential)=>{
+
+    const user = userCredential.user;
+
+    const sessionId = crypto.randomUUID();
+
+    await setDoc(
+        doc(db,"users",user.uid),
+        {
+            sessionId
+        },
+        {merge:true}
+    );
+
+    localStorage.setItem("sessionId",sessionId);
+
+    authMessage.style.color="green";
+    authMessage.innerText="Đăng nhập thành công!";
+    authModal.style.display="none";
+
+})
     .catch(err=>{
       authMessage.style.color="red";
       authMessage.innerText=err.message;
@@ -93,17 +116,46 @@ authLoginBtn.addEventListener("click", ()=>{
 });
 
 // LOGOUT
-logoutLink.addEventListener("click", ()=>{
-  signOut(auth).then(()=>{
-    loginLink.style.display="block";
-    logoutLink.style.display="none";
-    userInfoPreview.style.display="none";
-  });
+logoutLink.addEventListener("click", async () => {
+
+  if (auth.currentUser) {
+    await updateDoc(doc(db, "users", auth.currentUser.uid), {
+      sessionId: null
+    });
+  }
+
+  localStorage.removeItem("sessionId");
+
+  await signOut(auth);
+
+  loginLink.style.display = "block";
+  logoutLink.style.display = "none";
+  userInfoPreview.style.display = "none";
 });
 
 // AUTO LOAD USER INFO
 onAuthStateChanged(auth,user=>{
   if(user){
+    onSnapshot(doc(db,"users",user.uid),(snap)=>{
+
+    if(!snap.exists()) return;
+
+    const serverSession = snap.data().sessionId;
+    const localSession = localStorage.getItem("sessionId");
+
+    if(serverSession !== localSession){
+
+        alert("Tài khoản đã được đăng nhập trên thiết bị khác!");
+
+        localStorage.removeItem("sessionId");
+
+        signOut(auth);
+
+        location.reload();
+
+    }
+
+});
     loginLink.style.display="none";
     logoutLink.style.display="block";
     userInfoPreview.style.display="block";
