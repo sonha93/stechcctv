@@ -335,10 +335,7 @@ Hiện ảnh đã upload
       class="status"
       id="status"
     ></div>
-    <div
-  class="status"
-  id="status"
-></div>
+
 
 <h3 style="margin-top:20px">Ảnh đã upload</h3>
 
@@ -457,6 +454,7 @@ input.addEventListener("change",()=>{
 
 reader.readAsDataURL(file);
 }
+});
 /* UPLOAD CLOUDINARY */
 
 document
@@ -504,7 +502,7 @@ let videos = [];
         "file",
         file
       );
-
+    
     formData.append(
   "upload_preset",
   "stech_up"
@@ -612,7 +610,8 @@ return;
 
 const images =
 snap.data().images || [];
-
+const videos =
+snap.data().videos || [];
 galleryList.innerHTML="";
 
 images.forEach(url=>{
@@ -634,7 +633,34 @@ onclick="deleteImage('${url}')">
 `;
 
 });
+videos.forEach(url=>{
 
+galleryList.innerHTML += `
+
+<div class="gallery-item">
+
+<video
+src="${url}"
+controls
+style="
+width:120px;
+height:120px;
+object-fit:cover;
+border-radius:10px;
+">
+</video>
+
+<button
+class="delete-btn"
+onclick="deleteVideo('${url}')">
+🗑
+</button>
+
+</div>
+
+`;
+
+});
 }
   window.deleteImage = async function(url){
 
@@ -650,6 +676,28 @@ doc(db,"products",productId),
 {
 
 images:arrayRemove(url)
+
+}
+
+);
+
+loadGallery();
+
+}
+  window.deleteVideo = async function(url){
+
+const productId =
+document.getElementById("productId").value.trim();
+
+if(!confirm("Xóa video này?")) return;
+
+await updateDoc(
+
+doc(db,"products",productId),
+
+{
+
+videos: arrayRemove(url)
 
 }
 
