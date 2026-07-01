@@ -441,18 +441,28 @@ document
 
     currentImages.forEach((img,index)=>{
 
-        const url =
-        typeof img==="string"
+    const url = typeof img === "string"
         ? img
         : img.url;
 
-        box.innerHTML+=`
-        <div style="
+    box.innerHTML += `
+    <div style="
         width:120px;
-        position:relative;
-        ">
+        text-align:center;
+    ">
+        <img
+            src="${url}"
+            style="
+                width:100px;
+                height:100px;
+                object-fit:cover;
+                border-radius:10px;
+                border:2px solid #ddd;
+            ">
+    </div>
+    `;
 
-            <
+});
 /* UPLOAD CLOUDINARY */
 
 document
