@@ -166,7 +166,8 @@ const featured = allProducts.filter(
     box.innerHTML += `
 
       <div class="item">
-
+          <div class="product-image">
+      
         <img
           src="${imgUrl}"
 
@@ -179,9 +180,10 @@ const featured = allProducts.filter(
 
           style="cursor:pointer;"
         >
+             </div>
 
         <h4>${p.name}</h4>
-
+   
         <div class="price-box">
 
           <span class="price">
