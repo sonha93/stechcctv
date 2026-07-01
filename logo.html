@@ -2213,7 +2213,7 @@ let products = [];
 let product = null;
 
 let currentIndex = 0;
-let medias = [];
+let images = [];
 // MENU
 function toggleMenu(){
 
@@ -2343,88 +2343,23 @@ const thumbList =
   document.getElementById("thumbList");
 
 // danh sách ảnh
-medias = [];
-
-if(product.img){
-
-    medias.push({
-        type:"image",
-        url:product.img
-    });
-
-}
-
-(product.images || []).forEach(img=>{
-
-    if(img !== product.img){
-
-        medias.push({
-            type:"image",
-            url:img
-        });
-
-    }
-
-});
-
-(product.videos || []).forEach(video=>{
-
-    medias.push({
-        type:"video",
-        url:video
-    });
-
-});
+images = [
+  product.img,
+  ...(product.images || []).filter(
+    img => img !== product.img
+  )
+];
 
 currentIndex = 0;
+mainImg.src = images[0] || "";
 
-thumbList.innerHTML="";
-	if(medias.length){
+thumbList.innerHTML = "";
 
-    if(medias[0].type==="image"){
+images.forEach((img,index)=>{
 
-        mainImg.outerHTML=`
-        <img
-        id="detailImg"
-        src="${medias[0].url}">
-        `;
+  const thumb = document.createElement("img");
 
-    }else{
-
-        mainImg.outerHTML=`
-        <video
-        id="detailImg"
-        controls
-        autoplay
-        muted
-        style="width:100%;border-radius:10px;">
-        <source src="${medias[0].url}">
-        </video>
-        `;
-
-    }
-
-}
-
-medias.forEach((item,index)=>{
-
-  let thumb;
-
-if(item.type==="image"){
-
-    thumb=document.createElement("img");
-
-    thumb.src=item.url;
-
-}else{
-
-    thumb=document.createElement("video");
-
-    thumb.src=item.url;
-
-    thumb.muted=true;
-
-}
+  thumb.src = img;
 
   if(index === 0){
     thumb.classList.add("active");
@@ -2432,38 +2367,22 @@ if(item.type==="image"){
 
 thumb.onclick = ()=>{
 
-    currentIndex = index;
+  currentIndex = index;
 
-    if(item.type==="image"){
+  // đổi ảnh chính
+  mainImg.src = img;
 
-        document.getElementById("detailImg").outerHTML=`
-            <img
-                id="detailImg"
-                src="${item.url}">
-        `;
-
-        viewerImg.src = item.url;
-        viewer.classList.add("active");
-
-    }else{
-
-        document.getElementById("detailImg").outerHTML=`
-            <video
-                id="detailImg"
-                controls
-                autoplay
-                style="width:100%;border-radius:10px;">
-                <source src="${item.url}">
-            </video>
-        `;
-
-    }
-
-    document
-    .querySelectorAll("#thumbList img,#thumbList video")
+  document
+    .querySelectorAll(".thumb-list img")
     .forEach(el=>el.classList.remove("active"));
 
-    thumb.classList.add("active");
+  thumb.classList.add("active");
+
+  // mở popup ảnh
+  viewerImg.src = img;
+
+  viewer.classList.add("active");
+
 
 };
   thumbList.appendChild(thumb);
@@ -2782,76 +2701,52 @@ viewer.addEventListener("touchstart",(e)=>{
   startX = e.touches[0].clientX;
 
 });
+
 viewer.addEventListener("touchend",(e)=>{
 
-const endX=e.changedTouches[0].clientX;
+  const endX = e.changedTouches[0].clientX;
 
-const diff=startX-endX;
+  const diff = startX - endX;
 
-if(Math.abs(diff)<40)return;
+  if(Math.abs(diff) < 40) return;
 
-if(diff>0){
+  // swipe trái
+  if(diff > 0){
 
-currentIndex++;
+    currentIndex++;
 
-if(currentIndex>=medias.length){
+    if(currentIndex >= images.length){
 
-currentIndex=0;
+      currentIndex = 0;
 
-}
+    }
 
-}else{
+  }
 
-currentIndex--;
+  // swipe phải
+  else{
 
-if(currentIndex<0){
+    currentIndex--;
 
-currentIndex=medias.length-1;
+    if(currentIndex < 0){
 
-}
+      currentIndex = images.length - 1;
 
-}
+    }
 
-const media=medias[currentIndex];
+  }
 
-viewerImg.src=media.url;
-
-});
   zoomed = false;
 
   viewerImg.style.transform = "scale(1)";
 
-viewerImg.src = medias[currentIndex].url;
+  viewerImg.src = images[currentIndex];
 
-  const media = medias[currentIndex];
+  document.getElementById("detailImg").src =
+    images[currentIndex];
 
-const box = document.getElementById("detailImg");
-
-if(media.type==="image"){
-
-    box.outerHTML=`
-        <img
-        id="detailImg"
-        src="${media.url}">
-    `;
-
-}else{
-
-    box.outerHTML=`
-        <video
-        id="detailImg"
-        controls
-        autoplay
-        style="width:100%">
-            <source src="${media.url}">
-        </video>
-    `;
-
-}
- 
-   document
-.querySelectorAll("#thumbList img,#thumbList video")
-.forEach(el=>el.classList.remove("active"));
+  document
+    .querySelectorAll(".thumb-list img")
     .forEach((el,i)=>{
 
       el.classList.toggle(
@@ -2864,67 +2759,59 @@ if(media.type==="image"){
 });
 	// CLICK MŨI TÊN ẢNH TO
 
-document.getElementById("viewerPrev").onclick=(e)=>{
+document
+  .getElementById("viewerPrev")
+  .onclick = (e)=>{
 
-e.stopPropagation();
+    e.stopPropagation();
 
-currentIndex--;
+    currentIndex--;
 
-if(currentIndex<0){
+    if(currentIndex < 0){
+      currentIndex = images.length - 1;
+    }
 
-currentIndex=medias.length-1;
+    viewerImg.src = images[currentIndex];
 
-}
+    document.getElementById("detailImg").src =
+      images[currentIndex];
 
-viewerImg.src=medias[currentIndex].url;
+    document
+      .querySelectorAll(".thumb-list img")
+      .forEach((el,i)=>{
+        el.classList.toggle(
+          "active",
+          i === currentIndex
+        );
+      });
 
 };
 
 document
-.getElementById("viewerNext")
-.onclick=(e)=>{
+  .getElementById("viewerNext")
+  .onclick = (e)=>{
 
     e.stopPropagation();
 
     currentIndex++;
 
-    if(currentIndex>=medias.length){
-        currentIndex=0;
+    if(currentIndex >= images.length){
+      currentIndex = 0;
     }
 
-    const media=medias[currentIndex];
+    viewerImg.src = images[currentIndex];
 
-    viewerImg.src=media.url;
-
-    if(media.type==="image"){
-
-        document.getElementById("detailImg").outerHTML=`
-            <img
-            id="detailImg"
-            src="${media.url}">
-        `;
-
-    }else{
-
-        document.getElementById("detailImg").outerHTML=`
-            <video
-            id="detailImg"
-            controls
-            autoplay
-            style="width:100%">
-                <source src="${media.url}">
-            </video>
-        `;
-
-    }
+    document.getElementById("detailImg").src =
+      images[currentIndex];
 
     document
-    .querySelectorAll("#thumbList img,#thumbList video")
-    .forEach((el,i)=>{
-
-        el.classList.toggle("active",i===currentIndex);
-
-    });
+      .querySelectorAll(".thumb-list img")
+      .forEach((el,i)=>{
+        el.classList.toggle(
+          "active",
+          i === currentIndex
+        );
+      });
 
 };
 	// DESKTOP SWIPE
@@ -2941,65 +2828,47 @@ viewer.addEventListener("mousedown",(e)=>{
 
 viewer.addEventListener("mouseup",(e)=>{
 
-    if(!isDown)return;
+  if(!isDown) return;
 
-    isDown=false;
+  isDown = false;
 
-    const endX=e.clientX;
+  const endX = e.clientX;
 
-    const diff=startX-endX;
+  const diff = startX - endX;
 
-    if(Math.abs(diff)<40)return;
+  if(Math.abs(diff) < 40) return;
 
-    if(diff>0){
+  if(diff > 0){
 
-        currentIndex++;
+    currentIndex++;
 
-        if(currentIndex>=medias.length){
-            currentIndex=0;
-        }
-
-    }else{
-
-        currentIndex--;
-
-        if(currentIndex<0){
-            currentIndex=medias.length-1;
-        }
-
+    if(currentIndex >= images.length){
+      currentIndex = 0;
     }
 
-    const media=medias[currentIndex];
+  }else{
 
-    viewerImg.src=media.url;
+    currentIndex--;
 
-    if(media.type==="image"){
-
-        document.getElementById("detailImg").outerHTML=`
-            <img
-            id="detailImg"
-            src="${media.url}">
-        `;
-
-    }else{
-
-        document.getElementById("detailImg").outerHTML=`
-            <video
-            id="detailImg"
-            controls
-            autoplay
-            style="width:100%">
-                <source src="${media.url}">
-            </video>
-        `;
-
+    if(currentIndex < 0){
+      currentIndex = images.length - 1;
     }
 
-    document
-    .querySelectorAll("#thumbList img,#thumbList video")
+  }
+
+  viewerImg.src = images[currentIndex];
+
+  document.getElementById("detailImg").src =
+    images[currentIndex];
+
+  document
+    .querySelectorAll(".thumb-list img")
     .forEach((el,i)=>{
 
-        el.classList.toggle("active",i===currentIndex);
+      el.classList.toggle(
+        "active",
+        i === currentIndex
+      );
 
     });
 
