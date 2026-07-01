@@ -1,3 +1,4 @@
+
 /* =========================
    🔥 HOME PAGE JS
 ========================= */
@@ -163,81 +164,65 @@ const featured = allProducts.filter(
     // Luôn sử dụng link public
     const imgUrl = p.img;
 
-    box.innerHTML += `
+box.innerHTML += `
 
-      <div class="item">
-          <div class="product-image">
-      
+<div class="item">
+
+    <div class="product-image">
+
         <img
-          src="${imgUrl}"
-
-          onclick="goDetail('${id}')"
-
-          onerror="
-            this.src=
-            'https://via.placeholder.com/300'
-          "
-
-          style="cursor:pointer;"
+            src="${imgUrl}"
+            onclick="goDetail('${id}')"
+            onerror="this.src='https://via.placeholder.com/300'"
+            style="cursor:pointer;"
         >
-             </div>
+
+    </div>
+
+    <div class="product-info">
 
         <h4>${p.name}</h4>
-   
+
         <div class="price-box">
 
-          <span class="price">
-            ${Number(p.price)
-              .toLocaleString()}đ
-          </span>
-
-          ${
-            p.oldPrice &&
-            p.oldPrice > p.price
-
-            ?
-
-            `
-            <span class="old-price">
-              ${Number(p.oldPrice)
-                .toLocaleString()}đ
+            <span class="price">
+                ${Number(p.price).toLocaleString()}đ
             </span>
-            `
 
-            :
+            ${
+                p.oldPrice && p.oldPrice > p.price
+                ? `
+                <span class="old-price">
+                    ${Number(p.oldPrice).toLocaleString()}đ
+                </span>
+                `
+                : ""
+            }
 
-            ""
-          }
-
-          ${
-            percentText
-            ?
-            `
-            <span class="discount-text">
-              ${percentText}
-            </span>
-            `
-            :
-            ""
-          }
+            ${
+                percentText
+                ? `
+                <span class="discount-text">
+                    ${percentText}
+                </span>
+                `
+                : ""
+            }
 
         </div>
 
         <button
-          class="cart-btn"
-          onclick="addToCart('${id}')"
+            class="cart-btn"
+            onclick="addToCart('${id}')"
         >
-
-          🛒 Thêm vào giỏ
-
+            🛒 Thêm vào giỏ
         </button>
 
-      </div>
+    </div>
 
-    `;
+</div>
 
-  });
-
+`;
   /* UPDATE */
 
   showing += nextProducts.length;
