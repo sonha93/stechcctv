@@ -270,17 +270,7 @@ header{
       >
 
     </div>
-<button
-id="loadImagesBtn"
-class="upload-btn"
-style="margin-bottom:15px;background:#444">
-Tải ảnh hiện có
-</button>
 
-<div
-id="oldImages"
-class="preview">
-</div>
     <div class="input-box">
 
       <label>Chọn nhiều ảnh</label>
@@ -293,7 +283,7 @@ class="preview">
       >
 
     </div>
-    
+
     <button
       class="upload-btn"
       id="uploadBtn"
@@ -323,8 +313,7 @@ import {
   getFirestore,
   doc,
   updateDoc,
-  arrayUnion,
-  getDoc
+  arrayUnion
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -349,7 +338,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
-let currentImages = [];
+
 /* MENU */
 
 function toggleMenu(){
@@ -409,60 +398,7 @@ input.addEventListener("change",()=>{
   }
 
 });
-document
-.getElementById("loadImagesBtn")
-.onclick = async ()=>{
 
-    const id =
-    document.getElementById("productId")
-    .value
-    .trim();
-
-    if(!id){
-        alert("Nhập ID");
-        return;
-    }
-
-    const snap =
-    await getDoc(doc(db,"products",id));
-
-    if(!snap.exists()){
-        alert("Không tìm thấy sản phẩm");
-        return;
-    }
-
-    currentImages =
-    snap.data().images || [];
-
-    const box =
-    document.getElementById("oldImages");
-
-    box.innerHTML="";
-
-    currentImages.forEach((img,index)=>{
-
-    const url = typeof img === "string"
-        ? img
-        : img.url;
-
-    box.innerHTML += `
-    <div style="
-        width:120px;
-        text-align:center;
-    ">
-        <img
-            src="${url}"
-            style="
-                width:100px;
-                height:100px;
-                object-fit:cover;
-                border-radius:10px;
-                border:2px solid #ddd;
-            ">
-    </div>
-    `;
-
-});
 /* UPLOAD CLOUDINARY */
 
 document
@@ -498,7 +434,7 @@ document
     status.innerText =
     "Đang upload...";
 
-    let images = [];
+    let urls = [];
 
     for(const file of files){
 
@@ -526,18 +462,21 @@ document
       const data =
       await res.json();
 
-     images.push({
-  url: data.secure_url,
-  public_id: data.public_id
-});
+      urls.push(
+        data.secure_url
+      );
+
     }
 
     const productRef =
     doc(db,"products",productId);
 
-   await updateDoc(productRef,{
-  images: arrayUnion(...images)
-});
+    await updateDoc(productRef,{
+
+      images: arrayUnion(...urls)
+
+    });
+
     status.innerText =
     "Upload thành công ✅";
 
