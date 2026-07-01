@@ -2432,44 +2432,38 @@ if(item.type==="image"){
 
 thumb.onclick = ()=>{
 
-  currentIndex = index;
+    currentIndex = index;
 
-  // đổi ảnh chính
- const box=document.getElementById("detailImg");
+    if(item.type==="image"){
 
-if(item.type==="image"){
+        document.getElementById("detailImg").outerHTML=`
+            <img
+                id="detailImg"
+                src="${item.url}">
+        `;
 
-    box.outerHTML=`
-    <img
-    id="detailImg"
-    src="${item.url}">
-    `;
+        viewerImg.src = item.url;
+        viewer.classList.add("active");
 
-}else{
+    }else{
 
-    box.outerHTML=`
-    <video
-    id="detailImg"
-    controls
-    autoplay
-    style="width:100%">
-    <source src="${item.url}">
-    </video>
-    `;
+        document.getElementById("detailImg").outerHTML=`
+            <video
+                id="detailImg"
+                controls
+                autoplay
+                style="width:100%;border-radius:10px;">
+                <source src="${item.url}">
+            </video>
+        `;
 
-}
+    }
 
-  document
-    .querySelectorAll(".thumb-list img")
+    document
+    .querySelectorAll("#thumbList img,#thumbList video")
     .forEach(el=>el.classList.remove("active"));
 
-  thumb.classList.add("active");
-
-  // mở popup ảnh
-  viewerImg.src = img;
-
-  viewer.classList.add("active");
-
+    thumb.classList.add("active");
 
 };
   thumbList.appendChild(thumb);
@@ -2788,52 +2782,76 @@ viewer.addEventListener("touchstart",(e)=>{
   startX = e.touches[0].clientX;
 
 });
-
 viewer.addEventListener("touchend",(e)=>{
 
-  const endX = e.changedTouches[0].clientX;
+const endX=e.changedTouches[0].clientX;
 
-  const diff = startX - endX;
+const diff=startX-endX;
 
-  if(Math.abs(diff) < 40) return;
+if(Math.abs(diff)<40)return;
 
-  // swipe trái
-  if(diff > 0){
+if(diff>0){
 
-    currentIndex++;
+currentIndex++;
 
-    if(currentIndex >= images.length){
+if(currentIndex>=medias.length){
 
-      currentIndex = 0;
+currentIndex=0;
 
-    }
+}
 
-  }
+}else{
 
-  // swipe phải
-  else{
+currentIndex--;
 
-    currentIndex--;
+if(currentIndex<0){
 
-    if(currentIndex < 0){
+currentIndex=medias.length-1;
 
-      currentIndex = images.length - 1;
+}
 
-    }
+}
 
-  }
+const media=medias[currentIndex];
 
+viewerImg.src=media.url;
+
+});
   zoomed = false;
 
   viewerImg.style.transform = "scale(1)";
 
-  viewerImg.src = images[currentIndex];
+viewerImg.src = medias[currentIndex].url;
 
-  document.getElementById("detailImg").src =
-    images[currentIndex];
+  const media = medias[currentIndex];
 
-  document
-    .querySelectorAll(".thumb-list img")
+const box = document.getElementById("detailImg");
+
+if(media.type==="image"){
+
+    box.outerHTML=`
+        <img
+        id="detailImg"
+        src="${media.url}">
+    `;
+
+}else{
+
+    box.outerHTML=`
+        <video
+        id="detailImg"
+        controls
+        autoplay
+        style="width:100%">
+            <source src="${media.url}">
+        </video>
+    `;
+
+}
+ 
+   document
+.querySelectorAll("#thumbList img,#thumbList video")
+.forEach(el=>el.classList.remove("active"));
     .forEach((el,i)=>{
 
       el.classList.toggle(
@@ -2846,59 +2864,67 @@ viewer.addEventListener("touchend",(e)=>{
 });
 	// CLICK MŨI TÊN ẢNH TO
 
-document
-  .getElementById("viewerPrev")
-  .onclick = (e)=>{
+document.getElementById("viewerPrev").onclick=(e)=>{
 
-    e.stopPropagation();
+e.stopPropagation();
 
-    currentIndex--;
+currentIndex--;
 
-    if(currentIndex < 0){
-      currentIndex = images.length - 1;
-    }
+if(currentIndex<0){
 
-    viewerImg.src = images[currentIndex];
+currentIndex=medias.length-1;
 
-    document.getElementById("detailImg").src =
-      images[currentIndex];
+}
 
-    document
-      .querySelectorAll(".thumb-list img")
-      .forEach((el,i)=>{
-        el.classList.toggle(
-          "active",
-          i === currentIndex
-        );
-      });
+viewerImg.src=medias[currentIndex].url;
 
 };
 
 document
-  .getElementById("viewerNext")
-  .onclick = (e)=>{
+.getElementById("viewerNext")
+.onclick=(e)=>{
 
     e.stopPropagation();
 
     currentIndex++;
 
-    if(currentIndex >= images.length){
-      currentIndex = 0;
+    if(currentIndex>=medias.length){
+        currentIndex=0;
     }
 
-    viewerImg.src = images[currentIndex];
+    const media=medias[currentIndex];
 
-    document.getElementById("detailImg").src =
-      images[currentIndex];
+    viewerImg.src=media.url;
+
+    if(media.type==="image"){
+
+        document.getElementById("detailImg").outerHTML=`
+            <img
+            id="detailImg"
+            src="${media.url}">
+        `;
+
+    }else{
+
+        document.getElementById("detailImg").outerHTML=`
+            <video
+            id="detailImg"
+            controls
+            autoplay
+            style="width:100%">
+                <source src="${media.url}">
+            </video>
+        `;
+
+    }
 
     document
-      .querySelectorAll(".thumb-list img")
-      .forEach((el,i)=>{
-        el.classList.toggle(
-          "active",
-          i === currentIndex
-        );
-      });
+    .querySelectorAll("#thumbList img,#thumbList video")
+    .forEach((el,i)=>{
+
+        el.classList.toggle("active",i===currentIndex);
+
+    });
 
 };
 	// DESKTOP SWIPE
@@ -2915,47 +2941,65 @@ viewer.addEventListener("mousedown",(e)=>{
 
 viewer.addEventListener("mouseup",(e)=>{
 
-  if(!isDown) return;
+    if(!isDown)return;
 
-  isDown = false;
+    isDown=false;
 
-  const endX = e.clientX;
+    const endX=e.clientX;
 
-  const diff = startX - endX;
+    const diff=startX-endX;
 
-  if(Math.abs(diff) < 40) return;
+    if(Math.abs(diff)<40)return;
 
-  if(diff > 0){
+    if(diff>0){
 
-    currentIndex++;
+        currentIndex++;
 
-    if(currentIndex >= images.length){
-      currentIndex = 0;
+        if(currentIndex>=medias.length){
+            currentIndex=0;
+        }
+
+    }else{
+
+        currentIndex--;
+
+        if(currentIndex<0){
+            currentIndex=medias.length-1;
+        }
+
     }
 
-  }else{
+    const media=medias[currentIndex];
 
-    currentIndex--;
+    viewerImg.src=media.url;
 
-    if(currentIndex < 0){
-      currentIndex = images.length - 1;
+    if(media.type==="image"){
+
+        document.getElementById("detailImg").outerHTML=`
+            <img
+            id="detailImg"
+            src="${media.url}">
+        `;
+
+    }else{
+
+        document.getElementById("detailImg").outerHTML=`
+            <video
+            id="detailImg"
+            controls
+            autoplay
+            style="width:100%">
+                <source src="${media.url}">
+            </video>
+        `;
+
     }
 
-  }
-
-  viewerImg.src = images[currentIndex];
-
-  document.getElementById("detailImg").src =
-    images[currentIndex];
-
-  document
-    .querySelectorAll(".thumb-list img")
+    document
+    .querySelectorAll("#thumbList img,#thumbList video")
     .forEach((el,i)=>{
 
-      el.classList.toggle(
-        "active",
-        i === currentIndex
-      );
+        el.classList.toggle("active",i===currentIndex);
 
     });
 
