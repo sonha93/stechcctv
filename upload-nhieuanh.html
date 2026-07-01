@@ -305,11 +305,11 @@ header{
       <label>Chọn nhiều ảnh</label>
 
       <input
-        type="file"
-        id="galleryImages"
-        multiple
-        accept="image/*"
-      >
+  type="file"
+  id="galleryFiles"
+  multiple
+  accept="image/*,video/*"
+>
 
     </div>
 
@@ -414,8 +414,7 @@ document
 /* PREVIEW */
 
 const input =
-document.getElementById("galleryImages");
-
+document.getElementById("galleryFiles");
 const preview =
 document.getElementById("preview");
 
@@ -431,17 +430,32 @@ input.addEventListener("change",()=>{
 
     reader.onload = e => {
 
-      preview.innerHTML += `
-        <img src="${e.target.result}">
-      `;
+    if(file.type.startsWith("image/")){
 
-    };
+        preview.innerHTML += `
+            <img src="${e.target.result}">
+        `;
 
-    reader.readAsDataURL(file);
+    }else{
 
-  }
+        preview.innerHTML += `
+            <video
+                src="${e.target.result}"
+                controls
+                style="
+                    width:90px;
+                    height:90px;
+                    border-radius:12px;
+                    object-fit:cover;
+                ">
+            </video>
+        `;
 
-});
+    }
+
+};
+
+reader.readAsDataURL(file);
 
 /* UPLOAD CLOUDINARY */
 
@@ -479,6 +493,7 @@ document
     "Đang upload...";
 
     let urls = [];
+let videos = [];
 
     for(const file of files){
 
@@ -495,31 +510,47 @@ document
   "stech_up"
 );
 
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
-        {
-          method:"POST",
-          body: formData
-        }
-      );
+     const uploadUrl =
+file.type.startsWith("video/")
+?
+
+"https://api.cloudinary.com/v1_1/dmz9gpp1b/video/upload"
+
+:
+
+"https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload";
+
+const res = await fetch(
+    uploadUrl,
+    {
+        method:"POST",
+        body: formData
+    }
+);
 
       const data =
       await res.json();
 
-      urls.push(
-        data.secure_url
-      );
+      if(file.type.startsWith("video/")){
 
-    }
+    videos.push(data.secure_url);
 
+}else{
+
+    urls.push(data.secure_url);
+
+}
+   
     const productRef =
     doc(db,"products",productId);
 
     await updateDoc(productRef,{
 
-      images: arrayUnion(...urls)
+    images: arrayUnion(...urls),
 
-    });
+    videos: arrayUnion(...videos)
+
+});
 
     status.innerText =
     "Upload thành công ✅";
