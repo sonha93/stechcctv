@@ -2323,6 +2323,10 @@ async function loadProduct(){
       0
     )
 };
+console.log("Firestore:", docSnap.data());
+console.log("oldPrice =", docSnap.data().oldPrice);
+console.log("originalPrice =", docSnap.data().originalPrice);
+console.log("price =", docSnap.data().price);
 await saveViewedProduct(product);
   // IMAGE
  // IMAGE GALLERY
