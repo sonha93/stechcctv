@@ -434,7 +434,7 @@ document
     status.innerText =
     "Đang upload...";
 
-    let urls = [];
+    let images = [];
 
     for(const file of files){
 
@@ -462,21 +462,18 @@ document
       const data =
       await res.json();
 
-      urls.push(
-        data.secure_url
-      );
-
+     images.push({
+  url: data.secure_url,
+  public_id: data.public_id
+});
     }
 
     const productRef =
     doc(db,"products",productId);
 
-    await updateDoc(productRef,{
-
-      images: arrayUnion(...urls)
-
-    });
-
+   await updateDoc(productRef,{
+  images: arrayUnion(...images)
+});
     status.innerText =
     "Upload thành công ✅";
 
