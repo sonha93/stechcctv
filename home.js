@@ -1,4 +1,3 @@
-
 /* =========================
    🔥 HOME PAGE JS
 ========================= */
@@ -164,7 +163,7 @@ const featured = allProducts.filter(
     // Luôn sử dụng link public
     const imgUrl = p.img;
 
-box.innerHTML += `
+    box.innerHTML += `
 
 <div class="item">
 
@@ -223,6 +222,7 @@ box.innerHTML += `
 </div>
 
 `;
+
   /* UPDATE */
 
   showing += nextProducts.length;
