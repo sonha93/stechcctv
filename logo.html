@@ -2210,7 +2210,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
-console.log("ID:", id);
+
 let products = [];
 let product = null;
 
@@ -2330,10 +2330,7 @@ async function loadProduct(){
       0
     )
 };
-console.log("Firestore:", docSnap.data());
-console.log("oldPrice =", docSnap.data().oldPrice);
-console.log("originalPrice =", docSnap.data().originalPrice);
-console.log("price =", docSnap.data().price);
+
 await saveViewedProduct(product);
   // IMAGE
  // IMAGE GALLERY
