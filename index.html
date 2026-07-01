@@ -636,35 +636,26 @@ body{
 }
 
 .item{
-  position:relative;
-}
-.product-image{
 
-    height:220px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    overflow:hidden;
+    transition:
+        box-shadow .3s,
+        transform .3s;
 
 }
-.item img{
 
-    width:100%;
+.item:hover{
 
-    max-height:190px;
+    box-shadow:0 12px 28px rgba(0,0,0,.12);
 
-    object-fit:contain;
-
-    transition:transform .35s ease;
+    transform:translateY(-3px);
 
 }
+
 .item:hover .product-image img{
 
-transform:translateY(-10px) scale(1.06);
+    transform:
+        translateY(-14px)
+        scale(1.06);
 
 }
 #loadMoreBtn{
