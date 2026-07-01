@@ -281,7 +281,13 @@ header{
         multiple
         accept="image/*"
       >
+        <label>Chọn video (1 file)</label>
 
+<input
+  type="file"
+  id="videoFile"
+  accept="video/*"
+/>
     </div>
 
     <button
@@ -371,7 +377,8 @@ document
 
 const input =
 document.getElementById("galleryImages");
-
+const videoInput =
+document.getElementById("videoFile");
 const preview =
 document.getElementById("preview");
 
@@ -380,7 +387,7 @@ input.addEventListener("change",()=>{
   preview.innerHTML = "";
 
   const files = input.files;
-
+  const videoFile = videoInput.files[0];
   for(const file of files){
 
     const reader = new FileReader();
@@ -435,7 +442,28 @@ document
     "Đang upload...";
 
     let urls = [];
+    let videoUrl = "";
 
+if(videoFile){
+
+  const formData = new FormData();
+
+  formData.append("file", videoFile);
+
+  formData.append("upload_preset", "stech_up");
+
+  const res = await fetch(
+    "https://api.cloudinary.com/v1_1/dmz9gpp1b/video/upload",
+    {
+      method: "POST",
+      body: formData
+    }
+  );
+
+  const data = await res.json();
+
+  videoUrl = data.secure_url;
+}
     for(const file of files){
 
       const formData =
@@ -472,10 +500,9 @@ document
     doc(db,"products",productId);
 
     await updateDoc(productRef,{
-
-      images: arrayUnion(...urls)
-
-    });
+  images: arrayUnion(...urls),
+  video: videoUrl || ""
+});
 
     status.innerText =
     "Upload thành công ✅";
