@@ -174,6 +174,21 @@ ${productName}
     .join("")}
 </td>
 ${r.content || ""}
+<td>
+  ${(r.replies || [])
+    .map(rep => `
+      <div style="
+        background:#f1f1f1;
+        padding:6px;
+        margin:4px 0;
+        border-radius:6px;
+        font-size:12px;
+      ">
+        <b>${rep.name}</b>: ${rep.content}
+      </div>
+    `)
+    .join("")}
+</td>
 </td>
 
 <td>
@@ -325,6 +340,21 @@ ${productName}
 
 <td>
 ${c.content || ""}
+</td>
+<td>
+  ${(c.replies || [])
+    .map(rep => `
+      <div style="
+        background:#f1f1f1;
+        padding:6px;
+        margin:4px 0;
+        border-radius:6px;
+        font-size:12px;
+      ">
+        <b>${rep.name}</b>: ${rep.content}
+      </div>
+    `)
+    .join("")}
 </td>
 <td>
   ${(c.replies || [])
