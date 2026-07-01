@@ -208,7 +208,54 @@ header{
     width:40px;
     height:40px;
   }
+#galleryList{
 
+display:flex;
+flex-wrap:wrap;
+gap:12px;
+margin-top:20px;
+
+}
+
+.gallery-item{
+
+position:relative;
+
+}
+
+.gallery-item img{
+
+width:120px;
+height:120px;
+
+object-fit:cover;
+
+border-radius:10px;
+
+}
+
+.delete-btn{
+
+position:absolute;
+
+top:5px;
+right:5px;
+
+background:red;
+
+color:#fff;
+
+border:none;
+
+width:28px;
+
+height:28px;
+
+border-radius:50%;
+
+cursor:pointer;
+
+}
 }
 
 </style>
@@ -258,7 +305,7 @@ header{
     <div class="title">
       Upload nhiều ảnh 
     </div>
-
+  
     <div class="input-box">
 
       <label>ID sản phẩm</label>
@@ -290,7 +337,13 @@ header{
     >
       Upload
     </button>
-
+    <button
+  class="upload-btn"
+  id="loadGalleryBtn"
+  style="margin-top:10px;background:#ff9800;"
+>
+Hiện ảnh đã upload
+</button>
     <div
       class="preview"
       id="preview"
@@ -300,7 +353,14 @@ header{
       class="status"
       id="status"
     ></div>
+    <div
+  class="status"
+  id="status"
+></div>
 
+<h3 style="margin-top:20px">Ảnh đã upload</h3>
+
+<div id="galleryList"></div>
   </div>
 
 </div>
@@ -313,7 +373,9 @@ import {
   getFirestore,
   doc,
   updateDoc,
-  arrayUnion
+  arrayUnion,
+  getDoc,
+  arrayRemove
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -504,7 +566,85 @@ document
 /* GLOBAL */
 
 window.toggleMenu = toggleMenu;
+const galleryList =
+document.getElementById("galleryList");
 
+document
+.getElementById("loadGalleryBtn")
+.onclick = loadGallery;
+
+async function loadGallery(){
+
+const productId =
+document.getElementById("productId").value.trim();
+
+if(!productId){
+
+alert("Nhập ID");
+
+return;
+
+}
+
+const snap =
+await getDoc(doc(db,"products",productId));
+
+if(!snap.exists()){
+
+alert("Không có sản phẩm");
+
+return;
+
+}
+
+const images =
+snap.data().images || [];
+
+galleryList.innerHTML="";
+
+images.forEach(url=>{
+
+galleryList.innerHTML+=`
+
+<div class="gallery-item">
+
+<img src="${url}">
+
+<button
+class="delete-btn"
+onclick="deleteImage('${url}')">
+🗑
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+  window.deleteImage = async function(url){
+
+const productId =
+document.getElementById("productId").value.trim();
+
+if(!confirm("Xóa ảnh này?")) return;
+
+await updateDoc(
+
+doc(db,"products",productId),
+
+{
+
+images:arrayRemove(url)
+
+}
+
+);
+
+loadGallery();
+
+}
 </script>
 </body>
 </html>
