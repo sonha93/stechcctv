@@ -261,123 +261,62 @@ userSnap.data().phone || "";
 }
 
 questionsTable.innerHTML += `
-
 <tr>
+  <td>${c.userName || ""}</td>
 
-<td>
-${c.userName || ""}
-</td>
+  <td>${phone}</td>
 
-<td>
-${phone}
-</td>
+  <td>
+    <a href="${productLink}" target="_blank" style="color:#00b894;font-weight:bold;">
+      ${productName}
+    </a>
+  </td>
 
-<td>
-<a
-href="${productLink}"
-target="_blank"
-style="
-color:#00b894;
-font-weight:bold;
-">
-${productName}
-</a>
-</td>
+  <td>${c.content || ""}</td>
 
-<td>${c.content || ""}</td>
+  <!-- ⭐ CHỈ 1 CỘT REPLY DUY NHẤT -->
+  <td>
+    ${(c.replies || [])
+      .map(rep => `
+        <div style="
+          background:#f1f1f1;
+          padding:6px;
+          margin:4px 0;
+          border-radius:6px;
+          font-size:12px;
+        ">
+          <b>${rep.name}</b>: ${rep.content}
+        </div>
+      `)
+      .join("")}
+  </td>
 
-<td>
-  ${(c.replies || [])
-    .map(rep => `
-      <div style="
-        background:#f1f1f1;
-        padding:6px;
-        margin:4px 0;
-        border-radius:6px;
-        font-size:12px;
-      ">
-        <b>${rep.name}</b>: ${rep.content}
-      </div>
-    `)
-    .join("")}
-</td>
-<td>
-  ${(c.replies || [])
-    .map(rep => `
-      <div style="
-        background:#f1f1f1;
-        padding:6px;
-        margin:4px 0;
-        border-radius:6px;
-        font-size:12px;
-      ">
-        <b>${rep.name}</b>: ${rep.content}
-      </div>
-    `)
-    .join("")}
-</td>
-<td>
+  <td>
+    ${(c.images || [])
+      .map(img => `
+        <img src="${img}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;margin:2px;">
+      `)
+      .join("")}
 
-${(c.images || [])
-.map(img=>`
-<img
-src="${img}"
-style="
-width:60px;
-height:60px;
-object-fit:cover;
-border-radius:6px;
-margin:2px;
-">
-`)
-.join("")}
+    ${c.video ? `
+      <br>
+      <video src="${c.video}" controls width="120"></video>
+    ` : ""}
+  </td>
 
-${c.video ? `
-<br>
-<video
-src="${c.video}"
-controls
-width="120">
-</video>
-` : ""}
+  <td>
+    ${c.createdAt?.toDate ? c.createdAt.toDate().toLocaleString() : ""}
+  </td>
 
-</td>
+  <td>
+    <button onclick="adminReplyQuestion('${c.id}')">Reply</button>
+  </td>
 
-<td>
-
-${c.createdAt?.toDate
-? c.createdAt.toDate().toLocaleString()
-: ""
-}
-
-</td>
-
-<td>
-
-<button
-onclick="adminReplyQuestion('${c.id}')">
-
-Reply
-
-</button>
-
-</td>
-
-<td>
-
-<button
-onclick="deleteQuestion('${c.id}')">
-
-Xóa
-
-</button>
-
-</td>
-
+  <td>
+    <button onclick="deleteQuestion('${c.id}')">Xóa</button>
+  </td>
 </tr>
-
 `;
-
 }
 
 }
