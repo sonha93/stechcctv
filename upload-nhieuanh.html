@@ -281,13 +281,7 @@ header{
         multiple
         accept="image/*"
       >
-        <label>Chọn video (1 file)</label>
 
-<input
-  type="file"
-  id="videoFile"
-  accept="video/*"
-/>
     </div>
 
     <button
@@ -377,8 +371,7 @@ document
 
 const input =
 document.getElementById("galleryImages");
-const videoInput =
-document.getElementById("videoFile");
+
 const preview =
 document.getElementById("preview");
 
@@ -387,7 +380,7 @@ input.addEventListener("change",()=>{
   preview.innerHTML = "";
 
   const files = input.files;
-  const videoFile = videoInput.files[0];
+
   for(const file of files){
 
     const reader = new FileReader();
@@ -427,13 +420,7 @@ document
 
   }
 
-const files = input.files;
-const videoFile = videoInput.files[0];
-
-let urls = [];
-let videoUrl = "";
-
-
+  const files = input.files;
 
   if(files.length === 0){
 
@@ -444,62 +431,70 @@ let videoUrl = "";
 
   try{
 
-  status.innerText = "Đang upload...";
+    status.innerText =
+    "Đang upload...";
 
-  let urls = [];
-  let videoUrl = "";
+    let urls = [];
 
-  // ✅ UPLOAD VIDEO 1 LẦN
-  if(videoFile){
+    for(const file of files){
 
-    const formData = new FormData();
-    formData.append("file", videoFile);
-    formData.append("upload_preset", "stech_up");
+      const formData =
+      new FormData();
 
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dmz9gpp1b/video/upload",
-      {
-        method: "POST",
-        body: formData
-      }
-    );
+      formData.append(
+        "file",
+        file
+      );
 
-    const data = await res.json();
-    videoUrl = data.secure_url;
+    formData.append(
+  "upload_preset",
+  "stech_up"
+);
+
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+        {
+          method:"POST",
+          body: formData
+        }
+      );
+
+      const data =
+      await res.json();
+
+      urls.push(
+        data.secure_url
+      );
+
+    }
+
+    const productRef =
+    doc(db,"products",productId);
+
+    await updateDoc(productRef,{
+
+      images: arrayUnion(...urls)
+
+    });
+
+    status.innerText =
+    "Upload thành công ✅";
+
+    alert("Đã thêm gallery");
+
+    preview.innerHTML = "";
+
+    input.value = "";
+
   }
 
-  // ✅ UPLOAD ẢNH
-  for(const file of files){
+  catch(err){
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "stech_up");
+    console.log(err);
 
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
-      {
-        method:"POST",
-        body: formData
-      }
-    );
+    status.innerText =
+    "Upload lỗi ❌";
 
-    const data = await res.json();
-    urls.push(data.secure_url);
-  }
-
-  const productRef = doc(db,"products",productId);
-
-  await updateDoc(productRef,{
-    images: arrayUnion(...urls),
-    video: videoUrl || ""
-  });
-
-  status.innerText = "Upload thành công ✅";
-
-}catch(err){
-  console.log(err);
-  status.innerText = "Upload lỗi ❌";
-}
     alert("Có lỗi upload");
 
   }
