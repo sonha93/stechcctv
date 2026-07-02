@@ -1954,7 +1954,12 @@ body{
     src=""
     onerror="this.src='https://via.placeholder.com/300'"
   >
-
+	<video
+    id="detailVideo"
+    controls
+    playsinline
+    style="display:none;width:100%;height:330px;object-fit:cover;border-radius:18px;background:#fff;">
+</video>
   <!-- Danh sách ảnh nhỏ -->
   <div class="thumb-list" id="thumbList"></div>
 <!-- IMAGE VIEWER -->
@@ -2340,7 +2345,8 @@ const mainImg =
 
 const thumbList =
   document.getElementById("thumbList");
-
+	const mainVideo =
+document.getElementById("detailVideo");
 // danh sách ảnh
 images = [
   product.img,
@@ -2349,41 +2355,92 @@ images = [
   )
 ];
 
+const medias = [];
+
+if(product.img){
+    medias.push({
+        type:"image",
+        url:product.img
+    });
+}
+
+(product.images || []).forEach(url=>{
+
+    if(url !== product.img){
+
+        medias.push({
+            type:"image",
+            url
+        });
+
+    }
+
+});
+
+(product.videos || []).forEach(url=>{
+
+    medias.push({
+        type:"video",
+        url
+    });
+
+});
+
 currentIndex = 0;
-mainImg.src = images[0] || "";
 
 thumbList.innerHTML = "";
 
-images.forEach((img,index)=>{
+medias.forEach((item,index)=>{
 
-  const thumb = document.createElement("img");
+  const thumb = document.createElement(
+    item.type === "video" ? "video" : "img"
+);
 
-  thumb.src = img;
+thumb.src = item.url;
+
+if(item.type === "video"){
+
+    thumb.muted = true;
+    thumb.playsInline = true;
+
+}
 
   if(index === 0){
     thumb.classList.add("active");
   }
 
-thumb.onclick = ()=>{
+ thumb.onclick = ()=>{
 
-  currentIndex = index;
+    currentIndex = index;
 
-  // đổi ảnh chính
-  mainImg.src = img;
+    if(item.type==="image"){
 
-  document
-    .querySelectorAll(".thumb-list img")
-    .forEach(el=>el.classList.remove("active"));
+        mainVideo.pause();
 
-  thumb.classList.add("active");
+        mainVideo.style.display="none";
 
-  // mở popup ảnh
-  viewerImg.src = img;
+        mainImg.style.display="block";
 
-  viewer.classList.add("active");
+        mainImg.src=item.url;
 
+    }else{
+
+        mainImg.style.display="none";
+
+        mainVideo.style.display="block";
+
+        mainVideo.src=item.url;
+
+    }
+
+    document
+      .querySelectorAll("#thumbList img,#thumbList video")
+      .forEach(el=>el.classList.remove("active"));
+
+    thumb.classList.add("active");
 
 };
+
   thumbList.appendChild(thumb);
 
 });
