@@ -215,6 +215,21 @@ header{
   border-color:red;
   transform:scale(1.05);
 }
+	.thumb-list video{
+  width:58px;
+  height:58px;
+  object-fit:cover;
+  border-radius:10px;
+  cursor:pointer;
+  border:2px solid transparent;
+  background:#fff;
+  transition:.2s;
+}
+
+.thumb-list video.active{
+  border-color:red;
+  transform:scale(1.05);
+}
 .right{
   flex:1;
   display:flex;
@@ -2389,7 +2404,23 @@ if(product.img){
 currentIndex = 0;
 
 thumbList.innerHTML = "";
+if(medias.length){
 
+    if(medias[0].type === "image"){
+
+        mainVideo.style.display = "none";
+        mainImg.style.display = "block";
+        mainImg.src = medias[0].url;
+
+    }else{
+
+        mainImg.style.display = "none";
+        mainVideo.style.display = "block";
+        mainVideo.src = medias[0].url;
+
+    }
+
+}
 medias.forEach((item,index)=>{
 
   const thumb = document.createElement(
@@ -2402,9 +2433,8 @@ if(item.type === "video"){
 
     thumb.muted = true;
     thumb.playsInline = true;
-
+    thumb.preload = "metadata";
 }
-
   if(index === 0){
     thumb.classList.add("active");
   }
@@ -2425,11 +2455,14 @@ if(item.type === "video"){
 
     }else{
 
-        mainImg.style.display="none";
+       mainImg.style.display = "none";
 
-        mainVideo.style.display="block";
+mainVideo.pause();
+mainVideo.currentTime = 0;
 
-        mainVideo.src=item.url;
+mainVideo.style.display = "block";
+mainVideo.src = item.url;
+mainVideo.load();
 
     }
 
@@ -2771,7 +2804,7 @@ viewer.addEventListener("touchend",(e)=>{
 
     currentIndex++;
 
-    if(currentIndex >= images.length){
+    if(currentIndex >= medias.length){
 
       currentIndex = 0;
 
@@ -2786,7 +2819,7 @@ viewer.addEventListener("touchend",(e)=>{
 
     if(currentIndex < 0){
 
-      currentIndex = images.length - 1;
+      currentIndex = medias.length- 1;
 
     }
 
@@ -2796,10 +2829,10 @@ viewer.addEventListener("touchend",(e)=>{
 
   viewerImg.style.transform = "scale(1)";
 
-  viewerImg.src = images[currentIndex];
+  viewerImg.src = medias[currentIndex].url;
 
   document.getElementById("detailImg").src =
-    images[currentIndex];
+    medias[currentIndex].url;
 
   document
     .querySelectorAll(".thumb-list img")
@@ -2824,13 +2857,13 @@ document
     currentIndex--;
 
     if(currentIndex < 0){
-      currentIndex = images.length - 1;
+      currentIndex = medias.length - 1;
     }
 
-    viewerImg.src = images[currentIndex];
+    viewerImg.src = medias[currentIndex].url;
 
     document.getElementById("detailImg").src =
-      images[currentIndex];
+      medias[currentIndex].url;
 
     document
       .querySelectorAll(".thumb-list img")
@@ -2851,14 +2884,14 @@ document
 
     currentIndex++;
 
-    if(currentIndex >= images.length){
+    if(currentIndex >= medias.length){
       currentIndex = 0;
     }
 
-    viewerImg.src = images[currentIndex];
+    viewerImg.src = medias[currentIndex].url;
 
     document.getElementById("detailImg").src =
-      images[currentIndex];
+     medias[currentIndex].url;
 
     document
       .querySelectorAll(".thumb-list img")
@@ -2898,7 +2931,7 @@ viewer.addEventListener("mouseup",(e)=>{
 
     currentIndex++;
 
-    if(currentIndex >= images.length){
+    if(currentIndex >= medias.length){
       currentIndex = 0;
     }
 
@@ -2907,15 +2940,15 @@ viewer.addEventListener("mouseup",(e)=>{
     currentIndex--;
 
     if(currentIndex < 0){
-      currentIndex = images.length - 1;
+      currentIndex = medias.length - 1;
     }
 
   }
 
-  viewerImg.src = images[currentIndex];
+  viewerImg.src = medias[currentIndex].url;
 
   document.getElementById("detailImg").src =
-    images[currentIndex];
+    medias[currentIndex].url;
 
   document
     .querySelectorAll(".thumb-list img")
