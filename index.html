@@ -1133,8 +1133,41 @@ body{
     .policy-item span{
         font-size:14px;
     }
+.review-video-wrap{
+    display:flex;
+    gap:15px;
+    overflow-x:auto;
+    padding:10px 0;
+    scroll-behavior:smooth;
+}
+
+.review-video-wrap::-webkit-scrollbar{
+    display:none;
+}
+
+.review-video-card{
+    min-width:320px;
+    background:#fff;
+    border-radius:12px;
+    overflow:hidden;
+    flex-shrink:0;
+}
+
+.review-video-card video{
+    width:100%;
+    aspect-ratio:16/9;
+    display:block;
+    background:#000;
+}
+
+@media(max-width:768px){
+
+.review-video-card{
+    min-width:250px;
+}
 
 }
+
 </style>
 
 </head>
@@ -1444,6 +1477,7 @@ src="home.js"></script>
 <script type="module" src="banner.js"></script>
 
 <script type="module" src="featured-products.js"></script>
+<script type="module" src="review-videos.js"></script>
 <script type="module" src="viewed-products.js"></script>
 
 </body>
