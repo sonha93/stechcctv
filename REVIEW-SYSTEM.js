@@ -1440,7 +1440,7 @@ style="display:none;">
 
 <textarea
 id="commentReplyInput-${c.id}"
-placeholder="Nhập câu trả lời...">
+placeholder="Nhập nội dung trả lời...">
 </textarea>
 
 <button
