@@ -151,22 +151,9 @@ button{
 <input id="importPrice" placeholder="Giá nhập" class="full">
   <textarea id="desc" placeholder="Mô tả" class="full"></textarea>
 
-  <input
-    type="file"
-    id="fileImg"
-    accept="image/*"
-    class="full"
->
+  <input id="imgUrl" placeholder="Link ảnh Cloudinary" class="full">
 
-<img
-    id="previewImg"
-    style="
-        display:none;
-        max-width:250px;
-        margin:10px 0;
-        border-radius:8px;
-    "
->
+  <select id="category" class="full">
 
     <option value="sd">Thẻ nhớ</option>
 
@@ -193,7 +180,15 @@ button{
   <div id="specBox" class="full"></div>
 
   <input type="file" id="fileImg" class="full">
-
+  <img
+    id="previewImg"
+    style="
+        width:120px;
+        display:none;
+        margin:8px 0;
+        border-radius:8px;
+    "
+>
   <label class="full">
     <input type="checkbox" id="featured">
     ⭐ Featured
@@ -257,22 +252,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
-const fileInput = document.getElementById("fileImg");
-const preview = document.getElementById("previewImg");
 
-fileInput.addEventListener("change", () => {
-
-    const file = fileInput.files[0];
-
-    if(!file){
-        preview.style.display = "none";
-        return;
-    }
-
-    preview.src = URL.createObjectURL(file);
-    preview.style.display = "block";
-
-});
 /* =========================
    START
 ========================= */
@@ -306,7 +286,65 @@ function getVal(id){
 
 const categoryEl =
 document.getElementById("category");
+const fileImg = document.getElementById("fileImg");
+const imgUrlInput = document.getElementById("imgUrl");
+const previewImg = document.getElementById("previewImg");
 
+fileImg.addEventListener("change", async () => {
+
+    const file = fileImg.files[0];
+
+    if (!file) return;
+
+    previewImg.style.display = "block";
+    previewImg.src = URL.createObjectURL(file);
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("upload_preset", "qzcttlvsh");
+
+    btnAdd.disabled = true;
+    btnAdd.innerHTML = "Đang upload ảnh...";
+
+    try{
+
+        const res = await fetch(
+            "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+            {
+                method:"POST",
+                body:formData
+            }
+        );
+
+        const data = await res.json();
+
+        if(!data.secure_url){
+
+            showToast("Upload thất bại");
+
+            return;
+
+        }
+
+        imgUrlInput.value = data.secure_url;
+
+        previewImg.src = data.secure_url;
+
+        showToast("Upload ảnh thành công");
+
+    }catch(e){
+
+        console.error(e);
+
+        showToast("Lỗi upload ảnh");
+
+    }
+
+    btnAdd.disabled = false;
+    btnAdd.innerHTML = editingId ? "💾 Lưu thay đổi" : "➕ Thêm sản phẩm";
+
+});
 const btnAdd =
 document.getElementById("btnAdd");
 
@@ -430,7 +468,7 @@ btnAdd.addEventListener("click", async function(){
   const file=
   document.getElementById("fileImg").files[0];
 
- 
+  const imgUrl=getVal("imgUrl");
 
   if(!name){
 
@@ -444,11 +482,11 @@ btnAdd.addEventListener("click", async function(){
 
   }
 
-  if(!file){
+  if(!file && !imgUrl){
 
-    return showToast("Chọn ảnh");
+    return showToast("Chưa có ảnh");
 
-}
+  }
 
 const slug =
   name
@@ -547,7 +585,13 @@ await loadProducts();
      LINK CLOUDINARY
   ========================= */
 
- 
+  if(imgUrl){
+
+    await addProduct(imgUrl);
+
+    return;
+
+  }
 
   /* =========================
      UPLOAD CLOUDINARY
@@ -946,8 +990,8 @@ document.getElementById("price").value=p.price||"";
 document.getElementById("oldPrice").value=p.oldPrice||"";
 document.getElementById("importPrice").value=p.importPrice||"";
 document.getElementById("desc").value=p.desc||"";
-preview.src = p.img || "";
-preview.style.display = p.img ? "block" : "none";
+document.getElementById("imgUrl").value=p.img||"";
+
 document.getElementById("featured").checked=
 p.featured||false;
 
@@ -1055,10 +1099,9 @@ document.getElementById("price").value="";
 document.getElementById("oldPrice").value="";
 document.getElementById("importPrice").value="";
 document.getElementById("desc").value="";
+document.getElementById("imgUrl").value="";
 document.getElementById("fileImg").value="";
 
-preview.src="";
-preview.style.display="none";
 document.getElementById("featured").checked=false;
 
 categoryEl.value="sd";
