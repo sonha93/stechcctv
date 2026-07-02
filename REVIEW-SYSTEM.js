@@ -1232,7 +1232,7 @@ onclick="likeReviewReply('${r.id}', ${index})">
 `;
 
 }
-}
+
 reviewList.innerHTML += `
 <div class="review-pagination">
 
