@@ -16,7 +16,7 @@ snap.forEach(doc=>{
     if(!data.videos?.length) return;
 
     data.videos.forEach(video=>{
-
+   console.log(video);
         wrap.innerHTML += `
             <div class="review-video-card">
                 <video
