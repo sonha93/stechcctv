@@ -1133,41 +1133,8 @@ body{
     .policy-item span{
         font-size:14px;
     }
-.review-video-wrap{
-    display:flex;
-    gap:15px;
-    overflow-x:auto;
-    padding:10px 0;
-    scroll-behavior:smooth;
-}
-
-.review-video-wrap::-webkit-scrollbar{
-    display:none;
-}
-
-.review-video-card{
-    min-width:320px;
-    background:#fff;
-    border-radius:12px;
-    overflow:hidden;
-    flex-shrink:0;
-}
-
-.review-video-card video{
-    width:100%;
-    aspect-ratio:16/9;
-    display:block;
-    background:#000;
-}
-
-@media(max-width:768px){
-
-.review-video-card{
-    min-width:250px;
-}
 
 }
-
 </style>
 
 </head>
@@ -1316,15 +1283,6 @@ body{
     </div>
 
 </section>
-   <section class="featured-section" id="reviewSection">
-
-    <div class="featured-header">
-        <h2>Gốc Review </h2>
-    </div>
-
-    <div id="reviewVideos" class="review-video-wrap"></div>
-
-</section>
    <section class="featured-section" id="viewedSection" style="display:none;">
 
     <div class="featured-header">
@@ -1465,10 +1423,7 @@ function toggleMenu(){
 }
 
 </script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-<script src="firebase-init.js"></script>
+
 <script type="module"
 src="user.js"></script>
 
@@ -1480,7 +1435,6 @@ src="home.js"></script>
 <script type="module" src="banner.js"></script>
 
 <script type="module" src="featured-products.js"></script>
-<script src="review-videos.js"></script>
 <script type="module" src="viewed-products.js"></script>
 
 </body>
