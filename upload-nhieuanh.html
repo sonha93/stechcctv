@@ -304,11 +304,24 @@ header{
 
       <label>Chọn nhiều ảnh</label>
 
-      <input
-  type="file"
-  id="galleryFiles"
-  multiple
-  accept="image/*,video/*"
+      <label>Chọn ảnh</label>
+
+<input
+    type="file"
+    id="imageFiles"
+    multiple
+    accept="image/*"
+>
+
+<br><br>
+
+<label>Chọn video</label>
+
+<input
+    type="file"
+    id="videoFiles"
+    multiple
+    accept="video/*"
 >
 
     </div>
@@ -410,47 +423,54 @@ document
 
 /* PREVIEW */
 
-const input =
-document.getElementById("galleryFiles");
-const preview =
-document.getElementById("preview");
+function renderPreview(){
 
-input.addEventListener("change",()=>{
+    preview.innerHTML="";
 
-  preview.innerHTML = "";
+    const files=[
+        ...imageInput.files,
+        ...videoInput.files
+    ];
 
-  const files = input.files;
+    for(const file of files){
 
-  for(const file of files){
+        const reader=new FileReader();
 
-    const reader = new FileReader();
+        reader.onload=e=>{
 
-    reader.onload = e => {
+            if(file.type.startsWith("image/")){
 
-    if(file.type.startsWith("image/")){
+                preview.innerHTML+=`
+                    <img src="${e.target.result}">
+                `;
 
-        preview.innerHTML += `
-            <img src="${e.target.result}">
-        `;
+            }else{
 
-    }else{
+                preview.innerHTML+=`
+                    <video
+                        src="${e.target.result}"
+                        controls
+                        style="
+                            width:90px;
+                            height:90px;
+                            object-fit:cover;
+                            border-radius:12px;
+                        ">
+                    </video>
+                `;
 
-        preview.innerHTML += `
-            <video
-                src="${e.target.result}"
-                controls
-                style="
-                    width:90px;
-                    height:90px;
-                    border-radius:12px;
-                    object-fit:cover;
-                ">
-            </video>
-        `;
+            }
+
+        };
+
+        reader.readAsDataURL(file);
 
     }
 
-};
+}
+
+imageInput.addEventListener("change",renderPreview);
+videoInput.addEventListener("change",renderPreview);
 
 reader.readAsDataURL(file);
 }
@@ -542,13 +562,17 @@ const res = await fetch(
     const productRef =
     doc(db,"products",productId);
 
-    await updateDoc(productRef,{
+    const updateData = {};
 
-    images: arrayUnion(...urls),
+if (urls.length) {
+    updateData.images = arrayUnion(...urls);
+}
 
-    videos: arrayUnion(...videos)
+if (videos.length) {
+    updateData.videos = arrayUnion(...videos);
+}
 
-});
+await updateDoc(productRef, updateData);
 
     status.innerText =
     "Upload thành công ✅";
@@ -557,7 +581,10 @@ const res = await fetch(
 
     preview.innerHTML = "";
 
-    input.value = "";
+imageInput.value = "";
+videoInput.value = "";
+
+await loadGallery();
 
   }
 
