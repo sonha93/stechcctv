@@ -151,9 +151,22 @@ button{
 <input id="importPrice" placeholder="Giá nhập" class="full">
   <textarea id="desc" placeholder="Mô tả" class="full"></textarea>
 
-  <input id="imgUrl" placeholder="Link ảnh Cloudinary" class="full">
+  <input
+    type="file"
+    id="fileImg"
+    accept="image/*"
+    class="full"
+>
 
-  <select id="category" class="full">
+<img
+    id="previewImg"
+    style="
+        display:none;
+        max-width:250px;
+        margin:10px 0;
+        border-radius:8px;
+    "
+>
 
     <option value="sd">Thẻ nhớ</option>
 
@@ -244,7 +257,22 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
+const fileInput = document.getElementById("fileImg");
+const preview = document.getElementById("previewImg");
 
+fileInput.addEventListener("change", () => {
+
+    const file = fileInput.files[0];
+
+    if(!file){
+        preview.style.display = "none";
+        return;
+    }
+
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+
+});
 /* =========================
    START
 ========================= */
@@ -402,7 +430,7 @@ btnAdd.addEventListener("click", async function(){
   const file=
   document.getElementById("fileImg").files[0];
 
-  const imgUrl=getVal("imgUrl");
+ 
 
   if(!name){
 
@@ -416,11 +444,11 @@ btnAdd.addEventListener("click", async function(){
 
   }
 
-  if(!file && !imgUrl){
+  if(!file){
 
-    return showToast("Chưa có ảnh");
+    return showToast("Chọn ảnh");
 
-  }
+}
 
 const slug =
   name
@@ -519,13 +547,7 @@ await loadProducts();
      LINK CLOUDINARY
   ========================= */
 
-  if(imgUrl){
-
-    await addProduct(imgUrl);
-
-    return;
-
-  }
+ 
 
   /* =========================
      UPLOAD CLOUDINARY
@@ -924,8 +946,8 @@ document.getElementById("price").value=p.price||"";
 document.getElementById("oldPrice").value=p.oldPrice||"";
 document.getElementById("importPrice").value=p.importPrice||"";
 document.getElementById("desc").value=p.desc||"";
-document.getElementById("imgUrl").value=p.img||"";
-
+preview.src = p.img || "";
+preview.style.display = p.img ? "block" : "none";
 document.getElementById("featured").checked=
 p.featured||false;
 
@@ -1033,9 +1055,10 @@ document.getElementById("price").value="";
 document.getElementById("oldPrice").value="";
 document.getElementById("importPrice").value="";
 document.getElementById("desc").value="";
-document.getElementById("imgUrl").value="";
 document.getElementById("fileImg").value="";
 
+preview.src="";
+preview.style.display="none";
 document.getElementById("featured").checked=false;
 
 categoryEl.value="sd";
