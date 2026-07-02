@@ -1,32 +1,37 @@
-import { db } from "./firebase-init.js";
-
-import {
-    collection,
-    getDocs
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+// review-videos.js
 
 const wrap = document.getElementById("reviewVideos");
 
-const snap = await getDocs(collection(db,"products"));
+db.collection("products")
+.get()
+.then(snapshot=>{
 
-snap.forEach(doc=>{
+    wrap.innerHTML = "";
 
-    const data = doc.data();
+    snapshot.forEach(doc=>{
 
-    if(!data.videos?.length) return;
+        const data = doc.data();
 
-    data.videos.forEach(video=>{
-   console.log(video);
-        wrap.innerHTML += `
-            <div class="review-video-card">
-                <video
-                    controls
-                    preload="metadata">
-                    <source src="${video}" type="video/mp4">
-                </video>
-            </div>
-        `;
+        if(!data.videos || !data.videos.length) return;
+
+        data.videos.forEach(video=>{
+
+            wrap.innerHTML += `
+                <div class="review-video-card">
+                    <video controls preload="metadata">
+                        <source src="${video}" type="video/mp4">
+                        Trình duyệt không hỗ trợ video.
+                    </video>
+                </div>
+            `;
+
+        });
 
     });
+
+})
+.catch(err=>{
+
+    console.error("Lỗi load video:",err);
 
 });
