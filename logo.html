@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -213,21 +212,6 @@ header{
 }
 
 .thumb-list img.active{
-  border-color:red;
-  transform:scale(1.05);
-}
-	.thumb-list video{
-  width:58px;
-  height:58px;
-  object-fit:cover;
-  border-radius:10px;
-  cursor:pointer;
-  border:2px solid transparent;
-  background:#fff;
-  transition:.2s;
-}
-
-.thumb-list video.active{
   border-color:red;
   transform:scale(1.05);
 }
@@ -1970,12 +1954,7 @@ body{
     src=""
     onerror="this.src='https://via.placeholder.com/300'"
   >
-	<video
-    id="detailVideo"
-    controls
-    playsinline
-    style="display:none;width:100%;height:330px;object-fit:cover;border-radius:18px;background:#fff;">
-</video>
+
   <!-- Danh sách ảnh nhỏ -->
   <div class="thumb-list" id="thumbList"></div>
 <!-- IMAGE VIEWER -->
@@ -2237,7 +2216,6 @@ let product = null;
 
 let currentIndex = 0;
 let images = [];
-let medias = [];
 // MENU
 function toggleMenu(){
 
@@ -2362,8 +2340,7 @@ const mainImg =
 
 const thumbList =
   document.getElementById("thumbList");
-	const mainVideo =
-document.getElementById("detailVideo");
+
 // danh sách ảnh
 images = [
   product.img,
@@ -2372,110 +2349,41 @@ images = [
   )
 ];
 
-medias = [];
-
-if(product.img){
-    medias.push({
-        type:"image",
-        url:product.img
-    });
-}
-
-(product.images || []).forEach(url=>{
-
-    if(url !== product.img){
-
-        medias.push({
-            type:"image",
-            url
-        });
-
-    }
-
-});
-
-(product.videos || []).forEach(url=>{
-
-    medias.push({
-        type:"video",
-        url
-    });
-
-});
-
 currentIndex = 0;
+mainImg.src = images[0] || "";
 
 thumbList.innerHTML = "";
-if(medias.length){
 
-    if(medias[0].type === "image"){
+images.forEach((img,index)=>{
 
-        mainVideo.style.display = "none";
-        mainImg.style.display = "block";
-        mainImg.src = medias[0].url;
+  const thumb = document.createElement("img");
 
-    }else{
+  thumb.src = img;
 
-        mainImg.style.display = "none";
-        mainVideo.style.display = "block";
-        mainVideo.src = medias[0].url;
-
-    }
-
-}
-medias.forEach((item,index)=>{
-
-  const thumb = document.createElement(
-    item.type === "video" ? "video" : "img"
-);
-
-thumb.src = item.url;
-
-if(item.type === "video"){
-
-    thumb.muted = true;
-    thumb.playsInline = true;
-    thumb.preload = "metadata";
-}
   if(index === 0){
     thumb.classList.add("active");
   }
 
- thumb.onclick = ()=>{
+thumb.onclick = ()=>{
 
-    currentIndex = index;
+  currentIndex = index;
 
-    if(item.type==="image"){
+  // đổi ảnh chính
+  mainImg.src = img;
 
-        mainVideo.pause();
+  document
+    .querySelectorAll(".thumb-list img")
+    .forEach(el=>el.classList.remove("active"));
 
-        mainVideo.style.display="none";
+  thumb.classList.add("active");
 
-        mainImg.style.display="block";
+  // mở popup ảnh
+  viewerImg.src = img;
 
-        mainImg.src=item.url;
+  viewer.classList.add("active");
 
-    }else{
-
-       mainImg.style.display = "none";
-
-mainVideo.pause();
-mainVideo.currentTime = 0;
-
-mainVideo.style.display = "block";
-mainVideo.src = item.url;
-mainVideo.load();
-
-    }
-
-    document
-      .querySelectorAll("#thumbList img,#thumbList video")
-      .forEach(el=>el.classList.remove("active"));
-
-    thumb.classList.add("active");
 
 };
-
   thumbList.appendChild(thumb);
 
 });
@@ -2806,7 +2714,7 @@ viewer.addEventListener("touchend",(e)=>{
 
     currentIndex++;
 
-    if(currentIndex >= medias.length){
+    if(currentIndex >= images.length){
 
       currentIndex = 0;
 
@@ -2821,7 +2729,7 @@ viewer.addEventListener("touchend",(e)=>{
 
     if(currentIndex < 0){
 
-      currentIndex = medias.length- 1;
+      currentIndex = images.length - 1;
 
     }
 
@@ -2831,10 +2739,10 @@ viewer.addEventListener("touchend",(e)=>{
 
   viewerImg.style.transform = "scale(1)";
 
-  viewerImg.src = medias[currentIndex].url;
+  viewerImg.src = images[currentIndex];
 
   document.getElementById("detailImg").src =
-    medias[currentIndex].url;
+    images[currentIndex];
 
   document
     .querySelectorAll(".thumb-list img")
@@ -2859,13 +2767,13 @@ document
     currentIndex--;
 
     if(currentIndex < 0){
-      currentIndex = medias.length - 1;
+      currentIndex = images.length - 1;
     }
 
-    viewerImg.src = medias[currentIndex].url;
+    viewerImg.src = images[currentIndex];
 
     document.getElementById("detailImg").src =
-      medias[currentIndex].url;
+      images[currentIndex];
 
     document
       .querySelectorAll(".thumb-list img")
@@ -2886,14 +2794,14 @@ document
 
     currentIndex++;
 
-    if(currentIndex >= medias.length){
+    if(currentIndex >= images.length){
       currentIndex = 0;
     }
 
-    viewerImg.src = medias[currentIndex].url;
+    viewerImg.src = images[currentIndex];
 
     document.getElementById("detailImg").src =
-     medias[currentIndex].url;
+      images[currentIndex];
 
     document
       .querySelectorAll(".thumb-list img")
@@ -2933,7 +2841,7 @@ viewer.addEventListener("mouseup",(e)=>{
 
     currentIndex++;
 
-    if(currentIndex >= medias.length){
+    if(currentIndex >= images.length){
       currentIndex = 0;
     }
 
@@ -2942,15 +2850,15 @@ viewer.addEventListener("mouseup",(e)=>{
     currentIndex--;
 
     if(currentIndex < 0){
-      currentIndex = medias.length - 1;
+      currentIndex = images.length - 1;
     }
 
   }
 
-  viewerImg.src = medias[currentIndex].url;
+  viewerImg.src = images[currentIndex];
 
   document.getElementById("detailImg").src =
-    medias[currentIndex].url;
+    images[currentIndex];
 
   document
     .querySelectorAll(".thumb-list img")
