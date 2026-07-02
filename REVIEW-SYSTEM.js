@@ -1,4 +1,3 @@
-
 import { app, rtdb } from "./auth.js";
 import { getVerifiedBadge }
 from "./verified-users.js";
@@ -48,6 +47,9 @@ document.getElementById("commentList");
 let formRating = 5;
 let previewRating = 5;
 let currentFilter = "all";
+
+const REVIEW_PER_PAGE = 5;
+let reviewPage = 1;
 async function uploadToCloudinary(file,type="image"){
 
 const formData = new FormData();
@@ -955,7 +957,19 @@ document
 
 }
 },50);
-for (const r of allReviews) {
+let reviews = allReviews;
+
+if(currentFilter !== "all"){
+    reviews = reviews.filter(r => Number(r.rating) === Number(currentFilter));
+}
+
+const totalPages = Math.ceil(reviews.length / REVIEW_PER_PAGE);
+
+const start = (reviewPage - 1) * REVIEW_PER_PAGE;
+
+reviews = reviews.slice(start, start + REVIEW_PER_PAGE);
+
+for (const r of reviews) {
 
 const userSnap = await getDoc(doc(db,"users",r.uid));
 
@@ -1000,12 +1014,7 @@ if (r.replies?.length) {
   }
 
 }
- if(
-   currentFilter !== "all" &&
-   Number(r.rating) !== Number(currentFilter)
- ){
-   return;
- }
+
   
  reviewList.innerHTML += `
  
@@ -1224,7 +1233,32 @@ onclick="likeReviewReply('${r.id}', ${index})">
 
 }
 }
+reviewList.innerHTML += `
+<div class="review-pagination">
 
+<button
+${reviewPage===1?"disabled":""}
+onclick="changeReviewPage(${reviewPage-1})">
+
+« Trước
+
+</button>
+
+<span>
+Trang ${reviewPage}/${totalPages || 1}
+</span>
+
+<button
+${reviewPage>=totalPages?"disabled":""}
+onclick="changeReviewPage(${reviewPage+1})">
+
+Sau »
+
+</button>
+
+</div>
+`;
+}
 window.toggleReply = function(id){
 
 const box =
@@ -1875,4 +1909,15 @@ window.likeCommentReply = async function(commentId, index){
   });
 
   loadComments();
+};
+window.changeReviewPage = function(page){
+
+    reviewPage = page;
+
+    loadReviews();
+
+    reviewList.scrollIntoView({
+        behavior:"smooth"
+    });
+
 };
