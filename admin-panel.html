@@ -180,15 +180,7 @@ button{
   <div id="specBox" class="full"></div>
 
   <input type="file" id="fileImg" class="full">
-  <img
-    id="previewImg"
-    style="
-        width:120px;
-        display:none;
-        margin:8px 0;
-        border-radius:8px;
-    "
->
+
   <label class="full">
     <input type="checkbox" id="featured">
     ⭐ Featured
@@ -286,65 +278,7 @@ function getVal(id){
 
 const categoryEl =
 document.getElementById("category");
-const fileImg = document.getElementById("fileImg");
-const imgUrlInput = document.getElementById("imgUrl");
-const previewImg = document.getElementById("previewImg");
 
-fileImg.addEventListener("change", async () => {
-
-    const file = fileImg.files[0];
-
-    if (!file) return;
-
-    previewImg.style.display = "block";
-    previewImg.src = URL.createObjectURL(file);
-
-    const formData = new FormData();
-
-    formData.append("file", file);
-    formData.append("upload_preset", "qzcttlvsh");
-
-    btnAdd.disabled = true;
-    btnAdd.innerHTML = "Đang upload ảnh...";
-
-    try{
-
-        const res = await fetch(
-            "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
-            {
-                method:"POST",
-                body:formData
-            }
-        );
-
-        const data = await res.json();
-
-        if(!data.secure_url){
-
-            showToast("Upload thất bại");
-
-            return;
-
-        }
-
-        imgUrlInput.value = data.secure_url;
-
-        previewImg.src = data.secure_url;
-
-        showToast("Upload ảnh thành công");
-
-    }catch(e){
-
-        console.error(e);
-
-        showToast("Lỗi upload ảnh");
-
-    }
-
-    btnAdd.disabled = false;
-    btnAdd.innerHTML = editingId ? "💾 Lưu thay đổi" : "➕ Thêm sản phẩm";
-
-});
 const btnAdd =
 document.getElementById("btnAdd");
 
