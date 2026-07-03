@@ -183,12 +183,33 @@ header{
 .thumb-list{
     display:flex;
     gap:8px;
+
     overflow-x:auto;
-    padding:0;
-    position:static;      /* bỏ absolute */
-    max-width:100%;
-    background:none;
-    backdrop-filter:none;
+    overflow-y:hidden;
+
+    white-space:nowrap;
+
+    scrollbar-width:thin;          /* Firefox */
+    scrollbar-color:#999 #eee;
+
+    padding-bottom:8px;
+}
+	.thumb-list::-webkit-scrollbar{
+    height:10px;
+}
+
+.thumb-list::-webkit-scrollbar-track{
+    background:#eee;
+    border-radius:20px;
+}
+
+.thumb-list::-webkit-scrollbar-thumb{
+    background:#999;
+    border-radius:20px;
+}
+
+.thumb-list::-webkit-scrollbar-thumb:hover{
+    background:#666;
 }
 .thumb-list img{
   width:70px;
@@ -520,9 +541,7 @@ header{
   cursor:zoom-in;
 }
 
-.thumb-list::-webkit-scrollbar{
-  display:none;
-}
+
 	@media (max-width:768px){
 
   .menu-btn,
