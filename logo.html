@@ -215,6 +215,17 @@ header{
   border-color:red;
   transform:scale(1.05);
 }
+	#thumbList video{
+    width:70px;
+    height:70px;
+    object-fit:cover;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+#thumbList video.active{
+    border:2px solid #00acc1;
+}
 .right{
   flex:1;
   display:flex;
@@ -2218,7 +2229,7 @@ let products = [];
 let product = null;
 
 let currentIndex = 0;
-let images = [];
+let gallery = [];
 // MENU
 function toggleMenu(){
 
@@ -2345,49 +2356,107 @@ const thumbList =
   document.getElementById("thumbList");
 
 // danh sách ảnh
-images = [
-  product.img,
-  ...(product.images || []).filter(
-    img => img !== product.img
-  )
+gallery = [
+    {
+        type: "image",
+        url: product.img
+    },
+
+    ...(product.images || [])
+        .filter(img => img !== product.img)
+        .map(img => ({
+            type: "image",
+            url: img
+        })),
+
+    ...(product.videos || [])
+        .map(video => ({
+            type: "video",
+            url: video
+        }))
 ];
 
 currentIndex = 0;
-mainImg.src = images[0] || "";
 
+if(gallery.length){
+
+    if(gallery[0].type==="image"){
+        mainImg.src = gallery[0].url;
+    }else{
+        mainImg.removeAttribute("src");
+    }
+
+}
 thumbList.innerHTML = "";
 
-images.forEach((img,index)=>{
+gallery.forEach((item,index)=>{
 
-  const thumb = document.createElement("img");
+    let thumb;
 
-  thumb.src = img;
+    if(item.type === "image"){
 
-  if(index === 0){
-    thumb.classList.add("active");
-  }
+        thumb = document.createElement("img");
+        thumb.src = item.url;
 
-thumb.onclick = ()=>{
+    }else{
 
-  currentIndex = index;
+        thumb = document.createElement("video");
+        thumb.src = item.url;
+        thumb.muted = true;
+        thumb.playsInline = true;
+        thumb.preload = "metadata";
+    }
 
-  // đổi ảnh chính
-  mainImg.src = img;
+    if(index===0){
+        thumb.classList.add("active");
+    }
 
-  document
-    .querySelectorAll(".thumb-list img")
-    .forEach(el=>el.classList.remove("active"));
+    thumb.onclick = ()=>{
 
-  thumb.classList.add("active");
+        currentIndex = index;
 
-  // mở popup ảnh
-  viewerImg.src = img;
+        if(item.type==="image"){
 
-  viewer.classList.add("active");
+            mainImg.src = item.url;
 
+            viewerImg.style.display = "block";
+            viewerImg.src = item.url;
 
-};
-  thumbList.appendChild(thumb);
+        }else{
+
+            viewerImg.style.display = "none";
+
+            const oldVideo =
+                viewer.querySelector("video");
+
+            if(oldVideo) oldVideo.remove();
+
+            const v =
+                document.createElement("video");
+
+            v.src = item.url;
+            v.controls = true;
+            v.autoplay = true;
+            v.playsInline = true;
+            v.style.maxWidth = "95%";
+            v.style.maxHeight = "95%";
+            v.style.borderRadius = "18px";
+
+            viewer.appendChild(v);
+
+        }
+
+        document
+            .querySelectorAll("#thumbList img,#thumbList video")
+            .forEach(el=>el.classList.remove("active"));
+
+        thumb.classList.add("active");
+
+        viewer.classList.add("active");
+
+    };
+
+    thumbList.appendChild(thumb);
 
 });
   document.getElementById("panelProductImg").src =
@@ -2625,13 +2694,15 @@ updateCartCount();
 
 // ĐÓNG POPUP ẢNH
 
-document
-  .getElementById("closeViewer")
-  .onclick = ()=>{
+document.getElementById("closeViewer").onclick=()=>{
 
-    document
-      .getElementById("imageViewer")
-      .classList.remove("active");
+    viewer.classList.remove("active");
+
+    viewerImg.style.display="block";
+
+    const oldVideo=viewer.querySelector("video");
+
+    if(oldVideo) oldVideo.remove();
 
 };
 
@@ -2717,7 +2788,7 @@ viewer.addEventListener("touchend",(e)=>{
 
     currentIndex++;
 
-    if(currentIndex >= images.length){
+    if(currentIndex >= gallery.length){
 
       currentIndex = 0;
 
@@ -2732,7 +2803,7 @@ viewer.addEventListener("touchend",(e)=>{
 
     if(currentIndex < 0){
 
-      currentIndex = images.length - 1;
+      currentIndex = gallery.length- 1;
 
     }
 
@@ -2742,13 +2813,38 @@ viewer.addEventListener("touchend",(e)=>{
 
   viewerImg.style.transform = "scale(1)";
 
-  viewerImg.src = images[currentIndex];
+  viewerImg.src = gallery[currentIndex].url;
 
-  document.getElementById("detailImg").src =
-    images[currentIndex];
+  const item = gallery[currentIndex].url;
 
+const oldVideo = viewer.querySelector("video");
+if(oldVideo) oldVideo.remove();
+
+viewerImg.style.display = "block";
+
+if(item.type==="image"){
+
+    viewerImg.src = item.url;
+    document.getElementById("detailImg").src = item.url;
+
+}else{
+
+    viewerImg.removeAttribute("src");
+
+    const v = document.createElement("video");
+
+    v.src = item.url;
+    v.controls = true;
+    v.autoplay = true;
+    v.playsInline = true;
+    v.style.maxWidth="95%";
+    v.style.maxHeight="95%";
+
+    viewer.appendChild(v);
+
+}
   document
-    .querySelectorAll(".thumb-list img")
+   .querySelectorAll("#thumbList img,#thumbList video")
     .forEach((el,i)=>{
 
       el.classList.toggle(
@@ -2770,16 +2866,42 @@ document
     currentIndex--;
 
     if(currentIndex < 0){
-      currentIndex = images.length - 1;
+      currentIndex = gallery.length - 1;
     }
 
-    viewerImg.src = images[currentIndex];
+    viewerImg.src = gallery[currentIndex].url;
 
-    document.getElementById("detailImg").src =
-      images[currentIndex];
+    const item = gallery[currentIndex].url;
+
+const oldVideo = viewer.querySelector("video");
+if(oldVideo) oldVideo.remove();
+
+viewerImg.style.display = "block";
+
+if(item.type==="image"){
+
+    viewerImg.src = item.url;
+    document.getElementById("detailImg").src = item.url;
+
+}else{
+
+    viewerImg.removeAttribute("src");
+
+    const v = document.createElement("video");
+
+    v.src = item.url;
+    v.controls = true;
+    v.autoplay = true;
+    v.playsInline = true;
+    v.style.maxWidth="95%";
+    v.style.maxHeight="95%";
+
+    viewer.appendChild(v);
+
+}
 
     document
-      .querySelectorAll(".thumb-list img")
+      .querySelectorAll("#thumbList img,#thumbList video")
       .forEach((el,i)=>{
         el.classList.toggle(
           "active",
@@ -2797,17 +2919,17 @@ document
 
     currentIndex++;
 
-    if(currentIndex >= images.length){
+    if(currentIndex >= gallery.length){
       currentIndex = 0;
     }
 
-    viewerImg.src = images[currentIndex];
+    viewerImg.src = gallery[currentIndex].url;
 
     document.getElementById("detailImg").src =
-      images[currentIndex];
+     gallery[currentIndex].url;
 
     document
-      .querySelectorAll(".thumb-list img")
+     .querySelectorAll("#thumbList img,#thumbList video")
       .forEach((el,i)=>{
         el.classList.toggle(
           "active",
@@ -2844,7 +2966,7 @@ viewer.addEventListener("mouseup",(e)=>{
 
     currentIndex++;
 
-    if(currentIndex >= images.length){
+    if(currentIndex >= gallery.length){
       currentIndex = 0;
     }
 
@@ -2853,18 +2975,44 @@ viewer.addEventListener("mouseup",(e)=>{
     currentIndex--;
 
     if(currentIndex < 0){
-      currentIndex = images.length - 1;
+      currentIndex =gallery.length - 1;
     }
 
   }
 
-  viewerImg.src = images[currentIndex];
+  viewerImg.src = gallery[currentIndex].url;
 
-  document.getElementById("detailImg").src =
-    images[currentIndex];
+ const item = gallery[currentIndex].url;
+
+const oldVideo = viewer.querySelector("video");
+if(oldVideo) oldVideo.remove();
+
+viewerImg.style.display = "block";
+
+if(item.type==="image"){
+
+    viewerImg.src = item.url;
+    document.getElementById("detailImg").src = item.url;
+
+}else{
+
+    viewerImg.removeAttribute("src");
+
+    const v = document.createElement("video");
+
+    v.src = item.url;
+    v.controls = true;
+    v.autoplay = true;
+    v.playsInline = true;
+    v.style.maxWidth="95%";
+    v.style.maxHeight="95%";
+
+    viewer.appendChild(v);
+
+}
 
   document
-    .querySelectorAll(".thumb-list img")
+  .querySelectorAll("#thumbList img,#thumbList video")
     .forEach((el,i)=>{
 
       el.classList.toggle(
