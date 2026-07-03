@@ -2431,21 +2431,27 @@ gallery.forEach((item,index)=>{
 
             if(oldVideo) oldVideo.remove();
 
-            const v =
-                document.createElement("video");
+           const v = document.createElement("video");
 
-            v.src = item.url;
-            v.controls = true;
-            v.autoplay = true;
-            v.playsInline = true;
-            v.style.maxWidth = "95%";
-            v.style.maxHeight = "95%";
-            v.style.borderRadius = "18px";
+v.src = item.url;
+v.controls = true;
+v.autoplay = true;
+v.muted = false;
 
-            viewer.appendChild(v);
+v.setAttribute("playsinline","");
+v.setAttribute("webkit-playsinline","");
 
-        }
+v.style.maxWidth = "95%";
+v.style.maxHeight = "95%";
+v.style.borderRadius = "18px";
 
+viewerImg.style.display = "none";
+
+viewer.appendChild(v);
+
+setTimeout(()=>{
+    v.play().catch(()=>{});
+},50);
         document
             .querySelectorAll("#thumbList img,#thumbList video")
             .forEach(el=>el.classList.remove("active"));
@@ -2829,7 +2835,8 @@ if(item.type==="image"){
 
 }else{
 
-    viewerImg.removeAttribute("src");
+   viewerImg.src = "";
+viewerImg.style.display = "none";
 
     const v = document.createElement("video");
 
@@ -2885,7 +2892,8 @@ if(item.type==="image"){
 
 }else{
 
-    viewerImg.removeAttribute("src");
+   viewerImg.src = "";
+viewerImg.style.display = "none";
 
     const v = document.createElement("video");
 
@@ -2937,7 +2945,8 @@ if(item.type==="image"){
 
 }else{
 
-    viewerImg.removeAttribute("src");
+    viewerImg.src = "";
+viewerImg.style.display = "none";
 
     const v=document.createElement("video");
 
@@ -3019,7 +3028,8 @@ if(item.type==="image"){
 
 }else{
 
-    viewerImg.removeAttribute("src");
+    viewerImg.src = "";
+viewerImg.style.display = "none";
 
     const v = document.createElement("video");
 
