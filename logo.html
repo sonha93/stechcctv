@@ -2520,11 +2520,7 @@ document.getElementById("detailImg").after(mainVideo);
     viewerImg.style.display="none";
 
     const oldVideo=viewer.querySelector("video");
-    if(oldVideo){
-    oldVideo.pause();
-    oldVideo.currentTime = 0;
-    oldVideo.remove();
-}
+    if(oldVideo) oldVideo.remove();
 
     const v=document.createElement("video");
 
@@ -2793,11 +2789,7 @@ document.getElementById("closeViewer").onclick=()=>{
 
     const oldVideo=viewer.querySelector("video");
 
-    if(oldVideo){
-    oldVideo.pause();
-    oldVideo.currentTime = 0;
-    oldVideo.remove();
-}
+    if(oldVideo) oldVideo.remove();
 
 };
 
@@ -2913,11 +2905,8 @@ viewer.addEventListener("touchend",(e)=>{
   const item = gallery[currentIndex];
 
 const oldVideo = viewer.querySelector("video");
-if(oldVideo){
-    oldVideo.pause();
-    oldVideo.currentTime = 0;
-    oldVideo.remove();
-}
+if(oldVideo) oldVideo.remove();
+
 viewerImg.style.display = "block";
 
 if(item.type==="image"){
@@ -2963,11 +2952,8 @@ if(item.type==="image"){
     viewerImg.style.display="none";
 
     const oldVideo=viewer.querySelector("video");
-   if(oldVideo){
-    oldVideo.pause();
-    oldVideo.currentTime = 0;
-    oldVideo.remove();
-}
+    if(oldVideo) oldVideo.remove();
+
     const v=document.createElement("video");
 
     v.src=item.url;
@@ -3015,11 +3001,7 @@ document
     const item = gallery[currentIndex];
 
 const oldVideo = viewer.querySelector("video");
-if(oldVideo){
-    oldVideo.pause();
-    oldVideo.currentTime = 0;
-    oldVideo.remove();
-}
+if(oldVideo) oldVideo.remove();
 
 viewerImg.style.display = "block";
 
@@ -3078,11 +3060,8 @@ document
     const item = gallery[currentIndex];
 
 const oldVideo = viewer.querySelector("video");
-if(oldVideo){
-    oldVideo.pause();
-    oldVideo.currentTime = 0;
-    oldVideo.remove();
-}
+if(oldVideo) oldVideo.remove();
+
 viewerImg.style.display="block";
 
 if(item.type==="image"){
@@ -3164,11 +3143,8 @@ viewer.addEventListener("mouseup",(e)=>{
  const item = gallery[currentIndex];
 
 const oldVideo = viewer.querySelector("video");
-if(oldVideo){
-    oldVideo.pause();
-    oldVideo.currentTime = 0;
-    oldVideo.remove();
-}
+if(oldVideo) oldVideo.remove();
+
 viewerImg.style.display = "block";
 
 if(item.type==="image"){
@@ -3180,12 +3156,7 @@ if(item.type==="image"){
 
     viewerImg.src = "";
 viewerImg.style.display = "none";
-const mainVideo = document.getElementById("detailVideo");
 
-if(mainVideo){
-    mainVideo.pause();
-}
-	
     const v = document.createElement("video");
 
     v.src = item.url;
