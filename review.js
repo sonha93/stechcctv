@@ -24,8 +24,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const container = document.getElementById("reviewContainer");
-
+const container = document.getElementById("reviewProducts");
 loadReview();
 
 async function loadReview(){
