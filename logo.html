@@ -2428,36 +2428,76 @@ gallery.forEach((item,index)=>{
     const oldVideo = viewer.querySelector("video");
     if(oldVideo) oldVideo.remove();
 
-    if(item.type === "image"){
+   if(item.type === "image"){
 
-        mainImg.src = item.url;
+    const mainVideo = document.getElementById("detailVideo");
 
-        viewerImg.src = item.url;
-        viewerImg.style.display = "block";
+    if(mainVideo){
+        mainVideo.pause();
+        mainVideo.style.display = "none";
+    }
 
-    }else{
+    mainImg.style.display = "block";
+    mainImg.src = item.url;
 
-        mainImg.style.display = "none";
+    viewerImg.src = item.url;
+    viewerImg.style.display = "block";
 
-        viewerImg.style.display = "none";
+}else{
+    // Ẩn ảnh lớn
+    document.getElementById("detailImg").style.display = "none";
 
-        const v = document.createElement("video");
+    // Nếu chưa có video ngoài thì tạo
+    let mainVideo = document.getElementById("detailVideo");
 
-        v.src = item.url;
-        v.controls = true;
-        v.autoplay = true;
-        v.muted = false;
-        v.playsInline = true;
-        v.setAttribute("playsinline","");
-        v.setAttribute("webkit-playsinline","");
+    if(!mainVideo){
 
-        v.style.maxWidth="95%";
-        v.style.maxHeight="95%";
-        v.style.borderRadius="18px";
+        mainVideo = document.createElement("video");
+        mainVideo.id = "detailVideo";
 
-        viewer.appendChild(v);
+        mainVideo.controls = true;
+        mainVideo.autoplay = true;
+        mainVideo.muted = false;
+
+        mainVideo.setAttribute("playsinline","");
+        mainVideo.setAttribute("webkit-playsinline","");
+
+        mainVideo.style.width = "100%";
+        mainVideo.style.borderRadius = "18px";
+        mainVideo.style.background = "#000";
+
+document.getElementById("detailImg").after(mainVideo);
 
     }
+
+    mainVideo.src = item.url;
+    mainVideo.style.display = "block";
+
+
+
+    // popup
+    viewerImg.src="";
+    viewerImg.style.display="none";
+
+    const oldVideo=viewer.querySelector("video");
+    if(oldVideo) oldVideo.remove();
+
+    const v=document.createElement("video");
+
+    v.src=item.url;
+    v.controls=true;
+    v.autoplay=true;
+
+    v.setAttribute("playsinline","");
+    v.setAttribute("webkit-playsinline","");
+
+    v.style.maxWidth="95%";
+    v.style.maxHeight="95%";
+    v.style.borderRadius="18px";
+
+    viewer.appendChild(v);
+
+}
 
     viewer.classList.add("active");
 
@@ -2836,17 +2876,56 @@ if(item.type==="image"){
 
 }else{
 
-   viewerImg.src = "";
-viewerImg.style.display = "none";
+    // Ẩn ảnh lớn
+    document.getElementById("detailImg").style.display = "none";
 
-    const v = document.createElement("video");
+    // Nếu chưa có video ngoài thì tạo
+    let mainVideo = document.getElementById("detailVideo");
 
-    v.src = item.url;
-    v.controls = true;
-    v.autoplay = true;
-    v.playsInline = true;
+    if(!mainVideo){
+
+        mainVideo = document.createElement("video");
+        mainVideo.id = "detailVideo";
+
+        mainVideo.controls = true;
+        mainVideo.autoplay = true;
+        mainVideo.muted = false;
+
+        mainVideo.setAttribute("playsinline","");
+        mainVideo.setAttribute("webkit-playsinline","");
+
+        mainVideo.style.width = "100%";
+        mainVideo.style.borderRadius = "18px";
+        mainVideo.style.background = "#000";
+
+        document.querySelector(".left").prepend(mainVideo);
+
+    }
+
+    mainVideo.src = item.url;
+    mainVideo.style.display = "block";
+
+
+
+    // popup
+    viewerImg.src="";
+    viewerImg.style.display="none";
+
+    const oldVideo=viewer.querySelector("video");
+    if(oldVideo) oldVideo.remove();
+
+    const v=document.createElement("video");
+
+    v.src=item.url;
+    v.controls=true;
+    v.autoplay=true;
+
+    v.setAttribute("playsinline","");
+    v.setAttribute("webkit-playsinline","");
+
     v.style.maxWidth="95%";
     v.style.maxHeight="95%";
+    v.style.borderRadius="18px";
 
     viewer.appendChild(v);
 
