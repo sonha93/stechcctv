@@ -617,7 +617,7 @@ const images =
 snap.data().images || [];
 const videos =
 snap.data().videos || [];
-console.log(videos);
+
 galleryList.innerHTML="";
 
 images.forEach(url=>{
@@ -641,11 +641,13 @@ onclick="deleteImage('${url}')">
 });
 videos.forEach(video=>{
 
+const videoUrl = typeof video === "string" ? video : video.url;
+
 galleryList.innerHTML += `
 <div class="gallery-item">
 
 <video
-src="${video.url}"
+src="${videoUrl}"
 controls
 style="
 width:120px;
@@ -657,7 +659,7 @@ border-radius:10px;
 
 <button
 class="delete-btn"
-onclick="deleteVideo('${video.url}')">
+onclick="deleteVideo('${videoUrl}')">
 🗑
 </button>
 
@@ -690,29 +692,23 @@ loadGallery();
 }
   window.deleteVideo = async function(url){
 
-const productId =
-document.getElementById("productId").value.trim();
+const productId = document.getElementById("productId").value.trim();
 
-const snap =
-await getDoc(doc(db,"products",productId));
+const ref = doc(db,"products",productId);
 
-const videos =
-snap.data().videos || [];
+const snap = await getDoc(ref);
 
-const target =
-videos.find(v=>v.url===url);
+const videos = snap.data().videos || [];
+
+const target = videos.find(v =>
+    (typeof v === "string" ? v : v.url) === url
+);
 
 if(!target) return;
 
-await updateDoc(
-
-doc(db,"products",productId),
-
-{
+await updateDoc(ref,{
     videos: arrayRemove(target)
-}
-
-);
+});
 
 loadGallery();
 
