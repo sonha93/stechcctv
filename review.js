@@ -60,13 +60,13 @@ async function loadReview(){
 <div class="video-item">
 
     <video
-        class="review-video"
-        src="${video}"
-        playsinline
-        muted
-        preload="metadata"
-        loop
-    ></video>
+    class="review-video"
+    src="${video}"
+    playsinline
+    muted
+    loop
+    preload="metadata">
+</video>
 
     <div class="info">
 
@@ -100,45 +100,52 @@ async function loadReview(){
 
 function autoPlay(){
 
-    const observer = new IntersectionObserver(entries=>{
+    const videos = document.querySelectorAll(".review-video");
 
-        entries.forEach(entry=>{
+    const observer = new IntersectionObserver(entries => {
+
+        entries.forEach(entry => {
 
             const video = entry.target;
 
             if(entry.isIntersecting){
 
-                document
-                .querySelectorAll(".review-video")
-                .forEach(v=>{
-
-                    if(v!==video){
-
+                // pause các video khác
+                videos.forEach(v => {
+                    if(v !== video){
                         v.pause();
-                        v.currentTime=0;
-
+                        v.currentTime = 0;
+                        v.muted = true;
                     }
-
                 });
 
+                // autoplay video đang thấy
                 video.play().catch(()=>{});
 
             }else{
-
                 video.pause();
-
             }
 
         });
 
     },{
-
-        threshold:0.7
-
+        threshold: 0.7
     });
 
-    document
-    .querySelectorAll(".review-video")
-    .forEach(video=>observer.observe(video));
+    videos.forEach(video => {
 
+        // 🔥 QUAN TRỌNG: click để bật tiếng
+        video.addEventListener("click", () => {
+
+            if(video.muted){
+                video.muted = false;
+                video.play();
+            }else{
+                video.muted = true;
+            }
+
+        });
+
+        observer.observe(video);
+    });
 }
