@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -534,7 +531,10 @@ const res = await fetch(
 
       if(file.type.startsWith("video/")){
 
-    videos.push(data.secure_url);
+   videos.push({
+    url: data.secure_url,
+    thumb: data.secure_url.replace("/upload/", "/upload/so_0,w_300/")
+});
 
 }else{
 
