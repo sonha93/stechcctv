@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -2415,23 +2417,29 @@ gallery.forEach((item,index)=>{
         thumb = document.createElement("img");
         thumb.src = item.url;
 
-    }else{
+   		}else{
 
-        thumb = document.createElement("video");
+    thumb = document.createElement("video");
 
-thumb.src = item.url;
+    thumb.src = item.url;
 
-// thêm dòng này
-thumb.poster = product.img;
+    thumb.muted = true;
+    thumb.playsInline = true;
+    thumb.setAttribute("playsinline", "");
+    thumb.setAttribute("webkit-playsinline", "");
 
-thumb.muted = true;
-thumb.playsInline = true;
-thumb.setAttribute("playsinline", "");
-thumb.setAttribute("webkit-playsinline", "");
+    thumb.preload = "auto";
+    thumb.load();
 
-thumb.preload = "metadata";
-    }
+    thumb.addEventListener("loadeddata", () => {
+        thumb.currentTime = 0.01;
+    });
 
+    thumb.addEventListener("seeked", () => {
+        thumb.pause();
+    });
+
+}
     if(index===0){
         thumb.classList.add("active");
     }
