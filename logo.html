@@ -3021,7 +3021,18 @@ if(mainVideo){
     mainVideo.currentTime = 0;
     mainVideo.style.display = "none";
 }
-    
+    const v = document.createElement("video");
+
+    v.src = item.url;
+    v.controls = true;
+    v.autoplay = true;
+    v.playsInline = true;
+    v.style.maxWidth="95%";
+    v.style.maxHeight="95%";
+
+    viewer.appendChild(v);
+
+}
 
     document
       .querySelectorAll("#thumbList img,#thumbList video")
