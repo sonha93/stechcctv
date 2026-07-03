@@ -2511,28 +2511,26 @@ document.getElementById("detailImg").after(mainVideo);
     }
 
     mainVideo.src = item.url;
-mainVideo.style.display = "block";
-
-// DỪNG VIDEO NGOÀI TRANG
-mainVideo.pause();
+    mainVideo.style.display = "block";
 
 
-// popup
-viewerImg.src = "";
-viewerImg.style.display = "none";
 
-const oldVideo = viewer.querySelector("video");
+    // popup
+    viewerImg.src="";
+    viewerImg.style.display="none";
 
-if(oldVideo){
+    const oldVideo=viewer.querySelector("video");
+    if(oldVideo){
     oldVideo.pause();
+    oldVideo.currentTime = 0;
     oldVideo.remove();
 }
 
-const v = document.createElement("video");
+    const v=document.createElement("video");
 
-v.src = item.url;
-v.controls = true;
-v.autoplay = true;
+    v.src=item.url;
+    v.controls=true;
+    v.autoplay=true;
 
     v.setAttribute("playsinline","");
     v.setAttribute("webkit-playsinline","");
@@ -2787,24 +2785,19 @@ updateCartCount();
 
 // ĐÓNG POPUP ẢNH
 
-document.getElementById("closeViewer").onclick = ()=>{
+document.getElementById("closeViewer").onclick=()=>{
 
     viewer.classList.remove("active");
 
-    viewerImg.style.display = "block";
+    viewerImg.style.display="block";
 
-    const oldVideo = viewer.querySelector("video");
+    const oldVideo=viewer.querySelector("video");
 
     if(oldVideo){
-        oldVideo.pause();
-        oldVideo.remove();
-    }
-
-    const mainVideo = document.getElementById("detailVideo");
-
-    if(mainVideo){
-        mainVideo.play().catch(()=>{});
-    }
+    oldVideo.pause();
+    oldVideo.currentTime = 0;
+    oldVideo.remove();
+}
 
 };
 
@@ -2920,8 +2913,11 @@ viewer.addEventListener("touchend",(e)=>{
   const item = gallery[currentIndex];
 
 const oldVideo = viewer.querySelector("video");
-if(oldVideo) oldVideo.remove();
-
+if(oldVideo){
+    oldVideo.pause();
+    oldVideo.currentTime = 0;
+    oldVideo.remove();
+}
 viewerImg.style.display = "block";
 
 if(item.type==="image"){
@@ -2967,8 +2963,11 @@ if(item.type==="image"){
     viewerImg.style.display="none";
 
     const oldVideo=viewer.querySelector("video");
-    if(oldVideo) oldVideo.remove();
-
+   if(oldVideo){
+    oldVideo.pause();
+    oldVideo.currentTime = 0;
+    oldVideo.remove();
+}
     const v=document.createElement("video");
 
     v.src=item.url;
@@ -3016,7 +3015,11 @@ document
     const item = gallery[currentIndex];
 
 const oldVideo = viewer.querySelector("video");
-if(oldVideo) oldVideo.remove();
+if(oldVideo){
+    oldVideo.pause();
+    oldVideo.currentTime = 0;
+    oldVideo.remove();
+}
 
 viewerImg.style.display = "block";
 
@@ -3075,8 +3078,11 @@ document
     const item = gallery[currentIndex];
 
 const oldVideo = viewer.querySelector("video");
-if(oldVideo) oldVideo.remove();
-
+if(oldVideo){
+    oldVideo.pause();
+    oldVideo.currentTime = 0;
+    oldVideo.remove();
+}
 viewerImg.style.display="block";
 
 if(item.type==="image"){
@@ -3158,8 +3164,11 @@ viewer.addEventListener("mouseup",(e)=>{
  const item = gallery[currentIndex];
 
 const oldVideo = viewer.querySelector("video");
-if(oldVideo) oldVideo.remove();
-
+if(oldVideo){
+    oldVideo.pause();
+    oldVideo.currentTime = 0;
+    oldVideo.remove();
+}
 viewerImg.style.display = "block";
 
 if(item.type==="image"){
@@ -3171,7 +3180,12 @@ if(item.type==="image"){
 
     viewerImg.src = "";
 viewerImg.style.display = "none";
+const mainVideo = document.getElementById("detailVideo");
 
+if(mainVideo){
+    mainVideo.pause();
+}
+	
     const v = document.createElement("video");
 
     v.src = item.url;
