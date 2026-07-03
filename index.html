@@ -1140,10 +1140,11 @@ body{
 .review-wrap{
     display:flex;
     overflow-x:auto;
-    gap:18px;
+    gap:12px;
     scroll-behavior:smooth;
-    scroll-snap-type:x mandatory;
-    padding-bottom:10px;
+
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
 }
 
 .review-wrap::-webkit-scrollbar{
@@ -1151,98 +1152,42 @@ body{
 }
 
 .review-card{
-    width:340px;
-    min-width:340px;
-    max-width:340px;
+    flex:0 0 auto;
 
-    background:#fff;
-    border-radius:18px;
-    overflow:hidden;
-
-    text-decoration:none;
-    color:#111;
-
-    flex-shrink:0;
-    scroll-snap-align:start;
-
-    display:flex;
-    flex-direction:column;
-
-    box-shadow:0 6px 18px rgba(0,0,0,.12);
+    width:180px;      /* chiều ngang mỗi video */
 }
 
 .review-card video{
-    width:100%;
-    aspect-ratio:1/1;      /* Khung vuông */
+    width:160px;
+    height:280px;
+
+    border-radius:12px;
+
+    object-fit:cover;
+
     background:#000;
-    object-fit:contain;    /* Video dọc/ngang đều vừa */
+
     display:block;
+
+    margin:auto;
 }
 
 .review-info{
-    padding:14px;
-}
-
-.review-name{
-    font-size:15px;
-    font-weight:bold;
-    line-height:1.4;
-    height:42px;
-    overflow:hidden;
-}
-
-.review-price{
-    margin-top:8px;
-    font-size:20px;
-    color:#e60023;
-    font-weight:bold;
-}
-
-.review-old{
-    margin-top:4px;
-    font-size:13px;
-    color:#999;
-    text-decoration:line-through;
-}
-
-.review-old span{
-    margin-left:8px;
-    color:#e60023;
-    text-decoration:none;
-    font-weight:bold;
+    display:none;      /* nếu chỉ muốn hiện video */
 }
 
 @media(max-width:768px){
 
-    .review-section{
-        padding:12px;
-    }
-
-    .review-wrap{
-        gap:12px;
-    }
-
     .review-card{
-        width:260px;
-        min-width:260px;
-        max-width:260px;
-    }
+    flex:0 0 auto;
+    width:160px;
+}
 
     .review-card video{
-        aspect-ratio:1/1;
+    width:140px;
+    height:240px;
     }
 
-    .review-info{
-        padding:10px;
-    }
-
-    .review-name{
-        font-size:14px;
-    }
-
-    .review-price{
-        font-size:18px;
-    }
 }
 </style>
 
