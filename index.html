@@ -1141,10 +1141,8 @@ body{
     display:flex;
     overflow-x:auto;
     gap:12px;
-    scroll-behavior:smooth;
-
-    -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
+    padding:10px;
+    scroll-snap-type:x mandatory;
 }
 
 .review-wrap::-webkit-scrollbar{
@@ -1152,41 +1150,33 @@ body{
 }
 
 .review-card{
-    flex:0 0 auto;
-
-    width:180px;      /* chiều ngang mỗi video */
+    flex:0 0 180px;
+    scroll-snap-align:start;
 }
 
-.review-card video{
-    width:160px;
-    height:280px;
-
+.review-video{
+    width:180px;
+    height:260px;
     border-radius:12px;
-
     object-fit:cover;
-
     background:#000;
-
     display:block;
-
-    margin:auto;
 }
 
 .review-info{
-    display:none;      /* nếu chỉ muốn hiện video */
+    padding:8px 0;
 }
 
 @media(max-width:768px){
 
-    .review-card{
-    flex:0 0 auto;
-    width:160px;
+.review-card{
+    flex:0 0 150px;
 }
 
-    .review-card video{
-    width:140px;
-    height:240px;
-    }
+.review-video{
+    width:150px;
+    height:220px;
+}
 
 }
 </style>
