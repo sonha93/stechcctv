@@ -57,7 +57,7 @@ async function loadReview(){
 
         container.innerHTML += `
 
-<section class="review-item">
+<div class="review-card">
 
 <video
 class="review-video"
@@ -69,52 +69,29 @@ preload="metadata">
 
 <div class="review-info">
 
-<h3>${product.name}</h3>
+<div class="review-name">
+${product.name}
+</div>
 
-<div style="margin-top:8px;">
-
-<div style="
-font-size:24px;
-font-weight:bold;
-color:red;
-">
+<div class="review-price">
 ${price.toLocaleString()}đ
 </div>
 
-<div style="
-color:#888;
-text-decoration:line-through;
-">
+<div class="review-old">
 ${oldPrice.toLocaleString()}đ
+<span>-${sale}%</span>
 </div>
 
-<div style="
-display:inline-block;
-margin-top:6px;
-padding:4px 10px;
-background:red;
-color:#fff;
-border-radius:20px;
-">
--${sale}%
-</div>
-
-</div>
-
-<button
-class="buy-btn"
+<button class="buy-btn"
 onclick="location.href='logo.html?id=${id}'">
-
 Mua ngay
-
 </button>
 
 </div>
 
-</section>
+</div>
 
 `;
-
     });
 
     autoPlay();
