@@ -1132,164 +1132,116 @@ body{
 
     .policy-item span{
         font-size:14px;
-    }
-
-
-       .review-section{
-
-padding:20px;
-
+ .review-section{
+    padding:20px;
 }
 
 .review-wrap{
-
-display:flex;
-
-overflow-x:auto;
-
-gap:15px;
-
-scroll-behavior:smooth;
-
-scroll-snap-type:x mandatory;
-
+    display:flex;
+    overflow-x:auto;
+    gap:18px;
+    scroll-behavior:smooth;
+    scroll-snap-type:x mandatory;
+    padding-bottom:10px;
 }
 
 .review-wrap::-webkit-scrollbar{
-
-display:none;
-
+    display:none;
 }
 
 .review-card{
+    width:340px;
+    min-width:340px;
+    max-width:340px;
 
-min-width:260px;
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
 
-max-width:260px;
+    text-decoration:none;
+    color:#111;
 
-background:#fff;
+    flex-shrink:0;
+    scroll-snap-align:start;
 
-border-radius:16px;
+    display:flex;
+    flex-direction:column;
 
-overflow:hidden;
-
-text-decoration:none;
-
-color:#111;
-
-flex-shrink:0;
-
-scroll-snap-align:start;
-
-box-shadow:0 5px 15px rgba(0,0,0,.08);
-
+    box-shadow:0 6px 18px rgba(0,0,0,.12);
 }
 
 .review-card video{
-
-width:100%;
-
-height:420px;
-
-object-fit:cover;
-
-background:#000;
-
+    width:100%;
+    aspect-ratio:1/1;      /* Khung vuông */
+    background:#000;
+    object-fit:contain;    /* Video dọc/ngang đều vừa */
+    display:block;
 }
 
 .review-info{
-
-padding:12px;
-
+    padding:14px;
 }
 
 .review-name{
-
-font-size:15px;
-
-font-weight:bold;
-
-height:42px;
-
-overflow:hidden;
-
+    font-size:15px;
+    font-weight:bold;
+    line-height:1.4;
+    height:42px;
+    overflow:hidden;
 }
 
 .review-price{
-
-margin-top:8px;
-
-font-size:18px;
-
-color:red;
-
-font-weight:bold;
-
+    margin-top:8px;
+    font-size:20px;
+    color:#e60023;
+    font-weight:bold;
 }
 
 .review-old{
-
-margin-top:4px;
-
-font-size:13px;
-
-color:#999;
-
-text-decoration:line-through;
-
+    margin-top:4px;
+    font-size:13px;
+    color:#999;
+    text-decoration:line-through;
 }
 
 .review-old span{
-
-margin-left:8px;
-
-color:red;
-
-text-decoration:none;
-
-font-weight:bold;
-
+    margin-left:8px;
+    color:#e60023;
+    text-decoration:none;
+    font-weight:bold;
 }
 
 @media(max-width:768px){
 
-.review-card{
+    .review-section{
+        padding:12px;
+    }
 
-width:320px;
-min-width:320px;
-max-width:320px;
+    .review-wrap{
+        gap:12px;
+    }
 
-border-radius:20px;
+    .review-card{
+        width:260px;
+        min-width:260px;
+        max-width:260px;
+    }
 
-background:#fff;
-overflow:hidden;
+    .review-card video{
+        aspect-ratio:1/1;
+    }
 
-display:flex;
-flex-direction:column;
-}
+    .review-info{
+        padding:10px;
+    }
 
-.review-card video{
+    .review-name{
+        font-size:14px;
+    }
 
-width:100%;
-aspect-ratio:1/1;   /* khung vuông */
-
-object-fit:contain; /* video dọc/ngang đều vừa */
-
-background:#000;
-
-display:block;
-}
-}
-@media(max-width:768px){
-
-.review-card{
-
-width:240px;
-min-width:240px;
-max-width:240px;
-
-}
-
+    .review-price{
+        font-size:18px;
+    }
 }
 </style>
 
