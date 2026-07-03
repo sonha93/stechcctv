@@ -2456,16 +2456,26 @@ gallery.forEach((item,index)=>{
     thumb.classList.add("active");
 
     const oldVideo = viewer.querySelector("video");
-    if(oldVideo) oldVideo.remove();
+
+if (oldVideo) {
+    oldVideo.pause();
+    oldVideo.currentTime = 0;
+    oldVideo.src = "";
+    oldVideo.load();
+    oldVideo.remove();
+}
 
    if(item.type === "image"){
 
     const mainVideo = document.getElementById("detailVideo");
 
-    if(mainVideo){
-        mainVideo.pause();
-        mainVideo.style.display = "none";
-    }
+if(mainVideo){
+    mainVideo.pause();
+    mainVideo.currentTime = 0;
+    mainVideo.src = "";
+    mainVideo.load();
+    mainVideo.style.display = "none";
+}
 
     mainImg.style.display = "block";
     mainImg.src = item.url;
