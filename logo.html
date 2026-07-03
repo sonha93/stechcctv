@@ -1,6 +1,4 @@
 
-
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -216,17 +214,6 @@ header{
 .thumb-list img.active{
   border-color:red;
   transform:scale(1.05);
-}
-	#thumbList video{
-    width:70px;
-    height:70px;
-    object-fit:cover;
-    border-radius:10px;
-    cursor:pointer;
-}
-
-#thumbList video.active{
-    border:2px solid #00acc1;
 }
 .right{
   flex:1;
@@ -2231,7 +2218,7 @@ let products = [];
 let product = null;
 
 let currentIndex = 0;
-let gallery = [];
+let images = [];
 // MENU
 function toggleMenu(){
 
@@ -2358,103 +2345,49 @@ const thumbList =
   document.getElementById("thumbList");
 
 // danh sách ảnh
-gallery = [
-    {
-        type: "image",
-        url: product.img
-    },
-
-    ...(product.images || [])
-        .filter(img => img !== product.img)
-        .map(img => ({
-            type: "image",
-            url: img
-        })),
-
-    ...(product.videos || [])
-        .map(video => ({
-            type: "video",
-            url: video
-        }))
+images = [
+  product.img,
+  ...(product.images || []).filter(
+    img => img !== product.img
+  )
 ];
 
 currentIndex = 0;
+mainImg.src = images[0] || "";
 
-if(gallery.length){
-
-    if(gallery[0].type==="image"){
-        mainImg.src = gallery[0].url;
-    }else{
-        mainImg.removeAttribute("src");
-    }
-
-}
 thumbList.innerHTML = "";
 
-gallery.forEach((item,index)=>{
+images.forEach((img,index)=>{
 
-    let thumb;
+  const thumb = document.createElement("img");
 
-    if(item.type === "image"){
+  thumb.src = img;
 
-        thumb = document.createElement("img");
-        thumb.src = item.url;
-
-    }else{
-
-        thumb = document.createElement("video");
-        thumb.src = item.url;
-        thumb.muted = true;
-        thumb.playsInline = true;
-        thumb.preload = "metadata";
-    }
-
-    if(index===0){
-        thumb.classList.add("active");
-    }
-
-    thumb.onclick = ()=>{
-
-    currentIndex = index;
-
-    const oldVideo = viewer.querySelector("video");
-    if(oldVideo) oldVideo.remove();
-
-    if(item.type === "image"){
-
-        mainImg.src = item.url;
-
-        viewerImg.style.display = "block";
-        viewerImg.src = item.url;
-
-    }else{
-
-        viewerImg.style.display = "none";
-
-        const v = document.createElement("video");
-
-        v.src = item.url;
-        v.controls = true;
-        v.autoplay = true;
-        v.playsInline = true;
-
-        v.style.maxWidth = "90%";
-        v.style.maxHeight = "90%";
-
-        viewer.appendChild(v);
-
-    }
-
-    document
-        .querySelectorAll("#thumbList img,#thumbList video")
-        .forEach(el=>el.classList.remove("active"));
-
+  if(index === 0){
     thumb.classList.add("active");
+  }
 
-    viewer.classList.add("active");
+thumb.onclick = ()=>{
+
+  currentIndex = index;
+
+  // đổi ảnh chính
+  mainImg.src = img;
+
+  document
+    .querySelectorAll(".thumb-list img")
+    .forEach(el=>el.classList.remove("active"));
+
+  thumb.classList.add("active");
+
+  // mở popup ảnh
+  viewerImg.src = img;
+
+  viewer.classList.add("active");
+
+
 };
-
-    thumbList.appendChild(thumb);
+  thumbList.appendChild(thumb);
 
 });
   document.getElementById("panelProductImg").src =
@@ -2692,14 +2625,14 @@ updateCartCount();
 
 // ĐÓNG POPUP ẢNH
 
-document.getElementById("closeViewer").onclick = ()=>{
+document
+  .getElementById("closeViewer")
+  .onclick = ()=>{
 
-    const oldVideo = viewer.querySelector("video");
-    if(oldVideo) oldVideo.remove();
+    document
+      .getElementById("imageViewer")
+      .classList.remove("active");
 
-    viewerImg.style.display = "block";
-
-    viewer.classList.remove("active");
 };
 
 // bấm nền đen để tắt
@@ -2784,7 +2717,7 @@ viewer.addEventListener("touchend",(e)=>{
 
     currentIndex++;
 
-    if(currentIndex >= gallery.length){
+    if(currentIndex >= images.length){
 
       currentIndex = 0;
 
@@ -2799,7 +2732,7 @@ viewer.addEventListener("touchend",(e)=>{
 
     if(currentIndex < 0){
 
-      currentIndex = gallery.length- 1;
+      currentIndex = images.length - 1;
 
     }
 
@@ -2809,38 +2742,13 @@ viewer.addEventListener("touchend",(e)=>{
 
   viewerImg.style.transform = "scale(1)";
 
-  viewerImg.src = gallery[currentIndex].url;
+  viewerImg.src = images[currentIndex];
 
-  const item = gallery[currentIndex].url;
+  document.getElementById("detailImg").src =
+    images[currentIndex];
 
-const oldVideo = viewer.querySelector("video");
-if(oldVideo) oldVideo.remove();
-
-viewerImg.style.display = "block";
-
-if(item.type==="image"){
-
-    viewerImg.src = item.url;
-    document.getElementById("detailImg").src = item.url;
-
-}else{
-
-    viewerImg.removeAttribute("src");
-
-    const v = document.createElement("video");
-
-    v.src = item.url;
-    v.controls = true;
-    v.autoplay = true;
-    v.playsInline = true;
-    v.style.maxWidth="95%";
-    v.style.maxHeight="95%";
-
-    viewer.appendChild(v);
-
-}
   document
-   .querySelectorAll("#thumbList img,#thumbList video")
+    .querySelectorAll(".thumb-list img")
     .forEach((el,i)=>{
 
       el.classList.toggle(
@@ -2862,42 +2770,16 @@ document
     currentIndex--;
 
     if(currentIndex < 0){
-      currentIndex = gallery.length - 1;
+      currentIndex = images.length - 1;
     }
 
-    viewerImg.src = gallery[currentIndex].url;
+    viewerImg.src = images[currentIndex];
 
-    const item = gallery[currentIndex].url;
-
-const oldVideo = viewer.querySelector("video");
-if(oldVideo) oldVideo.remove();
-
-viewerImg.style.display = "block";
-
-if(item.type==="image"){
-
-    viewerImg.src = item.url;
-    document.getElementById("detailImg").src = item.url;
-
-}else{
-
-    viewerImg.removeAttribute("src");
-
-    const v = document.createElement("video");
-
-    v.src = item.url;
-    v.controls = true;
-    v.autoplay = true;
-    v.playsInline = true;
-    v.style.maxWidth="95%";
-    v.style.maxHeight="95%";
-
-    viewer.appendChild(v);
-
-}
+    document.getElementById("detailImg").src =
+      images[currentIndex];
 
     document
-      .querySelectorAll("#thumbList img,#thumbList video")
+      .querySelectorAll(".thumb-list img")
       .forEach((el,i)=>{
         el.classList.toggle(
           "active",
@@ -2915,17 +2797,17 @@ document
 
     currentIndex++;
 
-    if(currentIndex >= gallery.length){
+    if(currentIndex >= images.length){
       currentIndex = 0;
     }
 
-    viewerImg.src = gallery[currentIndex].url;
+    viewerImg.src = images[currentIndex];
 
     document.getElementById("detailImg").src =
-     gallery[currentIndex].url;
+      images[currentIndex];
 
     document
-     .querySelectorAll("#thumbList img,#thumbList video")
+      .querySelectorAll(".thumb-list img")
       .forEach((el,i)=>{
         el.classList.toggle(
           "active",
@@ -2962,7 +2844,7 @@ viewer.addEventListener("mouseup",(e)=>{
 
     currentIndex++;
 
-    if(currentIndex >= gallery.length){
+    if(currentIndex >= images.length){
       currentIndex = 0;
     }
 
@@ -2971,44 +2853,18 @@ viewer.addEventListener("mouseup",(e)=>{
     currentIndex--;
 
     if(currentIndex < 0){
-      currentIndex =gallery.length - 1;
+      currentIndex = images.length - 1;
     }
 
   }
 
-  viewerImg.src = gallery[currentIndex].url;
+  viewerImg.src = images[currentIndex];
 
- const item = gallery[currentIndex].url;
-
-const oldVideo = viewer.querySelector("video");
-if(oldVideo) oldVideo.remove();
-
-viewerImg.style.display = "block";
-
-if(item.type==="image"){
-
-    viewerImg.src = item.url;
-    document.getElementById("detailImg").src = item.url;
-
-}else{
-
-    viewerImg.removeAttribute("src");
-
-    const v = document.createElement("video");
-
-    v.src = item.url;
-    v.controls = true;
-    v.autoplay = true;
-    v.playsInline = true;
-    v.style.maxWidth="95%";
-    v.style.maxHeight="95%";
-
-    viewer.appendChild(v);
-
-}
+  document.getElementById("detailImg").src =
+    images[currentIndex];
 
   document
-  .querySelectorAll("#thumbList img,#thumbList video")
+    .querySelectorAll(".thumb-list img")
     .forEach((el,i)=>{
 
       el.classList.toggle(
