@@ -2418,10 +2418,18 @@ gallery.forEach((item,index)=>{
     }else{
 
         thumb = document.createElement("video");
-        thumb.src = item.url;
-        thumb.muted = true;
-        thumb.playsInline = true;
-        thumb.preload = "metadata";
+
+thumb.src = item.url;
+
+// thêm dòng này
+thumb.poster = product.img;
+
+thumb.muted = true;
+thumb.playsInline = true;
+thumb.setAttribute("playsinline", "");
+thumb.setAttribute("webkit-playsinline", "");
+
+thumb.preload = "metadata";
     }
 
     if(index===0){
