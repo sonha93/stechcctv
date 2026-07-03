@@ -3014,7 +3014,13 @@ if(item.type==="image"){
 
    viewerImg.src = "";
 viewerImg.style.display = "none";
+	const mainVideo = document.getElementById("detailVideo");
 
+if(mainVideo){
+    mainVideo.pause();
+    mainVideo.currentTime = 0;
+    mainVideo.style.display = "none";
+}
     const v = document.createElement("video");
 
     v.src = item.url;
