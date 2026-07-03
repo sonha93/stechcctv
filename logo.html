@@ -2413,44 +2413,48 @@ gallery.forEach((item,index)=>{
 
     thumb.onclick = ()=>{
 
-    currentIndex = index;
+        currentIndex = index;
 
-    const oldVideo = viewer.querySelector("video");
-    if(oldVideo) oldVideo.remove();
+        if(item.type==="image"){
 
-    if(item.type === "image"){
+            mainImg.src = item.url;
 
-        mainImg.src = item.url;
+            viewerImg.style.display = "block";
+            viewerImg.src = item.url;
 
-        viewerImg.style.display = "block";
-        viewerImg.src = item.url;
+        }else{
 
-    }else{
+            viewerImg.style.display = "none";
 
-        viewerImg.style.display = "none";
+            const oldVideo =
+                viewer.querySelector("video");
 
-        const v = document.createElement("video");
+            if(oldVideo) oldVideo.remove();
 
-        v.src = item.url;
-        v.controls = true;
-        v.autoplay = true;
-        v.playsInline = true;
+            const v =
+                document.createElement("video");
 
-        v.style.maxWidth = "90%";
-        v.style.maxHeight = "90%";
+            v.src = item.url;
+            v.controls = true;
+            v.autoplay = true;
+            v.playsInline = true;
+            v.style.maxWidth = "95%";
+            v.style.maxHeight = "95%";
+            v.style.borderRadius = "18px";
 
-        viewer.appendChild(v);
+            viewer.appendChild(v);
 
-    }
+        }
 
-    document
-        .querySelectorAll("#thumbList img,#thumbList video")
-        .forEach(el=>el.classList.remove("active"));
+        document
+            .querySelectorAll("#thumbList img,#thumbList video")
+            .forEach(el=>el.classList.remove("active"));
 
-    thumb.classList.add("active");
+        thumb.classList.add("active");
 
-    viewer.classList.add("active");
-};
+        viewer.classList.add("active");
+
+    };
 
     thumbList.appendChild(thumb);
 
@@ -2690,14 +2694,16 @@ updateCartCount();
 
 // ĐÓNG POPUP ẢNH
 
-document.getElementById("closeViewer").onclick = ()=>{
-
-    const oldVideo = viewer.querySelector("video");
-    if(oldVideo) oldVideo.remove();
-
-    viewerImg.style.display = "block";
+document.getElementById("closeViewer").onclick=()=>{
 
     viewer.classList.remove("active");
+
+    viewerImg.style.display="block";
+
+    const oldVideo=viewer.querySelector("video");
+
+    if(oldVideo) oldVideo.remove();
+
 };
 
 // bấm nền đen để tắt
