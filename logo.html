@@ -2781,18 +2781,45 @@ updateCartCount();
 
 // ĐÓNG POPUP ẢNH
 
-document.getElementById("closeViewer").onclick=()=>{
+document.getElementById("closeViewer").onclick = ()=>{
 
     viewer.classList.remove("active");
 
-    viewerImg.style.display="block";
+    const oldVideo = viewer.querySelector("video");
 
-    const oldVideo=viewer.querySelector("video");
+    if(oldVideo){
+        oldVideo.pause();
+        oldVideo.currentTime = 0;
+        oldVideo.remove();
+    }
 
-    if(oldVideo) oldVideo.remove();
+    const item = gallery[currentIndex];
+
+    const mainImg = document.getElementById("detailImg");
+    const mainVideo = document.getElementById("detailVideo");
+
+    if(item.type === "image"){
+
+        if(mainVideo){
+            mainVideo.pause();
+            mainVideo.style.display = "none";
+        }
+
+        mainImg.style.display = "block";
+        mainImg.src = item.url;
+
+    }else{
+
+        mainImg.style.display = "none";
+
+        if(mainVideo){
+            mainVideo.style.display = "block";
+            mainVideo.play();
+        }
+
+    }
 
 };
-
 
 	// bấm nền đen để tắt
 
