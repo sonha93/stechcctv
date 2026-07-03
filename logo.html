@@ -165,41 +165,32 @@ header{
 }
 
 .left{
-  width:330px;
-  flex-shrink:0;
-  position:relative;
-  padding-bottom:20px; /* chừa chỗ ảnh nhỏ */
+    width:330px;
+    flex-shrink:0;
+
+    display:flex;
+    flex-direction:column;
+    gap:12px;
 }
 
-.left img{
-  width:100%;
-  height:330px;
-  object-fit:cover;
-  border-radius:18px;
-  background:#fff;
-}
-.left{
-  width:330px;
-  flex-shrink:0;
-  position:relative;
+.left img,
+#detailVideo{
+    width:100%;
+    height:330px;
+    object-fit:contain;
+    border-radius:18px;
+    background:#fff;
 }
 
 .thumb-list{
-  position:absolute;
-  bottom:-10px;   /* lùi xuống dưới */
-  left:10px;
-
-  display:flex;
-  gap:8px;
-
-  padding:6px;
-  border-radius:14px;
-
-  background:rgba(255,255,255,.7);
-  backdrop-filter:blur(6px);
-
-  overflow-x:auto;
-  max-width:90%;
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding:0;
+    position:static;      /* bỏ absolute */
+    max-width:100%;
+    background:none;
+    backdrop-filter:none;
 }
 .thumb-list img{
   width:70px;
