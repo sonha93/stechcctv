@@ -2511,22 +2511,28 @@ document.getElementById("detailImg").after(mainVideo);
     }
 
     mainVideo.src = item.url;
-    mainVideo.style.display = "block";
+mainVideo.style.display = "block";
+
+// DỪNG VIDEO NGOÀI TRANG
+mainVideo.pause();
 
 
+// popup
+viewerImg.src = "";
+viewerImg.style.display = "none";
 
-    // popup
-    viewerImg.src="";
-    viewerImg.style.display="none";
+const oldVideo = viewer.querySelector("video");
 
-    const oldVideo=viewer.querySelector("video");
-    if(oldVideo) oldVideo.remove();
+if(oldVideo){
+    oldVideo.pause();
+    oldVideo.remove();
+}
 
-    const v=document.createElement("video");
+const v = document.createElement("video");
 
-    v.src=item.url;
-    v.controls=true;
-    v.autoplay=true;
+v.src = item.url;
+v.controls = true;
+v.autoplay = true;
 
     v.setAttribute("playsinline","");
     v.setAttribute("webkit-playsinline","");
@@ -2781,15 +2787,24 @@ updateCartCount();
 
 // ĐÓNG POPUP ẢNH
 
-document.getElementById("closeViewer").onclick=()=>{
+document.getElementById("closeViewer").onclick = ()=>{
 
     viewer.classList.remove("active");
 
-    viewerImg.style.display="block";
+    viewerImg.style.display = "block";
 
-    const oldVideo=viewer.querySelector("video");
+    const oldVideo = viewer.querySelector("video");
 
-    if(oldVideo) oldVideo.remove();
+    if(oldVideo){
+        oldVideo.pause();
+        oldVideo.remove();
+    }
+
+    const mainVideo = document.getElementById("detailVideo");
+
+    if(mainVideo){
+        mainVideo.play().catch(()=>{});
+    }
 
 };
 
