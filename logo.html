@@ -2501,7 +2501,8 @@ document.getElementById("detailImg").after(mainVideo);
 
     mainVideo.src = item.url;
     mainVideo.style.display = "block";
-
+	mainVideo.pause();
+mainVideo.currentTime = 0;
 
 
     // popup
@@ -3028,6 +3029,12 @@ if(mainVideo){
     mainVideo.currentTime = 0;
     mainVideo.style.display = "none";
 }
+	const mainVideo = document.getElementById("detailVideo");
+
+if (mainVideo) {
+    mainVideo.pause();
+    mainVideo.currentTime = 0;
+}
     const v = document.createElement("video");
 
     v.src = item.url;
@@ -3174,7 +3181,12 @@ const mainVideo = document.getElementById("detailVideo");
 if(mainVideo){
     mainVideo.pause();
 }
-	
+	const mainVideo = document.getElementById("detailVideo");
+
+if (mainVideo) {
+    mainVideo.pause();
+    mainVideo.currentTime = 0;
+}
     const v = document.createElement("video");
 
     v.src = item.url;
