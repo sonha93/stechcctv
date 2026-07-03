@@ -1135,6 +1135,139 @@ body{
     }
 
 }
+       .review-section{
+
+padding:20px;
+
+}
+
+.review-wrap{
+
+display:flex;
+
+overflow-x:auto;
+
+gap:15px;
+
+scroll-behavior:smooth;
+
+scroll-snap-type:x mandatory;
+
+}
+
+.review-wrap::-webkit-scrollbar{
+
+display:none;
+
+}
+
+.review-card{
+
+min-width:260px;
+
+max-width:260px;
+
+background:#fff;
+
+border-radius:16px;
+
+overflow:hidden;
+
+text-decoration:none;
+
+color:#111;
+
+flex-shrink:0;
+
+scroll-snap-align:start;
+
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+}
+
+.review-card video{
+
+width:100%;
+
+height:420px;
+
+object-fit:cover;
+
+background:#000;
+
+}
+
+.review-info{
+
+padding:12px;
+
+}
+
+.review-name{
+
+font-size:15px;
+
+font-weight:bold;
+
+height:42px;
+
+overflow:hidden;
+
+}
+
+.review-price{
+
+margin-top:8px;
+
+font-size:18px;
+
+color:red;
+
+font-weight:bold;
+
+}
+
+.review-old{
+
+margin-top:4px;
+
+font-size:13px;
+
+color:#999;
+
+text-decoration:line-through;
+
+}
+
+.review-old span{
+
+margin-left:8px;
+
+color:red;
+
+text-decoration:none;
+
+font-weight:bold;
+
+}
+
+@media(max-width:768px){
+
+.review-card{
+
+min-width:210px;
+
+max-width:210px;
+
+}
+
+.review-card video{
+
+height:360px;
+
+}
+
+}
 </style>
 
 </head>
@@ -1281,6 +1414,15 @@ body{
         <button id="featuredNext">&#10095;</button>
 
     </div>
+
+</section>
+   <section class="review-section">
+
+    <div class="featured-header">
+        <h2>🎥 Review sản phẩm</h2>
+    </div>
+
+    <div id="reviewProducts" class="review-wrap"></div>
 
 </section>
    <section class="featured-section" id="viewedSection" style="display:none;">
@@ -1436,6 +1578,6 @@ src="home.js"></script>
 
 <script type="module" src="featured-products.js"></script>
 <script type="module" src="viewed-products.js"></script>
-
+<script type="module" src="review.js"></script>
 </body>
 </html>
