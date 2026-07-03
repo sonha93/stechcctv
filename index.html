@@ -1255,15 +1255,38 @@ font-weight:bold;
 
 .review-card{
 
-min-width:210px;
+width:320px;
+min-width:320px;
+max-width:320px;
 
-max-width:210px;
+border-radius:20px;
 
+background:#fff;
+overflow:hidden;
+
+display:flex;
+flex-direction:column;
 }
 
 .review-card video{
 
-height:360px;
+width:100%;
+aspect-ratio:1/1;   /* khung vuông */
+
+object-fit:contain; /* video dọc/ngang đều vừa */
+
+background:#000;
+
+display:block;
+}
+}
+@media(max-width:768px){
+
+.review-card{
+
+width:240px;
+min-width:240px;
+max-width:240px;
 
 }
 
