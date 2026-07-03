@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -532,10 +531,7 @@ const res = await fetch(
 
       if(file.type.startsWith("video/")){
 
-   videos.push({
-    url: data.secure_url,
-    thumb: data.secure_url.replace("/upload/", "/upload/so_0,w_300/")
-});
+    videos.push(data.secure_url);
 
 }else{
 
@@ -637,13 +633,14 @@ onclick="deleteImage('${url}')">
 `;
 
 });
-videos.forEach(video=>{
+videos.forEach(url=>{
 
 galleryList.innerHTML += `
+
 <div class="gallery-item">
 
 <video
-src="${video.url}"
+src="${url}"
 controls
 style="
 width:120px;
@@ -655,11 +652,12 @@ border-radius:10px;
 
 <button
 class="delete-btn"
-onclick="deleteVideo('${video.url}')">
+onclick="deleteVideo('${url}')">
 🗑
 </button>
 
 </div>
+
 `;
 
 });
@@ -691,23 +689,16 @@ loadGallery();
 const productId =
 document.getElementById("productId").value.trim();
 
-const snap =
-await getDoc(doc(db,"products",productId));
-
-const videos =
-snap.data().videos || [];
-
-const target =
-videos.find(v=>v.url===url);
-
-if(!target) return;
+if(!confirm("Xóa video này?")) return;
 
 await updateDoc(
 
 doc(db,"products",productId),
 
 {
-    videos: arrayRemove(target)
+
+videos: arrayRemove(url)
+
 }
 
 );
