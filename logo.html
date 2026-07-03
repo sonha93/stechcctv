@@ -2813,9 +2813,9 @@ viewer.addEventListener("touchend",(e)=>{
 
   viewerImg.style.transform = "scale(1)";
 
-  viewerImg.src = gallery[currentIndex];
+  viewerImg.src = gallery[currentIndex].url;
 
-  const item = gallery[currentIndex];
+  const item = gallery[currentIndex].url;
 
 const oldVideo = viewer.querySelector("video");
 if(oldVideo) oldVideo.remove();
@@ -2869,9 +2869,9 @@ document
       currentIndex = gallery.length - 1;
     }
 
-    viewerImg.src = gallery[currentIndex];
+    viewerImg.src = gallery[currentIndex].url;
 
-    const item = gallery[currentIndex];
+    const item = gallery[currentIndex].url;
 
 const oldVideo = viewer.querySelector("video");
 if(oldVideo) oldVideo.remove();
@@ -2923,10 +2923,10 @@ document
       currentIndex = 0;
     }
 
-    viewerImg.src = gallery[currentIndex];
+    viewerImg.src = gallery[currentIndex].url;
 
     document.getElementById("detailImg").src =
-      gallery[currentIndex];
+     gallery[currentIndex].url;
 
     document
      .querySelectorAll("#thumbList img,#thumbList video")
@@ -2980,9 +2980,9 @@ viewer.addEventListener("mouseup",(e)=>{
 
   }
 
-  viewerImg.src = gallery[currentIndex];
+  viewerImg.src = gallery[currentIndex].url;
 
- const item = gallery[currentIndex];
+ const item = gallery[currentIndex].url;
 
 const oldVideo = viewer.querySelector("video");
 if(oldVideo) oldVideo.remove();
