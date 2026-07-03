@@ -1,5 +1,3 @@
-
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
     getFirestore,
@@ -8,26 +6,20 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-
     apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
-
     authDomain: "stech-73b89.firebaseapp.com",
-
     projectId: "stech-73b89",
-
     storageBucket: "stech-73b89.firebasestorage.app",
-
     messagingSenderId: "873739162979",
-
     appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
-
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const container = document.getElementById("reviewProducts");
-loadReview();
+
+document.addEventListener("DOMContentLoaded", loadReview);
 
 async function loadReview(){
 
@@ -35,70 +27,44 @@ async function loadReview(){
 
     container.innerHTML = "";
 
-    snap.forEach(docSnap=>{
+    snap.forEach(docSnap => {
 
         const product = docSnap.data();
-
-        if(!product.videos || product.videos.length===0) return;
+        if(!product.videos || product.videos.length === 0) return;
 
         const id = docSnap.id;
 
-        const video =
-        typeof product.videos[0] === "string"
-        ? product.videos[0]
-        : product.videos[0].url;
-
-        const oldPrice = Number(product.oldPrice||0);
-        const price = Number(product.price||0);
-
-        const sale =
-        oldPrice>0
-        ? Math.round((oldPrice-price)/oldPrice*100)
-        : 0;
+        const video = typeof product.videos[0] === "string"
+            ? product.videos[0]
+            : product.videos[0].url;
 
         container.innerHTML += `
-<div class="video-item">
+        <div class="video-item">
 
-    <video
-    class="review-video"
-    src="${video}"
-    playsinline
-    muted
-    loop
-    preload="metadata">
-</video>
+            <video class="review-video"
+                src="${video}"
+                playsinline
+                muted
+                loop
+                preload="metadata">
+            </video>
 
-    <div class="info">
+            <div class="info">
+                <div>${product.name}</div>
 
-        <div class="name">
-            ${product.name}
-        </div>
+                <button class="buy-btn"
+                onclick="location.href='logo.html?id=${id}'">
+                    Mua ngay
+                </button>
+            </div>
 
-        <div class="price">
-            ${price.toLocaleString()}đ
-        </div>
-
-        <div class="old">
-            ${oldPrice.toLocaleString()}đ
-            <span>-${sale}%</span>
-        </div>
-
-        <button class="buy-btn"
-        onclick="location.href='logo.html?id=${id}'">
-            Mua ngay
-        </button>
-
-    </div>
-
-</div>
-`;
+        </div>`;
     });
 
-    autoPlay();
-
+    setupVideo();
 }
 
-function autoPlay(){
+function setupVideo(){
 
     const videos = document.querySelectorAll(".review-video");
 
@@ -110,8 +76,7 @@ function autoPlay(){
 
             if(entry.isIntersecting){
 
-                // pause các video khác
-                videos.forEach(v => {
+                videos.forEach(v=>{
                     if(v !== video){
                         v.pause();
                         v.currentTime = 0;
@@ -119,7 +84,6 @@ function autoPlay(){
                     }
                 });
 
-                // autoplay video đang thấy
                 video.play().catch(()=>{});
 
             }else{
@@ -128,22 +92,18 @@ function autoPlay(){
 
         });
 
-    },{
-        threshold: 0.7
-    });
+    }, { threshold: 0.8 });
 
     videos.forEach(video => {
 
-        // 🔥 QUAN TRỌNG: click để bật tiếng
+        // 🔥 click để bật/tắt tiếng (QUAN TRỌNG)
         video.addEventListener("click", () => {
 
-            if(video.muted){
-                video.muted = false;
-                video.play();
-            }else{
-                video.muted = true;
-            }
+            video.muted = !video.muted;
 
+            if(!video.muted){
+                video.play();
+            }
         });
 
         observer.observe(video);
