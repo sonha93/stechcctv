@@ -1647,7 +1647,7 @@ color:#00b894;
     flex-shrink:0;
 }
 	}
-	.footer{
+	}.footer{
   background:#111;
   color:#fff;
   padding:30px 15px;
@@ -2414,17 +2414,15 @@ gallery.forEach((item,index)=>{
     thumb.onclick = ()=>{
 
         currentIndex = index;
-		
-       if(item.type==="image"){
 
-    const oldVideo = viewer.querySelector("video");
-    if(oldVideo) oldVideo.remove();
+        if(item.type==="image"){
 
-    viewerImg.style.display = "block";
-    viewerImg.src = item.url;
-    document.getElementById("detailImg").src = item.url;
+            mainImg.src = item.url;
 
-}else{
+            viewerImg.style.display = "block";
+            viewerImg.src = item.url;
+
+        }else{
 
             viewerImg.style.display = "none";
 
@@ -2830,8 +2828,7 @@ if(item.type==="image"){
 
 }else{
 
-    viewerImg.style.display = "none";
-    viewerImg.src = "";
+    viewerImg.removeAttribute("src");
 
     const v = document.createElement("video");
 
@@ -2887,8 +2884,7 @@ if(item.type==="image"){
 
 }else{
 
-    viewerImg.style.display = "none";
-    viewerImg.src = "";
+    viewerImg.removeAttribute("src");
 
     const v = document.createElement("video");
 
@@ -3022,8 +3018,7 @@ if(item.type==="image"){
 
 }else{
 
-    viewerImg.style.display = "none";
-    viewerImg.src = "";
+    viewerImg.removeAttribute("src");
 
     const v = document.createElement("video");
 
