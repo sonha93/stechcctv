@@ -422,8 +422,7 @@ input.addEventListener("change",()=>{
   preview.innerHTML = "";
 
   const files = input.files;
-  const total = files.length;
-let current = 0;
+
   for(const file of files){
 
     const reader = new FileReader();
@@ -490,11 +489,13 @@ document
 
   try{
 
-    status.innerText =
-    "Đang upload...";
+    status.innerText = "Đang upload...";
 
     let urls = [];
-let videos = [];
+    let videos = [];
+
+    const total = files.length;
+    let current = 0;
 
     for(const file of files){
     current++;
