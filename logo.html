@@ -1903,7 +1903,21 @@ body{
     width:100%;
     justify-content:flex-start;
 }
+@media (max-width:768px){
 
+.thumb-list img,
+.thumb-list video{
+    width:70px !important;
+    height:70px !important;
+    min-width:70px !important;
+    min-height:70px !important;
+    max-width:70px !important;
+    max-height:70px !important;
+    flex-shrink:0 !important;
+    object-fit:cover;
+}
+
+}
 
 </style>
 </head>
