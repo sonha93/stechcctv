@@ -2385,10 +2385,11 @@ gallery = [
         })),
 
     ...(product.videos || [])
-        .map(video => ({
-            type: "video",
-            url: video
-        }))
+    .map(video => ({
+        type: "video",
+        url: typeof video === "string" ? video : video.url,
+        thumb: typeof video === "string" ? video : video.thumb
+    }))
 ];
 
 currentIndex = 0;
@@ -2422,7 +2423,7 @@ gallery.forEach((item,index)=>{
     thumb = document.createElement("video");
 
     thumb.src = item.url;
-
+console.log(item);
     thumb.muted = true;
     thumb.playsInline = true;
     thumb.setAttribute("playsinline", "");
