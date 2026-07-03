@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -2419,29 +2417,13 @@ gallery.forEach((item,index)=>{
 
     }else{
 
-    thumb = document.createElement("video");
+        thumb = document.createElement("video");
+        thumb.src = item.url;
+        thumb.muted = true;
+        thumb.playsInline = true;
+        thumb.preload = "metadata";
+    }
 
-    thumb.src = item.url;
-
-    thumb.muted = true;
-    thumb.playsInline = true;
-    thumb.setAttribute("playsinline", "");
-    thumb.setAttribute("webkit-playsinline", "");
-
-    thumb.preload = "auto";
-    thumb.autoplay = false;
-    thumb.controls = false;
-    thumb.loop = false;
-
-    thumb.addEventListener("loadedmetadata", () => {
-        thumb.currentTime = 0.1;
-    });
-
-    thumb.addEventListener("seeked", () => {
-        thumb.pause();
-    });
-
-}
     if(index===0){
         thumb.classList.add("active");
     }
