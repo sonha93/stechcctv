@@ -2381,11 +2381,15 @@ currentIndex = 0;
 if(gallery.length){
 
     if(gallery[0].type==="image"){
-        mainImg.src = gallery[0].url;
-    }else{
-        mainImg.removeAttribute("src");
-    }
 
+    mainImg.style.display="block";
+    mainImg.src=gallery[0].url;
+
+}else{
+
+    mainImg.style.display="none";
+
+}
 }
 thumbList.innerHTML = "";
 
@@ -2411,58 +2415,55 @@ gallery.forEach((item,index)=>{
         thumb.classList.add("active");
     }
 
-    thumb.onclick = ()=>{
+   thumb.onclick = () => {
 
-        currentIndex = index;
+    currentIndex = index;
 
-        if(item.type==="image"){
+    document
+      .querySelectorAll("#thumbList img,#thumbList video")
+      .forEach(el => el.classList.remove("active"));
 
-            mainImg.src = item.url;
+    thumb.classList.add("active");
 
-            viewerImg.style.display = "block";
-            viewerImg.src = item.url;
+    const oldVideo = viewer.querySelector("video");
+    if(oldVideo) oldVideo.remove();
 
-        }else{
+    if(item.type === "image"){
 
-            viewerImg.style.display = "none";
+        mainImg.src = item.url;
 
-            const oldVideo =
-                viewer.querySelector("video");
+        viewerImg.src = item.url;
+        viewerImg.style.display = "block";
 
-            if(oldVideo) oldVideo.remove();
+    }else{
 
-           const v = document.createElement("video");
+        mainImg.style.display = "none";
 
-v.src = item.url;
-v.controls = true;
-v.autoplay = true;
-v.muted = false;
+        viewerImg.style.display = "none";
 
-v.setAttribute("playsinline","");
-v.setAttribute("webkit-playsinline","");
+        const v = document.createElement("video");
 
-v.style.maxWidth = "95%";
-v.style.maxHeight = "95%";
-v.style.borderRadius = "18px";
+        v.src = item.url;
+        v.controls = true;
+        v.autoplay = true;
+        v.muted = false;
+        v.playsInline = true;
+        v.setAttribute("playsinline","");
+        v.setAttribute("webkit-playsinline","");
 
-viewerImg.style.display = "none";
+        v.style.maxWidth="95%";
+        v.style.maxHeight="95%";
+        v.style.borderRadius="18px";
 
-viewer.appendChild(v);
+        viewer.appendChild(v);
 
-setTimeout(()=>{
-    v.play().catch(()=>{});
-},50);
-        document
-            .querySelectorAll("#thumbList img,#thumbList video")
-            .forEach(el=>el.classList.remove("active"));
+    }
 
-        thumb.classList.add("active");
+    viewer.classList.add("active");
 
-        viewer.classList.add("active");
+};
 
-    };
-
-    thumbList.appendChild(thumb);
+thumbList.appendChild(thumb);
 
 });
   document.getElementById("panelProductImg").src =
