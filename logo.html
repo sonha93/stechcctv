@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -2779,45 +2781,18 @@ updateCartCount();
 
 // ĐÓNG POPUP ẢNH
 
-document.getElementById("closeViewer").onclick = ()=>{
+document.getElementById("closeViewer").onclick=()=>{
 
     viewer.classList.remove("active");
 
-    const oldVideo = viewer.querySelector("video");
+    viewerImg.style.display="block";
 
-    if(oldVideo){
-        oldVideo.pause();
-        oldVideo.currentTime = 0;
-        oldVideo.remove();
-    }
+    const oldVideo=viewer.querySelector("video");
 
-    const item = gallery[currentIndex];
-
-    const mainImg = document.getElementById("detailImg");
-    const mainVideo = document.getElementById("detailVideo");
-
-    if(item.type === "image"){
-
-        if(mainVideo){
-            mainVideo.pause();
-            mainVideo.style.display = "none";
-        }
-
-        mainImg.style.display = "block";
-        mainImg.src = item.url;
-
-    }else{
-
-        mainImg.style.display = "none";
-
-        if(mainVideo){
-            mainVideo.style.display = "block";
-            mainVideo.play();
-        }
-
-    }
+    if(oldVideo) oldVideo.remove();
 
 };
+
 
 	// bấm nền đen để tắt
 
