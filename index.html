@@ -96,36 +96,38 @@ body{
 /* LOGO */
 
 .logo{
-  width:48px;
-  height:48px;
+    width:160px;
+    height:48px;
 
-  min-width:58px;
+    min-width:160px;
 
-  border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
 
-  overflow:hidden;
+    overflow:visible;
 
-  background:#fff;
+    background:transparent;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+    border-radius:0;
 
-  flex-shrink:0;
+    box-shadow:none;
+
+    flex-shrink:0;
 }
 
 /* FIX LOGO */
 
 .logo img{
-  width:100% !important;
-  height:100% !important;
+    width:100% !important;
+    height:auto !important;
 
-  object-fit:contain;
+    object-fit:contain;
 
-  padding:2px;
+    padding:0;
 
-  display:block;
-
+    display:block;
+}
   border:none !important;
   outline:none !important;
   box-shadow:none !important;
@@ -398,9 +400,11 @@ body{
   .menu-btn,
   .icon-btn,
   .logo{
-    width:44px !important;
-    height:44px !important;
-    min-width:44px !important;
+  .logo{
+    width:120px !important;
+    height:40px !important;
+    min-width:120px !important;
+}
 
     border-radius:14px;
 
@@ -759,29 +763,25 @@ body{
     inset -2px -2px 4px rgba(255,255,255,.08);
 }
 
-   .logo{
-  width:48px !important;
-  height:48px !important;
+  .logo{
+    width:160px !important;
+    height:48px !important;
 
-  min-width:48px !important;
+    min-width:160px !important;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
 
-  overflow:hidden;
-  border-radius:16px;
-
-  box-sizing:border-box;
+    overflow:visible;
 }
-
 .logo img{
-  width:80% !important;
-  height:80% !important;
+    width:100% !important;
+    height:auto !important;
 
-  object-fit:contain !important;
+    object-fit:contain !important;
 
-  display:block;
+    display:block;
 }
    .menu-btn{
   text-shadow:0 0 2px rgba(255,255,255,.5);
@@ -1212,12 +1212,9 @@ body{
     ☰
   </div>
 
-  <div class="logo">
-
-  <img
-  src="https://i.ibb.co/Z1kv9nJj/logo.png"
-  alt="Stech">
-     </div>
+  <a href="index.html" class="logo">
+    <img src="logo.png" alt="STech">
+</a>
 <div class="search-box">
   <input
     type="search"
