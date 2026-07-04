@@ -332,16 +332,14 @@ body{
 
 <div class="comment-input">
 
-    <img
-        id="commentAvatar"
-        src="https://i.ibb.co/Z1kv9nJj/logo.png"
-        style="
-            width:40px;
-            height:40px;
+    <img id="commentAvatar"
+         src="default-avatar.png"
+         style="
+            width:42px;
+            height:42px;
             border-radius:50%;
             object-fit:cover;
-            flex-shrink:0;
-        ">
+         ">
 
     <input
         id="commentText"
@@ -417,6 +415,37 @@ if(!feed) throw new Error("Missing #feed");
 const db = getFirestore(app);
 
 const auth = getAuth(app);
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+onAuthStateChanged(auth, async (user) => {
+
+    const img = document.getElementById("commentAvatar");
+
+    if (!img) return;
+
+    if (!user) {
+        img.src = "default-avatar.png";
+        return;
+    }
+
+    try {
+
+        const snap = await getDoc(doc(db, "users", user.uid));
+
+        if (snap.exists() && snap.data().avatar) {
+            img.src = snap.data().avatar;
+        } else {
+            img.src = "default-avatar.png";
+        }
+
+    } catch {
+
+        img.src = "default-avatar.png";
+
+    }
+
+});
 let currentProduct = "";
 let currentCommentProduct = "";
 async function loadVideos(){
@@ -1028,6 +1057,28 @@ document.getElementById("sendBtn").onclick = () => {
 
     sendComment();
 };
+    onAuthStateChanged(auth, (user) => {
+
+    const img = document.getElementById("commentAvatar");
+
+    if (!img) return;
+
+    if (!user) {
+        img.src = "default-avatar.png";
+        return;
+    }
+
+    onSnapshot(doc(db, "users", user.uid), (snap) => {
+
+        if (snap.exists() && snap.data().avatar) {
+            img.src = snap.data().avatar;
+        } else {
+            img.src = "default-avatar.png";
+        }
+
+    });
+
+});
 </script>
 
 </body>
