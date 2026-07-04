@@ -664,17 +664,19 @@ try {
 
         <span>${time}</span>
 
-        <span style="
-            cursor:pointer;
-            font-weight:600;
-        ">
-            Trả lời
-        </span>
+       <span
+    onclick="replyComment('${name}')"
+    style="
+        cursor:pointer;
+        font-weight:600;
+    "
+>
+    Trả lời
+</span>
 
     </div>
 
 </div>
-
 <div style="
     width:48px;
     display:flex;
@@ -684,21 +686,31 @@ try {
     color:#666;
 ">
 
-    <div style="
-        font-size:18px;
-        line-height:18px;
-    ">
+    <div
+        onclick="likeComment('${productId}','${docSnap.id}')"
+        style="
+            font-size:18px;
+            line-height:18px;
+            cursor:pointer;
+        "
+    >
         🤍
     </div>
 
-    <div style="
-        font-size:12px;
-        margin-top:4px;
-    ">
+    <div
+        id="likeComment-${docSnap.id}"
+        style="
+            font-size:12px;
+            margin-top:4px;
+        "
+    >
         ${c.likeCount || 0}
     </div>
 
 </div>
+
+
+
 
                 </div>`;
             }
@@ -755,6 +767,15 @@ try {
    document.getElementById("commentText").value="";
 document.getElementById("commentText").focus();
 }
+    window.replyComment = function(name){
+
+    const input = document.getElementById("commentText");
+
+    input.value = "@" + name + " ";
+
+    input.focus();
+
+}
 window.addCart = async function(id){
 
     const docSnap = await getDoc(doc(db,"products",id));
@@ -771,7 +792,52 @@ window.addCart = async function(id){
 
     alert("Đã thêm giỏ hàng");
 }
+window.likeComment = async function(productId, commentId){
 
+    const user = auth.currentUser;
+
+    if(!user){
+        alert("Đăng nhập trước");
+        return;
+    }
+
+    const likeRef = doc(
+        db,
+        "commentLikes",
+        commentId + "_" + user.uid
+    );
+
+    const likeSnap = await getDoc(likeRef);
+
+    const commentRef = doc(
+        db,
+        "products",
+        productId,
+        "comments",
+        commentId
+    );
+
+    if(likeSnap.exists()){
+
+        await deleteDoc(likeRef);
+
+        await updateDoc(commentRef,{
+            likeCount:increment(-1)
+        });
+
+    }else{
+
+        await setDoc(likeRef,{
+            uid:user.uid
+        });
+
+        await updateDoc(commentRef,{
+            likeCount:increment(1)
+        });
+
+    }
+
+}
 window.toggleLike = async function(id){
 
     const user = auth.currentUser;
