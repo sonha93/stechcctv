@@ -292,7 +292,7 @@ body{
 
 <script type="module">
 
-import { app, auth } from "./auth.js";
+
 import { app } from "./auth.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
@@ -329,6 +329,7 @@ const firebaseConfig = {
 
 
 const feed = document.getElementById("feed");
+if(!feed) return;
 const db = getFirestore(app);
 let currentProduct = "";
 let currentCommentProduct = "";
