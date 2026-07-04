@@ -709,8 +709,9 @@ try {
         name = u.name || name;
 
         if (
+            u.avatar &&
             typeof u.avatar === "string" &&
-            u.avatar.trim() !== ""
+            u.avatar.startsWith("http")
         ) {
             avatar = u.avatar;
         }
@@ -729,9 +730,9 @@ try {
                     border-bottom:1px solid #eee;
                 ">
 
-                    <img
+                   <img
     src="${avatar}"
-    onerror="this.onerror=null;this.src='default-avatar.png';"
+    onerror="this.onerror=null;this.src='https://i.ibb.co/Z1kv9nJj/logo.png';"
     style="
         width:42px;
         height:42px;
