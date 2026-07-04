@@ -130,8 +130,21 @@ const productSnap = await getDoc(
     doc(db, "products", productId)
 );
 
-if (!productSnap.exists()) continue;
+if (!productSnap.exists()) {
 
+    // Tự xóa sản phẩm không còn tồn tại khỏi giỏ
+    await deleteDoc(
+        doc(
+            db,
+            "users",
+            currentUser.uid,
+            "cart",
+            docSnap.id
+        )
+    );
+
+    continue;
+}
 const product = productSnap.data();
 
 const image =
