@@ -541,28 +541,31 @@ function loadComments(productId){
 
                 const c = docSnap.data();
 
-                let name = c.name || "Người dùng";
-                let avatar = "default-avatar.png";
+               let name = c.name || "Người dùng";
+let avatar = "default-avatar.png";
 
-                try{
+try {
 
-                    const userSnap = await getDoc(doc(db,"users",c.uid));
+    const userSnap = await getDoc(doc(db, "users", c.uid));
 
-                    if(userSnap.exists()){
+    if (userSnap.exists()) {
 
-                        const u = userSnap.data();
+        const u = userSnap.data();
 
-                        name = u.name || name;
+        name = u.name || name;
 
-                        avatar = u.avatar && u.avatar.trim()
-                            ? u.avatar
-                            : "default-avatar.png";
+        if (
+            typeof u.avatar === "string" &&
+            u.avatar.trim() !== ""
+        ) {
+            avatar = u.avatar;
+        }
 
-                    }
+    }
 
-                }catch(e){
-                    console.log(e);
-                }
+} catch (e) {
+    console.error(e);
+}
 
                 list.innerHTML += `
                 <div style="
@@ -573,15 +576,15 @@ function loadComments(productId){
                 ">
 
                     <img
-                        src="${avatar}"
-                        onerror="this.src='default-avatar.png'"
-                        style="
-                            width:42px;
-                            height:42px;
-                            border-radius:50%;
-                            object-fit:cover;
-                        "
-                    >
+    src="${avatar}"
+    onerror="this.onerror=null;this.src='default-avatar.png';"
+    style="
+        width:42px;
+        height:42px;
+        border-radius:50%;
+        object-fit:cover;
+    "
+>
 
                     <div>
                         <div style="font-weight:bold">${name}</div>
