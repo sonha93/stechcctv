@@ -348,7 +348,7 @@ body{
 <div class="comment-input">
 
     <img id="commentAvatar"
-         src="default-avatar.png"
+     src="https://i.ibb.co/Z1kv9nJj/logo.png"
          style="
             width:42px;
             height:42px;
@@ -440,7 +440,7 @@ onAuthStateChanged(auth, async (user) => {
     if (!img) return;
 
     if (!user) {
-        img.src = "default-avatar.png";
+       img.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
         return;
     }
 
@@ -451,12 +451,12 @@ onAuthStateChanged(auth, async (user) => {
         if (snap.exists() && snap.data().avatar) {
             img.src = snap.data().avatar;
         } else {
-            img.src = "default-avatar.png";
+            img.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
         }
 
     } catch {
 
-        img.src = "default-avatar.png";
+        img.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
 
     }
 
@@ -1082,7 +1082,7 @@ document.getElementById("sendBtn").onclick = () => {
     if (!img) return;
 
     if (!user) {
-        img.src = "default-avatar.png";
+       img.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
         return;
     }
 
