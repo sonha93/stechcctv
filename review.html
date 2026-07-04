@@ -308,15 +308,15 @@ body{
         id="commentText"
         placeholder="Viết bình luận...">
 
-    <input
-        type="file"
-        id="commentImage"
-        accept="image/*"
-        hidden>
+   <label for="commentImage" style="cursor:pointer;font-size:22px;padding:0 10px;">
+    📷
+</label>
 
-    <button onclick="document.getElementById('commentImage').click()">
-        📷
-    </button>
+<input
+    type="file"
+    id="commentImage"
+    accept="image/*"
+    style="display:none;">
 
     <button id="sendBtn">Gửi</button>
 
