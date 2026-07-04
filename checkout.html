@@ -724,7 +724,13 @@ await db.collection("orders").add({
   payment:
     document.getElementById("payment").value,
 
-  items: cart,
+items: cart.map(p => ({
+  productId: String(p.productId),
+  name: p.name,
+  price: Number(p.price),
+  qty: Number(p.qty || 1),
+  img: p.img || ""
+})),
 
   total: finalTotal,
 
