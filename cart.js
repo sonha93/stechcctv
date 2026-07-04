@@ -115,8 +115,12 @@ actionBox = document.getElementById("cartAction");
     for (const docSnap of snapshot.docs) {
 
       const p = docSnap.data();
-      const productSnap = await getDoc(
-  doc(db, "products", p.productId)
+      const productId = String(p.productId);
+
+if (!productId) continue;
+
+const productSnap = await getDoc(
+  doc(db, "products", productId)
 );
 
 if (!productSnap.exists()) continue;
