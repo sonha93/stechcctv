@@ -177,8 +177,9 @@ body{
     left:0;
     right:0;
     bottom:-100%;
-
-    height:70vh;
+     top:30vh;      /* hoặc top:25vh */
+    height:auto;
+   
 
     background:#fff;
 
@@ -193,7 +194,9 @@ body{
     flex-direction:column;
 
 }
-
+.comment-input{
+    flex-shrink:0;
+}
 #commentSheet.active{
 
     bottom:0;
@@ -243,13 +246,10 @@ body{
     cursor:pointer;
 }
 #commentList{
-
     flex:1;
-
-    overflow:auto;
-
-    padding:15px;
-
+    overflow-y:auto;
+    min-height:0;
+}
 }
 
 .comment-input{
@@ -414,17 +414,7 @@ body{
 .comment-sort span:nth-child(4){
     width:4px;
 }
-    #commentSheet{
-    height:70dvh;
-    padding-bottom:env(safe-area-inset-bottom);
-}
-
-.comment-input{
-    position:sticky;
-    bottom:0;
-    background:#fff;
-    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
-}
+    
 </style>
 </head>
 <div id="commentSheet">
