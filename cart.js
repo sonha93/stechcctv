@@ -30,36 +30,45 @@ let actionBox = null;
 // ============================
 async function updateCartCount() {
 
-  const badge = document.getElementById("cartCount");
+    const badge = document.getElementById("cartCount");
 
-  if (!badge) return;
+    if (!badge) return;
 
-  if (!currentUser) {
+    if (!currentUser) {
+        badge.innerText = "0";
+        return;
+    }
 
-    badge.innerText = "0";
-    return;
+    const cartRef = collection(db, "users", currentUser.uid, "cart");
+    const snapshot = await getDocs(cartRef);
 
-  }
+    let totalQty = 0;
 
-  const snapshot = await getDocs(
-    collection(
-      db,
-      "users",
-      currentUser.uid,
-      "cart"
-    )
-  );
+    for (const docSnap of snapshot.docs) {
 
-  let totalQty = 0;
+        const item = docSnap.data();
 
-  snapshot.forEach(doc => {
+        const productId =
+            typeof item.productId === "string"
+                ? item.productId
+                : item.productId?.id;
 
-    totalQty += Number(doc.data().qty) || 0;
+        if (!productId) {
+            await deleteDoc(doc(db, "users", currentUser.uid, "cart", docSnap.id));
+            continue;
+        }
 
-  });
+        const productSnap = await getDoc(doc(db, "products", productId));
 
-  badge.innerText = totalQty;
+        if (!productSnap.exists()) {
+            await deleteDoc(doc(db, "users", currentUser.uid, "cart", docSnap.id));
+            continue;
+        }
 
+        totalQty += Number(item.qty) || 0;
+    }
+
+    badge.innerText = totalQty;
 }
 // ============================
 // RENDER CART
