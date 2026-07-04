@@ -546,7 +546,34 @@ window.closeComment=function(){
 
 }
 let unsubscribeComments = null;
+function timeAgo(timestamp){
 
+    if(!timestamp) return "Vừa xong";
+
+    const date = timestamp.toDate
+        ? timestamp.toDate()
+        : new Date(timestamp);
+
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+
+    if(diff < 5) return "Vừa xong";
+    if(diff < 60) return diff + "s";
+
+    const m = Math.floor(diff / 60);
+    if(m < 60) return m + "p";
+
+    const h = Math.floor(m / 60);
+    if(h < 24) return h + "h";
+
+    const d = Math.floor(h / 24);
+    if(d < 30) return d + " ngày";
+
+    const month = Math.floor(d / 30);
+    if(month < 12) return month + " tháng";
+
+    const y = Math.floor(month / 12);
+    return y + " năm";
+}
 function loadComments(productId){
 
     const list = document.getElementById("commentList");
@@ -566,7 +593,7 @@ function loadComments(productId){
             for(const docSnap of snap.docs){
 
                 const c = docSnap.data();
-
+                const time = timeAgo(c.createdAt);
                let name = c.name || "Người dùng";
 let avatar = "https://i.ibb.co/Z1kv9nJj/logo.png";
 
@@ -612,10 +639,66 @@ try {
     "
 >
 
-                    <div>
-                        <div style="font-weight:bold">${name}</div>
-                        <div>${c.text}</div>
-                    </div>
+                       <div style="flex:1;">
+
+    <div style="
+        font-weight:bold;
+        margin-bottom:4px;
+    ">
+        ${name}
+    </div>
+
+    <div style="
+        margin-bottom:8px;
+    ">
+        ${c.text}
+    </div>
+
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:22px;
+        font-size:13px;
+        color:#777;
+    ">
+
+        <span>${time}</span>
+
+        <span style="
+            cursor:pointer;
+            font-weight:600;
+        ">
+            Trả lời
+        </span>
+
+    </div>
+
+</div>
+
+<div style="
+    width:48px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    color:#666;
+">
+
+    <div style="
+        font-size:18px;
+        line-height:18px;
+    ">
+        🤍
+    </div>
+
+    <div style="
+        font-size:12px;
+        margin-top:4px;
+    ">
+        ${c.likeCount || 0}
+    </div>
+
+</div>
 
                 </div>`;
             }
@@ -626,7 +709,7 @@ try {
 
 }    
     window.sendComment = async function(){
-  console.log("sendComment chạy");
+
     const user = auth.currentUser;
 
     if(!user){
@@ -756,7 +839,7 @@ window.toggleSound = function () {
 };
  loadVideos();
 document.getElementById("sendBtn").onclick = () => {
-    console.log("click");
+
     sendComment();
 };
 </script>
