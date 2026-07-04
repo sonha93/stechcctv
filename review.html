@@ -152,7 +152,7 @@ async function loadVideos(){
 
         feed.innerHTML += `
         <div class="video-item">
-           <video
+         <video
     class="vid"
     src="${video}"
     autoplay
@@ -160,6 +160,7 @@ async function loadVideos(){
     loop
     playsinline
     webkit-playsinline
+    controls
 ></video>
             <div class="info">
                 <div class="name">${p.name}</div>
