@@ -215,17 +215,27 @@ body{
 }
 
 .sheet-header{
-
+    position:relative;
     display:flex;
-
-    justify-content:space-between;
-
-    padding:15px;
-
-    font-weight:bold;
-
+    justify-content:center;
+    align-items:center;
+    height:60px;
+    font-size:18px;
+    font-weight:700;
+    border-bottom:1px solid #eee;
 }
 
+.close-sheet{
+    position:absolute;
+    right:16px;
+    top:50%;
+    transform:translateY(-50%);
+    border:none;
+    background:none;
+    font-size:28px;
+    cursor:pointer;
+    color:#555;
+}
 #commentList{
 
     flex:1;
@@ -335,13 +345,13 @@ body{
 
     <div class="sheet-top"></div>
 
-    <div class="sheet-header">
+   <div class="sheet-header">
 
-        Bình luận
+    <div id="commentTotal">0 bình luận</div>
 
-        <button onclick="closeComment()">✕</button>
+    <button class="close-sheet" onclick="closeComment()">✕</button>
 
-    </div>
+</div>
 
    <div id="commentList"></div>
 
@@ -690,7 +700,8 @@ function loadComments(productId){
         async (snap)=>{
 
             list.innerHTML = "";
-
+            document.getElementById("commentTotal").innerText =
+    snap.size + " bình luận";
             for(const docSnap of snap.docs){
 
                 const c = docSnap.data();
