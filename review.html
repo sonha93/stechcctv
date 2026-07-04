@@ -402,15 +402,7 @@ async function loadVideos(){
    });
 
 
-    const id = span.id.replace("like-","");
-
-    onSnapshot(doc(db,"products",id),(snap)=>{
-
-        span.innerText = snap.data()?.likeCount || 0;
-
-    });
-
-
+    
 
 autoPlay();
 
@@ -469,77 +461,7 @@ v.play().catch(()=>{});
 
 }
 
-// realtime like + comment
-async function loadVideos(){
 
-    const snap = await getDocs(collection(db,"products"));
-
-    feed.innerHTML = "";
-
-    snap.forEach(docSnap => {
-
-        const p = docSnap.data();
-        if(!p.videos || p.videos.length === 0) return;
-
-        const video =
-            typeof p.videos[0] === "string"
-            ? p.videos[0]
-            : p.videos[0].url;
-
-        const id = docSnap.id;
-
-        feed.innerHTML += `
-        <div class="video-item">
-
-            <video class="vid"
-                src="${video}"
-                autoplay
-                playsinline
-                webkit-playsinline
-                controls
-                preload="metadata"
-                controlsList="nodownload noplaybackrate"
-                disablePictureInPicture>
-            </video>
-
-            <div class="right-action">
-
-                <div class="action" onclick="location.href='logo.html?id=${id}'">
-                    <div class="icon">🛍️</div>
-                    <span>Shop</span>
-                </div>
-
-                <div class="action" onclick="toggleLike('${id}')">
-                    <div class="icon">❤️</div>
-                    <span id="like-${id}">0</span>
-                </div>
-
-                <div class="action" onclick="openComment('${id}')">
-                    <div class="icon">💬</div>
-                    <span id="comment-${id}">0</span>
-                </div>
-
-                <div class="action" onclick="addCart('${id}')">
-                    <div class="icon">🛒</div>
-                    <span>Giỏ</span>
-                </div>
-
-            </div>
-
-            <div class="info">
-                <div class="name">${p.name}</div>
-                <div class="price">${Number(p.price).toLocaleString()}đ</div>
-                <button class="buy" onclick="location.href='logo.html?id=${id}'">
-                    Mua ngay
-                </button>
-            </div>
-
-        </div>
-        `;
-    });
-
-    autoPlay();
-}
 document.addEventListener("visibilitychange",()=>{
 
     const videos = document.querySelectorAll(".vid");
@@ -721,7 +643,7 @@ window.toggleLike = async function(id){
 
 }
     loadVideos().then(() => {
-    bindRealtime();
+ loadVideos();
 });
 </script>
 <script type="module" src="review.js"></script>
