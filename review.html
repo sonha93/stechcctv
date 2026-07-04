@@ -288,17 +288,31 @@ body{
     font-weight:bold;
     border:2px solid #fff;
 }
-    #previewWrap{
-    padding:10px;
+   #previewWrap{
     display:none;
+    width:100%;
+    text-align:center;
+    margin-top:12px;
+    position:relative;
 }
 
 #previewImage{
-    width:90px;
-    height:90px;
-    object-fit:cover;
-    border-radius:10px;
-    border:1px solid #ddd;
+    width:130px;
+    max-width:90%;
+    border-radius:12px;
+}
+#removePreview{
+    position:absolute;
+    top:-10px;
+    left:calc(50% + 55px);
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    border:none;
+    background:#ff3158;
+    color:#fff;
+    font-size:18px;
+    cursor:pointer;
 }
 </style>
 </head>
@@ -334,8 +348,12 @@ body{
 
 </div>
 
-<div id="previewWrap" style="display:none;">
+<div id="previewWrap">
+
     <img id="previewImage">
+
+    <span id="removePreview">✕</span>
+
 </div>
 
 </div>
