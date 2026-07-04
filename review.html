@@ -627,7 +627,9 @@ async function loadVideos(){
       <span id="like-${id}">${p.likeCount || 0}</span>
     </div>
 
-    <div class="icon">
+    <div class="action" onclick="openComment('${id}')">
+      <div class="icon comment-icon">
+      <div class="icon">
 <svg viewBox="0 0 24 24" width="38" height="38">
     <path d="M21 12c0 4.4-4 8-9 8-1.2 0-2.4-.2-3.5-.6L3 21l1.6-4.1C3.6 15.5 3 13.8 3 12c0-4.4 4-8 9-8s9 3.6 9 8z"
           fill="none"
@@ -639,6 +641,8 @@ async function loadVideos(){
     <circle cx="15" cy="12" r="1.2" fill="#fff"/>
 </svg>
 </div>
+       <span id="comment-${id}">${p.commentCount || 0}</span>
+    </div>
 
    
 <div class="action" onclick="toggleSound()">
