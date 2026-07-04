@@ -305,7 +305,7 @@ function sendTelegramNotification(orderNumber, customerName, phone, address, car
 
   // Tạo nội dung chi tiết đơn hàng
   let itemsText = cartItems.map(item => {
-    return `• ${item.name} - Giá: ${item.price.toLocaleString()}đ - Số lượng: ${item.qty}`;
+    return `• ${item.name} - Giá: ${Number(item.price || 0).toLocaleString()}đ - Số lượng: ${item.qty}`;
   }).join("\n");
 
   const message = `📦 Đơn hàng mới!\nMã đơn: ${orderNumber}\nKhách hàng: ${customerName}\nSĐT: ${phone}\nĐịa chỉ: ${address}\n\n🛒 Chi tiết đơn hàng:\n${itemsText}\n\nTổng tiền: ${total}`;
@@ -388,17 +388,6 @@ if(phoneValue){
   }
   // LOAD CART
 
-  const snapshot = await db
-    .collection("users")
-    .doc(user.uid)
-    .collection("cart")
-    .get();
-
- cart = snapshot.docs.map(doc => ({
-  cartId: doc.id,
-  ...doc.data()
-}));
-
 for (const item of cart) {
 
   const productDoc = await db
@@ -456,7 +445,16 @@ function renderCart(){
    box.innerHTML += `
   <div class="item">
    <a href="logo.html?id=${p.productId}">
-      <img src="${p.img}">
+     <img src="${
+    p.img ||
+    p.image ||
+    (Array.isArray(p.images)
+        ? (typeof p.images[0] === "string"
+            ? p.images[0]
+            : p.images[0]?.url)
+        : "") ||
+    "default-product.png"
+}">
     </a>
 
     <div>
