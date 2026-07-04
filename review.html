@@ -717,56 +717,42 @@ ${
 
 </div>
 
-    <div style="
-        display:flex;
-        align-items:center;
-        gap:22px;
-        font-size:13px;
-        color:#777;
-    ">
-
-        <span>${time}</span>
-
-       <span
-    onclick="replyComment('${name}')"
-    style="
-        cursor:pointer;
-        font-weight:600;
-    "
->
-    Trả lời
-</span>
-
-    </div>
-
-</div>
 <div style="
     display:flex;
     align-items:center;
-    gap:6px;
-    color:#666;
-    margin-left:12px;
+    gap:18px;
+    font-size:13px;
+    color:#777;
 ">
 
-    <div
+    <span>${time}</span>
+
+    <span
+        onclick="replyComment('${name}')"
+        style="
+            cursor:pointer;
+            font-weight:600;
+        "
+    >
+        Trả lời
+    </span>
+
+    <span
         onclick="likeComment('${productId}','${docSnap.id}')"
         style="
             cursor:pointer;
-            font-size:18px;
-            line-height:18px;
+            display:flex;
+            align-items:center;
+            gap:5px;
         "
     >
         🤍
-    </div>
-
-    <span
-        id="likeComment-${docSnap.id}"
-        style="
-            font-size:13px;
-        "
-    >
-        ${c.likeCount || 0}
+        <span id="likeComment-${docSnap.id}">
+            ${c.likeCount || 0}
+        </span>
     </span>
+
+</div>
 
 </div>
 
