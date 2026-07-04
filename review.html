@@ -259,6 +259,9 @@ body{
     padding:10px 18px;
 
 }
+    .video-item video {
+    pointer-events: none;
+}
 </style>
 </head>
 <div id="commentSheet">
@@ -375,12 +378,12 @@ async function loadVideos(){
 
     <div class="action" onclick="toggleLike('${id}')">
         <div class="icon">❤️</div>
-        <span id="like-${id}">0</span>
+      <span id="like-${id}">${p.likeCount || 0}</span>
     </div>
 
     <div class="action" onclick="openComment('${id}')">
         <div class="icon">💬</div>
-        <span id="comment-${id}">0</span>
+       <span id="comment-${id}">${p.commentCount || 0}</span>
     </div>
 
     <div class="action" onclick="addCart('${id}')">
@@ -627,7 +630,17 @@ window.toggleLike = async function(id){
         await updateDoc(productRef,{
             likeCount:increment(-1)
         });
+const el = document.getElementById("like-" + id);
 
+if(el){
+    let v = parseInt(el.innerText || "0");
+
+    if(likeSnap.exists()){
+        el.innerText = v - 1;
+    }else{
+        el.innerText = v + 1;
+    }
+}
     }else{
 
         await setDoc(likeRef,{
@@ -638,7 +651,11 @@ window.toggleLike = async function(id){
         await updateDoc(productRef,{
             likeCount:increment(1)
         });
-
+const el = document.getElementById("like-" + id);
+if(el){
+    let v = parseInt(el.innerText || "0");
+    el.innerText = v + 1;
+}
     }
 
 }
