@@ -132,19 +132,15 @@ if (typeof productId !== "string") {
 let product;
 
 if (productCache[productId]) {
-
   product = productCache[productId];
-
 } else {
-
   const productSnap = await getDoc(doc(db, "products", productId));
   if (!productSnap.exists()) continue;
 
   product = productSnap.data();
   productCache[productId] = product;
-
 }
-const product = productSnap.data();
+
       const qty = Number(p.qty) || 1;
       const price = Number(product.price) || 0;
 
