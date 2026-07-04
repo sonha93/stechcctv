@@ -398,14 +398,14 @@ if(phoneValue){
   cartId: doc.id,
   ...doc.data()
 }));
-console.log("CART =", cart);
+
 for (const item of cart) {
   console.log("productId =", item.productId);
   const productDoc = await db
     .collection("products")
     .doc(item.productId)
     .get();
-console.log("exists =", productDoc.exists);
+
   if (productDoc.exists) {
 
     Object.assign(item, productDoc.data());
