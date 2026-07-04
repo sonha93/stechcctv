@@ -522,6 +522,7 @@ document.addEventListener("visibilitychange",()=>{
 
 });
     window.openComment = function(id){
+console.log("openComment", id);
 
     currentCommentProduct = id;
 
@@ -560,7 +561,7 @@ function loadComments(productId){
         collection(db,"products",productId,"comments"),
 
         async (snap)=>{
-
+               console.log("Snapshot chạy", snap.docs.length);
             list.innerHTML = "";
 
             for(const docSnap of snap.docs){
@@ -755,10 +756,7 @@ window.toggleSound = function () {
     });
 };
  loadVideos();
-document.getElementById("sendBtn").onclick = () => {
-    console.log("click");
-    sendComment();
-};
+
 </script>
 
 </body>
