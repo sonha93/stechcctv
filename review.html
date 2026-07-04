@@ -513,70 +513,86 @@ window.closeComment=function(){
     .getElementById("commentSheet")
     .classList.remove("active");
 
+    if(unsubscribeComments){
+        unsubscribeComments();
+        unsubscribeComments = null;
+    }
+
 }
-async function loadComments(productId){
+let unsubscribeComments = null;
+
+function loadComments(productId){
 
     const list = document.getElementById("commentList");
 
-    onSnapshot(
+    if(unsubscribeComments){
+        unsubscribeComments();
+    }
+
+    unsubscribeComments = onSnapshot(
+
         collection(db,"products",productId,"comments"),
+
         async (snap)=>{
 
-            list.innerHTML="";
+            list.innerHTML = "";
 
             for(const docSnap of snap.docs){
 
                 const c = docSnap.data();
 
-                let name = "Người dùng";
-                let avatar = "images/default-avatar.png"; // đường dẫn avatar mặc định
+                let name = c.name || "Người dùng";
+                let avatar = "default-avatar.png";
 
-if (userSnap.exists()) {
+                try{
 
-    const u = userSnap.data();
+                    const userSnap = await getDoc(doc(db,"users",c.uid));
 
-    name = u.name || "Người dùng";
+                    if(userSnap.exists()){
 
-    if (u.avatar && u.avatar.trim() !== "") {
-        avatar = u.avatar;
-    }
+                        const u = userSnap.data();
 
-}
+                        name = u.name || name;
+
+                        avatar = u.avatar && u.avatar.trim()
+                            ? u.avatar
+                            : "default-avatar.png";
+
+                    }
+
+                }catch(e){
+                    console.log(e);
+                }
+
                 list.innerHTML += `
-                    <div style="
-                        display:flex;
-                        gap:10px;
-                        padding:12px;
-                        border-bottom:1px solid #eee;
-                        align-items:flex-start;
-                    ">
+                <div style="
+                    display:flex;
+                    gap:10px;
+                    padding:12px;
+                    border-bottom:1px solid #eee;
+                ">
 
-                        <img
-    src="${avatar}"
-    onerror="this.src='images/default-avatar.png'"
-    style="
-        width:42px;
-        height:42px;
-        border-radius:50%;
-        object-fit:cover;
-    "
->
+                    <img
+                        src="${avatar}"
+                        onerror="this.src='default-avatar.png'"
+                        style="
+                            width:42px;
+                            height:42px;
+                            border-radius:50%;
+                            object-fit:cover;
+                        "
+                    >
 
-                        <div>
-                            <div style="font-weight:bold">
-                                ${name}
-                            </div>
-
-                            <div style="margin-top:4px">
-                                ${c.text}
-                            </div>
-                        </div>
-
+                    <div>
+                        <div style="font-weight:bold">${name}</div>
+                        <div>${c.text}</div>
                     </div>
-                `;
+
+                </div>`;
             }
 
         }
+
     );
 
 }
