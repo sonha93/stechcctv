@@ -27,38 +27,44 @@ async function loadReview(){
 
     container.innerHTML = "";
 
-    snap.forEach(docSnap => {
+    snap.forEach(docSnap=>{
 
-        const product = docSnap.data();
-        if(!product.videos || product.videos.length === 0) return;
+        const p = docSnap.data();
 
-        const id = docSnap.id;
+        if(!p.videos || !p.videos.length) return;
 
-        const video = typeof product.videos[0] === "string"
-            ? product.videos[0]
-            : product.videos[0].url;
+        const video =
+            typeof p.videos[0] === "string"
+            ? p.videos[0]
+            : p.videos[0].url;
 
-        container.innerHTML += `
+        container.insertAdjacentHTML("beforeend",`
         <div class="video-item">
 
-            <video class="review-video"
+            <video
+                class="review-video"
                 src="${video}"
                 playsinline
-                muted
+                webkit-playsinline
+                preload="auto"
                 loop
-                preload="metadata">
-            </video>
+                muted
+                controlslist="nodownload"
+                disablepictureinpicture
+            ></video>
 
             <div class="info">
-                <div>${product.name}</div>
+                <div>${p.name}</div>
 
                 <button class="buy-btn"
-                onclick="location.href='logo.html?id=${id}'">
+                    onclick="location.href='logo.html?id=${docSnap.id}'">
                     Mua ngay
                 </button>
             </div>
 
-        </div>`;
+        </div>
+        `);
+
     });
 
     setupVideo();
@@ -66,46 +72,91 @@ async function loadReview(){
 
 function setupVideo(){
 
-    const videos = document.querySelectorAll(".review-video");
+    const videos=document.querySelectorAll(".review-video");
 
-    const observer = new IntersectionObserver(entries => {
+    let currentVideo=null;
 
-        entries.forEach(entry => {
+    const observer=new IntersectionObserver(entries=>{
 
-            const video = entry.target;
+        entries.forEach(entry=>{
 
-            if(entry.isIntersecting){
+            const video=entry.target;
 
-                videos.forEach(v=>{
-                    if(v !== video){
-                        v.pause();
-                        v.currentTime = 0;
-                        v.muted = true;
-                    }
-                });
+            if(entry.isIntersecting && entry.intersectionRatio>=0.8){
+
+                if(currentVideo && currentVideo!==video){
+
+                    currentVideo.pause();
+                    currentVideo.currentTime=0;
+                    currentVideo.muted=true;
+
+                }
+
+                currentVideo=video;
 
                 video.play().catch(()=>{});
 
             }else{
+
                 video.pause();
+
             }
 
         });
 
-    }, { threshold: 0.8 });
+    },{
+        threshold:0.8
+    });
 
-    videos.forEach(video => {
-
-        // 🔥 click để bật/tắt tiếng (QUAN TRỌNG)
-        video.addEventListener("click", () => {
-
-            video.muted = !video.muted;
-
-            if(!video.muted){
-                video.play();
-            }
-        });
+    videos.forEach(video=>{
 
         observer.observe(video);
+
+        video.addEventListener("click",()=>{
+
+            video.muted=!video.muted;
+
+            if(!video.paused){
+
+                video.play().catch(()=>{});
+
+            }
+
+        });
+
+        video.addEventListener("ended",()=>{
+
+            video.currentTime=0;
+            video.play().catch(()=>{});
+
+        });
+
+        video.addEventListener("loadedmetadata",()=>{
+
+            video.playbackRate=1;
+
+            video.volume=1;
+
+        });
+
     });
+
+    document.addEventListener("visibilitychange",()=>{
+
+        if(document.hidden){
+
+            videos.forEach(v=>v.pause());
+
+        }else{
+
+            if(currentVideo){
+
+                currentVideo.play().catch(()=>{});
+
+            }
+
+        }
+
+    });
+
 }
