@@ -304,15 +304,40 @@ body{
 
     <div id="commentList"></div>
 
-    <div class="comment-input">
+   <div class="comment-input">
 
-        <input
+    <input
+        type="file"
+        id="commentImage"
+        accept="image/*"
+        multiple
+        style="display:none;">
+
+    <button
+        id="pickImageBtn"
+        type="button">
+        📷
+    </button>
+
+    <input
         id="commentText"
         placeholder="Viết bình luận...">
 
-       <button id="sendBtn">Gửi</button>
-    </div>
+    <button id="sendBtn">
+        Gửi
+    </button>
 
+</div>
+
+<div
+    id="imagePreview"
+    style="
+        display:flex;
+        gap:8px;
+        padding:8px 12px;
+        overflow:auto;
+    ">
+</div>
 </div>
 <body>
 
@@ -546,7 +571,49 @@ window.closeComment=function(){
 
 }
 let unsubscribeComments = null;
-function timeAgo(timestamp){
+let selectedImages = [];
+const CLOUD_NAME = "dmz9gpp1b";
+const UPLOAD_PRESET = "stech_up";
+document
+.getElementById("pickImageBtn")
+.onclick=()=>{
+
+    document
+    .getElementById("commentImage")
+    .click();
+
+};
+    document
+.getElementById("commentImage")
+.onchange=e=>{
+
+    selectedImages=[...e.target.files];
+
+    const box=document.getElementById("imagePreview");
+
+    box.innerHTML="";
+
+    selectedImages.forEach(file=>{
+
+        const url=URL.createObjectURL(file);
+
+        box.innerHTML+=`
+
+        <img
+        src="${url}"
+        style="
+            width:70px;
+            height:70px;
+            border-radius:10px;
+            object-fit:cover;
+        ">
+
+        `;
+
+    });
+
+};
+    function timeAgo(timestamp){
 
     if(!timestamp) return "Vừa xong";
 
@@ -649,10 +716,43 @@ try {
     </div>
 
     <div style="
+    margin-bottom:8px;
+">
+    ${c.text}
+</div>
+
+${
+    Array.isArray(c.images) && c.images.length
+    ?
+    `
+    <div style="
+        display:flex;
+        flex-wrap:wrap;
+        gap:8px;
         margin-bottom:8px;
     ">
-        ${c.text}
+
+        ${c.images.map(img=>`
+
+            <img
+                src="${img}"
+                onclick="window.open('${img}','_blank')"
+                style="
+                    width:90px;
+                    height:90px;
+                    object-fit:cover;
+                    border-radius:10px;
+                    cursor:pointer;
+                "
+            >
+
+        `).join("")}
+
     </div>
+    `
+    :
+    ""
+}
 
     <div style="
         display:flex;
@@ -665,7 +765,7 @@ try {
         <span>${time}</span>
 
        <span
-    onclick="replyComment('${name}')"
+    onclick="replyComment('${name}','${docSnap.id}')"
     style="
         cursor:pointer;
         font-weight:600;
@@ -720,7 +820,7 @@ try {
     );
 
 }    
-    window.sendComment = async function(){
+   window.sendComment = async function(){
 
     const user = auth.currentUser;
 
@@ -734,21 +834,70 @@ try {
         .value
         .trim();
 
-    if(text=="") return;
+    if(text=="" && selectedImages.length==0){
+        return;
+    }
 
-    await addDoc(
+    const imageUrls=[];
 
-        collection(
-            db,
-            "products",
-            currentCommentProduct,
-            "comments"
-        ),
+    for(const file of selectedImages){
+
+        const formData=new FormData();
+
+        formData.append("file",file);
+
+        formData.append(
+            "upload_preset",
+            "stech_up"
+        );
+
+        const res=await fetch(
+
+            "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+
+            {
+                method:"POST",
+                body:formData
+            }
+
+        );
+
+        const data=await res.json();
+
+        imageUrls.push(data.secure_url);
+
+    }
+
+    const saveRef = replyCommentId
+
+?
+
+collection(
+    db,
+    "products",
+    currentCommentProduct,
+    "comments",
+    replyCommentId,
+    "replies"
+)
+
+:
+
+collection(
+    db,
+    "products",
+    currentCommentProduct,
+    "comments"
+);
+
+await addDoc(saveRef,{
 
         {
             uid:user.uid,
             name:user.displayName || "Người dùng",
             text:text,
+            images:imageUrls,
+            likeCount:0,
             createdAt:serverTimestamp()
         }
 
@@ -756,7 +905,11 @@ try {
 
     await updateDoc(
 
-        doc(db,"products",currentCommentProduct),
+        doc(
+            db,
+            "products",
+            currentCommentProduct
+        ),
 
         {
             commentCount:increment(1)
@@ -764,10 +917,26 @@ try {
 
     );
 
-   document.getElementById("commentText").value="";
+   document.getElementById("commentText").value = "";
+
+replyToCommentId = null;
+
+document.getElementById("commentText").placeholder = "Viết bình luận...";
+
 document.getElementById("commentText").focus();
+
+    document.getElementById("commentImage").value="";
+
+    document.getElementById("imagePreview").innerHTML="";
+
+    selectedImages=[];
+
 }
-    window.replyComment = function(name){
+   let replyToCommentId = null;
+
+window.replyComment = function(name, commentId){
+
+    replyToCommentId = commentId;
 
     const input = document.getElementById("commentText");
 
