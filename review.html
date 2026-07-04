@@ -292,12 +292,7 @@ body{
 
 <script type="module">
 
-import {
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-    getAuth
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { app, auth } from "./auth.js";
 import {
     getFirestore,
     collection,
@@ -311,7 +306,9 @@ import {
     increment,
     onSnapshot,
     query,
-    where
+    where,
+    serverTimestamp
+    
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -327,11 +324,11 @@ const firebaseConfig = {
     appId: "1:873739162979:web:978f1a4043f025b1cdaf56"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+
 const auth = getAuth(app);
 const feed = document.getElementById("feed");
 let currentProduct = "";
+let currentCommentProduct = "";
 async function loadVideos(){
 
     const snap = await getDocs(collection(db,"products"));
@@ -468,6 +465,31 @@ v.play().catch(()=>{});
 
 }
 loadVideos();
+// realtime like + comment
+document.querySelectorAll("[id^='like-'],[id^='comment-']").forEach(el=>{
+
+    const id = el.id
+        .replace("like-","")
+        .replace("comment-","");
+
+    onSnapshot(doc(db,"products",id),(snap)=>{
+
+        const data = snap.data() || {};
+
+        const like = document.getElementById("like-"+id);
+        const comment = document.getElementById("comment-"+id);
+
+        if(like){
+            like.innerText = data.likeCount || 0;
+        }
+
+        if(comment){
+            comment.innerText = data.commentCount || 0;
+        }
+
+    });
+
+});
 document.addEventListener("visibilitychange",()=>{
 
     const videos = document.querySelectorAll(".vid");
@@ -487,11 +509,15 @@ document.addEventListener("visibilitychange",()=>{
     }
 
 });
-    window.openComment=function(id){
+    window.openComment = function(id){
+
+    currentCommentProduct = id;
 
     document
-    .getElementById("commentSheet")
-    .classList.add("active");
+        .getElementById("commentSheet")
+        .classList.add("active");
+
+    loadComments(id);
 
 }
 
@@ -502,7 +528,109 @@ window.closeComment=function(){
     .classList.remove("active");
 
 }
+function loadComments(productId){
 
+    const list = document.getElementById("commentList");
+
+    onSnapshot(
+
+        collection(
+            db,
+            "products",
+            productId,
+            "comments"
+        ),
+
+        snap=>{
+
+            list.innerHTML="";
+
+            snap.forEach(docSnap=>{
+
+                const c=docSnap.data();
+
+                list.innerHTML+=`
+                <div style="padding:10px;border-bottom:1px solid #eee">
+                    <b>${c.name}</b><br>
+                    ${c.text}
+                </div>
+                `;
+
+            });
+
+        }
+
+    );
+
+}
+
+const snap = await getDocs(q);
+
+    list.innerHTML = "";
+
+    snap.forEach(docSnap=>{
+
+        const c = docSnap.data();
+
+        list.innerHTML += `
+        <div style="padding:10px;border-bottom:1px solid #eee;">
+            <b>${c.name}</b><br>
+            ${c.text}
+        </div>
+        `;
+
+    });
+
+}
+    window.sendComment = async function(){
+
+    const user = auth.currentUser;
+
+    if(!user){
+        alert("Đăng nhập trước");
+        return;
+    }
+
+    const text = document
+        .getElementById("commentText")
+        .value
+        .trim();
+
+    if(text=="") return;
+
+    await addDoc(
+
+        collection(
+            db,
+            "products",
+            currentCommentProduct,
+            "comments"
+        ),
+
+        {
+            uid:user.uid,
+            name:user.displayName || "Người dùng",
+            text:text,
+            createdAt:serverTimestamp()
+        }
+
+    );
+
+    await updateDoc(
+
+        doc(db,"products",currentCommentProduct),
+
+        {
+            commentCount:increment(1)
+        }
+
+    );
+
+    document.getElementById("commentText").value="";
+
+    loadComments(currentCommentProduct);
+    document.getElementById("commentText").focus();
+}
 async function addCart(id){
 
     const docSnap = await getDoc(doc(db,"products",id));
