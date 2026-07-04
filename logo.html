@@ -2522,6 +2522,37 @@ document.getElementById("detailImg").after(mainVideo);
     mainVideo.style.display = "block";
 
 
+
+    // popup
+    viewerImg.src="";
+    viewerImg.style.display="none";
+
+    const oldVideo=viewer.querySelector("video");
+    if(oldVideo){
+    oldVideo.pause();
+    oldVideo.currentTime = 0;
+    oldVideo.remove();
+}
+
+    const v=document.createElement("video");
+
+    v.src=item.url;
+    v.controls=true;
+    v.autoplay=true;
+
+    v.setAttribute("playsinline","");
+    v.setAttribute("webkit-playsinline","");
+
+    v.style.maxWidth="95%";
+    v.style.maxHeight="95%";
+    v.style.borderRadius="18px";
+
+    viewer.appendChild(v);
+
+}
+
+    viewer.classList.add("active");
+
 };
 
 thumbList.appendChild(thumb);
@@ -2930,10 +2961,8 @@ if(item.type==="image"){
 
     }
 
-    mainVideo.pause();
-mainVideo.removeAttribute("src");
-mainVideo.load();
-mainVideo.style.display = "none";
+    mainVideo.src = item.url;
+    mainVideo.style.display = "block";
 
 
 
