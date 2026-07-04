@@ -2453,7 +2453,13 @@ gallery.forEach((item,index)=>{
         thumb.classList.add("active");
     }
 
-   thumb.onclick = () => {
+  thumb.onclick = () => {
+
+    // Dừng toàn bộ video đang phát
+    document.querySelectorAll("video").forEach(v=>{
+        v.pause();
+        v.currentTime = 0;
+    });
 
     currentIndex = index;
 
@@ -2500,12 +2506,12 @@ if(mainVideo){
 
     if(!mainVideo){
 
-        mainVideo = document.createElement("video");
-        mainVideo.id = "detailVideo";
+       mainVideo = document.createElement("video");
+mainVideo.id = "detailVideo";
 
-        mainVideo.controls = true;
-        mainVideo.autoplay = true;
-        mainVideo.muted = false;
+mainVideo.controls = true;
+mainVideo.autoplay = false; // KHÔNG tự phát
+mainVideo.muted = false;
 
         mainVideo.setAttribute("playsinline","");
         mainVideo.setAttribute("webkit-playsinline","");
@@ -2519,6 +2525,8 @@ document.getElementById("detailImg").after(mainVideo);
     }
 
     mainVideo.src = item.url;
+	   mainVideo.pause();
+mainVideo.currentTime = 0;
     mainVideo.style.display = "block";
 
 
@@ -2944,11 +2952,11 @@ if(item.type==="image"){
     if(!mainVideo){
 
         mainVideo = document.createElement("video");
-        mainVideo.id = "detailVideo";
+mainVideo.id = "detailVideo";
 
-        mainVideo.controls = true;
-        mainVideo.autoplay = true;
-        mainVideo.muted = false;
+mainVideo.controls = true;
+mainVideo.autoplay = false; // KHÔNG tự phát
+mainVideo.muted = false;
 
         mainVideo.setAttribute("playsinline","");
         mainVideo.setAttribute("webkit-playsinline","");
@@ -2962,6 +2970,8 @@ if(item.type==="image"){
     }
 
     mainVideo.src = item.url;
+	mainVideo.pause();
+mainVideo.currentTime = 0;
     mainVideo.style.display = "block";
 
 
@@ -3047,6 +3057,15 @@ if(mainVideo){
     mainVideo.currentTime = 0;
     mainVideo.style.display = "none";
 }
+	const mainVideo = document.getElementById("detailVideo");
+
+if(mainVideo){
+    mainVideo.pause();
+    mainVideo.currentTime = 0;
+    mainVideo.src = "";
+    mainVideo.load();
+}
+
     const v = document.createElement("video");
 
     v.src = item.url;
@@ -3189,11 +3208,18 @@ if(item.type==="image"){
     viewerImg.src = "";
 viewerImg.style.display = "none";
 const mainVideo = document.getElementById("detailVideo");
+if(mainVideo){
+    mainVide
+		o.pause();
+}
+	const mainVideo = document.getElementById("detailVideo");
 
 if(mainVideo){
     mainVideo.pause();
+    mainVideo.currentTime = 0;
+    mainVideo.src = "";
+    mainVideo.load();
 }
-	
     const v = document.createElement("video");
 
     v.src = item.url;
