@@ -20,7 +20,7 @@ const db = getFirestore(app);
 
 // USER
 let currentUser = null;
-const productCache = {};
+
 // DOM
 let cartBox = null;
 let totalBox = null;
@@ -115,32 +115,13 @@ actionBox = document.getElementById("cartAction");
     for (const docSnap of snapshot.docs) {
 
       const p = docSnap.data();
-    const productId = String(p.productId || "");
+      const productSnap = await getDoc(
+  doc(db, "products", p.productId)
+);
 
-if (!productId || productId === "undefined") {
-  console.error("Bad productId:", p);
-  continue;
-}
+if (!productSnap.exists()) continue;
 
-
-
-if (typeof productId !== "string") {
-  console.error("Invalid productId:", p.productId);
-  continue;
-}
-
-let product;
-
-if (productCache[productId]) {
-  product = productCache[productId];
-} else {
-  const productSnap = await getDoc(doc(db, "products", productId));
-  if (!productSnap.exists()) continue;
-
-  product = productSnap.data();
-  productCache[productId] = product;
-}
-
+const product = productSnap.data();
       const qty = Number(p.qty) || 1;
       const price = Number(product.price) || 0;
 
@@ -151,7 +132,7 @@ if (productCache[productId]) {
  cartBox.innerHTML += `
 <div class="item">
 
-<a href="logo.html?id=${productId}">
+ <a href="logo.html?id=${p.productId}">
   <img src="${product.img || ''}">
 </a>
   <div class="info">
@@ -231,44 +212,63 @@ if(actionBox){
 export async function addToCart(product) {
 
   if (!currentUser) {
-    showToast("Bạn cần đăng nhập!");
+  showToast("Bạn cần đăng nhập!");
     return;
   }
 
-  const productId = String(product?.id || product?.productId);
-
-  if (!productId || productId === "undefined") {
-    console.error("Invalid productId:", product);
+  if (!product.id) {
+    console.error("Thiếu product.id");
     return;
   }
+const productId =
+  String(product.id);
+  try {
 
-  const itemRef = doc(
-    db,
-    "users",
-    currentUser.uid,
-    "cart",
-    productId
-  );
+    const itemRef = doc(
+      db,
+      "users",
+      currentUser.uid,
+      "cart",
+      productId
+    );
 
-  const snap = await getDoc(itemRef);
+    const snapshot = await getDocs(
+      collection(
+        db,
+        "users",
+        currentUser.uid,
+        "cart"
+      )
+    );
 
-  let oldQty = 0;
+    let oldQty = 0;
 
-  if (snap.exists()) {
-    oldQty = Number(snap.data().qty) || 0;
-  }
+    snapshot.forEach(d => {
 
-  await setDoc(itemRef, {
-  productId,
-  qty: oldQty + 1,
-  name: product.name,
-  img: product.img,
-  price: product.price
+      if(d.id === productId){
+        oldQty = Number(d.data().qty) || 0;
+      }
+
+    });
+
+ await setDoc(itemRef, {
+  productId: product.id,
+  qty: oldQty + 1
 });
 
+
   await renderCart();
-  await updateCartCount();
+await updateCartCount();
+
+  } catch (err) {
+
+    console.error("Lỗi addToCart:", err);
+
+  }
+
 }
+
+
 // ============================
 // REMOVE ITEM
 // ============================
