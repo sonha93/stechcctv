@@ -125,7 +125,10 @@ actionBox = document.getElementById("cartAction");
 
     const p = docSnap.data();
 
-const productId = String(p.productId || "");
+const productId =
+    typeof p.productId === "string"
+        ? p.productId
+        : p.productId?.id;
 
 if (!productId) {
     console.warn("Cart lỗi:", docSnap.id, p);
