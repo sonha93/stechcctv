@@ -291,12 +291,30 @@ body{
 <div id="feed"></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
     getFirestore,
     collection,
-    getDocs
+    getDocs,
+    doc,
+    getDoc,
+    setDoc,
+    addDoc,
+    deleteDoc,
+    updateDoc,
+    increment,
+    onSnapshot,
+    query,
+    where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+    addToCart as addToCartFirebase
+} from "./cart.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
@@ -309,9 +327,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
+const auth = getAuth(app);
 const feed = document.getElementById("feed");
-
+let currentProduct = "";
 async function loadVideos(){
 
     const snap = await getDocs(collection(db,"products"));
@@ -330,6 +348,19 @@ async function loadVideos(){
         : p.videos[0].url;
 
         const id = docSnap.id;
+        onSnapshot(doc(db,"products",id),(snap)=>{
+
+    const p = snap.data();
+
+    const like = document.getElementById("like-"+id);
+
+    if(like){
+
+        like.innerText = p.likeCount || 0;
+
+    }
+
+});
 
         feed.innerHTML += `
         <div class="video-item">
@@ -437,16 +468,19 @@ v.play().catch(()=>{});
 loadVideos();
 document.addEventListener("visibilitychange",()=>{
 
+    const videos = document.querySelectorAll(".vid");
+
     if(document.hidden){
 
         videos.forEach(v=>v.pause());
 
     }else{
 
-        const active=document.querySelector(".vid:not([paused])");
-        if(active){
-            active.play().catch(()=>{});
-        }
+        videos.forEach(v=>{
+            if(!v.paused){
+                v.play().catch(()=>{});
+            }
+        });
 
     }
 
@@ -467,15 +501,62 @@ window.closeComment=function(){
 
 }
 
-window.addCart=function(id){
+async function addCart(id){
 
-    location.href="logo.html?id="+id;
+    const docSnap = await getDoc(doc(db,"products",id));
+
+    if(!docSnap.exists()) return;
+
+    const product = {
+        id: docSnap.id,
+        productId: docSnap.id,
+        ...docSnap.data()
+    };
+
+    await addToCartFirebase(product);
 
 }
+window.addCart = addCart;
 
-window.toggleLike=function(id){
+window.toggleLike = async function(id){
 
-    alert("Thả tim sản phẩm");
+    const user = auth.currentUser;
+
+    if(!user){
+        alert("Đăng nhập trước");
+        return;
+    }
+
+    const likeRef = doc(
+        db,
+        "reviewLikes",
+        id+"_"+user.uid
+    );
+
+    const likeSnap = await getDoc(likeRef);
+
+    const productRef = doc(db,"products",id);
+
+    if(likeSnap.exists()){
+
+        await deleteDoc(likeRef);
+
+        await updateDoc(productRef,{
+            likeCount:increment(-1)
+        });
+
+    }else{
+
+        await setDoc(likeRef,{
+            uid:user.uid,
+            productId:id
+        });
+
+        await updateDoc(productRef,{
+            likeCount:increment(1)
+        });
+
+    }
 
 }
 </script>
