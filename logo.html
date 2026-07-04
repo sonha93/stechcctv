@@ -2490,68 +2490,29 @@ if(mainVideo){
 
     viewerImg.src = item.url;
     viewerImg.style.display = "block";
-
 }else{
-    // Ẩn ảnh lớn
-    document.getElementById("detailImg").style.display = "none";
 
-    // Nếu chưa có video ngoài thì tạo
-    let mainVideo = document.getElementById("detailVideo");
+    document.getElementById("detailImg").style.display="none";
+
+    let mainVideo=document.getElementById("detailVideo");
 
     if(!mainVideo){
 
-        mainVideo = document.createElement("video");
-        mainVideo.id = "detailVideo";
+        mainVideo=document.createElement("video");
+        mainVideo.id="detailVideo";
 
-        mainVideo.controls = true;
-        mainVideo.autoplay = true;
-        mainVideo.muted = false;
+        mainVideo.controls=true;
+        mainVideo.autoplay=true;
 
-        mainVideo.setAttribute("playsinline","");
-        mainVideo.setAttribute("webkit-playsinline","");
-
-        mainVideo.style.width = "100%";
-        mainVideo.style.borderRadius = "18px";
-        mainVideo.style.background = "#000";
-
-document.getElementById("detailImg").after(mainVideo);
-
+        document.getElementById("detailImg").after(mainVideo);
     }
 
-    mainVideo.src = item.url;
-    mainVideo.style.display = "block";
+    mainVideo.src=item.url;
+    mainVideo.style.display="block";
 
-
-
-    // popup
-    viewerImg.src="";
-    viewerImg.style.display="none";
-
-    const oldVideo=viewer.querySelector("video");
-    if(oldVideo){
-    oldVideo.pause();
-    oldVideo.currentTime = 0;
-    oldVideo.remove();
+    // KHÔNG tạo popup nữa
+    return;
 }
-
-    const v=document.createElement("video");
-
-    v.src=item.url;
-    v.controls=true;
-    v.autoplay=true;
-
-    v.setAttribute("playsinline","");
-    v.setAttribute("webkit-playsinline","");
-
-    v.style.maxWidth="95%";
-    v.style.maxHeight="95%";
-    v.style.borderRadius="18px";
-
-    viewer.appendChild(v);
-
-}
-
-    viewer.classList.add("active");
 
 };
 
@@ -2962,7 +2923,7 @@ if(item.type==="image"){
     }
 
     mainVideo.src = item.url;
-    mainVideo.style.display = "block";
+mainVideo.style.display = "none";
 
 
 
@@ -2975,6 +2936,13 @@ if(item.type==="image"){
     oldVideo.pause();
     oldVideo.currentTime = 0;
     oldVideo.remove();
+}
+	const mainVideo = document.getElementById("detailVideo");
+
+if(mainVideo){
+    mainVideo.pause();
+    mainVideo.currentTime = 0;
+    mainVideo.style.display = "none";
 }
     const v=document.createElement("video");
 
@@ -3047,6 +3015,13 @@ if(mainVideo){
     mainVideo.currentTime = 0;
     mainVideo.style.display = "none";
 }
+	const mainVideo = document.getElementById("detailVideo");
+
+if(mainVideo){
+    mainVideo.pause();
+    mainVideo.currentTime = 0;
+    mainVideo.style.display = "none";
+}
     const v = document.createElement("video");
 
     v.src = item.url;
@@ -3102,7 +3077,13 @@ if(item.type==="image"){
 
     viewerImg.src = "";
 viewerImg.style.display = "none";
+	const mainVideo = document.getElementById("detailVideo");
 
+if(mainVideo){
+    mainVideo.pause();
+    mainVideo.currentTime = 0;
+    mainVideo.style.display = "none";
+}
     const v=document.createElement("video");
 
     v.src=item.url;
@@ -3192,6 +3173,13 @@ const mainVideo = document.getElementById("detailVideo");
 
 if(mainVideo){
     mainVideo.pause();
+}
+	const mainVideo = document.getElementById("detailVideo");
+
+if(mainVideo){
+    mainVideo.pause();
+    mainVideo.currentTime = 0;
+    mainVideo.style.display = "none";
 }
 	
     const v = document.createElement("video");
