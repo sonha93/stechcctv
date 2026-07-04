@@ -34,9 +34,13 @@ async function loadReview(){
         if(!p.videos || !p.videos.length) return;
 
         const video =
-            typeof p.videos[0] === "string"
-            ? p.videos[0]
-            : p.videos[0].url;
+    (typeof p.videos[0] === "string"
+        ? p.videos[0]
+        : p.videos[0].url)
+    .replace(
+        "/upload/",
+        "/upload/f_auto,q_auto:best,w_1080/"
+    );
 
         container.insertAdjacentHTML("beforeend",`
         <div class="video-item">
