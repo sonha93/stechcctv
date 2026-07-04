@@ -288,6 +288,18 @@ body{
     font-weight:bold;
     border:2px solid #fff;
 }
+    #previewWrap{
+    padding:10px;
+    display:none;
+}
+
+#previewImage{
+    width:90px;
+    height:90px;
+    object-fit:cover;
+    border-radius:10px;
+    border:1px solid #ddd;
+}
 </style>
 </head>
 <div id="commentSheet">
@@ -302,22 +314,29 @@ body{
 
     </div>
 
-    <div id="commentList"></div>
+   <div id="commentList"></div>
+
+<div class="comment-input">
 
     <input
         id="commentText"
         placeholder="Viết bình luận...">
 
-   <label for="commentImage" style="cursor:pointer;font-size:22px;padding:0 10px;">
-    📷
-</label>
+    <label for="commentImage">📷</label>
 
-<input
-    type="file"
-    id="commentImage"
-    accept="image/*"
-    style="display:none;">
+    <input
+        type="file"
+        id="commentImage"
+        accept="image/*"
+        style="display:none;">
 
+    <button id="sendBtn">Gửi</button>
+
+</div>
+
+<div id="previewWrap" style="display:none;">
+    <img id="previewImage">
+</div>
     <button id="sendBtn">Gửi</button>
 
 </div>
@@ -821,6 +840,8 @@ let image = "";
 
    document.getElementById("commentText").value="";
 document.getElementById("commentImage").value="";
+document.getElementById("previewWrap").style.display="none";
+document.getElementById("previewImage").src="";
 document.getElementById("commentText").focus();
 }
     window.replyComment = function(name){
@@ -959,6 +980,30 @@ window.toggleSound = function () {
         v.volume = soundOn ? 1 : 0;
     });
 };
+const commentImage = document.getElementById("commentImage");
+
+commentImage.addEventListener("change",function(){
+
+    const file = this.files[0];
+
+    if(!file){
+        document.getElementById("previewWrap").style.display="none";
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload=function(e){
+
+        document.getElementById("previewImage").src=e.target.result;
+
+        document.getElementById("previewWrap").style.display="block";
+
+    }
+
+    reader.readAsDataURL(file);
+
+});
  loadVideos();
 document.getElementById("sendBtn").onclick = () => {
 
