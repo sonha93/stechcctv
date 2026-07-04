@@ -134,11 +134,12 @@ if (!productId) {
     console.warn("Cart lỗi:", docSnap.id, p);
     continue;
 }
-
+console.log("Cart item:", p);
+console.log("productId =", productId);
 const productSnap = await getDoc(
     doc(db, "products", productId)
 );
-
+console.log("exists =", productSnap.exists());
 if (!productSnap.exists()) {
 
     // Tự xóa sản phẩm không còn tồn tại khỏi giỏ
