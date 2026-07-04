@@ -529,19 +529,19 @@ async function loadComments(productId){
                 const c = docSnap.data();
 
                 let name = "Người dùng";
-                let avatar = "default-avatar.png"; // ảnh mặc định
+                let avatar = "images/default-avatar.png"; // đường dẫn avatar mặc định
 
-                const userSnap = await getDoc(doc(db,"users",c.uid));
+if (userSnap.exists()) {
 
-                if(userSnap.exists()){
+    const u = userSnap.data();
 
-                    const u = userSnap.data();
+    name = u.name || "Người dùng";
 
-                    name = u.name || "Người dùng";
-                    avatar = u.avatar || "default-avatar.png";
+    if (u.avatar && u.avatar.trim() !== "") {
+        avatar = u.avatar;
+    }
 
-                }
-
+}
                 list.innerHTML += `
                     <div style="
                         display:flex;
@@ -552,14 +552,15 @@ async function loadComments(productId){
                     ">
 
                         <img
-                            src="${avatar}"
-                            style="
-                                width:42px;
-                                height:42px;
-                                border-radius:50%;
-                                object-fit:cover;
-                            "
-                        >
+    src="${avatar}"
+    onerror="this.src='images/default-avatar.png'"
+    style="
+        width:42px;
+        height:42px;
+        border-radius:50%;
+        object-fit:cover;
+    "
+>
 
                         <div>
                             <div style="font-weight:bold">
@@ -623,10 +624,8 @@ async function loadComments(productId){
 
     );
 
-    document.getElementById("commentText").value="";
-
-    loadComments(currentCommentProduct);
-    document.getElementById("commentText").focus();
+   document.getElementById("commentText").value="";
+document.getElementById("commentText").focus();
 }
 window.addCart = async function(id){
 
