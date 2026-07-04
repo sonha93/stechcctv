@@ -288,33 +288,47 @@ body{
     font-weight:bold;
     border:2px solid #fff;
 }
-    #previewWrap{
-    padding:10px;
+  #previewWrap{
     display:none;
+    width:100%;
+    text-align:center;
+    margin-top:10px;
 }
 
-#previewImage{
-    width:90px;
-    height:90px;
-    object-fit:cover;
-    border-radius:10px;
-    border:1px solid #ddd;
+#previewWrap::before{
+    content:"";
+    display:inline-block;
 }
-    #previewWrap{
-    display:none;
+
+.preview-box{
+    display:inline-block;
     position:relative;
-    width:90px;
-    margin:10px 12px;
 }
 
 #previewImage{
     width:90px;
     height:90px;
-    border-radius:12px;
     object-fit:cover;
+    border-radius:12px;
     display:block;
 }
 
+#removePreview{
+    position:absolute;
+    top:-8px;
+    right:-8px;
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    background:#ff2d55;
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:bold;
+}
 #removePreview{
 
     position:absolute;
@@ -378,12 +392,13 @@ body{
 
 <div id="previewWrap">
 
-    <img id="previewImage">
+    <div class="preview-box">
 
-    <span id="removePreview">✕</span>
+        <img id="previewImage">
 
-</div>
-    <button id="sendBtn">Gửi</button>
+        <span id="removePreview">✕</span>
+
+    </div>
 
 </div>
 
