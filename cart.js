@@ -20,7 +20,7 @@ const db = getFirestore(app);
 
 // USER
 let currentUser = null;
-
+const productCache = {};
 // DOM
 let cartBox = null;
 let totalBox = null;
@@ -115,23 +115,35 @@ actionBox = document.getElementById("cartAction");
     for (const docSnap of snapshot.docs) {
 
       const p = docSnap.data();
-     const productId =
-  typeof p.productId === "string"
-    ? p.productId
-    : p.productId?.id || p.productId?.productId;
+    const productId = String(p.productId || "");
 
-if (!productId) continue;
+if (!productId || productId === "undefined") {
+  console.error("Bad productId:", p);
+  continue;
+}
 
-if (!productId) continue;
+
 
 if (typeof productId !== "string") {
   console.error("Invalid productId:", p.productId);
   continue;
 }
 
-const productSnap = await getDoc(doc(db, "products", productId));
-if (!productSnap.exists()) continue;
+let product;
 
+if (productCache[productId]) {
+
+  product = productCache[productId];
+
+} else {
+
+  const productSnap = await getDoc(doc(db, "products", productId));
+  if (!productSnap.exists()) continue;
+
+  product = productSnap.data();
+  productCache[productId] = product;
+
+}
 const product = productSnap.data();
       const qty = Number(p.qty) || 1;
       const price = Number(product.price) || 0;
@@ -143,7 +155,7 @@ const product = productSnap.data();
  cartBox.innerHTML += `
 <div class="item">
 
- <a href="logo.html?id=${p.productId}">
+<a href="logo.html?id=${productId}">
   <img src="${product.img || ''}">
 </a>
   <div class="info">
