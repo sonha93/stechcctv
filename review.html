@@ -325,14 +325,14 @@ const firebaseConfig = {
 };
 
 
-const auth = getAuth(app);
+
 const feed = document.getElementById("feed");
 let currentProduct = "";
 let currentCommentProduct = "";
 async function loadVideos(){
 
     const snap = await getDocs(collection(db,"products"));
-
+    const db = getFirestore(app);
     feed.innerHTML = "";
 
     snap.forEach(docSnap=>{
@@ -564,22 +564,7 @@ function loadComments(productId){
 
 }
 
-const snap = await getDocs(q);
 
-    list.innerHTML = "";
-
-    snap.forEach(docSnap=>{
-
-        const c = docSnap.data();
-
-        list.innerHTML += `
-        <div style="padding:10px;border-bottom:1px solid #eee;">
-            <b>${c.name}</b><br>
-            ${c.text}
-        </div>
-        `;
-
-    });
 
 }
     window.sendComment = async function(){
@@ -644,6 +629,7 @@ async function addCart(id){
     };
 
     await addToCartFirebase(product);
+alert("Đã thêm giỏ hàng");
 
 }
 window.addCart = addCart;
