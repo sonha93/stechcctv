@@ -329,8 +329,9 @@ const firebaseConfig = {
 
 
 const feed = document.getElementById("feed");
-if(!feed) return;
+if(!feed) throw new Error("Missing #feed");
 const db = getFirestore(app);
+const auth = getAuth(app);
 let currentProduct = "";
 let currentCommentProduct = "";
 async function loadVideos(){
@@ -440,8 +441,8 @@ function autoPlay(){
                 });
 
               v.load();
-v.muted = false;
-v.volume = 1;
+v.muted = true;
+v.volume = 0;
 v.play().catch(()=>{});
 
             }else{
@@ -467,34 +468,78 @@ v.play().catch(()=>{});
     });
 
 }
-loadVideos().then(() => {
-    bindRealtime();
-});
+
 // realtime like + comment
-document.querySelectorAll("[id^='like-'],[id^='comment-']").forEach(el=>{
+async function loadVideos(){
 
-    const id = el.id
-        .replace("like-","")
-        .replace("comment-","");
+    const snap = await getDocs(collection(db,"products"));
 
-    onSnapshot(doc(db,"products",id),(snap)=>{
+    feed.innerHTML = "";
 
-        const data = snap.data() || {};
+    snap.forEach(docSnap => {
 
-        const like = document.getElementById("like-"+id);
-        const comment = document.getElementById("comment-"+id);
+        const p = docSnap.data();
+        if(!p.videos || p.videos.length === 0) return;
 
-        if(like){
-            like.innerText = data.likeCount || 0;
-        }
+        const video =
+            typeof p.videos[0] === "string"
+            ? p.videos[0]
+            : p.videos[0].url;
 
-        if(comment){
-            comment.innerText = data.commentCount || 0;
-        }
+        const id = docSnap.id;
 
+        feed.innerHTML += `
+        <div class="video-item">
+
+            <video class="vid"
+                src="${video}"
+                autoplay
+                playsinline
+                webkit-playsinline
+                controls
+                preload="metadata"
+                controlsList="nodownload noplaybackrate"
+                disablePictureInPicture>
+            </video>
+
+            <div class="right-action">
+
+                <div class="action" onclick="location.href='logo.html?id=${id}'">
+                    <div class="icon">🛍️</div>
+                    <span>Shop</span>
+                </div>
+
+                <div class="action" onclick="toggleLike('${id}')">
+                    <div class="icon">❤️</div>
+                    <span id="like-${id}">0</span>
+                </div>
+
+                <div class="action" onclick="openComment('${id}')">
+                    <div class="icon">💬</div>
+                    <span id="comment-${id}">0</span>
+                </div>
+
+                <div class="action" onclick="addCart('${id}')">
+                    <div class="icon">🛒</div>
+                    <span>Giỏ</span>
+                </div>
+
+            </div>
+
+            <div class="info">
+                <div class="name">${p.name}</div>
+                <div class="price">${Number(p.price).toLocaleString()}đ</div>
+                <button class="buy" onclick="location.href='logo.html?id=${id}'">
+                    Mua ngay
+                </button>
+            </div>
+
+        </div>
+        `;
     });
 
-});
+    autoPlay();
+}
 document.addEventListener("visibilitychange",()=>{
 
     const videos = document.querySelectorAll(".vid");
@@ -537,7 +582,7 @@ function loadComments(productId){
 
     const list = document.getElementById("commentList");
 
-    onSnapshot(
+   return onSnapshot(
 
         collection(
             db,
@@ -633,7 +678,6 @@ window.addCart = async function(id){
 alert("Đã thêm giỏ hàng");
 
 }
-window.addCart = addCart;
 
 window.toggleLike = async function(id){
 
