@@ -123,16 +123,14 @@ actionBox = document.getElementById("cartAction");
 
     for (const docSnap of snapshot.docs) {
 
-    const productId =
-    p.productId != null
-        ? String(p.productId)
-        : "";
+    const p = docSnap.data();
+
+const productId = String(p.productId || "");
 
 if (!productId) {
     console.warn("Cart lỗi:", docSnap.id, p);
     continue;
 }
-
 
 const productSnap = await getDoc(
     doc(db, "products", productId)
