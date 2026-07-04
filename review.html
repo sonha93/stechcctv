@@ -314,6 +314,21 @@ body{
     font-size:18px;
     cursor:pointer;
 }
+    #imageViewer{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.9);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:99999;
+}
+
+#imageViewer img{
+    max-width:95%;
+    max-height:95%;
+    border-radius:10px;
+}
 </style>
 </head>
 <div id="commentSheet">
@@ -741,14 +756,16 @@ try {
 ${
     c.image
     ?
-    `<img
-        src="${c.image}"
-        style="
-            width:180px;
-            margin-top:8px;
-            border-radius:10px;
-            display:block;
-        ">`
+    <img
+    src="${c.image}"
+    onclick="viewImage('${c.image}')"
+    style="
+        width:180px;
+        margin-top:8px;
+        border-radius:10px;
+        display:block;
+        cursor:pointer;
+    ">
     :
     ""
 }
@@ -1079,7 +1096,22 @@ document.getElementById("sendBtn").onclick = () => {
     });
 
 });
-</script>
+window.viewImage = function(src){
 
+    document.getElementById("viewerImage").src = src;
+
+    document.getElementById("imageViewer").style.display = "flex";
+
+}
+
+window.closeImage = function(){
+
+    document.getElementById("imageViewer").style.display = "none";
+
+}
+</script>
+<div id="imageViewer" onclick="closeImage()">
+    <img id="viewerImage">
+</div>
 </body>
 </html>
