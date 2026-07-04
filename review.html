@@ -121,7 +121,11 @@ body{background:#000;overflow:hidden}
 <div id="feed"></div>
 
 <script type="module">
+
 import { app } from "./auth.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const auth = getAuth(app);
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
@@ -337,18 +341,8 @@ window.toggleLike = async function(id){
   }
 };
 
-await loadVideos();
-bindRealtime();
-onSnapshot(doc(db,"products",id),(snap)=>{
-
-  const d = snap.data() || {};
-
-  const likeEl = document.getElementById("like-"+id);
-  const cmtEl = document.getElementById("comment-"+id);
-
-  if(likeEl) likeEl.innerText = d.likeCount || 0;
-  if(cmtEl) cmtEl.innerText = d.commentCount || 0;
-
+loadVideos().then(()=>{
+  bindRealtime();
 });
 </script>
 
