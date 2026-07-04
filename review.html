@@ -304,14 +304,23 @@ body{
 
     <div id="commentList"></div>
 
-    <div class="comment-input">
-
-        <input
+    <input
         id="commentText"
         placeholder="Viết bình luận...">
 
-       <button id="sendBtn">Gửi</button>
-    </div>
+    <input
+        type="file"
+        id="commentImage"
+        accept="image/*"
+        hidden>
+
+    <button onclick="document.getElementById('commentImage').click()">
+        📷
+    </button>
+
+    <button id="sendBtn">Gửi</button>
+
+</div>
 
 </div>
 <body>
@@ -344,7 +353,12 @@ import {
 import {
     addToCart as addToCartFirebase
 } from "./cart.js";
-
+import {
+    getStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 const firebaseConfig = {
     apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
     authDomain: "stech-73b89.firebaseapp.com",
@@ -359,6 +373,7 @@ const firebaseConfig = {
 const feed = document.getElementById("feed");
 if(!feed) throw new Error("Missing #feed");
 const db = getFirestore(app);
+const storage = getStorage(app);
 const auth = getAuth(app);
 let currentProduct = "";
 let currentCommentProduct = "";
@@ -648,11 +663,26 @@ try {
         ${name}
     </div>
 
-    <div style="
-        margin-bottom:8px;
-    ">
-        ${c.text}
-    </div>
+    <div style="margin-bottom:8px;">
+
+    ${c.text}
+
+    ${
+        c.image
+        ?
+        `<img
+            src="${c.image}"
+            style="
+                margin-top:8px;
+                width:180px;
+                max-width:100%;
+                border-radius:10px;
+            ">`
+        :
+        ""
+    }
+
+</div>
 
     <div style="
         display:flex;
@@ -733,11 +763,28 @@ try {
         .getElementById("commentText")
         .value
         .trim();
+const file =
+document.getElementById("commentImage").files[0];
 
-    if(text=="") return;
+let image = "";
+   if(text=="" && !file) return;
+    if(file){
 
+    const imageRef = ref(
+        storage,
+        "comments/" +
+        Date.now() +
+        "_" +
+        file.name
+    );
+
+    await uploadBytes(imageRef,file);
+
+    image = await getDownloadURL(imageRef);
+
+}
     await addDoc(
-
+    
         collection(
             db,
             "products",
@@ -746,12 +793,12 @@ try {
         ),
 
         {
-            uid:user.uid,
-            name:user.displayName || "Người dùng",
-            text:text,
-            createdAt:serverTimestamp()
-        }
-
+    uid:user.uid,
+    name:user.displayName || "Người dùng",
+    text:text,
+    image:image,
+    createdAt:serverTimestamp()
+}
     );
 
     await updateDoc(
@@ -765,6 +812,7 @@ try {
     );
 
    document.getElementById("commentText").value="";
+document.getElementById("commentImage").value="";
 document.getElementById("commentText").focus();
 }
     window.replyComment = function(name){
