@@ -154,7 +154,6 @@ async function loadVideos(){
     class="vid"
     src="${video}"
     autoplay
-    muted
     playsinline
     webkit-playsinline
     controls
@@ -200,7 +199,9 @@ function autoPlay(){
 
                 });
 
-               v.load();
+              v.load();
+v.muted = false;
+v.volume = 1;
 v.play().catch(()=>{});
 
             }else{
