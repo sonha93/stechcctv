@@ -333,6 +333,7 @@ const feed = document.getElementById("feed");
 if(!feed) throw new Error("Missing #feed");
 const db = getFirestore(app);
 const auth = getAuth(app);
+const user = auth.currentUser;
 let currentProduct = "";
 let currentCommentProduct = "";
 async function loadVideos(){
@@ -396,8 +397,15 @@ async function loadVideos(){
 </div>
 
 <div class="info">
-                <div class="name">${p.name}</div>
-                <div class="price">${Number(p.price).toLocaleString()}đ</div>
+    <div class="name">
+        ${auth.currentUser?.displayName || "Người dùng"}
+    </div>
+
+    <div>${p.name}</div>
+
+    <div class="price">
+        ${Number(p.price).toLocaleString()}đ
+    </div>
                 </button>
             </div>
         </div>
