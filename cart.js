@@ -115,9 +115,8 @@ actionBox = document.getElementById("cartAction");
     for (const docSnap of snapshot.docs) {
 
       const p = docSnap.data();
-     
-     const productSnap = await getDoc(
-    doc(db, "products", String(p.productId))
+      const productSnap = await getDoc(
+  doc(db, "products", p.productId)
 );
 
 if (!productSnap.exists()) continue;
@@ -252,10 +251,11 @@ const productId =
 
     });
 
-await setDoc(itemRef,{
-    productId: String(product.id),
-    qty: oldQty + 1
+ await setDoc(itemRef, {
+  productId: product.id,
+  qty: oldQty + 1
 });
+
 
   await renderCart();
 await updateCartCount();
