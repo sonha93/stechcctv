@@ -212,63 +212,41 @@ if(actionBox){
 export async function addToCart(product) {
 
   if (!currentUser) {
-  showToast("Bạn cần đăng nhập!");
+    showToast("Bạn cần đăng nhập!");
     return;
   }
 
-  if (!product.id) {
-    console.error("Thiếu product.id");
+  const productId = String(product?.id || product?.productId);
+
+  if (!productId || productId === "undefined") {
+    console.error("Invalid productId:", product);
     return;
   }
-const productId =
-  String(product.id);
-  try {
 
-    const itemRef = doc(
-      db,
-      "users",
-      currentUser.uid,
-      "cart",
-      productId
-    );
+  const itemRef = doc(
+    db,
+    "users",
+    currentUser.uid,
+    "cart",
+    productId
+  );
 
-    const snapshot = await getDocs(
-      collection(
-        db,
-        "users",
-        currentUser.uid,
-        "cart"
-      )
-    );
+  const snap = await getDoc(itemRef);
 
-    let oldQty = 0;
+  let oldQty = 0;
 
-    snapshot.forEach(d => {
+  if (snap.exists()) {
+    oldQty = Number(snap.data().qty) || 0;
+  }
 
-      if(d.id === productId){
-        oldQty = Number(d.data().qty) || 0;
-      }
-
-    });
-
- await setDoc(itemRef, {
-  productId: product.id,
-  qty: oldQty + 1
-});
-
+  await setDoc(itemRef, {
+    productId: productId,
+    qty: oldQty + 1
+  });
 
   await renderCart();
-await updateCartCount();
-
-  } catch (err) {
-
-    console.error("Lỗi addToCart:", err);
-
-  }
-
+  await updateCartCount();
 }
-
-
 // ============================
 // REMOVE ITEM
 // ============================
