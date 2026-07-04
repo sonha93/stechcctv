@@ -590,15 +590,15 @@ window.addCart = async function(id){
 
     if(!docSnap.exists()) return;
 
-    const product = {
-        id: docSnap.id,
-        productId: docSnap.id,
-        ...docSnap.data()
-    };
+    const product = docSnap.data();
 
-    await addToCartFirebase(product);
-alert("Đã thêm giỏ hàng");
+    await addToCartFirebase({
+        id: id,              // 🔥 QUAN TRỌNG
+        productId: id,      // 🔥 QUAN TRỌNG
+        ...product
+    });
 
+    alert("Đã thêm giỏ hàng");
 }
 
 window.toggleLike = async function(id){
@@ -642,9 +642,9 @@ window.toggleLike = async function(id){
     }
 
 }
-    loadVideos().then(() => {
+  
  loadVideos();
-});
+
 </script>
 <script type="module" src="review.js"></script>
 </body>
