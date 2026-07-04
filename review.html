@@ -259,9 +259,7 @@ body{
     padding:10px 18px;
 
 }
-    .video-item video {
-    pointer-events: none;
-}
+   
 </style>
 </head>
 <div id="commentSheet">
@@ -357,19 +355,7 @@ async function loadVideos(){
         const id = docSnap.id;
     
         feed.innerHTML += `
-        setTimeout(() => {
-    const vids = document.querySelectorAll(".vid");
-
-    vids.forEach(v => {
-        v.onclick = () => {
-            if (v.paused) {
-                v.play();
-            } else {
-                v.pause();
-            }
-        };
-    });
-}, 100);
+        
         <div class="video-item">
        <video
     class="vid"
@@ -452,8 +438,8 @@ function autoPlay(){
                 });
 
             
-v.muted = false;
-v.volume = 1;
+v.muted = !soundOn;
+v.volume = soundOn ? 1 : 0;
 v.play().catch(()=>{});
 
             }else{
@@ -468,15 +454,26 @@ v.play().catch(()=>{});
         threshold:0.8
     });
 
-    videos.forEach(v=>{
-    v.addEventListener("ended", () => {
-    v.currentTime = 0;
-    v.play().catch(()=>{});
-});
-        observer.observe(v);
+   videos.forEach(v => {
 
-        
+    v.addEventListener("ended", () => {
+        v.currentTime = 0;
+        v.play().catch(()=>{});
     });
+
+    observer.observe(v);
+
+    v.addEventListener("click", () => {
+
+        if (v.paused) {
+            v.play();
+        } else {
+            v.pause();
+        }
+
+    });
+
+});
 
 }
 
