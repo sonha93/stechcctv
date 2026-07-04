@@ -357,6 +357,19 @@ async function loadVideos(){
         const id = docSnap.id;
     
         feed.innerHTML += `
+        setTimeout(() => {
+    const vids = document.querySelectorAll(".vid");
+
+    vids.forEach(v => {
+        v.onclick = () => {
+            if (v.paused) {
+                v.play();
+            } else {
+                v.pause();
+            }
+        };
+    });
+}, 100);
         <div class="video-item">
        <video
     class="vid"
@@ -390,7 +403,10 @@ async function loadVideos(){
         <div class="icon">🛒</div>
         <span>Giỏ</span>
     </div>
-
+<div class="action" onclick="toggleSound()">
+    <div class="icon">🔊</div>
+    <span>Âm</span>
+</div>
 </div>
 
 <div class="info">
@@ -435,9 +451,9 @@ function autoPlay(){
 
                 });
 
-              v.load();
-v.muted = true;
-v.volume = 0;
+            
+v.muted = false;
+v.volume = 1;
 v.play().catch(()=>{});
 
             }else{
@@ -659,7 +675,16 @@ if(el){
     }
 
 }
-  
+  let soundOn = false;
+
+window.toggleSound = function () {
+    soundOn = !soundOn;
+
+    document.querySelectorAll(".vid").forEach(v => {
+        v.muted = !soundOn;
+        v.volume = soundOn ? 1 : 0;
+    });
+};
  loadVideos();
 
 </script>
