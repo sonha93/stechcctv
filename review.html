@@ -333,7 +333,6 @@ const feed = document.getElementById("feed");
 if(!feed) throw new Error("Missing #feed");
 const db = getFirestore(app);
 const auth = getAuth(app);
-const user = auth.currentUser;
 let currentProduct = "";
 let currentCommentProduct = "";
 async function loadVideos(){
@@ -397,15 +396,8 @@ async function loadVideos(){
 </div>
 
 <div class="info">
-    <div class="name">
-        ${auth.currentUser?.displayName || "Người dùng"}
-    </div>
-
-    <div>${p.name}</div>
-
-    <div class="price">
-        ${Number(p.price).toLocaleString()}đ
-    </div>
+                <div class="name">${p.name}</div>
+                <div class="price">${Number(p.price).toLocaleString()}đ</div>
                 </button>
             </div>
         </div>
@@ -522,38 +514,68 @@ window.closeComment=function(){
     .classList.remove("active");
 
 }
-function loadComments(productId){
+async function loadComments(productId){
 
     const list = document.getElementById("commentList");
 
-   return onSnapshot(
-
-        collection(
-            db,
-            "products",
-            productId,
-            "comments"
-        ),
-
-        snap=>{
+    onSnapshot(
+        collection(db,"products",productId,"comments"),
+        async (snap)=>{
 
             list.innerHTML="";
 
-            snap.forEach(docSnap=>{
+            for(const docSnap of snap.docs){
 
-                const c=docSnap.data();
+                const c = docSnap.data();
 
-                list.innerHTML+=`
-                <div style="padding:10px;border-bottom:1px solid #eee">
-                    <b>${c.name}</b><br>
-                    ${c.text}
-                </div>
+                let name = "Người dùng";
+                let avatar = "default-avatar.png"; // ảnh mặc định
+
+                const userSnap = await getDoc(doc(db,"users",c.uid));
+
+                if(userSnap.exists()){
+
+                    const u = userSnap.data();
+
+                    name = u.name || "Người dùng";
+                    avatar = u.avatar || "default-avatar.png";
+
+                }
+
+                list.innerHTML += `
+                    <div style="
+                        display:flex;
+                        gap:10px;
+                        padding:12px;
+                        border-bottom:1px solid #eee;
+                        align-items:flex-start;
+                    ">
+
+                        <img
+                            src="${avatar}"
+                            style="
+                                width:42px;
+                                height:42px;
+                                border-radius:50%;
+                                object-fit:cover;
+                            "
+                        >
+
+                        <div>
+                            <div style="font-weight:bold">
+                                ${name}
+                            </div>
+
+                            <div style="margin-top:4px">
+                                ${c.text}
+                            </div>
+                        </div>
+
+                    </div>
                 `;
-
-            });
+            }
 
         }
-
     );
 
 }
