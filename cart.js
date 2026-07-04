@@ -114,8 +114,9 @@ actionBox = document.getElementById("cartAction");
 
     for (const docSnap of snapshot.docs) {
 
-      const p = docSnap.data();
-     const productId =
+    const p = docSnap.data();
+
+const productId =
     typeof p.productId === "string"
         ? p.productId
         : p.productId?.id;
@@ -132,18 +133,32 @@ const productSnap = await getDoc(
 if (!productSnap.exists()) continue;
 
 const product = productSnap.data();
-      const qty = Number(p.qty) || 1;
-      const price = Number(product.price) || 0;
 
-      const subTotal = qty * price;
+const image =
+    product.img ||
+    product.image ||
+    (Array.isArray(product.images)
+        ? (typeof product.images[0] === "string"
+            ? product.images[0]
+            : product.images[0]?.url)
+        : "") ||
+    "default-product.png";
+
+const qty = Number(p.qty) || 1;
+const price = Number(product.price) || 0;
+
+const subTotal = qty * price;
 
       total += subTotal;
 
  cartBox.innerHTML += `
 <div class="item">
 
- <a href="logo.html?id=${productId}"
-  <img src="${product.img || ''}">
+<a href="logo.html?id=${productId}">
+    <img
+        src="${image}"
+        onerror="this.src='default-product.png'"
+    >
 </a>
   <div class="info">
 
