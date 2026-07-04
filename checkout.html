@@ -400,7 +400,7 @@ if(phoneValue){
 }));
 
 for (const item of cart) {
-  console.log("productId =", item.productId);
+
   const productDoc = await db
     .collection("products")
     .doc(item.productId)
