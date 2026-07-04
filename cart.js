@@ -115,6 +115,9 @@ actionBox = document.getElementById("cartAction");
     for (const docSnap of snapshot.docs) {
 
       const p = docSnap.data();
+    console.log("Cart data:", p);
+console.log("productId:", p.productId);
+console.log("typeof:", typeof p.productId);
       const productSnap = await getDoc(
   doc(db, "products", p.productId)
 );
