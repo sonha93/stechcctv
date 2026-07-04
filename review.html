@@ -295,7 +295,9 @@ body{
 import {
     initializeApp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
+import {
+    getAuth
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
     getFirestore,
     collection,
@@ -348,20 +350,7 @@ async function loadVideos(){
         : p.videos[0].url;
 
         const id = docSnap.id;
-        onSnapshot(doc(db,"products",id),(snap)=>{
-
-    const p = snap.data();
-
-    const like = document.getElementById("like-"+id);
-
-    if(like){
-
-        like.innerText = p.likeCount || 0;
-
-    }
-
-});
-
+    
         feed.innerHTML += `
         <div class="video-item">
        <video
@@ -408,9 +397,22 @@ async function loadVideos(){
             </div>
         </div>
         `;
+   });
+
+document.querySelectorAll("[id^='like-']").forEach(span=>{
+
+    const id = span.id.replace("like-","");
+
+    onSnapshot(doc(db,"products",id),(snap)=>{
+
+        span.innerText = snap.data()?.likeCount || 0;
+
     });
 
-    autoPlay();
+});
+
+autoPlay();
+
 }
 
 /* AUTO PLAY LIKE TIKTOK */
