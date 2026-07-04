@@ -97,39 +97,7 @@ body{
     color:#fff;
     z-index:2;
 }
-    function autoPlay(){
 
-    const videos = document.querySelectorAll(".review-video");
-
-    const observer = new IntersectionObserver(entries=>{
-
-        entries.forEach(entry=>{
-
-            const v = entry.target;
-
-            if(entry.isIntersecting && entry.intersectionRatio > 0.8){
-
-                videos.forEach(x=>{
-                    if(x !== v){
-                        x.pause();
-                        x.currentTime = 0;
-                    }
-                });
-
-                v.play().catch(()=>{});
-
-            }else{
-                v.pause();
-            }
-
-        });
-
-    },{
-        threshold:0.8
-    });
-
-    videos.forEach(v=>observer.observe(v));
-}
 </style>
 </head>
 
@@ -180,8 +148,15 @@ async function loadVideos(){
 
         feed.innerHTML += `
         <div class="video-item">
-            <video class="vid" src="${video}" muted playsinline></video>
-
+           <video
+    class="vid"
+    src="${video}"
+    autoplay
+    muted
+    loop
+    playsinline
+    webkit-playsinline
+></video>
             <div class="info">
                 <div class="name">${p.name}</div>
                 <div class="price">${Number(p.price).toLocaleString()}đ</div>
@@ -199,27 +174,34 @@ async function loadVideos(){
 /* AUTO PLAY LIKE TIKTOK */
 function autoPlay(){
 
-    const videos = document.querySelectorAll("video");
+    const videos = document.querySelectorAll(".vid");
 
     const observer = new IntersectionObserver(entries=>{
 
-        entries.forEach(e=>{
+        entries.forEach(entry=>{
 
-            const v = e.target;
+            const v = entry.target;
 
-            if(e.isIntersecting && e.intersectionRatio > 0.8){
+            if(entry.isIntersecting && entry.intersectionRatio >= 0.8){
 
                 videos.forEach(x=>{
-                    if(x !== v){
+
+                    if(x!==v){
+
                         x.pause();
-                        x.currentTime = 0;
+                        x.currentTime=0;
+                        x.muted=true;
+
                     }
+
                 });
 
                 v.play().catch(()=>{});
 
             }else{
+
                 v.pause();
+
             }
 
         });
@@ -228,11 +210,22 @@ function autoPlay(){
         threshold:0.8
     });
 
-    videos.forEach(v=>observer.observe(v));
-}
+    videos.forEach(v=>{
 
+        observer.observe(v);
+
+        // Chạm để bật/tắt tiếng
+        v.addEventListener("click",()=>{
+
+            v.muted=!v.muted;
+
+        });
+
+    });
+
+}
 loadVideos();
 </script>
-<script type="module" src="review.js"></script>
+
 </body>
 </html>
