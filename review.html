@@ -220,21 +220,27 @@ body{
     justify-content:center;
     align-items:center;
     height:60px;
-    font-size:18px;
-    font-weight:700;
     border-bottom:1px solid #eee;
+}
+
+.comment-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:28px;
+    font-weight:700;
 }
 
 .close-sheet{
     position:absolute;
-    right:16px;
+    right:18px;
     top:50%;
     transform:translateY(-50%);
     border:none;
     background:none;
-    font-size:28px;
-    cursor:pointer;
+    font-size:32px;
     color:#555;
+    cursor:pointer;
 }
 #commentList{
 
@@ -348,25 +354,25 @@ body{
 }
 
 .comment-sort{
+    width:16px;
     display:flex;
     flex-direction:column;
     gap:2px;
-    cursor:pointer;
 }
 
 .comment-sort span{
-    display:block;
     height:2px;
     background:#111;
     border-radius:2px;
+    margin-left:auto;
 }
 
 .comment-sort span:nth-child(1){
-    width:14px;
+    width:16px;
 }
 
 .comment-sort span:nth-child(2){
-    width:11px;
+    width:12px;
 }
 
 .comment-sort span:nth-child(3){
@@ -374,7 +380,7 @@ body{
 }
 
 .comment-sort span:nth-child(4){
-    width:5px;
+    width:4px;
 }
 </style>
 </head>
@@ -382,20 +388,21 @@ body{
 
     <div class="sheet-top"></div>
 
- <div class="sheet-header">
+   <div class="sheet-header">
+<div class="comment-title">
 
-    <div class="comment-title">
-        <span id="commentTotal">0</span>
+    <span id="commentTotal">0 bình luận</span>
 
-        <div class="comment-sort">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
+    <div class="comment-sort">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
     </div>
 
-    <button class="close-btn" onclick="closeComment()">✕</button>
+</div>
+
+<button class="close-sheet" onclick="closeComment()">✕</button>
 
 </div>
 
@@ -746,7 +753,8 @@ function loadComments(productId){
         async (snap)=>{
 
             list.innerHTML = "";
-            document.getElementById("commentTotal").innerText = count;
+            document.getElementById("commentTotal").innerText =
+    snap.size + " bình luận";
             for(const docSnap of snap.docs){
 
                 const c = docSnap.data();
