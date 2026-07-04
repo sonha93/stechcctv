@@ -300,48 +300,6 @@ body{
     border-radius:10px;
     border:1px solid #ddd;
 }
-    #previewWrap{
-    display:none;
-    position:relative;
-    width:90px;
-    margin:10px 12px;
-}
-
-#previewImage{
-    width:90px;
-    height:90px;
-    border-radius:12px;
-    object-fit:cover;
-    display:block;
-}
-
-#removePreview{
-
-    position:absolute;
-
-    top:-8px;
-    right:-8px;
-
-    width:22px;
-    height:22px;
-
-    background:#ff2d55;
-
-    color:#fff;
-
-    border-radius:50%;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    cursor:pointer;
-
-    font-size:14px;
-
-    font-weight:bold;
-
-}
 </style>
 </head>
 <div id="commentSheet">
@@ -376,12 +334,8 @@ body{
 
 </div>
 
-<div id="previewWrap">
-
+<div id="previewWrap" style="display:none;">
     <img id="previewImage">
-
-    <span id="removePreview">✕</span>
-
 </div>
     <button id="sendBtn">Gửi</button>
 
@@ -770,31 +724,35 @@ ${
 
 </div>
 <div style="
+    width:48px;
     display:flex;
+    flex-direction:column;
     align-items:center;
-    gap:6px;
+    justify-content:center;
     color:#666;
-    margin-left:12px;
 ">
 
-   <div
-    onclick="likeComment('${productId}','${docSnap.id}')"
-    style="
-        cursor:pointer;
-        font-size:20px;
-    "
->
-    🤍
-</div>
+    <div
+        onclick="likeComment('${productId}','${docSnap.id}')"
+        style="
+            font-size:18px;
+            line-height:18px;
+            cursor:pointer;
+        "
+    >
+        🤍
+    </div>
 
-<span
-    id="likeComment-${docSnap.id}"
-    style="
-        font-size:14px;
-    "
->
-    ${c.likeCount || 0}
-</span>
+    <div
+        id="likeComment-${docSnap.id}"
+        style="
+            font-size:12px;
+            margin-top:4px;
+        "
+    >
+        ${c.likeCount || 0}
+    </div>
+
 </div>
 
 
@@ -1025,15 +983,7 @@ window.toggleSound = function () {
 const commentImage = document.getElementById("commentImage");
 
 commentImage.addEventListener("change",function(){
-document.getElementById("removePreview").onclick = () => {
 
-    commentImage.value = "";
-
-    document.getElementById("previewImage").src = "";
-
-    document.getElementById("previewWrap").style.display = "none";
-
-};
     const file = this.files[0];
 
     if(!file){
