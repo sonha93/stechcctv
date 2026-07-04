@@ -1021,6 +1021,13 @@ commentImage.addEventListener("change",function(){
     reader.readAsDataURL(file);
 
 });
+    document.getElementById("removePreview").onclick = function () {
+
+    document.getElementById("commentImage").value = "";
+    document.getElementById("previewImage").src = "";
+    document.getElementById("previewWrap").style.display = "none";
+
+};
  loadVideos();
 document.getElementById("sendBtn").onclick = () => {
 
