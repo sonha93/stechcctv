@@ -339,6 +339,43 @@ body{
     max-height:95%;
     border-radius:10px;
 }
+    .comment-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:28px;
+    font-weight:700;
+}
+
+.comment-sort{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    cursor:pointer;
+}
+
+.comment-sort span{
+    display:block;
+    height:2px;
+    background:#111;
+    border-radius:2px;
+}
+
+.comment-sort span:nth-child(1){
+    width:14px;
+}
+
+.comment-sort span:nth-child(2){
+    width:11px;
+}
+
+.comment-sort span:nth-child(3){
+    width:8px;
+}
+
+.comment-sort span:nth-child(4){
+    width:5px;
+}
 </style>
 </head>
 <div id="commentSheet">
@@ -347,9 +384,18 @@ body{
 
    <div class="sheet-header">
 
-    <div id="commentTotal">0 bình luận</div>
+    <div class="comment-title">
+        <span id="commentTotal">0</span> bình luận
 
-    <button class="close-sheet" onclick="closeComment()">✕</button>
+        <div class="comment-sort">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <button class="close-btn" onclick="closeComment()">✕</button>
 
 </div>
 
