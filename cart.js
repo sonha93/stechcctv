@@ -251,9 +251,12 @@ export async function addToCart(product) {
   }
 
   await setDoc(itemRef, {
-    productId: productId,
-    qty: oldQty + 1
-  });
+  productId,
+  qty: oldQty + 1,
+  name: product.name,
+  img: product.img,
+  price: product.price
+});
 
   await renderCart();
   await updateCartCount();
