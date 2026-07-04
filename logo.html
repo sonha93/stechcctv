@@ -2504,7 +2504,7 @@ if(mainVideo){
         mainVideo.id = "detailVideo";
 
         mainVideo.controls = true;
-        mainVideo.autoplay = true;
+       mainVideo.autoplay = false;
         mainVideo.muted = false;
 
         mainVideo.setAttribute("playsinline","");
@@ -2793,22 +2793,24 @@ updateCartCount();
 
 // ĐÓNG POPUP ẢNH
 
-document.getElementById("closeViewer").onclick=()=>{
+document.getElementById("closeViewer").onclick = ()=>{
 
     viewer.classList.remove("active");
 
+    viewer.querySelectorAll("video").forEach(v=>{
+        v.pause();
+        v.currentTime = 0;
+        v.remove();
+    });
+
+    const mainVideo = document.getElementById("detailVideo");
+    if(mainVideo){
+        mainVideo.pause();
+        mainVideo.currentTime = 0;
+    }
+
     viewerImg.style.display="block";
-
-    const oldVideo=viewer.querySelector("video");
-
-    if(oldVideo){
-    oldVideo.pause();
-    oldVideo.currentTime = 0;
-    oldVideo.remove();
-}
-
 };
-
 
 	// bấm nền đen để tắt
 
@@ -2947,7 +2949,7 @@ if(item.type==="image"){
         mainVideo.id = "detailVideo";
 
         mainVideo.controls = true;
-        mainVideo.autoplay = true;
+       mainVideo.autoplay = false;
         mainVideo.muted = false;
 
         mainVideo.setAttribute("playsinline","");
@@ -3047,6 +3049,15 @@ if(mainVideo){
     mainVideo.currentTime = 0;
     mainVideo.style.display = "none";
 }
+	viewer.querySelectorAll("video").forEach(v=>{
+    v.pause();
+    v.remove();
+});
+
+document.querySelectorAll("#detailVideo").forEach(v=>{
+    v.pause();
+    v.currentTime = 0;
+});
     const v = document.createElement("video");
 
     v.src = item.url;
@@ -3193,7 +3204,15 @@ const mainVideo = document.getElementById("detailVideo");
 if(mainVideo){
     mainVideo.pause();
 }
-	
+	viewer.querySelectorAll("video").forEach(v=>{
+    v.pause();
+    v.remove();
+});
+
+document.querySelectorAll("#detailVideo").forEach(v=>{
+    v.pause();
+    v.currentTime = 0;
+});
     const v = document.createElement("video");
 
     v.src = item.url;
