@@ -111,29 +111,15 @@ actionBox = document.getElementById("cartAction");
 }
 
     let total = 0;
-let total = 0;
 
-for (const docSnap of snapshot.docs) {
+    for (const docSnap of snapshot.docs) {
+
       const p = docSnap.data();
       const productSnap = await getDoc(
   doc(db, "products", p.productId)
 );
 
-if (!productSnap.exists()) {
-
-  await deleteDoc(
-    doc(
-      db,
-      "users",
-      currentUser.uid,
-      "cart",
-      docSnap.id
-    )
-  );
-
-  await renderCart();   // <-- thêm dòng này
-  return;               // <-- thêm dòng này
-}
+if (!productSnap.exists()) continue;
 
 const product = productSnap.data();
       const qty = Number(p.qty) || 1;
@@ -195,7 +181,7 @@ const product = productSnap.data();
 </div>
 `;
 }
-    await updateCartCount();
+
     totalBox.innerHTML =
       "Tạm tính: " +
       total.toLocaleString() +
