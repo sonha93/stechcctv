@@ -123,23 +123,21 @@ actionBox = document.getElementById("cartAction");
 
     for (const docSnap of snapshot.docs) {
 
-    const p = docSnap.data();
-
-const productId =
-    typeof p.productId === "string"
-        ? p.productId
-        : p.productId?.id;
+    const productId =
+    p.productId != null
+        ? String(p.productId)
+        : "";
 
 if (!productId) {
     console.warn("Cart lỗi:", docSnap.id, p);
     continue;
 }
-console.log("Cart item:", p);
-console.log("productId =", productId);
+
+
 const productSnap = await getDoc(
     doc(db, "products", productId)
 );
-console.log("exists =", productSnap.exists());
+
 if (!productSnap.exists()) {
 
     // Tự xóa sản phẩm không còn tồn tại khỏi giỏ
