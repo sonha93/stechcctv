@@ -20,19 +20,23 @@ body{
 /* CONTAINER FULL SCREEN */
 #feed{
     height:100vh;
-    overflow-y:scroll;
+    overflow-y:auto;
     scroll-snap-type:y mandatory;
+    scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;
 }
 
 /* VIDEO ITEM */
 .video-item{
     height:100vh;
     width:100%;
+    position:relative;
     display:flex;
     justify-content:center;
     align-items:center;
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
     background:#000;
-    position:relative;
 }
 
 /* VIDEO FULL SCREEN */
@@ -191,8 +195,6 @@ function autoPlay(){
 
                        x.pause();
                         x.currentTime = 0;
-                        x.muted = true;
-                        x.load();
 
                     }
 
