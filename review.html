@@ -121,8 +121,9 @@ body{background:#000;overflow:hidden}
 <div id="feed"></div>
 
 <script type="module">
+import { app } from "./auth.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-import { app, auth } from "./auth.js";
 import {
   getFirestore,
   collection,
@@ -134,7 +135,8 @@ import {
   deleteDoc,
   increment,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import { addToCart as addToCartFirebase } from "./cart.js";
@@ -162,7 +164,7 @@ async function loadVideos(){
     feed.insertAdjacentHTML("beforeend",`
       <div class="video-item">
 
-        <video class="vid" src="${video}" autoplay muted playsinline loop></video>
+        <video class="vid" src="${video}" autoplay playsinline loop></video>
 
         <div class="right-action">
 
@@ -286,39 +288,68 @@ window.sendComment = async function(){
 
 /* CART */
 window.addCart = async function(id){
-  const snap = await getDoc(doc(db,"products",id));
-  if(!snap.exists()) return;
 
-  await addToCartFirebase({
-    id: snap.id,
-    productId: snap.id,
-    ...snap.data()
-  });
+  const user = auth.currentUser;
+  if(!user) return alert("Đăng nhập");
+
+  const ref = doc(db,"users",user.uid,"cart",id);
+  const snap = await getDoc(ref);
+
+  if(snap.exists()){
+    await updateDoc(ref,{
+      qty: increment(1)
+    });
+  }else{
+    await setDoc(ref,{
+      productId:id,
+      qty:1
+    });
+  }
+
+  alert("Đã thêm giỏ hàng");
 };
 
 /* LIKE */
 window.toggleLike = async function(id){
+
   const user = auth.currentUser;
   if(!user) return alert("Đăng nhập");
 
-  const ref = doc(db,"reviewLikes",id+"_"+user.uid);
-  const snap = await getDoc(ref);
+  const likeRef = doc(db,"reviewLikes",id+"_"+user.uid);
+  const productRef = doc(db,"products",id);
+
+  const snap = await getDoc(likeRef);
 
   if(snap.exists()){
-    await deleteDoc(ref);
-    await updateDoc(doc(db,"products",id),{
-      likeCount:increment(-1)
+    await deleteDoc(likeRef);
+    await updateDoc(productRef,{
+      likeCount: increment(-1)
     });
   }else{
-    await setDoc(ref,{uid:user.uid,productId:id});
-    await updateDoc(doc(db,"products",id),{
-      likeCount:increment(1)
+    await setDoc(likeRef,{
+      uid:user.uid,
+      productId:id
+    });
+
+    await updateDoc(productRef,{
+      likeCount: increment(1)
     });
   }
 };
 
-loadVideos().then(bindRealtime);
+await loadVideos();
+bindRealtime();
+onSnapshot(doc(db,"products",id),(snap)=>{
 
+  const d = snap.data() || {};
+
+  const likeEl = document.getElementById("like-"+id);
+  const cmtEl = document.getElementById("comment-"+id);
+
+  if(likeEl) likeEl.innerText = d.likeCount || 0;
+  if(cmtEl) cmtEl.innerText = d.commentCount || 0;
+
+});
 </script>
 
 </body>
