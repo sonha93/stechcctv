@@ -293,6 +293,8 @@ body{
 <script type="module">
 
 import { app, auth } from "./auth.js";
+import { app } from "./auth.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
     getFirestore,
     collection,
@@ -327,12 +329,13 @@ const firebaseConfig = {
 
 
 const feed = document.getElementById("feed");
+const db = getFirestore(app);
 let currentProduct = "";
 let currentCommentProduct = "";
 async function loadVideos(){
 
     const snap = await getDocs(collection(db,"products"));
-    const db = getFirestore(app);
+   
     feed.innerHTML = "";
 
     snap.forEach(docSnap=>{
@@ -396,7 +399,6 @@ async function loadVideos(){
         `;
    });
 
-document.querySelectorAll("[id^='like-']").forEach(span=>{
 
     const id = span.id.replace("like-","");
 
@@ -464,7 +466,9 @@ v.play().catch(()=>{});
     });
 
 }
-loadVideos();
+loadVideos().then(() => {
+    bindRealtime();
+});
 // realtime like + comment
 document.querySelectorAll("[id^='like-'],[id^='comment-']").forEach(el=>{
 
@@ -612,7 +616,7 @@ function loadComments(productId){
     loadComments(currentCommentProduct);
     document.getElementById("commentText").focus();
 }
-async function addCart(id){
+window.addCart = async function(id){
 
     const docSnap = await getDoc(doc(db,"products",id));
 
@@ -671,6 +675,9 @@ window.toggleLike = async function(id){
     }
 
 }
+    loadVideos().then(() => {
+    bindRealtime();
+});
 </script>
 <script type="module" src="review.js"></script>
 </body>
