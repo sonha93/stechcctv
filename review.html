@@ -741,34 +741,32 @@ ${
 
 </div>
 <div style="
-    width:48px;
     display:flex;
-    flex-direction:column;
     align-items:center;
-    justify-content:center;
+    gap:6px;
     color:#666;
+    margin-left:12px;
 ">
 
     <div
         onclick="likeComment('${productId}','${docSnap.id}')"
         style="
+            cursor:pointer;
             font-size:18px;
             line-height:18px;
-            cursor:pointer;
         "
     >
         🤍
     </div>
 
-    <div
+    <span
         id="likeComment-${docSnap.id}"
         style="
-            font-size:12px;
-            margin-top:4px;
+            font-size:13px;
         "
     >
         ${c.likeCount || 0}
-    </div>
+    </span>
 
 </div>
 
