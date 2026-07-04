@@ -751,23 +751,23 @@ try {
 
     <div style="margin-bottom:8px;">
 
-    ${c.text}
+   ${c.text}
 
 ${
     c.image
-    ?
+    ? `
     <img
-    src="${c.image}"
-    onclick="viewImage('${c.image}')"
-    style="
-        width:180px;
-        margin-top:8px;
-        border-radius:10px;
-        display:block;
-        cursor:pointer;
-    ">
-    :
-    ""
+        src="${c.image}"
+        onclick="viewImage('${c.image}')"
+        style="
+            width:180px;
+            margin-top:8px;
+            border-radius:10px;
+            display:block;
+            cursor:pointer;
+        ">
+    `
+    : ""
 }
 
 
