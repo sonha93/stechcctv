@@ -115,8 +115,18 @@ actionBox = document.getElementById("cartAction");
     for (const docSnap of snapshot.docs) {
 
       const p = docSnap.data();
-      const productSnap = await getDoc(
-  doc(db, "products", p.productId)
+     const productId =
+    typeof p.productId === "string"
+        ? p.productId
+        : p.productId?.id;
+
+if (!productId) {
+    console.warn("Cart lỗi:", docSnap.id, p);
+    continue;
+}
+
+const productSnap = await getDoc(
+    doc(db, "products", productId)
 );
 
 if (!productSnap.exists()) continue;
@@ -132,7 +142,7 @@ const product = productSnap.data();
  cartBox.innerHTML += `
 <div class="item">
 
- <a href="logo.html?id=${p.productId}">
+ <a href="logo.html?id=${productId}"
   <img src="${product.img || ''}">
 </a>
   <div class="info">
