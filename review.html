@@ -310,8 +310,7 @@ body{
         id="commentText"
         placeholder="Viết bình luận...">
 
-        <button onclick="sendComment()">Gửi</button>
-
+       <button id="sendBtn">Gửi</button>
     </div>
 
 </div>
@@ -756,8 +755,11 @@ window.toggleSound = function () {
     });
 };
  loadVideos();
-
+document.getElementById("sendBtn").onclick = () => {
+    console.log("click");
+    sendComment();
+};
 </script>
-<script type="module" src="review.js"></script>
+
 </body>
 </html>
