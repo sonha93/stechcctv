@@ -382,10 +382,10 @@ body{
 
     <div class="sheet-top"></div>
 
-   <div class="sheet-header">
+ <div class="sheet-header">
 
     <div class="comment-title">
-        <span id="commentTotal">0</span> bình luận
+        <span id="commentTotal">0</span>
 
         <div class="comment-sort">
             <span></span>
@@ -746,8 +746,7 @@ function loadComments(productId){
         async (snap)=>{
 
             list.innerHTML = "";
-            document.getElementById("commentTotal").innerText =
-    snap.size + " bình luận";
+            document.getElementById("commentTotal").innerText = count;
             for(const docSnap of snap.docs){
 
                 const c = docSnap.data();
