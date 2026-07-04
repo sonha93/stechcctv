@@ -115,14 +115,21 @@ actionBox = document.getElementById("cartAction");
     for (const docSnap of snapshot.docs) {
 
       const p = docSnap.data();
-      const productId = String(p.productId);
+     const productId =
+  typeof p.productId === "string"
+    ? p.productId
+    : p.productId?.id || p.productId?.productId;
 
 if (!productId) continue;
 
-const productSnap = await getDoc(
-  doc(db, "products", productId)
-);
+if (!productId) continue;
 
+if (typeof productId !== "string") {
+  console.error("Invalid productId:", p.productId);
+  continue;
+}
+
+const productSnap = await getDoc(doc(db, "products", productId));
 if (!productSnap.exists()) continue;
 
 const product = productSnap.data();
