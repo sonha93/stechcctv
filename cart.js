@@ -303,7 +303,17 @@ const productId =
 });
 
 
-  await renderCart();
+ console.log("Đã lưu cart:", {
+  docId: productId,
+  productId: product.id,
+  qty: oldQty + 1
+});
+
+const check = await getDoc(itemRef);
+
+console.log("Đọc lại sau khi lưu:", check.exists(), check.data());
+
+await renderCart();
 await updateCartCount();
 
   } catch (err) {
