@@ -760,68 +760,59 @@ if (order.createdAt?.toDate) {
 
 }
 const steps = [
-
 {
     title:"Đơn hàng đã được tạo",
-    time: formatTime(order.createdAt)
+    time: formatTime(order.createdAt, true)
 },
-
 {
     title:"Đơn hàng đã được xác nhận",
-    time: formatTime(order.confirmedAt)
+    time: formatTime(
+        order.confirmedAt,
+        ["confirmed","shipping","completed","returned"].includes(order.status)
+    )
 },
-
 {
     title:"Đơn hàng đang vận chuyển",
-    time: formatTime(order.shippingAt)
+    time: formatTime(
+        order.shippingAt,
+        ["shipping","completed","returned"].includes(order.status)
+    )
 },
-
 {
     title:"Đơn hàng đã giao",
-    time: formatTime(order.completedAt)
+    time: formatTime(
+        order.completedAt,
+        ["completed","returned"].includes(order.status)
+    )
 },
-
 {
     title:"Đơn hàng đã trả",
-    time: formatTime(order.returnApprovedAt || order.returnedAt)
+    time: formatTime(
+        order.returnApprovedAt || order.returnedAt,
+        order.status === "returned"
+    )
 }
-
 ];
-timeline.innerHTML="";
+timeline.innerHTML = "";
 
 steps.forEach((step,index)=>{
 
-timeline.innerHTML+=`
+timeline.innerHTML += `
+<div class="timeline-item ${index < currentStep ? "active" : ""}">
+    <div class="timeline-icon">
+        ${index < currentStep ? "✓" : ""}
+    </div>
 
-<div class="timeline-item ${
-index<currentStep
-?"active":""
-}">
+    <div>
+        <div class="timeline-title">
+            ${step.title}
+        </div>
 
-<div class="timeline-icon">
-
-${index<currentStep?"✓":""}
-
+        <div class="timeline-time">
+            ${step.time}
+        </div>
+    </div>
 </div>
-
-<div>
-
-<div class="timeline-title">
-
-${step.title}
-
-</div>
-
-<div class="timeline-time">
-
-${step.time}
-
-</div>
-
-</div>
-
-</div>
-
 `;
 
 });
