@@ -182,8 +182,7 @@ function loadInbox(){
         snap.forEach(docSnap=>{
 
             const n=docSnap.data();
-                console.log("Notification:", n);
-    console.log("image =", n.image);
+                
             const image =
                 n.image ||
                 "https://i.ibb.co/Z1kv9nJj/logo.png";
