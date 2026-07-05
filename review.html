@@ -1064,7 +1064,8 @@ window.addCart = async function(id){
     if(!docSnap.exists()) return;
 
     const product = docSnap.data();
-
+    console.log("Document ID =", id);
+    console.log("Product data =", product);
     await addToCartFirebase({
         id: id,              // 🔥 QUAN TRỌNG
         productId: id,      // 🔥 QUAN TRỌNG
