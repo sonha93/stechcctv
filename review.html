@@ -19,11 +19,9 @@ body{
 
 /* CONTAINER FULL SCREEN */
 #feed{
-    height:100vh;
+    height:calc(100vh - 65px);
     overflow-y:auto;
     scroll-snap-type:y mandatory;
-    scroll-behavior:smooth;
-    -webkit-overflow-scrolling:touch;
 }
 
 /* VIDEO ITEM */
@@ -37,8 +35,9 @@ body{
     scroll-snap-align:start;
     scroll-snap-stop:always;
     background:#000;
+     height:calc(100vh - 65px);
 }
-
+ 
 /* VIDEO FULL SCREEN */
 .video-item video{
     max-width:100%;
@@ -503,8 +502,41 @@ body{
     border-style:solid;
     border-color:#fff transparent transparent;
 }
+    .bottom-nav{
+    width:100%;
+    height:65px;
+
+    background:#000;
+
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+
+    border-top:1px solid #333;
+}
+
+.nav-item{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    color:#888;
+    font-size:11px;
+}
+
+.nav-item .material-symbols-outlined{
+    font-size:28px;
+}
+
+.nav-item.active{
+    color:#fff;
+}
 </style>
 </head>
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 <div id="commentSheet">
 
     <div class="sheet-top"></div>
@@ -1380,5 +1412,29 @@ viewer.addEventListener("touchend",e=>{
 <div id="imageViewer" onclick="closeImage()">
     <img id="viewerImage">
 </div>
+<div class="bottom-nav">
+
+    <a href="index.html" class="nav-item active">
+        <span class="material-symbols-outlined">home</span>
+        <small>Trang chủ</small>
+    </a>
+
+    <a href="shop.html" class="nav-item">
+        <span class="material-symbols-outlined">storefront</span>
+        <small>Cửa hàng</small>
+    </a>
+
+    <a href="inbox.html" class="nav-item">
+        <span class="material-symbols-outlined">mail</span>
+        <small>Hộp thư</small>
+    </a>
+
+    <a href="profile.html" class="nav-item">
+        <span class="material-symbols-outlined">person</span>
+        <small>Hồ sơ</small>
+    </a>
+
+</div>
+
 </body>
 </html>
