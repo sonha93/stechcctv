@@ -564,7 +564,7 @@ if(!snap.exists()){
 }
 
 const order = snap.data();
-console.log(order);
+console.log(JSON.stringify(order, null, 2));
 loading.style.display="none";
 
 page.style.display="block";
