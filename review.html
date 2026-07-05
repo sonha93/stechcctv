@@ -570,6 +570,12 @@ body{
 .nav-item.active{
     color:#fff;
 }
+    .review-image{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    background:#000;
+}
 </style>
 </head>
 
@@ -727,12 +733,23 @@ async function loadVideos(){
 
         const p = docSnap.data();
 
-        if(!p.videos || p.videos.length === 0) return;
+       const media = [];
 
-        const video =
-        typeof p.videos[0] === "string"
-        ? p.videos[0]
-        : p.videos[0].url;
+(p.videos || []).forEach(v=>{
+    media.push({
+        type:"video",
+        url: typeof v === "string" ? v : v.url
+    });
+});
+
+(p.images || []).forEach(img=>{
+    media.push({
+        type:"image",
+        url: typeof img === "string" ? img : img.url
+    });
+});
+
+if(media.length === 0) return;
 
         const id = docSnap.id;
         onSnapshot(doc(db, "products", id), (snap) => {
@@ -748,20 +765,32 @@ async function loadVideos(){
     }
 
 });
-        feed.innerHTML += `
+       media.forEach(item=>{
+
+feed.innerHTML += `
         
         <div class="video-item">
-       <video
-    class="vid"
-    src="${video}"
-    autoplay
-    playsinline
-    webkit-playsinline
-    controls
-    preload="metadata"
-    controlsList="nodownload noplaybackrate"
-    disablePictureInPicture>
+       ${
+item.type==="video"
+? `
+<video
+class="vid"
+src="${item.url}"
+autoplay
+playsinline
+webkit-playsinline
+controls
+preload="metadata"
+controlsList="nodownload noplaybackrate"
+disablePictureInPicture>
 </video>
+`
+: `
+<img
+src="${item.url}"
+class="review-image">
+`
+}
             <div class="right-action">
     <div class="action" onclick="addCart('${id}')">
     <div class="cart-icon">
@@ -811,7 +840,7 @@ async function loadVideos(){
         </div>
         `;
    });
-
+});
 
     
 
