@@ -622,10 +622,41 @@ desc:"Đơn hàng không thể tiếp tục xử lý."
 }
 
 };
+returned:{
+title:"↩️ Đơn hàng đã trả hàng",
+desc:"Yêu cầu trả hàng của bạn đã được cửa hàng chấp nhận."
+},
+let current = statusUI[order.status];
 
-const current =
-statusUI[order.status] ||
-statusUI.pending;
+if (order.returnRequested && order.returnStatus === "pending") {
+
+    current = {
+        title:"📦 Đang chờ duyệt trả hàng",
+        desc:"Yêu cầu trả hàng của bạn đang được cửa hàng xem xét."
+    };
+
+}
+
+if (order.returnRequested && order.returnStatus === "approved") {
+
+    current = statusUI.returned;
+
+}
+
+if (order.returnRequested && order.returnStatus === "rejected") {
+
+    current = {
+        title:"⛔ Yêu cầu trả hàng bị từ chối",
+        desc:"Cửa hàng đã từ chối yêu cầu trả hàng của bạn."
+    };
+
+}
+
+if (!current) {
+
+    current = statusUI.pending;
+
+}
 
 document.getElementById("statusName").innerText =
 current.title;
@@ -697,6 +728,7 @@ pending:1,
 confirmed:2,
 shipping:3,
 completed:4,
+returned:5,
 cancelled:0
 
 };
@@ -734,9 +766,15 @@ time:"Đang chờ"
 {
 title:"Đơn hàng đã giao",
 time:"Đang chờ"
+},
+
+{
+title:"Đơn hàng đã trả",
+time:"Đang chờ"
 }
 
 ];
+
 
 timeline.innerHTML="";
 
