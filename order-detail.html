@@ -611,7 +611,7 @@ title:"🚚 Đơn hàng đang vận chuyển",
 desc:"Đơn hàng đang trên đường giao tới bạn."
 },
 
-delivered:{
+completed:{
 title:"🎉 Đơn hàng đã giao thành công",
 desc:"Cảm ơn bạn đã mua hàng."
 },
@@ -696,7 +696,7 @@ const stepIndex={
 pending:1,
 confirmed:2,
 shipping:3,
-delivered:4,
+completed:4,
 cancelled:0
 
 };
@@ -704,10 +704,16 @@ cancelled:0
 const currentStep =
 stepIndex[order.status] || 1;
 
-const createdTime =
-new Date(order.createdAt)
-.toLocaleString("vi-VN");
+let createdTime = "";
 
+if (order.createdAt?.toDate) {
+    createdTime = order.createdAt
+        .toDate()
+        .toLocaleString("vi-VN");
+} else {
+    createdTime = new Date(order.createdAt)
+        .toLocaleString("vi-VN");
+}
 const steps=[
 
 {
