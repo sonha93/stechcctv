@@ -1296,6 +1296,42 @@ viewer.addEventListener("touchend",e=>{
         commentImages[currentImageIndex];
 
 });
+const sheet = document.getElementById("commentSheet");
+const handle = document.querySelector(".sheet-top");
+
+let startY = 0;
+let currentY = 0;
+
+handle.addEventListener("touchstart", e => {
+    startY = e.touches[0].clientY;
+});
+
+handle.addEventListener("touchmove", e => {
+    currentY = e.touches[0].clientY;
+    const dy = currentY - startY;
+
+    if (dy > 0) {
+        sheet.style.transition = "none";
+        sheet.style.transform = `translateY(${dy}px)`;
+    }
+});
+
+handle.addEventListener("touchend", () => {
+
+    const dy = currentY - startY;
+
+    sheet.style.transition = ".25s";
+
+    if (dy > 120) {
+        sheet.classList.remove("active");
+        sheet.style.transform = "";
+    } else {
+        sheet.style.transform = "translateY(0)";
+    }
+
+    startY = 0;
+    currentY = 0;
+});
 </script>
 <div id="imageViewer" onclick="closeImage()">
     <img id="viewerImage">
