@@ -6,9 +6,9 @@ import {
   doc,
   deleteDoc,
   setDoc,
-  updateDoc
+  updateDoc,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -25,6 +25,7 @@ let currentUser = null;
 let cartBox = null;
 let totalBox = null;
 let actionBox = null;
+let unsubscribeCart = null;
 // ============================
 // UPDATE CART COUNT
 // ============================
@@ -377,12 +378,28 @@ window.checkout = function(){
 // ============================
 onAuthStateChanged(auth, async user => {
 
-  currentUser = user;
+    currentUser = user;
 
+    if (unsubscribeCart) {
+        unsubscribeCart();
+        unsubscribeCart = null;
+    }
 
+    if (!user) {
+        await renderCart();
+        await updateCartCount();
+        return;
+    }
 
- await renderCart();
-await updateCartCount();
+    unsubscribeCart = onSnapshot(
+        collection(db, "users", user.uid, "cart"),
+        async () => {
+
+            await renderCart();
+            await updateCartCount();
+
+        }
+    );
 
 });
 
