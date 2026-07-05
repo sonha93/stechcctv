@@ -604,18 +604,25 @@ body{
 
     <img id="commentAvatar">
 
-    <div class="comment-box">
+   <div class="comment-box">
 
-        <input
-            id="commentText"
-            placeholder="Thêm bình luận...">
+    <input
+        id="commentText"
+        placeholder="Thêm bình luận...">
 
-        <label
-            class="image-btn"
-            for="commentImage">
-            🖼️
-        </label>
+    <button
+        type="button"
+        id="emojiBtn"
+        class="emoji-btn">
+        😊
+    </button>
 
+    <label
+        class="image-btn"
+        for="commentImage">
+        🖼️
+    </label>
+    
         <input
             type="file"
             id="commentImage"
@@ -1463,6 +1470,23 @@ viewer.addEventListener("touchend",e=>{
         commentImages[currentImageIndex];
 
 });
+const emojiBtn = document.getElementById("emojiBtn");
+const emojiPicker = document.getElementById("emojiPicker");
+
+emojiBtn.onclick = async () => {
+
+    if (emojiPicker.innerHTML !== "") {
+        emojiPicker.style.display =
+            emojiPicker.style.display === "block" ? "none" : "block";
+        return;
+    }
+
+    const res = await fetch("emoji/emojis.json");
+    const data = await res.json();
+
+    emojiPicker.innerHTML = "Đã tải emoji thành công!";
+    emojiPicker.style.display = "block";
+};
 </script>
 <div id="imageViewer" onclick="closeImage()">
     <img id="viewerImage">
@@ -1492,4 +1516,5 @@ viewer.addEventListener("touchend",e=>{
 </div>
 
 </body>
+<div id="emojiPicker" class="emoji-picker"></div>
 </html>
