@@ -3,8 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>Chi tiết đơn hàng</title>
 
@@ -23,11 +22,9 @@ color:#111;
 }
 
 .container{
-
-max-width:700px;
+max-width:760px;
 margin:auto;
 padding-bottom:30px;
-
 }
 
 /* HEADER */
@@ -37,30 +34,32 @@ padding-bottom:30px;
 position:sticky;
 top:0;
 
+height:60px;
+
 background:#fff;
 
 display:flex;
 align-items:center;
 
-gap:15px;
-
-padding:15px;
+padding:0 16px;
 
 border-bottom:1px solid #eee;
 
-z-index:100;
+z-index:1000;
 
 }
 
 .back{
 
-font-size:26px;
+font-size:28px;
 text-decoration:none;
 color:#111;
 
+margin-right:15px;
+
 }
 
-.title{
+.header-title{
 
 font-size:20px;
 font-weight:bold;
@@ -71,31 +70,29 @@ font-weight:bold;
 
 .status-box{
 
-background:#fff;
+background:linear-gradient(135deg,#ff6b6b,#ff2d55);
 
-padding:18px;
+color:#fff;
 
-margin-top:10px;
+padding:22px 18px;
 
 }
 
-.status-title{
+.status-name{
 
 font-size:24px;
 
 font-weight:bold;
 
-margin-bottom:6px;
+margin-bottom:8px;
 
 }
 
-.status-text{
+.status-desc{
 
-color:#ff4d4f;
+font-size:15px;
 
-font-size:16px;
-
-font-weight:bold;
+opacity:.95;
 
 }
 
@@ -107,7 +104,7 @@ background:#fff;
 
 margin-top:10px;
 
-padding:15px;
+padding:16px;
 
 }
 
@@ -127,18 +124,20 @@ border-bottom:1px solid #eee;
 
 .product:last-child{
 
-border:none;
+border-bottom:none;
 
 }
 
 .product img{
 
-width:82px;
-height:82px;
+width:90px;
+height:90px;
 
-border-radius:10px;
+border-radius:12px;
 
 object-fit:cover;
+
+background:#eee;
 
 }
 
@@ -146,27 +145,40 @@ object-fit:cover;
 
 flex:1;
 
+display:flex;
+flex-direction:column;
+
 }
 
 .product-name{
 
 font-weight:bold;
 
-margin-bottom:8px;
-
 font-size:16px;
+
+line-height:1.4;
+
+margin-bottom:6px;
+
+}
+
+.product-qty{
+
+font-size:14px;
+
+color:#777;
 
 }
 
 .product-price{
 
-color:#ff2d55;
+margin-top:auto;
 
-font-size:17px;
+font-size:18px;
 
 font-weight:bold;
 
-margin-top:5px;
+color:#ff2d55;
 
 }
 
@@ -178,15 +190,41 @@ display:flex;
 
 justify-content:space-between;
 
-margin:10px 0;
+align-items:flex-start;
+
+gap:20px;
+
+padding:8px 0;
+
+}
+
+.row-title{
+
+color:#666;
 
 font-size:15px;
 
 }
 
-.row span:first-child{
+.row-value{
 
-color:#666;
+font-weight:bold;
+
+text-align:right;
+
+word-break:break-word;
+
+}
+
+/* TOTAL */
+
+.total{
+
+font-size:24px;
+
+font-weight:bold;
+
+color:#ff2d55;
 
 }
 
@@ -194,7 +232,7 @@ color:#666;
 
 .timeline{
 
-margin-top:15px;
+margin-top:18px;
 
 position:relative;
 
@@ -209,7 +247,6 @@ position:absolute;
 left:11px;
 
 top:0;
-
 bottom:0;
 
 width:2px;
@@ -218,19 +255,19 @@ background:#ddd;
 
 }
 
-.step{
+.timeline-item{
+
+position:relative;
 
 display:flex;
 
 gap:15px;
 
-position:relative;
-
 margin-bottom:22px;
 
 }
 
-.dot{
+.timeline-icon{
 
 width:24px;
 height:24px;
@@ -239,56 +276,53 @@ border-radius:50%;
 
 background:#ddd;
 
-z-index:2;
-
 display:flex;
-
 justify-content:center;
 align-items:center;
 
 color:#fff;
 
-font-size:14px;
+font-size:13px;
+
+z-index:2;
+
+flex-shrink:0;
 
 }
 
-.step.active .dot{
+.timeline-item.active .timeline-icon{
 
 background:#16c784;
 
 }
 
-.step-content{
-
-padding-top:2px;
-
-}
-
-.step-title{
+.timeline-title{
 
 font-weight:bold;
 
+margin-bottom:4px;
+
 }
 
-.step-time{
+.timeline-time{
 
 font-size:13px;
 
 color:#888;
 
-margin-top:3px;
-
 }
 
-/* TOTAL */
+/* LOADING */
 
-.total{
+.loading{
 
-font-size:22px;
+padding:80px 20px;
 
-font-weight:bold;
+text-align:center;
 
-color:#ff2d55;
+font-size:18px;
+
+color:#666;
 
 }
 
@@ -304,14 +338,20 @@ max-width:100%;
 
 .product img{
 
-width:72px;
-height:72px;
+width:80px;
+height:80px;
 
 }
 
-.status-title{
+.status-name{
 
 font-size:20px;
+
+}
+
+.total{
+
+font-size:22px;
 
 }
 
@@ -335,7 +375,7 @@ class="back">
 
 </a>
 
-<div class="title">
+<div class="header-title">
 
 Chi tiết đơn hàng
 
@@ -343,27 +383,33 @@ Chi tiết đơn hàng
 
 </div>
 
-<!-- STATUS -->
+<div id="loading" class="loading">
 
-<div class="status-box">
-
-<div id="orderCode"
-class="status-title">
-
-Đơn hàng
+Đang tải đơn hàng...
 
 </div>
 
-<div id="statusText"
-class="status-text">
+<div id="page" style="display:none;">
+
+<div class="status-box">
+
+<div
+id="statusName"
+class="status-name">
 
 Đang tải...
 
 </div>
 
+<div
+id="statusDesc"
+class="status-desc">
+
+Vui lòng chờ...
+
 </div>
 
-<!-- DANH SÁCH SẢN PHẨM -->
+</div>
 
 <div
 class="card"
@@ -371,51 +417,83 @@ id="productList">
 
 </div>
 
-<!-- THÔNG TIN -->
+<div class="card">
+
+<div class="row">
+
+<div class="row-title">
+
+Người nhận
+
+</div>
+
+<div
+id="customerName"
+class="row-value">
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="row-title">
+
+Số điện thoại
+
+</div>
+
+<div
+id="phone"
+class="row-value">
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="row-title">
+
+Địa chỉ
+
+</div>
+
+<div
+id="address"
+class="row-value">
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="row-title">
+
+Thanh toán
+
+</div>
+
+<div
+id="payment"
+class="row-value">
+
+</div>
+
+</div>
+
+</div>
 
 <div class="card">
 
 <div class="row">
 
-<span>Người nhận</span>
+<div class="row-title">
 
-<b id="customerName"></b>
-
-</div>
-
-<div class="row">
-
-<span>Số điện thoại</span>
-
-<b id="phone"></b>
+Tổng thanh toán
 
 </div>
-
-<div class="row">
-
-<span>Địa chỉ</span>
-
-<b id="address"></b>
-
-</div>
-
-<div class="row">
-
-<span>Thanh toán</span>
-
-<b id="payment"></b>
-
-</div>
-
-</div>
-
-<!-- TỔNG -->
-
-<div class="card">
-
-<div class="row">
-
-<span>Tổng thanh toán</span>
 
 <div
 id="total"
@@ -429,14 +507,11 @@ class="total">
 
 </div>
 
-<!-- TIMELINE -->
+<div class="card">
 
-<div
-class="card">
+<h3 style="margin-bottom:18px;">
 
-<h3>
-
-Trạng thái đơn hàng
+Lịch sử đơn hàng
 
 </h3>
 
@@ -461,9 +536,8 @@ import {
 
 const db = getFirestore(app);
 
-/* =========================
-   LẤY ID ĐƠN HÀNG
-========================= */
+const loading = document.getElementById("loading");
+const page = document.getElementById("page");
 
 const params = new URLSearchParams(location.search);
 
@@ -477,15 +551,11 @@ if(!orderId){
 
 }
 
-/* =========================
-   ĐỌC FIRESTORE
-========================= */
+const snap = await getDoc(
+    doc(db,"orders",orderId)
+);
 
-const orderRef = doc(db,"orders",orderId);
-
-const orderSnap = await getDoc(orderRef);
-
-if(!orderSnap.exists()){
+if(!snap.exists()){
 
     alert("Đơn hàng không tồn tại");
 
@@ -493,16 +563,15 @@ if(!orderSnap.exists()){
 
 }
 
-const order = orderSnap.data();
+const order = snap.data();
 
-/* =========================
-   THÔNG TIN CHUNG
-========================= */
+loading.style.display="none";
 
-document.getElementById("orderCode").innerHTML =
-"Đơn hàng <br><small style='font-size:14px;color:#666'>" +
-orderId +
-"</small>";
+page.style.display="block";
+
+/* =======================
+HIỂN THỊ THÔNG TIN
+======================= */
 
 document.getElementById("customerName").innerText =
 order.customerName || "";
@@ -521,24 +590,67 @@ order.payment=="bank"
 document.getElementById("total").innerText =
 Number(order.total||0).toLocaleString()+"đ";
 
-/* =========================
-   DANH SÁCH SẢN PHẨM
-========================= */
+/* =======================
+TRẠNG THÁI
+======================= */
 
-const list =
+const statusUI={
+
+pending:{
+title:"🟡 Đơn hàng đang chờ xác nhận",
+desc:"Shop sẽ xác nhận đơn hàng của bạn sớm nhất."
+},
+
+confirmed:{
+title:"✅ Đơn hàng đã được xác nhận",
+desc:"Shop đã xác nhận và chuẩn bị đóng gói."
+},
+
+shipping:{
+title:"🚚 Đơn hàng đang vận chuyển",
+desc:"Đơn hàng đang trên đường giao tới bạn."
+},
+
+delivered:{
+title:"🎉 Đơn hàng đã giao thành công",
+desc:"Cảm ơn bạn đã mua hàng."
+},
+
+cancelled:{
+title:"❌ Đơn hàng đã bị hủy",
+desc:"Đơn hàng không thể tiếp tục xử lý."
+}
+
+};
+
+const current =
+statusUI[order.status] ||
+statusUI.pending;
+
+document.getElementById("statusName").innerText =
+current.title;
+
+document.getElementById("statusDesc").innerText =
+current.desc;
+
+/* =======================
+SẢN PHẨM
+======================= */
+
+const productList =
 document.getElementById("productList");
 
-list.innerHTML="";
+productList.innerHTML="";
 
 (order.items||[]).forEach(item=>{
-
-const price =
-Number(item.price||0);
 
 const qty =
 Number(item.qty||1);
 
-list.innerHTML += `
+const price =
+Number(item.price||0);
+
+productList.innerHTML += `
 
 <div class="product">
 
@@ -552,7 +664,7 @@ ${item.name}
 
 </div>
 
-<div>
+<div class="product-qty">
 
 Số lượng: x${qty}
 
@@ -572,112 +684,82 @@ ${price.toLocaleString()}đ
 
 });
 
-/* =========================
-   TRẠNG THÁI
-========================= */
+/* =======================
+TIMELINE
+======================= */
 
-const statusMap={
+const timeline =
+document.getElementById("timeline");
 
-pending:{
-text:"🟡 Chờ xác nhận",
-step:1
-},
+const stepIndex={
 
-confirmed:{
-text:"✅ Đã xác nhận",
-step:2
-},
-
-shipping:{
-text:"🚚 Đang giao",
-step:3
-},
-
-delivered:{
-text:"🎉 Đã giao",
-step:4
-},
-
-cancelled:{
-text:"❌ Đã hủy",
-step:0
-}
+pending:1,
+confirmed:2,
+shipping:3,
+delivered:4,
+cancelled:0
 
 };
 
-const current =
-statusMap[order.status]||
-statusMap.pending;
+const currentStep =
+stepIndex[order.status] || 1;
 
-document.getElementById("statusText").innerText =
-current.text;
+const createdTime =
+new Date(order.createdAt)
+.toLocaleString("vi-VN");
 
-</script>
-<script type="module">
-
-/* =========================
-   TIMELINE
-========================= */
-
-const timeline = document.getElementById("timeline");
-
-const steps = [
+const steps=[
 
 {
-    key:"pending",
-    title:"Đơn hàng đã được tạo",
-    time: order.createdAt
-        ? new Date(order.createdAt).toLocaleString("vi-VN")
-        : ""
+title:"Đơn hàng đã được tạo",
+time:createdTime
 },
 
 {
-    key:"confirmed",
-    title:"Đơn hàng đã được xác nhận",
-    time:"Đang chờ xác nhận"
+title:"Đơn hàng đã được xác nhận",
+time:"Đang chờ"
 },
 
 {
-    key:"shipping",
-    title:"Đơn hàng đang được giao",
-    time:"Đang chờ vận chuyển"
+title:"Đơn hàng đang vận chuyển",
+time:"Đang chờ"
 },
 
 {
-    key:"delivered",
-    title:"Đơn hàng đã giao thành công",
-    time:"Đang chờ giao hàng"
+title:"Đơn hàng đã giao",
+time:"Đang chờ"
 }
 
 ];
 
 timeline.innerHTML="";
 
-steps.forEach((item,index)=>{
+steps.forEach((step,index)=>{
 
-const active = index < current.step;
+timeline.innerHTML+=`
 
-timeline.innerHTML += `
+<div class="timeline-item ${
+index<currentStep
+?"active":""
+}">
 
-<div class="step ${active ? "active":""}">
+<div class="timeline-icon">
 
-<div class="dot">
-
-${active ? "✓":""}
-
-</div>
-
-<div class="step-content">
-
-<div class="step-title">
-
-${item.title}
+${index<currentStep?"✓":""}
 
 </div>
 
-<div class="step-time">
+<div>
 
-${item.time}
+<div class="timeline-title">
+
+${step.title}
+
+</div>
+
+<div class="timeline-time">
+
+${step.time}
 
 </div>
 
@@ -689,47 +771,6 @@ ${item.time}
 
 });
 
-/* =========================
-   NẾU ĐƠN HỦY
-========================= */
-
-if(order.status==="cancelled"){
-
-document.getElementById("timeline").innerHTML=`
-
-<div class="step active">
-
-<div class="dot">
-
-✕
-
-</div>
-
-<div class="step-content">
-
-<div class="step-title">
-
-Đơn hàng đã bị hủy
-
-</div>
-
-<div class="step-time">
-
-${order.createdAt
-? new Date(order.createdAt).toLocaleString("vi-VN")
-: ""}
-
-</div>
-
-</div>
-
-</div>
-
-`;
-
-}
-
 </script>
-
 </body>
 </html>
