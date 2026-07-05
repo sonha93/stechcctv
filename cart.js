@@ -304,8 +304,7 @@ const productId =
 });
 
 
-  await renderCart();
-await updateCartCount();
+ 
 
   } catch (err) {
 
@@ -333,8 +332,6 @@ window.removeItem = async function(itemId) {
     )
   );
 
-await renderCart();
-await updateCartCount();
 
 };
 // ============================
@@ -360,8 +357,7 @@ window.updateQty = async function(itemId, qty) {
     qty: qty
   });
 
-await renderCart();
-await updateCartCount();
+
 };
 // ============================
 // CHECKOUT
@@ -395,8 +391,7 @@ onAuthStateChanged(auth, async user => {
         collection(db, "users", user.uid, "cart"),
         async () => {
 
-            await renderCart();
-            await updateCartCount();
+            
 
         }
     );
