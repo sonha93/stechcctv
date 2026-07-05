@@ -742,13 +742,6 @@ async function loadVideos(){
     });
 });
 
-(p.images || []).forEach(img=>{
-    media.push({
-        type:"image",
-        url: typeof img === "string" ? img : img.url
-    });
-});
-
 if(media.length === 0) return;
 
         const id = docSnap.id;
