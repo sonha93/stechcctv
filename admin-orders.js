@@ -38,6 +38,7 @@ document.addEventListener("change", async (e) => {
 if (value === "approved") {
 
   update.status = "returned";
+  update.returnedAt = Date.now();
   update.returnApprovedAt = Date.now();
   update.pointsProcessed = false;
   const earnPoints = Math.floor(Number(order.total || 0) / 10000);
@@ -1153,7 +1154,27 @@ const updateData = {
   status: status,
   handledBy: document.getElementById("adminName").textContent
 };
+const now = Date.now();
 
+switch (status) {
+
+    case "confirmed":
+        updateData.confirmedAt = now;
+        break;
+
+    case "shipping":
+        updateData.shippingAt = now;
+        break;
+
+    case "completed":
+        updateData.completedAt = now;
+        break;
+
+    case "cancelled":
+        updateData.cancelledAt = now;
+        break;
+
+}
 
 // nếu chuyển sang cancelled
 // thì khóa luôn
