@@ -248,7 +248,6 @@ if(actionBox){
 }
   } catch (err) {
 
-    console.error("Lỗi renderCart:", err);
 
   }
 
