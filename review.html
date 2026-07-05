@@ -759,19 +759,21 @@ document.addEventListener("visibilitychange",()=>{
 
     currentCommentProduct = id;
 
-    document
-        .getElementById("commentSheet")
-        .classList.add("active");
+    const sheet = document.getElementById("commentSheet");
+
+    sheet.classList.add("active");
+    sheet.style.transform = "translateY(0)";
 
     loadComments(id);
 
 }
 
-window.closeComment=function(){
+window.closeComment = function(){
 
-    document
-    .getElementById("commentSheet")
-    .classList.remove("active");
+    const sheet = document.getElementById("commentSheet");
+
+    sheet.classList.remove("active");
+    sheet.style.transform = "";
 
     if(unsubscribeComments){
         unsubscribeComments();
@@ -1299,36 +1301,56 @@ viewer.addEventListener("touchend",e=>{
 
 });
 const sheet = document.getElementById("commentSheet");
-const handle = document.querySelector(".sheet-top");
-handle.addEventListener("touchstart", e => {
+const list = document.getElementById("commentList");
+
+let startY = 0;
+let moveY = 0;
+let dragging = false;
+
+sheet.addEventListener("touchstart",(e)=>{
+
+    if(list.scrollTop > 0) return;
+
     startY = e.touches[0].clientY;
+    dragging = true;
+
 });
 
-handle.addEventListener("touchmove", e => {
-    currentY = e.touches[0].clientY;
-    const dy = currentY - startY;
+sheet.addEventListener("touchmove",(e)=>{
 
-    if (dy > 0) {
-        sheet.style.transition = "none";
-        sheet.style.transform = `translateY(${dy}px)`;
-    }
-});
+    if(!dragging) return;
 
-handle.addEventListener("touchend", () => {
+    moveY = e.touches[0].clientY - startY;
 
-    const dy = currentY - startY;
+    if(moveY < 0) return;
+
+    e.preventDefault();
+
+    sheet.style.transition = "none";
+    sheet.style.transform = `translateY(${moveY}px)`;
+
+},{passive:false});
+
+sheet.addEventListener("touchend",()=>{
+
+    if(!dragging) return;
+
+    dragging = false;
 
     sheet.style.transition = ".25s";
 
-    if (dy > 120) {
-        sheet.classList.remove("active");
-        sheet.style.transform = "";
-    } else {
+    if(moveY > 140){
+
+        closeComment();
+
+    }else{
+
         sheet.style.transform = "translateY(0)";
+
     }
 
-    startY = 0;
-    currentY = 0;
+    moveY = 0;
+
 });
 </script>
 <div id="imageViewer" onclick="closeImage()">
