@@ -197,8 +197,7 @@ if (order.memberId) {
     order.userId || order.uid,
     orderId,
     title,
-    message,
-    order.items?.[0]?.img || ""
+    message
 );
   }
 
@@ -308,25 +307,29 @@ function formatDate(timestamp) {
     return "-";
   }
 }
-
-
- async function createNotification(userId, orderId, title, message, image = "") {
+async function createNotification(userId, orderId, title, message) {
 
   if (!userId) return;
 
   await db.collection("notifications").add({
-    userId,
-    orderId,
-    title,
-    message,
-    image,
+
+    userId: userId,
+
+    orderId: orderId,
+
+    title: title,
+
+    message: message,
+
     type: "order",
+
     read: false,
+
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
+
   });
 
 }
-
 // ============================
 // CHECK ADMIN
 // ============================
@@ -1611,12 +1614,11 @@ await db
 
   if (title) {
     await createNotification(
-    orderData.userId || orderData.uid,
-    id,
-    title,
-    message,
-    orderData.items?.[0]?.img || ""
-);
+      orderData.userId || orderData.uid,
+      id,
+      title,
+      message
+    );
   }
 }
         // completed => khóa
