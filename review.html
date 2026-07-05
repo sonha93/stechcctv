@@ -487,23 +487,19 @@ body{
     position:absolute;
 
     left:50%;
-    bottom:28px;
+    top:28px;          /* đổi từ bottom thành top */
+    bottom:auto;
     transform:translateX(-50%);
 
     width:190px;
 
     background:#fff;
     color:#111;
-
     border-radius:10px;
-
     padding:10px 12px;
-
     box-shadow:0 8px 25px rgba(0,0,0,.18);
-
     z-index:99999;
 }
-
 .verified-badge:hover .verified-popup{
     display:block;
 }
@@ -529,15 +525,16 @@ body{
     line-height:1.45;
     color:#666;
 }
-    .verified-popup::after{
+   .verified-popup::after{
     content:"";
     position:absolute;
     left:50%;
-    bottom:-6px;
+    top:-6px;
+    bottom:auto;
     transform:translateX(-50%);
-    border-width:6px 6px 0;
+    border-width:0 6px 6px;
     border-style:solid;
-    border-color:#fff transparent transparent;
+    border-color:transparent transparent #fff transparent;
 }
     .bottom-nav{
     width:100%;
