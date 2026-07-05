@@ -1611,7 +1611,9 @@ await db
       message = `Đơn hàng ${id} đã bị hủy.`;
       break;
   }
-
+console.log("orderData =", orderData);
+console.log("items =", orderData.items);
+console.log("img =", orderData.items?.[0]?.img);
   if (title) {
     await createNotification(
     orderData.userId || orderData.uid,
