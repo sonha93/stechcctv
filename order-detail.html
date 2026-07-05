@@ -628,7 +628,7 @@ desc:"Đơn hàng không thể tiếp tục xử lý."
 
 };
 
-let current = statusUI[order.status];
+let current = statusUI[order.status] || statusUI.pending;
 
 // Đang chờ duyệt trả
 if(order.returnRequested === true &&
