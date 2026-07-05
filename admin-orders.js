@@ -1149,28 +1149,30 @@ if(orderData.customerCancelled){
 
   return;
 }
-const now = Date.now();
-
 const updateData = {
   status: status,
   handledBy: document.getElementById("adminName").textContent
 };
+const now = Date.now();
 
-// Chỉ lưu lần đầu, không ghi đè thời gian cũ
-if (status === "confirmed" && !orderData.confirmedAt) {
-  updateData.confirmedAt = now;
-}
+switch (status) {
 
-if (status === "shipping" && !orderData.shippingAt) {
-  updateData.shippingAt = now;
-}
+    case "confirmed":
+        updateData.confirmedAt = now;
+        break;
 
-if (status === "completed" && !orderData.completedAt) {
-  updateData.completedAt = now;
-}
+    case "shipping":
+        updateData.shippingAt = now;
+        break;
 
-if (status === "cancelled" && !orderData.cancelledAt) {
-  updateData.cancelledAt = now;
+    case "completed":
+        updateData.completedAt = now;
+        break;
+
+    case "cancelled":
+        updateData.cancelledAt = now;
+        break;
+
 }
 
 // nếu chuyển sang cancelled
