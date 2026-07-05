@@ -551,12 +551,15 @@ import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 onAuthStateChanged(auth, async (user) => {
-
+console.log("Current user =", user);
     const img = document.getElementById("commentAvatar");
 
     if (!img) return;
-
+    
     if (!user) {
+      console.log("UID =", user.uid);
+    console.log("Email =", user.email);
+    console.log("Phone =", user.phoneNumber);
        img.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
         return;
     }
