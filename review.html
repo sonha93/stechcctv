@@ -1065,12 +1065,12 @@ window.addCart = async function(id){
 
     const product = docSnap.data();
 
-    const ok = await addToCartFirebase({
-    id,
-    ...product
-});
+    await addToCartFirebase({
+        id: id,              // 🔥 QUAN TRỌNG
+        productId: id,      // 🔥 QUAN TRỌNG
+        ...product
+    });
 
-if (ok) {
     alert("Đã thêm giỏ hàng");
 }
 window.likeComment = async function(productId, commentId){
