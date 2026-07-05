@@ -1599,6 +1599,7 @@ await db
     case "shipping":
       title = "Đơn hàng đang được giao";
       message = `Đơn hàng ${id} đang được giao tới bạn.`;
+      
       break;
 
     case "completed":
@@ -1620,7 +1621,22 @@ console.log("img =", orderData.items?.[0]?.img);
     id,
     title,
     message,
-    orderData.items?.[0]?.img || ""
+    const firstItem = orderData.items?.[0] || {};
+
+const image =
+    firstItem.img ||
+    firstItem.image ||
+    firstItem.thumbnail ||
+    firstItem.images?.[0] ||
+    "";
+
+await createNotification(
+    orderData.userId || orderData.uid,
+    id,
+    title,
+    message,
+    image
+);
 );
   }
 }
