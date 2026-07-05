@@ -594,7 +594,7 @@ Number(order.total||0).toLocaleString()+"đ";
 TRẠNG THÁI
 ======================= */
 
-const statusUI={
+const statusUI = {
 
 pending:{
 title:"🟡 Đơn hàng đang chờ xác nhận",
@@ -616,19 +616,23 @@ title:"🎉 Đơn hàng đã giao thành công",
 desc:"Cảm ơn bạn đã mua hàng."
 },
 
+returned:{
+title:"↩️ Đơn hàng đã trả hàng",
+desc:"Yêu cầu trả hàng của bạn đã được cửa hàng chấp nhận."
+},
+
 cancelled:{
 title:"❌ Đơn hàng đã bị hủy",
 desc:"Đơn hàng không thể tiếp tục xử lý."
 }
 
 };
-returned:{
-title:"↩️ Đơn hàng đã trả hàng",
-desc:"Yêu cầu trả hàng của bạn đã được cửa hàng chấp nhận."
-},
+
 let current = statusUI[order.status];
 
-if (order.returnRequested && order.returnStatus === "pending") {
+// Đang chờ duyệt trả
+if(order.returnRequested === true &&
+   order.returnStatus === "pending"){
 
     current = {
         title:"📦 Đang chờ duyệt trả hàng",
@@ -637,32 +641,31 @@ if (order.returnRequested && order.returnStatus === "pending") {
 
 }
 
-if (order.returnRequested && order.returnStatus === "approved") {
+// Đã duyệt trả
+if(order.returnRequested === true &&
+   order.returnStatus === "approved"){
 
     current = statusUI.returned;
 
 }
 
-if (order.returnRequested && order.returnStatus === "rejected") {
+// Từ chối trả
+if(order.returnRequested === true &&
+   order.returnStatus === "rejected"){
 
     current = {
         title:"⛔ Yêu cầu trả hàng bị từ chối",
-        desc:"Cửa hàng đã từ chối yêu cầu trả hàng của bạn."
+        desc:"Yêu cầu trả hàng của bạn đã bị cửa hàng từ chối."
     };
 
 }
 
-if (!current) {
-
+if(!current){
     current = statusUI.pending;
-
 }
 
-document.getElementById("statusName").innerText =
-current.title;
-
-document.getElementById("statusDesc").innerText =
-current.desc;
+document.getElementById("statusName").innerText = current.title;
+document.getElementById("statusDesc").innerText = current.desc;
 
 /* =======================
 SẢN PHẨM
@@ -732,7 +735,6 @@ returned:5,
 cancelled:0
 
 };
-
 const currentStep =
 stepIndex[order.status] || 1;
 
@@ -774,8 +776,6 @@ time:"Đang chờ"
 }
 
 ];
-
-
 timeline.innerHTML="";
 
 steps.forEach((step,index)=>{
