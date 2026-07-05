@@ -34,9 +34,11 @@ let currentUser = null;
 let unsubscribeInbox = null;
 
 onAuthStateChanged(auth, user => {
-
     currentUser = user;
 
+    if (user) {
+        loadInbox();
+    }
 });
 
 function timeAgo(time){
@@ -252,7 +254,16 @@ list.innerHTML += `
 `;
 
         });
+const badge = document.getElementById("notifyBadge");
 
+if (badge) {
+    if (unreadCount > 0) {
+        badge.style.display = "flex";
+        badge.textContent = unreadCount > 99 ? "99+" : unreadCount;
+    } else {
+        badge.style.display = "none";
+    }
+}
     });
 
 }
@@ -315,15 +326,6 @@ window.readAllNotifications = async function(){
         }
 
     });
-const badge = document.getElementById("notifyBadge");
-
-if (badge) {
-    if (unreadCount > 0) {
-        badge.style.display = "flex";
-        badge.textContent = unreadCount > 99 ? "99+" : unreadCount;
-    } else {
-        badge.style.display = "none";
-    }
 }
 }
 
