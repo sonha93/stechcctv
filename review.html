@@ -573,6 +573,20 @@ body{
     object-fit:contain;
     background:#000;
 }
+    .emoji-picker{
+    display:none;
+    position:absolute;
+    bottom:60px;
+    right:70px;
+    width:300px;
+    height:250px;
+    overflow:auto;
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:12px;
+    padding:10px;
+    z-index:999999;
+}
 </style>
 </head>
 
@@ -1470,7 +1484,7 @@ viewer.addEventListener("touchend",e=>{
         commentImages[currentImageIndex];
 
 });
-    console.log("Emoji JS chạy");
+    
 const emojiBtn = document.getElementById("emojiBtn");
 const emojiPicker = document.getElementById("emojiPicker");
 
