@@ -197,7 +197,8 @@ if (order.memberId) {
     order.userId || order.uid,
     orderId,
     title,
-    message
+    message,
+    order.items?.[0]?.img || ""
 );
   }
 
@@ -1613,11 +1614,12 @@ await db
 
   if (title) {
     await createNotification(
-      orderData.userId || orderData.uid,
-      id,
-      title,
-      message
-    );
+    orderData.userId || orderData.uid,
+    id,
+    title,
+    message,
+    orderData.items?.[0]?.img || ""
+);
   }
 }
         // completed => khóa
