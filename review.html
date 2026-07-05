@@ -759,21 +759,19 @@ document.addEventListener("visibilitychange",()=>{
 
     currentCommentProduct = id;
 
-    const sheet = document.getElementById("commentSheet");
-
-    sheet.classList.add("active");
-    sheet.style.transform = "translateY(0)";
+    document
+        .getElementById("commentSheet")
+        .classList.add("active");
 
     loadComments(id);
 
 }
 
-window.closeComment = function(){
+window.closeComment=function(){
 
-    const sheet = document.getElementById("commentSheet");
-
-    sheet.classList.remove("active");
-    sheet.style.transform = "";
+    document
+    .getElementById("commentSheet")
+    .classList.remove("active");
 
     if(unsubscribeComments){
         unsubscribeComments();
@@ -786,8 +784,6 @@ let commentImages = [];
 let currentImageIndex = 0;
 let touchStartX = 0;
 let touchEndX = 0;
-let startY = 0;
-let currentY = 0;
 function timeAgo(timestamp){
 
     if(!timestamp) return "Vừa xong";
@@ -1298,58 +1294,6 @@ viewer.addEventListener("touchend",e=>{
 
     document.getElementById("viewerImage").src=
         commentImages[currentImageIndex];
-
-});
-const sheet = document.getElementById("commentSheet");
-const list = document.getElementById("commentList");
-
-let startY = 0;
-let moveY = 0;
-let dragging = false;
-
-sheet.addEventListener("touchstart",(e)=>{
-
-    if(list.scrollTop > 0) return;
-
-    startY = e.touches[0].clientY;
-    dragging = true;
-
-});
-
-sheet.addEventListener("touchmove",(e)=>{
-
-    if(!dragging) return;
-
-    moveY = e.touches[0].clientY - startY;
-
-    if(moveY < 0) return;
-
-    e.preventDefault();
-
-    sheet.style.transition = "none";
-    sheet.style.transform = `translateY(${moveY}px)`;
-
-},{passive:false});
-
-sheet.addEventListener("touchend",()=>{
-
-    if(!dragging) return;
-
-    dragging = false;
-
-    sheet.style.transition = ".25s";
-
-    if(moveY > 140){
-
-        closeComment();
-
-    }else{
-
-        sheet.style.transform = "translateY(0)";
-
-    }
-
-    moveY = 0;
 
 });
 </script>
