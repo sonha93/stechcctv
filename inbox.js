@@ -178,11 +178,11 @@ function loadInbox(){
         }
 
         list.innerHTML="";
-
+        let unreadCount = 0;
         snap.forEach(docSnap=>{
 
             const n=docSnap.data();
-                
+               if (!n.read) unreadCount++; 
             const image =
                 n.image ||
                 "https://i.ibb.co/Z1kv9nJj/logo.png";
@@ -315,7 +315,16 @@ window.readAllNotifications = async function(){
         }
 
     });
+const badge = document.getElementById("notifyBadge");
 
+if (badge) {
+    if (unreadCount > 0) {
+        badge.style.display = "flex";
+        badge.textContent = unreadCount > 99 ? "99+" : unreadCount;
+    } else {
+        badge.style.display = "none";
+    }
+}
 }
 
 
