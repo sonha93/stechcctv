@@ -564,8 +564,7 @@ if(!snap.exists()){
 }
 
 const order = snap.data();
-console.log("ORDER =", order);
-console.log("ITEMS =", order.items);
+
 loading.style.display="none";
 
 page.style.display="block";
@@ -678,10 +677,7 @@ document.getElementById("productList");
 productList.innerHTML="";
 
 (order.items||[]).forEach(item=>{
-console.log(item);
-console.log("img =", item.img);
-console.log("image =", item.image);
-console.log("thumbnail =", item.thumbnail);
+
 const qty =
 Number(item.qty||1);
 
