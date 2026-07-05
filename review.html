@@ -1059,20 +1059,12 @@ document.getElementById("commentText").focus();
 }
 window.addCart = async function(id){
 
-    const docSnap = await getDoc(doc(db,"products",id));
-
-    if(!docSnap.exists()) return;
-
-    const product = docSnap.data();
-    console.log("Document ID =", id);
-    console.log("Product data =", product);
     await addToCartFirebase({
-        id: id,              // 🔥 QUAN TRỌNG
-        productId: id,      // 🔥 QUAN TRỌNG
-        ...product
+        id: id
     });
 
     alert("Đã thêm giỏ hàng");
+
 }
 window.likeComment = async function(productId, commentId){
 
