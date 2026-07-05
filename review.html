@@ -1797,13 +1797,35 @@ viewer.addEventListener("touchend",e=>{
         <small>Cửa hàng</small>
     </a>
 
-    <a href="javascript:void(0)"
+   <a href="javascript:void(0)"
    class="nav-item"
    onclick="openInbox()">
 
-    <span class="material-symbols-outlined">
-        mail
-    </span>
+    <div style="position:relative;display:inline-block;">
+        <span class="material-symbols-outlined">mail</span>
+
+        <span id="notifyBadge"
+              style="
+                position:absolute;
+                top:-6px;
+                right:-10px;
+                min-width:18px;
+                height:18px;
+                padding:0 5px;
+                border-radius:999px;
+                background:#ff004f;
+                color:#fff;
+                font-size:11px;
+                font-weight:700;
+                display:none;
+                justify-content:center;
+                align-items:center;
+                line-height:18px;
+                border:2px solid #000;
+            ">
+            0
+        </span>
+    </div>
 
     <small>Hộp thư</small>
 
