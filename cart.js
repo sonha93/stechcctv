@@ -124,15 +124,15 @@ actionBox = document.getElementById("cartAction");
     for (const docSnap of snapshot.docs) {
 
     const p = docSnap.data();
-
+console.log("Cart document ID =", docSnap.id);
+console.log("Cart data =", p);
 const productId =
     typeof p.productId === "string"
         ? p.productId
         : p.productId?.id;
-console.log("Cart item =", item);
-console.log("item.productId =", item.productId);
+console.log("productId =", productId);
 if (!productId) {
-console.log("Product lấy được =", productDoc.data());
+
     continue;
 }
 
