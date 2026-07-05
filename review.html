@@ -170,28 +170,36 @@ body{
     font-weight:bold;
 
 }
- #commentSheet{
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: auto !important;      /* thêm */
-    bottom: 0;                 /* đổi từ -100% thành 0 */
+   #commentSheet{
 
-    height: 70vh;
-    background: #fff;
-    border-radius: 20px 20px 0 0;
-    z-index: 1000001 !important;
+    position:fixed;
 
-    display: flex;
-    flex-direction: column;
+    left:0;
+    right:0;
+    bottom:-100%;
 
-    transform: translateY(100%);   /* ẩn xuống dưới */
-    transition: transform .35s;
+    height:70vh;
+
+    background:#fff;
+
+    border-radius:20px 20px 0 0;
+
+    transition:.35s;
+
+    z-index:1000001 !important;
+
+    display:flex;
+
+    flex-direction:column;
+
 }
 
 #commentSheet.active{
-    transform: translateY(0);      /* hiện lên */
+
+    bottom:0;
+
 }
+
 .sheet-top{
 
     width:50px;
