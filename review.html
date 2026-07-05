@@ -722,7 +722,7 @@ onAuthStateChanged(auth, async (user) => {
 
 });
 let currentProduct = "";
-let currentCommentProduct = "";
+let currentCommentVideo = "";
 async function loadVideos(){
 
     const snap = await getDocs(collection(db,"products"));
@@ -758,7 +758,8 @@ if(media.length === 0) return;
     }
 
 });
-       media.forEach(item=>{
+       media.forEach((item, index)=>{
+    const videoId = id + "_v" + index;
 
 feed.innerHTML += `
         
@@ -785,18 +786,18 @@ class="review-image">
 `
 }
             <div class="right-action">
-    <div class="action" onclick="addCart('${id}')">
+    <div class="action" onclick="addCart('${videoId}')">
     <div class="cart-icon">
         🛒
         <div class="cart-plus">+</div>
     </div>
     <span>Giỏ</span>
 </div>
-    <div class="action" onclick="toggleLike('${id}')">
+    <div class="action" onclick="toggleLike('${videoId}')"
         <div class="icon">❤️</div>
-      <span id="like-${id}">${p.likeCount || 0}</span>
+      <span id="like-${videoId}">item.likeCount || 0</span>
     </div>
-<div class="action" onclick="openComment('${id}')">
+<div class="action" onclick="openComment('${videoId}')">
 
     <div class="icon">
         <svg viewBox="0 0 24 24" width="38" height="38">
@@ -812,7 +813,7 @@ class="review-image">
         </svg>
     </div>
 
-    <span id="comment-${id}">
+    <span id="comment-${videoId}">
         ${p.commentCount || 0}
     </span>
 
@@ -927,8 +928,8 @@ document.addEventListener("visibilitychange",()=>{
 });
     window.openComment = function(id){
 
-    currentCommentProduct = id;
-
+currentCommentVideo= id;
+    currentCommentVideo = id;
     document
         .getElementById("commentSheet")
         .classList.add("active");
@@ -1192,12 +1193,14 @@ let image = "";
     
     await addDoc(
 
-    collection(
-        db,
-        "products",
-        currentCommentProduct,
-        "comments"
-    ),
+   collection(
+    db,
+    "products",
+    currentProduct,
+    "videos",
+    currentCommentVideo,
+    "comments"
+)
 
     {
         uid: user.uid,
@@ -1211,7 +1214,7 @@ let image = "";
 
     await updateDoc(
 
-        doc(db,"products",currentCommentProduct),
+       doc(db,"products",currentProduct),
 
         {
             commentCount:increment(1)
@@ -1298,51 +1301,56 @@ window.toggleLike = async function(id){
         return;
     }
 
+ window.toggleLike = async function(videoId){
+
+    const user = auth.currentUser;
+
+    if(!user){
+        alert("Đăng nhập trước");
+        return;
+    }
+
     const likeRef = doc(
         db,
-        "reviewLikes",
-        id+"_"+user.uid
+        "reviewVideoLikes",
+        videoId + "_" + user.uid
     );
 
     const likeSnap = await getDoc(likeRef);
 
-    const productRef = doc(db,"products",id);
+    const videoRef = doc(db, "videoLikes", videoId);
 
     if(likeSnap.exists()){
 
         await deleteDoc(likeRef);
 
-        await updateDoc(productRef,{
-            likeCount:increment(-1)
+        await updateDoc(videoRef,{
+            likeCount: increment(-1)
         });
-const el = document.getElementById("like-" + id);
 
-if(el){
-    let v = parseInt(el.innerText || "0");
+        const el = document.getElementById("like-" + videoId);
+        if(el){
+            let v = parseInt(el.innerText || "0");
+            el.innerText = v - 1;
+        }
 
-    if(likeSnap.exists()){
-        el.innerText = v - 1;
-    }else{
-        el.innerText = v + 1;
-    }
-}
     }else{
 
         await setDoc(likeRef,{
-            uid:user.uid,
-            productId:id
+            uid: user.uid,
+            videoId: videoId
         });
 
-        await updateDoc(productRef,{
-            likeCount:increment(1)
-        });
-const el = document.getElementById("like-" + id);
-if(el){
-    let v = parseInt(el.innerText || "0");
-    el.innerText = v + 1;
-}
+        await setDoc(videoRef,{
+            likeCount: increment(1)
+        }, { merge: true });
+
+        const el = document.getElementById("like-" + videoId);
+        if(el){
+            let v = parseInt(el.innerText || "0");
+            el.innerText = v + 1;
+        }
     }
-
 }
   let soundOn = false;
 
