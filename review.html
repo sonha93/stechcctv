@@ -442,26 +442,66 @@ body{
 }
 
 .verified-icon{
-    width:18px;
-    height:18px;
+    width:16px;
+    height:16px;
 }
 
 .verified-popup{
     display:none;
     position:absolute;
-    left:0;
+
+    left:50%;
     bottom:28px;
-    width:250px;
+    transform:translateX(-50%);
+
+    width:190px;
+
     background:#fff;
     color:#111;
-    border-radius:12px;
-    padding:12px;
-    box-shadow:0 6px 20px rgba(0,0,0,.2);
+
+    border-radius:10px;
+
+    padding:10px 12px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.18);
+
     z-index:99999;
 }
 
 .verified-badge:hover .verified-popup{
     display:block;
+}
+
+.verified-popup-title{
+    display:flex;
+    align-items:center;
+    gap:6px;
+
+    font-size:13px;
+    font-weight:700;
+
+    margin-bottom:6px;
+}
+
+.verified-popup-icon{
+    width:16px;
+    height:16px;
+}
+
+.verified-popup-text{
+    font-size:12px;
+    line-height:1.45;
+    color:#666;
+}
+    .verified-popup::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    bottom:-6px;
+    transform:translateX(-50%);
+    border-width:6px 6px 0;
+    border-style:solid;
+    border-color:#fff transparent transparent;
 }
 </style>
 </head>
