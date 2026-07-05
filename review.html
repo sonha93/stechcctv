@@ -622,10 +622,10 @@ async function loadVideos(){
     </div>
     <span>Giỏ</span>
 </div>
-    <div class="action" onclick="toggleLike('${id}')">
-        <div class="icon">❤️</div>
-      <span id="like-${id}">${p.likeCount || 0}</span>
-    </div>
+   <div class="action" onclick="toggleLike('${id}')">
+    <div class="icon" id="heart-${id}" style="color:white;">🤍</div>
+    <span id="like-${id}">${p.likeCount || 0}</span>
+</div>
 <div class="action" onclick="openComment('${id}')">
 
     <div class="icon">
@@ -1145,6 +1145,7 @@ window.toggleLike = async function(id){
         await updateDoc(productRef,{
             likeCount:increment(-1)
         });
+        document.getElementById("heart-" + id).innerHTML = "❤️";
 const el = document.getElementById("like-" + id);
 
 if(el){
@@ -1166,6 +1167,7 @@ if(el){
         await updateDoc(productRef,{
             likeCount:increment(1)
         });
+        document.getElementById("heart-" + id).textContent = "❤️";
 const el = document.getElementById("like-" + id);
 if(el){
     let v = parseInt(el.innerText || "0");
