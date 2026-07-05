@@ -394,40 +394,26 @@ if(phoneValue){
     .collection("cart")
     .get();
 
- cart = [];
+ cart = snapshot.docs.map(doc => ({
+  cartId: doc.id,
+  ...doc.data()
+}));
 
-for (const cartDoc of snapshot.docs) {
-
-  const item = {
-    cartId: cartDoc.id,
-    ...cartDoc.data()
-  };
-
-  const productId =
-    typeof item.productId === "string"
-      ? item.productId
-      : item.productId?.id;
-
-  if (!productId) {
-    console.warn("Thiếu productId", item);
-    continue;
-  }
+for (const item of cart) {
 
   const productDoc = await db
     .collection("products")
-    .doc(productId)
+    .doc(item.productId)
     .get();
 
-  if (!productDoc.exists) {
-    console.warn("Không tồn tại sản phẩm", productId);
-    continue;
+  if (productDoc.exists) {
+
+    Object.assign(item, productDoc.data());
+
+    item.productId = item.productId || productDoc.id;
+
   }
 
-  Object.assign(item, productDoc.data());
-
-  item.productId = productId;
-
-  cart.push(item);
 }
   renderCart();
   updateBank();
@@ -445,14 +431,7 @@ function renderCart(){
 
   box.innerHTML = "";
 
-  cart = cart.filter(p =>
-    p &&
-    p.productId &&
-    p.name &&
-    Number(p.price) >= 0
-  );
-
-  if(cart.length === 0){
+ if(cart.length === 0){
   window.orderSubmitting = false;
   document.querySelector(".btn").disabled = false;
   alert("🛒 Giỏ hàng trống!");
@@ -477,19 +456,7 @@ function renderCart(){
    box.innerHTML += `
   <div class="item">
    <a href="logo.html?id=${p.productId}">
-    const image =
-p.img ||
-p.image ||
-(
-Array.isArray(p.images)
-? (
-typeof p.images[0] === "string"
-? p.images[0]
-: p.images[0]?.url
-)
-: ""
-)
-|| "default-product.png";
+      <img src="${p.img}">
     </a>
 
     <div>
@@ -580,11 +547,10 @@ function updateBank(){
   let bank = document.getElementById("bankInfo");
 
 const cartTotal =
-cart.reduce(
-(sum,p)=>
-sum + (Number(p.price)||0) * (Number(p.qty)||1),
-0
-);
+  cart.reduce(
+    (sum,p)=>sum + p.price * (p.qty || 1),
+    0
+  );
 
 const lockedDiscount = Number(usePoints || 0) * 100;
 
@@ -650,11 +616,9 @@ try{
 }
 
   const orderId = Date.now();
- const total = cart.reduce(
-(sum,p)=>
-sum + (Number(p.price)||0) * (Number(p.qty)||1),
-0
-);
+  const total = cart.reduce((sum,p)=>
+    sum + p.price * (p.qty || 1),0
+  );
   const user = auth.currentUser;
 
 // ============================
