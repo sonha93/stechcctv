@@ -432,6 +432,7 @@ body{
     padding:0;
     font-size:16px;
 }
+    }
         @media (max-width:768px){
 
 .bottom-nav{
@@ -902,7 +903,7 @@ document.addEventListener("visibilitychange",()=>{
     }
 
 });
-    window.openComment = function(id){
+   window.openComment = function(id){
 
     currentCommentProduct = id;
 
@@ -910,21 +911,27 @@ document.addEventListener("visibilitychange",()=>{
         .getElementById("commentSheet")
         .classList.add("active");
 
-    loadComments(id);
+    // Ẩn menu dưới
+    const nav = document.querySelector(".bottom-nav");
+    if(nav) nav.style.display = "none";
 
+    loadComments(id);
 }
 
-window.closeComment=function(){
+window.closeComment = function(){
 
     document
-    .getElementById("commentSheet")
-    .classList.remove("active");
+        .getElementById("commentSheet")
+        .classList.remove("active");
+
+    // Hiện lại menu dưới
+    const nav = document.querySelector(".bottom-nav");
+    if(nav) nav.style.display = "flex";
 
     if(unsubscribeComments){
         unsubscribeComments();
         unsubscribeComments = null;
     }
-
 }
 let unsubscribeComments = null;
 let commentImages = [];
