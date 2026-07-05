@@ -129,9 +129,10 @@ const productId =
     typeof p.productId === "string"
         ? p.productId
         : p.productId?.id;
-
+console.log("Cart item =", item);
+console.log("item.productId =", item.productId);
 if (!productId) {
-
+console.log("Product lấy được =", productDoc.data());
     continue;
 }
 
