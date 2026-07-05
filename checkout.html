@@ -711,7 +711,7 @@ if (lockedPoints > 0 && memberId) {
 // ORDER
 // ============================
 
-await db.collection("orders").add({
+const orderRef = await db.collection("orders").add({
 
   uid: user.uid,
 
@@ -721,8 +721,7 @@ await db.collection("orders").add({
 
   address: address,
 
-  payment:
-    document.getElementById("payment").value,
+  payment: document.getElementById("payment").value,
 
   items: cart,
 
@@ -733,6 +732,7 @@ await db.collection("orders").add({
   usedPoints: usePoints,
 
   cashbackAmount: cashbackAmount,
+
   status: "pending",
 
   memberId: memberId,
@@ -740,7 +740,27 @@ await db.collection("orders").add({
   createdAt: Date.now()
 
 });
+await db.collection("notifications").add({
 
+  userId: user.uid,
+
+  orderId: orderRef.id,
+
+  title: `Đơn hàng #${orderRef.id} đã đặt thành công`,
+
+  message: "Cửa hàng sẽ xác nhận đơn hàng của bạn trong thời gian sớm nhất.",
+
+  image: cart.length ? cart[0].img : "",
+
+  type: "order",
+
+  status: "pending",
+
+  read: false,
+
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+
+});
   // TELEGRAM
  sendTelegramNotification(
   orderId,
