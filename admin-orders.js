@@ -308,9 +308,7 @@ function formatDate(timestamp) {
     return "-";
   }
 }
-async function createNotification(userId, orderId, title, message) {
 
-  if (!userId) return;
 
  async function createNotification(userId, orderId, title, message, image = "") {
 
