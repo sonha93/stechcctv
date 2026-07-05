@@ -523,10 +523,9 @@ import {
     onSnapshot,
     query,
     where,
+    orderBy,
     serverTimestamp
-    
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 import {
     addToCart as addToCartFirebase
 } from "./cart.js";
@@ -832,11 +831,14 @@ function loadComments(productId){
         unsubscribeComments();
     }
 
-    unsubscribeComments = onSnapshot(
+    const q = query(
+    collection(db, "products", productId, "comments"),
+orderBy("createdAt", "desc")
+);
 
-        collection(db,"products",productId,"comments"),
-
-        async (snap)=>{
+unsubscribeComments = onSnapshot(
+    q,
+    async (snap) => {
 
     list.innerHTML = "";
     commentImages = [];
