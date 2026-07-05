@@ -748,31 +748,42 @@ if (order.createdAt?.toDate) {
     createdTime = new Date(order.createdAt)
         .toLocaleString("vi-VN");
 }
-const steps=[
+    function formatTime(time){
+
+    if(!time) return "Đang chờ";
+
+    if(time?.toDate){
+        return time.toDate().toLocaleString("vi-VN");
+    }
+
+    return new Date(time).toLocaleString("vi-VN");
+
+}
+const steps = [
 
 {
-title:"Đơn hàng đã được tạo",
-time:createdTime
+    title:"Đơn hàng đã được tạo",
+    time: formatTime(order.createdAt)
 },
 
 {
-title:"Đơn hàng đã được xác nhận",
-time:"Đang chờ"
+    title:"Đơn hàng đã được xác nhận",
+    time: formatTime(order.confirmedAt)
 },
 
 {
-title:"Đơn hàng đang vận chuyển",
-time:"Đang chờ"
+    title:"Đơn hàng đang vận chuyển",
+    time: formatTime(order.shippingAt)
 },
 
 {
-title:"Đơn hàng đã giao",
-time:"Đang chờ"
+    title:"Đơn hàng đã giao",
+    time: formatTime(order.completedAt)
 },
 
 {
-title:"Đơn hàng đã trả",
-time:"Đang chờ"
+    title:"Đơn hàng đã trả",
+    time: formatTime(order.returnApprovedAt || order.returnedAt)
 }
 
 ];
