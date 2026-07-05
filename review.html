@@ -586,7 +586,7 @@ async function loadVideos(){
    
     feed.innerHTML = "";
 
-    snap.forEach(docSnap=>{
+    for (const docSnap of snap.docs) {
 
         const p = docSnap.data();
 
@@ -598,7 +598,16 @@ async function loadVideos(){
         : p.videos[0].url;
 
         const id = docSnap.id;
-    
+        const user = auth.currentUser;
+
+let liked = false;
+
+if (user) {
+    const likeSnap = await getDoc(
+        doc(db, "reviewLikes", id + "_" + user.uid)
+    );
+    liked = likeSnap.exists();
+}
         feed.innerHTML += `
         
         <div class="video-item">
@@ -623,7 +632,9 @@ async function loadVideos(){
     <span>Giỏ</span>
 </div>
    <div class="action" onclick="toggleLike('${id}')">
-    <div class="icon" id="heart-${id}" style="color:white;">🤍</div>
+   <div class="icon" id="heart-${id}">
+    ${liked ? "❤️" : "🤍"}
+</div>
     <span id="like-${id}">${p.likeCount || 0}</span>
 </div>
 <div class="action" onclick="openComment('${id}')">
@@ -684,16 +695,14 @@ function autoPlay(){
 
             if(entry.isIntersecting && entry.intersectionRatio >= 0.8){
 
-                videos.forEach(x=>{
+               videos.forEach(x=>{
 
-                    if(x!==v){
+    if(x!==v){
+        x.pause();
+        x.currentTime = 0;
+    }
 
-                       x.pause();
-                        x.currentTime = 0;
-
-                    }
-
-                });
+});
 
             
 v.muted = !soundOn;
@@ -1145,17 +1154,18 @@ window.toggleLike = async function(id){
         await updateDoc(productRef,{
             likeCount:increment(-1)
         });
-        document.getElementById("heart-" + id).innerHTML = "❤️";
+       document.getElementById("heart-" + id).textContent = "🤍";
 const el = document.getElementById("like-" + id);
 
 if(el){
     let v = parseInt(el.innerText || "0");
 
-    if(likeSnap.exists()){
-        el.innerText = v - 1;
-    }else{
-        el.innerText = v + 1;
-    }
+   document.getElementById("heart-" + id).textContent = "🤍";
+
+const el = document.getElementById("like-" + id);
+if(el){
+    el.innerText = parseInt(el.innerText) - 1;
+}
 }
     }else{
 
@@ -1217,7 +1227,9 @@ commentImage.addEventListener("change",function(){
     document.getElementById("previewWrap").style.display = "none";
 
 };
- loadVideos();
+onAuthStateChanged(auth, () => {
+    loadVideos();
+});
 document.getElementById("sendBtn").onclick = () => {
 
     sendComment();
