@@ -1496,33 +1496,34 @@ emojiBtn.onclick = async () => {
         return;
     }
 
-    const res = await fetch("emoji/emojis.json");
-    const data = await res.json();
+   const res = await fetch("emoji/emojis.json");
+const data = await res.json();
 
-   emojiPicker.innerHTML = "";
+emojiPicker.innerHTML = "";
 
-for (const key in data.emojis) {
+Object.values(data.emojis).forEach(item => {
 
-    const emoji = data.emojis[key].skins[0].native;
+    const emoji = item.skins[0].native;
 
-    const btn = document.createElement("span");
+    const span = document.createElement("span");
 
-    btn.textContent = emoji;
+    span.textContent = emoji;
 
-    btn.style.fontSize = "24px";
-    btn.style.cursor = "pointer";
-    btn.style.padding = "4px";
+    span.style.fontSize = "24px";
+    span.style.padding = "6px";
+    span.style.cursor = "pointer";
 
-    btn.onclick = () => {
+    span.onclick = () => {
         document.getElementById("commentText").value += emoji;
     };
 
-    emojiPicker.appendChild(btn);
-}
+    emojiPicker.appendChild(span);
+
+});
 
 emojiPicker.style.display = "block";
-    emojiPicker.style.display = "block";
-};
+   };
+
 </script>
 <div id="imageViewer" onclick="closeImage()">
     <img id="viewerImage">
