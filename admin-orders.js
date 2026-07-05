@@ -307,26 +307,25 @@ function formatDate(timestamp) {
     return "-";
   }
 }
-async function createNotification(userId, orderId, title, message) {
+async function createNotification(
+  userId,
+  orderId,
+  title,
+  message,
+  image = ""
+) {
 
   if (!userId) return;
 
   await db.collection("notifications").add({
-
-    userId: userId,
-
-    orderId: orderId,
-
-    title: title,
-
-    message: message,
-
+    userId,
+    orderId,
+    title,
+    message,
+    image, // <-- thêm dòng này
     type: "order",
-
     read: false,
-
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-
   });
 
 }
