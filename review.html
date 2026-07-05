@@ -586,7 +586,7 @@ async function loadVideos(){
    
     feed.innerHTML = "";
 
-    for (const docSnap of snap.docs) {
+    snap.forEach(docSnap=>{
 
         const p = docSnap.data();
 
@@ -598,16 +598,7 @@ async function loadVideos(){
         : p.videos[0].url;
 
         const id = docSnap.id;
-        const user = auth.currentUser;
-
-let liked = false;
-
-if (user) {
-    const likeSnap = await getDoc(
-        doc(db, "reviewLikes", id + "_" + user.uid)
-    );
-    liked = likeSnap.exists();
-}
+    
         feed.innerHTML += `
         
         <div class="video-item">
@@ -631,12 +622,10 @@ if (user) {
     </div>
     <span>Giỏ</span>
 </div>
-   <div class="action" onclick="toggleLike('${id}')">
-   <div class="icon" id="heart-${id}">
-    ${liked ? "❤️" : "🤍"}
-</div>
-    <span id="like-${id}">${p.likeCount || 0}</span>
-</div>
+    <div class="action" onclick="toggleLike('${id}')">
+        <div class="icon">❤️</div>
+      <span id="like-${id}">${p.likeCount || 0}</span>
+    </div>
 <div class="action" onclick="openComment('${id}')">
 
     <div class="icon">
@@ -669,7 +658,7 @@ if (user) {
 <div class="info">
                 <div class="name">${p.name}</div>
                 <div class="price">${Number(p.price).toLocaleString()}đ</div>
-               
+                </button>
             </div>
         </div>
         `;
@@ -695,14 +684,16 @@ function autoPlay(){
 
             if(entry.isIntersecting && entry.intersectionRatio >= 0.8){
 
-               videos.forEach(x=>{
+                videos.forEach(x=>{
 
-    if(x!==v){
-        x.pause();
-        x.currentTime = 0;
-    }
+                    if(x!==v){
 
-});
+                       x.pause();
+                        x.currentTime = 0;
+
+                    }
+
+                });
 
             
 v.muted = !soundOn;
@@ -1154,19 +1145,17 @@ window.toggleLike = async function(id){
         await updateDoc(productRef,{
             likeCount:increment(-1)
         });
-       document.getElementById("heart-" + id).textContent = "🤍";
 const el = document.getElementById("like-" + id);
 
 if(el){
     let v = parseInt(el.innerText || "0");
 
-   document.getElementById("heart-" + id).textContent = "🤍";
-
-const el = document.getElementById("like-" + id);
-if(el){
-    el.innerText = parseInt(el.innerText) - 1;
+    if(likeSnap.exists()){
+        el.innerText = v - 1;
+    }else{
+        el.innerText = v + 1;
+    }
 }
-
     }else{
 
         await setDoc(likeRef,{
@@ -1177,7 +1166,6 @@ if(el){
         await updateDoc(productRef,{
             likeCount:increment(1)
         });
-        document.getElementById("heart-" + id).textContent = "❤️";
 const el = document.getElementById("like-" + id);
 if(el){
     let v = parseInt(el.innerText || "0");
@@ -1227,9 +1215,7 @@ commentImage.addEventListener("change",function(){
     document.getElementById("previewWrap").style.display = "none";
 
 };
-onAuthStateChanged(auth, () => {
-    loadVideos();
-});
+ loadVideos();
 document.getElementById("sendBtn").onclick = () => {
 
     sendComment();
