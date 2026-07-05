@@ -304,7 +304,8 @@ const productId =
 });
 
 
- 
+  await renderCart();
+await updateCartCount();
 
   } catch (err) {
 
@@ -332,6 +333,8 @@ window.removeItem = async function(itemId) {
     )
   );
 
+await renderCart();
+await updateCartCount();
 
 };
 // ============================
@@ -357,7 +360,8 @@ window.updateQty = async function(itemId, qty) {
     qty: qty
   });
 
-
+await renderCart();
+await updateCartCount();
 };
 // ============================
 // CHECKOUT
@@ -387,15 +391,17 @@ onAuthStateChanged(auth, async user => {
         return;
     }
 
-   unsubscribeCart = onSnapshot(
-    collection(db, "users", user.uid, "cart"),
-    async () => {
+    unsubscribeCart = onSnapshot(
+        collection(db, "users", user.uid, "cart"),
+        async () => {
 
-        await renderCart();
-        await updateCartCount();
+            await renderCart();
+            await updateCartCount();
 
-    }
-);
+        }
+    );
+
+});
 
 window.renderCart = renderCart;
 function showToast(message){
