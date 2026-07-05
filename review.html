@@ -573,20 +573,6 @@ body{
     object-fit:contain;
     background:#000;
 }
-    .emoji-picker{
-    display:none;
-    position:absolute;
-    bottom:60px;
-    right:70px;
-    width:300px;
-    height:250px;
-    overflow:auto;
-    background:#fff;
-    border:1px solid #ddd;
-    border-radius:12px;
-    padding:10px;
-    z-index:999999;
-}
 </style>
 </head>
 
@@ -618,25 +604,18 @@ body{
 
     <img id="commentAvatar">
 
-   <div class="comment-box">
+    <div class="comment-box">
 
-    <input
-        id="commentText"
-        placeholder="Thêm bình luận...">
+        <input
+            id="commentText"
+            placeholder="Thêm bình luận...">
 
-    <button
-        type="button"
-        id="emojiBtn"
-        class="emoji-btn">
-        😊
-    </button>
+        <label
+            class="image-btn"
+            for="commentImage">
+            🖼️
+        </label>
 
-    <label
-        class="image-btn"
-        for="commentImage">
-        🖼️
-    </label>
-    
         <input
             type="file"
             id="commentImage"
@@ -1484,46 +1463,6 @@ viewer.addEventListener("touchend",e=>{
         commentImages[currentImageIndex];
 
 });
-    
-const emojiBtn = document.getElementById("emojiBtn");
-const emojiPicker = document.getElementById("emojiPicker");
-
-emojiBtn.onclick = async () => {
-
-    if (emojiPicker.innerHTML !== "") {
-        emojiPicker.style.display =
-            emojiPicker.style.display === "block" ? "none" : "block";
-        return;
-    }
-
-   const res = await fetch("emoji/emojis.json");
-const data = await res.json();
-
-emojiPicker.innerHTML = "";
-
-Object.values(data.emojis).forEach(item => {
-
-    const emoji = item.skins[0].native;
-
-    const span = document.createElement("span");
-
-    span.textContent = emoji;
-
-    span.style.fontSize = "24px";
-    span.style.padding = "6px";
-    span.style.cursor = "pointer";
-
-    span.onclick = () => {
-        document.getElementById("commentText").value += emoji;
-    };
-
-    emojiPicker.appendChild(span);
-
-});
-
-emojiPicker.style.display = "block";
-   };
-
 </script>
 <div id="imageViewer" onclick="closeImage()">
     <img id="viewerImage">
@@ -1551,7 +1490,6 @@ emojiPicker.style.display = "block";
     </a>
 
 </div>
-<div id="emojiPicker" class="emoji-picker"></div>
-</body>
 
+</body>
 </html>
