@@ -573,6 +573,300 @@ body{
     object-fit:contain;
     background:#000;
 }
+    /* ===========================
+   TIKTOK INBOX
+=========================== */
+
+#inboxSheet{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:flex;
+    align-items:flex-end;
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:.3s;
+
+    z-index:1000002;
+
+}
+
+#inboxSheet.active{
+
+    opacity:1;
+    visibility:visible;
+
+}
+
+.inbox-container{
+
+    width:100%;
+    height:82vh;
+
+    background:#fff;
+
+    border-radius:22px 22px 0 0;
+
+    display:flex;
+    flex-direction:column;
+
+    transform:translateY(100%);
+    transition:.35s cubic-bezier(.2,.8,.2,1);
+
+}
+
+#inboxSheet.active .inbox-container{
+
+    transform:translateY(0);
+
+}
+
+#inboxList{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    -webkit-overflow-scrolling:touch;
+
+    background:#fff;
+
+}
+
+/* mỗi thông báo */
+
+.notifyItem{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    padding:15px;
+
+    border-bottom:1px solid #f1f1f1;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    position:relative;
+
+}
+
+.notifyItem:active{
+
+    background:#f5f5f5;
+
+}
+
+/* ảnh */
+
+.notifyImage{
+
+    width:72px;
+
+    height:72px;
+
+    border-radius:12px;
+
+    object-fit:cover;
+
+    flex-shrink:0;
+
+    background:#eee;
+
+}
+
+/* nội dung */
+
+.notifyContent{
+
+    flex:1;
+
+    min-width:0;
+
+}
+
+.notifyTitle{
+
+    font-size:16px;
+
+    font-weight:700;
+
+    color:#111;
+
+    line-height:1.4;
+
+    margin-bottom:6px;
+
+}
+
+.notifyMessage{
+
+    font-size:14px;
+
+    color:#666;
+
+    line-height:1.5;
+
+    display:-webkit-box;
+
+    -webkit-box-orient:vertical;
+
+    -webkit-line-clamp:2;
+
+    overflow:hidden;
+
+}
+
+.notifyTime{
+
+    margin-top:8px;
+
+    color:#999;
+
+    font-size:12px;
+
+}
+
+/* chấm đỏ */
+
+.notifyDot{
+
+    width:10px;
+
+    height:10px;
+
+    background:#ff2d55;
+
+    border-radius:50%;
+
+    flex-shrink:0;
+
+}
+
+/* loading */
+
+.loadingInbox{
+
+    padding:40px;
+
+    text-align:center;
+
+    color:#777;
+
+    font-size:15px;
+
+}
+
+/* rỗng */
+
+.emptyInbox{
+
+    height:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#999;
+
+    gap:12px;
+
+}
+
+.emptyIcon{
+
+    font-size:60px;
+
+}
+
+/* toolbar */
+
+.inbox-toolbar{
+
+    padding:10px 16px;
+
+    border-bottom:1px solid #eee;
+
+    background:#fff;
+
+}
+
+.read-all-btn{
+
+    border:none;
+
+    background:#f4f4f4;
+
+    padding:10px 16px;
+
+    border-radius:999px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+    font-weight:600;
+
+}
+
+.read-all-btn:active{
+
+    transform:scale(.96);
+
+}
+
+/* scrollbar */
+
+#inboxList::-webkit-scrollbar{
+
+    width:4px;
+
+}
+
+#inboxList::-webkit-scrollbar-thumb{
+
+    background:#ddd;
+
+    border-radius:10px;
+
+}
+
+@media(max-width:768px){
+
+    .inbox-container{
+
+        height:88vh;
+
+    }
+
+    .notifyImage{
+
+        width:64px;
+
+        height:64px;
+
+    }
+
+    .notifyTitle{
+
+        font-size:15px;
+
+    }
+
+}
 </style>
 </head>
 
@@ -1479,10 +1773,17 @@ viewer.addEventListener("touchend",e=>{
         <small>Cửa hàng</small>
     </a>
 
-    <a href="inbox.html" class="nav-item">
-        <span class="material-symbols-outlined">mail</span>
-        <small>Hộp thư</small>
-    </a>
+    <a href="javascript:void(0)"
+   class="nav-item"
+   onclick="openInbox()">
+
+    <span class="material-symbols-outlined">
+        mail
+    </span>
+
+    <small>Hộp thư</small>
+
+</a>
 
     <a href="profile.html" class="nav-item">
         <span class="material-symbols-outlined">person</span>
@@ -1490,6 +1791,55 @@ viewer.addEventListener("touchend",e=>{
     </a>
 
 </div>
+<!-- INBOX SHEET -->
 
+<div id="inboxSheet" onclick="closeInboxBackground(event)">
+
+    <div class="inbox-container">
+
+        <div class="sheet-top"></div>
+
+        <div class="sheet-header">
+
+            <div class="comment-title">
+
+                <span>📩 Hộp thư</span>
+
+            </div>
+
+            <button
+                class="close-sheet"
+                onclick="closeInbox()">
+                ✕
+            </button>
+
+        </div>
+
+        <div class="inbox-toolbar">
+
+            <button
+                class="read-all-btn"
+                onclick="readAllNotifications()">
+
+                Đánh dấu tất cả đã đọc
+
+            </button>
+
+        </div>
+
+        <div id="inboxList">
+
+            <div class="loadingInbox">
+
+                Đang tải...
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<script type="module" src="inbox.js"></script>
 </body>
 </html>
