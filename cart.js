@@ -131,7 +131,7 @@ const productId =
         : p.productId?.id;
 
 if (!productId) {
-    console.warn("Cart lỗi:", docSnap.id, p);
+
     continue;
 }
 
