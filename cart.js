@@ -387,16 +387,15 @@ onAuthStateChanged(auth, async user => {
         return;
     }
 
-    unsubscribeCart = onSnapshot(
-        collection(db, "users", user.uid, "cart"),
-        async () => {
+   unsubscribeCart = onSnapshot(
+    collection(db, "users", user.uid, "cart"),
+    async () => {
 
-            
+        await renderCart();
+        await updateCartCount();
 
-        }
-    );
-
-});
+    }
+);
 
 window.renderCart = renderCart;
 function showToast(message){
