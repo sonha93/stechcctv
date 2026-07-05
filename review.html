@@ -598,7 +598,16 @@ async function loadVideos(){
         : p.videos[0].url;
 
         const id = docSnap.id;
-    
+        const user = auth.currentUser;
+
+let liked = false;
+
+if(user){
+    const likeSnap = await getDoc(
+        doc(db,"reviewLikes",id+"_"+user.uid)
+    );
+    liked = likeSnap.exists();
+}
         feed.innerHTML += `
         
         <div class="video-item">
@@ -622,10 +631,14 @@ async function loadVideos(){
     </div>
     <span>Giỏ</span>
 </div>
-    <div class="action" onclick="toggleLike('${id}')">
-        <div class="icon">❤️</div>
-      <span id="like-${id}">${p.likeCount || 0}</span>
-    </div>
+   <div class="action" onclick="toggleLike('${id}')">
+    <div class="icon"
+     id="heart-${id}"
+     style="color:${liked ? '#ff2d55' : '#fff'};font-size:34px;">
+    ❤
+</div>
+    <span id="like-${id}">${p.likeCount || 0}</span>
+</div>
 <div class="action" onclick="openComment('${id}')">
 
     <div class="icon">
@@ -1119,7 +1132,7 @@ window.likeComment = async function(productId, commentId){
     }
 
 }
-window.toggleLike = async function(id){
+    window.toggleLike = async function(id){
 
     const user = auth.currentUser;
 
@@ -1128,15 +1141,14 @@ window.toggleLike = async function(id){
         return;
     }
 
-    const likeRef = doc(
-        db,
-        "reviewLikes",
-        id+"_"+user.uid
-    );
-
+    const likeRef = doc(db,"reviewLikes",id+"_"+user.uid);
     const likeSnap = await getDoc(likeRef);
-
     const productRef = doc(db,"products",id);
+
+    const heart = document.getElementById("heart-"+id);
+    const count = document.getElementById("like-"+id);
+
+    let total = parseInt(count.innerText) || 0;
 
     if(likeSnap.exists()){
 
@@ -1145,17 +1157,10 @@ window.toggleLike = async function(id){
         await updateDoc(productRef,{
             likeCount:increment(-1)
         });
-const el = document.getElementById("like-" + id);
 
-if(el){
-    let v = parseInt(el.innerText || "0");
+        heart.style.color="#fff";
+        count.innerText=Math.max(0,total-1);
 
-    if(likeSnap.exists()){
-        el.innerText = v - 1;
-    }else{
-        el.innerText = v + 1;
-    }
-}
     }else{
 
         await setDoc(likeRef,{
@@ -1166,132 +1171,11 @@ if(el){
         await updateDoc(productRef,{
             likeCount:increment(1)
         });
-const el = document.getElementById("like-" + id);
-if(el){
-    let v = parseInt(el.innerText || "0");
-    el.innerText = v + 1;
+
+        heart.style.color="#ff2d55";
+        count.innerText=total+1;
+    }
 }
-    }
-
-}
-  let soundOn = false;
-
-window.toggleSound = function () {
-    soundOn = !soundOn;
-
-    document.querySelectorAll(".vid").forEach(v => {
-        v.muted = !soundOn;
-        v.volume = soundOn ? 1 : 0;
-    });
-};
-const commentImage = document.getElementById("commentImage");
-
-commentImage.addEventListener("change",function(){
-
-    const file = this.files[0];
-
-    if(!file){
-        document.getElementById("previewWrap").style.display="none";
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload=function(e){
-
-        document.getElementById("previewImage").src=e.target.result;
-
-        document.getElementById("previewWrap").style.display="block";
-
-    }
-
-    reader.readAsDataURL(file);
-
-});
-    document.getElementById("removePreview").onclick = function () {
-
-    document.getElementById("commentImage").value = "";
-    document.getElementById("previewImage").src = "";
-    document.getElementById("previewWrap").style.display = "none";
-
-};
- loadVideos();
-document.getElementById("sendBtn").onclick = () => {
-
-    sendComment();
-};
-    onAuthStateChanged(auth, (user) => {
-
-    const img = document.getElementById("commentAvatar");
-
-    if (!img) return;
-
-    if (!user) {
-       img.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
-        return;
-    }
-
-    onSnapshot(doc(db, "users", user.uid), (snap) => {
-
-        if (snap.exists() && snap.data().avatar) {
-            img.src = snap.data().avatar;
-        } else {
-            img.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
-        }
-
-    });
-
-});
-window.viewImage = function(index){
-
-    currentImageIndex = index;
-
-    document.getElementById("viewerImage").src =
-        commentImages[currentImageIndex];
-
-    document.getElementById("imageViewer").style.display="flex";
-
-}
-
-window.closeImage = function(){
-
-    document.getElementById("imageViewer").style.display = "none";
-
-}
-const viewer=document.getElementById("imageViewer");
-
-viewer.addEventListener("touchstart",e=>{
-
-    touchStartX=e.changedTouches[0].screenX;
-
-});
-
-viewer.addEventListener("touchend",e=>{
-
-    touchEndX=e.changedTouches[0].screenX;
-
-    const dx=touchEndX-touchStartX;
-
-    if(Math.abs(dx)<50) return;
-
-    if(dx<0){
-
-        if(currentImageIndex<commentImages.length-1){
-
-            currentImageIndex++;
-
-        }
-
-    }else{
-
-        if(currentImageIndex>0){
-
-            currentImageIndex--;
-
-        }
-
-    }
-
     document.getElementById("viewerImage").src=
         commentImages[currentImageIndex];
 
