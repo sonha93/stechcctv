@@ -376,31 +376,3 @@ window.closeInboxBackground=function(e){
     }
 
 }
-onAuthStateChanged(auth, user => {
-
-    if (!user) return;
-
-    onSnapshot(
-        query(
-            collection(db, "notifications"),
-            where("userId", "==", user.uid)
-        ),
-        snap => {
-
-            let unread = 0;
-
-            snap.forEach(doc => {
-                if (!doc.data().read) unread++;
-            });
-
-            const badge = document.getElementById("notifyBadge");
-
-            if (!badge) return;
-
-            badge.style.display = unread ? "flex" : "none";
-            badge.textContent = unread > 99 ? "99+" : unread;
-
-        }
-    );
-
-});
