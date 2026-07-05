@@ -599,7 +599,19 @@ async function loadVideos(){
         : p.videos[0].url;
 
         const id = docSnap.id;
-    
+        onSnapshot(doc(db, "products", id), (snap) => {
+
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+
+    const el = document.getElementById("comment-" + id);
+
+    if (el) {
+        el.innerText = data.commentCount || 0;
+    }
+
+});
         feed.innerHTML += `
         
         <div class="video-item">
