@@ -192,43 +192,64 @@ function loadInbox(){
                 ? `<div class="notifyDot"></div>`
                 : "";
 
-            list.innerHTML+=`
+           const statusIcon = {
 
-            <div
-                class="notifyItem"
-                onclick="openOrder('${docSnap.id}','${n.orderId}')">
+    pending: "📦",
+    confirmed: "✅",
+    shipping: "🚚",
+    delivered: "🎉",
+    cancelled: "❌",
+    returnApproved: "↩️",
+    returnRejected: "⛔"
 
-                <img
-                    class="notifyImage"
-                    src="${image}">
+}[n.status] || "📦";
 
-                <div class="notifyContent">
+list.innerHTML += `
 
-                    <div class="notifyTitle">
+<div class="notifyItem"
+     onclick="openOrder('${docSnap.id}','${n.orderId}')">
 
-                        ${n.title}
+    <div class="notifyLeft">
 
-                    </div>
+        <div class="notifyStatus">
 
-                    <div class="notifyMessage">
+            ${statusIcon}
 
-                        ${n.message}
+        </div>
 
-                    </div>
+    </div>
 
-                    <div class="notifyTime">
+    <div class="notifyContent">
 
-                        ${timeAgo(n.createdAt)}
+        <div class="notifyTitle">
 
-                    </div>
+            ${n.title}
 
-                </div>
+        </div>
 
-                ${unread}
+        <div class="notifyMessage">
 
-            </div>
+            ${n.message}
 
-            `;
+        </div>
+
+        <div class="notifyTime">
+
+            ${timeAgo(n.createdAt)}
+
+        </div>
+
+    </div>
+
+    <img
+        class="notifyImage"
+        src="${image}">
+
+    ${unread}
+
+</div>
+
+`;
 
         });
 
