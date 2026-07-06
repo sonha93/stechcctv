@@ -169,24 +169,34 @@ body{
     font-weight:bold;
 
 }
-  #commentSheet{
+   #commentSheet{
+
     position:fixed;
+
     left:0;
     right:0;
-    top:0;
-    bottom:0;
-    height:100dvh;
+    bottom:-100%;
+
+    height:85vh;
+
     background:#fff;
+
     border-radius:20px 20px 0 0;
-    display:flex;
-    flex-direction:column;
-    z-index:10000;
-    transform:translateY(100%);
+
     transition:.35s;
+
+    z-index:10000 !important;
+
+    display:flex;
+
+    flex-direction:column;
+
 }
 
 #commentSheet.active{
-    transform:translateY(0);
+
+    bottom:0;
+
 }
 
 .sheet-top{
