@@ -20,9 +20,7 @@ import {
     onSnapshot,
 
     updateDoc,
-    
-    deleteDoc,
-  
+
     doc,
 
     Timestamp
@@ -53,7 +51,7 @@ function listenNotificationBadge() {
     unsubscribeBadge = onSnapshot(q, snap => {
 
         let unreadCount = 0;
-        let openedItem = null;
+
         snap.forEach(docSnap => {
             if (!docSnap.data().read) unreadCount++;
         });
@@ -250,19 +248,9 @@ function loadInbox(){
 
 list.innerHTML += `
 
-<div class="notifyItem">
+<div class="notifyItem"
+     onclick="openOrder('${docSnap.id}','${n.orderId}')">
 
-<div class="notifyActions">
-
-<button class="deleteBtn"
-onclick="deleteNotification('${docSnap.id}',event)">
-Xóa
-</button>
-
-</div>
-
-<div class="notifySwipe"
-onclick="openOrder('${docSnap.id}','${n.orderId}')">
     <div class="notifyLeft">
 
         <div class="notifyStatus">
@@ -299,9 +287,7 @@ onclick="openOrder('${docSnap.id}','${n.orderId}')">
         class="notifyImage"
         src="${image}">
 
-   ${unread}
-
-</div>
+    ${unread}
 
 </div>
 
@@ -310,7 +296,7 @@ onclick="openOrder('${docSnap.id}','${n.orderId}')">
 
 
    });
-    enableSwipe();
+
      const badge = document.getElementById("notifyBadge");
 
 if (badge) {
@@ -428,84 +414,7 @@ document.addEventListener("keydown",e=>{
 
 });
 
-function enableSwipe(){
 
-    const items = document.querySelectorAll(".notifySwipe");
-
-    items.forEach(item=>{
-
-        let startX = 0;
-        let currentX = 0;
-
-        item.addEventListener("touchstart",e=>{
-
-            if(openedItem && openedItem!==item){
-
-                openedItem.style.transform="translateX(0)";
-                openedItem=null;
-
-            }
-
-            startX=e.touches[0].clientX;
-
-        });
-
-        item.addEventListener("touchmove",e=>{
-
-            let dx=e.touches[0].clientX-startX;
-
-            if(dx>0) dx=0;
-
-            if(dx<-90) dx=-90;
-
-            currentX=dx;
-
-            item.style.transition="none";
-            item.style.transform=`translateX(${dx}px)`;
-
-        });
-
-        item.addEventListener("touchend",()=>{
-
-            item.style.transition=".25s";
-
-            if(currentX<-45){
-
-                item.style.transform="translateX(-90px)";
-                openedItem=item;
-
-            }else{
-
-                item.style.transform="translateX(0)";
-                openedItem=null;
-
-            }
-
-        });
-
-    });
-
-}
-
-window.deleteNotification = async function(id,e){
-
-    e.stopPropagation();
-
-    if(!confirm("Xóa thông báo này?")) return;
-
-    try{
-
-        await deleteDoc(doc(db,"notifications",id));
-
-    }catch(err){
-
-        console.error(err);
-
-        alert("Không thể xóa.");
-
-    }
-
-}
 // Đóng khi bấm nền tối
 window.closeInboxBackground=function(e){
 
