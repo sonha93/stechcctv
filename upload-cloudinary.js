@@ -193,20 +193,11 @@ throw "Chưa chọn video";
 setProgress(1);
 
 // Upload song song
-const result =
-await Promise.all([
+const result = await uploadCloudinary();
 
-uploadFile(
-video,
-"video"
-),
+videoURL = result.videoURL;
 
-uploadFile(
-thumb,
-"image"
-)
-
-]);
+thumbnailURL = result.thumbnailURL;
 
 videoURL = result[0];
 
