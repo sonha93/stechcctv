@@ -1172,7 +1172,7 @@ function autoPlay(){
 
             const v = entry.target;
 
-            if(entry.isIntersecting && entry.intersectionRatio >= 0.8){
+          if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
 
                 videos.forEach(x=>{
 
@@ -1207,7 +1207,7 @@ if (p !== undefined) {
         });
 
     },{
-        threshold:0.35
+       threshold:0.5
     });
 
    videos.forEach(v => {
