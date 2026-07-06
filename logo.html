@@ -2437,7 +2437,7 @@ gallery.forEach((item,index)=>{
     thumb.setAttribute("playsinline", "");
     thumb.setAttribute("webkit-playsinline", "");
 
-    thumb.preload = "auto";
+   thumb.preload = "metadata";
     thumb.load();
 
     thumb.addEventListener("loadeddata", () => {
@@ -2519,7 +2519,8 @@ document.getElementById("detailImg").after(mainVideo);
     }
 
     mainVideo.src = item.url;
-    mainVideo.style.display = "block";
+mainVideo.load();
+mainVideo.style.display = "block";
 
 
 
@@ -3061,8 +3062,10 @@ document.querySelectorAll("#detailVideo").forEach(v=>{
     const v = document.createElement("video");
 
     v.src = item.url;
-    v.controls = true;
-    v.autoplay = true;
+v.controls = true;
+v.autoplay = true;
+v.preload = "metadata";
+v.load();
     v.playsInline = true;
     v.style.maxWidth="95%";
     v.style.maxHeight="95%";
