@@ -1219,77 +1219,90 @@ function autoPlay(){
 
     const videos = document.querySelectorAll(".vid");
 
+    if(isIOS){
+
+        let current = null;
+
+        function playCurrent(){
+
+            let target = null;
+
+            videos.forEach(v=>{
+
+                const r = v.getBoundingClientRect();
+
+                if(r.top < window.innerHeight/2 &&
+                   r.bottom > window.innerHeight/2){
+
+                    target = v;
+                }
+
+            });
+
+            if(!target) return;
+
+            if(current && current !== target){
+
+                current.pause();
+                current.currentTime = 0;
+            }
+
+            current = target;
+
+            current.muted = true;
+
+            current.play().catch(()=>{});
+
+        }
+
+        feed.addEventListener("scroll",()=>{
+
+            clearTimeout(window.__iosTimer);
+
+            window.__iosTimer = setTimeout(playCurrent,120);
+
+        });
+
+        playCurrent();
+
+        return;
+    }
+
+    // Android + PC
     const observer = new IntersectionObserver(entries=>{
 
         entries.forEach(entry=>{
 
             const v = entry.target;
 
-          if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
+            if(entry.isIntersecting){
 
                 videos.forEach(x=>{
 
                     if(x!==v){
 
-                       x.pause();
-                        x.currentTime = 0;
+                        x.pause();
+                        x.currentTime=0;
 
                     }
 
                 });
 
-            
-v.muted = !soundOn;
-v.volume = soundOn ? 1 : 0;
-const p = v.play();
-
-if (p !== undefined) {
-    p.catch(err=>{
-        console.log("play error",err);
-    });
-}
+                v.muted=!soundOn;
+                v.play().catch(()=>{});
 
             }else{
 
-    v.pause();
+                v.pause();
+                v.currentTime=0;
 
-    v.currentTime = 0;
-
-}
+            }
 
         });
 
-    },{
-       threshold:0.5
-    });
+    },{threshold:0.5});
 
-   videos.forEach(v => {
-
-    v.addEventListener("ended", () => {
-        v.currentTime = 0;
-       const p = v.play();
-
-if (p !== undefined) {
-    p.catch(err=>{
-        console.log("play error",err);
-    });
-}
-    });
-
-    observer.observe(v);
-
-    v.addEventListener("click", () => {
-
-        if (v.paused) {
-            v.play();
-        } else {
-            v.pause();
-        }
-
-    });
-
-});
-
+    videos.forEach(v=>observer.observe(v));
 }
 
 
@@ -1782,6 +1795,8 @@ commentImage.addEventListener("change",function(){
     document.getElementById("previewWrap").style.display = "none";
 
 };
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
  loadVideos();
 document.getElementById("sendBtn").onclick = () => {
 
