@@ -1142,7 +1142,7 @@ class="review-image">
 <div class="info">
                 <div class="name">${p.name}</div>
                 <div class="price">${Number(p.price).toLocaleString()}đ</div>
-                </button>
+               
             </div>
         </div>
         `;
@@ -1160,9 +1160,9 @@ function autoPlay(){
 
     const videos = document.querySelectorAll(".vid");
 
-    const observer = new IntersectionObserver(entries=>{
+    const observer = new IntersectionObserver((entries)=>{
 
-        entries.forEach(entry=>{
+        entries.forEach((entry)=>{
 
             const v = entry.target;
 
@@ -1171,31 +1171,24 @@ function autoPlay(){
                 videos.forEach(x=>{
 
                     if(x!==v){
-
-                       x.pause();
+                        x.pause();
                         x.currentTime = 0;
-
                     }
 
                 });
 
-            
-v.pause();
+                v.muted = !soundOn;
 
-v.currentTime = 0;
+                const play = ()=>{
+                    const p = v.play();
+                    if(p) p.catch(console.log);
+                };
 
-v.muted = !soundOn;
-
-setTimeout(()=>{
-
-    v.play().catch(()=>{});
-
-},50);
-if (promise !== undefined) {
-    promise.catch(err => {
-        console.log(err);
-    });
-}
+                if(v.readyState >= 2){
+                    play();
+                }else{
+                    v.onloadeddata = play;
+                }
 
             }else{
 
@@ -1209,29 +1202,39 @@ if (promise !== undefined) {
         threshold:0.8
     });
 
-   videos.forEach(v => {
+    videos.forEach(v=>{
 
-    v.addEventListener("ended", () => {
-        v.currentTime = 0;
-        v.play().catch(()=>{});
+        observer.observe(v);
+
+        v.addEventListener("ended",()=>{
+
+            v.currentTime = 0;
+
+            const p = v.play();
+
+            if(p) p.catch(console.log);
+
+        });
+
+        v.addEventListener("click",()=>{
+
+            if(v.paused){
+
+                const p = v.play();
+
+                if(p) p.catch(console.log);
+
+            }else{
+
+                v.pause();
+
+            }
+
+        });
+
     });
-
-    observer.observe(v);
-
-    v.addEventListener("click", () => {
-
-        if (v.paused) {
-            v.play();
-        } else {
-            v.pause();
-        }
-
-    });
-
-});
 
 }
-
 
 document.addEventListener("visibilitychange",()=>{
 
@@ -1245,7 +1248,13 @@ document.addEventListener("visibilitychange",()=>{
 
         videos.forEach(v=>{
             if(!v.paused){
-                v.play().catch(()=>{});
+               if (v.readyState >= 2) {
+    v.play().catch(console.log);
+} else {
+    v.onloadeddata = () => {
+        v.play().catch(console.log);
+    };
+}
             }
         });
 
@@ -1673,26 +1682,15 @@ if(el){
 }
   let soundOn = false;
 
-window.toggleSound = function () {
-    soundOn = !soundOn;
 
-    document.querySelectorAll(".vid").forEach(v => {
-        v.muted = !soundOn;
-        window.toggleSound = function(){
+
+window.toggleSound = function(){
 
     soundOn = !soundOn;
 
     document.querySelectorAll(".vid").forEach(v=>{
 
         v.muted = !soundOn;
-
-        if(soundOn){
-            v.play().catch(()=>{});
-        }
-
-    });
-
-}
     });
 };
 const commentImage = document.getElementById("commentImage");
