@@ -1333,6 +1333,8 @@ if (p !== undefined) {
         .getElementById("commentSheet")
         .classList.add("active");
 
+    document.querySelector(".bottom-nav").style.display = "none";
+
     loadComments(id);
 
 }
@@ -1342,6 +1344,8 @@ window.closeComment=function(){
     document
     .getElementById("commentSheet")
     .classList.remove("active");
+
+    document.querySelector(".bottom-nav").style.display = "flex";
 
     if(unsubscribeComments){
         unsubscribeComments();
