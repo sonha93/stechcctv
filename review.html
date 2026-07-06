@@ -1083,12 +1083,11 @@ item.type==="video"
 <video
 class="vid"
 src="${item.url}"
-autoplay
 playsinline
 webkit-playsinline="true"
 muted
 loop
-preload="auto"
+preload="metadata"
 x-webkit-airplay="deny"
 disablePictureInPicture
 crossorigin="anonymous">
@@ -1189,14 +1188,7 @@ function autoPlay(){
             
 v.muted = !soundOn;
 v.volume = soundOn ? 1 : 0;
-
-v.load();
-
 const p = v.play();
-
-if (p) {
-    p.catch(console.error);
-}
 
 if (p !== undefined) {
     p.catch(err=>{
@@ -1221,36 +1213,17 @@ if (p !== undefined) {
    videos.forEach(v => {
 
     v.addEventListener("ended", () => {
+        v.currentTime = 0;
+       const p = v.play();
 
-    v.currentTime = 0;
+if (p !== undefined) {
+    p.catch(err=>{
+        console.log("play error",err);
+    });
+}
+    });
 
-    v.load();
-
-   v.addEventListener("ended", () => {
-
-    v.currentTime = 0;
-
-    v.load();
-
-    const p = v.play();
-
-    if (p) {
-        p.catch(console.error);
-    }
-
-});
-
-observer.observe(v);
-
-v.addEventListener("click", () => {
-
-    if (v.paused) {
-        v.play();
-    } else {
-        v.pause();
-    }
-
-});
+    observer.observe(v);
 
     v.addEventListener("click", () => {
 
@@ -1279,16 +1252,7 @@ document.addEventListener("visibilitychange",()=>{
 
         videos.forEach(v=>{
             if(!v.paused){
-
-    v.load();
-
-    const p = v.play();
-
-    if (p) {
-        p.catch(console.error);
-    }
-
-}
+                const p = v.play();
 
 if (p !== undefined) {
     p.catch(err=>{
@@ -1664,7 +1628,7 @@ window.likeComment = async function(productId, commentId){
 
     }
 
-
+}
 window.toggleLike = async function(id){
 
     const user = auth.currentUser;
@@ -1761,21 +1725,7 @@ commentImage.addEventListener("change",function(){
     document.getElementById("previewWrap").style.display = "none";
 
 };
- window.addEventListener("load", () => {
-
-    loadVideos();
-
-    setTimeout(() => {
-
-        document.querySelectorAll(".vid").forEach(v => {
-
-            v.load();
-
-        });
-
-    },500);
-
-});
+ loadVideos();
 document.getElementById("sendBtn").onclick = () => {
 
     sendComment();
