@@ -419,67 +419,122 @@ id="productList">
 
 <div class="card">
 
-    <div class="row">
-        <div class="row-title">Tổng giá gốc</div>
-        <div id="originalTotal" class="row-value">0đ</div>
-    </div>
+<div class="row">
 
-    <div class="row">
-        <div class="row-title">Tiết kiệm</div>
-        <div id="discountTotal"
-             class="row-value"
-             style="color:#ff2d55;">
-            -0đ
-        </div>
-    </div>
+<div class="row-title">
 
-    <div class="row">
-        <div class="row-title">Dùng điểm</div>
-        <div id="pointTotal"
-             class="row-value"
-             style="color:#ff2d55;">
-            -0đ
-        </div>
-    </div>
+Người nhận
 
-    <hr style="margin:12px 0;border:none;border-top:1px solid #eee;">
+</div>
 
-    <div class="row">
-        <div class="row-title"
-             style="font-size:18px;font-weight:bold;color:#111;">
-            Cần thanh toán
-        </div>
+<div
+id="customerName"
+class="row-value">
 
-        <div id="total"
-             class="total">
-            0đ
-        </div>
-    </div>
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="row-title">
+
+Số điện thoại
+
+</div>
+
+<div
+id="phone"
+class="row-value">
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="row-title">
+
+Địa chỉ
+
+</div>
+
+<div
+id="address"
+class="row-value">
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="row-title">
+
+Thanh toán
+
+</div>
+
+<div
+id="payment"
+class="row-value">
+
+</div>
+
+</div>
 
 </div>
 
 <div class="card">
 
 <div class="row">
-
 <div class="row-title">
+Tổng giá gốc
+</div>
+<div id="originalTotal" class="row-value">
+0đ
+</div>
+</div>
 
-Tổng thanh toán
+<div class="row">
+<div class="row-title">
+Tiết kiệm
+</div>
+<div id="discountTotal"
+class="row-value"
+style="color:#ff2d55;">
+-0đ
+</div>
+</div>
 
+<div class="row">
+<div class="row-title">
+Dùng điểm
+</div>
+<div id="pointTotal"
+class="row-value"
+style="color:#ff2d55;">
+-0đ
+</div>
+</div>
+
+<hr style="margin:10px 0;border:none;border-top:1px solid #eee;">
+
+<div class="row">
+<div class="row-title"
+style="font-size:18px;font-weight:bold;color:#111;">
+Cần thanh toán
 </div>
 
 <div
 id="total"
 class="total">
-
 0đ
-
 </div>
 
 </div>
 
 </div>
-
 <div class="card">
 
 <h3 style="margin-bottom:18px;">
@@ -565,24 +620,11 @@ const pay = Number(order.total || 0);
 const originalTotal =
 Number(order.originalTotal || pay);
 
+const discount =
+Number(order.discount || 0);
+
 const point =
 Number(order.cashbackAmount || 0);
-
-// số tiền giảm do khuyến mãi
-const discount =
-originalTotal - pay - point;
-
-document.getElementById("originalTotal").innerText =
-originalTotal.toLocaleString() + "đ";
-
-document.getElementById("discountTotal").innerText =
-"-" + discount.toLocaleString() + "đ";
-
-document.getElementById("pointTotal").innerText =
-"-" + point.toLocaleString() + "đ";
-
-document.getElementById("total").innerText =
-pay.toLocaleString() + "đ";
 
 document.getElementById("originalTotal").innerText =
 originalTotal.toLocaleString() + "đ";
@@ -682,22 +724,15 @@ document.getElementById("productList");
 
 productList.innerHTML="";
 
-(order.items||[]).forEach(item=>{
+(order.items || []).forEach(item => {
 
-const qty =
-Number(item.qty||1);
+    const qty = Number(item.qty || 1);
 
-const price = Number(item.price || 0);
+    const price = Number(item.price || 0);
 
-const oldPrice =
-Number(
-    item.originalPrice ||
-    item.oldPrice ||
-    item.comparePrice ||
-    price
-);
+    const oldPrice = Number(item.oldPrice || price);
 
-productList.innerHTML += `
+    productList.innerHTML += `
 
 <div class="product">
 
@@ -720,14 +755,14 @@ Số lượng: x${qty}
 <div style="margin-top:auto;">
 
     ${
-        old > price
+        oldPrice > price
         ? `
         <div style="
             color:#999;
             text-decoration:line-through;
             font-size:14px;
             margin-bottom:4px;">
-            ${old.toLocaleString()}đ
+            ${oldPrice.toLocaleString()}đ
         </div>
         `
         : ""
@@ -736,14 +771,6 @@ Số lượng: x${qty}
     <div class="product-price">
         ${price.toLocaleString()}đ
     </div>
-
-</div>
-        `
-        : ""
-    }
-
-    const old =
-Number(item.oldPrice || price);
 
 </div>
 
