@@ -537,15 +537,22 @@ class="total">
 </div>
 <div class="card">
 
-<h3 style="margin-bottom:18px;">
-
-Lịch sử đơn hàng
-
+<h3 style="margin-bottom:6px;">
+Lịch sử đơn hàng: 
 </h3>
 
 <div
-id="timeline"
-class="timeline">
+id="orderIdText"
+style="
+margin-bottom:18px;
+font-size:14px;
+color:#666;
+font-weight:bold;
+">
+ID đơn hàng:
+</div>
+
+<div id="timeline" class="timeline"></div>
 
 </div>
 
@@ -592,7 +599,8 @@ if(!snap.exists()){
 }
 
 const order = snap.data();
-
+document.getElementById("orderIdText").innerText =
+    "ID đơn hàng: " + orderId;
 loading.style.display="none";
 
 page.style.display="block";
