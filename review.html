@@ -41,11 +41,10 @@ body{
  
 /* VIDEO FULL SCREEN */
 .video-item video{
-    max-width:100%;
-    max-height:100%;
-    width:auto;
-    height:auto;
+    width:100%;
+    height:100%;
     object-fit:contain;
+    background:#000;
 }
 /* INFO OVERLAY */
 .info{
@@ -1085,14 +1084,14 @@ item.type==="video"
 class="vid"
 src="${item.url}"
 playsinline
-webkit-playsinline
+webkit-playsinline="true"
 muted
-autoplay
 loop
 preload="auto"
-disablepictureinpicture
-controls="false"
-></video>
+x-webkit-airplay="deny"
+disablePictureInPicture
+crossorigin="anonymous">
+</video>
 `
 : `
 <img
@@ -1144,16 +1143,23 @@ class="review-image">
 <div class="info">
                 <div class="name">${p.name}</div>
                 <div class="price">${Number(p.price).toLocaleString()}đ</div>
-               
+                </button>
             </div>
         </div>
         `;
    });
-});
+ });
 
-    
+    // Safari iOS
+    setTimeout(() => {
 
-autoPlay();
+        document.querySelectorAll(".vid").forEach(v => {
+            v.load();
+        });
+
+        autoPlay();
+
+    }, 200);
 
 }
 
@@ -1162,9 +1168,9 @@ function autoPlay(){
 
     const videos = document.querySelectorAll(".vid");
 
-    const observer = new IntersectionObserver((entries)=>{
+    const observer = new IntersectionObserver(entries=>{
 
-        entries.forEach((entry)=>{
+        entries.forEach(entry=>{
 
             const v = entry.target;
 
@@ -1173,29 +1179,23 @@ function autoPlay(){
                 videos.forEach(x=>{
 
                     if(x!==v){
-                        x.pause();
+
+                       x.pause();
                         x.currentTime = 0;
+
                     }
 
                 });
 
-                v.muted = !soundOn;
+            
+v.muted = !soundOn;
+v.volume = soundOn ? 1 : 0;
+const p = v.play();
 
-               const play = ()=>{
-    v.play().catch(()=>{});
-};
-
-             const startVideo = ()=>{
-
-    v.muted = !soundOn;
-
-    v.play().catch(()=>{});
-
-};
-if(v.readyState >= 2){
-    startVideo();
-}else{
-    v.oncanplay = startVideo;
+if (p !== undefined) {
+    p.catch(err=>{
+        console.log("play error",err);
+    });
 }
 
             }else{
@@ -1207,42 +1207,38 @@ if(v.readyState >= 2){
         });
 
     },{
-        threshold:0.8
+        threshold:0.35
     });
 
-    videos.forEach(v=>{
+   videos.forEach(v => {
 
-        observer.observe(v);
+    v.addEventListener("ended", () => {
+        v.currentTime = 0;
+       const p = v.play();
 
-        v.addEventListener("ended",()=>{
+if (p !== undefined) {
+    p.catch(err=>{
+        console.log("play error",err);
+    });
+}
+    });
 
-            v.currentTime = 0;
+    observer.observe(v);
 
-            const p = v.play();
+    v.addEventListener("click", () => {
 
-            if(p) p.catch(console.log);
-
-        });
-
-        v.addEventListener("click",()=>{
-
-            if(v.paused){
-
-                const p = v.play();
-
-                if(p) p.catch(console.log);
-
-            }else{
-
-                v.pause();
-
-            }
-
-        });
+        if (v.paused) {
+            v.play();
+        } else {
+            v.pause();
+        }
 
     });
+
+});
 
 }
+
 
 document.addEventListener("visibilitychange",()=>{
 
@@ -1256,12 +1252,12 @@ document.addEventListener("visibilitychange",()=>{
 
         videos.forEach(v=>{
             if(!v.paused){
-               if (v.readyState >= 2) {
-    v.play().catch(console.log);
-} else {
-    v.onloadeddata = () => {
-        v.play().catch(console.log);
-    };
+                const p = v.play();
+
+if (p !== undefined) {
+    p.catch(err=>{
+        console.log("play error",err);
+    });
 }
             }
         });
@@ -1690,15 +1686,12 @@ if(el){
 }
   let soundOn = false;
 
-
-
-window.toggleSound = function(){
-
+window.toggleSound = function () {
     soundOn = !soundOn;
 
-    document.querySelectorAll(".vid").forEach(v=>{
-
+    document.querySelectorAll(".vid").forEach(v => {
         v.muted = !soundOn;
+        v.volume = soundOn ? 1 : 0;
     });
 };
 const commentImage = document.getElementById("commentImage");
@@ -1733,26 +1726,6 @@ commentImage.addEventListener("change",function(){
 
 };
  loadVideos();
-document.addEventListener("touchstart", () => {
-
-    const video = document.querySelector(".vid");
-
-    if(video){
-
-        video.play().catch(()=>{});
-
-    }
-
-}, { once:true });
-document.querySelectorAll(".vid").forEach(v=>{
-
-    v.muted = true;
-
-    v.playsInline = true;
-
-    v.autoplay = true;
-
-});
 document.getElementById("sendBtn").onclick = () => {
 
     sendComment();
