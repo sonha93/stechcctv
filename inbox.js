@@ -21,6 +21,8 @@ import {
 
     updateDoc,
 
+     deleteDoc,
+   
     doc,
 
     Timestamp
@@ -248,46 +250,49 @@ function loadInbox(){
 
 list.innerHTML += `
 
-<div class="notifyItem"
-     onclick="openOrder('${docSnap.id}','${n.orderId}')">
+<div class="swipeItem">
 
-    <div class="notifyLeft">
+    <div class="deleteBtn"
+         onclick="deleteNotification(event,'${docSnap.id}')">
 
-        <div class="notifyStatus">
-
-            ${statusIcon}
-
-        </div>
+        Xóa
 
     </div>
 
-    <div class="notifyContent">
+    <div class="notifyItem"
+         onclick="openOrder('${docSnap.id}','${n.orderId}')">
 
-        <div class="notifyTitle">
+        <div class="notifyLeft">
 
-            ${n.title}
-
-        </div>
-
-        <div class="notifyMessage">
-
-            ${n.message}
+            <div class="notifyStatus">
+                ${statusIcon}
+            </div>
 
         </div>
 
-        <div class="notifyTime">
+        <div class="notifyContent">
 
-            ${timeAgo(n.createdAt)}
+            <div class="notifyTitle">
+                ${n.title}
+            </div>
+
+            <div class="notifyMessage">
+                ${n.message}
+            </div>
+
+            <div class="notifyTime">
+                ${timeAgo(n.createdAt)}
+            </div>
 
         </div>
+
+        <img
+            class="notifyImage"
+            src="${image}">
+
+        ${unread}
 
     </div>
-
-    <img
-        class="notifyImage"
-        src="${image}">
-
-    ${unread}
 
 </div>
 
@@ -425,3 +430,69 @@ window.closeInboxBackground=function(e){
     }
 
 }
+window.deleteNotification = async function (e, id) {
+
+    e.stopPropagation();
+
+    if (!confirm("Xóa thông báo này?")) return;
+
+    try {
+
+        await deleteDoc(doc(db, "notifications", id));
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+};
+
+
+let startX = 0;
+
+document.addEventListener("touchstart", e => {
+
+    const item = e.target.closest(".notifyItem");
+
+    if (!item) return;
+
+    startX = e.touches[0].clientX;
+
+});
+
+document.addEventListener("touchmove", e => {
+
+    const item = e.target.closest(".notifyItem");
+
+    if (!item) return;
+
+    const dx = e.touches[0].clientX - startX;
+
+    if (dx < -40) {
+
+        item.style.transform = "translateX(-90px)";
+
+    }
+
+    if (dx > 40) {
+
+        item.style.transform = "translateX(0)";
+
+    }
+
+});
+
+document.addEventListener("click", e => {
+
+    document.querySelectorAll(".notifyItem").forEach(i => {
+
+        if (!i.contains(e.target)) {
+
+            i.style.transform = "translateX(0)";
+
+        }
+
+    });
+
+});
