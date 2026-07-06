@@ -32,10 +32,52 @@ const db = getFirestore(app);
 
 let currentUser = null;
 let unsubscribeInbox = null;
+let unsubscribeBadge = null;
+
+function listenNotificationBadge() {
+
+    if (!currentUser) return;
+
+    const q = query(
+        collection(db, "notifications"),
+        where("userId", "==", currentUser.uid),
+        orderBy("createdAt", "desc")
+    );
+
+    if (unsubscribeBadge) {
+        unsubscribeBadge();
+    }
+
+    unsubscribeBadge = onSnapshot(q, snap => {
+
+        let unreadCount = 0;
+
+        snap.forEach(docSnap => {
+            if (!docSnap.data().read) unreadCount++;
+        });
+
+        const badge = document.getElementById("notifyBadge");
+
+        if (!badge) return;
+
+        if (unreadCount > 0) {
+            badge.style.display = "flex";
+            badge.textContent = unreadCount > 99 ? "99+" : unreadCount;
+        } else {
+            badge.style.display = "none";
+        }
+
+    });
+
+}
 let unreadCount = 0;
 onAuthStateChanged(auth, user => {
 
     currentUser = user;
+
+    if (user) {
+        listenNotificationBadge();
+    }
 
 });
 
