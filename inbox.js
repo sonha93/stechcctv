@@ -32,7 +32,7 @@ const db = getFirestore(app);
 
 let currentUser = null;
 let unsubscribeInbox = null;
-
+let unreadCount = 0;
 onAuthStateChanged(auth, user => {
 
     currentUser = user;
@@ -178,7 +178,7 @@ function loadInbox(){
         }
 
         list.innerHTML="";
-        let unreadCount = 0;
+      unreadCount = 0;
         snap.forEach(docSnap=>{
 
             const n=docSnap.data();
@@ -251,7 +251,26 @@ list.innerHTML += `
 
 `;
 
-        });
+
+
+   });
+
+        const badge = document.getElementById("notifyBadge");
+
+        if (badge) {
+
+            if (unreadCount > 0) {
+
+                badge.style.display = "flex";
+                badge.textContent = unreadCount > 99 ? "99+" : unreadCount;
+
+            } else {
+
+                badge.style.display = "none";
+
+            }
+
+        }
 
     });
 
@@ -315,16 +334,6 @@ window.readAllNotifications = async function(){
         }
 
     });
-const badge = document.getElementById("notifyBadge");
-
-if (badge) {
-    if (unreadCount > 0) {
-        badge.style.display = "flex";
-        badge.textContent = unreadCount > 99 ? "99+" : unreadCount;
-    } else {
-        badge.style.display = "none";
-    }
-}
 }
 
 
