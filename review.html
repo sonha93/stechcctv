@@ -1083,12 +1083,14 @@ item.type==="video"
 <video
 class="vid"
 src="${item.url}"
-autoplay
+playsinline
+webkit-playsinline="true"
 muted
 loop
-playsinline
-webkit-playsinline
-preload="auto">
+preload="metadata"
+x-webkit-airplay="deny"
+disablePictureInPicture
+crossorigin="anonymous">
 </video>
 `
 : `
@@ -1141,7 +1143,7 @@ class="review-image">
 <div class="info">
                 <div class="name">${p.name}</div>
                 <div class="price">${Number(p.price).toLocaleString()}đ</div>
-               
+                </button>
             </div>
         </div>
         `;
@@ -1149,56 +1151,40 @@ class="review-image">
  });
 
     // Safari iOS
-   setTimeout(() => {
-    autoPlay();
-},300);
+    setTimeout(() => {
+
+       
+
+        autoPlay();
+
+    }, 200);
+
+}
 
 /* AUTO PLAY LIKE TIKTOK */
-function autoPlay() {
+function autoPlay(){
 
     const videos = document.querySelectorAll(".vid");
 
-    const observer = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver(entries=>{
 
-        entries.forEach(async (entry) => {
+        entries.forEach(entry=>{
 
             const v = entry.target;
 
-            if (entry.isIntersecting) {
+          if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
 
-                videos.forEach(video => {
-                    if (video !== v) {
-                        video.pause();
+                videos.forEach(x=>{
+
+                    if(x!==v){
+
+                       x.pause();
+                        x.currentTime = 0;
+
                     }
+
                 });
 
-                v.muted = !soundOn;
-
-                try {
-                    await v.play();
-                } catch (e) {
-                    console.log(e);
-                }
-
-            } else {
-
-                v.pause();
-
-            }
-
-        });
-
-    }, {
-        threshold: 0.6
-    });
-
-    videos.forEach(v => {
-
-        observer.observe(v);
-
-    });
-
-}
             
 v.muted = !soundOn;
 v.volume = soundOn ? 1 : 0;
@@ -1252,7 +1238,7 @@ if (p !== undefined) {
 });
 
 }
-}
+
 
 document.addEventListener("visibilitychange",()=>{
 
@@ -1699,24 +1685,7 @@ if(el){
 
 }
   let soundOn = false;
-let iosUnlocked = false;
 
-document.addEventListener("touchstart", async () => {
-
-    if (iosUnlocked) return;
-
-    iosUnlocked = true;
-
-    const v = document.querySelector(".vid");
-
-    if (!v) return;
-
-    try {
-        v.muted = true;
-        await v.play();
-    } catch(e){}
-
-}, { once:true });
 window.toggleSound = function () {
     soundOn = !soundOn;
 
