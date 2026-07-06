@@ -251,19 +251,20 @@ body{
 }
 
 .comment-input{
-
-    flex-shrink:0;
+    position:sticky;
+    bottom:0;
+    left:0;
 
     display:flex;
     align-items:center;
     gap:10px;
 
     padding:10px 14px;
-
     border-top:1px solid #eee;
-
     background:#fff;
 
+    z-index:100;
+    padding-bottom:calc(env(safe-area-inset-bottom) + 10px);
 }
 .comment-input{
     padding-bottom:calc(env(safe-area-inset-bottom) + 10px);
