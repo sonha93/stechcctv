@@ -1083,14 +1083,12 @@ item.type==="video"
 ? `
 <video
 class="vid"
-src="${item.url}"
-autoplay
 playsinline
 webkit-playsinline
-controls
-preload="metadata"
-controlsList="nodownload noplaybackrate"
-disablePictureInPicture>
+muted
+loop
+preload="auto">
+    <source src="${item.url}" type="video/mp4">
 </video>
 `
 : `
@@ -1183,7 +1181,13 @@ function autoPlay(){
             
 v.muted = !soundOn;
 v.volume = soundOn ? 1 : 0;
-v.play().catch(()=>{});
+const p = v.play();
+
+if (p !== undefined) {
+    p.catch(err => {
+        console.log(err);
+    });
+}
 
             }else{
 
@@ -1201,7 +1205,13 @@ v.play().catch(()=>{});
 
     v.addEventListener("ended", () => {
         v.currentTime = 0;
-        v.play().catch(()=>{});
+       const p = v.play();
+
+if (p !== undefined) {
+    p.catch(err => {
+        console.log(err);
+    });
+}
     });
 
     observer.observe(v);
@@ -1233,7 +1243,13 @@ document.addEventListener("visibilitychange",()=>{
 
         videos.forEach(v=>{
             if(!v.paused){
-                v.play().catch(()=>{});
+               const p = v.play();
+
+if (p !== undefined) {
+    p.catch(err => {
+        console.log(err);
+    });
+}
             }
         });
 
