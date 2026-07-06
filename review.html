@@ -200,36 +200,19 @@ body{
 }
 
 .sheet-top{
-
-    width:50px;
-
-    height:5px;
-
-    background:#ccc;
-
-    border-radius:20px;
-
-    margin:10px auto;
-
+    flex-shrink:0;
 }
 
 .sheet-header{
-    position:relative;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:60px;
-    border-bottom:1px solid #eee;
+    flex-shrink:0;
 }
 
-.comment-title{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-size:28px;
-    font-weight:700;
+#commentList{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
 }
-
 .close-sheet{
     position:absolute;
     right:18px;
