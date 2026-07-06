@@ -1185,14 +1185,23 @@ function autoPlay(){
                 });
 
             
-v.muted = !soundOn;
-v.volume = soundOn ? 1 : 0;
+videos.forEach(video => {
+    video.muted = true;
+    video.volume = 0;
+});
+
+if (soundOn) {
+    v.muted = false;
+    v.volume = 1;
+} else {
+    v.muted = true;
+    v.volume = 0;
+}
+
 const p = v.play();
 
-if (p !== undefined) {
-    p.catch(err=>{
-        console.log("play error",err);
-    });
+if (p) {
+    p.catch(console.error);
 }
 
             }else{
@@ -1686,12 +1695,21 @@ if(el){
   let soundOn = false;
 
 window.toggleSound = function () {
+
     soundOn = !soundOn;
 
+    const current = document.querySelector(".vid:not([paused])");
+
     document.querySelectorAll(".vid").forEach(v => {
-        v.muted = !soundOn;
-        v.volume = soundOn ? 1 : 0;
+        v.muted = true;
+        v.volume = 0;
     });
+
+    if (current) {
+        current.muted = !soundOn;
+        current.volume = soundOn ? 1 : 0;
+    }
+
 };
 const commentImage = document.getElementById("commentImage");
 
