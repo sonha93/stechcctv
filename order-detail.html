@@ -617,14 +617,15 @@ order.payment=="bank"
 
 const pay = Number(order.total || 0);
 
-const originalTotal =
-Number(order.originalTotal || pay);
+const originalTotal = Number(order.originalTotal || pay);
 
-const discount =
-Number(order.discount || 0);
+// Nếu đơn cũ chưa có discount thì tự tính
+const discount = Number(
+    order.discount ??
+    (originalTotal - pay - Number(order.cashbackAmount || 0))
+);
 
-const point =
-Number(order.cashbackAmount || 0);
+const point = Number(order.cashbackAmount || 0);
 
 document.getElementById("originalTotal").innerText =
 originalTotal.toLocaleString() + "đ";
