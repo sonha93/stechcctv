@@ -1172,18 +1172,31 @@ function autoPlay(){
         entries.forEach(entry=>{
 
             const v = entry.target;
-if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
 
-    videos.forEach(x => {
-        x.pause();
-        x.currentTime = 0;
+          if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
+
+                videos.forEach(x=>{
+
+                    if(x!==v){
+
+                       x.pause();
+                        x.currentTime = 0;
+
+                    }
+
+                });
+
+            
+v.muted = !soundOn;
+v.volume = soundOn ? 1 : 0;
+const p = v.play();
+
+if (p !== undefined) {
+    p.catch(err=>{
+        console.log("play error",err);
     });
-
-    v.muted = !soundOn;
-    v.volume = soundOn ? 1 : 0;
-
-    v.play().catch(() => {});
 }
+
             }else{
 
     v.pause();
@@ -1199,7 +1212,7 @@ if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
     });
 
    videos.forEach(v => {
-  
+
     v.addEventListener("ended", () => {
         v.currentTime = 0;
        const p = v.play();
