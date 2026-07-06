@@ -255,22 +255,22 @@ list.innerHTML += `
 
    });
 
-        const badge = document.getElementById("notifyBadge");
+     const badge = document.getElementById("notifyBadge");
 
-        if (badge) {
+if (badge) {
 
-            if (unreadCount > 0) {
+    if (unreadCount > 0) {
 
-                badge.style.display = "flex";
-                badge.textContent = unreadCount > 99 ? "99+" : unreadCount;
+        badge.style.display = "flex";
+        badge.textContent = unreadCount > 99 ? "99+" : unreadCount;
 
-            } else {
+    } else {
 
-                badge.style.display = "none";
+        badge.style.display = "none";
 
-            }
+    }
 
-        }
+}   
 
     });
 
