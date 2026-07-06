@@ -283,3 +283,126 @@ previewImage.onerror = () => {
     selectedThumbnail = null;
 
 };
+// ===============================
+// upload-preview.js
+// PHẦN 2D
+// Tự tạo thumbnail nếu chưa chọn ảnh
+// ===============================
+
+async function generateThumbnail(){
+
+    if(selectedThumbnail) return;
+
+    if(!selectedVideo) return;
+
+    return new Promise((resolve)=>{
+
+        const video = document.createElement("video");
+
+        video.muted = true;
+        video.playsInline = true;
+
+        video.src = URL.createObjectURL(selectedVideo);
+
+        video.onloadeddata = ()=>{
+
+            // lấy frame đầu sau 0.5s
+            video.currentTime = Math.min(0.5, video.duration / 2);
+
+        };
+
+        video.onseeked = ()=>{
+
+            const canvas = document.createElement("canvas");
+
+            canvas.width = video.videoWidth;
+
+            canvas.height = video.videoHeight;
+
+            const ctx = canvas.getContext("2d");
+
+            ctx.drawImage(
+                video,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            canvas.toBlob((blob)=>{
+
+                selectedThumbnail = new File(
+                    [blob],
+                    "thumbnail.jpg",
+                    {
+                        type:"image/jpeg"
+                    }
+                );
+
+                const url = URL.createObjectURL(blob);
+
+                if(previewImage.dataset.url){
+
+                    URL.revokeObjectURL(
+                        previewImage.dataset.url
+                    );
+
+                }
+
+                previewImage.dataset.url = url;
+
+                previewImage.src = url;
+
+                previewImage.style.display = "block";
+
+                URL.revokeObjectURL(video.src);
+
+                resolve();
+
+            },"image/jpeg",0.92);
+
+        };
+
+    });
+
+}
+
+
+// ===============================
+// Khi bấm Đăng
+// nếu chưa có thumbnail thì tự tạo
+// ===============================
+
+document
+.getElementById("uploadPost")
+.addEventListener("click",async()=>{
+
+    if(!selectedVideo){
+
+        alert("Chọn video trước.");
+
+        return;
+
+    }
+
+    if(!selectedThumbnail){
+
+        await generateThumbnail();
+
+    }
+
+    console.log("Video:",selectedVideo);
+
+    console.log("Thumbnail:",selectedThumbnail);
+
+    // Bước 3 sẽ upload Cloudinary
+    document.dispatchEvent(
+        new CustomEvent("upload-start")
+    );
+
+});
+
+window.uploadPreview.generateThumbnail =
+generateThumbnail;
+
+console.log("upload-preview loaded");
