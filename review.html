@@ -1135,15 +1135,13 @@ item.type==="video"
 ? `
 <video
 class="vid"
-src="${item.url}"
-playsinline
-webkit-playsinline="true"
+autoplay
 muted
+playsinline
+webkit-playsinline
 loop
-preload="metadata"
-x-webkit-airplay="deny"
-disablePictureInPicture
-crossorigin="anonymous">
+preload="auto">
+    <source src="${item.url}" type="video/mp4">
 </video>
 `
 : `
