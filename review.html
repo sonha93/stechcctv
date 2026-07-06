@@ -169,19 +169,31 @@ body{
     font-weight:bold;
 
 }
-  #commentSheet{
+   #commentSheet{
+
     position:fixed;
-    inset:0;
+
+    left:0;
+    right:0;
+    bottom:-100%;
+
+   height:100dvh;
+max-height:100dvh;
+
     background:#fff;
+
+    border-radius:20px 20px 0 0;
+
+    transition:.35s;
+
+    z-index:10000 !important;
+
     display:flex;
+
     flex-direction:column;
-    transform:translateY(100%);
-    transition:.3s;
+
 }
 
-#commentSheet.active{
-    transform:translateY(0);
-}
 #commentSheet.active{
 
     bottom:0;
@@ -231,18 +243,29 @@ body{
     cursor:pointer;
 }
 #commentList{
+
     flex:1;
     overflow-y:auto;
-    min-height:0;
     padding:15px;
-    padding-bottom:90px;
+    min-height:0;
+
 }
 
 .comment-input{
     position:sticky;
     bottom:0;
+    left:0;
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    padding:10px 14px;
+    border-top:1px solid #eee;
     background:#fff;
+
     z-index:100;
+    padding-bottom:calc(env(safe-area-inset-bottom) + 10px);
 }
 .comment-input{
     padding-bottom:calc(env(safe-area-inset-bottom) + 10px);
