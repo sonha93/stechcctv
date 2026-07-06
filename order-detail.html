@@ -616,49 +616,16 @@ order.payment=="bank"
 :"Thanh toán khi nhận hàng";
 
 const pay = Number(order.total || 0);
-const point = Number(order.cashbackAmount || 0);
 
-let originalTotal = Number(order.originalTotal || 0);
+const originalTotal = Number(order.originalTotal || pay);
 
-// Đơn cũ chưa lưu originalTotal thì tính lại từ products
-if (!originalTotal) {
-
-    originalTotal = 0;
-
-    for (const item of (order.items || [])) {
-
-        const qty = Number(item.qty || 1);
-
-        let oldPrice = Number(item.oldPrice || 0);
-
-        if (!oldPrice && item.productId) {
-
-            const productSnap = await getDoc(
-                doc(db, "products", item.productId)
-            );
-
-            if (productSnap.exists()) {
-
-                const p = productSnap.data();
-
-                oldPrice = Number(p.oldPrice || item.price);
-
-            } else {
-
-                oldPrice = Number(item.price);
-
-            }
-
-        }
-
-        originalTotal += oldPrice * qty;
-    }
-}
-
-const discount = Math.max(
-    0,
-    originalTotal - pay - point
+// Nếu đơn cũ chưa có discount thì tự tính
+const discount = Number(
+    order.discount ??
+    (originalTotal - pay - Number(order.cashbackAmount || 0))
 );
+
+const point = Number(order.cashbackAmount || 0);
 
 document.getElementById("originalTotal").innerText =
 originalTotal.toLocaleString() + "đ";
@@ -671,6 +638,7 @@ document.getElementById("pointTotal").innerText =
 
 document.getElementById("total").innerText =
 pay.toLocaleString() + "đ";
+
 /* =======================
 TRẠNG THÁI
 ======================= */
