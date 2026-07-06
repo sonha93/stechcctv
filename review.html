@@ -1742,7 +1742,50 @@ commentImage.addEventListener("change",function(){
     document.getElementById("previewWrap").style.display = "none";
 
 };
+window.closeImage = function () {
+    document.getElementById("imageViewer").style.display = "none";
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+
+    const viewer = document.getElementById("imageViewer");
+
+    if (!viewer) return;
+
+    viewer.addEventListener("touchstart", e => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+
+    viewer.addEventListener("touchend", e => {
+
+        touchEndX = e.changedTouches[0].screenX;
+
+        const dx = touchEndX - touchStartX;
+
+        if (Math.abs(dx) < 50) return;
+
+        if (dx < 0) {
+
+            if (currentImageIndex < commentImages.length - 1) {
+                currentImageIndex++;
+            }
+
+        } else {
+
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+            }
+
+        }
+
+        document.getElementById("viewerImage").src =
+            commentImages[currentImageIndex];
+
+    });
+
+});
  loadVideos();
+    
 document.getElementById("sendBtn").onclick = () => {
 
     sendComment();
@@ -1779,50 +1822,6 @@ window.viewImage = function(index){
     document.getElementById("imageViewer").style.display="flex";
 
 }
-
-window.closeImage = function(){
-
-    document.getElementById("imageViewer").style.display = "none";
-
-}
-const viewer=document.getElementById("imageViewer");
-
-viewer.addEventListener("touchstart",e=>{
-
-    touchStartX=e.changedTouches[0].screenX;
-
-});
-
-viewer.addEventListener("touchend",e=>{
-
-    touchEndX=e.changedTouches[0].screenX;
-
-    const dx=touchEndX-touchStartX;
-
-    if(Math.abs(dx)<50) return;
-
-    if(dx<0){
-
-        if(currentImageIndex<commentImages.length-1){
-
-            currentImageIndex++;
-
-        }
-
-    }else{
-
-        if(currentImageIndex>0){
-
-            currentImageIndex--;
-
-        }
-
-    }
-
-    document.getElementById("viewerImage").src=
-        commentImages[currentImageIndex];
-
-});
 </script>
 <div id="imageViewer" onclick="closeImage()">
     <img id="viewerImage">
