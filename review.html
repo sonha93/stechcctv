@@ -1153,14 +1153,13 @@ class="review-image">
     // Safari iOS
     setTimeout(() => {
 
-       
+    document.querySelectorAll(".vid").forEach(v => {
+        v.load();
+    });
 
-        autoPlay();
+    autoPlay();
 
-    }, 200);
-
-}
-
+}, 200);
 /* AUTO PLAY LIKE TIKTOK */
 function autoPlay(){
 
