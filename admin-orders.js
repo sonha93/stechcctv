@@ -1616,11 +1616,22 @@ console.log("orderData =", orderData);
 console.log("items =", orderData.items);
 console.log("img =", orderData.items?.[0]?.img);
   if (title) {
-    await createNotification(
+   const firstItem = orderData.items?.[0] || {};
+
+const image =
+    firstItem.img ||
+    firstItem.image ||
+    firstItem.thumbnail ||
+    firstItem.images?.[0] ||
+    "";
+
+await createNotification(
     orderData.userId || orderData.uid,
     id,
     title,
     message,
+    image
+);
     const firstItem = orderData.items?.[0] || {};
 
 const image =
