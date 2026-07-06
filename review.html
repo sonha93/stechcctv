@@ -1087,10 +1087,12 @@ src="${item.url}"
 playsinline
 webkit-playsinline
 muted
+autoplay
+loop
 preload="auto"
-controls
-x-webkit-airplay="allow">
-</video>
+disablepictureinpicture
+controls="false"
+></video>
 `
 : `
 <img
@@ -1179,16 +1181,22 @@ function autoPlay(){
 
                 v.muted = !soundOn;
 
-                const play = ()=>{
-                    const p = v.play();
-                    if(p) p.catch(console.log);
-                };
+               const play = ()=>{
+    v.play().catch(()=>{});
+};
 
-                if(v.readyState >= 2){
-                    play();
-                }else{
-                    v.onloadeddata = play;
-                }
+             const startVideo = ()=>{
+
+    v.muted = !soundOn;
+
+    v.play().catch(()=>{});
+
+};
+if(v.readyState >= 2){
+    startVideo();
+}else{
+    v.oncanplay = startVideo;
+}
 
             }else{
 
@@ -1725,6 +1733,26 @@ commentImage.addEventListener("change",function(){
 
 };
  loadVideos();
+document.addEventListener("touchstart", () => {
+
+    const video = document.querySelector(".vid");
+
+    if(video){
+
+        video.play().catch(()=>{});
+
+    }
+
+}, { once:true });
+document.querySelectorAll(".vid").forEach(v=>{
+
+    v.muted = true;
+
+    v.playsInline = true;
+
+    v.autoplay = true;
+
+});
 document.getElementById("sendBtn").onclick = () => {
 
     sendComment();
