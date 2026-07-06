@@ -560,22 +560,29 @@ order.payment=="bank"
 ?"Chuyển khoản"
 :"Thanh toán khi nhận hàng";
 
-const originalTotal =
-Number(
-    order.originalTotal ??
-    order.subtotal ??
-    order.total ??
-    0
-);
+const pay = Number(order.total || 0);
 
-const discount =
-Number(order.discount || 0);
+const originalTotal =
+Number(order.originalTotal || pay);
 
 const point =
-Number(order.point || order.pointDiscount || 0);
+Number(order.cashbackAmount || 0);
 
-const pay =
-Number(order.total || 0);
+// số tiền giảm do khuyến mãi
+const discount =
+originalTotal - pay - point;
+
+document.getElementById("originalTotal").innerText =
+originalTotal.toLocaleString() + "đ";
+
+document.getElementById("discountTotal").innerText =
+"-" + discount.toLocaleString() + "đ";
+
+document.getElementById("pointTotal").innerText =
+"-" + point.toLocaleString() + "đ";
+
+document.getElementById("total").innerText =
+pay.toLocaleString() + "đ";
 
 document.getElementById("originalTotal").innerText =
 originalTotal.toLocaleString() + "đ";
@@ -713,14 +720,14 @@ Số lượng: x${qty}
 <div style="margin-top:auto;">
 
     ${
-        oldPrice > price
+        old > price
         ? `
         <div style="
             color:#999;
             text-decoration:line-through;
-            font-size:15px;
+            font-size:14px;
             margin-bottom:4px;">
-            ${oldPrice.toLocaleString()}đ
+            ${old.toLocaleString()}đ
         </div>
         `
         : ""
@@ -729,6 +736,14 @@ Số lượng: x${qty}
     <div class="product-price">
         ${price.toLocaleString()}đ
     </div>
+
+</div>
+        `
+        : ""
+    }
+
+    const old =
+Number(item.oldPrice || price);
 
 </div>
 
