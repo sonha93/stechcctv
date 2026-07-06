@@ -1083,11 +1083,12 @@ item.type==="video"
 <video
 class="vid"
 src="${item.url}"
+autoplay
 playsinline
 webkit-playsinline="true"
 muted
 loop
-preload="metadata"
+preload="auto"
 x-webkit-airplay="deny"
 disablePictureInPicture
 crossorigin="anonymous">
@@ -1171,31 +1172,18 @@ function autoPlay(){
         entries.forEach(entry=>{
 
             const v = entry.target;
+if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
 
-          if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
-
-                videos.forEach(x=>{
-
-                    if(x!==v){
-
-                       x.pause();
-                        x.currentTime = 0;
-
-                    }
-
-                });
-
-            
-v.muted = !soundOn;
-v.volume = soundOn ? 1 : 0;
-const p = v.play();
-
-if (p !== undefined) {
-    p.catch(err=>{
-        console.log("play error",err);
+    videos.forEach(x => {
+        x.pause();
+        x.currentTime = 0;
     });
-}
 
+    v.muted = !soundOn;
+    v.volume = soundOn ? 1 : 0;
+
+    v.play().catch(() => {});
+}
             }else{
 
     v.pause();
@@ -1211,7 +1199,7 @@ if (p !== undefined) {
     });
 
    videos.forEach(v => {
-
+  
     v.addEventListener("ended", () => {
         v.currentTime = 0;
        const p = v.play();
@@ -1251,13 +1239,14 @@ document.addEventListener("visibilitychange",()=>{
     }else{
 
         videos.forEach(v=>{
+            v.load();
             if(!v.paused){
-                const p = v.play();
+                v.load();
 
-if (p !== undefined) {
-    p.catch(err=>{
-        console.log("play error",err);
-    });
+const playPromise = v.play();
+
+if (playPromise) {
+    playPromise.catch(() => {});
 }
             }
         });
