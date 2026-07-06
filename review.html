@@ -14,8 +14,8 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 }
 
 body{
-    background:#000;
-    overflow:hidden;
+    overflow-x:hidden;
+    overflow-y:auto;
 }
 
 /* CONTAINER FULL SCREEN */
@@ -177,7 +177,7 @@ body{
     right:0;
     bottom:-100%;
 
-    height:70vh;
+    height:85vh;
 
     background:#fff;
 
@@ -265,7 +265,9 @@ body{
     background:#fff;
 
 }
-
+.comment-input{
+    padding-bottom:calc(env(safe-area-inset-bottom) + 10px);
+}
 #commentAvatar{
     width:42px;
     height:42px;
