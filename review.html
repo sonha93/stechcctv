@@ -1083,11 +1083,12 @@ item.type==="video"
 <video
 class="vid"
 src="${item.url}"
+autoplay
 playsinline
 webkit-playsinline="true"
 muted
 loop
-preload="metadata"
+preload="auto"
 x-webkit-airplay="deny"
 disablePictureInPicture
 crossorigin="anonymous">
@@ -1188,7 +1189,14 @@ function autoPlay(){
             
 v.muted = !soundOn;
 v.volume = soundOn ? 1 : 0;
+
+v.load();
+
 const p = v.play();
+
+if (p) {
+    p.catch(console.error);
+}
 
 if (p !== undefined) {
     p.catch(err=>{
@@ -1213,13 +1221,22 @@ if (p !== undefined) {
    videos.forEach(v => {
 
     v.addEventListener("ended", () => {
-        v.currentTime = 0;
-       const p = v.play();
 
-if (p !== undefined) {
-    p.catch(err=>{
-        console.log("play error",err);
-    });
+    v.currentTime = 0;
+
+    v.load();
+
+    const p = v.play();
+
+    if (p) {
+        p.catch(console.error);
+    }
+
+});
+const p = v.play();
+
+if (p) {
+    p.catch(err => console.log(err));
 }
     });
 
@@ -1252,7 +1269,16 @@ document.addEventListener("visibilitychange",()=>{
 
         videos.forEach(v=>{
             if(!v.paused){
-                const p = v.play();
+
+    v.load();
+
+    const p = v.play();
+
+    if (p) {
+        p.catch(console.error);
+    }
+
+}
 
 if (p !== undefined) {
     p.catch(err=>{
@@ -1725,7 +1751,21 @@ commentImage.addEventListener("change",function(){
     document.getElementById("previewWrap").style.display = "none";
 
 };
- loadVideos();
+ window.addEventListener("load", () => {
+
+    loadVideos();
+
+    setTimeout(() => {
+
+        document.querySelectorAll(".vid").forEach(v => {
+
+            v.load();
+
+        });
+
+    },500);
+
+});
 document.getElementById("sendBtn").onclick = () => {
 
     sendComment();
