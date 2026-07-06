@@ -1150,43 +1150,55 @@ class="review-image">
 
     // Safari iOS
    setTimeout(() => {
-
     autoPlay();
-
-    document.querySelectorAll(".vid").forEach(v=>{
-
-        v.load();
-
-        v.play().catch(()=>{});
-
-    });
-
-},500);
+},300);
 
 /* AUTO PLAY LIKE TIKTOK */
-function autoPlay(){
+function autoPlay() {
 
     const videos = document.querySelectorAll(".vid");
 
-    const observer = new IntersectionObserver(entries=>{
+    const observer = new IntersectionObserver((entries) => {
 
-        entries.forEach(entry=>{
+        entries.forEach(async (entry) => {
 
             const v = entry.target;
 
-          if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
+            if (entry.isIntersecting) {
 
-                videos.forEach(x=>{
-
-                    if(x!==v){
-
-                       x.pause();
-                        x.currentTime = 0;
-
+                videos.forEach(video => {
+                    if (video !== v) {
+                        video.pause();
                     }
-
                 });
 
+                v.muted = !soundOn;
+
+                try {
+                    await v.play();
+                } catch (e) {
+                    console.log(e);
+                }
+
+            } else {
+
+                v.pause();
+
+            }
+
+        });
+
+    }, {
+        threshold: 0.6
+    });
+
+    videos.forEach(v => {
+
+        observer.observe(v);
+
+    });
+
+}
             
 v.muted = !soundOn;
 v.volume = soundOn ? 1 : 0;
@@ -1689,21 +1701,22 @@ if(el){
   let soundOn = false;
 let iosUnlocked = false;
 
-document.addEventListener("touchstart",()=>{
+document.addEventListener("touchstart", async () => {
 
-    if(iosUnlocked) return;
+    if (iosUnlocked) return;
 
     iosUnlocked = true;
 
-    document.querySelectorAll(".vid").forEach(v=>{
+    const v = document.querySelector(".vid");
 
-        v.play().then(()=>{
-            v.pause();
-        }).catch(()=>{});
+    if (!v) return;
 
-    });
+    try {
+        v.muted = true;
+        await v.play();
+    } catch(e){}
 
-},{once:true});
+}, { once:true });
 window.toggleSound = function () {
     soundOn = !soundOn;
 
