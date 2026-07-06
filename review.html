@@ -1083,14 +1083,12 @@ item.type==="video"
 <video
 class="vid"
 src="${item.url}"
-playsinline
-webkit-playsinline="true"
+autoplay
 muted
 loop
-preload="metadata"
-x-webkit-airplay="deny"
-disablePictureInPicture
-crossorigin="anonymous">
+playsinline
+webkit-playsinline
+preload="auto">
 </video>
 `
 : `
@@ -1151,15 +1149,19 @@ class="review-image">
  });
 
     // Safari iOS
-    setTimeout(() => {
+   setTimeout(() => {
 
-       
+    autoPlay();
 
-        autoPlay();
+    document.querySelectorAll(".vid").forEach(v=>{
 
-    }, 200);
+        v.load();
 
-}
+        v.play().catch(()=>{});
+
+    });
+
+},500);
 
 /* AUTO PLAY LIKE TIKTOK */
 function autoPlay(){
@@ -1685,7 +1687,23 @@ if(el){
 
 }
   let soundOn = false;
+let iosUnlocked = false;
 
+document.addEventListener("touchstart",()=>{
+
+    if(iosUnlocked) return;
+
+    iosUnlocked = true;
+
+    document.querySelectorAll(".vid").forEach(v=>{
+
+        v.play().then(()=>{
+            v.pause();
+        }).catch(()=>{});
+
+    });
+
+},{once:true});
 window.toggleSound = function () {
     soundOn = !soundOn;
 
