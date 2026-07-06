@@ -735,7 +735,10 @@ const orderRef = await db.collection("orders").add({
 
   payment: document.getElementById("payment").value,
 
-  items: cart,
+items: cart.map(item => ({
+    ...item,
+    oldPrice: Number(item.oldPrice || item.price)
+})),
 
   total: finalTotal,
 
