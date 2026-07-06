@@ -1087,7 +1087,7 @@ playsinline
 webkit-playsinline="true"
 muted
 loop
-preload="auto"
+preload="metadata"
 x-webkit-airplay="deny"
 disablePictureInPicture
 crossorigin="anonymous">
@@ -1153,9 +1153,7 @@ class="review-image">
     // Safari iOS
     setTimeout(() => {
 
-        document.querySelectorAll(".vid").forEach(v => {
-            v.load();
-        });
+       
 
         autoPlay();
 
@@ -1200,9 +1198,11 @@ if (p !== undefined) {
 
             }else{
 
-                v.pause();
+    v.pause();
 
-            }
+    v.currentTime = 0;
+
+}
 
         });
 
