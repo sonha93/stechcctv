@@ -1226,6 +1226,12 @@ if (p !== undefined) {
 
     v.load();
 
+   v.addEventListener("ended", () => {
+
+    v.currentTime = 0;
+
+    v.load();
+
     const p = v.play();
 
     if (p) {
@@ -1233,14 +1239,18 @@ if (p !== undefined) {
     }
 
 });
-const p = v.play();
 
-if (p) {
-    p.catch(err => console.log(err));
-}
-    });
+observer.observe(v);
 
-    observer.observe(v);
+v.addEventListener("click", () => {
+
+    if (v.paused) {
+        v.play();
+    } else {
+        v.pause();
+    }
+
+});
 
     v.addEventListener("click", () => {
 
