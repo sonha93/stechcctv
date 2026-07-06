@@ -381,3 +381,84 @@ async function uploadCloudinary(){
 }
 
 console.log("upload-cloudinary 3C loaded");
+// ===============================
+// upload-cloudinary.js
+// PHẦN 3D
+// ===============================
+
+document.addEventListener(
+"cloudinary-success",
+(e)=>{
+
+    progress.style.display = "none";
+
+    setProgress(100);
+
+    postBtn.disabled = false;
+
+    postBtn.innerText = "Đăng";
+
+    uploading = false;
+
+    console.log("Upload hoàn tất");
+
+});
+
+function resetUploadState(){
+
+    videoURL = "";
+
+    thumbnailURL = "";
+
+    uploading = false;
+
+    progress.style.display = "none";
+
+    setProgress(0);
+
+    postBtn.disabled = false;
+
+    postBtn.innerText = "Đăng";
+
+}
+
+window.uploadCloudinary = {
+
+    getVideoURL(){
+
+        return videoURL;
+
+    },
+
+    getThumbnailURL(){
+
+        return thumbnailURL;
+
+    },
+
+    reset(){
+
+        resetUploadState();
+
+    }
+
+};
+
+
+// Khi popup đóng thì reset
+
+if(window.uploadUI){
+
+    const oldClose = window.uploadUI.close;
+
+    window.uploadUI.close = function(){
+
+        resetUploadState();
+
+        oldClose();
+
+    };
+
+}
+
+console.log("upload-cloudinary loaded");
