@@ -1083,12 +1083,13 @@ item.type==="video"
 ? `
 <video
 class="vid"
+src="${item.url}"
 playsinline
 webkit-playsinline
 muted
-loop
-preload="auto">
-    <source src="${item.url}" type="video/mp4">
+preload="auto"
+controls
+x-webkit-airplay="allow">
 </video>
 `
 : `
@@ -1179,12 +1180,19 @@ function autoPlay(){
                 });
 
             
-v.muted = !soundOn;
-v.volume = soundOn ? 1 : 0;
-const p = v.play();
+v.pause();
 
-if (p !== undefined) {
-    p.catch(err => {
+v.currentTime = 0;
+
+v.muted = !soundOn;
+
+setTimeout(()=>{
+
+    v.play().catch(()=>{});
+
+},50);
+if (promise !== undefined) {
+    promise.catch(err => {
         console.log(err);
     });
 }
@@ -1205,13 +1213,7 @@ if (p !== undefined) {
 
     v.addEventListener("ended", () => {
         v.currentTime = 0;
-       const p = v.play();
-
-if (p !== undefined) {
-    p.catch(err => {
-        console.log(err);
-    });
-}
+        v.play().catch(()=>{});
     });
 
     observer.observe(v);
@@ -1243,13 +1245,7 @@ document.addEventListener("visibilitychange",()=>{
 
         videos.forEach(v=>{
             if(!v.paused){
-               const p = v.play();
-
-if (p !== undefined) {
-    p.catch(err => {
-        console.log(err);
-    });
-}
+                v.play().catch(()=>{});
             }
         });
 
@@ -1682,7 +1678,21 @@ window.toggleSound = function () {
 
     document.querySelectorAll(".vid").forEach(v => {
         v.muted = !soundOn;
-        v.volume = soundOn ? 1 : 0;
+        window.toggleSound = function(){
+
+    soundOn = !soundOn;
+
+    document.querySelectorAll(".vid").forEach(v=>{
+
+        v.muted = !soundOn;
+
+        if(soundOn){
+            v.play().catch(()=>{});
+        }
+
+    });
+
+}
     });
 };
 const commentImage = document.getElementById("commentImage");
