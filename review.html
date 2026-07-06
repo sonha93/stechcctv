@@ -1082,18 +1082,15 @@ item.type==="video"
 ? `
 <video
 class="vid"
+src="${item.url}"
 playsinline
-webkit-playsinline
+webkit-playsinline="true"
 muted
-autoplay
 loop
-preload="auto"
+preload="metadata"
+x-webkit-airplay="deny"
+disablePictureInPicture
 crossorigin="anonymous">
-
-    <source
-        src="${item.url}"
-        type="video/mp4">
-
 </video>
 `
 : `
@@ -1181,13 +1178,8 @@ function autoPlay(){
 
                     if(x!==v){
 
-                      x.pause();
-
-try{
-    if(x.readyState >= 2){
-        x.currentTime = 0.01;
-    }
-}catch(e){}
+                       x.pause();
+                        x.currentTime = 0;
 
                     }
 
@@ -1206,19 +1198,16 @@ if (p !== undefined) {
 
             }else{
 
-    x.pause();
+    v.pause();
 
-try{
-    if(x.readyState >= 2){
-        x.currentTime = 0.01;
-    }
-}catch(e){}
+    v.currentTime = 0;
+
 }
 
         });
 
     },{
-       threshold:0.2
+       threshold:0.5
     });
 
    videos.forEach(v => {
@@ -1737,11 +1726,6 @@ commentImage.addEventListener("change",function(){
 
 };
  loadVideos();
-document.querySelectorAll(".vid").forEach(v=>{
-
-    v.load();
-
-});
 document.getElementById("sendBtn").onclick = () => {
 
     sendComment();
