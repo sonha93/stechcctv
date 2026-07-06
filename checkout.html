@@ -706,7 +706,19 @@ if (lockedPoints > 0 && memberId) {
 }
 
 
+let originalTotal = 0;
 
+cart.forEach(p => {
+
+  const qty = Number(p.qty || 1);
+
+  const oldPrice = Number(p.oldPrice || p.price);
+
+  originalTotal += oldPrice * qty;
+
+});
+
+const productDiscount = originalTotal - total;
 // ============================
 // ORDER
 // ============================
@@ -727,11 +739,13 @@ const orderRef = await db.collection("orders").add({
 
   total: finalTotal,
 
-  originalTotal: total,
+  originalTotal: originalTotal,
 
-  usedPoints: usePoints,
+  discount: productDiscount,
 
   cashbackAmount: cashbackAmount,
+
+  usedPoints: usePoints,
 
   status: "pending",
 
@@ -740,6 +754,7 @@ const orderRef = await db.collection("orders").add({
   createdAt: Date.now()
 
 });
+
 await db.collection("notifications").add({
 
   userId: user.uid,
