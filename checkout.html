@@ -712,13 +712,23 @@ cart.forEach(p => {
 
   const qty = Number(p.qty || 1);
 
-  const oldPrice = Number(p.oldPrice || p.price);
+  // Lấy giá gốc từ nhiều field khác nhau
+  const oldPrice = Number(
+      p.oldPrice ??
+      p.originalPrice ??
+      p.priceOld ??
+      p.price
+  );
 
   originalTotal += oldPrice * qty;
 
 });
 
-const productDiscount = originalTotal - total;
+if(originalTotal < total){
+    originalTotal = total;
+}
+
+const productDiscount = Math.max(0, originalTotal - total);
 // ============================
 // ORDER
 // ============================
@@ -737,7 +747,12 @@ const orderRef = await db.collection("orders").add({
 
 items: cart.map(item => ({
     ...item,
-    oldPrice: Number(item.oldPrice || item.price)
+    oldPrice: Number(
+        item.oldPrice ??
+        item.originalPrice ??
+        item.priceOld ??
+        item.price
+    )
 })),
 
   total: finalTotal,
