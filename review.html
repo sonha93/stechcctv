@@ -1083,12 +1083,11 @@ item.type==="video"
 <video
 class="vid"
 src="${item.url}"
-autoplay
 playsinline
 webkit-playsinline="true"
 muted
 loop
-preload="auto"
+preload="metadata"
 x-webkit-airplay="deny"
 disablePictureInPicture
 crossorigin="anonymous">
@@ -1252,14 +1251,13 @@ document.addEventListener("visibilitychange",()=>{
     }else{
 
         videos.forEach(v=>{
-            v.load();
             if(!v.paused){
-                v.load();
+                const p = v.play();
 
-const playPromise = v.play();
-
-if (playPromise) {
-    playPromise.catch(() => {});
+if (p !== undefined) {
+    p.catch(err=>{
+        console.log("play error",err);
+    });
 }
             }
         });
