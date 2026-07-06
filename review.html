@@ -1153,13 +1153,14 @@ class="review-image">
     // Safari iOS
     setTimeout(() => {
 
-    document.querySelectorAll(".vid").forEach(v => {
-        v.load();
-    });
+       
 
-    autoPlay();
+        autoPlay();
 
-}, 200);
+    }, 200);
+
+}
+
 /* AUTO PLAY LIKE TIKTOK */
 function autoPlay(){
 
@@ -1185,23 +1186,14 @@ function autoPlay(){
                 });
 
             
-videos.forEach(video => {
-    video.muted = true;
-    video.volume = 0;
-});
-
-if (soundOn) {
-    v.muted = false;
-    v.volume = 1;
-} else {
-    v.muted = true;
-    v.volume = 0;
-}
-
+v.muted = !soundOn;
+v.volume = soundOn ? 1 : 0;
 const p = v.play();
 
-if (p) {
-    p.catch(console.error);
+if (p !== undefined) {
+    p.catch(err=>{
+        console.log("play error",err);
+    });
 }
 
             }else{
@@ -1695,21 +1687,12 @@ if(el){
   let soundOn = false;
 
 window.toggleSound = function () {
-
     soundOn = !soundOn;
 
-    const current = document.querySelector(".vid:not([paused])");
-
     document.querySelectorAll(".vid").forEach(v => {
-        v.muted = true;
-        v.volume = 0;
+        v.muted = !soundOn;
+        v.volume = soundOn ? 1 : 0;
     });
-
-    if (current) {
-        current.muted = !soundOn;
-        current.volume = soundOn ? 1 : 0;
-    }
-
 };
 const commentImage = document.getElementById("commentImage");
 
@@ -1742,50 +1725,7 @@ commentImage.addEventListener("change",function(){
     document.getElementById("previewWrap").style.display = "none";
 
 };
-window.closeImage = function () {
-    document.getElementById("imageViewer").style.display = "none";
-};
-
-window.addEventListener("DOMContentLoaded", () => {
-
-    const viewer = document.getElementById("imageViewer");
-
-    if (!viewer) return;
-
-    viewer.addEventListener("touchstart", e => {
-        touchStartX = e.changedTouches[0].screenX;
-    });
-
-    viewer.addEventListener("touchend", e => {
-
-        touchEndX = e.changedTouches[0].screenX;
-
-        const dx = touchEndX - touchStartX;
-
-        if (Math.abs(dx) < 50) return;
-
-        if (dx < 0) {
-
-            if (currentImageIndex < commentImages.length - 1) {
-                currentImageIndex++;
-            }
-
-        } else {
-
-            if (currentImageIndex > 0) {
-                currentImageIndex--;
-            }
-
-        }
-
-        document.getElementById("viewerImage").src =
-            commentImages[currentImageIndex];
-
-    });
-
-});
  loadVideos();
-    
 document.getElementById("sendBtn").onclick = () => {
 
     sendComment();
@@ -1822,6 +1762,50 @@ window.viewImage = function(index){
     document.getElementById("imageViewer").style.display="flex";
 
 }
+
+window.closeImage = function(){
+
+    document.getElementById("imageViewer").style.display = "none";
+
+}
+const viewer=document.getElementById("imageViewer");
+
+viewer.addEventListener("touchstart",e=>{
+
+    touchStartX=e.changedTouches[0].screenX;
+
+});
+
+viewer.addEventListener("touchend",e=>{
+
+    touchEndX=e.changedTouches[0].screenX;
+
+    const dx=touchEndX-touchStartX;
+
+    if(Math.abs(dx)<50) return;
+
+    if(dx<0){
+
+        if(currentImageIndex<commentImages.length-1){
+
+            currentImageIndex++;
+
+        }
+
+    }else{
+
+        if(currentImageIndex>0){
+
+            currentImageIndex--;
+
+        }
+
+    }
+
+    document.getElementById("viewerImage").src=
+        commentImages[currentImageIndex];
+
+});
 </script>
 <div id="imageViewer" onclick="closeImage()">
     <img id="viewerImage">
