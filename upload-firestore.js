@@ -48,7 +48,7 @@ async(e)=>{
             return;
 
         }
-        });
+  
         const profileSnap =
         await getDoc(
             doc(db,"users",user.uid)
@@ -230,7 +230,7 @@ id:docRef.id,
 
 
 );
-   }catch(err){
+  }catch(err){
 
     console.error("Firestore Error:", err);
     console.error("Code:", err.code);
@@ -241,6 +241,8 @@ id:docRef.id,
     saving = false;
 
 }
+
+});
 
 
 // ===============================
