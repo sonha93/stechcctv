@@ -48,7 +48,7 @@ async(e)=>{
             return;
 
         }
-
+        });
         const profileSnap =
         await getDoc(
             doc(db,"users",user.uid)
