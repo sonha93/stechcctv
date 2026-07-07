@@ -262,12 +262,18 @@ console.log("upload-firestore 4C loaded");
 // Thêm video mới lên đầu feed
 window.appendVideoToFeed = function(video){
 
+    if(window.loadedVideos?.has(video.id)) return;
+
+    window.loadedVideos ??= new Set();
+
+    window.loadedVideos.add(video.id);
+
     const feed = document.getElementById("feed");
 
     if(!feed) return;
 
     const html = `
-    <div class="video-item">
+    <div class="video-item" id="video-${video.id}">
 
         <video
             class="vid"
