@@ -1111,58 +1111,183 @@ let currentProduct = "";
 let currentCommentProduct = "";
 async function loadVideos(){
 
-    const snap = await getDocs(collection(db,"videos"));
-
+    const snap = await getDocs(collection(db,"products"));
+   
     feed.innerHTML = "";
 
     snap.forEach(docSnap=>{
 
         const p = docSnap.data();
 
-        feed.innerHTML += `
+       const media = [];
+
+(p.videos || []).forEach(v=>{
+    media.push({
+        type:"video",
+        url: typeof v === "string" ? v : v.url
+    });
+});
+
+if(media.length === 0) return;
+
+        const id = docSnap.id;
+        onSnapshot(doc(db, "products", id), (snap) => {
+
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+
+    const el = document.getElementById("comment-" + id);
+
+    if (el) {
+        el.innerText = data.commentCount || 0;
+    }
+
+});
+       media.forEach(item=>{
+
+feed.innerHTML += `
+        
         <div class="video-item">
-
-            <video
-                class="vid"
-                src="${p.videoUrl}"
-                poster="${p.thumbnail || ""}"
-                playsinline
-                webkit-playsinline
-                muted
-                loop
-                preload="metadata">
-            </video>
-
+       ${
+item.type==="video"
+? `
+<video
+class="vid"
+src="${item.url}"
+playsinline
+webkit-playsinline="true"
+muted
+loop
+preload="metadata"
+x-webkit-airplay="deny"
+disablePictureInPicture
+crossorigin="anonymous">
+</video>
+`
+: `
+<img
+src="${item.url}"
+class="review-image">
+`
+}
             <div class="right-action">
+    <div class="action" onclick="addCart('${id}')">
+    <div class="cart-icon">
+        🛒
+        <div class="cart-plus">+</div>
+    </div>
+    <span>Giỏ</span>
+</div>
+    <div class="action" onclick="toggleLike('${id}')">
+        <div class="icon">❤️</div>
+      <span id="like-${id}">${p.likeCount || 0}</span>
+    </div>
+<div class="action" onclick="openComment('${id}')">
 
-                <div class="action">
-                    <div class="icon">❤️</div>
-                    <span>${p.likeCount || 0}</span>
-                </div>
+    <div class="icon">
+        <svg viewBox="0 0 24 24" width="38" height="38">
+            <path
+                d="M21 12c0 4.4-4 8-9 8-1.2 0-2.4-.2-3.5-.6L3 21l1.6-4.1C3.6 15.5 3 13.8 3 12c0-4.4 4-8 9-8s9 3.6 9 8z"
+                fill="none"
+                stroke="#fff"
+                stroke-width="2"
+                stroke-linejoin="round"/>
+            <circle cx="9" cy="12" r="1.2" fill="#fff"/>
+            <circle cx="12" cy="12" r="1.2" fill="#fff"/>
+            <circle cx="15" cy="12" r="1.2" fill="#fff"/>
+        </svg>
+    </div>
 
-                <div class="action">
-                    <div class="icon">💬</div>
-                    <span>${p.commentCount || 0}</span>
-                </div>
+    <span id="comment-${id}">
+        ${p.commentCount || 0}
+    </span>
 
-                <div class="action">
-                    <div class="icon">↗</div>
-                    <span>${p.shareCount || 0}</span>
-                </div>
+</div>
 
+   
+<div class="action" onclick="toggleSound()">
+    <div class="icon">🔊</div>
+    <span></span>
+</div>
+</div>
+
+<div class="info">
+                <div class="name">${p.name}</div>
+                <div class="price">${Number(p.price).toLocaleString()}đ</div>
+                </button>
+            </div>
+        </div>
+        `;
+   });
+ });
+// =========================
+// Video người dùng
+// =========================
+
+const videoSnap = await getDocs(collection(db,"videos"));
+
+videoSnap.forEach(docSnap=>{
+
+    const v = docSnap.data();
+
+    feed.innerHTML += `
+    <div class="video-item" id="video-${docSnap.id}">
+
+        <video
+            class="vid"
+            src="${v.videoUrl}"
+            poster="${v.thumbnail || ""}"
+            playsinline
+            webkit-playsinline
+            muted
+            loop
+            preload="metadata">
+        </video>
+
+        <div class="right-action">
+
+            <div class="action">
+                <div class="icon">❤️</div>
+                <span>${v.likeCount || 0}</span>
             </div>
 
-            <div class="info">
-                <div class="name">${p.name}</div>
-                <div class="desc">${p.caption || ""}</div>
+            <div class="action">
+                <div class="icon">💬</div>
+                <span>${v.commentCount || 0}</span>
+            </div>
+
+            <div class="action">
+                <div class="icon">↗</div>
+                <span>${v.shareCount || 0}</span>
             </div>
 
         </div>
-        `;
 
-    });
+        <div class="info">
 
-    setTimeout(autoPlay,200);
+            <div class="name">
+                ${v.name || "Người dùng"}
+            </div>
+
+            <div class="desc">
+                ${v.caption || ""}
+            </div>
+
+        </div>
+
+    </div>
+    `;
+
+});
+    // Safari iOS
+    setTimeout(() => {
+
+       
+
+        autoPlay();
+
+    }, 200);
 
 }
 
