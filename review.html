@@ -1174,6 +1174,8 @@ if(!feed) throw new Error("Missing #feed");
 const db = getFirestore(app);
 
 const auth = getAuth(app);
+const params = new URLSearchParams(location.search);
+const openVideoId = params.get("video");
 import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -1335,7 +1337,9 @@ videoSnap.forEach(docSnap=>{
     const v = docSnap.data();
 
     feed.innerHTML += `
-    <div class="video-item" id="video-${docSnap.id}">
+    <div class="video-item"
+     id="video-${docSnap.id}"
+     data-video-id="${docSnap.id}">
 
         <video
             class="vid"
@@ -1516,7 +1520,21 @@ videos.forEach(video=>{
     }, 200);
 
 }
+if (openVideoId) {
 
+    const target = document.querySelector(
+        `[data-video-id="${openVideoId}"]`
+    );
+
+    if (target) {
+
+        target.scrollIntoView({
+            block: "start"
+        });
+
+    }
+
+}
 /* AUTO PLAY LIKE TIKTOK */
 function autoPlay(){
 
