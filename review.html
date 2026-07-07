@@ -1177,7 +1177,7 @@ const auth = getAuth(app);
 const params = new URLSearchParams(location.search);
 const openVideoId = params.get("video");
 const openUid = params.get("uid");
-const openUid = params.get("uid");
+
 import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -1352,7 +1352,21 @@ if (openUid) {
     );
 
 }
-videoSnap.forEach(docSnap=>{
+let docs = videoSnap.docs;
+
+if (openVideoId) {
+
+    docs.sort((a, b) => {
+
+        if (a.id === openVideoId) return -1;
+        if (b.id === openVideoId) return 1;
+        return 0;
+
+    });
+
+}
+
+docs.forEach(docSnap => {
 
     const v = docSnap.data();
 
@@ -1532,21 +1546,7 @@ videos.forEach(video=>{
 });
     // Safari iOS
     setTimeout(() => {
-if (openVideoId) {
 
-    const target = document.querySelector(
-        `[data-video-id="${openVideoId}"]`
-    );
-
-    if (target) {
-
-        target.scrollIntoView({
-            block: "start"
-        });
-
-    }
-
-}
        
 
         autoPlay();
@@ -2227,44 +2227,42 @@ window.closeImage = function(){
     document.getElementById("imageViewer").style.display = "none";
 
 }
-const viewer=document.getElementById("imageViewer");
+const viewer = document.getElementById("imageViewer");
 
-viewer.addEventListener("touchstart",e=>{
+if (viewer) {
 
-    touchStartX=e.changedTouches[0].screenX;
+    viewer.addEventListener("touchstart", e => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
 
-});
+    viewer.addEventListener("touchend", e => {
 
-viewer.addEventListener("touchend",e=>{
+        touchEndX = e.changedTouches[0].screenX;
 
-    touchEndX=e.changedTouches[0].screenX;
+        const dx = touchEndX - touchStartX;
 
-    const dx=touchEndX-touchStartX;
+        if (Math.abs(dx) < 50) return;
 
-    if(Math.abs(dx)<50) return;
+        if (dx < 0) {
 
-    if(dx<0){
+            if (currentImageIndex < commentImages.length - 1) {
+                currentImageIndex++;
+            }
 
-        if(currentImageIndex<commentImages.length-1){
+        } else {
 
-            currentImageIndex++;
-
-        }
-
-    }else{
-
-        if(currentImageIndex>0){
-
-            currentImageIndex--;
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+            }
 
         }
 
-    }
+        document.getElementById("viewerImage").src =
+            commentImages[currentImageIndex];
 
-    document.getElementById("viewerImage").src=
-        commentImages[currentImageIndex];
+    });
 
-});
+}
 </script>
 <div id="imageViewer" onclick="closeImage()">
     <img id="viewerImage">
@@ -2391,7 +2389,6 @@ viewer.addEventListener("touchend",e=>{
 </div>
 <script type="module" src="inbox.js"></script>
 <div id="uploadContainer"></div>
-<script type="module" src="inbox.js"></script>
 <script type="module" src="upload-ui.js"></script>
 
 <script type="module" src="upload-preview.js"></script>
