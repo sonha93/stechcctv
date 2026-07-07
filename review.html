@@ -1245,57 +1245,38 @@ videoSnap.forEach(docSnap=>{
             preload="metadata">
         </video>
 
-       <div class="right-action">
+        <div class="right-action">
 
-    <!-- Avatar -->
-    <div class="action">
-        <img
-            src="${p.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
-            style="
-                width:58px;
-                height:58px;
-                border-radius:50%;
-                border:2px solid #fff;
-                object-fit:cover;
-            ">
-    </div>
+            <div class="action">
+                <div class="icon">❤️</div>
+                <span>${v.likeCount || 0}</span>
+            </div>
 
-    <!-- Like -->
-    <div
-        class="action"
-        onclick="toggleVideoLike('${docSnap.id}')">
+            <div class="action">
+                <div class="icon">💬</div>
+                <span>${v.commentCount || 0}</span>
+            </div>
 
-        <div class="icon">❤️</div>
+            <div class="action">
+                <div class="icon">↗</div>
+                <span>${v.shareCount || 0}</span>
+            </div>
 
-        <span id="videoLike-${docSnap.id}">
-            ${p.likeCount || 0}
-        </span>
+        </div>
 
-    </div>
+        <div class="info">
 
-    <!-- Bình luận -->
-    <div
-        class="action"
-        onclick="openVideoComment('${docSnap.id}')">
+            <div class="name">
+                ${v.name || "Người dùng"}
+            </div>
 
-        <div class="icon">💬</div>
+            <div class="desc">
+                ${v.caption || ""}
+            </div>
 
-        <span id="videoComment-${docSnap.id}">
-            ${p.commentCount || 0}
-        </span>
+        </div>
 
     </div>
-
-    <!-- Âm thanh -->
-    <div
-        class="action"
-        onclick="toggleSound()">
-
-        <div class="icon">🔊</div>
-
-    </div>
-
-</div>
     `;
 
 });
