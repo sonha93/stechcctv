@@ -1120,8 +1120,20 @@ async function loadVideos(){
     orderBy("createdAt","desc")
 );
 
-    const snap = await getDocs(q);
+ let snap;
 
+try{
+    snap = await getDocs(q);
+}catch(err){
+    console.error("LOAD VIDEO ERROR:", err);
+    return;
+}
+
+console.log("Video count:", snap.size);
+    if(snap.empty){
+    console.log("KHÔNG CÓ VIDEO");
+    return;
+}
     snap.forEach(docSnap=>{
 
         const p = docSnap.data();
