@@ -1020,6 +1020,12 @@ body{
 .product-info .price{
     display:block;
 }
+.video-comment-count{
+    color:#fff;
+    font-size:13px;
+    font-weight:bold;
+    margin-top:5px;
+}
 </style>
 </head>
 <body>
@@ -1293,21 +1299,7 @@ const videoSnap = await getDocs(collection(db,"videos"));
 videoSnap.forEach(docSnap=>{
 
     const v = docSnap.data();
-onSnapshot(doc(db, "videos", docSnap.id), (snap)=>{
 
-    if(!snap.exists()) return;
-
-    const data = snap.data();
-
-    const el = document.getElementById(
-        "videoComment-" + docSnap.id
-    );
-
-    if(el){
-        el.innerText = data.commentCount || 0;
-    }
-
-});
     feed.innerHTML += `
     <div class="video-item" id="video-${docSnap.id}">
 
@@ -1334,12 +1326,15 @@ onSnapshot(doc(db, "videos", docSnap.id), (snap)=>{
         </span>
     </div>
 
-    <div class="action" onclick="openCommentVideo('${docSnap.id}')">
-        <div class="icon">💬</div>
-        <span id="videoComment-${docSnap.id}">
-            ${v.commentCount || 0}
-        </span>
-    </div>
+   <div class="action" onclick="openCommentVideo('${docSnap.id}')">
+
+    <div class="icon">💬</div>
+
+    <span id="videoComment-${docSnap.id}">
+        ${v.commentCount || 0}
+    </span>
+
+</div>
 
 </div>
           <div class="info">
@@ -1538,17 +1533,6 @@ if (p !== undefined) {
     }
 
 });
-    window.openCommentVideo = function(id){
-
-    currentCommentProduct = id;
-
-    document
-    .getElementById("commentSheet")
-    .classList.add("active");
-
-    loadComments(id);
-
-}
     window.openComment = function(id){
 
     currentCommentProduct = id;
