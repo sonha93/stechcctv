@@ -230,18 +230,17 @@ id:docRef.id,
 
 
 );
-    }catch(err){
+   }catch(err){
 
-        console.error(err);
+    console.error("Firestore Error:", err);
+    console.error("Code:", err.code);
+    console.error("Message:", err.message);
 
-        alert("Không thể lưu video.");
+    alert(err.code + "\n" + err.message);
 
-        saving = false;
+    saving = false;
 
-    }
-  
-
-});
+}
 
 
 // ===============================
