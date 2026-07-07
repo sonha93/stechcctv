@@ -199,9 +199,6 @@ videoURL = result.videoURL;
 
 thumbnailURL = result.thumbnailURL;
 
-videoURL = result[0];
-
-thumbnailURL = result[1];
 
 setProgress(100);
 
