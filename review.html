@@ -1247,18 +1247,6 @@ videoSnap.forEach(docSnap=>{
 
         <div class="right-action">
 
-            <div class="action" onclick="toggleLikeVideo('${docSnap.id}')">
-    <div class="icon">❤️</div>
-    <span id="videoLike-${docSnap.id}">
-        ${v.likeCount || 0}
-    </span>
-</div>
-
-            <div class="action">
-                <div class="icon">💬</div>
-                <span>${v.commentCount || 0}</span>
-            </div>
-
            <div class="action" onclick="toggleLikeVideo('${docSnap.id}')">
     <div class="icon">❤️</div>
     <span id="videoLike-${docSnap.id}">
