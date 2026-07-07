@@ -1311,27 +1311,29 @@ videoSnap.forEach(docSnap=>{
 </div>
 
         </div>
+          <div class="info">
 
-          <img 
-        class="video-avatar"
-        src="${v.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
+            <img 
+                class="video-avatar"
+                src="${v.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
 
-    <div class="user-text">
+            <div class="user-text">
 
-        <div class="name">
-            ${v.name || "Người dùng"}
-        </div>
+                <div class="name">
+                    ${v.name || "Người dùng"}
+                </div>
 
-        <div class="desc">
-            ${v.caption || ""}
+                <div class="desc">
+                    ${v.caption || ""}
+                </div>
+
+            </div>
+
         </div>
 
     </div>
+`;
 
-</div>
-
-    </div>
-    `;
 
 });
 // =========================
