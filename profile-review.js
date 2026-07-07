@@ -24,7 +24,7 @@ const params = new URLSearchParams(location.search);
 
 const profileUid = params.get("uid");
 
-console.log("profileUid =", profileUid);
+
 // ===== HTML =====
 
 const avatar = document.getElementById("profileAvatar");
@@ -237,7 +237,12 @@ async function loadTab(type){
         );
 
         const snap=await getDocs(q);
+console.log("profileUid =", profileUid);
+console.log("video count =", snap.size);
 
+snap.forEach(doc => {
+    console.log(doc.id, doc.data());
+});
         renderVideos(snap);
 
     }
