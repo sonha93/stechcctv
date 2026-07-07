@@ -1177,7 +1177,6 @@ const auth = getAuth(app);
 const params = new URLSearchParams(location.search);
 const openVideoId = params.get("video");
 const openUid = params.get("uid");
-
 import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -1333,40 +1332,8 @@ class="review-image">
 // Video người dùng
 // =========================
 
-let videoSnap;
-
-if (openUid) {
-
-    videoSnap = await getDocs(
-        query(
-            collection(db, "videos"),
-            where("uid", "==", openUid),
-            where("status", "==", "public")
-        )
-    );
-
-} else {
-
-    videoSnap = await getDocs(
-        collection(db, "videos")
-    );
-
-}
-let docs = videoSnap.docs;
-
-if (openVideoId) {
-
-    docs.sort((a, b) => {
-
-        if (a.id === openVideoId) return -1;
-        if (b.id === openVideoId) return 1;
-        return 0;
-
-    });
-
-}
-
-docs.forEach(docSnap => {
+const videoSnap = await getDocs(collection(db,"videos"));
+videoSnap.forEach(docSnap=>{
 
     const v = docSnap.data();
 
@@ -1546,7 +1513,21 @@ videos.forEach(video=>{
 });
     // Safari iOS
     setTimeout(() => {
+if (openVideoId) {
 
+    const target = document.querySelector(
+        `[data-video-id="${openVideoId}"]`
+    );
+
+    if (target) {
+
+        target.scrollIntoView({
+            block: "start"
+        });
+
+    }
+
+}
        
 
         autoPlay();
@@ -2227,42 +2208,44 @@ window.closeImage = function(){
     document.getElementById("imageViewer").style.display = "none";
 
 }
-const viewer = document.getElementById("imageViewer");
+const viewer=document.getElementById("imageViewer");
 
-if (viewer) {
+viewer.addEventListener("touchstart",e=>{
 
-    viewer.addEventListener("touchstart", e => {
-        touchStartX = e.changedTouches[0].screenX;
-    });
+    touchStartX=e.changedTouches[0].screenX;
 
-    viewer.addEventListener("touchend", e => {
+});
 
-        touchEndX = e.changedTouches[0].screenX;
+viewer.addEventListener("touchend",e=>{
 
-        const dx = touchEndX - touchStartX;
+    touchEndX=e.changedTouches[0].screenX;
 
-        if (Math.abs(dx) < 50) return;
+    const dx=touchEndX-touchStartX;
 
-        if (dx < 0) {
+    if(Math.abs(dx)<50) return;
 
-            if (currentImageIndex < commentImages.length - 1) {
-                currentImageIndex++;
-            }
+    if(dx<0){
 
-        } else {
+        if(currentImageIndex<commentImages.length-1){
 
-            if (currentImageIndex > 0) {
-                currentImageIndex--;
-            }
+            currentImageIndex++;
 
         }
 
-        document.getElementById("viewerImage").src =
-            commentImages[currentImageIndex];
+    }else{
 
-    });
+        if(currentImageIndex>0){
 
-}
+            currentImageIndex--;
+
+        }
+
+    }
+
+    document.getElementById("viewerImage").src=
+        commentImages[currentImageIndex];
+
+});
 </script>
 <div id="imageViewer" onclick="closeImage()">
     <img id="viewerImage">
@@ -2389,6 +2372,7 @@ if (viewer) {
 </div>
 <script type="module" src="inbox.js"></script>
 <div id="uploadContainer"></div>
+<script type="module" src="inbox.js"></script>
 <script type="module" src="upload-ui.js"></script>
 
 <script type="module" src="upload-preview.js"></script>
