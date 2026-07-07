@@ -1635,9 +1635,10 @@ if (p !== undefined) {
     }
 
 });
-    window.openCommentVideo = function(id){
+   window.openCommentVideo = function(id){
 
     currentCommentProduct = id;
+    currentCommentType = "videos";
 
     document
     .getElementById("commentSheet")
@@ -1649,7 +1650,7 @@ if (p !== undefined) {
     window.openComment = function(id){
 
     currentCommentProduct = id;
-
+    currentCommentType = "products";
     document
         .getElementById("commentSheet")
         .classList.add("active");
@@ -1707,7 +1708,7 @@ function timeAgo(timestamp){
     const y = Math.floor(month / 12);
     return y + " năm";
 }
-function loadComments(productId){
+function loadComments(id, type="products"){
 
     const list = document.getElementById("commentList");
 
@@ -1716,7 +1717,7 @@ function loadComments(productId){
     }
 
     const q = query(
-    collection(db, "products", productId, "comments"),
+ collection(db, type, id, "comments")
 orderBy("createdAt", "desc")
 );
 
@@ -1918,12 +1919,11 @@ let image = "";
     await addDoc(
 
     collection(
-        db,
-        "products",
-        currentCommentProduct,
-        "comments"
-    ),
-
+    db,
+    currentCommentType,
+    currentCommentProduct,
+    "comments"
+)
     {
         uid: user.uid,
         name: user.displayName || "Người dùng",
@@ -1936,7 +1936,7 @@ let image = "";
 
     await updateDoc(
 
-        doc(db,"products",currentCommentProduct),
+       doc(db,currentCommentType,currentCommentProduct)
 
         {
             commentCount:increment(1)
