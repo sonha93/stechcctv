@@ -1179,6 +1179,18 @@ const params = new URLSearchParams(location.search);
 
 const openVideoId = params.get("video");
 const profileUid = params.get("uid");
+document.getElementById("myProfileBtn").onclick = () => {
+
+    const user = auth.currentUser;
+
+    if(!user){
+        alert("Bạn chưa đăng nhập");
+        return;
+    }
+
+    location.href = "profile-review.html?uid=" + user.uid;
+
+};
 import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -2347,10 +2359,10 @@ viewer.addEventListener("touchend",e=>{
 
     </a>
 
-    <a href="profile-review.html" class="nav-item">
-        <span class="material-symbols-outlined">person</span>
-        <small>Hồ sơ</small>
-    </a>
+    <a href="javascript:void(0)" id="myProfileBtn" class="nav-item">
+    <span class="material-symbols-outlined">person</span>
+    <small>Hồ sơ</small>
+</a>
 
 </div>
 <!-- INBOX SHEET -->
