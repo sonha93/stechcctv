@@ -2019,7 +2019,9 @@ window.likeComment = async function(productId, commentId){
     if(likeSnap.exists()){
 
         await deleteDoc(likeRef);
-
+await deleteDoc(
+    doc(db, "users", user.uid, "likes", id)
+);
         await updateDoc(commentRef,{
             likeCount:increment(-1)
         });
@@ -2080,7 +2082,12 @@ if(el){
             uid:user.uid,
             productId:id
         });
-
+        await setDoc(
+    doc(db, "users", user.uid, "likes", id),
+    {
+        time: serverTimestamp()
+    }
+);
         await updateDoc(productRef,{
             likeCount:increment(1)
         });
@@ -2116,7 +2123,9 @@ if(el){
     if(likeSnap.exists()){
 
         await deleteDoc(likeRef);
-
+        await deleteDoc(
+    doc(db, "users", user.uid, "likes", id)
+);
         await updateDoc(videoRef,{
             likeCount:increment(-1)
         });
@@ -2130,7 +2139,12 @@ if(el){
         await setDoc(likeRef,{
             uid:user.uid
         });
-
+        await setDoc(
+    doc(db, "users", user.uid, "likes", id),
+    {
+        time: serverTimestamp()
+    }
+);
         await updateDoc(videoRef,{
             likeCount:increment(1)
         });
