@@ -1114,6 +1114,7 @@ let currentCommentProduct = "";
 async function loadVideos(){
 
     feed.innerHTML = "";
+    loadedVideos.clear();
 
    const q = collection(db, "videos");
 
