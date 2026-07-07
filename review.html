@@ -1072,7 +1072,7 @@ const firebaseConfig = {
 
 const feed = document.getElementById("feed");
     window.loadedVideos = new Set();
-const loadedVideos = new Set();
+
 if(!feed) throw new Error("Missing #feed");
 const db = getFirestore(app);
 
@@ -1116,8 +1116,8 @@ async function loadVideos(){
     feed.innerHTML = "";
 
    const q = query(
-    collection(db, "videos", productId, "comments"),
-    orderBy("createdAt", "desc")
+    collection(db,"videos"),
+    orderBy("createdAt","desc")
 );
 
     const snap = await getDocs(q);
@@ -1665,14 +1665,12 @@ let image = "";
 
 );
 
-    await updateDoc(
-
-       doc(db,"videos",currentCommentProduct)
-        {
-            commentCount:increment(1)
-        }
-
-    );
+   await updateDoc(
+    doc(db,"videos",currentCommentProduct),
+    {
+        commentCount:increment(1)
+    }
+);
 
    document.getElementById("commentText").value="";
 document.getElementById("commentImage").value="";
