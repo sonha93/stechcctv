@@ -1446,9 +1446,9 @@ function loadComments(productId){
         unsubscribeComments();
     }
 
-    const q = query(
-   collection(db, "videos", productId, "comments")
-orderBy("createdAt", "desc")
+   const q = query(
+    collection(db, "videos", productId, "comments"),
+    orderBy("createdAt", "desc")
 );
 
 unsubscribeComments = onSnapshot(
