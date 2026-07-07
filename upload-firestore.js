@@ -239,19 +239,11 @@ document.addEventListener(
     saving = false;
 
     // Thêm ngay vào feed
-    if(typeof appendVideoToFeed==="function"){
+    if(typeof loadVideos==="function"){
 
-        appendVideoToFeed({
+    loadVideos();
 
-            id:data.id,
-
-            ...data
-
-        });
-
-    }
-
-});
+}
 
 console.log("upload-firestore 4C loaded");
 // ===============================
