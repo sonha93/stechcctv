@@ -134,11 +134,12 @@ if(xhr.readyState!==4) return;
 
 if(xhr.status===200){
 
-const json=
-JSON.parse(xhr.responseText);
+
+const json = JSON.parse(xhr.responseText);
+
+console.log("Cloudinary response:", json);
 
 resolve(json.secure_url);
-
 }else{
 
 reject(xhr.responseText);
@@ -280,8 +281,9 @@ async function uploadWithRetry(file,type){
 
             const url = await uploadWithTimeout(file,type);
 
-            return url;
+console.log(type, url);
 
+return url;
         }catch(err){
 
             lastError = err;
