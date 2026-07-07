@@ -4,16 +4,6 @@
 // ===============================
 const container =
 document.getElementById("uploadContainer");
-
-fetch("upload-popup.html")
-.then(r=>r.text())
-.then(html=>{
-
-    container.innerHTML = html;
-
-    initUploadUI();
-
-});
 const uploadHTML = `
 <div id="uploadPopup">
 
