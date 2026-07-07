@@ -195,10 +195,13 @@ setProgress(1);
 // Upload song song
 const result = await uploadCloudinary();
 
-videoURL = result.videoURL;
+console.log("RESULT =", result);
 
+videoURL = result.videoURL;
 thumbnailURL = result.thumbnailURL;
 
+console.log("videoURL =", videoURL);
+console.log("thumbnailURL =", thumbnailURL);
 
 setProgress(100);
 
@@ -244,22 +247,19 @@ uploading=false;
 // Getter
 // =====================
 
-window.uploadCloudinary={
+async function uploadCloudinary() {
 
-getVideo(){
+    const video = window.uploadPreview.getVideo();
+    const thumb = window.uploadPreview.getThumbnail();
 
-return videoURL;
+    const videoURL = await uploadWithRetry(video, "video");
+    const thumbnailURL = await uploadWithRetry(thumb, "image");
 
-},
-
-getThumbnail(){
-
-return thumbnailURL;
-
+    return {
+        videoURL,
+        thumbnailURL
+    };
 }
-
-};
-
 console.log("upload-cloudinary 3B loaded");
 // ===============================
 // upload-cloudinary.js
