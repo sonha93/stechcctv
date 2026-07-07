@@ -1020,14 +1020,16 @@ body{
 .product-info .price{
     display:block;
 }
-    .right-action{
+  .right-action{
     position:absolute;
     right:10px;
-    bottom:120px;
+    bottom:105px;
+
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:10px;
+
+    gap:4px;              /* giảm khoảng cách */
 }
 
 .video-avatar{
@@ -1036,37 +1038,24 @@ body{
     border-radius:50%;
     object-fit:cover;
     border:2px solid #fff;
-    margin-bottom:10px;
+
+    margin-bottom:6px;    /* từ 10 -> 6 */
 }
 
 .action{
     display:flex;
     flex-direction:column;
     align-items:center;
+
+    margin:0;             /* thêm */
+    padding:0;            /* thêm */
+
     color:#fff;
-    cursor:pointer;
-}
-
-.icon{
-    width:42px;
-    height:42px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-
-.icon svg{
-    width:34px;
-    height:34px;
-    filter:drop-shadow(0 1px 3px rgba(0,0,0,.5));
 }
 
 .action span{
-    margin-top:3px;
-    font-size:13px;
-    font-weight:600;
-    color:#fff;
-    text-shadow:0 1px 3px rgba(0,0,0,.5);
+    margin-top:1px;       /* từ 3 -> 1 */
+    font-size:12px;
 }
 </style>
 </head>
