@@ -236,8 +236,6 @@ where("status","==","public")
         );
 
         const snap=await getDocs(q);
-console.log("profileUid =", profileUid);
-console.log("video count =", snap.size);
 
 snap.forEach(doc => {
     console.log(doc.id, doc.data());
