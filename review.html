@@ -108,7 +108,8 @@ body{
     display:flex;
     flex-direction:column;
 
-  
+    align-items:center;
+
     gap:20px;
 
     z-index:999;
@@ -1011,6 +1012,14 @@ body{
     margin-top:5px;
 
 }
+    .product-info{
+    display:block !important;
+}
+
+.product-info .name,
+.product-info .price{
+    display:block;
+}
 </style>
 </head>
 <body>
@@ -1261,12 +1270,17 @@ class="review-image">
 </div>
 </div>
 
-<div class="info">
-                <div class="name">${p.name}</div>
-                <div class="price">${Number(p.price).toLocaleString()}đ</div>
-                </button>
-            </div>
-        </div>
+<div class="info product-info">
+
+    <div class="name">
+        ${p.name}
+    </div>
+
+    <div class="price">
+        ${Number(p.price).toLocaleString()}đ
+    </div>
+
+</div>
         `;
    });
  });
