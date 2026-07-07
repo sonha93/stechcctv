@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Hồ sơ</title>
+
+<link rel="stylesheet" href="profile-review.css">
+
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    background:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+    color:#111;
+}
+
+body{
+    overflow-x:hidden;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.profile-header{
+
+    position:sticky;
+    top:0;
+
+    height:56px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 14px;
+
+    background:#fff;
+
+    border-bottom:1px solid #eee;
+
+    z-index:1000;
+
+}
+
+.profile-title{
+
+    font-size:18px;
+    font-weight:700;
+
+}
+
+.top-btn{
+
+    width:40px;
+    height:40px;
+
+    border:none;
+    background:none;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    cursor:pointer;
+
+}
+
+.top-btn .material-symbols-outlined{
+
+    font-size:28px;
+
+}
+
+/* =========================
+   PROFILE
+========================= */
+
+.profile-top{
+
+    padding:24px 20px 10px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+}
+
+.profile-avatar{
+
+    width:96px;
+    height:96px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:2px solid #eee;
+
+}
+
+#profileName{
+
+    margin-top:16px;
+
+    font-size:22px;
+
+    font-weight:700;
+
+}
+
+.username{
+
+    margin-top:6px;
+
+    color:#666;
+
+    font-size:15px;
+
+}
+
+.bio{
+
+    margin-top:12px;
+
+    text-align:center;
+
+    font-size:14px;
+
+    color:#333;
+
+    line-height:1.5;
+
+    max-width:330px;
+
+}
+
+/* =========================
+   COUNT
+========================= */
+
+.profile-count{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:42px;
+
+    margin-top:18px;
+
+}
+
+.count-item{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+}
+
+.count-item span{
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+.count-item small{
+
+    margin-top:4px;
+
+    color:#666;
+
+    font-size:13px;
+
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.profile-buttons{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:10px;
+
+    margin-top:22px;
+
+    padding:0 20px;
+
+}
+
+.profile-buttons button{
+
+    flex:1;
+
+    max-width:170px;
+
+    height:42px;
+
+    border-radius:8px;
+
+    border:none;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+}
+
+#followBtn{
+
+    background:#ff2d55;
+
+    color:#fff;
+
+}
+
+#editBtn{
+
+    background:#f3f3f3;
+
+    color:#111;
+
+}
+
+/* =========================
+   TAB
+========================= */
+
+.profile-tabs{
+
+    margin-top:24px;
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    border-top:1px solid #eee;
+
+    border-bottom:1px solid #eee;
+
+}
+
+.tab{
+
+    height:48px;
+
+    border:none;
+
+    background:#fff;
+
+    cursor:pointer;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#888;
+
+}
+
+.tab.active{
+
+    color:#111;
+
+    border-bottom:2px solid #111;
+
+}
+
+.tab .material-symbols-outlined{
+
+    font-size:26px;
+
+}
+
+/* =========================
+   GRID
+========================= */
+
+.video-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:2px;
+
+    background:#eee;
+
+    margin-top:2px;
+
+}
+
+.video-card{
+
+    position:relative;
+
+    aspect-ratio:9/16;
+
+    background:#000;
+
+    overflow:hidden;
+
+    cursor:pointer;
+
+}
+
+.video-card img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+}
+
+.video-card video{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+}
+
+.play-count{
+
+    position:absolute;
+
+    left:6px;
+
+    bottom:6px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:3px;
+
+    color:#fff;
+
+    font-size:12px;
+
+    font-weight:600;
+
+    text-shadow:0 1px 3px rgba(0,0,0,.7);
+
+}
+
+/* =========================
+   MENU
+========================= */
+
+#videoMenu{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:none;
+
+    align-items:flex-end;
+
+    z-index:99999;
+
+}
+
+#videoMenu.active{
+
+    display:flex;
+
+}
+
+.menu-box{
+
+    width:100%;
+
+    background:#fff;
+
+    border-radius:18px 18px 0 0;
+
+    overflow:hidden;
+
+}
+
+.menu-box button{
+
+    width:100%;
+
+    height:56px;
+
+    border:none;
+
+    background:#fff;
+
+    border-bottom:1px solid #eee;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+}
+
+.menu-box button:last-child{
+
+    color:#ff2d55;
+
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:768px){
+
+.profile-count{
+
+    gap:26px;
+
+}
+
+.profile-buttons{
+
+    padding:0 12px;
+
+}
+
+.profile-buttons button{
+
+    max-width:none;
+
+}
+
+.profile-avatar{
+
+    width:88px;
+    height:88px;
+
+}
+
+}
+</head>
+
+<body>
+
+<!-- Header -->
+
+<div class="profile-header">
+
+    <button id="backBtn" class="top-btn">
+        <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+
+    <div class="profile-title">
+        Hồ sơ
+    </div>
+
+    <button id="menuBtn" class="top-btn">
+        <span class="material-symbols-outlined">menu</span>
+    </button>
+
+</div>
+
+
+
+<!-- Thông tin -->
+
+<div class="profile-top">
+
+    <img
+        id="profileAvatar"
+        class="profile-avatar"
+        src="https://i.ibb.co/Z1kv9nJj/logo.png">
+
+    <h2 id="profileName">
+        Đang tải...
+    </h2>
+
+    <div id="profileUsername" class="username">
+        @loading
+    </div>
+
+    <div id="profileBio" class="bio">
+    </div>
+
+</div>
+
+
+
+<!-- Thống kê -->
+
+<div class="profile-count">
+
+    <div class="count-item">
+
+        <span id="followingCount">0</span>
+
+        <small>Đã follow</small>
+
+    </div>
+
+    <div class="count-item">
+
+        <span id="followerCount">0</span>
+
+        <small>Follower</small>
+
+    </div>
+
+    <div class="count-item">
+
+        <span id="likeCount">0</span>
+
+        <small>Thích</small>
+
+    </div>
+
+</div>
+
+
+
+<!-- Nút -->
+
+<div class="profile-buttons">
+
+    <button id="followBtn">
+
+        Follow
+
+    </button>
+
+    <button id="editBtn">
+
+        Sửa hồ sơ
+
+    </button>
+
+</div>
+
+
+
+<!-- Tabs -->
+
+<div class="profile-tabs">
+
+    <button
+        class="tab active"
+        data-tab="videos">
+
+        <span class="material-symbols-outlined">
+
+            grid_view
+
+        </span>
+
+    </button>
+
+    <button
+        class="tab"
+        data-tab="private">
+
+        <span class="material-symbols-outlined">
+
+            lock
+
+        </span>
+
+    </button>
+
+    <button
+        class="tab"
+        data-tab="liked">
+
+        <span class="material-symbols-outlined">
+
+            favorite
+
+        </span>
+
+    </button>
+
+    <button
+        class="tab"
+        data-tab="saved">
+
+        <span class="material-symbols-outlined">
+
+            bookmark
+
+        </span>
+
+    </button>
+
+</div>
+
+
+
+<!-- Nội dung -->
+
+<div id="tabContent">
+
+    <div
+        id="videosGrid"
+        class="video-grid">
+
+    </div>
+
+</div>
+
+
+
+<!-- Menu video -->
+
+<div id="videoMenu">
+
+    <div class="menu-box">
+
+        <button id="privacyBtn">
+
+            Chuyển Công khai / Riêng tư
+
+        </button>
+
+        <button id="commentBtn">
+
+            Bật / Tắt bình luận
+
+        </button>
+
+        <button id="deleteBtn">
+
+            Xóa video
+
+        </button>
+
+        <button id="cancelBtn">
+
+            Hủy
+
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<script type="module" src="profile-review.js"></script>
+
+</body>
+</html>
