@@ -24,7 +24,7 @@ const params = new URLSearchParams(location.search);
 
 const profileUid = params.get("uid");
 
-
+console.log("profileUid =", profileUid);
 // ===== HTML =====
 
 const avatar = document.getElementById("profileAvatar");
