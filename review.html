@@ -1335,17 +1335,6 @@ videoSnap.forEach(docSnap=>{
     const v = docSnap.data();
 
     feed.innerHTML += `
-    onSnapshot(doc(db, "videos", docSnap.id), snap => {
-
-    if (!snap.exists()) return;
-
-    const el = document.getElementById("videoComment-" + docSnap.id);
-
-    if (el) {
-        el.innerText = snap.data().commentCount || 0;
-    }
-
-});
     <div class="video-item" id="video-${docSnap.id}">
 
         <video
