@@ -172,12 +172,9 @@ if(captionInput){
 
     captionInput.addEventListener("input",()=>{
 
-        counter.innerText =
-        captionInput.value.length +
-        " / 500";
-
-    });
-
+       if(counter){
+    counter.innerText =
+    captionInput.value.length + " / 500";
 }
 
 // Đếm ký tự tiêu đề
