@@ -1296,21 +1296,25 @@ videoSnap.forEach(docSnap=>{
 
         <div class="right-action">
 
-           <div class="action" onclick="toggleLikeVideo('${docSnap.id}')">
-    <div class="icon">❤️</div>
-    <span id="videoLike-${docSnap.id}">
-        ${v.likeCount || 0}
-    </span>
-</div>
+    <img 
+        class="video-avatar"
+        src="${v.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
 
-<div class="action" onclick="openComment('${docSnap.id}')">
-    <div class="icon">💬</div>
-    <span id="videoComment-${docSnap.id}">
-        ${v.commentCount || 0}
-    </span>
-</div>
+    <div class="action" onclick="toggleLikeVideo('${docSnap.id}')">
+        <div class="icon">❤️</div>
+        <span id="videoLike-${docSnap.id}">
+            ${v.likeCount || 0}
+        </span>
+    </div>
 
-        </div>
+    <div class="action" onclick="openComment('${docSnap.id}')">
+        <div class="icon">💬</div>
+        <span id="videoComment-${docSnap.id}">
+            ${v.commentCount || 0}
+        </span>
+    </div>
+
+</div>
           <div class="info">
 
             <img 
