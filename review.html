@@ -1247,20 +1247,31 @@ videoSnap.forEach(docSnap=>{
 
         <div class="right-action">
 
-            <div class="action">
-                <div class="icon">❤️</div>
-                <span>${v.likeCount || 0}</span>
-            </div>
+            <div class="action" onclick="toggleLikeVideo('${docSnap.id}')">
+    <div class="icon">❤️</div>
+    <span id="videoLike-${docSnap.id}">
+        ${v.likeCount || 0}
+    </span>
+</div>
 
             <div class="action">
                 <div class="icon">💬</div>
                 <span>${v.commentCount || 0}</span>
             </div>
 
-            <div class="action">
-                <div class="icon">↗</div>
-                <span>${v.shareCount || 0}</span>
-            </div>
+           <div class="action" onclick="toggleLikeVideo('${docSnap.id}')">
+    <div class="icon">❤️</div>
+    <span id="videoLike-${docSnap.id}">
+        ${v.likeCount || 0}
+    </span>
+</div>
+
+<div class="action" onclick="openComment('${docSnap.id}')">
+    <div class="icon">💬</div>
+    <span id="videoComment-${docSnap.id}">
+        ${v.commentCount || 0}
+    </span>
+</div>
 
         </div>
 
@@ -1815,6 +1826,56 @@ if(el){
     let v = parseInt(el.innerText || "0");
     el.innerText = v + 1;
 }
+    }
+
+}
+    window.toggleLikeVideo = async function(id){
+
+    const user = auth.currentUser;
+
+    if(!user){
+        alert("Đăng nhập trước");
+        return;
+    }
+
+    const likeRef = doc(
+        db,
+        "videoLikes",
+        id + "_" + user.uid
+    );
+
+    const likeSnap = await getDoc(likeRef);
+
+    const videoRef = doc(db,"videos",id);
+
+    const el = document.getElementById("videoLike-"+id);
+
+    if(likeSnap.exists()){
+
+        await deleteDoc(likeRef);
+
+        await updateDoc(videoRef,{
+            likeCount:increment(-1)
+        });
+
+        if(el){
+            el.innerText = Math.max(0,parseInt(el.innerText||0)-1);
+        }
+
+    }else{
+
+        await setDoc(likeRef,{
+            uid:user.uid
+        });
+
+        await updateDoc(videoRef,{
+            likeCount:increment(1)
+        });
+
+        if(el){
+            el.innerText = parseInt(el.innerText||0)+1;
+        }
+
     }
 
 }
