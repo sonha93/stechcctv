@@ -1177,6 +1177,7 @@ const auth = getAuth(app);
 const params = new URLSearchParams(location.search);
 const openVideoId = params.get("video");
 const openUid = params.get("uid");
+const openUid = params.get("uid");
 import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -1332,7 +1333,25 @@ class="review-image">
 // Video người dùng
 // =========================
 
-const videoSnap = await getDocs(collection(db,"videos"));
+let videoSnap;
+
+if (openUid) {
+
+    videoSnap = await getDocs(
+        query(
+            collection(db, "videos"),
+            where("uid", "==", openUid),
+            where("status", "==", "public")
+        )
+    );
+
+} else {
+
+    videoSnap = await getDocs(
+        collection(db, "videos")
+    );
+
+}
 videoSnap.forEach(docSnap=>{
 
     const v = docSnap.data();
