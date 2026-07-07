@@ -378,19 +378,25 @@ window.appendVideoToFeed = function(video){
 
         </div>
 
-        <div class="info">
+       <div class="info">
 
-            <div class="name">
-                ${video.name}
-            </div>
+    <img
+        class="video-avatar"
+        src="${video.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
 
-            <div class="desc">
-                ${video.caption || ""}
-            </div>
+    <div class="user-text">
 
+        <div class="name">
+            ${video.name}
+        </div>
+
+        <div class="desc">
+            ${video.caption || ""}
         </div>
 
     </div>
+
+</div>
     `;
 
     feed.insertAdjacentHTML(
