@@ -1071,6 +1071,8 @@ const firebaseConfig = {
 
 
 const feed = document.getElementById("feed");
+    window.loadedVideos = new Set();
+const loadedVideos = new Set();
 if(!feed) throw new Error("Missing #feed");
 const db = getFirestore(app);
 
@@ -1111,28 +1113,50 @@ let currentProduct = "";
 let currentCommentProduct = "";
 async function loadVideos(){
 
-    const snap = await getDocs(collection(db,"products"));
-   
-    feed.innerHTML = "";
+  onSnapshot(
+    query(
+        collection(db,"videos"),
+        orderBy("createdAt","desc")
+    ),
+    (snap)=>{
 
-    snap.forEach(docSnap=>{
+        snap.docChanges().forEach(change=>{
 
-        const p = docSnap.data();
+            if(change.type==="added"){
 
-       const media = [];
+                const p = change.doc.data();
 
-(p.videos || []).forEach(v=>{
-    media.push({
-        type:"video",
-        url: typeof v === "string" ? v : v.url
-    });
+                appendVideoToFeed({
+
+                    id:change.doc.id,
+
+                    ...p
+
+                });
+
+            }
+
+        });
+
+    }
+);
+
+       const p = docSnap.data();
+
+const media = [{
+    type:"video",
+    url:p.videoUrl
+}];
 });
 
 if(media.length === 0) return;
 
-        const id = docSnap.id;
-        onSnapshot(doc(db, "products", id), (snap) => {
+      const id = docSnap.id;
 
+if(loadedVideos.has(id)) return;
+
+loadedVideos.add(id);
+        onSnapshot(doc(db, "videos", id), (snap) => {
     if (!snap.exists()) return;
 
     const data = snap.data();
@@ -1148,7 +1172,7 @@ if(media.length === 0) return;
 
 feed.innerHTML += `
         
-        <div class="video-item">
+       <div class="video-item" id="video-${video.id}">
        ${
 item.type==="video"
 ? `
@@ -1213,10 +1237,17 @@ class="review-image">
 </div>
 
 <div class="info">
-                <div class="name">${p.name}</div>
-                <div class="price">${Number(p.price).toLocaleString()}đ</div>
-                </button>
-            </div>
+
+    <div class="name">
+        ${p.name}
+        ${p.verified ? "✔️" : ""}
+    </div>
+
+    <div class="desc">
+        ${p.caption || ""}
+    </div>
+
+</div>
         </div>
         `;
    });
@@ -1407,7 +1438,7 @@ function loadComments(productId){
     }
 
     const q = query(
-    collection(db, "products", productId, "comments"),
+   collection(db, "videos", productId, "comments")
 orderBy("createdAt", "desc")
 );
 
@@ -1609,11 +1640,11 @@ let image = "";
     await addDoc(
 
     collection(
-        db,
-        "products",
-        currentCommentProduct,
-        "comments"
-    ),
+    db,
+    "videos",
+    currentCommentProduct,
+    "comments"
+)
 
     {
         uid: user.uid,
@@ -1627,8 +1658,7 @@ let image = "";
 
     await updateDoc(
 
-        doc(db,"products",currentCommentProduct),
-
+       doc(db,"videos",currentCommentProduct)
         {
             commentCount:increment(1)
         }
@@ -1676,13 +1706,13 @@ window.likeComment = async function(productId, commentId){
 
     const likeSnap = await getDoc(likeRef);
 
-    const commentRef = doc(
-        db,
-        "products",
-        productId,
-        "comments",
-        commentId
-    );
+    const commentRef =doc(
+    db,
+    "videos",
+    productId,
+    "comments",
+    commentId
+);
 
     if(likeSnap.exists()){
 
@@ -1722,7 +1752,7 @@ window.toggleLike = async function(id){
 
     const likeSnap = await getDoc(likeRef);
 
-    const productRef = doc(db,"products",id);
+    const productRef = doc(db,"videos",id);
 
     if(likeSnap.exists()){
 
