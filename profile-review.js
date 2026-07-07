@@ -368,7 +368,7 @@ function renderOne(docSnap){
 
 <div class="video-card"
 
-onclick="location.href='review.html?video=${docSnap.id}&uid=${profileUid}'"
+onclick="location.href='review.html?uid=${profileUid}&video=${docSnap.id}'"
 
 ${auth.currentUser && auth.currentUser.uid===profileUid
 
