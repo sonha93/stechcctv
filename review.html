@@ -1111,125 +1111,58 @@ let currentProduct = "";
 let currentCommentProduct = "";
 async function loadVideos(){
 
-    const snap = await getDocs(collection(db,"products"));
-   
+    const snap = await getDocs(collection(db,"videos"));
+
     feed.innerHTML = "";
 
     snap.forEach(docSnap=>{
 
         const p = docSnap.data();
 
-       const media = [];
-
-(p.videos || []).forEach(v=>{
-    media.push({
-        type:"video",
-        url: typeof v === "string" ? v : v.url
-    });
-});
-
-if(media.length === 0) return;
-
-        const id = docSnap.id;
-        onSnapshot(doc(db, "products", id), (snap) => {
-
-    if (!snap.exists()) return;
-
-    const data = snap.data();
-
-    const el = document.getElementById("comment-" + id);
-
-    if (el) {
-        el.innerText = data.commentCount || 0;
-    }
-
-});
-       media.forEach(item=>{
-
-feed.innerHTML += `
-        
+        feed.innerHTML += `
         <div class="video-item">
-       ${
-item.type==="video"
-? `
-<video
-class="vid"
-src="${item.url}"
-playsinline
-webkit-playsinline="true"
-muted
-loop
-preload="metadata"
-x-webkit-airplay="deny"
-disablePictureInPicture
-crossorigin="anonymous">
-</video>
-`
-: `
-<img
-src="${item.url}"
-class="review-image">
-`
-}
+
+            <video
+                class="vid"
+                src="${p.videoUrl}"
+                poster="${p.thumbnail || ""}"
+                playsinline
+                webkit-playsinline
+                muted
+                loop
+                preload="metadata">
+            </video>
+
             <div class="right-action">
-    <div class="action" onclick="addCart('${id}')">
-    <div class="cart-icon">
-        🛒
-        <div class="cart-plus">+</div>
-    </div>
-    <span>Giỏ</span>
-</div>
-    <div class="action" onclick="toggleLike('${id}')">
-        <div class="icon">❤️</div>
-      <span id="like-${id}">${p.likeCount || 0}</span>
-    </div>
-<div class="action" onclick="openComment('${id}')">
 
-    <div class="icon">
-        <svg viewBox="0 0 24 24" width="38" height="38">
-            <path
-                d="M21 12c0 4.4-4 8-9 8-1.2 0-2.4-.2-3.5-.6L3 21l1.6-4.1C3.6 15.5 3 13.8 3 12c0-4.4 4-8 9-8s9 3.6 9 8z"
-                fill="none"
-                stroke="#fff"
-                stroke-width="2"
-                stroke-linejoin="round"/>
-            <circle cx="9" cy="12" r="1.2" fill="#fff"/>
-            <circle cx="12" cy="12" r="1.2" fill="#fff"/>
-            <circle cx="15" cy="12" r="1.2" fill="#fff"/>
-        </svg>
-    </div>
+                <div class="action">
+                    <div class="icon">❤️</div>
+                    <span>${p.likeCount || 0}</span>
+                </div>
 
-    <span id="comment-${id}">
-        ${p.commentCount || 0}
-    </span>
+                <div class="action">
+                    <div class="icon">💬</div>
+                    <span>${p.commentCount || 0}</span>
+                </div>
 
-</div>
+                <div class="action">
+                    <div class="icon">↗</div>
+                    <span>${p.shareCount || 0}</span>
+                </div>
 
-   
-<div class="action" onclick="toggleSound()">
-    <div class="icon">🔊</div>
-    <span></span>
-</div>
-</div>
-
-<div class="info">
-                <div class="name">${p.name}</div>
-                <div class="price">${Number(p.price).toLocaleString()}đ</div>
-                </button>
             </div>
+
+            <div class="info">
+                <div class="name">${p.name}</div>
+                <div class="desc">${p.caption || ""}</div>
+            </div>
+
         </div>
         `;
-   });
- });
 
-    // Safari iOS
-    setTimeout(() => {
+    });
 
-       
-
-        autoPlay();
-
-    }, 200);
+    setTimeout(autoPlay,200);
 
 }
 
