@@ -1326,14 +1326,13 @@ videoSnap.forEach(docSnap=>{
         </span>
     </div>
 
-    <div class="action" onclick="openComment('${docSnap.id}')">
+   <div class="action" onclick="openCommentVideo('${docSnap.id}')">
 
     <div class="icon">💬</div>
 
-    <div class="video-comment-count"
-         id="videoComment-${docSnap.id}">
+    <span id="videoComment-${docSnap.id}">
         ${v.commentCount || 0}
-    </div>
+    </span>
 
 </div>
 
