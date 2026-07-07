@@ -1240,7 +1240,6 @@ videoSnap.forEach(docSnap=>{
             poster="${v.thumbnail || ""}"
             playsinline
             webkit-playsinline
-            muted
             loop
             preload="metadata">
         </video>
@@ -1277,6 +1276,65 @@ videoSnap.forEach(docSnap=>{
 
     </div>
     `;
+
+});
+// =========================
+// Tự phát video + bật âm thanh khi tới video
+// =========================
+
+const videos = document.querySelectorAll(".vid");
+
+const observer = new IntersectionObserver((entries)=>{
+
+    entries.forEach(entry=>{
+
+        const video = entry.target;
+
+        if(entry.isIntersecting){
+
+            video.play()
+            .then(()=>{
+
+                video.muted = false;
+                video.volume = 1;
+
+            })
+            .catch(()=>{
+
+                // trình duyệt chặn âm thanh
+                // cho phép người dùng bật bằng click
+                video.muted = true;
+                video.play();
+
+            });
+
+        }else{
+
+            video.pause();
+            video.currentTime = 0;
+
+        }
+
+    });
+
+},{
+    threshold:0.8
+});
+
+
+videos.forEach(video=>{
+    observer.observe(video);
+});
+
+
+// Click vào video để bật/tắt tiếng
+videos.forEach(video=>{
+
+    video.addEventListener("click",()=>{
+
+        video.muted = !video.muted;
+
+    });
 
 });
     // Safari iOS
