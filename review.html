@@ -1075,7 +1075,7 @@ const feed = document.getElementById("feed");
 
 if(!feed) throw new Error("Missing #feed");
 const db = getFirestore(app);
-console.log(app.options);
+
 const auth = getAuth(app);
 import {
     onAuthStateChanged
@@ -1114,24 +1114,14 @@ let currentCommentProduct = "";
 async function loadVideos(){
 
     feed.innerHTML = "";
-    loadedVideos.clear();
 
-   const q = collection(db, "videos");
+   const q = query(
+    collection(db,"videos"),
+    orderBy("createdAt","desc")
+);
 
- let snap;
+    const snap = await getDocs(q);
 
-try{
-    snap = await getDocs(q);
-}catch(err){
-    console.error("LOAD VIDEO ERROR:", err);
-    return;
-}
-
-console.log("Video count:", snap.size);
-    if(snap.empty){
-    console.log("KHÔNG CÓ VIDEO");
-    return;
-}
     snap.forEach(docSnap=>{
 
         const p = docSnap.data();
@@ -1456,9 +1446,9 @@ function loadComments(productId){
         unsubscribeComments();
     }
 
-   const q = query(
-    collection(db, "videos", productId, "comments"),
-    orderBy("createdAt", "desc")
+    const q = query(
+   collection(db, "videos", productId, "comments")
+orderBy("createdAt", "desc")
 );
 
 unsubscribeComments = onSnapshot(
@@ -1663,7 +1653,7 @@ let image = "";
     "videos",
     currentCommentProduct,
     "comments"
-),
+)
 
     {
         uid: user.uid,
@@ -1891,42 +1881,44 @@ window.closeImage = function(){
     document.getElementById("imageViewer").style.display = "none";
 
 }
-const viewer = document.getElementById("imageViewer");
+const viewer=document.getElementById("imageViewer");
 
-if (viewer) {
+viewer.addEventListener("touchstart",e=>{
 
-    viewer.addEventListener("touchstart", e => {
-        touchStartX = e.changedTouches[0].screenX;
-    });
+    touchStartX=e.changedTouches[0].screenX;
 
-    viewer.addEventListener("touchend", e => {
+});
 
-        touchEndX = e.changedTouches[0].screenX;
+viewer.addEventListener("touchend",e=>{
 
-        const dx = touchEndX - touchStartX;
+    touchEndX=e.changedTouches[0].screenX;
 
-        if (Math.abs(dx) < 50) return;
+    const dx=touchEndX-touchStartX;
 
-        if (dx < 0) {
+    if(Math.abs(dx)<50) return;
 
-            if (currentImageIndex < commentImages.length - 1) {
-                currentImageIndex++;
-            }
+    if(dx<0){
 
-        } else {
+        if(currentImageIndex<commentImages.length-1){
 
-            if (currentImageIndex > 0) {
-                currentImageIndex--;
-            }
+            currentImageIndex++;
 
         }
 
-        document.getElementById("viewerImage").src =
-            commentImages[currentImageIndex];
+    }else{
 
-    });
+        if(currentImageIndex>0){
 
-}
+            currentImageIndex--;
+
+        }
+
+    }
+
+    document.getElementById("viewerImage").src=
+        commentImages[currentImageIndex];
+
+});
 </script>
 <div id="imageViewer" onclick="closeImage()">
     <img id="viewerImage">
