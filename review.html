@@ -1113,72 +1113,73 @@ let currentProduct = "";
 let currentCommentProduct = "";
 async function loadVideos(){
 
-  onSnapshot(
-    query(
+    feed.innerHTML = "";
+
+    const q = query(
         collection(db,"videos"),
         orderBy("createdAt","desc")
-    ),
-    (snap)=>{
+    );
 
-        snap.docChanges().forEach(change=>{
+    const snap = await getDocs(q);
 
-            if(change.type==="added"){
+    snap.forEach(docSnap=>{
 
-                const p = change.doc.data();
+        const p = docSnap.data();
 
-                appendVideoToFeed({
+        const id = docSnap.id;
 
-                    id:change.doc.id,
+        if(loadedVideos.has(id)) return;
 
-                    ...p
+        loadedVideos.add(id);
 
-                });
+        const media = [{
+            type:"video",
+            url:p.videoUrl
+        }];
+
+        onSnapshot(
+            doc(db,"videos",id),
+            (snap)=>{
+
+                if(!snap.exists()) return;
+
+                const data = snap.data();
+
+                const likeEl =
+                document.getElementById("like-"+id);
+
+                if(likeEl){
+
+                    likeEl.innerText =
+                    data.likeCount || 0;
+
+                }
+
+                const commentEl =
+                document.getElementById("comment-"+id);
+
+                if(commentEl){
+
+                    commentEl.innerText =
+                    data.commentCount || 0;
+
+                }
 
             }
+        );
 
-        });
+        media.forEach(item=>{
 
-    }
-);
+            feed.innerHTML += `
+            <div class="video-item" id="video-${id}">
 
-       const p = docSnap.data();
-
-const media = [{
-    type:"video",
-    url:p.videoUrl
-}];
-});
-
-if(media.length === 0) return;
-
-      const id = docSnap.id;
-
-if(loadedVideos.has(id)) return;
-
-loadedVideos.add(id);
-        onSnapshot(doc(db, "videos", id), (snap) => {
-    if (!snap.exists()) return;
-
-    const data = snap.data();
-
-    const el = document.getElementById("comment-" + id);
-
-    if (el) {
-        el.innerText = data.commentCount || 0;
-    }
-
-});
-       media.forEach(item=>{
-
-feed.innerHTML += `
-        
-       <div class="video-item" id="video-${video.id}">
-       ${
+${
 item.type==="video"
-? `
+?`
 <video
 class="vid"
 src="${item.url}"
+poster="${p.thumbnail || ""}"
 playsinline
 webkit-playsinline="true"
 muted
@@ -1189,81 +1190,89 @@ disablePictureInPicture
 crossorigin="anonymous">
 </video>
 `
-: `
+:`
 <img
 src="${item.url}"
 class="review-image">
 `
 }
-            <div class="right-action">
-    <div class="action" onclick="addCart('${id}')">
-    <div class="cart-icon">
-        🛒
-        <div class="cart-plus">+</div>
-    </div>
-    <span>Giỏ</span>
+
+<div class="right-action">
+
+<div class="action" onclick="toggleLike('${id}')">
+
+<div class="icon">❤️</div>
+
+<span id="like-${id}">
+${p.likeCount||0}
+</span>
+
 </div>
-    <div class="action" onclick="toggleLike('${id}')">
-        <div class="icon">❤️</div>
-      <span id="like-${id}">${p.likeCount || 0}</span>
-    </div>
+
 <div class="action" onclick="openComment('${id}')">
 
-    <div class="icon">
-        <svg viewBox="0 0 24 24" width="38" height="38">
-            <path
-                d="M21 12c0 4.4-4 8-9 8-1.2 0-2.4-.2-3.5-.6L3 21l1.6-4.1C3.6 15.5 3 13.8 3 12c0-4.4 4-8 9-8s9 3.6 9 8z"
-                fill="none"
-                stroke="#fff"
-                stroke-width="2"
-                stroke-linejoin="round"/>
-            <circle cx="9" cy="12" r="1.2" fill="#fff"/>
-            <circle cx="12" cy="12" r="1.2" fill="#fff"/>
-            <circle cx="15" cy="12" r="1.2" fill="#fff"/>
-        </svg>
-    </div>
+<div class="icon">
 
-    <span id="comment-${id}">
-        ${p.commentCount || 0}
-    </span>
+<svg viewBox="0 0 24 24" width="38" height="38">
+
+<path
+d="M21 12c0 4.4-4 8-9 8-1.2 0-2.4-.2-3.5-.6L3 21l1.6-4.1C3.6 15.5 3 13.8 3 12c0-4.4 4-8 9-8s9 3.6 9 8z"
+fill="none"
+stroke="#fff"
+stroke-width="2"
+stroke-linejoin="round"/>
+
+<circle cx="9" cy="12" r="1.2" fill="#fff"/>
+
+<circle cx="12" cy="12" r="1.2" fill="#fff"/>
+
+<circle cx="15" cy="12" r="1.2" fill="#fff"/>
+
+</svg>
 
 </div>
 
-   
+<span id="comment-${id}">
+${p.commentCount||0}
+</span>
+
+</div>
+
 <div class="action" onclick="toggleSound()">
-    <div class="icon">🔊</div>
-    <span></span>
-</div>
+
+<div class="icon">🔊</div>
+
+<span></span>
+
 </div>
 
 <div class="info">
 
-    <div class="name">
-        ${p.name}
-        ${p.verified ? "✔️" : ""}
-    </div>
+<div class="name">
 
-    <div class="desc">
-        ${p.caption || ""}
-    </div>
+${p.name}
+
+${p.verified ? "✔️" : ""}
 
 </div>
-        </div>
-        `;
-   });
- });
 
-    // Safari iOS
-    setTimeout(() => {
+<div class="desc">
 
-       
+${p.caption||""}
 
-        autoPlay();
+</div>
 
-    }, 200);
+</div>
+
+</div>
+`;
+        });
+
+    });
+
+    autoPlay();
 
 }
-
 /* AUTO PLAY LIKE TIKTOK */
 function autoPlay(){
 
