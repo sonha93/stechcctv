@@ -1364,6 +1364,7 @@ videoSnap.forEach(docSnap=>{
     class="video-avatar"
     src="${v.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
     onclick="openProfile('${v.uid}')"
+       onclick="location.href='profile.html?uid=${v.uid}'"
     style="cursor:pointer;">
         <div class="action" onclick="toggleLikeVideo('${docSnap.id}')">
 
@@ -1439,7 +1440,7 @@ videoSnap.forEach(docSnap=>{
             <div class="user-text">
 
               <div class="name"
-     onclick="openProfile('${v.uid}')"
+    onclick="location.href='profile.html?uid=${v.uid}'"
      style="cursor:pointer;">
     ${v.name || "Người dùng"}
     ${getVerifiedBadge(v.uid)}
