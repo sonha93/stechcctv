@@ -1320,7 +1320,7 @@ videoSnap.forEach(docSnap=>{
         </span>
     </div>
 
-    <div class="action" onclick="openComment('${docSnap.id}')">
+    <div class="action" onclick="openCommentVideo('${docSnap.id}')">
         <div class="icon">💬</div>
         <span id="videoComment-${docSnap.id}">
             ${v.commentCount || 0}
@@ -1524,6 +1524,17 @@ if (p !== undefined) {
     }
 
 });
+    window.openCommentVideo = function(id){
+
+    currentCommentProduct = id;
+
+    document
+    .getElementById("commentSheet")
+    .classList.add("active");
+
+    loadComments(id);
+
+}
     window.openComment = function(id){
 
     currentCommentProduct = id;
