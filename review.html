@@ -1348,44 +1348,18 @@ class="review-image">
 
 let videoSnap;
 
-
-if(openVideoId){
-
-    const oneVideo = await getDoc(
-        doc(db,"videos",openVideoId)
-    );
-
-
-    if(oneVideo.exists()){
-
-        videoSnap = {
-            docs:[oneVideo]
-        };
-
-    }else{
-
-        videoSnap = {
-            docs:[]
-        };
-
-    }
-
-
-}else if(profileUid){
+if (profileUid) {
 
     videoSnap = await getDocs(
         query(
-            collection(db,"videos"),
-            where("uid","==",profileUid)
+            collection(db, "videos"),
+            where("uid", "==", profileUid)
         )
     );
 
+} else {
 
-}else{
-
-    videoSnap = await getDocs(
-        collection(db,"videos")
-    );
+    videoSnap = await getDocs(collection(db, "videos"));
 
 }
     
@@ -1405,7 +1379,7 @@ videoSnap.forEach(docSnap=>{
             playsinline
             webkit-playsinline
             loop
-           preload="auto">
+            preload="metadata">
         </video>
 
         <div class="right-action">
@@ -1568,17 +1542,18 @@ videos.forEach(video=>{
 
 });
     // Safari iOS
-  setTimeout(()=>{
+   setTimeout(() => {
 
     if(openVideoId){
 
-        const el=document.getElementById(
-            "video-"+openVideoId
+        const target = document.getElementById(
+            "video-" + openVideoId
         );
 
-        if(el){
+        if(target){
 
-            el.scrollIntoView({
+            target.scrollIntoView({
+                behavior:"instant",
                 block:"start"
             });
 
