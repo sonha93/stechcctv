@@ -1118,7 +1118,7 @@ async function loadVideos(){
     snap.forEach(docSnap=>{
 
         const p = docSnap.data();
-        const id = docSnap.id;
+
        const media = [];
 
 (p.videos || []).forEach(v=>{
@@ -1130,7 +1130,7 @@ async function loadVideos(){
 
 if(media.length === 0) return;
 
-      
+        const id = docSnap.id;
         onSnapshot(doc(db, "products", id), (snap) => {
 
     if (!snap.exists()) return;
@@ -1232,7 +1232,7 @@ videoSnap.forEach(docSnap=>{
     const v = docSnap.data();
 
     feed.innerHTML += `
-    <div class="video-item" id="video-${id}">
+    <div class="video-item" id="video-${docSnap.id}">
 
         <video
             class="vid"
@@ -1263,11 +1263,11 @@ videoSnap.forEach(docSnap=>{
     <!-- Like -->
     <div
         class="action"
-        onclick="toggleVideoLike('${id}')">
+        onclick="toggleVideoLike('${docSnap.id}')">
 
         <div class="icon">❤️</div>
 
-        <span id="videoLike-${id}">
+        <span id="videoLike-${docSnap.id}">
             ${p.likeCount || 0}
         </span>
 
@@ -1276,11 +1276,11 @@ videoSnap.forEach(docSnap=>{
     <!-- Bình luận -->
     <div
         class="action"
-        onclick="openVideoComment('${id}')">
+        onclick="openVideoComment('${docSnap.id}')">
 
         <div class="icon">💬</div>
 
-        <span id="videoComment-${id}">
+        <span id="videoComment-${docSnap.id}">
             ${p.commentCount || 0}
         </span>
 
@@ -1611,7 +1611,7 @@ ${
     </span>
 
     <span
-        onclick="likeComment('${productId}','${id}')"
+        onclick="likeComment('${productId}','${docSnap.id}')"
         style="
             cursor:pointer;
             display:flex;
@@ -1620,7 +1620,7 @@ ${
         "
     >
         🤍
-        <span id="likeComment-${id}">
+        <span id="likeComment-${docSnap.id}">
             ${c.likeCount || 0}
         </span>
     </span>
