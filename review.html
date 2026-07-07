@@ -1115,10 +1115,7 @@ async function loadVideos(){
 
     feed.innerHTML = "";
 
-   const q = query(
-    collection(db,"videos"),
-    orderBy("createdAt","desc")
-);
+   const q = collection(db, "videos");
 
  let snap;
 
