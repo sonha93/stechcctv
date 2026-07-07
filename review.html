@@ -1020,12 +1020,6 @@ body{
 .product-info .price{
     display:block;
 }
-.video-comment-count{
-    color:#fff;
-    font-size:13px;
-    font-weight:bold;
-    margin-top:5px;
-}
 </style>
 </head>
 <body>
@@ -1326,15 +1320,12 @@ videoSnap.forEach(docSnap=>{
         </span>
     </div>
 
-   <div class="action" onclick="openCommentVideo('${docSnap.id}')">
-
-    <div class="icon">💬</div>
-
-    <span id="videoComment-${docSnap.id}">
-        ${v.commentCount || 0}
-    </span>
-
-</div>
+    <div class="action" onclick="openCommentVideo('${docSnap.id}')">
+        <div class="icon">💬</div>
+        <span id="videoComment-${docSnap.id}">
+            ${v.commentCount || 0}
+        </span>
+    </div>
 
 </div>
           <div class="info">
@@ -1533,6 +1524,17 @@ if (p !== undefined) {
     }
 
 });
+    window.openCommentVideo = function(id){
+
+    currentCommentProduct = id;
+
+    document
+    .getElementById("commentSheet")
+    .classList.add("active");
+
+    loadComments(id);
+
+}
     window.openComment = function(id){
 
     currentCommentProduct = id;
