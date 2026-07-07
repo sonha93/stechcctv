@@ -1020,6 +1020,12 @@ body{
 .product-info .price{
     display:block;
 }
+.video-comment-count{
+    color:#fff;
+    font-size:13px;
+    font-weight:bold;
+    margin-top:5px;
+}
 </style>
 </head>
 <body>
@@ -1321,11 +1327,15 @@ videoSnap.forEach(docSnap=>{
     </div>
 
     <div class="action" onclick="openComment('${docSnap.id}')">
-        <div class="icon">💬</div>
-        <span id="videoComment-${docSnap.id}">
-            ${v.commentCount || 0}
-        </span>
+
+    <div class="icon">💬</div>
+
+    <div class="video-comment-count"
+         id="videoComment-${docSnap.id}">
+        ${v.commentCount || 0}
     </div>
+
+</div>
 
 </div>
           <div class="info">
