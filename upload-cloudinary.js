@@ -243,25 +243,6 @@ uploading=false;
 
 });
 
-
-// =====================
-// Getter
-// =====================
-
-async function uploadCloudinary() {
-
-    const video = window.uploadPreview.getVideo();
-    const thumb = window.uploadPreview.getThumbnail();
-
-    const videoURL = await uploadWithRetry(video, "video");
-    const thumbnailURL = await uploadWithRetry(thumb, "image");
-
-    return {
-        videoURL,
-        thumbnailURL
-    };
-}
-console.log("upload-cloudinary 3B loaded");
 // ===============================
 // upload-cloudinary.js
 // PHẦN 3C
