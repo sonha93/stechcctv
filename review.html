@@ -1542,29 +1542,28 @@ videos.forEach(video=>{
 
 });
     // Safari iOS
-    setTimeout(() => {
-if (openVideoId) {
+   setTimeout(() => {
 
-    const target = document.querySelector(
-        `[data-video-id="${openVideoId}"]`
-    );
+    if(openVideoId){
 
-    if (target) {
+        const target = document.getElementById(
+            "video-" + openVideoId
+        );
 
-        target.scrollIntoView({
-            block: "start"
-        });
+        if(target){
+
+            target.scrollIntoView({
+                behavior:"instant",
+                block:"start"
+            });
+
+        }
 
     }
 
-}
-       
+    autoPlay();
 
-        autoPlay();
-
-    }, 200);
-
-}
+},1000);
 
 /* AUTO PLAY LIKE TIKTOK */
 function autoPlay(){
