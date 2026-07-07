@@ -238,7 +238,7 @@ where("status","==","public")
         const snap=await getDocs(q);
 
 snap.forEach(doc => {
-    console.log(doc.id, doc.data());
+   
 });
         renderVideos(snap);
 
