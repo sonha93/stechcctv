@@ -1075,7 +1075,7 @@ const feed = document.getElementById("feed");
 
 if(!feed) throw new Error("Missing #feed");
 const db = getFirestore(app);
-
+console.log(app.options);
 const auth = getAuth(app);
 import {
     onAuthStateChanged
