@@ -1,7 +1,7 @@
+import { app, auth } from "./auth.js";
 import {
-    initializeApp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
     getFirestore,
     doc,
@@ -13,24 +13,10 @@ import {
     updateDoc,
     deleteDoc,
     setDoc,
-    onSnapshot,
     increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-    getAuth,
-    onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-
-// ===== Firebase Config =====
-// Dán firebaseConfig của bạn vào đây
-
-const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
-
-const auth = getAuth(app);
-
 
 // ===== Lấy uid trên URL =====
 
