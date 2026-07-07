@@ -69,7 +69,167 @@ async(e)=>{
             window.uploadUI.caption.value.trim();
 
         // Phần 4B sẽ lưu Firestore ở đây
+    console.log("upload-firestore 4A loaded");
 
+// ===============================
+
+// upload-firestore.js
+
+// PHẦN 4B
+
+// ===============================
+
+
+
+const videoDoc = {
+
+
+
+    uid: user.uid,
+
+
+
+    name:
+
+        profile.name ||
+
+        user.displayName ||
+
+        "Người dùng",
+
+
+
+    avatar:
+
+        profile.avatar ||
+
+        "https://i.ibb.co/Z1kv9nJj/logo.png",
+
+
+
+    caption: caption,
+
+
+
+    videoUrl: videoUrl,
+
+
+
+    thumbnail: thumbnail,
+
+
+
+    verified:
+
+        profile.verified || false,
+
+
+
+    createdAt:
+
+        serverTimestamp(),
+
+
+
+    viewCount:0,
+
+
+
+    likeCount:0,
+
+
+
+    commentCount:0,
+
+
+
+    shareCount:0,
+
+
+
+    saveCount:0,
+
+
+
+    status:"public"
+
+
+
+};
+
+
+
+const docRef =
+
+await addDoc(
+
+
+
+    collection(db,"videos"),
+
+
+
+    videoDoc
+
+
+
+);
+
+
+
+console.log(
+
+    "Video ID:",
+
+    docRef.id
+
+);
+
+
+
+// sang bước tiếp
+
+document.dispatchEvent(
+
+
+
+new CustomEvent(
+
+
+
+"firestore-success",
+
+
+
+{
+
+
+
+detail:{
+
+
+
+id:docRef.id,
+
+
+
+...videoDoc
+
+
+
+}
+
+
+
+}
+
+
+
+)
+
+
+
+);
     }catch(err){
 
         console.error(err);
@@ -83,87 +243,7 @@ async(e)=>{
 
 });
 
-console.log("upload-firestore 4A loaded");
-// ===============================
-// upload-firestore.js
-// PHẦN 4B
-// ===============================
 
-const videoDoc = {
-
-    uid: user.uid,
-
-    name:
-        profile.name ||
-        user.displayName ||
-        "Người dùng",
-
-    avatar:
-        profile.avatar ||
-        "https://i.ibb.co/Z1kv9nJj/logo.png",
-
-    caption: caption,
-
-    videoUrl: videoUrl,
-
-    thumbnail: thumbnail,
-
-    verified:
-        profile.verified || false,
-
-    createdAt:
-        serverTimestamp(),
-
-    viewCount:0,
-
-    likeCount:0,
-
-    commentCount:0,
-
-    shareCount:0,
-
-    saveCount:0,
-
-    status:"public"
-
-};
-
-const docRef =
-await addDoc(
-
-    collection(db,"videos"),
-
-    videoDoc
-
-);
-
-console.log(
-    "Video ID:",
-    docRef.id
-);
-
-// sang bước tiếp
-document.dispatchEvent(
-
-new CustomEvent(
-
-"firestore-success",
-
-{
-
-detail:{
-
-id:docRef.id,
-
-...videoDoc
-
-}
-
-}
-
-)
-
-);
 // ===============================
 // upload-firestore.js
 // PHẦN 4C
