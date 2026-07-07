@@ -231,8 +231,7 @@ async function loadTab(type){
             collection(db,"videos"),
 
             where("uid","==",profileUid),
-
-            where("visibility","==","public")
+where("status","==","public")
 
         );
 
@@ -269,7 +268,7 @@ snap.forEach(doc => {
 
             where("uid","==",profileUid),
 
-            where("visibility","==","private")
+          where("status","==","private")
 
         );
 
@@ -422,14 +421,13 @@ privacyBtn.onclick = async function(){
 
     if(!snap.exists()) return;
 
-    const current = snap.data().visibility || "public";
+   const current = snap.data().status || "public";
 
-    await updateDoc(ref,{
-        visibility: current==="public"
-            ? "private"
-            : "public"
-    });
-
+await updateDoc(ref,{
+    status: current === "public"
+        ? "private"
+        : "public"
+});
     videoMenu.classList.remove("active");
 
     loadTab("videos");
