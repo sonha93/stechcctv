@@ -1130,7 +1130,7 @@ async function loadVideos(){
 
 if(media.length === 0) return;
 
-        const id = docSnap.id;
+      
         onSnapshot(doc(db, "products", id), (snap) => {
 
     if (!snap.exists()) return;
