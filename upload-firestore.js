@@ -244,7 +244,7 @@ document.addEventListener(
     loadVideos();
 
 }
-
+});
 console.log("upload-firestore 4C loaded");
 // ===============================
 // upload-firestore.js
