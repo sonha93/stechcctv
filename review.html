@@ -962,6 +962,56 @@ body{
 .upload-nav:active svg{
     transform:scale(.9);
 }
+    .video-avatar{
+
+    width:45px;
+    height:45px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:2px solid #fff;
+
+    margin-right:10px;
+
+}
+
+
+.info{
+
+    display:flex;
+
+    align-items:center;
+
+}
+
+
+.user-text{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+.name{
+
+    font-weight:bold;
+
+    color:#fff;
+
+}
+
+
+.desc{
+
+    color:#fff;
+
+    margin-top:5px;
+
+}
 </style>
 </head>
 <body>
@@ -1262,17 +1312,23 @@ videoSnap.forEach(docSnap=>{
 
         </div>
 
-        <div class="info">
+          <img 
+        class="video-avatar"
+        src="${v.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
 
-            <div class="name">
-                ${v.name || "Người dùng"}
-            </div>
+    <div class="user-text">
 
-            <div class="desc">
-                ${v.caption || ""}
-            </div>
-
+        <div class="name">
+            ${v.name || "Người dùng"}
         </div>
+
+        <div class="desc">
+            ${v.caption || ""}
+        </div>
+
+    </div>
+
+</div>
 
     </div>
     `;
