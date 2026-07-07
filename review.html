@@ -1071,8 +1071,6 @@ const firebaseConfig = {
 
 
 const feed = document.getElementById("feed");
-    window.loadedVideos = new Set();
-
 if(!feed) throw new Error("Missing #feed");
 const db = getFirestore(app);
 
@@ -1113,73 +1111,50 @@ let currentProduct = "";
 let currentCommentProduct = "";
 async function loadVideos(){
 
+    const snap = await getDocs(collection(db,"products"));
+   
     feed.innerHTML = "";
-
-   const q = query(
-    collection(db,"videos"),
-    orderBy("createdAt","desc")
-);
-
-    const snap = await getDocs(q);
 
     snap.forEach(docSnap=>{
 
         const p = docSnap.data();
 
+       const media = [];
+
+(p.videos || []).forEach(v=>{
+    media.push({
+        type:"video",
+        url: typeof v === "string" ? v : v.url
+    });
+});
+
+if(media.length === 0) return;
+
         const id = docSnap.id;
+        onSnapshot(doc(db, "products", id), (snap) => {
 
-        if(loadedVideos.has(id)) return;
+    if (!snap.exists()) return;
 
-        loadedVideos.add(id);
+    const data = snap.data();
 
-        const media = [{
-            type:"video",
-            url:p.videoUrl
-        }];
+    const el = document.getElementById("comment-" + id);
 
-        onSnapshot(
-            doc(db,"videos",id),
-            (snap)=>{
+    if (el) {
+        el.innerText = data.commentCount || 0;
+    }
 
-                if(!snap.exists()) return;
+});
+       media.forEach(item=>{
 
-                const data = snap.data();
-
-                const likeEl =
-                document.getElementById("like-"+id);
-
-                if(likeEl){
-
-                    likeEl.innerText =
-                    data.likeCount || 0;
-
-                }
-
-                const commentEl =
-                document.getElementById("comment-"+id);
-
-                if(commentEl){
-
-                    commentEl.innerText =
-                    data.commentCount || 0;
-
-                }
-
-            }
-        );
-
-        media.forEach(item=>{
-
-            feed.innerHTML += `
-            <div class="video-item" id="video-${id}">
-
-${
+feed.innerHTML += `
+        
+        <div class="video-item">
+       ${
 item.type==="video"
-?`
+? `
 <video
 class="vid"
 src="${item.url}"
-poster="${p.thumbnail || ""}"
 playsinline
 webkit-playsinline="true"
 muted
@@ -1190,89 +1165,74 @@ disablePictureInPicture
 crossorigin="anonymous">
 </video>
 `
-:`
+: `
 <img
 src="${item.url}"
 class="review-image">
 `
 }
-
-<div class="right-action">
-
-<div class="action" onclick="toggleLike('${id}')">
-
-<div class="icon">❤️</div>
-
-<span id="like-${id}">
-${p.likeCount||0}
-</span>
-
+            <div class="right-action">
+    <div class="action" onclick="addCart('${id}')">
+    <div class="cart-icon">
+        🛒
+        <div class="cart-plus">+</div>
+    </div>
+    <span>Giỏ</span>
 </div>
-
+    <div class="action" onclick="toggleLike('${id}')">
+        <div class="icon">❤️</div>
+      <span id="like-${id}">${p.likeCount || 0}</span>
+    </div>
 <div class="action" onclick="openComment('${id}')">
 
-<div class="icon">
+    <div class="icon">
+        <svg viewBox="0 0 24 24" width="38" height="38">
+            <path
+                d="M21 12c0 4.4-4 8-9 8-1.2 0-2.4-.2-3.5-.6L3 21l1.6-4.1C3.6 15.5 3 13.8 3 12c0-4.4 4-8 9-8s9 3.6 9 8z"
+                fill="none"
+                stroke="#fff"
+                stroke-width="2"
+                stroke-linejoin="round"/>
+            <circle cx="9" cy="12" r="1.2" fill="#fff"/>
+            <circle cx="12" cy="12" r="1.2" fill="#fff"/>
+            <circle cx="15" cy="12" r="1.2" fill="#fff"/>
+        </svg>
+    </div>
 
-<svg viewBox="0 0 24 24" width="38" height="38">
-
-<path
-d="M21 12c0 4.4-4 8-9 8-1.2 0-2.4-.2-3.5-.6L3 21l1.6-4.1C3.6 15.5 3 13.8 3 12c0-4.4 4-8 9-8s9 3.6 9 8z"
-fill="none"
-stroke="#fff"
-stroke-width="2"
-stroke-linejoin="round"/>
-
-<circle cx="9" cy="12" r="1.2" fill="#fff"/>
-
-<circle cx="12" cy="12" r="1.2" fill="#fff"/>
-
-<circle cx="15" cy="12" r="1.2" fill="#fff"/>
-
-</svg>
-
-</div>
-
-<span id="comment-${id}">
-${p.commentCount||0}
-</span>
+    <span id="comment-${id}">
+        ${p.commentCount || 0}
+    </span>
 
 </div>
 
+   
 <div class="action" onclick="toggleSound()">
-
-<div class="icon">🔊</div>
-
-<span></span>
-
+    <div class="icon">🔊</div>
+    <span></span>
+</div>
 </div>
 
 <div class="info">
+                <div class="name">${p.name}</div>
+                <div class="price">${Number(p.price).toLocaleString()}đ</div>
+                </button>
+            </div>
+        </div>
+        `;
+   });
+ });
 
-<div class="name">
+    // Safari iOS
+    setTimeout(() => {
 
-${p.name}
+       
 
-${p.verified ? "✔️" : ""}
+        autoPlay();
 
-</div>
-
-<div class="desc">
-
-${p.caption||""}
-
-</div>
-
-</div>
-
-</div>
-`;
-        });
-
-    });
-
-    autoPlay();
+    }, 200);
 
 }
+
 /* AUTO PLAY LIKE TIKTOK */
 function autoPlay(){
 
@@ -1447,7 +1407,7 @@ function loadComments(productId){
     }
 
     const q = query(
-   collection(db, "videos", productId, "comments")
+    collection(db, "products", productId, "comments"),
 orderBy("createdAt", "desc")
 );
 
@@ -1649,11 +1609,11 @@ let image = "";
     await addDoc(
 
     collection(
-    db,
-    "videos",
-    currentCommentProduct,
-    "comments"
-)
+        db,
+        "products",
+        currentCommentProduct,
+        "comments"
+    ),
 
     {
         uid: user.uid,
@@ -1665,12 +1625,15 @@ let image = "";
 
 );
 
-   await updateDoc(
-    doc(db,"videos",currentCommentProduct),
-    {
-        commentCount:increment(1)
-    }
-);
+    await updateDoc(
+
+        doc(db,"products",currentCommentProduct),
+
+        {
+            commentCount:increment(1)
+        }
+
+    );
 
    document.getElementById("commentText").value="";
 document.getElementById("commentImage").value="";
@@ -1713,13 +1676,13 @@ window.likeComment = async function(productId, commentId){
 
     const likeSnap = await getDoc(likeRef);
 
-    const commentRef =doc(
-    db,
-    "videos",
-    productId,
-    "comments",
-    commentId
-);
+    const commentRef = doc(
+        db,
+        "products",
+        productId,
+        "comments",
+        commentId
+    );
 
     if(likeSnap.exists()){
 
@@ -1759,7 +1722,7 @@ window.toggleLike = async function(id){
 
     const likeSnap = await getDoc(likeRef);
 
-    const productRef = doc(db,"videos",id);
+    const productRef = doc(db,"products",id);
 
     if(likeSnap.exists()){
 
@@ -2043,14 +2006,6 @@ viewer.addEventListener("touchend",e=>{
     </div>
 
 </div>
-<div id="uploadContainer"></div>
 <script type="module" src="inbox.js"></script>
-<script type="module" src="upload-ui.js"></script>
-
-<script type="module" src="upload-preview.js"></script>
-
-<script type="module" src="upload-cloudinary.js"></script>
-
-<script type="module" src="upload-firestore.js"></script>
 </body>
 </html>
