@@ -23,19 +23,13 @@ const params=new URLSearchParams(location.search);
 
 const uid=params.get("uid");
 
-const videoId=params.get("video");
 
 
 
-const video=document.getElementById("video");
+
 
 const name=document.getElementById("name");
 
-const username=document.getElementById("username");
-
-const time=document.getElementById("time");
-
-const desc=document.getElementById("desc");
 
 
 
@@ -88,45 +82,41 @@ async function load(){
 
 
 const userSnap=await getDoc(
-
 doc(db,"users",uid)
-
 );
-
 
 
 if(userSnap.exists()){
 
-
 const u=userSnap.data();
 
-
 name.innerHTML=u.name || "Người dùng";
-
 
 }
 
 
 
-
-
-async function loadVideos(){
-
-
 const q=query(
-    collection(db,"videos"),
-    where("uid","==",uid),
-    orderBy("createdAt","desc")
+
+collection(db,"videos"),
+
+where("uid","==",uid),
+
+orderBy("createdAt","desc")
+
 );
+
 
 
 const snap=await getDocs(q);
 
 
-const container=document.getElementById("videoList");
+
+const box=document.getElementById("videoList");
 
 
-container.innerHTML="";
+box.innerHTML="";
+
 
 
 snap.forEach(d=>{
@@ -135,25 +125,45 @@ snap.forEach(d=>{
 const v=d.data();
 
 
-container.innerHTML += `
 
-<div class="video-item">
+box.innerHTML += `
+
+<div class="videoItem">
+
 
 <video
+
 src="${v.videoUrl}"
+
 playsinline
+
 loop
+
 muted>
+
 </video>
 
 
 <div class="info">
 
-<div>${v.description || ""}</div>
 
-<div>
-${timeAgo(v.createdAt || Date.now())}
+<div class="desc">
+
+${v.description || ""}
+
 </div>
+
+
+<div class="time">
+
+${timeAgo(
+    v.createdAt?.toMillis 
+    ? v.createdAt.toMillis()
+    : Date.now()
+)}
+
+</div>
+
 
 </div>
 
@@ -165,67 +175,35 @@ ${timeAgo(v.createdAt || Date.now())}
 });
 
 
-enableSwipe();
+
+autoPlayVideo();
 
 
 }
-
-loadVideos();
-
-
-
-if(!videoSnap.exists()){
-
-alert("Không tìm thấy video");
-
-return;
-
-}
-
-
-const v=videoSnap.data();
-
-
-
-video.src=v.videoUrl || v.url || "";
-
-
-
-time.innerHTML=timeAgo(
-v.createdAt || Date.now()
-);
-
-
-
-desc.innerHTML=v.description || "";
-
-
-
-}
-
 
 load();
-function enableSwipe(){
+function autoPlayVideo(){
 
 
 const videos=document.querySelectorAll(
-".video-item video"
+".videoItem video"
 );
 
 
-const observer=new IntersectionObserver(entries=>{
+
+const ob=new IntersectionObserver((items)=>{
 
 
-entries.forEach(e=>{
+items.forEach(item=>{
 
 
-if(e.isIntersecting){
+if(item.isIntersecting){
 
-e.target.play();
+item.target.play();
 
 }else{
 
-e.target.pause();
+item.target.pause();
 
 }
 
@@ -235,16 +213,12 @@ e.target.pause();
 
 },{
 threshold:0.7
-});
-
-
-
-videos.forEach(v=>{
-
-observer.observe(v);
-
 
 });
+
+
+
+videos.forEach(v=>ob.observe(v));
 
 
 }
