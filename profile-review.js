@@ -64,7 +64,6 @@ async function loadProfile() {
     }
 
     const u = snap.data();
-console.log("USER DATA:", u);
     avatar.src = u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
 
 document.getElementById("profileName").innerHTML = `
@@ -74,7 +73,7 @@ document.getElementById("profileName").innerHTML = `
     username.innerHTML = "@" + (u.username || "");
 
     bio.innerHTML = u.bio || "";
-    bio.innerHTML = u.bio || "";
+
 
 if (u.website) {
     profileLink.innerHTML = `
