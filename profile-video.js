@@ -100,7 +100,7 @@ const q=query(
 
 collection(db,"videos"),
 
-where("uid","==",uid),
+
 
 orderBy("createdAt","desc")
 
