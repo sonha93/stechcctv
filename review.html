@@ -1408,7 +1408,8 @@ const user = userSnap.exists()
     </span>
 
 </div>
-<div class="action" onclick="openCommentVideo('${docSnap.id}')">
+<div class="action"
+${v.commentEnabled === false ? "" : `onclick="openCommentVideo('${docSnap.id}')"`}>
 
     <div class="icon">
 
@@ -1426,9 +1427,9 @@ const user = userSnap.exists()
 
     </div>
 
-    <span id="videoComment-${docSnap.id}">
-        ${v.commentCount || 0}
-    </span>
+   <span id="videoComment-${docSnap.id}">
+    ${v.commentEnabled === false ? "" : (v.commentCount || 0)}
+</span>
 
 </div>
 
