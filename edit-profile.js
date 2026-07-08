@@ -269,3 +269,50 @@ saveBtn.onclick = async () => {
     alert("Đã lưu hồ sơ.");
 
 };
+usernameInput.addEventListener("input", async () => {
+
+    const username = usernameInput.value
+        .trim()
+        .toLowerCase();
+
+    if (!username) {
+        usernameStatus.textContent = "";
+        return;
+    }
+
+    if (!/^[a-z0-9._-]{3,30}$/.test(username)) {
+        usernameStatus.textContent =
+            "ID không hợp lệ";
+        usernameStatus.style.color = "#ff3b30";
+        return;
+    }
+
+    const q = query(
+        collection(db, "users"),
+        where("username", "==", username)
+    );
+
+    const snap = await getDocs(q);
+
+    const duplicated = snap.docs.some(
+        d => d.id !== currentUser.uid
+    );
+
+    if (duplicated) {
+
+        usernameStatus.textContent =
+            "❌ ID đã được sử dụng";
+
+        usernameStatus.style.color =
+            "#ff3b30";
+
+    } else {
+
+        usernameStatus.textContent =
+            "✅ ID có thể sử dụng";
+
+        usernameStatus.style.color =
+            "#16a34a";
+    }
+
+});
