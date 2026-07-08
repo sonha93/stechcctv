@@ -46,7 +46,11 @@ const username = document.getElementById("profileUsername");
 const bio = document.getElementById("profileBio");
 
 const followBtn = document.getElementById("followBtn");
-
+const followSheet=document.getElementById("followSheet");
+const sheetAvatar=document.getElementById("sheetAvatar");
+const sheetName=document.getElementById("sheetName");
+const closeFollowSheet=document.getElementById("closeFollowSheet");
+const unfollowBtn=document.getElementById("unfollowBtn");
 const editBtn = document.getElementById("editBtn");
 
 const followingCount = document.getElementById("followingCount");
@@ -75,7 +79,8 @@ async function loadProfile() {
     const u = snap.data();
   
     avatar.src = u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
-
+    sheetAvatar.src = avatar.src;
+sheetName.textContent = u.name || "Người dùng";
 document.getElementById("profileName").innerHTML = `
     <span id="profileNameText">${u.name || "Người dùng"}</span>
     ${getVerifiedBadge(profileUid)}
@@ -241,15 +246,13 @@ followBtn.onclick = async () => {
     const snap = await getDoc(followingRef);
 
     // Đã follow
-    if(snap.exists()){
+   if(snap.exists()){
 
-        // Tạm thời bỏ menu
-        // Sau sẽ mở Bottom Sheet giống TikTok
+    followSheet.classList.add("active");
 
-        return;
+    return;
 
-    }
-
+}
     await setDoc(followingRef,{
         time:Date.now()
     });
@@ -650,3 +653,47 @@ document.addEventListener("keydown", e => {
         avatarPopup.classList.remove("active");
     }
 });
+closeFollowSheet.onclick=()=>{
+followSheet.classList.remove("active");
+};
+
+followSheet.onclick=e=>{
+if(e.target===followSheet){
+followSheet.classList.remove("active");
+}
+};
+
+unfollowBtn.onclick=async()=>{
+
+const myUid=auth.currentUser.uid;
+
+await deleteDoc(
+doc(db,"users",myUid,"following",profileUid)
+);
+
+await deleteDoc(
+doc(db,"users",profileUid,"followers",myUid)
+);
+
+await updateDoc(
+doc(db,"users",myUid),
+{
+followingCount:increment(-1)
+}
+);
+
+await updateDoc(
+doc(db,"users",profileUid),
+{
+followerCount:increment(-1)
+}
+);
+
+followBtn.innerHTML="Follow";
+
+followSheet.classList.remove("active");
+
+followerCount.textContent=
+Number(followerCount.textContent)-1;
+
+};
