@@ -51,6 +51,12 @@ const sheetAvatar=document.getElementById("sheetAvatar");
 const sheetName=document.getElementById("sheetName");
 const closeFollowSheet=document.getElementById("closeFollowSheet");
 const unfollowBtn=document.getElementById("unfollowBtn");
+const editNickname = document.getElementById("editNickname");
+
+const nicknameModal = document.getElementById("nicknameModal");
+const nicknameInput = document.getElementById("nicknameInput");
+const saveNickname = document.getElementById("saveNickname");
+const cancelNickname = document.getElementById("cancelNickname");
 const editBtn = document.getElementById("editBtn");
 
 const followingCount = document.getElementById("followingCount");
@@ -81,10 +87,34 @@ async function loadProfile() {
     avatar.src = u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
     sheetAvatar.src = avatar.src;
 sheetName.textContent = u.name || "Người dùng";
+let displayName = u.name || "Người dùng";
+
+if(auth.currentUser){
+
+    const nickSnap = await getDoc(
+        doc(
+            db,
+            "users",
+            auth.currentUser.uid,
+            "nicknames",
+            profileUid
+        )
+    );
+
+    if(nickSnap.exists()){
+
+        displayName = nickSnap.data().nickname;
+
+    }
+
+}
+
 document.getElementById("profileName").innerHTML = `
-    <span id="profileNameText">${u.name || "Người dùng"}</span>
+    <span id="profileNameText">${displayName}</span>
     ${getVerifiedBadge(profileUid)}
 `;
+
+sheetName.textContent = displayName;
     username.innerHTML = "@" + (u.username || "");
 
     bio.innerHTML = u.bio || "";
@@ -653,6 +683,47 @@ document.addEventListener("keydown", e => {
         avatarPopup.classList.remove("active");
     }
 });
+cancelNickname.onclick = () => {
+
+    nicknameModal.classList.remove("active");
+
+};
+
+nicknameModal.onclick = e => {
+
+    if (e.target === nicknameModal) {
+
+        nicknameModal.classList.remove("active");
+
+    }
+
+};
+saveNickname.onclick = async () => {
+
+    const value = nicknameInput.value.trim();
+
+    if (!value) return;
+
+    await setDoc(
+        doc(
+            db,
+            "users",
+            auth.currentUser.uid,
+            "nicknames",
+            profileUid
+        ),
+        {
+            nickname: value
+        }
+    );
+
+    document.getElementById("profileNameText").textContent = value;
+
+    sheetName.textContent = value;
+
+    nicknameModal.classList.remove("active");
+
+};
 closeFollowSheet.onclick=()=>{
 followSheet.classList.remove("active");
 };
@@ -662,7 +733,31 @@ if(e.target===followSheet){
 followSheet.classList.remove("active");
 }
 };
+editNickname.onclick = async () => {
 
+    nicknameModal.classList.add("active");
+
+    nicknameInput.value = "";
+
+    const snap = await getDoc(
+        doc(
+            db,
+            "users",
+            auth.currentUser.uid,
+            "nicknames",
+            profileUid
+        )
+    );
+
+    if (snap.exists()) {
+        nicknameInput.value = snap.data().nickname;
+    }
+
+    setTimeout(() => {
+        nicknameInput.focus();
+    }, 100);
+
+};
 unfollowBtn.onclick=async()=>{
 
 const myUid=auth.currentUser.uid;
