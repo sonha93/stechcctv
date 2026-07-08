@@ -21,7 +21,7 @@ const avatarPreview = document.getElementById("avatarPreview");
 
 const nameInput = document.getElementById("nameInput");
 const usernameInput = document.getElementById("usernameInput");
-
+const usernameStatus = document.getElementById("usernameStatus");
 const bioInput = document.getElementById("bioInput");
 const bioCount = document.getElementById("bioCount");
 
