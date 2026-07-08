@@ -932,6 +932,6 @@ storyFile.onchange = async () => {
 
     alert("Đăng story thành công");
 
-    storyFile.value = "";
+  
 
 };
