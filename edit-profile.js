@@ -173,7 +173,13 @@ saveBtn.onclick = async () => {
 
     const name = nameInput.value.trim();
     const username = usernameInput.value.trim().toLowerCase();
-
+    if (
+    username === "stechcctv" &&
+    currentUser.uid !== "YuqmtdI6KIQHVp3j7HknPofQGon1"
+) {
+    alert("ID này đã được đăng ký độc quyền.");
+    return;
+}
     if (name === "") {
         alert("Vui lòng nhập tên.");
         return;
@@ -191,7 +197,7 @@ saveBtn.onclick = async () => {
     let changedUsername = false;
 
     if (username !== oldUsername) {
-
+    
         const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
 
         if (
