@@ -356,28 +356,36 @@ if(type==="orders"){
             where("uid","==",profileUid)
         )
     );
+snap.forEach(docSnap => {
 
-    snap.forEach(docSnap=>{
+    const o = docSnap.data();
 
-        const o = docSnap.data();
+    const item = o.items?.[0] || {};
 
-        grid.innerHTML += `
+    const image =
+        item.image ||
+        item.images?.[0] ||
+        item.thumbnail ||
+        item.photo ||
+        item.img ||
+        "";
+
+    grid.innerHTML += `
         <div class="video-card"
         onclick="location.href='order-detail.html?id=${docSnap.id}'">
 
-            <img src="${
-                o.items?.[0]?.image ||
-                'https://i.ibb.co/Z1kv9nJj/logo.png'
-            }">
+            <img
+                src="${image || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
+                loading="lazy">
 
             <div class="play-count">
                 ${o.status || "Đơn hàng"}
             </div>
 
         </div>
-        `;
+    `;
 
-    });
+});
 
 }
  }
