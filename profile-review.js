@@ -164,28 +164,53 @@ loadProfile();
 // HIỆN FOLLOW / EDIT
 // ===========================
 
-onAuthStateChanged(auth, user => {
+onAuthStateChanged(auth, async (user) => {
 
     const isOwner = user && user.uid === profileUid;
 
     if (isOwner) {
-
         followBtn.style.display = "none";
         editBtn.style.display = "block";
-
     } else {
-
         followBtn.style.display = "block";
         editBtn.style.display = "none";
-
     }
 
-    // Chỉ chủ tài khoản mới thấy 3 tab cuối
     document.querySelector('[data-tab="private"]').style.display = isOwner ? "" : "none";
     document.querySelector('[data-tab="liked"]').style.display   = isOwner ? "" : "none";
     document.querySelector('[data-tab="saved"]').style.display   = isOwner ? "" : "none";
 
+    if(user && !isOwner){
+
+        const followRef = doc(
+            db,
+            "users",
+            user.uid,
+            "following",
+            profileUid
+        );
+
+        const snap = await getDoc(followRef);
+
+        if(snap.exists()){
+
+            followBtn.innerHTML = `
+            <span class="material-symbols-outlined">
+                manage_accounts
+            </span>
+            `;
+
+        }else{
+
+            followBtn.innerHTML = "Follow";
+
+        }
+
+    }
+
 });
+
+
 followBtn.onclick = async () => {
 
     if (!auth.currentUser) {
@@ -195,38 +220,63 @@ followBtn.onclick = async () => {
 
     const myUid = auth.currentUser.uid;
 
-    // Không cho tự follow chính mình
     if (myUid === profileUid) return;
 
-    await setDoc(
-        doc(db, "users", myUid, "following", profileUid),
-        {
-            time: Date.now()
-        }
+    const followingRef = doc(
+        db,
+        "users",
+        myUid,
+        "following",
+        profileUid
     );
 
-    await setDoc(
-        doc(db, "users", profileUid, "followers", myUid),
+    const followerRef = doc(
+        db,
+        "users",
+        profileUid,
+        "followers",
+        myUid
+    );
+
+    const snap = await getDoc(followingRef);
+
+    // Đã follow
+    if(snap.exists()){
+
+        // Tạm thời bỏ menu
+        // Sau sẽ mở Bottom Sheet giống TikTok
+
+        return;
+
+    }
+
+    await setDoc(followingRef,{
+        time:Date.now()
+    });
+
+    await setDoc(followerRef,{
+        time:Date.now()
+    });
+
+    await updateDoc(
+        doc(db,"users",myUid),
         {
-            time: Date.now()
+            followingCount:increment(1)
         }
     );
 
     await updateDoc(
-        doc(db, "users", myUid),
+        doc(db,"users",profileUid),
         {
-            followingCount: increment(1)
+            followerCount:increment(1)
         }
     );
 
-    await updateDoc(
-        doc(db, "users", profileUid),
-        {
-            followerCount: increment(1)
-        }
-    );
-
-    followBtn.innerText = "Đã Follow";
+    followBtn.innerHTML = `
+        <span class="material-symbols-outlined">
+            manage_accounts
+        </span>
+    `;
 
 };
 // ===========================
