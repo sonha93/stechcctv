@@ -950,15 +950,9 @@ loadStories();
 
 async function loadStories(){
 
-    if(!auth.currentUser) return;
-
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
-
-
-    storyBar.querySelectorAll(".storyItem:not(#addStoryBtn)")
-    .forEach(e=>e.remove());
 
 
     const snap = await getDocs(
@@ -967,7 +961,6 @@ async function loadStories(){
             where("uid","==",profileUid)
         )
     );
-
 
     snap.forEach(docSnap=>{
 
@@ -981,11 +974,27 @@ async function loadStories(){
             `
             <div class="storyItem">
 
-                <div class="storyAvatar">
+               <div class="storyAvatar">
 
-                    <img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
+${
+s.type === "video"
+?
+`
+<video
+src="${s.media}"
+muted
+autoplay
+loop
+playsinline>
+</video>
+`
+:
+`
+<img src="${s.media}">
+`
+}
 
-                </div>
+</div>
 
                 <div class="storyName">
                     ${s.name || "Story"}
