@@ -953,6 +953,8 @@ loadStories();
 
 async function loadStories(){
 
+    const storyBar = document.getElementById("storyBar");
+
     const snap = await getDocs(
         query(
             collection(db,"stories"),
@@ -961,29 +963,61 @@ async function loadStories(){
     );
 
 
-    let storyId = null;
+    let latestStory = null;
+
+
+    storyBar
+    .querySelectorAll(".storyItem:not(#addStoryBtn)")
+    .forEach(e=>e.remove());
 
 
     snap.forEach(docSnap=>{
 
         const s = docSnap.data();
 
-        if(s.expiresAt > Date.now()){
 
-            storyId = docSnap.id;
+        if(s.expiresAt < Date.now()) return;
 
-        }
+
+        latestStory = docSnap.id;
+
+
+        storyBar.insertAdjacentHTML(
+            "beforeend",
+            `
+            <div class="storyItem"
+            onclick="openStory('${docSnap.id}')">
+
+                <div class="storyAvatar">
+
+                    ${
+                    s.type==="video"
+                    ?
+                    `<video src="${s.media}" muted></video>`
+                    :
+                    `<img src="${s.media}">`
+                    }
+
+                </div>
+
+                <div class="storyName">
+                    ${s.name || "Story"}
+                </div>
+
+            </div>
+            `
+        );
 
     });
 
 
-    if(storyId){
+    if(latestStory){
 
         avatar.classList.add("hasStory");
 
-        avatar.onclick = ()=>{
+        avatar.onclick=()=>{
 
-            openStory(storyId);
+            openStory(latestStory);
 
         };
 
@@ -995,7 +1029,7 @@ async function loadStories(){
 
 
     if(auth.currentUser &&
-       auth.currentUser.uid === profileUid){
+       auth.currentUser.uid===profileUid){
 
         addStoryBtn.style.display="flex";
 
