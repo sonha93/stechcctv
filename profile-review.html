@@ -996,55 +996,6 @@ text-overflow:ellipsis;
     cursor:pointer;
     z-index:5;
 }
- .avatar-wrap{
-    position:relative;
-}
-
-.profile-avatar.hasStory{
-    padding:3px;
-    border:3px solid transparent;
-    background:
-    linear-gradient(#fff,#fff) padding-box,
-    linear-gradient(45deg,#ff0050,#ffb000,#ff0050) border-box;
-}
-
-
-#addStoryBtn{
-    display:none;
-    position:absolute;
-    right:0;
-    bottom:5px;
-}
- .avatar-wrap{
-    position:relative;
-}
-
-
-.profile-avatar.hasStory{
-    padding:3px;
-    border:3px solid transparent;
-
-    background:
-    linear-gradient(#fff,#fff) padding-box,
-    linear-gradient(45deg,#ff0050,#ff9900,#ff0050) border-box;
-}
-
-
-#addStoryBtn{
-    display:none;
-}
- #profileAvatar.hasStory{
-    padding:3px;
-    border:3px solid #ff0050;
-}
- #storyMore{
-    position:absolute;
-    top:20px;
-    right:70px;
-    color:white;
-    font-size:28px;
-    z-index:5;
-}
 </style>
 </head>
 
@@ -1074,16 +1025,10 @@ text-overflow:ellipsis;
 
 <div class="profile-top">
 
-    <div class="avatar-wrap">
-
     <img
-    id="profileAvatar"
-    class="profile-avatar"
-    src="https://i.ibb.co/Z1kv9nJj/logo.png">
-
-    <span id="addStoryBtn" class="storyPlus">+</span>
-
-</div>
+        id="profileAvatar"
+        class="profile-avatar"
+        src="https://i.ibb.co/Z1kv9nJj/logo.png">
 
    <h2 id="profileName">
     <span id="profileNameText">Đang tải...</span>
@@ -1152,14 +1097,25 @@ text-overflow:ellipsis;
 </div>
 
 
-<div class="avatar-wrap">
+<div id="storyBar">
 
-    <img
-    id="profileAvatar"
-    class="profile-avatar"
-    src="https://i.ibb.co/Z1kv9nJj/logo.png">
+    <div class="storyItem" id="addStoryBtn">
 
-    <span id="addStoryBtn" class="storyPlus">+</span>
+        <div class="storyAvatar mine">
+
+            <img
+            id="myStoryAvatar"
+            src="https://i.ibb.co/Z1kv9nJj/logo.png">
+
+            <span class="storyPlus">+</span>
+
+        </div>
+
+        <div class="storyName">
+            Story
+        </div>
+
+    </div>
 
 </div>
 
@@ -1390,12 +1346,10 @@ stroke-linejoin="round">
     </div>
 
 </div>
-<div id="storyViewer">
+ <div id="storyViewer">
 
     <span id="closeStory">×</span>
-
-    <span id="storyMore">•••</span>
-
+ <span id="storyMore">•••</span>
     <video id="storyVideo" controls autoplay playsinline></video>
 
     <img id="storyImage">
