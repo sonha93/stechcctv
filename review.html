@@ -1486,6 +1486,54 @@ const user = userSnap.exists()
 
 
 }
+// =========================
+// Tự phát video + bật âm thanh khi tới video
+// =========================
+
+const videos = document.querySelectorAll(".vid");
+
+const observer = new IntersectionObserver((entries)=>{
+
+    entries.forEach(entry=>{
+
+        const video = entry.target;
+
+        if(entry.isIntersecting){
+
+            video.play()
+            .then(()=>{
+
+                video.muted = false;
+                video.volume = 1;
+
+            })
+            .catch(()=>{
+
+                // trình duyệt chặn âm thanh
+                // cho phép người dùng bật bằng click
+                video.muted = true;
+                video.play();
+
+            });
+
+        }else{
+
+            video.pause();
+            video.currentTime = 0;
+
+        }
+
+    });
+
+},{
+    threshold:0.8
+});
+
+
+videos.forEach(video=>{
+    observer.observe(video);
+});
+
 
 // Click vào video để bật/tắt tiếng
 videos.forEach(video=>{
@@ -1521,7 +1569,6 @@ if (openVideoId) {
     }, 200);
 
 }
-const viewedVideos = new Set();
 
 /* AUTO PLAY LIKE TIKTOK */
 function autoPlay(){
@@ -1534,22 +1581,19 @@ function autoPlay(){
 
             const v = entry.target;
 
-        if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
-        
-    const videoId = v.closest(".video-item")?.dataset.videoId;
+          if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
 
-    if(videoId && !viewedVideos.has(videoId)){
+                videos.forEach(x=>{
 
-        viewedVideos.add(videoId);
+                    if(x!==v){
 
-        updateDoc(
-            doc(db, "videos", videoId),
-            {
-                viewCount: increment(1)
-            }
-        );
+                       x.pause();
+                        x.currentTime = 0;
 
-    }
+                    }
+
+                });
+
             
 v.muted = !soundOn;
 v.volume = soundOn ? 1 : 0;
