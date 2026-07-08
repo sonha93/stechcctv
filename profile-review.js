@@ -955,13 +955,14 @@ async function loadStories(){
 
     const storyBar = document.getElementById("storyBar");
 
+    if(!storyBar) return;
+
     const snap = await getDocs(
         query(
             collection(db,"stories"),
             where("uid","==",profileUid)
         )
     );
-
 
     let latestStory = null;
 
