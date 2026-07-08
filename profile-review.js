@@ -14,11 +14,18 @@ import {
     updateDoc,
     deleteDoc,
     setDoc,
+     addDoc,
+     serverTimestamp,
     increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+import {
+    getStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 const db = getFirestore(app);
-
+const storage = getStorage(app);
 // ===== Lấy uid trên URL =====
 
 const params = new URLSearchParams(location.search);
@@ -64,6 +71,11 @@ const followingCount = document.getElementById("followingCount");
 const followerCount = document.getElementById("followerCount");
 
 const likeCount = document.getElementById("likeCount");
+const addStoryBtn = document.getElementById("addStoryBtn");
+
+const storyFile = document.getElementById("storyFile");
+
+const myStoryAvatar = document.getElementById("myStoryAvatar");
 let selectedVideoId = null;
 
 // ===========================
@@ -200,7 +212,19 @@ loadProfile();
 // ===========================
 
 onAuthStateChanged(auth, async (user) => {
+if(user){
 
+    const me = await getDoc(doc(db,"users",user.uid));
+
+    if(me.exists()){
+
+        myStoryAvatar.src =
+            me.data().avatar ||
+            "https://i.ibb.co/Z1kv9nJj/logo.png";
+
+    }
+
+}
     const isOwner = user && user.uid === profileUid;
 
     if (isOwner) {
@@ -824,5 +848,103 @@ followSheet.classList.remove("active");
 
 followerCount.textContent=
 Number(followerCount.textContent)-1;
+
+};
+addStoryBtn.onclick = ()=>{
+
+    if(!auth.currentUser){
+
+        alert("Bạn cần đăng nhập");
+
+        return;
+
+    }
+
+    storyFile.click();
+
+};
+storyFile.onchange = async () => {
+
+    const file = storyFile.files[0];
+
+    if(!file) return;
+
+    if(!auth.currentUser) return;
+
+    const uid = auth.currentUser.uid;
+
+    const userSnap = await getDoc(
+        doc(db,"users",uid)
+    );
+
+    if(!userSnap.exists()) return;
+
+    const user = userSnap.data();
+
+    const ext = file.name.split(".").pop();
+
+    const fileName =
+        Date.now()+"."+ext;
+
+    const storageRef = ref(
+        storage,
+        "stories/"+uid+"/"+fileName
+    );
+
+    await uploadBytes(
+        storageRef,
+        file
+    );
+
+    const media =
+        await getDownloadURL(storageRef);
+
+    const expire =
+        new Date(
+            Date.now()+24*60*60*1000
+        );
+
+    await addDoc(
+        collection(db,"stories"),
+        {
+
+            uid,
+
+            name:user.name||"",
+
+            username:user.username||"",
+
+            avatar:user.avatar||"",
+
+            verified:user.verified||false,
+
+            media,
+
+            thumbnail:"",
+
+            type:file.type.startsWith("video")
+                ? "video"
+                : "image",
+
+            caption:"",
+
+            privacy:"public",
+
+            likeCount:0,
+
+            viewCount:0,
+
+            replyCount:0,
+
+            createdAt:serverTimestamp(),
+
+            expireAt:expire
+
+        }
+    );
+
+    alert("Đăng story thành công");
+
+    storyFile.value="";
 
 };
