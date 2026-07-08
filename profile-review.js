@@ -340,7 +340,48 @@ snap.forEach(doc => {
 
 }
 
+if(type==="orders"){
 
+    if(!auth.currentUser) return;
+
+    if(auth.currentUser.uid!==profileUid){
+        grid.innerHTML =
+        "<p style='padding:40px;text-align:center'>Không có quyền xem.</p>";
+        return;
+    }
+
+    grid.innerHTML = "";
+
+    const snap = await getDocs(
+        query(
+            collection(db,"orders"),
+            where("uid","==",profileUid)
+        )
+    );
+
+    snap.forEach(docSnap=>{
+
+        const o = docSnap.data();
+
+        grid.innerHTML += `
+        <div class="video-card"
+        onclick="location.href='order-detail.html?id=${docSnap.id}'">
+
+            <img src="${
+                o.items?.[0]?.image ||
+                'https://i.ibb.co/Z1kv9nJj/logo.png'
+            }">
+
+            <div class="play-count">
+                ${o.status || "Đơn hàng"}
+            </div>
+
+        </div>
+        `;
+
+    });
+
+}
 
 // ===========================
 // HIỂN THỊ DANH SÁCH
