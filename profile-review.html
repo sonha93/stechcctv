@@ -715,6 +715,72 @@ cursor:pointer;
 .sheet-item .material-symbols-outlined{
 font-size:34px;
 }
+ #nicknameModal{
+position:fixed;
+inset:0;
+display:none;
+justify-content:center;
+align-items:center;
+background:rgba(0,0,0,.45);
+z-index:9999999;
+}
+
+#nicknameModal.active{
+display:flex;
+}
+
+.nickname-box{
+width:92%;
+max-width:420px;
+background:#fff;
+border-radius:22px;
+overflow:hidden;
+}
+
+.nickname-box h2{
+padding:24px 20px 10px;
+text-align:center;
+font-size:30px;
+}
+
+.nickname-box p{
+padding:0 24px;
+text-align:center;
+line-height:1.5;
+color:#666;
+font-size:18px;
+}
+
+#nicknameInput{
+width:calc(100% - 32px);
+height:58px;
+margin:20px 16px;
+border:none;
+border-radius:16px;
+background:#f2f2f2;
+padding:0 18px;
+font-size:22px;
+outline:none;
+}
+
+.nickname-actions{
+display:flex;
+border-top:1px solid #eee;
+}
+
+.nickname-actions button{
+flex:1;
+height:62px;
+border:none;
+background:#fff;
+font-size:26px;
+font-weight:700;
+}
+
+#cancelNickname{
+border-right:1px solid #eee;
+color:#777;
+}
 }
 </style>
 </head>
@@ -979,6 +1045,36 @@ stroke-linejoin="round">
             <span class="material-symbols-outlined">
                 person_remove
             </span>
+
+        </div>
+
+    </div>
+
+</div>
+ <div id="nicknameModal">
+
+    <div class="nickname-box">
+
+        <h2>Tùy chỉnh tên</h2>
+
+        <p>
+            Hãy đặt cho người này một cái tên mà bạn quen thuộc.
+            Chỉ bạn mới có thể nhìn thấy tên này.
+        </p>
+
+        <input
+            id="nicknameInput"
+            maxlength="30">
+
+        <div class="nickname-actions">
+
+            <button id="cancelNickname">
+                Hủy
+            </button>
+
+            <button id="saveNickname">
+                Lưu
+            </button>
 
         </div>
 
