@@ -1583,7 +1583,7 @@ function autoPlay(){
             const v = entry.target;
 
         if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
-
+        
     const videoId = v.closest(".video-item")?.dataset.videoId;
 
     if(videoId && !viewedVideos.has(videoId)){
@@ -1612,6 +1612,21 @@ if (videoId && !viewedVideos.has(videoId)) {
         }
     );
 
+}
+            const videoId = v.closest(".video-item")?.dataset.videoId;
+
+if (
+    videoId &&
+    !viewedVideos.has(videoId)
+) {
+    viewedVideos.add(videoId);
+
+    updateDoc(
+        doc(db, "videos", videoId),
+        {
+            viewCount: increment(1)
+        }
+    ).catch(console.error);
 }
                 videos.forEach(x=>{
 
