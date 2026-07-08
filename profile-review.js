@@ -81,19 +81,20 @@ if(oldLink) oldLink.remove();
 let links = "";
 
 if(u.website)
-links += `<a href="${u.website}" target="_blank">${u.website}</a><br>`;
+links += `<a style="color:#0866ff;text-decoration:none;font-weight:600;" href="${u.website}" target="_blank">${u.website}</a><br>`;
 
 if(u.facebook)
-links += `<a href="${u.facebook}" target="_blank">${u.facebook}</a><br>`;
-
+links += `<a style="color:#0866ff;text-decoration:none;font-weight:600;" href="${u.website}" target="_blank">${u.website}</a><br>`;
 if(u.youtube)
-links += `<a href="${u.youtube}" target="_blank">${u.youtube}</a><br>`;
+links += `<a style="color:#0866ff;text-decoration:none;font-weight:600;" href="${u.website}" target="_blank">${u.website}</a><br>`;
 
 if(u.tiktok)
-links += `<a href="${u.tiktok}" target="_blank">${u.tiktok}</a><br>`;
+links += `<a style="color:#0866ff;text-decoration:none;font-weight:600;" href="${u.website}" target="_blank">${u.website}</a><br>`;
+
 
 if(u.zalo)
-links += `<a href="${u.zalo}" target="_blank">${u.zalo}</a>`;
+links += `<a style="color:#0866ff;text-decoration:none;font-weight:600;" href="${u.website}" target="_blank">${u.website}</a><br>`;
+
 
 
 if(links){
