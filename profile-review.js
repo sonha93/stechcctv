@@ -76,50 +76,55 @@ document.getElementById("profileName").innerHTML = `
 
 profileLink.innerHTML = "";
 
-if(
-    u.website ||
-    u.facebook ||
-    u.youtube ||
-    u.tiktok ||
-    u.zalo
-){
+if(u.website){
 
-profileLink.innerHTML = `
-
-${u.website ? `
-<a href="${u.website}" target="_blank">
-🔗 Website
-</a><br>
-`:""}
-
-${u.facebook ? `
-<a href="${u.facebook}" target="_blank">
-📘 Facebook
-</a><br>
-`:""}
-
-${u.youtube ? `
-<a href="${u.youtube}" target="_blank">
-▶ YouTube
-</a><br>
-`:""}
-
-${u.tiktok ? `
-<a href="${u.tiktok}" target="_blank">
-♪ TikTok
-</a><br>
-`:""}
-
-${u.zalo ? `
-<a href="${u.zalo}" target="_blank">
-💬 Zalo
-</a>
-`:""}
-
-`;
+    profileLink.innerHTML += `
+    <a href="${u.website}" target="_blank">
+        ${u.website}
+    </a>
+    `;
 
 }
 
+if(u.facebook){
+
+    profileLink.innerHTML += `
+    <a href="${u.facebook}" target="_blank">
+        ${u.facebook}
+    </a>
+    `;
+
+}
+
+if(u.youtube){
+
+    profileLink.innerHTML += `
+    <a href="${u.youtube}" target="_blank">
+        ${u.youtube}
+    </a>
+    `;
+
+}
+
+if(u.tiktok){
+
+    profileLink.innerHTML += `
+    <a href="${u.tiktok}" target="_blank">
+        ${u.tiktok}
+    </a>
+    `;
+
+}
+
+if(u.zalo){
+
+    profileLink.innerHTML += `
+    <a href="${u.zalo}" target="_blank">
+        ${u.zalo}
+    </a>
+    `;
+
+}
     // ===== TÍNH TỔNG LIKE VIDEO =====
 
     let totalLike = 0;
