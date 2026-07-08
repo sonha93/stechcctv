@@ -1,4 +1,4 @@
-
+import { getVerifiedBadge } from "./verified-users.js";
 import { app, auth } from "./auth.js";
 import {
     onAuthStateChanged
@@ -71,9 +71,9 @@ document.getElementById("profileNameText").innerHTML =
     u.name || "Người dùng";
 
 
-document.getElementById("profileNameText").innerHTML =
-    (u.name || "Người dùng") + getVerifiedBadge(profileUid);
+const verified = document.getElementById("verifiedBadge");
 
+verified.style.display = "block";
     username.innerHTML = "@" + (u.username || "");
 
     bio.innerHTML = u.bio || "";
