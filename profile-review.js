@@ -73,7 +73,12 @@ document.getElementById("profileNameText").innerHTML =
 
 const verified = document.getElementById("verifiedBadge");
 
-verified.style.display = "block";
+if(u.verified === true){
+    verified.style.display = "block";
+}else{
+    verified.style.display = "none";
+}
+
     username.innerHTML = "@" + (u.username || "");
 
     bio.innerHTML = u.bio || "";
