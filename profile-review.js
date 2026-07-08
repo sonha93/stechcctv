@@ -29,7 +29,16 @@ const profileUid = params.get("uid");
 // ===== HTML =====
 
 const avatar = document.getElementById("profileAvatar");
+const avatarPopup = document.createElement("div");
 
+avatarPopup.id = "avatarPopup";
+
+avatarPopup.innerHTML = `
+    <span id="closeAvatarPopup">&times;</span>
+    <img id="popupAvatarImg">
+`;
+
+document.body.appendChild(avatarPopup);
 const name = document.getElementById("profileName");
 
 const username = document.getElementById("profileUsername");
@@ -569,3 +578,25 @@ if (editBtn) {
         location.href = "edit-profile.html";
     };
 }
+avatar.style.cursor = "pointer";
+
+avatar.onclick = () => {
+    document.getElementById("popupAvatarImg").src = avatar.src;
+    avatarPopup.classList.add("active");
+};
+
+document.getElementById("closeAvatarPopup").onclick = () => {
+    avatarPopup.classList.remove("active");
+};
+
+avatarPopup.onclick = (e) => {
+    if (e.target === avatarPopup) {
+        avatarPopup.classList.remove("active");
+    }
+};
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+        avatarPopup.classList.remove("active");
+    }
+});
