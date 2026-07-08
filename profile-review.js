@@ -590,7 +590,15 @@ cancelBtn.onclick = function(){
     videoMenu.classList.remove("active");
 
 };
+videoMenu.onclick = (e)=>{
 
+    if(e.target===videoMenu){
+
+        videoMenu.classList.remove("active");
+
+    }
+
+};
 privacyBtn.onclick = async function(){
 
     if(!selectedVideoId) return;
