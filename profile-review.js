@@ -35,7 +35,7 @@ const name = document.getElementById("profileName");
 const username = document.getElementById("profileUsername");
 
 const bio = document.getElementById("profileBio");
-
+const profileLink = document.getElementById("profileLink");
 const followBtn = document.getElementById("followBtn");
 
 const editBtn = document.getElementById("editBtn");
@@ -74,23 +74,18 @@ document.getElementById("profileName").innerHTML = `
     username.innerHTML = "@" + (u.username || "");
 
     bio.innerHTML = u.bio || "";
-    // Hiển thị liên kết
-const oldLink = document.getElementById("profileLink");
-if (oldLink) oldLink.remove();
+    bio.innerHTML = u.bio || "";
 
 if (u.website) {
-    bio.insertAdjacentHTML(
-        "afterend",
-        `
-        <div id="profileLink" style="margin-top:10px;text-align:center;">
-            <a href="${u.website}"
-               target="_blank"
-               style="color:#0866ff;text-decoration:none;font-size:14px;font-weight:600;">
-                🔗 ${u.website}
-            </a>
-        </div>
-        `
-    );
+    profileLink.innerHTML = `
+        <a href="${u.website}"
+           target="_blank"
+           style="color:#0866ff;text-decoration:none;font-size:14px;font-weight:600;">
+            🔗 ${u.website}
+        </a>
+    `;
+} else {
+    profileLink.innerHTML = "";
 }
 
 
