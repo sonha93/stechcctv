@@ -223,7 +223,13 @@ if(user){
 
 }
     const isOwner = user && user.uid === profileUid;
+const addStory = document.getElementById("addStoryBtn");
 
+if(addStory){
+
+    addStory.style.display = isOwner ? "" : "none";
+
+}
     if (isOwner) {
         followBtn.style.display = "none";
         editBtn.style.display = "block";
@@ -932,7 +938,6 @@ storyFile.onchange = async () => {
 
 });
 
-console.log("Story ID:", storyRef.id);
 
 storyFile.value = "";
 
@@ -945,28 +950,28 @@ loadStories();
 
 async function loadStories(){
 
+    if(!auth.currentUser) return;
+
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
 
 
-    // xóa story cũ nhưng giữ nút +
     storyBar.querySelectorAll(".storyItem:not(#addStoryBtn)")
     .forEach(e=>e.remove());
 
 
     const snap = await getDocs(
-    query(
-        collection(db,"stories"),
-        where("uid","==",auth.currentUser.uid)
-    )
-);
+        query(
+            collection(db,"stories"),
+            where("uid","==",profileUid)
+        )
+    );
 
 
     snap.forEach(docSnap=>{
 
         const s = docSnap.data();
-
 
         if(s.expiresAt < Date.now()) return;
 
