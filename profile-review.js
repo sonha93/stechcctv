@@ -111,26 +111,28 @@ loadProfile();
 // HIỆN FOLLOW / EDIT
 // ===========================
 
-onAuthStateChanged(auth,user=>{
+onAuthStateChanged(auth, user => {
 
-    if(!user) return;
+    const isOwner = user && user.uid === profileUid;
 
-    if(user.uid===profileUid){
+    if (isOwner) {
 
-        followBtn.style.display="none";
+        followBtn.style.display = "none";
+        editBtn.style.display = "block";
 
-        editBtn.style.display="block";
+    } else {
 
-    }else{
-
-        followBtn.style.display="block";
-
-        editBtn.style.display="none";
+        followBtn.style.display = "block";
+        editBtn.style.display = "none";
 
     }
 
-});
+    // Chỉ chủ tài khoản mới thấy 3 tab cuối
+    document.querySelector('[data-tab="private"]').style.display = isOwner ? "" : "none";
+    document.querySelector('[data-tab="liked"]').style.display   = isOwner ? "" : "none";
+    document.querySelector('[data-tab="saved"]').style.display   = isOwner ? "" : "none";
 
+});
 followBtn.onclick = async () => {
 
     if (!auth.currentUser) {
