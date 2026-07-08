@@ -730,7 +730,7 @@ saveNickname.onclick = async () => {
         "nicknames",
         profileUid
     );
-
+      const profileNameText = document.getElementById("profileNameText");
     // Nếu xóa hết chữ -> xóa biệt danh
     if(value === ""){
 
@@ -747,8 +747,8 @@ saveNickname.onclick = async () => {
     }else{
 
         await setDoc(ref,{
-            name:value
-        });
+    nickname: value
+});
 
         profileNameText.innerText = value;
 
@@ -783,7 +783,8 @@ editNickname.onclick = async () => {
     );
 
     if (snap.exists()) {
-        nicknameInput.value = snap.data().nickname;
+       nicknameInput.value =
+    snap.data().nickname || "";
     }
 
     setTimeout(() => {
