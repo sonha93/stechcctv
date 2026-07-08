@@ -99,9 +99,6 @@ const u=userSnap.data();
 name.innerHTML=u.name || "Người dùng";
 
 
-username.innerHTML="@"+(u.username || "");
-
-
 }
 
 
