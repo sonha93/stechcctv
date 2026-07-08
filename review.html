@@ -1366,9 +1366,6 @@ if (profileUid) {
 for (const docSnap of videoSnap.docs) {
 
     const v = docSnap.data();
-if (v.videoEnabled === false) {
-    continue;
-}
     const userSnap = await getDoc(doc(db, "users", v.uid));
 
 const user = userSnap.exists()
@@ -1677,20 +1674,13 @@ if (p !== undefined) {
     }
 
 });
-   window.openCommentVideo = async function(id){
-
-    const snap = await getDoc(doc(db,"videos",id));
-
-    if(snap.exists() && snap.data().commentEnabled === false){
-        alert("Chủ video đã tắt bình luận.");
-        return;
-    }
+    window.openCommentVideo = function(id){
 
     currentCommentProduct = id;
 
     document
-        .getElementById("commentSheet")
-        .classList.add("active");
+    .getElementById("commentSheet")
+    .classList.add("active");
 
     loadComments(id);
 
@@ -1924,12 +1914,7 @@ ${
     window.sendComment = async function(){
 
     const user = auth.currentUser;
-const videoSnap = await getDoc(doc(db,"videos",currentCommentProduct));
 
-if(videoSnap.exists() && videoSnap.data().commentEnabled === false){
-    alert("Video này đã tắt bình luận.");
-    return;
-}
     if(!user){
         alert("Đăng nhập trước");
         return;
