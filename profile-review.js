@@ -64,7 +64,7 @@ async function loadProfile() {
     }
 
     const u = snap.data();
-  console.log(u);
+console.log("USER DATA:", u);
     avatar.src = u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
 
 document.getElementById("profileName").innerHTML = `
