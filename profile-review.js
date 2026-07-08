@@ -1,3 +1,4 @@
+import { getVerifiedBadge } from "./verified-users.js";
 import { app, auth } from "./auth.js";
 import {
     onAuthStateChanged
