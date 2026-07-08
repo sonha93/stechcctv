@@ -568,11 +568,23 @@ MOBILE
         visibility:visible;
     }
  .verified-popup-title{
-    font-size:10px !important;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    white-space:nowrap;   /* Không cho xuống dòng */
+    font-size:10px;
     font-weight:600;
-   white-space:nowrap;
 }
 
+.verified-popup-icon{
+    width:14px;
+    height:14px;
+    flex-shrink:0;
+}
+
+.verified-popup-title span{
+    white-space:nowrap;
+}
 .verified-popup-text{
     font-size:9px !important;
     line-height:1.3;
