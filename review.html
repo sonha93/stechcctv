@@ -1339,7 +1339,6 @@ class="review-image">
     </div>
 
 </div>
-</div>
         `;
    });
  });
@@ -1360,22 +1359,13 @@ if (profileUid) {
 
 } else {
 
-    videoSnap = await getDocs(
-        collection(db, "videos")
-    );
+    videoSnap = await getDocs(collection(db, "videos"));
 
 }
     
 for (const docSnap of videoSnap.docs) {
 
     const v = docSnap.data();
-
-   // chỉ ẩn khi đang xem profile
-if(profileUid && v.hidden === true){
-    continue;
-}
-
-   
     const userSnap = await getDoc(doc(db, "users", v.uid));
 
 const user = userSnap.exists()
@@ -2046,7 +2036,7 @@ window.likeComment = async function(productId, commentId){
 
         await deleteDoc(likeRef);
 await deleteDoc(
-    doc(db, "users", user.uid, "likes", commentId)
+    doc(db, "users", user.uid, "likes", id)
 );
         await updateDoc(commentRef,{
             likeCount:increment(-1)
