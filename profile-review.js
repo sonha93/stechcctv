@@ -376,40 +376,32 @@ tabs.forEach(tab=>{
 // ===========================
 
 async function loadTab(type){
-  console.log("LOAD TAB:", type);
-    console.log("profileUid:", profileUid);
+
     grid.innerHTML="";
 
     // --------------------
     // VIDEO CÔNG KHAI
     // --------------------
 
-   if(type==="videos"){
+    if(type==="videos"){
 
-    console.log("Đang lấy videos...");
+        const q=query(
 
-    const q=query(
-        collection(db,"videos"),
-        where("uid","==",profileUid)
-    );
+            collection(db,"videos"),
 
-    const snap = await getDocs(q);
+            where("uid","==",profileUid),
+where("status","==","public")
 
-    console.log("Số video lấy được:", snap.size);
-
-    snap.forEach(docSnap=>{
-
-        console.log(
-            "VIDEO:",
-            docSnap.id,
-            docSnap.data()
         );
 
-    });
+        const snap=await getDocs(q);
 
-    renderVideos(snap);
+snap.forEach(doc => {
+   
+});
+        renderVideos(snap);
 
-}
+    }
 
     // --------------------
     // VIDEO RIÊNG TƯ
@@ -579,19 +571,13 @@ function renderOne(docSnap){
 
     const v = docSnap.data();
 
-    console.log(
-        "Render video:",
-        docSnap.id,
-        v
-    );
-
     const ownerUid = v.uid;
 
     grid.innerHTML += `
 
 <div class="video-card"
 
-onclick="console.log('CLICK VIDEO', '${docSnap.id}'); location.href='review.html?uid=${ownerUid}&video=${docSnap.id}'"
+onclick="location.href='review.html?uid=${ownerUid}&video=${docSnap.id}'"
 
 ${auth.currentUser && auth.currentUser.uid===ownerUid
 ? `oncontextmenu="openVideoMenu('${docSnap.id}');return false;"`
@@ -981,43 +967,11 @@ loadStories();
 
         <div class="storyItem">
 
-          <div class="storyAvatar">
+            <div class="storyAvatar">
 
-${
-s.type==="video"
+                <img src="${s.avatar}">
 
-?
-
-`
-<video
-src="${s.media}"
-muted
-playsinline
-style="
-width:100%;
-height:100%;
-border-radius:50%;
-object-fit:cover;
-">
-</video>
-`
-
-:
-
-`
-<img
-src="${s.media}"
-style="
-width:100%;
-height:100%;
-border-radius:50%;
-object-fit:cover;
-">
-`
-
-}
-
-</div>
+            </div>
 
             <div class="storyName">
                 ${s.name || "Story"}
