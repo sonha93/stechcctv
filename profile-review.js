@@ -587,29 +587,20 @@ window.openVideoMenu = async function(videoId){
 
         const v = snap.data();
 
-        commentBtn.querySelector(".left span:last-child").textContent =
+        commentBtn.innerHTML = `
+        <span class="material-symbols-outlined">
+            chat
+        </span>
+        ${
             v.commentEnabled === false
             ? "Bật bình luận"
-            : "Tắt bình luận";
+            : "Tắt bình luận"
+        }
+        `;
+
     }
 
     videoMenu.classList.add("active");
-
-};
-
-cancelBtn.onclick = function(){
-
-    videoMenu.classList.remove("active");
-
-};
-
-videoMenu.onclick = (e)=>{
-
-    if(e.target===videoMenu){
-
-        videoMenu.classList.remove("active");
-
-    }
 
 };
 privacyBtn.onclick = async function(){
@@ -644,11 +635,15 @@ commentBtn.onclick = async function(){
 
     if(!snap.exists()) return;
 
-    const enable = snap.data().commentEnabled !== false;
+
+    const current =
+    snap.data().commentEnabled !== false;
+
 
     await updateDoc(ref,{
-        commentEnabled: !enable
+        commentEnabled: !current
     });
+
 
     videoMenu.classList.remove("active");
 
