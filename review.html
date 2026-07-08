@@ -1913,6 +1913,16 @@ ${
 }    
     window.sendComment = async function(){
 
+    // Kiểm tra video có cho bình luận không
+    const videoSnap = await getDoc(
+        doc(db, "videos", currentVideoId)
+    );
+
+    if(videoSnap.exists() && videoSnap.data().commentEnabled === false){
+        alert("Video này đã tắt bình luận");
+        return;
+    }
+
     const user = auth.currentUser;
 
     if(!user){
@@ -1924,70 +1934,69 @@ ${
         .getElementById("commentText")
         .value
         .trim();
-const file =
-document.getElementById("commentImage").files[0];
 
-let image = "";
-        if(file){
+    const file = document
+        .getElementById("commentImage")
+        .files[0];
 
-    const formData = new FormData();
+    let image = "";
 
-    formData.append("file", file);
+    if(file){
 
-    formData.append(
-        "upload_preset",
-        "stech_up"
-    );
+        const formData = new FormData();
 
-    const res = await fetch(
-        "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
-        {
-            method: "POST",
-            body: formData
-        }
-    );
+        formData.append("file", file);
+        formData.append("upload_preset", "stech_up");
 
-    const data = await res.json();
+        const res = await fetch(
+            "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
 
-    image = data.secure_url;
-
-}
-   if(text=="" && !file) return;
-    
-    await addDoc(
-
-    collection(
-        db,
-        "products",
-        currentCommentProduct,
-        "comments"
-    ),
-
-    {
-        uid: user.uid,
-        name: user.displayName || "Người dùng",
-        text: text,
-        image: image,
-        createdAt: serverTimestamp()
+        const data = await res.json();
+        image = data.secure_url;
     }
 
-);
+    if(text=="" && !file) return;
+
+    await addDoc(
+
+        collection(
+            db,
+            "products",
+            currentCommentProduct,
+            "comments"
+        ),
+
+        {
+            uid: user.uid,
+            name: user.displayName || "Người dùng",
+            text: text,
+            image: image,
+            createdAt: serverTimestamp()
+        }
+
+    );
 
     await updateDoc(
 
         doc(db,"products",currentCommentProduct),
 
         {
-            commentCount:increment(1)
+            commentCount: increment(1)
         }
 
     );
 
-   document.getElementById("commentText").value="";
-document.getElementById("commentImage").value="";
-document.getElementById("previewWrap").style.display="none";
-document.getElementById("previewImage").src="";
-document.getElementById("commentText").focus();
+    document.getElementById("commentText").value = "";
+    document.getElementById("commentImage").value = "";
+    document.getElementById("previewWrap").style.display = "none";
+    document.getElementById("previewImage").src = "";
+    document.getElementById("commentText").focus();
+
 }
     window.replyComment = function(name){
 
