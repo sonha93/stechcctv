@@ -1357,9 +1357,14 @@ if (profileUid) {
         )
     );
 
-} else {
+else {
 
-    videoSnap = await getDocs(collection(db, "videos"));
+    videoSnap = await getDocs(
+        query(
+            collection(db, "videos"),
+            where("status","==","public")
+        )
+    );
 
 }
     
