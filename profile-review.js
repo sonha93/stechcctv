@@ -957,6 +957,7 @@ async function loadStories(){
 
     if(!storyBar) return;
 
+
     const snap = await getDocs(
         query(
             collection(db,"stories"),
@@ -964,80 +965,112 @@ async function loadStories(){
         )
     );
 
-    let latestStory = null;
-
-
-    storyBar
-    .querySelectorAll(".storyItem:not(#addStoryBtn)")
-    .forEach(e=>e.remove());
-
-
     snap.forEach(docSnap=>{
 
         const s = docSnap.data();
 
-
         if(s.expiresAt < Date.now()) return;
 
+storyBar.insertAdjacentHTML(
+"beforeend",
+`
+<div class="storyItem" onclick="openStory('${docSnap.id}')">
 
-        latestStory = docSnap.id;
+    <div class="storyAvatar">
 
+        ${
+        s.type==="video"
+        ?
+        `<video src="${s.media}" muted></video>`
+        :
+        `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
+        }
 
-        storyBar.insertAdjacentHTML(
-            "beforeend",
-            `
-            <div class="storyItem"
-            onclick="openStory('${docSnap.id}')">
+    </div>
 
-                <div class="storyAvatar">
+    <div class="storyName">
+        ${s.name || "Story"}
+    </div>
 
-                    ${
-                    s.type==="video"
-                    ?
-                    `<video src="${s.media}" muted></video>`
-                    :
-                    `<img src="${s.media}">`
-                    }
-
-                </div>
-
-                <div class="storyName">
-                    ${s.name || "Story"}
-                </div>
-
-            </div>
-            `
-        );
-
+</div>
+`
+);
     });
 
-
-    if(latestStory){
-
-        avatar.classList.add("hasStory");
-
-        avatar.onclick=()=>{
-
-            openStory(latestStory);
-
-        };
-
-    }else{
-
-        avatar.classList.remove("hasStory");
-
-    }
-
-
-    if(auth.currentUser &&
-       auth.currentUser.uid===profileUid){
-
-        addStoryBtn.style.display="flex";
-
-    }else{
-
-        addStoryBtn.style.display="none";
-
-    }
-
 }
+const storyViewer = document.getElementById("storyViewer");
+const storyVideo = document.getElementById("storyVideo");
+const storyImage = document.getElementById("storyImage");
+
+window.openStory = async function(id){
+
+    currentStoryId = id;
+
+    const snap = await getDoc(
+        doc(db,"stories",id)
+    );
+
+    if(!snap.exists()) return;
+
+    const s = snap.data();
+
+    currentStoryOwner = s.uid;
+
+    storyViewer.classList.add("active");
+
+
+    if(auth.currentUser && auth.currentUser.uid === s.uid){
+
+        storyMore.style.display="block";
+
+    }else{
+
+        storyMore.style.display="none";
+
+    }
+
+
+    storyVideo.style.display="none";
+    storyImage.style.display="none";
+
+
+    if(s.type==="video"){
+
+        storyVideo.src=s.media;
+        storyVideo.style.display="block";
+        storyVideo.play();
+
+    }else{
+
+        storyImage.src=s.media;
+        storyImage.style.display="block";
+
+    }
+
+};
+storyMore.onclick = async ()=>{
+
+    if(!currentStoryId) return;
+
+    if(!confirm("Xóa story này?")) return;
+
+    await deleteDoc(
+        doc(db,"stories",currentStoryId)
+    );
+
+    storyViewer.classList.remove("active");
+
+    storyVideo.pause();
+    storyVideo.src="";
+
+    loadStories();
+
+};
+document.getElementById("closeStory").onclick=()=>{
+
+    storyViewer.classList.remove("active");
+
+    storyVideo.pause();
+    storyVideo.src="";
+
+};
