@@ -331,7 +331,7 @@ const videoMenu = document.getElementById("videoMenu");
 const privacyBtn = document.getElementById("privacyBtn");
 
 const commentBtn = document.getElementById("commentBtn");
-
+const videoToggleBtn = document.getElementById("videoToggleBtn");
 const deleteBtn = document.getElementById("deleteBtn");
 
 const cancelBtn = document.getElementById("cancelBtn");
@@ -585,12 +585,17 @@ window.openVideoMenu = async function(videoId){
 
     if(snap.exists()){
 
-        const v = snap.data();
+       const v = snap.data();
 
-        commentBtn.querySelector(".left span:last-child").textContent =
-            v.commentEnabled === false
-            ? "Bật bình luận"
-            : "Tắt bình luận";
+commentBtn.querySelector(".left span:last-child").textContent =
+    v.commentEnabled === false
+        ? "Bật bình luận"
+        : "Tắt bình luận";
+
+videoToggleBtn.querySelector(".left span:last-child").textContent =
+    v.videoEnabled === false
+        ? "Bật video"
+        : "Tắt video";
     }
 
     videoMenu.classList.add("active");
@@ -648,6 +653,25 @@ commentBtn.onclick = async function(){
 
     await updateDoc(ref,{
         commentEnabled: !enable
+    });
+
+    videoMenu.classList.remove("active");
+
+};
+videoToggleBtn.onclick = async function(){
+
+    if(!selectedVideoId) return;
+
+    const ref = doc(db,"videos",selectedVideoId);
+
+    const snap = await getDoc(ref);
+
+    if(!snap.exists()) return;
+
+    const enable = snap.data().videoEnabled !== false;
+
+    await updateDoc(ref,{
+        videoEnabled: !enable
     });
 
     videoMenu.classList.remove("active");
