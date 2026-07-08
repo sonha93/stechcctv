@@ -1569,6 +1569,7 @@ if (openVideoId) {
     }, 200);
 
 }
+const viewedVideos = new Set();
 
 /* AUTO PLAY LIKE TIKTOK */
 function autoPlay(){
@@ -1581,8 +1582,37 @@ function autoPlay(){
 
             const v = entry.target;
 
-          if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
+        if(entry.isIntersecting && entry.intersectionRatio >= 0.5){
 
+    const videoId = v.closest(".video-item")?.dataset.videoId;
+
+    if(videoId && !viewedVideos.has(videoId)){
+
+        viewedVideos.add(videoId);
+
+        updateDoc(
+            doc(db, "videos", videoId),
+            {
+                viewCount: increment(1)
+            }
+        );
+
+    }
+
+            const videoId = v.closest(".video-item")?.dataset.videoId;
+
+if (videoId && !viewedVideos.has(videoId)) {
+
+    viewedVideos.add(videoId);
+
+    updateDoc(
+        doc(db, "videos", videoId),
+        {
+            viewCount: increment(1)
+        }
+    );
+
+}
                 videos.forEach(x=>{
 
                     if(x!==v){
