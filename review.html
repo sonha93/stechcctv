@@ -1182,7 +1182,17 @@ const profileUid = params.get("uid");
 document.getElementById("myProfileBtn").onclick = () => {
 
     const user = auth.currentUser;
+    const videoSnap = await getDoc(
+    doc(db, "videos", currentCommentProduct)
+);
 
+if (
+    videoSnap.exists() &&
+    videoSnap.data().commentEnabled === false
+) {
+    alert("Đã tắt bình luận");
+    return;
+}
     if(!user){
         alert("Bạn chưa đăng nhập");
         return;
