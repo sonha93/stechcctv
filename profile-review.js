@@ -523,8 +523,6 @@ loadTab("videos");
 // MỞ TRANG SỬA HỒ SƠ
 // ==========================
 
-const editBtn = document.getElementById("editBtn");
-
 if (editBtn) {
     editBtn.onclick = () => {
         location.href = "edit-profile.html";
