@@ -582,51 +582,34 @@ window.openVideoMenu = async function(videoId){
     selectedVideoId = videoId;
 
     const snap = await getDoc(doc(db,"videos",videoId));
-    
+
     if(snap.exists()){
 
         const v = snap.data();
-        const commentBox = document.getElementById("commentBox");
-const commentInput = document.getElementById("commentInput");
-const commentSend = document.getElementById("commentSend");
 
-if(v.commentEnabled === false){
-
-    if(commentBox)
-        commentBox.style.display = "none";
-
-    if(commentInput)
-        commentInput.disabled = true;
-
-    if(commentSend)
-        commentSend.style.display = "none";
-
-}else{
-
-    if(commentBox)
-        commentBox.style.display = "block";
-
-    if(commentInput)
-        commentInput.disabled = false;
-
-    if(commentSend)
-        commentSend.style.display = "block";
-
-}
-        commentBtn.innerHTML = `
-        <span class="material-symbols-outlined">
-            chat
-        </span>
-        ${
+        commentBtn.querySelector(".left span:last-child").textContent =
             v.commentEnabled === false
             ? "Bật bình luận"
-            : "Tắt bình luận"
-        }
-        `;
-
+            : "Tắt bình luận";
     }
 
     videoMenu.classList.add("active");
+
+};
+
+cancelBtn.onclick = function(){
+
+    videoMenu.classList.remove("active");
+
+};
+
+videoMenu.onclick = (e)=>{
+
+    if(e.target===videoMenu){
+
+        videoMenu.classList.remove("active");
+
+    }
 
 };
 privacyBtn.onclick = async function(){
@@ -661,15 +644,11 @@ commentBtn.onclick = async function(){
 
     if(!snap.exists()) return;
 
-
-    const current =
-    snap.data().commentEnabled !== false;
-
+    const enable = snap.data().commentEnabled !== false;
 
     await updateDoc(ref,{
-        commentEnabled: !current
+        commentEnabled: !enable
     });
-
 
     videoMenu.classList.remove("active");
 
