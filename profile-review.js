@@ -74,23 +74,46 @@ document.getElementById("profileName").innerHTML = `
     username.innerHTML = "@" + (u.username || "");
 
     bio.innerHTML = u.bio || "";
-    // Hiển thị liên kết
+  // Hiển thị liên kết
 const oldLink = document.getElementById("profileLink");
-if (oldLink) oldLink.remove();
+if(oldLink) oldLink.remove();
 
-if (u.website) {
-    bio.insertAdjacentHTML(
-        "afterend",
-        `
-        <div id="profileLink" style="margin-top:10px;text-align:center;">
-            <a href="${u.website}"
-               target="_blank"
-               style="color:#0866ff;text-decoration:none;font-size:14px;font-weight:600;">
-                🔗 ${u.website}
-            </a>
-        </div>
-        `
-    );
+let links = "";
+
+if(u.website)
+links += `<a href="${u.website}" target="_blank">${u.website}</a><br>`;
+
+if(u.facebook)
+links += `<a href="${u.facebook}" target="_blank">${u.facebook}</a><br>`;
+
+if(u.youtube)
+links += `<a href="${u.youtube}" target="_blank">${u.youtube}</a><br>`;
+
+if(u.tiktok)
+links += `<a href="${u.tiktok}" target="_blank">${u.tiktok}</a><br>`;
+
+if(u.zalo)
+links += `<a href="${u.zalo}" target="_blank">${u.zalo}</a>`;
+
+
+if(links){
+
+bio.insertAdjacentHTML(
+"afterend",
+`
+<div id="profileLink"
+style="
+margin-top:10px;
+text-align:center;
+line-height:1.8;
+">
+
+${links}
+
+</div>
+`
+);
+
 }
 
 
