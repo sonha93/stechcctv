@@ -46,7 +46,8 @@ const followerCount = document.getElementById("followerCount");
 
 const likeCount = document.getElementById("likeCount");
 let selectedVideoId = null;
-
+let profileVideos = [];
+let currentVideoIndex = 0;
 // ===========================
 // LOAD USER
 // ===========================
@@ -441,16 +442,20 @@ snap.forEach(docSnap => {
 
 function renderVideos(snap){
 
+    profileVideos = [];
+
     snap.forEach(docSnap=>{
+
+        profileVideos.push({
+            id: docSnap.id,
+            ...docSnap.data()
+        });
 
         renderOne(docSnap);
 
     });
 
 }
-
-
-
 // ===========================
 // 1 VIDEO
 // ===========================
@@ -465,7 +470,7 @@ function renderOne(docSnap){
 
 <div class="video-card"
 
-onclick="location.href='profile-video.html?uid=${ownerUid}'"
+onclick="openVideoViewer('${docSnap.id}')"
 
 ${auth.currentUser && auth.currentUser.uid===ownerUid
 ? `oncontextmenu="openVideoMenu('${docSnap.id}');return false;"`
@@ -569,4 +574,103 @@ if (editBtn) {
     editBtn.onclick = () => {
         location.href = "edit-profile.html";
     };
+}
+window.openVideoViewer = function(id){
+
+    currentVideoIndex =
+    profileVideos.findIndex(v=>v.id===id);
+
+
+    const v = profileVideos[currentVideoIndex];
+
+window.openProfileVideo = async function(videoId){
+
+    const snap = await getDoc(
+        doc(db,"videos",videoId)
+    );
+
+    if(!snap.exists()) return;
+
+    const v = snap.data();
+
+
+    const viewer = document.createElement("div");
+
+    viewer.id="profileVideoViewer";
+
+
+    viewer.innerHTML = `
+
+    <button id="closeProfileVideo">
+        ←
+    </button>
+
+
+    <video
+        src="${v.videoUrl || v.url || v.video}"
+        autoplay
+        controls
+        playsinline>
+    </video>
+
+
+    <div class="video-info">
+
+        <div class="video-name">
+            ${v.name || ""}
+        </div>
+
+        <div class="video-time">
+            ${formatVideoTime(v.createdAt)}
+        </div>
+
+    </div>
+
+    `;
+
+
+    document.body.appendChild(viewer);
+
+
+    document.getElementById("closeProfileVideo")
+    .onclick = ()=>viewer.remove();
+
+};
+function formatVideoTime(time){
+
+    if(!time) return "";
+
+    let date;
+
+
+    if(time.toDate){
+        date = time.toDate();
+    }
+    else{
+        date = new Date(time);
+    }
+
+
+    const diff =
+    Date.now()-date.getTime();
+
+
+    const hour =
+    Math.floor(diff/3600000);
+
+
+    if(hour < 1)
+        return "Vừa xong";
+
+
+    if(hour < 24)
+        return hour+" giờ trước";
+
+
+    const day =
+    Math.floor(hour/24);
+
+
+    return day+" ngày trước";
+
 }
