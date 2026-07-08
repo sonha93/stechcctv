@@ -19,13 +19,10 @@ import {
     increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
-    getStorage,
-    ref,
-    uploadBytes,
-    getDownloadURL
+    
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 const db = getFirestore(app);
-const storage = getStorage(app);
+
 // ===== Lấy uid trên URL =====
 
 const params = new URLSearchParams(location.search);
@@ -869,83 +866,72 @@ storyFile.onchange = async () => {
 
     if(!file) return;
 
-    if(!auth.currentUser) return;
+    if(!auth.currentUser){
+        alert("Bạn cần đăng nhập");
+        return;
+    }
 
     const uid = auth.currentUser.uid;
 
-    const userSnap = await getDoc(
-        doc(db,"users",uid)
-    );
+    const userSnap = await getDoc(doc(db,"users",uid));
 
     if(!userSnap.exists()) return;
 
     const user = userSnap.data();
 
-    const ext = file.name.split(".").pop();
+    const formData = new FormData();
 
-    const fileName =
-        Date.now()+"."+ext;
+    formData.append("file", file);
 
-    const storageRef = ref(
-        storage,
-        "stories/"+uid+"/"+fileName
-    );
-console.log(file);
-    await uploadBytes(
-        storageRef,
-        file
-    );
-console.log("Upload Storage OK");
-    const media =
-        await getDownloadURL(storageRef);
-console.log(media);
-    const expire =
-        new Date(
-            Date.now()+24*60*60*1000
-        );
+    // TÊN UPLOAD PRESET CỦA MÀY
+    formData.append("upload_preset","stech_up");
 
-    await addDoc(
-        collection(db,"stories"),
-        {
-console.log("Đang ghi Firestore...");
-    console.log("Done");
-            uid,
+    const uploadUrl =
+    file.type.startsWith("video/")
+    ? "https://api.cloudinary.com/v1_1/dmz9gpp1b/video/upload"
+    : "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload";
 
-            name:user.name||"",
+    const res = await fetch(uploadUrl,{
+        method:"POST",
+        body:formData
+    });
 
-            username:user.username||"",
+    const data = await res.json();
 
-            avatar:user.avatar||"",
+    console.log(data);
 
-            verified:user.verified||false,
+    if(!data.secure_url){
 
-            media,
+        alert(data.error?.message || "Upload thất bại");
 
-            thumbnail:"",
+        return;
 
-            type:file.type.startsWith("video")
-                ? "video"
-                : "image",
+    }
 
-            caption:"",
+    await addDoc(collection(db,"stories"),{
 
-            privacy:"public",
+        uid:uid,
 
-            likeCount:0,
+        media:data.secure_url,
 
-            viewCount:0,
+        type:file.type.startsWith("video/")
+            ? "video"
+            : "image",
 
-            replyCount:0,
+        avatar:user.avatar || "",
 
-            createdAt:serverTimestamp(),
+        name:user.name || "",
 
-            expireAt:expire
+        username:user.username || "",
 
-        }
-    );
+        createdAt:serverTimestamp(),
+
+        expiresAt:Date.now() + 86400000
+
+    });
 
     alert("Đăng story thành công");
 
-    storyFile.value="";
+    storyFile.value = "";
 
 };
