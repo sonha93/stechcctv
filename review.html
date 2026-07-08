@@ -1363,10 +1363,14 @@ if (profileUid) {
 
 }
     
-videoSnap.forEach(docSnap=>{
+for (const docSnap of videoSnap.docs) {
 
     const v = docSnap.data();
+    const userSnap = await getDoc(doc(db, "users", v.uid));
 
+const user = userSnap.exists()
+    ? userSnap.data()
+    : {};
     feed.innerHTML += `
     <div class="video-item"
      id="video-${docSnap.id}"
@@ -1386,7 +1390,7 @@ videoSnap.forEach(docSnap=>{
 
     <img
     class="video-avatar"
-    src="${v.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
+   src="${user.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
    onclick="location.href='profile-review.html?uid=${v.uid}'"
     style="cursor:pointer;">
         <div class="action" onclick="toggleLikeVideo('${docSnap.id}')">
@@ -1465,7 +1469,7 @@ videoSnap.forEach(docSnap=>{
               <div class="name"
     onclick="location.href='profile-review.html?uid=${v.uid}'"
      style="cursor:pointer;">
-    ${v.name || "Người dùng"}
+  ${user.name || "Người dùng"}
     ${getVerifiedBadge(v.uid)}
 </div>
 
@@ -1481,7 +1485,7 @@ videoSnap.forEach(docSnap=>{
 `;
 
 
-});
+}
 // =========================
 // Tự phát video + bật âm thanh khi tới video
 // =========================
