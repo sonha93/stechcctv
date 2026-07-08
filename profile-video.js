@@ -4,7 +4,12 @@ import {
 
 getFirestore,
 doc,
-getDoc
+getDoc,
+collection,
+query,
+where,
+orderBy,
+getDocs
 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -105,11 +110,67 @@ name.innerHTML=u.name || "Người dùng";
 
 
 
-const videoSnap=await getDoc(
+async function loadVideos(){
 
-doc(db,"videos",videoId)
 
+const q=query(
+    collection(db,"videos"),
+    where("uid","==",uid),
+    orderBy("createdAt","desc")
 );
+
+
+const snap=await getDocs(q);
+
+
+const container=document.getElementById("videoList");
+
+
+container.innerHTML="";
+
+
+snap.forEach(d=>{
+
+
+const v=d.data();
+
+
+container.innerHTML += `
+
+<div class="video-item">
+
+<video
+src="${v.videoUrl}"
+playsinline
+loop
+muted>
+</video>
+
+
+<div class="info">
+
+<div>${v.description || ""}</div>
+
+<div>
+${timeAgo(v.createdAt || Date.now())}
+</div>
+
+</div>
+
+
+</div>
+
+`;
+
+});
+
+
+enableSwipe();
+
+
+}
+
+loadVideos();
 
 
 
@@ -144,3 +205,46 @@ desc.innerHTML=v.description || "";
 
 
 load();
+function enableSwipe(){
+
+
+const videos=document.querySelectorAll(
+".video-item video"
+);
+
+
+const observer=new IntersectionObserver(entries=>{
+
+
+entries.forEach(e=>{
+
+
+if(e.isIntersecting){
+
+e.target.play();
+
+}else{
+
+e.target.pause();
+
+}
+
+
+});
+
+
+},{
+threshold:0.7
+});
+
+
+
+videos.forEach(v=>{
+
+observer.observe(v);
+
+
+});
+
+
+}
