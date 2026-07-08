@@ -935,8 +935,13 @@ console.log("Story ID:", storyRef.id);
 storyFile.value = "";
 
 alert("Đăng story thành công");
-async function loadStories(){
 
+
+loadStories();
+   
+};
+
+ async function loadStories(){
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
@@ -979,5 +984,3 @@ async function loadStories(){
     });
 
 }
-
-loadStories();
