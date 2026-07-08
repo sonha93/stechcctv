@@ -475,13 +475,70 @@ MOBILE
     margin-top:4px;
     color:#888;
     font-size:13px;
+/* ==========================
+   VERIFIED BADGE
+========================== */
+
+.verified-badge{
+    display:inline-flex;
+    align-items:center;
+    position:relative;
+    margin-left:6px;
+    vertical-align:middle;
+    cursor:pointer;
 }
- .verified-badge{
-    display:inline-block;
+
+.verified-icon{
     width:18px;
     height:18px;
-    margin-left:4px;
-    vertical-align:middle;
+    display:block;
+}
+
+.verified-popup{
+    position:absolute;
+    top:28px;
+    left:50%;
+    transform:translateX(-50%);
+    width:240px;
+
+    background:#fff;
+    border-radius:12px;
+    padding:12px;
+
+    box-shadow:0 8px 30px rgba(0,0,0,.15);
+
+    opacity:0;
+    visibility:hidden;
+    transition:.2s;
+
+    z-index:9999;
+}
+
+.verified-badge:hover .verified-popup{
+    opacity:1;
+    visibility:visible;
+}
+
+.verified-popup-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    font-weight:700;
+    font-size:14px;
+    margin-bottom:8px;
+}
+
+.verified-popup-icon{
+    width:18px;
+    height:18px;
+    flex:none;
+}
+
+.verified-popup-text{
+    font-size:13px;
+    line-height:1.5;
+    color:#555;
 }
 }
  
