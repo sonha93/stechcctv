@@ -71,13 +71,8 @@ document.getElementById("profileNameText").innerHTML =
     u.name || "Người dùng";
 
 
-const verified = document.getElementById("verifiedBadge");
-
-if(u.verified === true){
-    verified.style.display = "block";
-}else{
-    verified.style.display = "none";
-}
+document.getElementById("profileNameText").innerHTML =
+    (u.name || "Người dùng") + getVerifiedBadge(profileUid);
 
     username.innerHTML = "@" + (u.username || "");
 
