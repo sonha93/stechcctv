@@ -702,24 +702,36 @@ saveNickname.onclick = async () => {
 
     const value = nicknameInput.value.trim();
 
-    if (!value) return;
-
-    await setDoc(
-        doc(
-            db,
-            "users",
-            auth.currentUser.uid,
-            "nicknames",
-            profileUid
-        ),
-        {
-            nickname: value
-        }
+    const ref = doc(
+        db,
+        "users",
+        auth.currentUser.uid,
+        "nicknames",
+        profileUid
     );
 
-    document.getElementById("profileNameText").textContent = value;
+    // Nếu xóa hết chữ -> xóa biệt danh
+    if(value === ""){
 
-    sheetName.textContent = value;
+        await deleteDoc(ref);
+
+        // Hiện lại tên gốc
+        const userSnap = await getDoc(
+            doc(db,"users",profileUid)
+        );
+
+        profileNameText.innerText =
+            userSnap.data().name || "Người dùng";
+
+    }else{
+
+        await setDoc(ref,{
+            name:value
+        });
+
+        profileNameText.innerText = value;
+
+    }
 
     nicknameModal.classList.remove("active");
 
