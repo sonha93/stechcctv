@@ -35,7 +35,7 @@ const name = document.getElementById("profileName");
 const username = document.getElementById("profileUsername");
 
 const bio = document.getElementById("profileBio");
-const profileLink = document.getElementById("profileLink");
+
 const followBtn = document.getElementById("followBtn");
 
 const editBtn = document.getElementById("editBtn");
@@ -46,8 +46,7 @@ const followerCount = document.getElementById("followerCount");
 
 const likeCount = document.getElementById("likeCount");
 let selectedVideoId = null;
-let profileVideos = [];
-let currentVideoIndex = 0;
+
 // ===========================
 // LOAD USER
 // ===========================
@@ -65,67 +64,28 @@ async function loadProfile() {
     }
 
     const u = snap.data();
+  
     avatar.src = u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
 
-document.getElementById("profileName").innerHTML = `
-    <span id="profileNameText">${u.name || "Người dùng"}</span>
-    ${getVerifiedBadge(profileUid)}
-`;
+document.getElementById("profileNameText").innerHTML =
+    u.name || "Người dùng";
+
+
+const verified = document.getElementById("verifiedBadge");
+
+verified.style.display = "block";
     username.innerHTML = "@" + (u.username || "");
 
     bio.innerHTML = u.bio || "";
 
-profileLink.innerHTML = "";
 
-if(u.website){
 
-    profileLink.innerHTML += `
-    <a href="${u.website}" target="_blank">
-        ${u.website}
-    </a>
-    `;
+    followingCount.innerHTML = u.followingCount || 0;
 
-}
+    followerCount.innerHTML = u.followerCount || 0;
 
-if(u.facebook){
 
-    profileLink.innerHTML += `
-    <a href="${u.facebook}" target="_blank">
-        ${u.facebook}
-    </a>
-    `;
 
-}
-
-if(u.youtube){
-
-    profileLink.innerHTML += `
-    <a href="${u.youtube}" target="_blank">
-        ${u.youtube}
-    </a>
-    `;
-
-}
-
-if(u.tiktok){
-
-    profileLink.innerHTML += `
-    <a href="${u.tiktok}" target="_blank">
-        ${u.tiktok}
-    </a>
-    `;
-
-}
-
-if(u.zalo){
-
-    profileLink.innerHTML += `
-    <a href="${u.zalo}" target="_blank">
-        ${u.zalo}
-    </a>
-    `;
-
-}
     // ===== TÍNH TỔNG LIKE VIDEO =====
 
     let totalLike = 0;
@@ -442,20 +402,16 @@ snap.forEach(docSnap => {
 
 function renderVideos(snap){
 
-    profileVideos = [];
-
     snap.forEach(docSnap=>{
-
-        profileVideos.push({
-            id: docSnap.id,
-            ...docSnap.data()
-        });
 
         renderOne(docSnap);
 
     });
 
 }
+
+
+
 // ===========================
 // 1 VIDEO
 // ===========================
@@ -470,7 +426,7 @@ function renderOne(docSnap){
 
 <div class="video-card"
 
-onclick="openVideoViewer('${docSnap.id}')"
+onclick="location.href='review.html?uid=${ownerUid}&video=${docSnap.id}'"
 
 ${auth.currentUser && auth.currentUser.uid===ownerUid
 ? `oncontextmenu="openVideoMenu('${docSnap.id}');return false;"`
@@ -566,92 +522,3 @@ deleteBtn.onclick = async function(){
 // ===========================
 
 loadTab("videos");
-// ==========================
-// MỞ TRANG SỬA HỒ SƠ
-// ==========================
-
-if (editBtn) {
-    editBtn.onclick = () => {
-        location.href = "edit-profile.html";
-    };
-}
-window.openVideoViewer = function(id){
-
-    currentVideoIndex =
-    profileVideos.findIndex(v=>v.id===id);
-
-
-    const v = profileVideos[currentVideoIndex];
-
-
-    const viewer = document.createElement("div");
-
-    viewer.id="videoViewer";
-
-
-    viewer.innerHTML=`
-
-<button id="closeViewer">
-← ${v.name || "Quay lại"}
-</button>
-
-
-<video 
-src="${v.videoUrl}"
-autoplay
-controls
-playsinline>
-</video>
-
-
-<div class="video-info">
-
-<b>${v.userName || ""}</b>
-
-<div>
-${timeAgo(v.createdAt)}
-</div>
-
-</div>
-
-`;
-
-document.body.appendChild(viewer);
-
-
-document.getElementById("closeViewer")
-.onclick=()=>viewer.remove();
-
-
-};
-function timeAgo(time){
-
-if(!time) return "";
-
-const diff =
-Date.now()-time;
-
-
-const min =
-Math.floor(diff/60000);
-
-
-if(min<60)
-return min+" phút trước";
-
-
-const hour =
-Math.floor(min/60);
-
-
-if(hour<24)
-return hour+" giờ trước";
-
-
-const day =
-Math.floor(hour/24);
-
-
-return day+" ngày trước";
-
-}
