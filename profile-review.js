@@ -943,52 +943,51 @@ loadStories();
 
 async function loadStories(){
 
-const storyBar=document.getElementById("storyBar");
+    const storyBar = document.getElementById("storyBar");
 
-if(!storyBar) return;
+    if(!storyBar) return;
 
 
-// giữ lại nút thêm story
-storyBar.querySelectorAll(".storyItem:not(#addStoryBtn)")
-.forEach(e=>e.remove());
+    // xóa story cũ nhưng giữ nút +
+    storyBar.querySelectorAll(".storyItem:not(#addStoryBtn)")
+    .forEach(e=>e.remove());
 
-const snap = await getDocs(
-query(
-collection(db,"stories"),
-where("uid","==",profileUid)
-)
+
+    const snap = await getDocs(
+    query(
+        collection(db,"stories"),
+        where("uid","==",auth.currentUser.uid)
+    )
 );
 
 
-snap.forEach(docSnap=>{
+    snap.forEach(docSnap=>{
 
-const s=docSnap.data();
-
-if(s.expiresAt < Date.now()) return;
+        const s = docSnap.data();
 
 
-storyBar.insertAdjacentHTML(
-"beforeend",
-`
-
-<div class="storyItem">
-
-<div class="storyAvatar">
-
-<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
-
-</div>
-
-<div class="storyName">
-${s.name || "Story"}
-</div>
-
-</div>
-
-`
-);
+        if(s.expiresAt < Date.now()) return;
 
 
-});
+        storyBar.insertAdjacentHTML(
+            "beforeend",
+            `
+            <div class="storyItem">
+
+                <div class="storyAvatar">
+
+                    <img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
+
+                </div>
+
+                <div class="storyName">
+                    ${s.name || "Story"}
+                </div>
+
+            </div>
+            `
+        );
+
+    });
 
 }
