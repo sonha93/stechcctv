@@ -957,7 +957,34 @@ white-space:nowrap;
 text-overflow:ellipsis;
 
 }
+#storyViewer{
+    position:fixed;
+    inset:0;
+    background:#000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:999999;
+}
 
+#storyViewer.active{
+    display:flex;
+}
+
+#storyViewer video,
+#storyViewer img{
+    max-width:100%;
+    max-height:100%;
+}
+
+#closeStory{
+    position:absolute;
+    top:20px;
+    right:25px;
+    color:#fff;
+    font-size:40px;
+    z-index:2;
+}
 </style>
 </head>
 
@@ -1306,6 +1333,15 @@ stroke-linejoin="round">
         </div>
 
     </div>
+
+</div>
+ <div id="storyViewer">
+
+    <span id="closeStory">×</span>
+
+    <video id="storyVideo" controls autoplay playsinline></video>
+
+    <img id="storyImage">
 
 </div>
 <script type="module" src="profile-review.js"></script>
