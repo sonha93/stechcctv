@@ -1015,6 +1015,24 @@ text-overflow:ellipsis;
     right:0;
     bottom:5px;
 }
+ .avatar-wrap{
+    position:relative;
+}
+
+
+.profile-avatar.hasStory{
+    padding:3px;
+    border:3px solid transparent;
+
+    background:
+    linear-gradient(#fff,#fff) padding-box,
+    linear-gradient(45deg,#ff0050,#ff9900,#ff0050) border-box;
+}
+
+
+#addStoryBtn{
+    display:none;
+}
 </style>
 </head>
 
@@ -1044,10 +1062,16 @@ text-overflow:ellipsis;
 
 <div class="profile-top">
 
+    <div class="avatar-wrap">
+
     <img
-        id="profileAvatar"
-        class="profile-avatar"
-        src="https://i.ibb.co/Z1kv9nJj/logo.png">
+    id="profileAvatar"
+    class="profile-avatar"
+    src="https://i.ibb.co/Z1kv9nJj/logo.png">
+
+    <span id="addStoryBtn" class="storyPlus">+</span>
+
+</div>
 
    <h2 id="profileName">
     <span id="profileNameText">Đang tải...</span>
