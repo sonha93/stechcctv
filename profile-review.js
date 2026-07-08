@@ -583,75 +583,94 @@ window.openVideoViewer = function(id){
 
     const v = profileVideos[currentVideoIndex];
 
+window.openProfileVideo = async function(videoId){
+
+    const snap = await getDoc(
+        doc(db,"videos",videoId)
+    );
+
+    if(!snap.exists()) return;
+
+    const v = snap.data();
+
 
     const viewer = document.createElement("div");
 
-    viewer.id="videoViewer";
+    viewer.id="profileVideoViewer";
 
 
-    viewer.innerHTML=`
+    viewer.innerHTML = `
 
-<button id="closeViewer">
-← ${v.name || "Quay lại"}
-</button>
-
-
-<video 
-src="${v.videoUrl}"
-autoplay
-controls
-playsinline>
-</video>
+    <button id="closeProfileVideo">
+        ←
+    </button>
 
 
-<div class="video-info">
-
-<b>${v.userName || ""}</b>
-
-<div>
-${timeAgo(v.createdAt)}
-</div>
-
-</div>
-
-`;
-
-document.body.appendChild(viewer);
+    <video
+        src="${v.videoUrl || v.url || v.video}"
+        autoplay
+        controls
+        playsinline>
+    </video>
 
 
-document.getElementById("closeViewer")
-.onclick=()=>viewer.remove();
+    <div class="video-info">
 
+        <div class="video-name">
+            ${v.name || ""}
+        </div>
+
+        <div class="video-time">
+            ${formatVideoTime(v.createdAt)}
+        </div>
+
+    </div>
+
+    `;
+
+
+    document.body.appendChild(viewer);
+
+
+    document.getElementById("closeProfileVideo")
+    .onclick = ()=>viewer.remove();
 
 };
-function timeAgo(time){
+function formatVideoTime(time){
 
-if(!time) return "";
+    if(!time) return "";
 
-const diff =
-Date.now()-time;
-
-
-const min =
-Math.floor(diff/60000);
+    let date;
 
 
-if(min<60)
-return min+" phút trước";
+    if(time.toDate){
+        date = time.toDate();
+    }
+    else{
+        date = new Date(time);
+    }
 
 
-const hour =
-Math.floor(min/60);
+    const diff =
+    Date.now()-date.getTime();
 
 
-if(hour<24)
-return hour+" giờ trước";
+    const hour =
+    Math.floor(diff/3600000);
 
 
-const day =
-Math.floor(hour/24);
+    if(hour < 1)
+        return "Vừa xong";
 
 
-return day+" ngày trước";
+    if(hour < 24)
+        return hour+" giờ trước";
+
+
+    const day =
+    Math.floor(hour/24);
+
+
+    return day+" ngày trước";
 
 }
