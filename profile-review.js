@@ -63,6 +63,8 @@ async function loadProfile() {
     }
 
     const u = snap.data();
+    console.log(u);
+console.log("verified =", u.verified);
     const verified = document.getElementById("verifiedBadge");
     avatar.src = u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
 
