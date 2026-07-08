@@ -693,7 +693,9 @@ deleteBtn.onclick = async function(){
 // LOAD MẶC ĐỊNH
 // ===========================
 
+
 loadTab("videos");
+loadStories();
 // ==========================
 // MỞ TRANG SỬA HỒ SƠ
 // ==========================
