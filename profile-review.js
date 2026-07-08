@@ -412,32 +412,28 @@ function renderVideos(snap){
 
 function renderOne(docSnap){
 
-    const v=docSnap.data();
+    const v = docSnap.data();
 
-    grid.innerHTML+=`
+    const ownerUid = v.uid;
+
+    grid.innerHTML += `
 
 <div class="video-card"
 
-onclick="location.href='review.html?uid=${profileUid}&video=${docSnap.id}'"
+onclick="location.href='review.html?uid=${ownerUid}&video=${docSnap.id}'"
 
-${auth.currentUser && auth.currentUser.uid===profileUid
-
-?`oncontextmenu="openVideoMenu('${docSnap.id}');return false;"`
-
-:""}
+${auth.currentUser && auth.currentUser.uid===ownerUid
+? `oncontextmenu="openVideoMenu('${docSnap.id}');return false;"`
+: ""}
 
 >
 
 <img
-
-src="${v.thumbnail||''}"
-
+src="${v.thumbnail || ''}"
 loading="lazy">
 
 <div class="play-count">
-
-▶ ${v.viewCount||0}
-
+▶ ${v.viewCount || 0}
 </div>
 
 </div>
