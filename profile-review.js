@@ -67,10 +67,17 @@ async function loadProfile() {
   
     avatar.src = u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
 
-name.innerHTML = `
-${u.name || "Người dùng"}
-${getVerifiedBadge(u.verified)}
-`;
+document.getElementById("profileNameText").innerHTML =
+    u.name || "Người dùng";
+
+
+const verified = document.getElementById("verifiedBadge");
+
+if(u.verified === true){
+    verified.style.display = "block";
+}else{
+    verified.style.display = "none";
+}
 
     username.innerHTML = "@" + (u.username || "");
 
