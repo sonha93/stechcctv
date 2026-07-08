@@ -74,7 +74,24 @@ document.getElementById("profileName").innerHTML = `
     username.innerHTML = "@" + (u.username || "");
 
     bio.innerHTML = u.bio || "";
+    // Hiển thị liên kết
+const oldLink = document.getElementById("profileLink");
+if (oldLink) oldLink.remove();
 
+if (u.website) {
+    bio.insertAdjacentHTML(
+        "afterend",
+        `
+        <div id="profileLink" style="margin-top:10px;text-align:center;">
+            <a href="${u.website}"
+               target="_blank"
+               style="color:#0866ff;text-decoration:none;font-size:14px;font-weight:600;">
+                🔗 ${u.website}
+            </a>
+        </div>
+        `
+    );
+}
 
 
     followingCount.innerHTML = u.followingCount || 0;
