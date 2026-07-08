@@ -890,15 +890,15 @@ storyFile.onchange = async () => {
         storage,
         "stories/"+uid+"/"+fileName
     );
-
+console.log(file);
     await uploadBytes(
         storageRef,
         file
     );
-
+console.log("Upload Storage OK");
     const media =
         await getDownloadURL(storageRef);
-
+console.log(media);
     const expire =
         new Date(
             Date.now()+24*60*60*1000
@@ -907,7 +907,8 @@ storyFile.onchange = async () => {
     await addDoc(
         collection(db,"stories"),
         {
-
+console.log("Đang ghi Firestore...");
+    console.log("Done");
             uid,
 
             name:user.name||"",
