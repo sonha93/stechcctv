@@ -981,11 +981,43 @@ loadStories();
 
         <div class="storyItem">
 
-            <div class="storyAvatar">
+          <div class="storyAvatar">
 
-                <img src="${s.avatar}">
+${
+s.type==="video"
 
-            </div>
+?
+
+`
+<video
+src="${s.media}"
+muted
+playsinline
+style="
+width:100%;
+height:100%;
+border-radius:50%;
+object-fit:cover;
+">
+</video>
+`
+
+:
+
+`
+<img
+src="${s.media}"
+style="
+width:100%;
+height:100%;
+border-radius:50%;
+object-fit:cover;
+">
+`
+
+}
+
+</div>
 
             <div class="storyName">
                 ${s.name || "Story"}
