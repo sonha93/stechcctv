@@ -1650,42 +1650,56 @@ if (p !== undefined) {
 }
 
 
-document.addEventListener("visibilitychange",()=>{
-
-    const videos = document.querySelectorAll(".vid");
-
-    if(document.hidden){
-
-        videos.forEach(v=>v.pause());
-
-    }else{
-
-        videos.forEach(v=>{
-            if(!v.paused){
-                const p = v.play();
-
-if (p !== undefined) {
-    p.catch(err=>{
-        console.log("play error",err);
-    });
-}
-            }
-        });
-
-    }
-
-});
-    window.openCommentVideo = function(id){
+window.openCommentVideo = async function(id){
 
     currentCommentProduct = id;
+
+    const videoSnap = await getDoc(
+        doc(db,"videos",id)
+    );
+
+    const input = document.querySelector(".comment-input");
+    const list = document.getElementById("commentList");
 
     document
     .getElementById("commentSheet")
     .classList.add("active");
 
+
+    if(videoSnap.exists()){
+
+        const data = videoSnap.data();
+
+        if(data.commentEnabled === false){
+
+            list.innerHTML = `
+            <div style="
+                height:100%;
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                color:#777;
+                font-size:15px;
+                font-weight:600;
+            ">
+                Chủ video đã tắt bình luận
+            </div>
+            `;
+
+            input.style.display = "none";
+
+            return;
+
+        }
+
+    }
+
+
+    input.style.display = "flex";
+
     loadComments(id);
 
-}
+};
     window.openComment = function(id){
 
     currentCommentProduct = id;
