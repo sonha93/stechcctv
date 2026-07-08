@@ -968,42 +968,30 @@ async function loadStories(){
 
         if(s.expiresAt < Date.now()) return;
 
+storyBar.insertAdjacentHTML(
+"beforeend",
+`
+<div class="storyItem" onclick="openStory('${docSnap.id}')">
 
-        storyBar.insertAdjacentHTML(
-            "beforeend",
-            `
-            <div class="storyItem">
+    <div class="storyAvatar">
 
-               <div class="storyAvatar">
+        ${
+        s.type==="video"
+        ?
+        `<video src="${s.media}" muted></video>`
+        :
+        `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
+        }
 
-${
-s.type === "video"
-?
-`
-<video
-src="${s.media}"
-muted
-autoplay
-loop
-playsinline>
-</video>
-`
-:
-`
-<img src="${s.media}">
-`
-}
+    </div>
+
+    <div class="storyName">
+        ${s.name || "Story"}
+    </div>
 
 </div>
-
-                <div class="storyName">
-                    ${s.name || "Story"}
-                </div>
-
-            </div>
-            `
-        );
-
+`
+);
     });
 
 }
