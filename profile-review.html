@@ -1033,6 +1033,18 @@ text-overflow:ellipsis;
 #addStoryBtn{
     display:none;
 }
+ #profileAvatar.hasStory{
+    padding:3px;
+    border:3px solid #ff0050;
+}
+ #storyMore{
+    position:absolute;
+    top:20px;
+    right:70px;
+    color:white;
+    font-size:28px;
+    z-index:5;
+}
 </style>
 </head>
 
@@ -1378,10 +1390,12 @@ stroke-linejoin="round">
     </div>
 
 </div>
- <div id="storyViewer">
+<div id="storyViewer">
 
     <span id="closeStory">×</span>
- <span id="storyMore">•••</span>
+
+    <span id="storyMore">•••</span>
+
     <video id="storyVideo" controls autoplay playsinline></video>
 
     <img id="storyImage">
