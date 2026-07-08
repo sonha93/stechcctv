@@ -927,9 +927,10 @@ storyFile.onchange = async () => {
         createdAt:serverTimestamp(),
 
         expiresAt:Date.now() + 86400000
-
+        
     });
-
+    storyFile.value = "";
+console.log("Story ID:", ref.id);
     alert("Đăng story thành công");
 
   
