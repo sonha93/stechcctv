@@ -46,7 +46,8 @@ const followerCount = document.getElementById("followerCount");
 
 const likeCount = document.getElementById("likeCount");
 let selectedVideoId = null;
-
+let profileVideos = [];
+let currentVideoIndex = 0;
 // ===========================
 // LOAD USER
 // ===========================
@@ -441,16 +442,20 @@ snap.forEach(docSnap => {
 
 function renderVideos(snap){
 
+    profileVideos = [];
+
     snap.forEach(docSnap=>{
+
+        profileVideos.push({
+            id: docSnap.id,
+            ...docSnap.data()
+        });
 
         renderOne(docSnap);
 
     });
 
 }
-
-
-
 // ===========================
 // 1 VIDEO
 // ===========================
@@ -465,7 +470,7 @@ function renderOne(docSnap){
 
 <div class="video-card"
 
-onclick="location.href='profile-video.html?uid=${ownerUid}&video=${docSnap.id}'"
+onclick="openVideoViewer('${docSnap.id}')"
 
 ${auth.currentUser && auth.currentUser.uid===ownerUid
 ? `oncontextmenu="openVideoMenu('${docSnap.id}');return false;"`
@@ -569,4 +574,84 @@ if (editBtn) {
     editBtn.onclick = () => {
         location.href = "edit-profile.html";
     };
+}
+window.openVideoViewer = function(id){
+
+    currentVideoIndex =
+    profileVideos.findIndex(v=>v.id===id);
+
+
+    const v = profileVideos[currentVideoIndex];
+
+
+    const viewer = document.createElement("div");
+
+    viewer.id="videoViewer";
+
+
+    viewer.innerHTML=`
+
+<button id="closeViewer">
+← ${v.name || "Quay lại"}
+</button>
+
+
+<video 
+src="${v.videoUrl}"
+autoplay
+controls
+playsinline>
+</video>
+
+
+<div class="video-info">
+
+<b>${v.userName || ""}</b>
+
+<div>
+${timeAgo(v.createdAt)}
+</div>
+
+</div>
+
+`;
+
+document.body.appendChild(viewer);
+
+
+document.getElementById("closeViewer")
+.onclick=()=>viewer.remove();
+
+
+};
+function timeAgo(time){
+
+if(!time) return "";
+
+const diff =
+Date.now()-time;
+
+
+const min =
+Math.floor(diff/60000);
+
+
+if(min<60)
+return min+" phút trước";
+
+
+const hour =
+Math.floor(min/60);
+
+
+if(hour<24)
+return hour+" giờ trước";
+
+
+const day =
+Math.floor(hour/24);
+
+
+return day+" ngày trước";
+
 }
