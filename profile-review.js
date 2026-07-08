@@ -591,8 +591,7 @@ function renderOne(docSnap){
 
 <div class="video-card"
 
-onclick="console.log('CLICK VIDEO', '${docSnap.id}'); location.href='review.html?uid=${ownerUid}&video=${docSnap.id}'"
-
+onclick="console.log('CLICK:', '${docSnap.id}', '${ownerUid}'); location.href='review.html?uid=${ownerUid}&video=${docSnap.id}'"
 ${auth.currentUser && auth.currentUser.uid===ownerUid
 ? `oncontextmenu="openVideoMenu('${docSnap.id}');return false;"`
 : ""}
