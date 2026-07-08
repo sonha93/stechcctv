@@ -74,7 +74,10 @@ const storyFile = document.getElementById("storyFile");
 
 const myStoryAvatar = document.getElementById("myStoryAvatar");
 let selectedVideoId = null;
+const storyMore = document.getElementById("storyMore");
 
+let currentStoryId = null;
+let currentStoryOwner = null;
 // ===========================
 // LOAD USER
 // ===========================
@@ -1001,6 +1004,8 @@ const storyImage = document.getElementById("storyImage");
 
 window.openStory = async function(id){
 
+    currentStoryId = id;
+
     const snap = await getDoc(
         doc(db,"stories",id)
     );
@@ -1009,27 +1014,58 @@ window.openStory = async function(id){
 
     const s = snap.data();
 
+    currentStoryOwner = s.uid;
+
     storyViewer.classList.add("active");
+
+
+    if(auth.currentUser && auth.currentUser.uid === s.uid){
+
+        storyMore.style.display="block";
+
+    }else{
+
+        storyMore.style.display="none";
+
+    }
+
 
     storyVideo.style.display="none";
     storyImage.style.display="none";
 
+
     if(s.type==="video"){
 
-        storyVideo.src = s.media;
+        storyVideo.src=s.media;
         storyVideo.style.display="block";
         storyVideo.play();
 
     }else{
 
-        storyImage.src = s.media;
+        storyImage.src=s.media;
         storyImage.style.display="block";
 
     }
 
 };
+storyMore.onclick = async ()=>{
 
+    if(!currentStoryId) return;
 
+    if(!confirm("Xóa story này?")) return;
+
+    await deleteDoc(
+        doc(db,"stories",currentStoryId)
+    );
+
+    storyViewer.classList.remove("active");
+
+    storyVideo.pause();
+    storyVideo.src="";
+
+    loadStories();
+
+};
 document.getElementById("closeStory").onclick=()=>{
 
     storyViewer.classList.remove("active");
