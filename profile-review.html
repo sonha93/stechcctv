@@ -829,6 +829,125 @@ font-weight:700;
 border-right:1px solid #eee;
 color:#777;
 }
+ /*==============================
+STORY
+==============================*/
+
+#storyBar{
+
+display:flex;
+
+gap:14px;
+
+padding:14px;
+
+overflow-x:auto;
+
+background:#fff;
+
+scrollbar-width:none;
+
+}
+
+#storyBar::-webkit-scrollbar{
+
+display:none;
+
+}
+
+.storyItem{
+
+flex:0 0 auto;
+
+width:72px;
+
+text-align:center;
+
+cursor:pointer;
+
+}
+
+.storyAvatar{
+
+position:relative;
+
+width:68px;
+
+height:68px;
+
+padding:3px;
+
+border-radius:50%;
+
+background:linear-gradient(45deg,#ff0050,#ff7a00);
+
+}
+
+.storyAvatar.mine{
+
+background:#ddd;
+
+}
+
+.storyAvatar img{
+
+width:100%;
+
+height:100%;
+
+border-radius:50%;
+
+object-fit:cover;
+
+border:2px solid #fff;
+
+}
+
+.storyPlus{
+
+position:absolute;
+
+right:-2px;
+
+bottom:-2px;
+
+width:22px;
+
+height:22px;
+
+border-radius:50%;
+
+background:#0a84ff;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:18px;
+
+font-weight:bold;
+
+color:#fff;
+
+border:2px solid #fff;
+
+}
+
+.storyName{
+
+margin-top:6px;
+
+font-size:12px;
+
+overflow:hidden;
+
+white-space:nowrap;
+
+text-overflow:ellipsis;
+
+}
 }
 </style>
 </head>
@@ -931,7 +1050,33 @@ color:#777;
 </div>
 
 
+<div id="storyBar">
 
+    <div class="storyItem" id="addStoryBtn">
+
+        <div class="storyAvatar mine">
+
+            <img
+            id="myStoryAvatar"
+            src="https://i.ibb.co/Z1kv9nJj/logo.png">
+
+            <span class="storyPlus">+</span>
+
+        </div>
+
+        <div class="storyName">
+            Story
+        </div>
+
+    </div>
+
+</div>
+
+<input
+id="storyFile"
+type="file"
+accept="image/*,video/*"
+hidden>
 <!-- Tabs -->
 
 <div class="profile-tabs">
