@@ -1007,3 +1007,46 @@ playsinline>
     });
 
 }
+const storyViewer = document.getElementById("storyViewer");
+const storyVideo = document.getElementById("storyVideo");
+const storyImage = document.getElementById("storyImage");
+
+window.openStory = async function(id){
+
+    const snap = await getDoc(
+        doc(db,"stories",id)
+    );
+
+    if(!snap.exists()) return;
+
+    const s = snap.data();
+
+    storyViewer.classList.add("active");
+
+    storyVideo.style.display="none";
+    storyImage.style.display="none";
+
+    if(s.type==="video"){
+
+        storyVideo.src = s.media;
+        storyVideo.style.display="block";
+        storyVideo.play();
+
+    }else{
+
+        storyImage.src = s.media;
+        storyImage.style.display="block";
+
+    }
+
+};
+
+
+document.getElementById("closeStory").onclick=()=>{
+
+    storyViewer.classList.remove("active");
+
+    storyVideo.pause();
+    storyVideo.src="";
+
+};
