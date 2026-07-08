@@ -376,32 +376,40 @@ tabs.forEach(tab=>{
 // ===========================
 
 async function loadTab(type){
-
+  console.log("LOAD TAB:", type);
+    console.log("profileUid:", profileUid);
     grid.innerHTML="";
 
     // --------------------
     // VIDEO CÔNG KHAI
     // --------------------
 
-    if(type==="videos"){
+   if(type==="videos"){
 
-        const q=query(
+    console.log("Đang lấy videos...");
 
-            collection(db,"videos"),
+    const q=query(
+        collection(db,"videos"),
+        where("uid","==",profileUid)
+    );
 
-            where("uid","==",profileUid),
-where("status","==","public")
+    const snap = await getDocs(q);
 
+    console.log("Số video lấy được:", snap.size);
+
+    snap.forEach(docSnap=>{
+
+        console.log(
+            "VIDEO:",
+            docSnap.id,
+            docSnap.data()
         );
 
-        const snap=await getDocs(q);
+    });
 
-snap.forEach(doc => {
-   
-});
-        renderVideos(snap);
+    renderVideos(snap);
 
-    }
+}
 
     // --------------------
     // VIDEO RIÊNG TƯ
@@ -571,13 +579,19 @@ function renderOne(docSnap){
 
     const v = docSnap.data();
 
+    console.log(
+        "Render video:",
+        docSnap.id,
+        v
+    );
+
     const ownerUid = v.uid;
 
     grid.innerHTML += `
 
 <div class="video-card"
 
-onclick="location.href='review.html?uid=${ownerUid}&video=${docSnap.id}'"
+onclick="console.log('CLICK VIDEO', '${docSnap.id}'); location.href='review.html?uid=${ownerUid}&video=${docSnap.id}'"
 
 ${auth.currentUser && auth.currentUser.uid===ownerUid
 ? `oncontextmenu="openVideoMenu('${docSnap.id}');return false;"`
