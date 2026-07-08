@@ -908,31 +908,30 @@ storyFile.onchange = async () => {
 
     }
 
-    await addDoc(collection(db,"stories"),{
+    const storyRef = await addDoc(collection(db,"stories"),{
 
-        uid:uid,
+    uid:uid,
 
-        media:data.secure_url,
+    media:data.secure_url,
 
-        type:file.type.startsWith("video/")
-            ? "video"
-            : "image",
+    type:file.type.startsWith("video/")
+        ? "video"
+        : "image",
 
-        avatar:user.avatar || "",
+    avatar:user.avatar || "",
 
-        name:user.name || "",
+    name:user.name || "",
 
-        username:user.username || "",
+    username:user.username || "",
 
-        createdAt:serverTimestamp(),
+    createdAt:serverTimestamp(),
 
-        expiresAt:Date.now() + 86400000
-        
-    });
-    storyFile.value = "";
-console.log("Story ID:", ref.id);
-    alert("Đăng story thành công");
+    expiresAt:Date.now() + 86400000
 
-  
+});
 
-};
+console.log("Story ID:", storyRef.id);
+
+storyFile.value = "";
+
+alert("Đăng story thành công");
