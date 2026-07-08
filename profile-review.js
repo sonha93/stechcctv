@@ -76,7 +76,13 @@ const verified = document.getElementById("verifiedBadge");
 const verified = document.getElementById("verifiedBadge");
 
 if(u.verified === true){
+   const verified = document.getElementById("verifiedBadge");
+
+if(u.verified === true){
     verified.style.display = "block";
+}else{
+    verified.style.display = "none";
+}
 }else{
     verified.style.display = "none";
 }
