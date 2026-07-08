@@ -1350,21 +1350,32 @@ let videoSnap;
 
 if (profileUid) {
 
-    videoSnap = await getDocs(
-        query(
-            collection(db, "videos"),
-            where("uid", "==", profileUid)
-        )
-    );
+   videoSnap = await getDocs(
+    query(
+        collection(db, "videos"),
+        where("uid", "==", profileUid),
+        where("hidden", "==", false)
+    )
+);
 
 } else {
 
-    videoSnap = await getDocs(collection(db, "videos"));
-
+    videoSnap = await getDocs(
+    query(
+        collection(db, "videos"),
+        where("hidden", "==", false)
+    )
+);
 }
     
 for (const docSnap of videoSnap.docs) {
 
+    const v = docSnap.data();
+
+    // bỏ video đã ẩn
+    if(v.hidden === true){
+        continue;
+    }
     const v = docSnap.data();
     const userSnap = await getDoc(doc(db, "users", v.uid));
 
