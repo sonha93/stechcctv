@@ -582,11 +582,37 @@ window.openVideoMenu = async function(videoId){
     selectedVideoId = videoId;
 
     const snap = await getDoc(doc(db,"videos",videoId));
-
+    
     if(snap.exists()){
 
         const v = snap.data();
+        const commentBox = document.getElementById("commentBox");
+const commentInput = document.getElementById("commentInput");
+const commentSend = document.getElementById("commentSend");
 
+if(v.commentEnabled === false){
+
+    if(commentBox)
+        commentBox.style.display = "none";
+
+    if(commentInput)
+        commentInput.disabled = true;
+
+    if(commentSend)
+        commentSend.style.display = "none";
+
+}else{
+
+    if(commentBox)
+        commentBox.style.display = "block";
+
+    if(commentInput)
+        commentInput.disabled = false;
+
+    if(commentSend)
+        commentSend.style.display = "block";
+
+}
         commentBtn.innerHTML = `
         <span class="material-symbols-outlined">
             chat
