@@ -496,7 +496,11 @@ SMALL PHONE
     font-size:12px;
 
 }
-
+#usernameStatus{
+    margin-top:6px;
+    font-size:13px;
+    font-weight:500;
+}
 }
   </style>
 </head>
@@ -571,32 +575,32 @@ SMALL PHONE
     </div>
 
 
+<!-- Username -->
 
-    <!-- Username -->
+<div class="section">
 
-    <div class="section">
+    <label>
+        Tên người dùng (ID)
+    </label>
 
-        <label>
-            Tên người dùng (ID)
-        </label>
+    <div class="username-box">
 
-        <div class="username-box">
+        <span>@</span>
 
-            <span>@</span>
-
-            <input
-                id="usernameInput"
-                maxlength="30"
-                placeholder="hoang-son">
-
-        </div>
-
-        <small id="usernameTip">
-            Bạn chỉ có thể đổi ID sau 30 ngày.
-        </small>
+        <input
+            id="usernameInput"
+            maxlength="30"
+            placeholder="Nhập ID của bạn">
 
     </div>
 
+    <div id="usernameStatus"></div>
+
+    <small id="usernameTip">
+        Bạn chỉ có thể đổi ID sau 30 ngày.
+    </small>
+
+</div>
 
 
     <!-- Bio -->
