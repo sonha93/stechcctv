@@ -63,7 +63,7 @@ async function loadProfile() {
     }
 
     const u = snap.data();
-
+    const verified = document.getElementById("verifiedBadge");
     avatar.src = u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
 
    name.innerHTML = `
