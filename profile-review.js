@@ -984,3 +984,62 @@ loadStories();
     });
 
 }
+async function loadStories(){
+
+    const storyBar = document.getElementById("storyBar");
+
+    if(!storyBar) return;
+
+    const snap = await getDocs(
+        query(
+            collection(db,"stories"),
+            where("uid","==",profileUid)
+        )
+    );
+
+
+    snap.forEach(docSnap=>{
+
+        const s = docSnap.data();
+
+        if(s.expiresAt < Date.now()) return;
+
+
+        storyBar.innerHTML += `
+
+        <div class="storyItem">
+
+            <div class="storyAvatar">
+
+                ${
+                s.type === "video"
+
+                ?
+
+                `<video
+                    src="${s.media}"
+                    muted
+                    autoplay
+                    loop
+                    playsinline
+                ></video>`
+
+                :
+
+                `<img src="${s.media}">`
+
+                }
+
+            </div>
+
+            <div class="storyName">
+                ${s.name || "Story"}
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+}
