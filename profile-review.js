@@ -589,14 +589,17 @@ window.openProfileVideo = async function(videoId){
         doc(db,"videos",videoId)
     );
 
-    if(!snap.exists()) return;
+    if(!snap.exists()){
+        return;
+    }
+
 
     const v = snap.data();
 
 
     const viewer = document.createElement("div");
 
-    viewer.id="profileVideoViewer";
+    viewer.id = "profileVideoViewer";
 
 
     viewer.innerHTML = `
@@ -605,9 +608,8 @@ window.openProfileVideo = async function(videoId){
         ←
     </button>
 
-
     <video
-        src="${v.videoUrl || v.url || v.video}"
+        src="${v.videoUrl || v.url || v.video || ""}"
         autoplay
         controls
         playsinline>
@@ -632,45 +634,65 @@ window.openProfileVideo = async function(videoId){
     document.body.appendChild(viewer);
 
 
+    document.body.style.overflow="hidden";
+
+
     document.getElementById("closeProfileVideo")
-    .onclick = ()=>viewer.remove();
+    .onclick = ()=>{
+
+        viewer.remove();
+
+        document.body.style.overflow="";
+
+    };
 
 };
+
+
+
 function formatVideoTime(time){
 
-    if(!time) return "";
+    if(!time){
+        return "";
+    }
+
 
     let date;
 
 
-    if(time.toDate){
+    if(typeof time.toDate === "function"){
+
         date = time.toDate();
-    }
-    else{
+
+    }else{
+
         date = new Date(time);
+
     }
 
 
     const diff =
-    Date.now()-date.getTime();
+    Date.now() - date.getTime();
 
 
     const hour =
-    Math.floor(diff/3600000);
+    Math.floor(diff / 3600000);
 
 
-    if(hour < 1)
+    if(hour < 1){
+
         return "Vừa xong";
 
-
-    if(hour < 24)
-        return hour+" giờ trước";
+    }
 
 
-    const day =
-    Math.floor(hour/24);
+    if(hour < 24){
+
+        return hour + " giờ trước";
+
+    }
 
 
-    return day+" ngày trước";
+    return Math.floor(hour / 24) + " ngày trước";
 
 }
