@@ -653,7 +653,7 @@ await updateDoc(ref,{
     videoMenu.classList.remove("active");
 
     loadTab("videos");
-
+loadStories();
 };
 commentBtn.onclick = async function(){
 
@@ -941,46 +941,55 @@ loadStories();
    
 };
 
- async function loadStories(){
-    const storyBar = document.getElementById("storyBar");
+async function loadStories(){
 
-    if(!storyBar) return;
+const storyBar=document.getElementById("storyBar");
 
+if(!storyBar) return;
 
-    const snap = await getDocs(
-        query(
-            collection(db,"stories"),
-            where("uid","==",profileUid)
-        )
-    );
+storyBar.innerHTML="";
 
 
-    snap.forEach(docSnap=>{
+const snap = await getDocs(
+    query(
+        collection(db,"stories"),
+        where("uid","==",profileUid)
+    )
+);
 
-        const s = docSnap.data();
+
+snap.forEach(docSnap=>{
+
+const s=docSnap.data();
 
 
-        if(s.expiresAt < Date.now()) return;
+if(
+s.expiresAt &&
+s.expiresAt < Date.now()
+){
+    return;
+}
 
 
-        storyBar.innerHTML += `
+storyBar.innerHTML += `
 
-        <div class="storyItem">
+<div class="storyItem">
 
-            <div class="storyAvatar">
+<div class="storyAvatar">
 
-                <img src="${s.avatar}">
+<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
 
-            </div>
+</div>
 
-            <div class="storyName">
-                ${s.name || "Story"}
-            </div>
+<div class="storyName">
+${s.name || "Story"}
+</div>
 
-        </div>
+</div>
 
-        `;
+`;
 
-    });
+});
+
 
 }
