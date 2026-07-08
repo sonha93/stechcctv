@@ -636,6 +636,82 @@ MOBILE
         transform:scale(1);
         opacity:1;
     }
+#followSheet{
+position:fixed;
+left:0;
+right:0;
+top:0;
+bottom:0;
+background:rgba(0,0,0,.35);
+display:flex;
+align-items:flex-end;
+opacity:0;
+pointer-events:none;
+transition:.25s;
+z-index:999999;
+}
+
+#followSheet.active{
+opacity:1;
+pointer-events:auto;
+}
+
+#followSheet .sheet{
+width:100%;
+background:#f5f5f5;
+border-radius:26px 26px 0 0;
+padding:18px;
+transform:translateY(100%);
+transition:.25s;
+}
+
+#followSheet.active .sheet{
+transform:translateY(0);
+}
+
+.sheet-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:18px;
+}
+
+.sheet-user{
+display:flex;
+align-items:center;
+gap:12px;
+font-size:24px;
+font-weight:700;
+}
+
+.sheet-user img{
+width:52px;
+height:52px;
+border-radius:50%;
+object-fit:cover;
+}
+
+#closeFollowSheet{
+font-size:30px;
+cursor:pointer;
+}
+
+.sheet-item{
+height:72px;
+background:#fff;
+border-radius:18px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 22px;
+font-size:23px;
+font-weight:600;
+margin-bottom:14px;
+cursor:pointer;
+}
+
+.sheet-item .material-symbols-outlined{
+font-size:34px;
 }
 }
 </style>
@@ -856,7 +932,53 @@ stroke-linejoin="round">
         </button>
 
     </div>
+<div id="followSheet">
 
+    <div class="sheet">
+
+        <div class="sheet-header">
+
+            <div class="sheet-user">
+
+                <img id="sheetAvatar">
+
+                <span id="sheetName"></span>
+
+            </div>
+
+            <span id="closeFollowSheet" class="material-symbols-outlined">
+                close
+            </span>
+
+        </div>
+
+        <div class="sheet-item" id="editNickname">
+
+            <span>
+                Tùy chỉnh tên
+            </span>
+
+            <span class="material-symbols-outlined">
+                edit
+            </span>
+
+        </div>
+
+        <div class="sheet-item" id="unfollowBtn">
+
+            <span>
+                Hủy follow
+            </span>
+
+            <span class="material-symbols-outlined">
+                person_remove
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
 </div>
 
 
