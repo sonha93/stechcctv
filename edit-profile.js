@@ -37,13 +37,34 @@ const saveBtn = document.getElementById("saveBtn");
 // Avatar Preview
 // ==========================
 
-avatarInput.onchange = e => {
+avatarInput.onchange = async e=>{
 
     const file = e.target.files[0];
 
     if(!file) return;
 
     avatarPreview.src = URL.createObjectURL(file);
+
+    const form = new FormData();
+
+    form.append("file",file);
+
+   form.append(
+    "upload_preset",
+    "stechcamera"
+);
+
+const res = await fetch(
+    "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+    {
+        method:"POST",
+        body:form
+    }
+);
+
+    const data = await res.json();
+
+    avatarUrl = data.secure_url;
 
 };
 
@@ -70,11 +91,11 @@ document.getElementById("backBtn").onclick = () => {
 // ==========================
 // Load User
 // ==========================
-
 let currentUser = null;
 let oldUsername = "";
 let usernameChangedAt = 0;
 
+let avatarUrl = "";
 onAuthStateChanged(auth, async(user)=>{
 
     if(!user){
@@ -95,10 +116,11 @@ onAuthStateChanged(auth, async(user)=>{
 
     const data = snap.data();
 
-    avatarPreview.src =
-        data.avatar ||
-        "https://i.ibb.co/Z1kv9nJj/logo.png";
+   avatarUrl =
+    data.avatar ||
+    "https://i.ibb.co/Z1kv9nJj/logo.png";
 
+avatarPreview.src = avatarUrl;
     nameInput.value =
         data.name || "";
 
@@ -214,7 +236,7 @@ saveBtn.onclick = async () => {
     await updateDoc(
         doc(db, "users", currentUser.uid),
         {
-
+             avatar: avatarUrl,
             name: name,
 
             username: username,
