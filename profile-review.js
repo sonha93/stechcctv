@@ -334,8 +334,6 @@ snap.forEach(doc => {
 
             }
 
-        }
-
     }
 
 }
