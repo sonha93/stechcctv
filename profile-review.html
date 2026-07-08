@@ -272,34 +272,15 @@ TAB
 
 .tab.active::after{
     content:"";
-
-    position:absolute;
-    left:22%;
-    right:22%;
-    bottom:0;
-
-    height:3px;
-
-    background:#111;
-
-    border-radius:999px;
-}
     position:absolute;
     left:20%;
     right:20%;
     bottom:0;
-
     height:2px;
-
     background:#111;
     border-radius:20px;
 }
-
-.tab .material-symbols-outlined{
-    font-size:24px;
-}
-
-.tab svg{
+  .tab svg{
     width:22px;
     height:22px;
 }
@@ -490,9 +471,12 @@ MOBILE
 }
 
 .verified-icon{
-    width:18px;
-    height:18px;
+    width:18px !important;
+    height:18px !important;
+    min-width:18px;
+    min-height:18px;
     display:block;
+    flex-shrink:0;
 }
 
 .verified-popup{
