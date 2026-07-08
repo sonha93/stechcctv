@@ -69,24 +69,12 @@ console.log("verified =", u.verified);
     const verified = document.getElementById("verifiedBadge");
     avatar.src = u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
 
-   name.innerHTML = `
+  name.innerHTML = `
+<span>
 ${u.name || "Người dùng"}
-${
-u.verified
-? `
-<svg class="verified-badge"
-viewBox="0 0 24 24"
-width="18"
-height="18">
-<path
-fill="#20a0ff"
-d="M12 2l2.2 1.3 2.5-.4 1.3 2.2 2.2 1.3-.4 2.5L22 12l-1.2 2.1.4 2.5-2.2 1.3-1.3 2.2-2.5-.4L12 22l-2.2-1.3-2.5.4-1.3-2.2-2.2-1.3.4-2.5L2 12l1.2-2.1-.4-2.5 2.2-1.3 1.3-2.2 2.5.4L12 2z"/>
-<path
-fill="#fff"
-d="M10.2 15.5l-2.6-2.6 1.1-1.1 1.5 1.5 4-4 1.1 1.1z"/>
-</svg>
-`
-: ""
+${getVerifiedBadge(u.verified)}
+</span>
+`;
 }
 `;
 
