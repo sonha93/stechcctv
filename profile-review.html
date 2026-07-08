@@ -589,6 +589,53 @@ MOBILE
     font-size:9px !important;
     line-height:1.3;
 }
+ #avatarPopup{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.9);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:999999;
+}
+
+#avatarPopup.active{
+    display:flex;
+    animation:fadeIn .25s;
+}
+
+#popupAvatarImg{
+    width:320px;
+    height:320px;
+    border-radius:50%;
+    object-fit:cover;
+    animation:zoom .25s;
+}
+
+#closeAvatarPopup{
+    position:absolute;
+    top:20px;
+    right:25px;
+    color:#fff;
+    font-size:42px;
+    cursor:pointer;
+}
+
+@keyframes fadeIn{
+    from{opacity:0;}
+    to{opacity:1;}
+}
+
+@keyframes zoom{
+    from{
+        transform:scale(.5);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
 }
 </style>
 </head>
