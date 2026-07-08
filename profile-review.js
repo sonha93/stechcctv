@@ -74,25 +74,51 @@ document.getElementById("profileName").innerHTML = `
 
     bio.innerHTML = u.bio || "";
 
+profileLink.innerHTML = "";
 
-if (u.website) {
-    profileLink.innerHTML = `
-        <a href="${u.website}"
-           target="_blank"
-           style="color:#0866ff;text-decoration:none;font-size:14px;font-weight:600;">
-            🔗 ${u.website}
-        </a>
-    `;
-} else {
-    profileLink.innerHTML = "";
+if(
+    u.website ||
+    u.facebook ||
+    u.youtube ||
+    u.tiktok ||
+    u.zalo
+){
+
+profileLink.innerHTML = `
+
+${u.website ? `
+<a href="${u.website}" target="_blank">
+🔗 Website
+</a><br>
+`:""}
+
+${u.facebook ? `
+<a href="${u.facebook}" target="_blank">
+📘 Facebook
+</a><br>
+`:""}
+
+${u.youtube ? `
+<a href="${u.youtube}" target="_blank">
+▶ YouTube
+</a><br>
+`:""}
+
+${u.tiktok ? `
+<a href="${u.tiktok}" target="_blank">
+♪ TikTok
+</a><br>
+`:""}
+
+${u.zalo ? `
+<a href="${u.zalo}" target="_blank">
+💬 Zalo
+</a>
+`:""}
+
+`;
+
 }
-
-
-    followingCount.innerHTML = u.followingCount || 0;
-
-    followerCount.innerHTML = u.followerCount || 0;
-
-
 
     // ===== TÍNH TỔNG LIKE VIDEO =====
 
