@@ -935,3 +935,49 @@ console.log("Story ID:", storyRef.id);
 storyFile.value = "";
 
 alert("Đăng story thành công");
+async function loadStories(){
+
+    const storyBar = document.getElementById("storyBar");
+
+    if(!storyBar) return;
+
+
+    const snap = await getDocs(
+        query(
+            collection(db,"stories"),
+            where("uid","==",profileUid)
+        )
+    );
+
+
+    snap.forEach(docSnap=>{
+
+        const s = docSnap.data();
+
+
+        if(s.expiresAt < Date.now()) return;
+
+
+        storyBar.innerHTML += `
+
+        <div class="storyItem">
+
+            <div class="storyAvatar">
+
+                <img src="${s.avatar}">
+
+            </div>
+
+            <div class="storyName">
+                ${s.name || "Story"}
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+loadStories();
