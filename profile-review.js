@@ -577,9 +577,21 @@ loading="lazy">
 `;
 
 }
-window.openVideoMenu = function(videoId){
+window.openVideoMenu = async function(videoId){
 
     selectedVideoId = videoId;
+
+    const snap = await getDoc(doc(db,"videos",videoId));
+
+    if(snap.exists()){
+
+        const v = snap.data();
+
+        commentBtn.querySelector(".left span:last-child").textContent =
+            v.commentEnabled === false
+            ? "Bật bình luận"
+            : "Tắt bình luận";
+    }
 
     videoMenu.classList.add("active");
 
@@ -590,6 +602,7 @@ cancelBtn.onclick = function(){
     videoMenu.classList.remove("active");
 
 };
+
 videoMenu.onclick = (e)=>{
 
     if(e.target===videoMenu){
