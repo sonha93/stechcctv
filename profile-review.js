@@ -947,14 +947,16 @@ const storyBar=document.getElementById("storyBar");
 
 if(!storyBar) return;
 
-storyBar.innerHTML="";
 
+// giữ lại nút thêm story
+storyBar.querySelectorAll(".storyItem:not(#addStoryBtn)")
+.forEach(e=>e.remove());
 
 const snap = await getDocs(
-    query(
-        collection(db,"stories"),
-        where("uid","==",profileUid)
-    )
+query(
+collection(db,"stories"),
+where("uid","==",profileUid)
+)
 );
 
 
@@ -962,16 +964,12 @@ snap.forEach(docSnap=>{
 
 const s=docSnap.data();
 
-
-if(
-s.expiresAt &&
-s.expiresAt < Date.now()
-){
-    return;
-}
+if(s.expiresAt < Date.now()) return;
 
 
-storyBar.innerHTML += `
+storyBar.insertAdjacentHTML(
+"beforeend",
+`
 
 <div class="storyItem">
 
@@ -987,9 +985,10 @@ ${s.name || "Story"}
 
 </div>
 
-`;
+`
+);
+
 
 });
-
 
 }
