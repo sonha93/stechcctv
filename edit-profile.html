@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Sửa hồ sơ</title>
+
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
+
+<link rel="stylesheet" href="edit-profile.css">
+<style>
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    background:#fff;
+    color:#111;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    padding-bottom:50px;
+}
+
+/* ======================
+HEADER
+====================== */
+
+.header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+
+    height:56px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 16px;
+
+    background:#fff;
+
+    border-bottom:1px solid #eee;
+}
+
+.header-title{
+    font-size:18px;
+    font-weight:700;
+}
+
+.icon-btn{
+    width:42px;
+    height:42px;
+
+    border:none;
+    background:none;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    cursor:pointer;
+}
+
+.icon-btn:active{
+    background:#f3f3f3;
+}
+
+.icon-btn .material-symbols-outlined{
+    font-size:28px;
+}
+
+.save-btn{
+    border:none;
+    background:none;
+
+    color:#0866ff;
+
+    font-size:15px;
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+/* ======================
+BODY
+====================== */
+
+.container{
+
+    width:100%;
+    max-width:620px;
+
+    margin:auto;
+
+    padding:20px;
+
+}
+
+/* ======================
+AVATAR
+====================== */
+
+.avatar-wrap{
+
+    position:relative;
+
+    width:110px;
+    height:110px;
+
+    margin:0 auto 28px;
+
+}
+
+.avatar{
+
+    width:110px;
+    height:110px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:3px solid #fff;
+
+    box-shadow:
+    0 3px 14px rgba(0,0,0,.12);
+
+}
+
+.avatar-edit{
+
+    position:absolute;
+
+    right:0;
+    bottom:0;
+
+    width:34px;
+    height:34px;
+
+    background:#0866ff;
+
+    color:#fff;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.25);
+
+}
+
+.avatar-edit
+.material-symbols-outlined{
+
+    font-size:20px;
+
+}
+
+/* ======================
+FORM
+====================== */
+
+.section{
+
+    margin-bottom:24px;
+
+}
+
+.section label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    font-size:14px;
+    font-weight:700;
+
+}
+
+.section input,
+.section textarea{
+
+    width:100%;
+
+    border:1px solid #ddd;
+
+    border-radius:12px;
+
+    padding:14px;
+
+    font-size:15px;
+
+    outline:none;
+
+    transition:.2s;
+
+}
+
+.section input:focus,
+.section textarea:focus{
+
+    border-color:#0866ff;
+
+}
+
+.section textarea{
+
+    resize:none;
+
+}
+  </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header class="header">
+
+    <button id="backBtn" class="icon-btn">
+        <span class="material-symbols-outlined">
+            arrow_back
+        </span>
+    </button>
+
+    <div class="header-title">
+        Sửa hồ sơ
+    </div>
+
+    <button id="saveBtn" class="save-btn">
+        Lưu
+    </button>
+
+</header>
+
+
+
+<div class="container">
+
+    <!-- Avatar -->
+
+    <div class="avatar-wrap">
+
+        <img
+            id="avatarPreview"
+            src="https://i.ibb.co/Z1kv9nJj/logo.png"
+            class="avatar">
+
+        <label
+            for="avatarInput"
+            class="avatar-edit">
+
+            <span class="material-symbols-outlined">
+                photo_camera
+            </span>
+
+        </label>
+
+        <input
+            type="file"
+            id="avatarInput"
+            accept="image/*"
+            hidden>
+
+    </div>
+
+
+
+    <!-- Tên -->
+
+    <div class="section">
+
+        <label>
+            Tên
+        </label>
+
+        <input
+            id="nameInput"
+            maxlength="40"
+            placeholder="Tên hiển thị">
+
+    </div>
+
+
+
+    <!-- Username -->
+
+    <div class="section">
+
+        <label>
+            Tên người dùng (ID)
+        </label>
+
+        <div class="username-box">
+
+            <span>@</span>
+
+            <input
+                id="usernameInput"
+                maxlength="30"
+                placeholder="hoang-son">
+
+        </div>
+
+        <small id="usernameTip">
+            Bạn chỉ có thể đổi ID sau 30 ngày.
+        </small>
+
+    </div>
+
+
+
+    <!-- Bio -->
+
+    <div class="section">
+
+        <label>
+            Tiểu sử
+        </label>
+
+        <textarea
+            id="bioInput"
+            maxlength="120"
+            rows="4"
+            placeholder="Viết vài dòng giới thiệu..."></textarea>
+
+        <div class="counter">
+            <span id="bioCount">
+                0
+            </span>/120
+        </div>
+
+    </div>
+
+
+
+    <!-- Website -->
+
+    <div class="section">
+
+        <label>
+            Liên kết
+        </label>
+
+        <input
+            id="websiteInput"
+            placeholder="https://example.com">
+
+    </div>
+
+
+
+    <!-- Social -->
+
+    <div class="section">
+
+        <label>
+            Facebook
+        </label>
+
+        <input
+            id="facebookInput"
+            placeholder="https://facebook.com/...">
+
+    </div>
+
+    <div class="section">
+
+        <label>
+            YouTube
+        </label>
+
+        <input
+            id="youtubeInput"
+            placeholder="https://youtube.com/...">
+
+    </div>
+
+    <div class="section">
+
+        <label>
+            TikTok
+        </label>
+
+        <input
+            id="tiktokInput"
+            placeholder="https://tiktok.com/@...">
+
+    </div>
+
+    <div class="section">
+
+        <label>
+            Zalo
+        </label>
+
+        <input
+            id="zaloInput"
+            placeholder="https://zalo.me/...">
+
+    </div>
+
+
+
+    <!-- Thông tin -->
+
+    <div class="info-box">
+
+        <h3>
+            Thông tin
+        </h3>
+
+        <p>
+            • Tên người dùng phải là duy nhất.
+        </p>
+
+        <p>
+            • Chỉ được đổi ID sau mỗi 30 ngày.
+        </p>
+
+        <p>
+            • Tiểu sử tối đa 120 ký tự.
+        </p>
+
+        <p>
+            • Có thể thêm liên kết để hiển thị trên trang cá nhân.
+        </p>
+
+    </div>
+
+</div>
+
+
+
+<script type="module" src="edit-profile.js"></script>
+
+</body>
+</html>
