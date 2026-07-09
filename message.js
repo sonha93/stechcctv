@@ -1,6 +1,3 @@
-
-
-
 // ================================
 // MESSAGE JS (FIREBASE V8)
 // ================================
@@ -72,29 +69,61 @@ let currentUser = null;
 // LOAD CHAT INFO
 // ================================
 
-const otherUid = data.members.find(uid => uid !== currentUser.uid);
+async function loadChatInfo(){
 
-const userDoc = await db
-.collection("users")
-.doc(otherUid)
-.get();
+try{
 
-if(userDoc.exists){
 
-    const userData = userDoc.data();
+    const doc =
+    await db
+    .collection("conversations")
+    .doc(conversationId)
+    .get();
 
-    chatTitle.textContent =
-        userData.displayName ||
-        userData.name ||
+
+
+    if(!doc.exists)
+    return;
+
+
+
+    const data =
+    doc.data();
+
+
+
+    if(chatTitle){
+
+        chatTitle.textContent =
+        data.name ||
         "Người dùng";
 
-    if(userData.photoURL || userData.avatar){
-        chatAvatar.src =
-            userData.photoURL ||
-            userData.avatar;
     }
 
+
+
+    if(chatAvatar && data.avatar){
+
+        chatAvatar.src =
+        data.avatar;
+
+    }
+
+
+
+}catch(err){
+
+    console.error(
+        "Load chat info lỗi:",
+        err
+    );
+
 }
+
+}
+
+
+
 
 // ================================
 // LOAD MESSAGES REALTIME
