@@ -234,16 +234,8 @@ if(!bar) return;
 
 
 // XÓA STORY CŨ, GIỮ LẠI NÚT ĐĂNG
-bar.innerHTML = "";
-
-if(addBtn){
-
-    bar.appendChild(addBtn);
-
-}
-
-const addBtn =
-document.getElementById("myStoryBtn");
+bar.querySelectorAll(".story-item:not(.add-story)")
+.forEach(el => el.remove());
 
 
 const snap =
