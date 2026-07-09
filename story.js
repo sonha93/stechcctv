@@ -131,41 +131,24 @@ e
 // ================================
 // OPEN STORY
 // ================================
-window.openStory = async function(uid){
+window.openStory = async function(id){
 
-const snap =
+const doc =
 await db.collection("stories")
-.where("uid","==",uid)
+.doc(id)
 .get();
 
 
-let story = null;
+if(!doc.exists){
 
-
-snap.forEach(doc=>{
-
-const s = doc.data();
-
-
-if(
-s.expiresAt.toDate() > new Date()
-){
-
-story = s;
-
-}
-
-});
-
-
-if(!story){
-
-alert("Chưa có tin");
+alert("Không tìm thấy story");
 
 return;
 
 }
 
+
+const story = doc.data();
 
 
 const box =
@@ -188,14 +171,15 @@ playsinline>
 `;
 
 
-box.onclick = ()=>{
+document.body.appendChild(box);
+
+
+box.onclick=()=>{
 
 box.remove();
 
 };
 
-
-document.body.appendChild(box);
 
 };
 // ================================
@@ -244,6 +228,16 @@ const bar =
 document.getElementById("storyBar");
 
 if(!bar) return;
+
+
+const addBtn =
+document.getElementById("myStoryBtn");
+
+
+// XÓA STORY CŨ, GIỮ LẠI NÚT ĐĂNG
+bar.innerHTML = "";
+
+bar.appendChild(addBtn);
 
 
 const addBtn =
@@ -312,7 +306,7 @@ Story
 
 item.onclick=()=>{
 
-openStory(s.uid);
+openStory(doc.id);
 
 };
 
