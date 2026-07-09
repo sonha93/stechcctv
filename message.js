@@ -136,9 +136,9 @@ function loadMessages(){
 
 
 db
-.collection("messages")
+.collection("conversations")
 .doc(conversationId)
-.collection("items")
+.collection("messages")
 .orderBy(
     "createdAt",
     "asc"
@@ -283,9 +283,9 @@ try{
 
 
     await db
-    .collection("messages")
-    .doc(conversationId)
-    .collection("items")
+    .collection("conversations")
+.doc(conversationId)
+.collection("messages")
     .add({
 
         senderId:
