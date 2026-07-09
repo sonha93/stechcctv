@@ -67,8 +67,9 @@ document.getElementById("backBtn");
 // DATA
 // ================================
     let currentUser = null;
-let userCache = {};
-let seenUserCache = {};
+    let userCache = {};
+    let seenUserCache = {};
+    let selectedImage = null;
 
 
 // ================================
@@ -706,7 +707,6 @@ imageBtn.onclick=()=>{
 
 
 
-let selectedImage = null;
 
 
 if(imageInput){
