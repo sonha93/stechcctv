@@ -235,13 +235,23 @@ if(addStory){
     addStory.style.display = isOwner ? "" : "none";
 
 }
-    if (isOwner) {
-        followBtn.style.display = "none";
-        editBtn.style.display = "block";
-    } else {
-        followBtn.style.display = "block";
-        editBtn.style.display = "none";
-    }
+   if (isOwner) {
+
+    followBtn.style.display = "none";
+    editBtn.style.display = "block";
+
+    // Ẩn nhắn tin khi xem chính mình
+    messageBtn.style.display = "none";
+
+} else {
+
+    followBtn.style.display = "block";
+    editBtn.style.display = "none";
+
+    // Hiện nhắn tin khi xem người khác
+    messageBtn.style.display = "block";
+
+}
 
     document.querySelector('[data-tab="private"]').style.display = isOwner ? "" : "none";
     document.querySelector('[data-tab="liked"]').style.display   = isOwner ? "" : "none";
