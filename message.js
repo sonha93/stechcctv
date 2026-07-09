@@ -64,39 +64,8 @@ document.getElementById("backBtn");
 // ================================
 
 let currentUser = null;
-let userCache = {};
-async function getUserInfo(uid){
 
-    if(userCache[uid]){
-        return userCache[uid];
-    }
 
-    const snap = await db
-        .collection("users")
-        .doc(uid)
-        .get();
-
-    let user = {
-        avatar: "https://i.ibb.co/Z1kv9nJj/logo.png",
-        name: "Người dùng"
-    };
-
-    if(snap.exists){
-
-        const data = snap.data();
-
-        user = {
-            avatar: data.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png",
-            name: data.name || "Người dùng"
-        };
-
-    }
-
-    userCache[uid] = user;
-
-    return user;
-
-}
 
 // ================================
 // LOAD CHAT INFO
@@ -207,21 +176,19 @@ snap=>{
 
 
 
-   (async()=>{
+    snap.forEach(doc=>{
 
-    messageBox.innerHTML="";
 
-    for(const doc of snap.docs){
+        const msg =
+        doc.data();
 
-        const msg = doc.data();
 
-        await renderMessage(msg);
 
-    }
+        renderMessage(msg);
 
-    scrollBottom();
 
-})();
+
+    });
 
 
 
@@ -234,59 +201,124 @@ snap=>{
 
 
 }
+
+
+
+// ================================
+// RENDER MESSAGE
+// ================================
+
+function renderMessage(msg){
+
+
+const div =
+document.createElement("div");
+
+
+
+div.className =
+"message";
+
+
+
+if(
+    msg.senderId ===
+    currentUser.uid
+){
+
+    div.classList.add(
+        "mine"
+    );
+
+}else{
+
+    div.classList.add(
+        "other"
+    );
+
+}
+
+
+
+div.innerHTML = `
+
+<div class="message-content">
+
+${escapeHTML(
+    msg.text || ""
+)}
+
+</div>
+
+<div class="message-time">
+
+${formatTime(
+    msg.createdAt
+)}
+
+</div>
+
+`;
+
+
+
+messageBox.appendChild(div);
+
+
+}
+
+
+
+
 // ================================
 // SEND MESSAGE
 // ================================
 
-async function renderMessage(msg){
+async function sendMessage(){
 
-    const div = document.createElement("div");
 
-    const mine = msg.senderId === currentUser.uid;
+const text =
+messageInput.value.trim();
 
-    div.className = mine ? "message mine" : "message other";
 
-    let avatarHTML = "";
 
-    if(!mine){
+if(!text)
+return;
 
-        const user = await getUserInfo(msg.senderId);
 
-        avatarHTML = `
-            <img
-                class="message-avatar"
-                src="${user.avatar}"
-                onclick="location.href='profile-review.html?uid=${msg.senderId}'"
-            >
-        `;
 
-    }
+if(!currentUser)
+return;
 
-    div.innerHTML = `
 
-        ${avatarHTML}
 
-        <div class="message-body">
+try{
 
-            <div class="message-content">
 
-                ${escapeHTML(msg.text || "")}
+    const now =
+    firebase.firestore
+    .Timestamp
+    .now();
 
-            </div>
 
-            <div class="message-time">
 
-                ${formatTime(msg.createdAt)}
+    await db
+    .collection("conversations")
+.doc(conversationId)
+.collection("messages")
+    .add({
 
-            </div>
+        senderId:
+        currentUser.uid,
 
-        </div>
+        text:text,
 
-    `;
+        createdAt:
+        now
 
-    messageBox.appendChild(div);
+    });
 
-}
+
 
    await db
 .collection("conversations")
