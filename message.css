@@ -381,3 +381,26 @@ object-fit:contain;
 border-radius:10px;
 
 }
+.message-content.image-only{
+
+background:transparent !important;
+
+padding:0 !important;
+
+border-radius:0 !important;
+
+}
+
+.chat-image{
+
+display:block;
+
+max-width:260px;
+
+height:auto;
+
+border-radius:12px;
+
+cursor:pointer;
+
+}
