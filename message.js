@@ -297,18 +297,18 @@ try{
 
 
 
-    await db
-    .collection("conversations")
-    .doc(conversationId)
-    .update({
+   await db
+.collection("conversations")
+.doc(conversationId)
+.update({
 
-        lastMessage:text,
+    lastMessage: text,
 
-        updatedAt:now
+    updatedAt: now,
 
-    });
+    unread: firebase.firestore.FieldValue.increment(1)
 
-
+});
 
     messageInput.value="";
 
@@ -478,7 +478,11 @@ if(user){
 
     loadMessages();
 
-
+db.collection("conversations")
+.doc(conversationId)
+.update({
+    unread:0
+});
 }
 
 
