@@ -273,3 +273,10 @@ margin-top:2px;
     border-radius:50%;
 
 }
+.chat-image{
+
+max-width:280px;
+border-radius:12px;
+display:block;
+
+}
