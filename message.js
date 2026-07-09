@@ -74,56 +74,47 @@ async function loadChatInfo(){
 
 try{
 
-
-    const doc =
-    await db
+    const snap = await db
     .collection("conversations")
     .doc(conversationId)
     .get();
 
+    if(!snap.exists) return;
 
+    const data = snap.data();
 
-    if(!doc.exists)
-    return;
+    const otherUid =
+    data.members.find(uid => uid !== currentUser.uid);
 
+    const userSnap = await db
+    .collection("users")
+    .doc(otherUid)
+    .get();
 
+    if(userSnap.exists){
 
-    const data =
-    doc.data();
+        const u = userSnap.data();
 
+        if(chatTitle){
+            chatTitle.textContent =
+            u.name || "Người dùng";
+        }
 
-
-    if(chatTitle){
-
-        chatTitle.textContent =
-        data.name ||
-        "Người dùng";
+        if(chatAvatar){
+            chatAvatar.src =
+            u.avatar ||
+            "https://i.ibb.co/Z1kv9nJj/logo.png";
+        }
 
     }
-
-
-
-    if(chatAvatar && data.avatar){
-
-        chatAvatar.src =
-        data.avatar;
-
-    }
-
-
 
 }catch(err){
 
-    console.error(
-        "Load chat info lỗi:",
-        err
-    );
+    console.error(err);
 
 }
 
 }
-
-
 
 
 // ================================
