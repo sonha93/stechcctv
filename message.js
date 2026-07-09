@@ -315,7 +315,8 @@ ${formatTime(msg.createdAt)}
 ${
 mine &&
 msg.seenBy &&
-msg.seenBy.some(uid=>uid!==currentUser.uid)
+msg.seenBy.some(uid=>uid!==currentUser.uid) &&
+(!nextMsg || nextMsg.senderId !== currentUser.uid)
 ?
 `
 <img
@@ -329,7 +330,6 @@ msg.seenBy.find(uid=>uid!==currentUser.uid)
 }">
 `
 :""
-
 }
 </div>
 `;
