@@ -131,7 +131,7 @@ ${getVerifiedBadge(otherUid)}
     chatAvatar.onclick = ()=>{
 
         window.location.href =
-        "profile.html?uid=" + otherUid;
+        "profile-review.html?uid=" + otherUid;
 
     };
 
