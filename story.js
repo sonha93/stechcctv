@@ -131,9 +131,7 @@ e
 // ================================
 // OPEN STORY
 // ================================
-
 window.openStory = async function(uid){
-
 
 const snap =
 await db.collection("stories")
@@ -141,32 +139,28 @@ await db.collection("stories")
 .get();
 
 
-
 let story = null;
 
 
 snap.forEach(doc=>{
 
-const data=doc.data();
+const s = doc.data();
 
 
 if(
-data.expiresAt.toDate()
->
-new Date()
+s.expiresAt.toDate() > new Date()
 ){
 
-story=data;
+story = s;
 
 }
 
 });
 
 
-
 if(!story){
 
-alert("Chưa có story");
+alert("Chưa có tin");
 
 return;
 
@@ -174,39 +168,36 @@ return;
 
 
 
-const popup =
+const box =
 document.createElement("div");
 
 
-popup.className =
+box.className =
 "story-popup";
 
 
-popup.innerHTML = `
-<video 
+box.innerHTML = `
+
+<video
 src="${story.video}"
 autoplay
 controls
 playsinline>
 </video>
+
 `;
 
 
-popup.onclick=()=>{
+box.onclick = ()=>{
 
-popup.remove();
-
-};
-
-
-document.body.appendChild(
-popup
-);
-
-
+box.remove();
 
 };
 
+
+document.body.appendChild(box);
+
+};
 // ================================
 // CLICK ĐĂNG TIN
 // ================================
