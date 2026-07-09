@@ -485,28 +485,19 @@ backBtn.onclick=()=>{
 // AUTH START
 // ================================
 
-auth.onAuthStateChanged(
-user=>{
+auth.onAuthStateChanged(async user => {
 
+    if (!user) return;
 
-if(user){
-
-
-    currentUser =
-    user;
-
+    currentUser = user;
 
     loadChatInfo();
-
-
     loadMessages();
 
-db.collection("conversations")
-.doc(conversationId)
-.update({
-    unread:0
-});
-}
-
+    await db.collection("conversations")
+        .doc(conversationId)
+        .update({
+            unread: 0
+        });
 
 });
