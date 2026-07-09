@@ -206,6 +206,8 @@ body{
 .verified-popup{
     display:none!important;
 }
+
+}
 .seen-avatar{
 
 width:18px;
@@ -235,5 +237,4 @@ margin-left:auto;
 
 margin-top:2px;
 
-}
 }
