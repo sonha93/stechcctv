@@ -304,7 +304,44 @@ function renderChats(){
             "";
 
         }
+        // Badge chưa đọc
+const unreadBadge = node.querySelector(".unread-badge");
 
+if (unreadBadge) {
+    const unread = Number(chat.unread || 0);
+
+    if (unread > 0) {
+        unreadBadge.hidden = false;
+        unreadBadge.textContent = unread > 99 ? "99+" : unread;
+    } else {
+        unreadBadge.hidden = true;
+    }
+}
+
+// Chữ đậm khi chưa đọc
+if (name && msg) {
+    if (Number(chat.unread || 0) > 0) {
+        name.style.fontWeight = "700";
+        msg.style.fontWeight = "600";
+        msg.style.color = "#fff";
+    } else {
+        name.style.fontWeight = "500";
+        msg.style.fontWeight = "400";
+        msg.style.color = "#999";
+    }
+}
+const unreadBadge = node.querySelector(".unread-badge");
+
+if (unreadBadge) {
+    const unread = Number(chat.unread || 0);
+
+    if (unread > 0) {
+        unreadBadge.hidden = false;
+        unreadBadge.textContent = unread > 99 ? "99+" : unread;
+    } else {
+        unreadBadge.hidden = true;
+    }
+}
 
 
 
