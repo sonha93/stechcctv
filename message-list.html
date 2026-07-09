@@ -348,6 +348,106 @@ ul{
 #notificationToast{
     display:none;
 }
+ #messageContainer{
+    flex:1;
+    overflow:hidden;
+}
+
+#chatList{
+    height:100%;
+    overflow-y:auto;
+}
+
+.chat-item{
+    display:flex;
+    align-items:center;
+    padding:12px 16px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.chat-button{
+    flex:1;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:none;
+    border:none;
+    color:#fff;
+    text-align:left;
+}
+
+.avatar-wrap{
+    width:56px;
+    height:56px;
+    flex-shrink:0;
+    position:relative;
+}
+
+.avatar{
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+.chat-body{
+    flex:1;
+    min-width:0;
+}
+
+.chat-header,
+.chat-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+}
+
+.chat-name-area{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    min-width:0;
+}
+
+.chat-name{
+    font-weight:600;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.message-preview{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    min-width:0;
+    flex:1;
+}
+
+.message-text{
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    color:#aaa;
+}
+
+.message-right{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.chat-menu{
+    width:40px;
+    height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    background:none;
+    border:none;
+}
 </style>
 </head>
 
