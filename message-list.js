@@ -327,21 +327,6 @@ if (name && msg) {
         msg.style.color = "#999";
     }
 }
-const unreadBadge = node.querySelector(".unread-badge");
-
-if (unreadBadge) {
-    const unread = Number(chat.unread || 0);
-
-    if (unread > 0) {
-        unreadBadge.hidden = false;
-        unreadBadge.textContent = unread > 99 ? "99+" : unread;
-    } else {
-        unreadBadge.hidden = true;
-    }
-}
-
-
-
         const time =
         node.querySelector(
             ".chat-time"
