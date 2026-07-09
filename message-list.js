@@ -303,15 +303,15 @@ function renderChats(){
         }
         // Badge chưa đọc
 const unreadBadge = node.querySelector(".unread-badge");
-const unread = Number(chat.unread || 0);
 
 if (unreadBadge) {
-    if (unread >= 1) {
+    const unread = Number(chat.unread || 0);
+
+    if (unread > 0) {
         unreadBadge.hidden = false;
-        unreadBadge.textContent = unread > 99 ? "99+" : String(unread);
+        unreadBadge.textContent = unread > 99 ? "99+" : unread;
     } else {
         unreadBadge.hidden = true;
-        unreadBadge.textContent = "";
     }
 }
 
