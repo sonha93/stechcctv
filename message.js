@@ -461,7 +461,19 @@ data.secure_url;
 });
 
 
-   await db
+  const convSnap = await db
+.collection("conversations")
+.doc(conversationId)
+.get();
+
+
+const otherUid = convSnap.data().members.find(
+uid => uid !== currentUser.uid
+);
+
+
+
+await db
 .collection("conversations")
 .doc(conversationId)
 .update({
@@ -470,10 +482,10 @@ data.secure_url;
 
     updatedAt: now,
 
-    unread: firebase.firestore.FieldValue.increment(1)
+    [`unread.${otherUid}`]:
+    firebase.firestore.FieldValue.increment(1)
 
 });
-
     messageInput.value="";
 
     selectedImage = null;
@@ -796,7 +808,9 @@ if(user){
 db.collection("conversations")
 .doc(conversationId)
 .update({
-    unread:0
+
+    [`unread.${currentUser.uid}`]:0
+
 });
 }
 
