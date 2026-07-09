@@ -316,7 +316,7 @@ msg.image
 <img
 class="chat-image"
 src="${msg.image}"
-onclick="openChatImage('${msg.image}')">
+onclick="showChatImage(this.src)">
 `
 :
 escapeHTML(msg.text||"")
@@ -735,6 +735,23 @@ popup.innerHTML = `
 `;
 
 popup.onclick = ()=>{
+    popup.remove();
+};
+
+document.body.appendChild(popup);
+
+}
+function showChatImage(src){
+
+const popup = document.createElement("div");
+
+popup.className = "chat-image-viewer";
+
+popup.innerHTML = `
+<img src="${src}">
+`;
+
+popup.onclick = function(){
     popup.remove();
 };
 
