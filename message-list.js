@@ -82,77 +82,34 @@ function showToast(text){
 // ================================
 // LOAD CHAT
 // ================================
+function loadChats(){
 
-async function loadChats(){
+const user = auth.currentUser;
 
-try{
+if(!user) return;
 
+db.collection("conversations")
+.where("members","array-contains",user.uid)
+.orderBy("updatedAt","desc")
+.onSnapshot(
+    snap=>{
 
-    const user =
-    auth.currentUser;
+        chats=[];
 
-
-    if(!user){
-
-        return;
-
-    }
-
-
-
-    const snap =
-    await db
-    .collection("conversations")
-    .where(
-        "members",
-        "array-contains",
-        user.uid
-    )
-    .orderBy(
-        "updatedAt",
-        "desc"
-    )
-    .get();
-
-
-
-    chats=[];
-
-
-
-    snap.forEach(doc=>{
-
-
-        chats.push({
-
-            id:doc.id,
-
-            ...doc.data()
-
+        snap.forEach(doc=>{
+            chats.push({
+                id:doc.id,
+                ...doc.data()
+            });
         });
 
+        renderChats();
 
-    });
-
-
-
-    renderChats();
-
-
-
-}catch(err){
-
-
-    console.error(
-        "Load chat lỗi:",
-        err
-    );
-
-
-}
-
-}
-
+    },
+    err=>{
+        console.error("Load chat lỗi:", err);
+    }
+);
 
 
 // ================================
