@@ -53,7 +53,11 @@ document.getElementById("messageInput");
 
 const sendBtn =
 document.getElementById("sendBtn");
+const imageBtn =
+document.getElementById("imageBtn");
 
+const imageInput =
+document.getElementById("imageInput");
 const backBtn =
 document.getElementById("backBtn");
 
@@ -304,7 +308,20 @@ user.avatar ||
 <div class="message-body">
 
 <div class="message-content">
-${escapeHTML(msg.text||"")}
+
+${
+msg.image
+?
+`
+<img
+class="chat-image"
+src="${msg.image}"
+onclick="window.open('${msg.image}')">
+`
+:
+escapeHTML(msg.text||"")
+}
+
 </div>
 
 <div class="message-time">
@@ -390,7 +407,92 @@ try{
 
 });
 
+// ================================
+// SEND IMAGE
+// ================================
 
+async function sendImage(){
+
+
+const file =
+imageInput.files[0];
+
+
+if(!file)
+return;
+
+
+if(!currentUser)
+return;
+
+
+try{
+
+
+const now =
+firebase.firestore.Timestamp.now();
+
+
+
+const ref =
+firebase.storage()
+.ref(
+"chat-images/" +
+Date.now() +
+"-" +
+file.name
+);
+
+
+
+await ref.put(file);
+
+
+
+const imageUrl =
+await ref.getDownloadURL();
+
+
+
+await db
+.collection("conversations")
+.doc(conversationId)
+.collection("messages")
+.add({
+
+    senderId:
+    currentUser.uid,
+
+    text:"",
+
+    image:
+    imageUrl,
+
+    createdAt:
+    now,
+
+    seenBy:[
+        currentUser.uid
+    ]
+
+});
+
+
+
+imageInput.value="";
+
+
+}catch(err){
+
+console.error(
+"Gửi ảnh lỗi:",
+err
+);
+
+}
+
+
+}
 
    await db
 .collection("conversations")
@@ -515,7 +617,27 @@ sendMessage;
 
 }
 
+if(imageBtn){
 
+imageBtn.onclick=()=>{
+
+    imageInput.click();
+
+};
+
+}
+
+
+
+if(imageInput){
+
+imageInput.onchange=()=>{
+
+    sendImage();
+
+};
+
+}
 
 if(messageInput){
 
