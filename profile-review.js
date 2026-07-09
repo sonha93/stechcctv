@@ -16,7 +16,8 @@ import {
     setDoc,
      addDoc,
      serverTimestamp,
-    increment
+    increment,
+     arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
     
@@ -62,7 +63,7 @@ const nicknameInput = document.getElementById("nicknameInput");
 const saveNickname = document.getElementById("saveNickname");
 const cancelNickname = document.getElementById("cancelNickname");
 const editBtn = document.getElementById("editBtn");
-
+const messageBtn = document.getElementById("messageBtn");
 const followingCount = document.getElementById("followingCount");
 
 const followerCount = document.getElementById("followerCount");
@@ -340,6 +341,55 @@ followBtn.onclick = async () => {
             manage_accounts
         </span>
     `;
+
+};
+const messageBtn = document.getElementById("messageBtn");
+
+messageBtn.onclick = async () => {
+
+    if (!auth.currentUser) {
+        alert("Bạn cần đăng nhập");
+        return;
+    }
+
+    const myUid = auth.currentUser.uid;
+
+    if (myUid === profileUid) return;
+
+    const snap = await getDocs(
+        query(
+            collection(db, "conversations"),
+            where("members", "array-contains", myUid)
+        )
+    );
+
+    let conversationId = null;
+
+    snap.forEach(docSnap => {
+        const data = docSnap.data();
+
+        if (data.members.includes(profileUid)) {
+            conversationId = docSnap.id;
+        }
+    });
+
+    if (!conversationId) {
+
+        const ref = await addDoc(
+            collection(db, "conversations"),
+            {
+                members: [myUid, profileUid],
+                name: document.getElementById("profileNameText").innerText,
+                avatar: avatar.src,
+                lastMessage: "",
+                updatedAt: serverTimestamp()
+            }
+        );
+
+        conversationId = ref.id;
+    }
+
+    location.href = `message.html?id=${conversationId}`;
 
 };
 // ===========================
