@@ -344,7 +344,6 @@ followBtn.onclick = async () => {
     `;
 
 };
-const messageBtn = document.getElementById("messageBtn");
 
 messageBtn.onclick = async () => {
 
