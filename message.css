@@ -404,3 +404,22 @@ border-radius:12px;
 cursor:pointer;
 
 }
+#imagePreview{
+
+position:absolute;
+
+bottom:55px;
+left:10px;
+
+}
+
+#imagePreview img{
+
+width:70px;
+height:70px;
+
+object-fit:cover;
+
+border-radius:10px;
+
+}
