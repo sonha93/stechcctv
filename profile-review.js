@@ -919,28 +919,33 @@ storyFile.onchange = async () => {
 
     }
 
-    const storyRef = await addDoc(collection(db,"stories"),{
+    const storyText =
+document.getElementById("storyText").value.trim();
 
-    uid:uid,
+const storyRef = await addDoc(collection(db,"stories"),{
 
-    media:data.secure_url,
+    uid: uid,
 
-    type:file.type.startsWith("video/")
+    media: data.secure_url,
+
+    type: file.type.startsWith("video/")
         ? "video"
         : "image",
 
-    avatar:user.avatar || "",
+    avatar: user.avatar || "",
 
-    name:user.name || "",
+    name: user.name || "",
 
-    username:user.username || "",
+    username: user.username || "",
 
-    createdAt:serverTimestamp(),
+    text: storyText,
 
-    expiresAt:Date.now() + 86400000
+    createdAt: serverTimestamp(),
+
+    expiresAt: Date.now() + 86400000
 
 });
-
+document.getElementById("storyText").value = "";
 
 storyFile.value = "";
 
