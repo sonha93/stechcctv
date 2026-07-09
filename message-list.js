@@ -35,7 +35,8 @@ document.getElementById("notificationToast");
 const toastText =
 document.getElementById("notificationText");
 
-
+const storyBar =
+document.getElementById("storyBar");
 
 // ================================
 // DATA
@@ -74,7 +75,64 @@ function showToast(text){
 
 }
 
+async function loadStories(){
 
+    if(!storyBar) return;
+
+    const user = auth.currentUser;
+
+    if(!user) return;
+
+    storyBar.innerHTML = "";
+
+    // Ô đăng tin của mình
+    storyBar.innerHTML = `
+        <div class="storyItem" id="myStoryBtn">
+
+            <div class="storyAvatar addStory">
+                +
+            </div>
+
+            <span>Đăng tin</span>
+
+        </div>
+    `;
+
+    // Lấy tất cả user
+    const snap =
+    await db.collection("users").get();
+
+    snap.forEach(doc=>{
+
+        if(doc.id===user.uid) return;
+
+        const u = doc.data();
+
+        storyBar.innerHTML += `
+            <div class="storyItem">
+
+                <div class="storyAvatar">
+
+                    <img src="${
+                        u.avatar ||
+                        u.photoURL ||
+                        "./avatar.png"
+                    }">
+
+                </div>
+
+                <span>${
+                    u.name ||
+                    u.displayName ||
+                    "User"
+                }</span>
+
+            </div>
+        `;
+
+    });
+
+}
 
 // ================================
 // LOAD CHAT
@@ -624,12 +682,12 @@ newChatBtn.onclick=()=>{
 auth.onAuthStateChanged(
 user=>{
 
-
     if(user){
+
+        loadStories();
 
         loadChats();
 
     }
-
 
 });
