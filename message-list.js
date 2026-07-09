@@ -588,11 +588,8 @@ if(newChatBtn){
 
 newChatBtn.onclick=()=>{
 
-
-    showToast(
-        "Tạo cuộc trò chuyện mới"
-    );
-
+    location.href =
+    "new-chat.html";
 
 };
 
