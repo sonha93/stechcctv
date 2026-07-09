@@ -206,5 +206,20 @@ body{
 .verified-popup{
     display:none!important;
 }
+.seen-avatar{
 
+width:18px;
+height:18px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+margin-left:auto;
+
+margin-top:3px;
+
+display:block;
+
+}
 }
