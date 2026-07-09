@@ -166,14 +166,38 @@ db.collection("conversations")
 
     const messages = [];
 
-    snap.forEach(doc=>{
-        messages.push(doc.data());
-    });
+   snap.forEach(doc=>{
+
+    let data = doc.data();
+
+    data.id = doc.id;
+
+    messages.push(data);
+
+});
 
     for(let i=0;i<messages.length;i++){
 
         const msg = messages[i];
+if(
+msg.senderId !== currentUser.uid &&
+(!msg.seenBy || !msg.seenBy.includes(currentUser.uid))
+){
 
+    db.collection("conversations")
+    .doc(conversationId)
+    .collection("messages")
+    .doc(msg.id)
+    .update({
+
+        seenBy:
+        firebase.firestore.FieldValue.arrayUnion(
+            currentUser.uid
+        )
+
+    });
+
+}
         if(!userCache[msg.senderId]){
 
             const userSnap = await db
@@ -254,6 +278,24 @@ ${escapeHTML(msg.text||"")}
 ${formatTime(msg.createdAt)}
 </div>
 
+
+${
+mine && msg.seenBy && msg.seenBy.length > 1
+?
+`
+<img
+class="seen-avatar"
+src="${
+userCache[msg.seenBy[msg.seenBy.length-1]]
+?
+userCache[msg.seenBy[msg.seenBy.length-1]].avatar
+:
+'https://i.ibb.co/Z1kv9nJj/logo.png'
+}">
+`
+:""
+}
+
 </div>
 
 `;
@@ -299,17 +341,21 @@ try{
     .collection("conversations")
 .doc(conversationId)
 .collection("messages")
-    .add({
+   .add({
 
-        senderId:
-        currentUser.uid,
+    senderId:
+    currentUser.uid,
 
-        text:text,
+    text:text,
 
-        createdAt:
-        now
+    createdAt:
+    now,
 
-    });
+    seenBy:[
+        currentUser.uid
+    ]
+
+});
 
 
 
