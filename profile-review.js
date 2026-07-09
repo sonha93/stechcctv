@@ -38,11 +38,38 @@ const avatarPopup = document.createElement("div");
 avatarPopup.id = "avatarPopup";
 
 avatarPopup.innerHTML = `
+    <span id="avatarMore">⋮</span>
+
     <span id="closeAvatarPopup">&times;</span>
+
+    <div id="avatarMenu" class="avatar-menu">
+        <button id="deleteAvatarBtn">
+            Xóa ảnh đại diện
+        </button>
+    </div>
+
     <img id="popupAvatarImg">
 `;
 
 document.body.appendChild(avatarPopup);
+const avatarMore = document.getElementById("avatarMore");
+const avatarMenu = document.getElementById("avatarMenu");
+
+avatarMore.onclick = (e) => {
+    e.stopPropagation();
+    avatarMenu.style.display =
+        avatarMenu.style.display === "block"
+            ? "none"
+            : "block";
+};
+
+avatarPopup.addEventListener("click", () => {
+    avatarMenu.style.display = "none";
+});
+
+avatarMenu.onclick = (e) => {
+    e.stopPropagation();
+};
 const name = document.getElementById("profileName");
 
 const username = document.getElementById("profileUsername");
