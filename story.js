@@ -243,3 +243,89 @@ if(myStoryBtn && storyInput){
     };
 
 }
+// ================================
+// LOAD STORY BAR
+// ================================
+
+async function loadStories(){
+
+const bar =
+document.getElementById("storyBar");
+
+if(!bar) return;
+
+
+const addBtn =
+document.getElementById("myStoryBtn");
+
+
+const snap =
+await db.collection("stories")
+.get();
+
+
+snap.forEach(doc=>{
+
+const s = doc.data();
+
+
+if(
+!s.expiresAt ||
+s.expiresAt.toDate() < new Date()
+){
+    return;
+}
+
+
+const item =
+document.createElement("div");
+
+
+item.className =
+"story-item";
+
+
+item.innerHTML = `
+
+<div class="story-avatar">
+
+<video
+src="${s.video}"
+muted
+></video>
+
+</div>
+
+<span>
+Story
+</span>
+
+`;
+
+
+item.onclick=()=>{
+
+openStory(s.uid);
+
+};
+
+
+bar.appendChild(item);
+
+
+});
+
+
+}
+
+
+
+auth.onAuthStateChanged(user=>{
+
+if(user){
+
+loadStories();
+
+}
+
+});
