@@ -119,10 +119,23 @@ ${getVerifiedBadge(otherUid)}
         }
 
         if(chatAvatar){
-            chatAvatar.src =
-            u.avatar ||
-            "https://i.ibb.co/Z1kv9nJj/logo.png";
-        }
+
+    chatAvatar.src =
+    u.avatar ||
+    "https://i.ibb.co/Z1kv9nJj/logo.png";
+
+
+    chatAvatar.style.cursor = "pointer";
+
+
+    chatAvatar.onclick = ()=>{
+
+        window.location.href =
+        "profile.html?uid=" + otherUid;
+
+    };
+
+}
 
     }
 
