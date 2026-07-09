@@ -58,9 +58,26 @@ body:form
 
 
 
-const data =
-await upload.json();
+const data = await upload.json();
 
+console.log("Cloudinary story:", data);
+
+
+if(!data.secure_url){
+
+    console.error(
+        "Cloudinary lỗi:",
+        data
+    );
+
+    alert(
+        data.error?.message ||
+        "Upload ảnh thất bại"
+    );
+
+    return;
+
+}
 
 
 const now =
