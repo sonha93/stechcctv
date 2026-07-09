@@ -62,9 +62,9 @@ document.getElementById("backBtn");
 // ================================
 // DATA
 // ================================
-
-let currentUser = null;
+    let currentUser = null;
 let userCache = {};
+let seenUserCache = {};
 
 
 // ================================
@@ -219,11 +219,39 @@ msg.senderId !== currentUser.uid &&
 
         const nextMsg = messages[i+1];
 
-        renderMessage(
-            msg,
-            userCache[msg.senderId],
-            nextMsg
-        );
+
+// lấy avatar người đã xem
+if(msg.seenBy){
+
+    for(const uid of msg.seenBy){
+
+        if(!seenUserCache[uid]){
+
+            const seenSnap = await db
+            .collection("users")
+            .doc(uid)
+            .get();
+
+
+            if(seenSnap.exists){
+
+                seenUserCache[uid] =
+                seenSnap.data();
+
+            }
+
+        }
+
+    }
+
+}
+
+
+renderMessage(
+    msg,
+    userCache[msg.senderId],
+    nextMsg
+);
 
     }
 
@@ -278,6 +306,25 @@ ${escapeHTML(msg.text||"")}
 ${formatTime(msg.createdAt)}
 </div>
 
+
+${
+mine &&
+msg.seenBy &&
+msg.seenBy.some(uid=>uid!==currentUser.uid)
+?
+`
+<img
+class="seen-avatar"
+src="${
+seenUserCache[
+msg.seenBy.find(uid=>uid!==currentUser.uid)
+]?.avatar
+||
+'https://i.ibb.co/Z1kv9nJj/logo.png'
+}">
+`
+:""
+}
 
 ${
 mine && msg.seenBy && msg.seenBy.length > 1
