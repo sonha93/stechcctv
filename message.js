@@ -307,7 +307,7 @@ user.avatar ||
 
 <div class="message-body">
 
-<div class="message-content">
+<div class="message-content ${msg.image ? "image-only" : ""}">
 
 ${
 msg.image
