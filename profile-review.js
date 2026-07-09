@@ -1,7 +1,3 @@
-
-
-
-
 import { getVerifiedBadge } from "./verified-users.js";
 import { app, auth } from "./auth.js";
 import {
@@ -923,33 +919,28 @@ storyFile.onchange = async () => {
 
     }
 
-    const storyText =
-document.getElementById("storyText").value.trim();
+    const storyRef = await addDoc(collection(db,"stories"),{
 
-const storyRef = await addDoc(collection(db,"stories"),{
+    uid:uid,
 
-    uid: uid,
+    media:data.secure_url,
 
-    media: data.secure_url,
-
-    type: file.type.startsWith("video/")
+    type:file.type.startsWith("video/")
         ? "video"
         : "image",
 
-    avatar: user.avatar || "",
+    avatar:user.avatar || "",
 
-    name: user.name || "",
+    name:user.name || "",
 
-    username: user.username || "",
+    username:user.username || "",
 
-    text: storyText,
+    createdAt:serverTimestamp(),
 
-    createdAt: serverTimestamp(),
-
-    expiresAt: Date.now() + 86400000
+    expiresAt:Date.now() + 86400000
 
 });
-document.getElementById("storyText").value = "";
+
 
 storyFile.value = "";
 
@@ -997,9 +988,9 @@ storyBar.insertAdjacentHTML(
 
     </div>
 
-   <div class="storyName">
-    ${s.text || s.content || "Story"}
-</div>
+    <div class="storyName">
+        ${s.name || "Story"}
+    </div>
 
 </div>
 `
