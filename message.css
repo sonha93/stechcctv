@@ -82,13 +82,28 @@ body{
 
 #chatTitle{
 
+    display:flex;
+
+    align-items:center;
+
+    gap:4px;
+
     font-size:17px;
+
     font-weight:bold;
 
 }
 
+#chatTitle img,
+#chatTitle svg{
 
+    width:18px;
 
+    height:18px;
+
+    flex-shrink:0;
+
+}
 
 .message-box{
 
