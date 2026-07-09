@@ -366,10 +366,8 @@ const text =
 messageInput.value.trim();
 
 
-
-if(!text)
+if(!text && !selectedImage)
 return;
-
 
 
 if(!currentUser)
@@ -379,7 +377,54 @@ return;
 
 try{
 
+let imageUrl = "";
 
+
+if(selectedImage){
+
+
+const form = new FormData();
+
+
+form.append(
+"file",
+selectedImage
+);
+
+
+form.append(
+"upload_preset",
+"stech_up"
+);
+
+
+
+const upload = await fetch(
+
+"https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+
+{
+
+method:"POST",
+
+body:form
+
+}
+
+);
+
+
+
+const data =
+await upload.json();
+
+
+
+imageUrl =
+data.secure_url;
+
+
+}
     const now =
     firebase.firestore
     .Timestamp
@@ -397,7 +442,7 @@ try{
     currentUser.uid,
 
     text:text,
-
+    image:imageUrl,
     createdAt:
     now,
 
@@ -423,7 +468,12 @@ try{
 
     messageInput.value="";
 
+    selectedImage = null;
 
+imageInput.value="";
+
+
+document.getElementById("imagePreview").innerHTML="";
 
 }catch(err){
 
@@ -649,11 +699,32 @@ imageBtn.onclick=()=>{
 
 
 
+let selectedImage = null;
+
+
 if(imageInput){
 
-imageInput.onchange=()=>{
+imageInput.onchange = ()=>{
 
-    sendImage();
+    selectedImage = imageInput.files[0];
+
+    if(selectedImage){
+
+        const url = URL.createObjectURL(selectedImage);
+
+        const preview =
+        document.getElementById("imagePreview");
+
+
+        if(preview){
+
+            preview.innerHTML = `
+            <img src="${url}">
+            `;
+
+        }
+
+    }
 
 };
 
