@@ -52,9 +52,9 @@ avatarInput.onchange = async e => {
     form.append("file", file);
 
     form.append(
-        "upload_preset",
-        "stechcamera"
-    );
+    "upload_preset",
+    "stech_up"
+);
 
 
     try {
