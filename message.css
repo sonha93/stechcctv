@@ -238,83 +238,38 @@ margin-left:auto;
 margin-top:2px;
 
 }
-/* ================================
-   IMAGE BUTTON
-================================ */
-
 #imageBtn{
 
     width:42px;
     height:42px;
 
     border:none;
+    background:none;
 
-    border-radius:50%;
-
-    background:#f0f2f5;
+    color:#0084ff;
 
     cursor:pointer;
 
-    font-size:20px;
-
     display:flex;
-
     align-items:center;
-
     justify-content:center;
+
+    padding:0;
+}
+
+
+#imageBtn svg{
+
+    width:24px;
+    height:24px;
 
 }
 
 
 #imageBtn:hover{
 
-    background:#e4e6eb;
+    background:#f0f2f5;
 
-}
-
-
-
-/* ================================
-   CHAT IMAGE
-================================ */
-
-.chat-image{
-
-    max-width:280px;
-
-    max-height:350px;
-
-    border-radius:14px;
-
-    object-fit:cover;
-
-    cursor:pointer;
-
-    display:block;
-
-}
-
-
-
-/* mobile */
-
-@media(max-width:600px){
-
-    .chat-image{
-
-        max-width:220px;
-
-        max-height:280px;
-
-    }
-
-
-    #imageBtn{
-
-        width:38px;
-
-        height:38px;
-
-    }
+    border-radius:50%;
 
 }
