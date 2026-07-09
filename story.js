@@ -131,15 +131,15 @@ e
 // ================================
 // OPEN STORY
 // ================================
-window.openStory = async function(id){
+window.openStory = async function(uid){
 
-const doc =
-await db.collection("stories")
-.doc(id)
+const snap = await db.collection("stories")
+.where("uid","==",uid)
+.orderBy("createdAt","desc")
+.limit(1)
 .get();
 
-
-if(!doc.exists){
+if(snap.empty){
 
 alert("Không tìm thấy story");
 
@@ -147,17 +147,11 @@ return;
 
 }
 
+const story = snap.docs[0].data();
 
-const story = doc.data();
+const box = document.createElement("div");
 
-
-const box =
-document.createElement("div");
-
-
-box.className =
-"story-popup";
-
+box.className = "story-popup";
 
 box.innerHTML = `
 
@@ -165,21 +159,23 @@ box.innerHTML = `
 src="${story.video}"
 autoplay
 controls
-playsinline>
+playsinline
+style="width:100%;height:100%;object-fit:contain;background:#000">
 </video>
 
 `;
 
+box.onclick = (e)=>{
 
-document.body.appendChild(box);
-
-
-box.onclick=()=>{
+if(e.target===box){
 
 box.remove();
 
+}
+
 };
 
+document.body.appendChild(box);
 
 };
 // ================================
@@ -300,7 +296,7 @@ Story
 
 item.onclick=()=>{
 
-openStory(doc.id);
+openStory(s.uid);
 
 };
 
