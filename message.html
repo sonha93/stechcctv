@@ -61,25 +61,36 @@
 
 
 
-    <!-- INPUT -->
+   <!-- INPUT -->
 
-    <div class="chat-input">
-
-
-        <input 
-        id="messageInput"
-        type="text"
-        placeholder="Nhập tin nhắn...">
+<div class="chat-input">
 
 
+    <input 
+    id="imageInput"
+    type="file"
+    accept="image/*"
+    hidden>
 
-        <button id="sendBtn">
-            Gửi
-        </button>
+
+    <button id="imageBtn">
+        📷
+    </button>
 
 
-    </div>
+    <input 
+    id="messageInput"
+    type="text"
+    placeholder="Nhập tin nhắn...">
 
+
+
+    <button id="sendBtn">
+        Gửi
+    </button>
+
+
+</div>
 
 
 </div>
@@ -93,7 +104,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
 <script type="module" src="message.js"></script>
-</script>
 
 
 </body>
