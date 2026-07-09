@@ -37,64 +37,33 @@ const saveBtn = document.getElementById("saveBtn");
 // Avatar Preview
 // ==========================
 
-avatarInput.onchange = async e => {
+avatarInput.onchange = async e=>{
 
     const file = e.target.files[0];
 
     if(!file) return;
 
-
     avatarPreview.src = URL.createObjectURL(file);
-
 
     const form = new FormData();
 
-    form.append("file", file);
+    form.append("file",file);
 
-    form.append(
+  form.append(
     "upload_preset",
     "stech_up"
 );
-
-
-    try {
-
-        const res = await fetch(
-            "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
-            {
-                method:"POST",
-                body:form
-            }
-        );
-
-
-        const data = await res.json();
-
-
-        if(!data.secure_url){
-
-            console.log(data);
-
-            alert("Upload avatar lỗi");
-
-            return;
-
-        }
-
-
-        avatarUrl = data.secure_url;
-
-
-        console.log("Avatar URL:", avatarUrl);
-
-
-    } catch(err){
-
-        console.error(err);
-
-        alert("Upload avatar thất bại");
-
+const res = await fetch(
+    "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+    {
+        method:"POST",
+        body:form
     }
+);
+
+    const data = await res.json();
+
+    avatarUrl = data.secure_url;
 
 };
 
@@ -150,13 +119,7 @@ onAuthStateChanged(auth, async(user)=>{
     data.avatar ||
     "https://i.ibb.co/Z1kv9nJj/logo.png";
 
-if(avatarPreview){
-
-    avatarPreview.src =
-    avatarUrl ||
-    "https://i.ibb.co/Z1kv9nJj/logo.png";
-
-}
+avatarPreview.src = avatarUrl;
     nameInput.value =
         data.name || "";
 
@@ -215,13 +178,6 @@ saveBtn.onclick = async () => {
 ) {
     alert("ID này đã được đăng ký độc quyền.");
     return;
-}
-    if(!avatarUrl){
-
-    avatarUrl =
-    avatarPreview.src ||
-    "https://i.ibb.co/Z1kv9nJj/logo.png";
-
 }
     if (name === "") {
         alert("Vui lòng nhập tên.");
