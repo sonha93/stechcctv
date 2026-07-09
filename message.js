@@ -4,10 +4,7 @@
 
 
 // Firebase
-import {
-    db,
-    auth
-} from "./firebase-init.js";
+import { db, auth } from "./firebase-init.js";
 
 
 
