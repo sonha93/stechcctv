@@ -230,15 +230,17 @@ document.getElementById("storyBar");
 if(!bar) return;
 
 
-const addBtn =
-document.getElementById("myStoryBtn");
+
 
 
 // XÓA STORY CŨ, GIỮ LẠI NÚT ĐĂNG
 bar.innerHTML = "";
 
-bar.appendChild(addBtn);
+if(addBtn){
 
+    bar.appendChild(addBtn);
+
+}
 
 const addBtn =
 document.getElementById("myStoryBtn");
