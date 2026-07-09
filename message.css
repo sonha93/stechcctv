@@ -278,6 +278,70 @@ body{
 .verified-popup{
     display:none !important;
 }
+   .message{
+    display:flex;
+    align-items:flex-end;
+    margin:8px 0;
+}
+
+.message.mine{
+    justify-content:flex-end;
+}
+
+.message.other{
+    justify-content:flex-start;
+}
+
+.message-avatar{
+
+    width:34px;
+    height:34px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    margin-right:8px;
+
+    cursor:pointer;
+
+    flex-shrink:0;
+
+}
+
+.message-body{
+
+    max-width:70%;
+
+}
+
+.message-content{
+
+    background:#2b2b2b;
+
+    color:#fff;
+
+    padding:10px 14px;
+
+    border-radius:18px;
+
+}
+
+.message.mine .message-content{
+
+    background:#0084ff;
+
+}
+
+.message-time{
+
+    font-size:11px;
+
+    color:#999;
+
+    margin-top:3px;
+
+}
 }
 
 
