@@ -332,6 +332,7 @@ msg.seenBy.find(uid=>uid!==currentUser.uid)
 
 }
 </div>
+`;
 
 messageBox.appendChild(div);
 
