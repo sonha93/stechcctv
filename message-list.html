@@ -80,15 +80,8 @@ input{
 }
 
 img{
-
     display:block;
-
-    width:100%;
-
-    user-select:none;
-
-    -webkit-user-drag:none;
-
+    max-width:100%;
 }
 
 a{
@@ -368,17 +361,17 @@ arrow_back_ios_new
 
 </button>
 
+
 <div class="headerTitle">
 
 <h1>Tin nhắn</h1>
 
 <p id="chatCount">
-
 0 cuộc trò chuyện
-
 </p>
 
 </div>
+
 
 <button id="newChatBtn">
 
@@ -461,107 +454,8 @@ Người bán
 <div id="messageContainer">
 
 <div id="chatList">
-          <div class="chat-item unread pinned online" data-id="">
 
-            <div class="chat-avatar">
-
-                <img src="images/default-avatar.png" alt="">
-
-                <span class="online-dot"></span>
-
-            </div>
-
-            <div class="chat-info">
-
-                <div class="chat-top">
-
-                    <div class="chat-name">
-
-                        <span class="name"></span>
-
-                        <span class="material-symbols-outlined verified" hidden>
-                            verified
-                        </span>
-
-                        <span class="material-symbols-outlined seller" hidden>
-                            storefront
-                        </span>
-
-                    </div>
-
-                    <span class="chat-time"></span>
-
-                </div>
-
-                <div class="chat-bottom">
-
-                    <div class="last-message">
-
-                        <span class="message-icon"></span>
-
-                        <span class="message-text"></span>
-
-                    </div>
-
-                    <div class="chat-right">
-
-                        <span class="material-symbols-outlined pin" hidden>
-                            keep
-                        </span>
-
-                        <span class="material-symbols-outlined seen" hidden>
-                            done_all
-                        </span>
-
-                        <span class="unread-count" hidden>
-                            0
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="chat-item unread" data-id=""></div>
-
-        <div class="chat-item unread" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
-
-        <div class="chat-item" data-id=""></div>
+  
                 <div id="loadingChats" hidden>
 
             <div class="loading-item"></div>
@@ -622,29 +516,29 @@ Người bán
 
     </div>
 
-    <button id="scrollTopBtn" hidden>
+<button id="scrollTopBtn" hidden>
 
-        <span class="material-symbols-outlined">
+<span class="material-symbols-outlined">
 
-            keyboard_arrow_up
+keyboard_arrow_up
 
-        </span>
+</span>
 
-    </button>
+</button>
 
-    <button id="floatingNewChat">
 
-        <span class="material-symbols-outlined">
+<button id="floatingNewChat">
 
-            edit_square
+<span class="material-symbols-outlined">
 
-        </span>
+edit_square
 
-    </button>
+</span>
+
+</button>
 
 </div>
 
-<div id="overlay" hidden></div>
 
 <div id="bottomSheet" hidden>
 
@@ -955,15 +849,15 @@ Người bán
 
 <template id="newMessageButtonTemplate">
 
-    <button id="newMessageFab">
+<button id="newMessageFab">
 
-        <span class="material-symbols-outlined">
+<span class="material-symbols-outlined">
 
-            edit_square
+edit_square
 
-        </span>
+</span>
 
-    </button>
+</button>
 
 </template>
 
@@ -1055,129 +949,7 @@ Người bán
     </span>
 
 </template>
-<template id="bottomSheetTemplate">
 
-    <div id="conversationSheet">
-
-        <div class="sheet-handle"></div>
-
-        <div class="sheet-header">
-
-            <img class="sheet-avatar"
-                 src=""
-                 alt="">
-
-            <div class="sheet-user">
-
-                <span class="sheet-name"></span>
-
-                <span class="sheet-id"></span>
-
-            </div>
-
-        </div>
-
-        <button class="sheet-item" id="viewProfile">
-
-            <span class="material-symbols-outlined">
-                account_circle
-            </span>
-
-            <span>Xem hồ sơ</span>
-
-        </button>
-
-        <button class="sheet-item" id="searchConversation">
-
-            <span class="material-symbols-outlined">
-                search
-            </span>
-
-            <span>Tìm trong cuộc trò chuyện</span>
-
-        </button>
-
-        <button class="sheet-item" id="pinConversation">
-
-            <span class="material-symbols-outlined">
-                keep
-            </span>
-
-            <span>Ghim cuộc trò chuyện</span>
-
-        </button>
-
-        <button class="sheet-item" id="muteConversation">
-
-            <span class="material-symbols-outlined">
-                notifications_off
-            </span>
-
-            <span>Tắt thông báo</span>
-
-        </button>
-
-        <button class="sheet-item" id="archiveConversation">
-
-            <span class="material-symbols-outlined">
-                archive
-            </span>
-
-            <span>Lưu trữ</span>
-
-        </button>
-
-        <button class="sheet-item" id="clearConversation">
-
-            <span class="material-symbols-outlined">
-                cleaning_services
-            </span>
-
-            <span>Xóa lịch sử trò chuyện</span>
-
-        </button>
-
-        <button class="sheet-item danger" id="deleteConversation">
-
-            <span class="material-symbols-outlined">
-                delete
-            </span>
-
-            <span>Xóa cuộc trò chuyện</span>
-
-        </button>
-
-        <button class="sheet-item danger" id="blockUser">
-
-            <span class="material-symbols-outlined">
-                block
-            </span>
-
-            <span>Chặn người này</span>
-
-        </button>
-
-        <button class="sheet-item danger" id="reportUser">
-
-            <span class="material-symbols-outlined">
-                flag
-            </span>
-
-            <span>Báo cáo</span>
-
-        </button>
-
-        <button class="sheet-cancel">
-
-            Hủy
-
-        </button>
-
-    </div>
-
-</template>
-
-<div id="sheetOverlay"></div>
 
 <div id="toastMessage">
 
@@ -1543,19 +1315,7 @@ Người bán
 
 </template>
 
-<div id="modalContainer"></div>
 
-<div id="menuContainer"></div>
-
-<div id="popupContainer"></div>
-
-<div id="floatingContainer"></div>
-
-<div id="toastContainer"></div>
-
-<div id="dialogContainer"></div>
-
-<div id="templateContainer" hidden></div>
 
 </body>
 
