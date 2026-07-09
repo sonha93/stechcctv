@@ -741,7 +741,7 @@ popup.onclick = ()=>{
 document.body.appendChild(popup);
 
 }
-function showChatImage(src){
+window.showChatImage = function(src){
 
 const popup = document.createElement("div");
 
@@ -757,4 +757,4 @@ popup.onclick = function(){
 
 document.body.appendChild(popup);
 
-}
+};
