@@ -187,69 +187,7 @@ popup
 
 
 };
-window.openStory = async function(uid){
 
-
-const snap =
-await db.collection("stories")
-.where("uid","==",uid)
-.get();
-
-
-
-let story=null;
-
-
-snap.forEach(doc=>{
-
-const s=doc.data();
-
-
-if(
-s.expiresAt.toDate()>new Date()
-){
-
-story=s;
-
-}
-
-});
-
-
-
-if(!story){
-
-alert("Chưa có tin");
-
-return;
-
-}
-
-
-
-const box =
-document.createElement("div");
-
-
-box.className="story-popup";
-
-
-box.innerHTML=`
-
-<img src="${story.image}">
-
-`;
-
-
-
-box.onclick=()=>box.remove();
-
-
-
-document.body.appendChild(box);
-
-
-};
 // ================================
 // CLICK ĐĂNG TIN
 // ================================
