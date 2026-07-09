@@ -3,7 +3,7 @@
 // ================================
 // MESSAGE JS (FIREBASE V8)
 // ================================
-
+import { getVerifiedBadge } from "./verified-users.js";
 
 // Firebase
 import { db, auth } from "./firebase-init.js";
@@ -97,8 +97,25 @@ try{
         const u = userSnap.data();
 
         if(chatTitle){
-            chatTitle.textContent =
-            u.name || "Người dùng";
+           let displayName = u.name || "Người dùng";
+
+const nickSnap = await db
+.collection("users")
+.doc(currentUser.uid)
+.collection("nicknames")
+.doc(otherUid)
+.get();
+
+if(nickSnap.exists){
+
+    displayName = nickSnap.data().nickname;
+
+}
+
+chatTitle.innerHTML = `
+<span>${displayName}</span>
+${getVerifiedBadge(otherUid)}
+`;
         }
 
         if(chatAvatar){
