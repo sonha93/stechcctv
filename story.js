@@ -101,7 +101,7 @@ await db
 
 uid:user.uid,
 
-image:data.secure_url,
+video:data.secure_url,
 
 createdAt:now,
 
@@ -183,11 +183,13 @@ popup.className =
 
 
 popup.innerHTML = `
-
-<img src="${story.image}">
-
+<video 
+src="${story.video}"
+autoplay
+controls
+playsinline>
+</video>
 `;
-
 
 
 popup.onclick=()=>{
