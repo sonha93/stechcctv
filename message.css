@@ -429,3 +429,20 @@ margin-top:6px;
 .image-only .chat-text{
     color:#222 !important;
 }
+ }
+ /* =========================
+   DESKTOP
+========================= */
+@media (min-width: 768px){
+
+#chatTitle{
+    font-size:15px;
+    gap:4px;
+}
+
+#chatTitle img,
+#chatTitle svg{
+    width:14px;
+    height:14px;
+    flex-shrink:0;
+}
