@@ -64,7 +64,7 @@ document.getElementById("backBtn");
 // ================================
 
 let currentUser = null;
-
+let userCache = {};
 
 
 // ================================
@@ -152,123 +152,113 @@ ${getVerifiedBadge(otherUid)}
 // LOAD MESSAGES REALTIME
 // ================================
 
-function loadMessages(){
+async function loadMessages() {
 
-
-db
-.collection("conversations")
+db.collection("conversations")
 .doc(conversationId)
 .collection("messages")
-.orderBy(
-    "createdAt",
-    "asc"
-)
-.onSnapshot(
-snap=>{
+.orderBy("createdAt","asc")
+.onSnapshot(async snap=>{
 
-
-    if(!messageBox)
-    return;
-
-
+    if(!messageBox) return;
 
     messageBox.innerHTML="";
 
-
+    const messages = [];
 
     snap.forEach(doc=>{
-
-
-        const msg =
-        doc.data();
-
-
-
-        renderMessage(msg);
-
-
-
+        messages.push(doc.data());
     });
 
+    for(let i=0;i<messages.length;i++){
 
+        const msg = messages[i];
+
+        if(!userCache[msg.senderId]){
+
+            const userSnap = await db
+            .collection("users")
+            .doc(msg.senderId)
+            .get();
+
+            if(userSnap.exists){
+
+                userCache[msg.senderId] = userSnap.data();
+
+            }else{
+
+                userCache[msg.senderId] = {};
+
+            }
+
+        }
+
+        const nextMsg = messages[i+1];
+
+        renderMessage(
+            msg,
+            userCache[msg.senderId],
+            nextMsg
+        );
+
+    }
 
     scrollBottom();
 
-
-
 });
 
-
-
 }
-
 
 
 // ================================
 // RENDER MESSAGE
 // ================================
 
-function renderMessage(msg){
+function renderMessage(msg,user,nextMsg){
 
+const div=document.createElement("div");
 
-const div =
-document.createElement("div");
+const mine =
+msg.senderId===currentUser.uid;
 
+div.className=
+mine ? "message mine":"message other";
 
+const showAvatar =
+!mine &&
+(
+!nextMsg ||
+nextMsg.senderId!==msg.senderId
+);
 
-div.className =
-"message";
+div.innerHTML=`
 
+${showAvatar?`
+<img
+class="msg-avatar"
+src="${
+user.avatar ||
+'https://i.ibb.co/Z1kv9nJj/logo.png'
+}">
+`:"<div class='msg-avatar-space'></div>"}
 
-
-if(
-    msg.senderId ===
-    currentUser.uid
-){
-
-    div.classList.add(
-        "mine"
-    );
-
-}else{
-
-    div.classList.add(
-        "other"
-    );
-
-}
-
-
-
-div.innerHTML = `
+<div class="message-body">
 
 <div class="message-content">
-
-${escapeHTML(
-    msg.text || ""
-)}
-
+${escapeHTML(msg.text||"")}
 </div>
 
 <div class="message-time">
-
-${formatTime(
-    msg.createdAt
-)}
+${formatTime(msg.createdAt)}
+</div>
 
 </div>
 
 `;
 
-
-
 messageBox.appendChild(div);
 
-
 }
-
-
-
 
 // ================================
 // SEND MESSAGE
