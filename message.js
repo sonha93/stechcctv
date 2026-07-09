@@ -72,61 +72,29 @@ let currentUser = null;
 // LOAD CHAT INFO
 // ================================
 
-async function loadChatInfo(){
+const otherUid = data.members.find(uid => uid !== currentUser.uid);
 
-try{
+const userDoc = await db
+.collection("users")
+.doc(otherUid)
+.get();
 
+if(userDoc.exists){
 
-    const doc =
-    await db
-    .collection("conversations")
-    .doc(conversationId)
-    .get();
+    const userData = userDoc.data();
 
-
-
-    if(!doc.exists)
-    return;
-
-
-
-    const data =
-    doc.data();
-
-
-
-    if(chatTitle){
-
-        chatTitle.textContent =
-        data.name ||
+    chatTitle.textContent =
+        userData.displayName ||
+        userData.name ||
         "Người dùng";
 
-    }
-
-
-
-    if(chatAvatar && data.avatar){
-
+    if(userData.photoURL || userData.avatar){
         chatAvatar.src =
-        data.avatar;
-
+            userData.photoURL ||
+            userData.avatar;
     }
 
-
-
-}catch(err){
-
-    console.error(
-        "Load chat info lỗi:",
-        err
-    );
-
 }
-
-}
-
-
-
 
 // ================================
 // LOAD MESSAGES REALTIME
