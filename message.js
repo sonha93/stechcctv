@@ -236,6 +236,8 @@ div.innerHTML=`
 ${showAvatar?`
 <img
 class="msg-avatar"
+style="cursor:pointer"
+onclick="window.location.href='profile-review.html?uid=${msg.senderId}'"
 src="${
 user.avatar ||
 'https://i.ibb.co/Z1kv9nJj/logo.png'
@@ -255,6 +257,7 @@ ${formatTime(msg.createdAt)}
 </div>
 
 `;
+
 
 messageBox.appendChild(div);
 
