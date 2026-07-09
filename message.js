@@ -7,7 +7,7 @@
 import {
     db,
     auth
-} from "./firebase.js";
+} from "./firebase-init.js";
 
 
 
