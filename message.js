@@ -407,92 +407,6 @@ try{
 
 });
 
-// ================================
-// SEND IMAGE
-// ================================
-
-async function sendImage(){
-
-
-const file =
-imageInput.files[0];
-
-
-if(!file)
-return;
-
-
-if(!currentUser)
-return;
-
-
-try{
-
-
-const now =
-firebase.firestore.Timestamp.now();
-
-
-
-const ref =
-firebase.storage()
-.ref(
-"chat-images/" +
-Date.now() +
-"-" +
-file.name
-);
-
-
-
-await ref.put(file);
-
-
-
-const imageUrl =
-await ref.getDownloadURL();
-
-
-
-await db
-.collection("conversations")
-.doc(conversationId)
-.collection("messages")
-.add({
-
-    senderId:
-    currentUser.uid,
-
-    text:"",
-
-    image:
-    imageUrl,
-
-    createdAt:
-    now,
-
-    seenBy:[
-        currentUser.uid
-    ]
-
-});
-
-
-
-imageInput.value="";
-
-
-}catch(err){
-
-console.error(
-"Gửi ảnh lỗi:",
-err
-);
-
-}
-
-
-}
 
    await db
 .collection("conversations")
@@ -524,7 +438,80 @@ err
 }
 
 
+// ================================
+// SEND IMAGE
+// ================================
 
+async function sendImage(){
+
+const file = imageInput.files[0];
+
+if(!file)
+return;
+
+
+try{
+
+const now =
+firebase.firestore.Timestamp.now();
+
+
+const storageRef =
+firebase.storage()
+.ref(
+"chat-images/" +
+Date.now() +
+"-" +
+file.name
+);
+
+
+
+await storageRef.put(file);
+
+
+
+const url =
+await storageRef.getDownloadURL();
+
+
+
+await db
+.collection("conversations")
+.doc(conversationId)
+.collection("messages")
+.add({
+
+    senderId:
+    currentUser.uid,
+
+    text:"",
+
+    image:url,
+
+    createdAt:now,
+
+    seenBy:[
+        currentUser.uid
+    ]
+
+});
+
+
+
+imageInput.value="";
+
+
+}catch(err){
+
+console.error(
+"Gửi ảnh lỗi:",
+err
+);
+
+}
+
+}
 
 // ================================
 // FORMAT TIME
