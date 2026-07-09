@@ -426,3 +426,6 @@ border-radius:10px;
 .chat-text{
 margin-top:6px;
 }
+.image-only .chat-text{
+    color:#222 !important;
+}
