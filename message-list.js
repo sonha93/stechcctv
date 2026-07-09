@@ -131,17 +131,16 @@ async function renderChats(){
 
 
 
-    if(currentFilter==="unread"){
+  if(currentFilter==="unread"){
 
 
-        list =
-        list.filter(
-            x=>Number(x.unread)>0
-        );
+    list =
+    list.filter(
+        x=>Number(x.unread?.[currentUser.uid] || 0)>0
+    );
 
 
-    }
-
+}
 
 
     if(currentFilter==="online"){
@@ -347,7 +346,8 @@ if(otherUid){
         }
         // Badge chưa đọc
 const unreadBadge = node.querySelector(".unread-badge");
-const unread = Number(chat.unread || 0);
+const unread =
+Number(chat.unread?.[currentUser.uid] || 0);
 
 if (unreadBadge) {
     if (unread >= 1) {
@@ -361,15 +361,23 @@ if (unreadBadge) {
 
 // Chữ đậm khi chưa đọc
 if (name && msg) {
-    if (Number(chat.unread || 0) > 0) {
+
+    if (
+        Number(chat.unread?.[currentUser.uid] || 0) > 0
+    ) {
+
         name.style.fontWeight = "700";
         msg.style.fontWeight = "600";
         msg.style.color = "#fff";
+
     } else {
+
         name.style.fontWeight = "500";
         msg.style.fontWeight = "400";
         msg.style.color = "#999";
+
     }
+
 }
         const time =
         node.querySelector(
