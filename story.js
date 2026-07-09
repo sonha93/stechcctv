@@ -260,11 +260,27 @@ snap.forEach(doc=>{
 const s = doc.data();
 
 
-if(
-!s.expiresAt ||
-s.expiresAt.toDate() < new Date()
-){
+let expireTime = null;
+
+
+if(s.expiresAt?.toDate){
+
+    expireTime = s.expiresAt.toDate();
+
+}
+else{
+
+    expireTime = new Date(
+        s.expiresAt
+    );
+
+}
+
+
+if(expireTime < new Date()){
+
     return;
+
 }
 
 
