@@ -250,3 +250,39 @@ document.body.appendChild(box);
 
 
 };
+// ================================
+// CLICK ĐĂNG TIN
+// ================================
+
+const myStoryBtn =
+document.getElementById("myStoryBtn");
+
+const storyInput =
+document.getElementById("storyInput");
+
+
+if(myStoryBtn && storyInput){
+
+
+    myStoryBtn.onclick = ()=>{
+
+        storyInput.click();
+
+    };
+
+
+    storyInput.onchange = ()=>{
+
+        const file =
+        storyInput.files[0];
+
+
+        if(file){
+
+            uploadStory(file);
+
+        }
+
+    };
+
+}
