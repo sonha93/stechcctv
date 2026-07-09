@@ -222,4 +222,18 @@ margin-top:3px;
 display:block;
 
 }
+   .seen-avatar{
+
+width:16px;
+height:16px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+margin-left:auto;
+
+margin-top:2px;
+
+}
 }
