@@ -342,18 +342,21 @@ body{
     margin-top:3px;
 
 }
-   .message{
+  
+}
+.message{
     display:flex;
     align-items:flex-end;
-    margin:4px 0;
-}
-
-.message.mine{
-    justify-content:flex-end;
+    margin:6px 0;
+    max-width:100%;
 }
 
 .message.other{
     justify-content:flex-start;
+}
+
+.message.mine{
+    justify-content:flex-end;
 }
 
 .message-body{
@@ -363,29 +366,21 @@ body{
 }
 
 .msg-avatar{
-
     width:32px;
     height:32px;
-
     border-radius:50%;
     object-fit:cover;
-
     margin-right:8px;
+    flex-shrink:0;
 }
 
 .msg-avatar-space{
-
-    width:32px;
+    width:40px;
     margin-right:8px;
-
 }
 
 .message.mine .msg-avatar,
 .message.mine .msg-avatar-space{
-
     display:none;
-
 }
-}
-
 
