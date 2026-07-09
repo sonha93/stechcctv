@@ -310,6 +310,7 @@ user.avatar ||
 <div class="message-content ${msg.image ? "image-only" : ""}">
 
 ${
+${
 msg.image
 ?
 `
@@ -319,8 +320,14 @@ src="${msg.image}"
 onclick="showChatImage(this.src)">
 `
 :
-escapeHTML(msg.text||"")
+""
 }
+
+${msg.text ? `
+<div class="chat-text">
+${escapeHTML(msg.text)}
+</div>
+` : ""}
 
 </div>
 
