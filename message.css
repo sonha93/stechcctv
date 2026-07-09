@@ -85,7 +85,8 @@ body{
     display:flex;
     align-items:flex-end;
     gap:8px;
-    margin:10px 0;
+    margin:8px 0;
+    width:100%;
 }
 
 .message.other{
@@ -99,13 +100,12 @@ body{
 /* AVATAR */
 
 .msg-avatar{
-    width:34px;
-    height:34px;
+    width:32px;
+    height:32px;
     border-radius:50%;
     object-fit:cover;
     flex-shrink:0;
 }
-
 .msg-avatar-space{
     width:34px;
     flex-shrink:0;
@@ -120,28 +120,30 @@ body{
 .message-body{
     display:flex;
     flex-direction:column;
-    max-width:75%;
+    align-items:flex-start;
+    max-width:70%;
 }
-
 .message.mine .message-body{
     align-items:flex-end;
 }
 /* BUBBLE */
 
 .message-content{
-    display:inline-block;
+    display:block;
+    width:max-content;
+    max-width:420px;
+    min-width:48px;
+
     padding:10px 14px;
+
     border-radius:18px;
+
     font-size:15px;
     line-height:1.5;
-
-    max-width:420px;
-    width:fit-content;
 
     white-space:pre-wrap;
     word-break:break-word;
 }
-
 .message.other .message-content{
     background:#fff;
     border:1px solid #ddd;
