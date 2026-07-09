@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Tin nhắn</title>
+
+<link rel="stylesheet" href="message-list.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+href="https://fonts.gstatic.com"
+crossorigin>
+
+<link
+href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap"
+rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+<style>
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html{
+    width:100%;
+    height:100%;
+    scroll-behavior:smooth;
+}
+
+body{
+
+    width:100%;
+    height:100%;
+
+    font-family:"Roboto",sans-serif;
+
+    background:#000;
+
+    color:#fff;
+
+    overflow:hidden;
+
+}
+
+button{
+
+    border:none;
+
+    outline:none;
+
+    background:none;
+
+    cursor:pointer;
+
+    font-family:inherit;
+
+}
+
+input{
+
+    border:none;
+
+    outline:none;
+
+    background:none;
+
+    font-family:inherit;
+
+}
+
+img{
+
+    display:block;
+
+    width:100%;
+
+    user-select:none;
+
+    -webkit-user-drag:none;
+
+}
+
+a{
+
+    text-decoration:none;
+
+    color:inherit;
+
+}
+
+ul{
+
+    list-style:none;
+
+}
+
+#messagePage{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    background:#000;
+
+    overflow:hidden;
+
+}
+
+/*============================*/
+
+#messageHeader{
+
+    width:100%;
+
+    height:64px;
+
+    padding:0 16px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    background:#000;
+
+    border-bottom:1px solid rgba(255,255,255,.06);
+
+    flex-shrink:0;
+
+}
+
+#backBtn,
+#newChatBtn{
+
+    width:42px;
+
+    height:42px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#fff;
+
+    transition:.2s;
+
+}
+
+#backBtn:hover,
+#newChatBtn:hover{
+
+    background:#181818;
+
+}
+
+#backBtn .material-symbols-outlined,
+#newChatBtn .material-symbols-outlined{
+
+    font-size:26px;
+
+}
+
+.headerTitle{
+
+    flex:1;
+
+    padding:0 14px;
+
+    overflow:hidden;
+
+}
+
+.headerTitle h1{
+
+    font-size:22px;
+
+    font-weight:700;
+
+    white-space:nowrap;
+
+}
+
+#chatCount{
+
+    font-size:12px;
+
+    color:#9b9b9b;
+
+    margin-top:3px;
+
+}
+
+/*============================*/
+
+#searchArea{
+
+    padding:12px 16px;
+
+    background:#000;
+
+    flex-shrink:0;
+
+}
+
+.searchBox{
+
+    width:100%;
+
+    height:44px;
+
+    background:#181818;
+
+    border-radius:14px;
+
+    display:flex;
+
+    align-items:center;
+
+    padding:0 14px;
+
+    transition:.25s;
+
+}
+
+.searchBox:focus-within{
+
+    background:#222;
+
+}
+
+.searchBox .material-symbols-outlined{
+
+    font-size:22px;
+
+    color:#9f9f9f;
+
+}
+
+#searchInput{
+
+    flex:1;
+
+    height:100%;
+
+    margin:0 10px;
+
+    color:#fff;
+
+    font-size:15px;
+
+}
+
+#searchInput::placeholder{
+
+    color:#8b8b8b;
+
+}
+
+#clearSearch{
+
+    width:30px;
+
+    height:30px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#8b8b8b;
+
+}
+
+/*============================*/
+
+#filterBar{
+
+    display:flex;
+
+    gap:10px;
+
+    padding:0 16px 14px;
+
+    overflow-x:auto;
+
+    scrollbar-width:none;
+
+    background:#000;
+
+}
+
+#filterBar::-webkit-scrollbar{
+
+    display:none;
+
+}
+
+.filterBtn{
+
+    height:34px;
+
+    padding:0 18px;
+
+    border-radius:18px;
+
+    background:#181818;
+
+    color:#d8d8d8;
+
+    font-size:14px;
+
+    font-weight:500;
+
+    white-space:nowrap;
+
+    transition:.25s;
+
+}
+
+.filterBtn.active{
+
+    background:#fe2c55;
+
+    color:#fff;
+
+}
+
+.filterBtn:hover{
+
+    background:#252525;
+
+}
+</style>
+</head>
+
+<body>
+
+<div id="messagePage">
+
+<header id="messageHeader">
+
+<button id="backBtn">
+
+<span class="material-symbols-outlined">
+arrow_back_ios_new
+</span>
+
+</button>
+
+<div class="headerTitle">
+
+<h1>Tin nhắn</h1>
+
+<p id="chatCount">
+
+0 cuộc trò chuyện
+
+</p>
+
+</div>
+
+<button id="newChatBtn">
+
+<span class="material-symbols-outlined">
+
+edit_square
+
+</span>
+
+</button>
+
+</header>
+
+<section id="searchArea">
+
+<div class="searchBox">
+
+<span class="material-symbols-outlined">
+
+search
+
+</span>
+
+<input
+type="text"
+id="searchInput"
+autocomplete="off"
+placeholder="Tìm kiếm">
+
+<button id="clearSearch">
+
+<span class="material-symbols-outlined">
+
+close
+
+</span>
+
+</button>
+
+</div>
+
+</section>
+
+<section id="filterBar">
+
+<button
+class="filterBtn active"
+data-filter="all">
+
+Tất cả
+
+</button>
+
+<button
+class="filterBtn"
+data-filter="unread">
+
+Chưa đọc
+
+</button>
+
+<button
+class="filterBtn"
+data-filter="online">
+
+Đang hoạt động
+
+</button>
+
+<button
+class="filterBtn"
+data-filter="shop">
+
+Người bán
+
+</button>
+
+</section>
+
+<div id="messageContainer">
+
+<div id="chatList">
+          <div class="chat-item unread pinned online" data-id="">
+
+            <div class="chat-avatar">
+
+                <img src="images/default-avatar.png" alt="">
+
+                <span class="online-dot"></span>
+
+            </div>
+
+            <div class="chat-info">
+
+                <div class="chat-top">
+
+                    <div class="chat-name">
+
+                        <span class="name"></span>
+
+                        <span class="material-symbols-outlined verified" hidden>
+                            verified
+                        </span>
+
+                        <span class="material-symbols-outlined seller" hidden>
+                            storefront
+                        </span>
+
+                    </div>
+
+                    <span class="chat-time"></span>
+
+                </div>
+
+                <div class="chat-bottom">
+
+                    <div class="last-message">
+
+                        <span class="message-icon"></span>
+
+                        <span class="message-text"></span>
+
+                    </div>
+
+                    <div class="chat-right">
+
+                        <span class="material-symbols-outlined pin" hidden>
+                            keep
+                        </span>
+
+                        <span class="material-symbols-outlined seen" hidden>
+                            done_all
+                        </span>
+
+                        <span class="unread-count" hidden>
+                            0
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="chat-item unread" data-id=""></div>
+
+        <div class="chat-item unread" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+
+        <div class="chat-item" data-id=""></div>
+                <div id="loadingChats" hidden>
+
+            <div class="loading-item"></div>
+
+            <div class="loading-item"></div>
+
+            <div class="loading-item"></div>
+
+            <div class="loading-item"></div>
+
+            <div class="loading-item"></div>
+
+        </div>
+
+        <div id="emptyChats" hidden>
+
+            <span class="material-symbols-outlined">
+
+                forum
+
+            </span>
+
+            <h2>
+
+                Chưa có cuộc trò chuyện
+
+            </h2>
+
+            <p>
+
+                Khi có người nhắn tin, cuộc trò chuyện sẽ xuất hiện tại đây.
+
+            </p>
+
+        </div>
+
+        <div id="searchEmpty" hidden>
+
+            <span class="material-symbols-outlined">
+
+                search_off
+
+            </span>
+
+            <h2>
+
+                Không tìm thấy kết quả
+
+            </h2>
+
+            <p>
+
+                Hãy thử tìm kiếm với từ khóa khác.
+
+            </p>
+
+        </div>
+
+    </div>
+
+    <button id="scrollTopBtn" hidden>
+
+        <span class="material-symbols-outlined">
+
+            keyboard_arrow_up
+
+        </span>
+
+    </button>
+
+    <button id="floatingNewChat">
+
+        <span class="material-symbols-outlined">
+
+            edit_square
+
+        </span>
+
+    </button>
+
+</div>
+
+<div id="overlay" hidden></div>
+
+<div id="bottomSheet" hidden>
+
+    <div class="sheetHandle"></div>
+
+    <button id="pinConversation">
+
+        <span class="material-symbols-outlined">
+
+            keep
+
+        </span>
+
+        <span>Ghim cuộc trò chuyện</span>
+
+    </button>
+
+    <button id="muteConversation">
+
+        <span class="material-symbols-outlined">
+
+            notifications_off
+
+        </span>
+
+        <span>Tắt thông báo</span>
+
+    </button>
+
+    <button id="deleteConversation">
+
+        <span class="material-symbols-outlined">
+
+            delete
+
+        </span>
+
+        <span>Xóa cuộc trò chuyện</span>
+
+    </button>
+
+    <button id="blockConversation">
+
+        <span class="material-symbols-outlined">
+
+            block
+
+        </span>
+
+        <span>Chặn</span>
+
+    </button>
+
+    <button id="reportConversation">
+
+        <span class="material-symbols-outlined">
+
+            flag
+
+        </span>
+
+        <span>Báo cáo</span>
+
+    </button>
+
+    <button id="cancelSheet">
+
+        Hủy
+
+    </button>
+
+</div>
+<template id="chatItemTemplate">
+
+    <div class="chat-item" data-conversation-id="">
+
+        <button class="chat-button" type="button">
+
+            <div class="avatar-wrap">
+
+                <img class="avatar" src="" alt="Avatar">
+
+                <span class="online-dot" hidden></span>
+
+                <span class="story-ring" hidden></span>
+
+            </div>
+
+            <div class="chat-body">
+
+                <div class="chat-header">
+
+                    <div class="chat-name-area">
+
+                        <span class="chat-name"></span>
+
+                        <img class="verified-icon"
+                             src="assets/icons/verified.svg"
+                             alt=""
+                             hidden>
+
+                        <img class="seller-icon"
+                             src="assets/icons/seller.svg"
+                             alt=""
+                             hidden>
+
+                        <img class="official-icon"
+                             src="assets/icons/official.svg"
+                             alt=""
+                             hidden>
+
+                    </div>
+
+                    <span class="chat-time"></span>
+
+                </div>
+
+                <div class="chat-footer">
+
+                    <div class="message-preview">
+
+                        <span class="message-status"></span>
+
+                        <span class="message-type-icon"></span>
+
+                        <span class="message-text"></span>
+
+                    </div>
+
+                    <div class="message-right">
+
+                        <img class="seen-avatar"
+                             src=""
+                             alt=""
+                             hidden>
+
+                        <span class="material-symbols-outlined pin-icon"
+                              hidden>
+
+                            keep
+
+                        </span>
+
+                        <span class="mute-icon"
+                              hidden>
+
+                            🔕
+
+                        </span>
+
+                        <span class="unread-badge"
+                              hidden>
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </button>
+
+        <button class="chat-menu">
+
+            <span class="material-symbols-outlined">
+
+                more_horiz
+
+            </span>
+
+        </button>
+
+    </div>
+
+</template>
+
+<template id="typingItemTemplate">
+
+    <div class="chat-item typing">
+
+        <button class="chat-button">
+
+            <div class="avatar-wrap">
+
+                <img class="avatar"
+                     src=""
+                     alt="">
+
+                <span class="online-dot"></span>
+
+            </div>
+
+            <div class="chat-body">
+
+                <div class="chat-header">
+
+                    <span class="chat-name"></span>
+
+                    <span class="chat-time">
+
+                        Đang nhập...
+
+                    </span>
+
+                </div>
+
+                <div class="chat-footer">
+
+                    <div class="typing-box">
+
+                        <span class="dot"></span>
+
+                        <span class="dot"></span>
+
+                        <span class="dot"></span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </button>
+
+    </div>
+
+</template>
+
+<template id="skeletonTemplate">
+
+    <div class="chat-skeleton">
+
+        <div class="skeleton-avatar"></div>
+
+        <div class="skeleton-info">
+
+            <div class="skeleton-name"></div>
+
+            <div class="skeleton-message"></div>
+
+        </div>
+
+    </div>
+
+</template>
+<template id="emptyConversationTemplate">
+
+    <div class="empty-conversation">
+
+        <div class="empty-icon">
+
+            <span class="material-symbols-outlined">
+                forum
+            </span>
+
+        </div>
+
+        <h2>Chưa có cuộc trò chuyện</h2>
+
+        <p>Hãy bắt đầu nhắn tin với bạn bè hoặc người bán.</p>
+
+    </div>
+
+</template>
+
+<template id="searchEmptyTemplate">
+
+    <div class="search-empty">
+
+        <span class="material-symbols-outlined">
+
+            search_off
+
+        </span>
+
+        <h3>
+
+            Không tìm thấy kết quả
+
+        </h3>
+
+        <p>
+
+            Thử tìm bằng tên hoặc ID người dùng.
+
+        </p>
+
+    </div>
+
+</template>
+
+<template id="loadMoreTemplate">
+
+    <div class="load-more">
+
+        <div class="load-spinner"></div>
+
+        <span>
+
+            Đang tải thêm cuộc trò chuyện...
+
+        </span>
+
+    </div>
+
+</template>
+
+<template id="newMessageButtonTemplate">
+
+    <button id="newMessageFab">
+
+        <span class="material-symbols-outlined">
+
+            edit_square
+
+        </span>
+
+    </button>
+
+</template>
+
+<template id="swipeActionTemplate">
+
+    <div class="swipe-actions">
+
+        <button class="pin-action">
+
+            <span class="material-symbols-outlined">
+
+                keep
+
+            </span>
+
+        </button>
+
+        <button class="mute-action">
+
+            <span class="material-symbols-outlined">
+
+                notifications_off
+
+            </span>
+
+        </button>
+
+        <button class="delete-action">
+
+            <span class="material-symbols-outlined">
+
+                delete
+
+            </span>
+
+        </button>
+
+    </div>
+
+</template>
+
+<template id="onlineIndicatorTemplate">
+
+    <span class="online-dot"></span>
+
+</template>
+
+<template id="verifiedTemplate">
+
+    <img
+        class="verified-icon"
+        src="assets/icons/verified.svg"
+        alt="Verified">
+
+</template>
+
+<template id="sellerTemplate">
+
+    <img
+        class="seller-icon"
+        src="assets/icons/seller.svg"
+        alt="Seller">
+
+</template>
+
+<template id="seenAvatarTemplate">
+
+    <img
+        class="seen-avatar"
+        src=""
+        alt="Seen">
+
+</template>
+
+<template id="unreadBadgeTemplate">
+
+    <span class="unread-badge">
+
+    </span>
+
+</template>
+
+<template id="pinTemplate">
+
+    <span class="material-symbols-outlined pin-icon">
+
+        keep
+
+    </span>
+
+</template>
+<template id="bottomSheetTemplate">
+
+    <div id="conversationSheet">
+
+        <div class="sheet-handle"></div>
+
+        <div class="sheet-header">
+
+            <img class="sheet-avatar"
+                 src=""
+                 alt="">
+
+            <div class="sheet-user">
+
+                <span class="sheet-name"></span>
+
+                <span class="sheet-id"></span>
+
+            </div>
+
+        </div>
+
+        <button class="sheet-item" id="viewProfile">
+
+            <span class="material-symbols-outlined">
+                account_circle
+            </span>
+
+            <span>Xem hồ sơ</span>
+
+        </button>
+
+        <button class="sheet-item" id="searchConversation">
+
+            <span class="material-symbols-outlined">
+                search
+            </span>
+
+            <span>Tìm trong cuộc trò chuyện</span>
+
+        </button>
+
+        <button class="sheet-item" id="pinConversation">
+
+            <span class="material-symbols-outlined">
+                keep
+            </span>
+
+            <span>Ghim cuộc trò chuyện</span>
+
+        </button>
+
+        <button class="sheet-item" id="muteConversation">
+
+            <span class="material-symbols-outlined">
+                notifications_off
+            </span>
+
+            <span>Tắt thông báo</span>
+
+        </button>
+
+        <button class="sheet-item" id="archiveConversation">
+
+            <span class="material-symbols-outlined">
+                archive
+            </span>
+
+            <span>Lưu trữ</span>
+
+        </button>
+
+        <button class="sheet-item" id="clearConversation">
+
+            <span class="material-symbols-outlined">
+                cleaning_services
+            </span>
+
+            <span>Xóa lịch sử trò chuyện</span>
+
+        </button>
+
+        <button class="sheet-item danger" id="deleteConversation">
+
+            <span class="material-symbols-outlined">
+                delete
+            </span>
+
+            <span>Xóa cuộc trò chuyện</span>
+
+        </button>
+
+        <button class="sheet-item danger" id="blockUser">
+
+            <span class="material-symbols-outlined">
+                block
+            </span>
+
+            <span>Chặn người này</span>
+
+        </button>
+
+        <button class="sheet-item danger" id="reportUser">
+
+            <span class="material-symbols-outlined">
+                flag
+            </span>
+
+            <span>Báo cáo</span>
+
+        </button>
+
+        <button class="sheet-cancel">
+
+            Hủy
+
+        </button>
+
+    </div>
+
+</template>
+
+<div id="sheetOverlay"></div>
+
+<div id="toastMessage">
+
+    <span id="toastText"></span>
+
+</div>
+
+<div id="contextMenu"></div>
+
+<div id="popupContainer"></div>
+
+</body>
+
+</html>
+<!-- ========================= -->
+<!-- DIALOG -->
+<!-- ========================= -->
+
+<dialog id="deleteDialog">
+
+    <div class="dialog-box">
+
+        <div class="dialog-icon">
+
+            <span class="material-symbols-outlined">
+
+                delete
+
+            </span>
+
+        </div>
+
+        <h2>
+
+            Xóa cuộc trò chuyện?
+
+        </h2>
+
+        <p>
+
+            Cuộc trò chuyện sẽ bị xóa khỏi danh sách của bạn.
+
+        </p>
+
+        <div class="dialog-actions">
+
+            <button id="cancelDelete">
+
+                Hủy
+
+            </button>
+
+            <button id="confirmDelete">
+
+                Xóa
+
+            </button>
+
+        </div>
+
+    </div>
+
+</dialog>
+
+<dialog id="blockDialog">
+
+    <div class="dialog-box">
+
+        <div class="dialog-icon">
+
+            <span class="material-symbols-outlined">
+
+                block
+
+            </span>
+
+        </div>
+
+        <h2>
+
+            Chặn người dùng?
+
+        </h2>
+
+        <p>
+
+            Bạn sẽ không nhận được tin nhắn từ người này nữa.
+
+        </p>
+
+        <div class="dialog-actions">
+
+            <button id="cancelBlock">
+
+                Hủy
+
+            </button>
+
+            <button id="confirmBlock">
+
+                Chặn
+
+            </button>
+
+        </div>
+
+    </div>
+
+</dialog>
+
+<dialog id="reportDialog">
+
+    <div class="dialog-box">
+
+        <div class="dialog-icon">
+
+            <span class="material-symbols-outlined">
+
+                flag
+
+            </span>
+
+        </div>
+
+        <h2>
+
+            Báo cáo cuộc trò chuyện
+
+        </h2>
+
+        <textarea
+            id="reportReason"
+            placeholder="Nhập lý do báo cáo..."></textarea>
+
+        <div class="dialog-actions">
+
+            <button id="cancelReport">
+
+                Hủy
+
+            </button>
+
+            <button id="sendReport">
+
+                Gửi báo cáo
+
+            </button>
+
+        </div>
+
+    </div>
+
+</dialog>
+
+<div id="notificationToast">
+
+    <span class="material-symbols-outlined">
+
+        done
+
+    </span>
+
+    <span id="notificationText">
+
+        Thành công
+
+    </span>
+
+</div>
+
+<div id="connectionBanner" hidden>
+
+    <span class="material-symbols-outlined">
+
+        wifi_off
+
+    </span>
+
+    <span>
+
+        Không có kết nối Internet
+
+    </span>
+
+</div>
+
+<div id="pageLoader">
+
+    <div class="loader-circle"></div>
+
+</div>
+
+<div id="pullRefresh">
+
+    <div class="refresh-spinner"></div>
+
+</div>
+
+<div id="scrollSentinel"></div>
+
+<div id="bottomSafeArea"></div>
+<!-- ========================= -->
+<!-- TEMPLATE -->
+<!-- ========================= -->
+
+<template id="conversationItemTemplate">
+
+    <div class="conversation-item">
+
+        <button class="conversation-button">
+
+            <div class="conversation-avatar">
+
+                <img class="conversation-avatar-image"
+                     src=""
+                     alt="">
+
+                <span class="conversation-online"
+                      hidden></span>
+
+            </div>
+
+            <div class="conversation-content">
+
+                <div class="conversation-row">
+
+                    <div class="conversation-user">
+
+                        <span class="conversation-name"></span>
+
+                        <img class="conversation-verified"
+                             src="assets/icons/verified.svg"
+                             alt=""
+                             hidden>
+
+                        <img class="conversation-seller"
+                             src="assets/icons/store.svg"
+                             alt=""
+                             hidden>
+
+                    </div>
+
+                    <span class="conversation-date"></span>
+
+                </div>
+
+                <div class="conversation-row">
+
+                    <div class="conversation-preview">
+
+                        <span class="conversation-status"></span>
+
+                        <span class="conversation-preview-icon"></span>
+
+                        <span class="conversation-preview-text"></span>
+
+                    </div>
+
+                    <div class="conversation-right">
+
+                        <img class="conversation-seen-avatar"
+                             src=""
+                             alt=""
+                             hidden>
+
+                        <span class="conversation-pin"
+                              hidden>
+
+                            📌
+
+                        </span>
+
+                        <span class="conversation-unread"
+                              hidden>
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </button>
+
+    </div>
+
+</template>
+
+<template id="loadingConversationTemplate">
+
+    <div class="loading-conversation">
+
+        <div class="loading-avatar"></div>
+
+        <div class="loading-info">
+
+            <div class="loading-name"></div>
+
+            <div class="loading-message"></div>
+
+        </div>
+
+    </div>
+
+</template>
+
+<template id="typingConversationTemplate">
+
+    <div class="typing-conversation">
+
+        <div class="typing-avatar"></div>
+
+        <div class="typing-content">
+
+            <div class="typing-name"></div>
+
+            <div class="typing-animation">
+
+                <span></span>
+
+                <span></span>
+
+                <span></span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</template>
+
+<template id="dayHeaderTemplate">
+
+    <div class="day-header">
+
+        <span class="day-text"></span>
+
+    </div>
+
+</template>
+
+<template id="searchHistoryTemplate">
+
+    <button class="history-item">
+
+        <span class="material-symbols-outlined">
+
+            history
+
+        </span>
+
+        <span class="history-text"></span>
+
+    </button>
+
+</template>
+
+<template id="recentUserTemplate">
+
+    <button class="recent-user">
+
+        <img class="recent-avatar"
+             src=""
+             alt="">
+
+        <span class="recent-name"></span>
+
+    </button>
+
+</template>
+
+<div id="modalContainer"></div>
+
+<div id="menuContainer"></div>
+
+<div id="popupContainer"></div>
+
+<div id="floatingContainer"></div>
+
+<div id="toastContainer"></div>
+
+<div id="dialogContainer"></div>
+
+<div id="templateContainer" hidden></div>
+
+</body>
+
+</html>
