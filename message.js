@@ -184,6 +184,11 @@ msg.senderId !== currentUser.uid &&
 (!msg.seenBy || !msg.seenBy.includes(currentUser.uid))
 ){
 
+    msg.seenBy = [
+        ...(msg.seenBy || []),
+        currentUser.uid
+    ];
+
     db.collection("conversations")
     .doc(conversationId)
     .collection("messages")
@@ -225,13 +230,14 @@ if(msg.seenBy){
 
     for(const uid of msg.seenBy){
 
+        if(uid === currentUser.uid) continue;
+
         if(!seenUserCache[uid]){
 
             const seenSnap = await db
             .collection("users")
             .doc(uid)
             .get();
-
 
             if(seenSnap.exists){
 
@@ -245,7 +251,6 @@ if(msg.seenBy){
     }
 
 }
-
 
 renderMessage(
     msg,
@@ -324,29 +329,9 @@ msg.seenBy.find(uid=>uid!==currentUser.uid)
 }">
 `
 :""
-}
 
-${
-mine && msg.seenBy && msg.seenBy.length > 1
-?
-`
-<img
-class="seen-avatar"
-src="${
-userCache[msg.seenBy[msg.seenBy.length-1]]
-?
-userCache[msg.seenBy[msg.seenBy.length-1]].avatar
-:
-'https://i.ibb.co/Z1kv9nJj/logo.png'
-}">
-`
-:""
 }
-
 </div>
-
-`;
-
 
 messageBox.appendChild(div);
 
