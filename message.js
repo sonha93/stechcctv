@@ -442,6 +442,10 @@ try{
 // SEND IMAGE
 // ================================
 
+// ================================
+// SEND IMAGE CLOUDINARY
+// ================================
+
 async function sendImage(){
 
 const file = imageInput.files[0];
@@ -452,27 +456,56 @@ return;
 
 try{
 
-const now =
-firebase.firestore.Timestamp.now();
 
+const form = new FormData();
 
-const storageRef =
-firebase.storage()
-.ref(
-"chat-images/" +
-Date.now() +
-"-" +
-file.name
+form.append(
+"file",
+file
+);
+
+form.append(
+"upload_preset",
+"stech_up"
 );
 
 
 
-await storageRef.put(file);
+const upload = await fetch(
+
+"https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+
+{
+
+method:"POST",
+
+body:form
+
+}
+
+);
 
 
 
-const url =
-await storageRef.getDownloadURL();
+const data = await upload.json();
+
+
+
+if(!data.secure_url){
+
+console.error(
+"Cloudinary lỗi:",
+data
+);
+
+return;
+
+}
+
+
+
+const now =
+firebase.firestore.Timestamp.now();
 
 
 
@@ -482,18 +515,19 @@ await db
 .collection("messages")
 .add({
 
-    senderId:
-    currentUser.uid,
+senderId:
+currentUser.uid,
 
-    text:"",
+text:"",
 
-    image:url,
+image:
+data.secure_url,
 
-    createdAt:now,
+createdAt:now,
 
-    seenBy:[
-        currentUser.uid
-    ]
+seenBy:[
+currentUser.uid
+]
 
 });
 
@@ -512,7 +546,6 @@ err
 }
 
 }
-
 // ================================
 // FORMAT TIME
 // ================================
