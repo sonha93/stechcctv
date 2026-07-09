@@ -129,15 +129,14 @@ body{
 /* BUBBLE */
 
 .message-content{
-    display:inline-block;
+   display:inline-block;
     max-width:420px;
 
-    padding:10px 14px;
-
+     padding:8px 14px;
     border-radius:18px;
 
     font-size:15px;
-    line-height:1.35;
+    line-height:1;
     min-width:0;
 
     white-space:pre-wrap;
