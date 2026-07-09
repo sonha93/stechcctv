@@ -1,5 +1,5 @@
 // ================================
-// MESSAGE LIST JS
+// MESSAGE LIST JS (FIREBASE V8)
 // ================================
 
 
@@ -8,14 +8,6 @@ import {
     db,
     auth
 } from "./firebase.js";
-
-import {
-    collection,
-    query,
-    where,
-    orderBy,
-    getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
 
@@ -31,9 +23,6 @@ document.getElementById("chatCount");
 
 const emptyChats =
 document.getElementById("emptyChats");
-
-const searchEmpty =
-document.getElementById("searchEmpty");
 
 const searchInput =
 document.getElementById("searchInput");
@@ -52,7 +41,9 @@ document.getElementById("notificationText");
 
 
 
+// ================================
 // DATA
+// ================================
 
 let chats = [];
 
@@ -68,9 +59,15 @@ function showToast(text){
 
     if(!toast) return;
 
-    toastText.textContent = text;
 
-    toast.style.display = "flex";
+    if(toastText){
+
+        toastText.textContent = text;
+
+    }
+
+
+    toast.style.display="flex";
 
 
     setTimeout(()=>{
@@ -83,7 +80,6 @@ function showToast(text){
 
 
 
-
 // ================================
 // LOAD CHAT
 // ================================
@@ -93,7 +89,8 @@ async function loadChats(){
 try{
 
 
-    const user = auth.currentUser;
+    const user =
+    auth.currentUser;
 
 
     if(!user){
@@ -103,25 +100,25 @@ try{
     }
 
 
-    const q = query(
-        collection(db,"conversations"),
-        where(
-            "members",
-            "array-contains",
-            user.uid
-        ),
-        orderBy(
-            "updatedAt",
-            "desc"
-        )
-    );
-
 
     const snap =
-    await getDocs(q);
+    await db
+    .collection("conversations")
+    .where(
+        "members",
+        "array-contains",
+        user.uid
+    )
+    .orderBy(
+        "updatedAt",
+        "desc"
+    )
+    .get();
+
 
 
     chats=[];
+
 
 
     snap.forEach(doc=>{
@@ -146,15 +143,16 @@ try{
 
 }catch(err){
 
+
     console.error(
         "Load chat lỗi:",
         err
     );
 
-}
 
 }
 
+}
 
 
 
@@ -165,80 +163,121 @@ try{
 function renderChats(){
 
 
+    if(!chatList)
+    return;
+
+
     chatList.innerHTML="";
+
 
 
     let list =
     [...chats];
 
 
+
     if(currentFilter==="unread"){
+
 
         list =
         list.filter(
-            x=>x.unread>0
+            x=>Number(x.unread)>0
         );
+
 
     }
 
 
+
     if(currentFilter==="online"){
+
 
         list =
         list.filter(
             x=>x.online===true
         );
 
+
     }
 
 
+
     if(currentFilter==="shop"){
+
 
         list =
         list.filter(
             x=>x.type==="shop"
         );
 
+
     }
 
 
 
+
     const keyword =
-    searchInput.value
-    .toLowerCase()
-    .trim();
+    searchInput?.value
+    ?.toLowerCase()
+    .trim() || "";
 
 
 
     if(keyword){
 
+
         list =
-        list.filter(
-            x=>
-            (x.name||"")
+        list.filter(x=>{
+
+
+            return (
+                x.name ||
+                ""
+            )
             .toLowerCase()
-            .includes(keyword)
-        );
+            .includes(keyword);
+
+
+        });
+
 
     }
 
 
 
-    chatCount.textContent =
-    `${list.length} cuộc trò chuyện`;
+
+    if(chatCount){
+
+        chatCount.textContent =
+        `${list.length} cuộc trò chuyện`;
+
+    }
+
 
 
 
     if(list.length===0){
 
-        emptyChats.hidden=false;
+
+        if(emptyChats){
+
+            emptyChats.hidden=false;
+
+        }
+
 
         return;
 
     }
 
 
-    emptyChats.hidden=true;
+
+    if(emptyChats){
+
+        emptyChats.hidden=true;
+
+    }
+
 
 
 
@@ -246,15 +285,19 @@ function renderChats(){
 
 
         const template =
-        document
-        .getElementById(
+        document.getElementById(
             "chatItemTemplate"
         );
 
 
+
+        if(!template)
+        return;
+
+
+
         const node =
-        template
-        .content
+        template.content
         .cloneNode(true);
 
 
@@ -265,41 +308,80 @@ function renderChats(){
         );
 
 
+
+        if(!item)
+        return;
+
+
+
         item.dataset.conversationId =
         chat.id;
 
 
 
+        const name =
         node.querySelector(
             ".chat-name"
-        ).textContent =
-        chat.name ||
-        "Người dùng";
-
-
-
-        node.querySelector(
-            ".message-text"
-        ).textContent =
-        chat.lastMessage ||
-        "";
-
-
-
-        node.querySelector(
-            ".chat-time"
-        ).textContent =
-        formatTime(
-            chat.updatedAt
         );
 
 
+        if(name){
 
-        if(chat.avatar){
+            name.textContent =
+            chat.name ||
+            "Người dùng";
 
-            node.querySelector(
-                ".avatar"
-            ).src =
+        }
+
+
+
+        const msg =
+        node.querySelector(
+            ".message-text"
+        );
+
+
+        if(msg){
+
+            msg.textContent =
+            chat.lastMessage ||
+            "";
+
+        }
+
+
+
+
+        const time =
+        node.querySelector(
+            ".chat-time"
+        );
+
+
+        if(time){
+
+            time.textContent =
+            formatTime(
+                chat.updatedAt
+            );
+
+        }
+
+
+
+
+        const avatar =
+        node.querySelector(
+            ".avatar"
+        );
+
+
+        if(
+            avatar &&
+            chat.avatar
+        ){
+
+            avatar.src =
             chat.avatar;
 
         }
@@ -323,20 +405,39 @@ function renderChats(){
 
 function formatTime(time){
 
+
     if(!time)
-        return "";
+    return "";
 
 
-    if(time.seconds){
+
+    if(time.seconds !== undefined){
+
 
         return new Date(
-            time.seconds*1000
+            time.seconds * 1000
         )
         .toLocaleDateString(
             "vi-VN"
         );
 
+
     }
+
+
+
+    if(time.toDate){
+
+
+        return time
+        .toDate()
+        .toLocaleDateString(
+            "vi-VN"
+        );
+
+
+    }
+
 
 
     return "";
@@ -345,13 +446,13 @@ function formatTime(time){
 
 
 
-
 // ================================
 // SEARCH
 // ================================
 
-searchInput
-.addEventListener(
+if(searchInput){
+
+searchInput.addEventListener(
 "input",
 ()=>{
 
@@ -359,19 +460,23 @@ searchInput
 
 });
 
+}
 
 
-clearSearch
-.addEventListener(
-"click",
-()=>{
+
+if(clearSearch){
+
+clearSearch.onclick=()=>{
+
 
     searchInput.value="";
 
     renderChats();
 
-});
 
+};
+
+}
 
 
 
@@ -379,19 +484,20 @@ clearSearch
 // FILTER
 // ================================
 
-filterBtns
-.forEach(btn=>{
+filterBtns.forEach(btn=>{
 
 
 btn.onclick=()=>{
 
 
-    filterBtns
-    .forEach(
-        b=>b.classList.remove(
+    filterBtns.forEach(b=>{
+
+        b.classList.remove(
             "active"
-        )
-    );
+        );
+
+    });
+
 
 
     btn.classList.add(
@@ -399,8 +505,10 @@ btn.onclick=()=>{
     );
 
 
+
     currentFilter =
     btn.dataset.filter;
+
 
 
     renderChats();
@@ -413,39 +521,41 @@ btn.onclick=()=>{
 
 
 
-
 // ================================
 // OPEN CHAT
 // ================================
 
-chatList
-.addEventListener(
+if(chatList){
+
+chatList.addEventListener(
 "click",
 e=>{
 
 
-const item =
-e.target.closest(
-".chat-item"
-);
+    const item =
+    e.target.closest(
+        ".chat-item"
+    );
 
 
-if(!item)
-return;
-
-
-
-const id =
-item.dataset.conversationId;
+    if(!item)
+    return;
 
 
 
-location.href =
-`message.html?id=${id}`;
+    const id =
+    item.dataset.conversationId;
+
+
+
+    location.href =
+    `message.html?id=${id}`;
 
 
 });
 
+
+}
 
 
 
@@ -454,28 +564,39 @@ location.href =
 // BUTTON
 // ================================
 
+const backBtn =
+document.getElementById("backBtn");
 
-document
-.getElementById("backBtn")
-.onclick=()=>{
+
+if(backBtn){
+
+backBtn.onclick=()=>{
 
     history.back();
 
 };
 
+}
 
 
-document
-.getElementById("newChatBtn")
-.onclick=()=>{
+
+const newChatBtn =
+document.getElementById("newChatBtn");
+
+
+if(newChatBtn){
+
+newChatBtn.onclick=()=>{
+
 
     showToast(
         "Tạo cuộc trò chuyện mới"
     );
 
+
 };
 
-
+}
 
 
 
