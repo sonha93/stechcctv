@@ -342,6 +342,50 @@ body{
     margin-top:3px;
 
 }
+   .message{
+    display:flex;
+    align-items:flex-end;
+    margin:4px 0;
+}
+
+.message.mine{
+    justify-content:flex-end;
+}
+
+.message.other{
+    justify-content:flex-start;
+}
+
+.message-body{
+    display:flex;
+    flex-direction:column;
+    max-width:75%;
+}
+
+.msg-avatar{
+
+    width:32px;
+    height:32px;
+
+    border-radius:50%;
+    object-fit:cover;
+
+    margin-right:8px;
+}
+
+.msg-avatar-space{
+
+    width:32px;
+    margin-right:8px;
+
+}
+
+.message.mine .msg-avatar,
+.message.mine .msg-avatar-space{
+
+    display:none;
+
+}
 }
 
 
