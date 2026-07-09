@@ -332,16 +332,12 @@ function renderChats(){
         );
 
 
-        if(
-            avatar &&
-            chat.avatar
-        ){
-
-            avatar.src =
-            chat.avatar;
-
-        }
-
+       if (avatar) {
+    avatar.src =
+        chat.avatar && !chat.avatar.includes("/video")
+        ? chat.avatar
+        : "assets/images/default-avatar.png";
+}
 
 
         chatList.appendChild(node);
