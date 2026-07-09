@@ -413,7 +413,13 @@ if (name && msg) {
  "./avatar.png";
 
 }
+avatar.onclick=(e)=>{
 
+e.stopPropagation();
+
+openStory(otherUid);
+
+};
 
 
         chatList.appendChild(node);
