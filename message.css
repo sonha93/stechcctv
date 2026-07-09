@@ -275,7 +275,9 @@ body{
         max-width:85%;
 
     }
-
+.verified-popup{
+    display:none !important;
+}
 }
 
 
