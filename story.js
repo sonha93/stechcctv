@@ -7,7 +7,7 @@ import { db, auth } from "./firebase-init.js";
 
 // CLOUDINARY
 const CLOUDINARY_URL =
-"https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload";
+"https://api.cloudinary.com/v1_1/dmz9gpp1b/video/upload";
 
 const UPLOAD_PRESET =
 "stech_up";
