@@ -271,7 +271,7 @@ if(chat.members && currentUser){
         node.querySelector(
             ".chat-item"
         );
-let otherUid = null;
+
 
 
 if(chat.members){
