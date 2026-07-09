@@ -98,40 +98,41 @@ async function loadStories(){
         </div>
     `;
 
-    // Lấy tất cả user
-    const snap =
-    await db.collection("users").get();
+   const meDoc = await db.collection("users")
+.doc(me.uid)
+.get();
 
-    snap.forEach(doc=>{
+const myData = meDoc.data() || {};
 
-        if(doc.id===user.uid) return;
+const friends = myData.friends || [];
 
-        const u = doc.data();
+for (const uid of friends){
 
-        storyBar.innerHTML += `
-            <div class="storyItem">
+    const userDoc = await db.collection("users")
+    .doc(uid)
+    .get();
 
-                <div class="storyAvatar">
+    if(!userDoc.exists) continue;
 
-                    <img src="${
-                        u.avatar ||
-                        u.photoURL ||
-                        "./avatar.png"
-                    }">
+    const user = userDoc.data();
 
-                </div>
+    storyBar.innerHTML += `
+        <div class="story-item">
 
-                <span>${
-                    u.name ||
-                    u.displayName ||
-                    "User"
-                }</span>
+            <div class="story-avatar">
+
+                <img src="${
+                    user.avatar ||
+                    user.photoURL ||
+                    "./avatar.png"
+                }">
 
             </div>
-        `;
 
-    });
+            <span>${user.name}</span>
 
+        </div>
+    `;
 }
 
 // ================================
