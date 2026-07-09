@@ -113,12 +113,14 @@ db.collection("conversations")
 // RENDER
 // ================================
 
-function renderChats(){
+async function renderChats(){
 
 
     if(!chatList)
     return;
 
+
+    const currentUser = auth.currentUser;
 
     chatList.innerHTML="";
 
@@ -234,8 +236,18 @@ function renderChats(){
 
 
 
-    list.forEach(chat=>{
+    list.forEach(async chat=>{
+    let otherUid = null;
 
+
+if(chat.members && currentUser){
+
+    otherUid =
+    chat.members.find(
+        uid => uid !== currentUser.uid
+    );
+
+}
 
         const template =
         document.getElementById(
@@ -259,7 +271,38 @@ function renderChats(){
         node.querySelector(
             ".chat-item"
         );
+let otherUid = null;
 
+
+if(chat.members){
+
+    otherUid =
+    chat.members.find(
+        uid => uid !== currentUser.uid
+    );
+
+}
+
+
+let otherUser = {};
+
+
+if(otherUid){
+
+    const userSnap =
+    await db.collection("users")
+    .doc(otherUid)
+    .get();
+
+
+    if(userSnap.exists){
+
+        otherUser =
+        userSnap.data();
+
+    }
+
+}
 
 
         if(!item)
@@ -280,11 +323,12 @@ function renderChats(){
 
         if(name){
 
-            name.textContent =
-            chat.name ||
-            "Người dùng";
+    name.textContent =
+    otherUser.name ||
+    otherUser.displayName ||
+    "Người dùng";
 
-        }
+}
 
 
 
@@ -352,14 +396,15 @@ if (name && msg) {
 
 
         if(
-            avatar &&
-            chat.avatar
-        ){
+ avatar
+){
 
-            avatar.src =
-            chat.avatar;
+ avatar.src =
+ otherUser.avatar ||
+ otherUser.photoURL ||
+ "./avatar.png";
 
-        }
+}
 
 
 
