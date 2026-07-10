@@ -141,6 +141,14 @@ window.openStory = async function(id){
     }
 
     const story = doc.data();
+    const userSnap = await db
+    .collection("users")
+    .doc(story.uid)
+    .get();
+
+const storyUser = userSnap.exists
+    ? userSnap.data()
+    : {};
     const user = auth.currentUser;
 
     const box = document.createElement("div");
@@ -157,12 +165,11 @@ window.openStory = async function(id){
 
         <div class="story-user">
 
-            <img src="${story.avatar || "./avatar.png"}">
-
+            <img src="${storyUser.avatar || storyUser.photoURL || "./avatar.png"}">
             <div>
 
                 <div class="story-name">
-                    ${story.name || "Người dùng"}
+                    ${storyUser.name || storyUser.displayName || "Người dùng"}
                 </div>
 
                 <div class="story-time">
@@ -229,33 +236,26 @@ document.querySelector(".story-top").onclick = (e) => {
     e.stopPropagation();
 
 };
-    // Nút X
-    box.querySelector(".story-close").onclick = (e)=>{
-        e.stopPropagation();
+    document.getElementById("closeStory").onclick = (e)=>{
+
+    e.stopPropagation();
+    box.remove();
+
+};
+
+document.getElementById("storyMenu").onclick = async (e)=>{
+
+    e.stopPropagation();
+
+    if(confirm("Xóa story này?")){
+
+        await db.collection("stories")
+            .doc(id)
+            .delete();
+
         box.remove();
-    };
 
-    // Nút ...
-    const menu = box.querySelector(".story-menu");
-
-    if(menu){
-
-        menu.onclick = async(e)=>{
-
-            e.stopPropagation();
-
-            if(confirm("Xóa story này?")){
-
-                await db.collection("stories")
-                    .doc(id)
-                    .delete();
-
-                box.remove();
-
-                loadStories();
-            }
-
-        };
+        loadStories();
 
     }
 
