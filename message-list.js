@@ -442,9 +442,21 @@ if (avatarWrap) {
 
         e.stopPropagation();
 
-        if (!hasStory) return;
+        currentAvatar =
+            avatar.src;
 
-        openStory(storySnap.docs[0].id);
+        if (hasStory) {
+
+            currentStoryId =
+                storySnap.docs[0].id;
+
+            avatarSheet.hidden = false;
+
+        } else {
+
+            showAvatar(currentAvatar);
+
+        }
 
     };
 
@@ -713,28 +725,40 @@ function openAvatar(src){
     document.body.appendChild(box);
 
 }
-viewStoryBtn.onclick = ()=>{
+if (viewStoryBtn) {
 
-    avatarSheet.hidden = true;
-
-    openStory(currentStoryId);
-
-};
-
-viewAvatarBtn.onclick = ()=>{
-
-    avatarSheet.hidden = true;
-
-    showAvatar(currentAvatar);
-
-};
-
-avatarSheet.onclick = (e)=>{
-
-    if(e.target===avatarSheet){
+    viewStoryBtn.onclick = () => {
 
         avatarSheet.hidden = true;
 
-    }
+        openStory(currentStoryId);
 
-};
+    };
+
+}
+
+if (viewAvatarBtn) {
+
+    viewAvatarBtn.onclick = () => {
+
+        avatarSheet.hidden = true;
+
+        showAvatar(currentAvatar);
+
+    };
+
+}
+
+if (avatarSheet) {
+
+    avatarSheet.onclick = (e) => {
+
+        if (e.target === avatarSheet) {
+
+            avatarSheet.hidden = true;
+
+        }
+
+    };
+
+}
