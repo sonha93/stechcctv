@@ -132,7 +132,7 @@ e
 // OPEN STORY
 // ================================
 window.openStory = async function(uid){
- console.log("OPEN UID:", uid);
+
 
     const userSnap = await db
         .collection("users")
