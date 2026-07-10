@@ -308,9 +308,11 @@ user.avatar ||
 <div class="message-body">
 
 <div class="message-content ${
-    msg.image ? "image-only" :
-    msg.video ? "video-only" :
-    ""
+    (msg.image || (msg.images && msg.images.length))
+        ? "image-only"
+        : msg.video
+        ? "video-only"
+        : ""
 }">
 
 ${
