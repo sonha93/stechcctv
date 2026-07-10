@@ -1213,15 +1213,12 @@ data.typing[otherUid] === true
 ){
 
 
-ttypingStatus.innerHTML =
+typingStatus.innerHTML =
 `
 <span>Đang soạn tin</span>
-<span class="typing-dot">
-<span>.</span>
-<span>.</span>
-<span>.</span>
-</span>
+<span class="typing-dot">...</span>
 `;
+
 
 
 }else{
