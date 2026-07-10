@@ -311,14 +311,14 @@ user.avatar ||
 <div class="message-body">
 
 <div class="message-content ${
-    msg.recalled
-    ? "recalled-message"
-    :
-    (msg.image || (msg.images && msg.images.length))
-        ? "image-only"
-        : msg.video
-        ? "video-only"
-        : ""
+msg.recalled
+? "recalled-message"
+:
+(msg.image || (msg.images && msg.images.length))
+? "image-only"
+: msg.video
+? "video-only"
+: ""
 }">
 
 ${
@@ -366,6 +366,7 @@ onclick="showChatImage(this.src)">
 ""
 }
 
+
 ${
 msg.video
 ?
@@ -382,84 +383,23 @@ src="${msg.video}">
 ""
 }
 
-${msg.text ? `
+
+${
+msg.text
+?
+`
 <div class="chat-text">
 ${escapeHTML(msg.text)}
 </div>
-` : ""}
-
-`
-}
-
-${msg.images.slice(0,4).map((img,index)=>`
-
-<div class="chat-image-item">
-
-<img
-class="chat-image"
-src="${img}"
-onclick='showChatGallery(${JSON.stringify(msg.images)},${index})'>
-${
-msg.images.length>4 && index===3
-?
-`<div class="more-images">
-+${msg.images.length-4}
-</div>`
-:
-""
-}
-
-</div>
-
-`).join("")}
-
-</div>
-`
-:
-msg.image
-?
-`
-<img
-class="chat-image"
-src="${msg.image}"
-onclick="showChatImage(this.src)">
 `
 :
 ""
 }
-${
-msg.video
-?
-`
-<video
-class="chat-video"
-controls
-playsinline
-preload="metadata"
-src="${msg.video}">
-</video>
-`
-:
-""
-}
-${
-msg.recalled
-?
-`
-<div class="chat-text recalled">
-Tin nhắn đã được thu hồi
-</div>
-`
-:
-`
-${msg.text ? `
-<div class="chat-text">
-${escapeHTML(msg.text)}
-</div>
-` : ""}
+
 `
 }
 
+</div>
 </div>
 
 <div class="message-time">
