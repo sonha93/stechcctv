@@ -224,11 +224,15 @@ ${formatStoryTime(s.createdAt)}
 
 </div>
 
+<div class="story-touch left" id="storyPrev"></div>
+
 <video id="storyVideo"
 src="${s.video}"
 autoplay
 playsinline>
 </video>
+
+<div class="story-touch right" id="storyNext"></div>
 
 `;
 
@@ -263,7 +267,33 @@ playsinline>
             }
 
         };
+        document.getElementById("storyPrev").onclick = () => {
 
+    if(index > 0){
+
+        index--;
+
+        render();
+
+    }
+
+};
+
+document.getElementById("storyNext").onclick = () => {
+
+    if(index < stories.length - 1){
+
+        index++;
+
+        render();
+
+    }else{
+
+        box.remove();
+
+    }
+
+};
         document.getElementById("closeStory").onclick=()=>{
 
             box.remove();
