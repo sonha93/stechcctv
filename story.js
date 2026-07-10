@@ -439,7 +439,20 @@ document.getElementById("storyBar");
 if(!bar) return;
 
 const currentUser = auth.currentUser;
+const friendIds = {};
 
+const friendSnap = await db
+    .collection("users")
+    .doc(currentUser.uid)
+    .collection("friends")
+    .get();
+
+friendSnap.forEach(doc => {
+    friendIds[doc.id] = true;
+});
+
+// luôn cho phép xem story của chính mình
+friendIds[currentUser.uid] = true;
 if(currentUser){
 
     const mySnap = await db
@@ -483,7 +496,10 @@ const showed = {};
 for (const doc of snap.docs) {
 
     const s = doc.data();
-
+// Không phải bạn bè thì bỏ qua
+if (!friendIds[s.uid]) {
+    continue;
+}
     // ===========================
     // STORY HẾT 24H -> XÓA LUÔN
     // ===========================
