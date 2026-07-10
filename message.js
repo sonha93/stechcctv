@@ -936,3 +936,75 @@ popup.onclick = function(){
 document.body.appendChild(popup);
 
 };
+window.showChatGallery = function(images,startIndex=0){
+
+let index=startIndex;
+
+const popup=document.createElement("div");
+
+popup.className="chat-image-viewer";
+
+popup.innerHTML=`
+<div class="gallery-wrap">
+
+<img id="galleryImg" src="${images[index]}">
+
+<button id="galleryPrev">&#10094;</button>
+
+<button id="galleryNext">&#10095;</button>
+
+<button id="galleryClose">&times;</button>
+
+</div>
+`;
+
+document.body.appendChild(popup);
+
+const img=
+popup.querySelector("#galleryImg");
+
+popup.querySelector("#galleryPrev").onclick=(e)=>{
+
+e.stopPropagation();
+
+index--;
+
+if(index<0)
+index=images.length-1;
+
+img.src=images[index];
+
+};
+
+popup.querySelector("#galleryNext").onclick=(e)=>{
+
+e.stopPropagation();
+
+index++;
+
+if(index>=images.length)
+index=0;
+
+img.src=images[index];
+
+};
+
+popup.querySelector("#galleryClose").onclick=(e)=>{
+
+e.stopPropagation();
+
+popup.remove();
+
+};
+
+popup.onclick=(e)=>{
+
+if(e.target===popup){
+
+popup.remove();
+
+}
+
+};
+
+};
