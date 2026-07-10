@@ -1049,7 +1049,7 @@ storyBar.insertAdjacentHTML(
     </div>
 
     <div class="storyName">
-        ${s.name || "Story"}
+        ${s.text || ""}
     </div>
 
 </div>
