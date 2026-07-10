@@ -5,7 +5,7 @@
 
 // Firebase
 import { db, auth } from "./firebase-init.js";
-
+import { VERIFIED_USERS } from "./verified.js";
 
 // ================================
 // ELEMENT
@@ -351,7 +351,7 @@ node.querySelector(".verified-icon");
 
 if(verifiedIcon){
 
-    verifiedIcon.hidden = !otherUser.verified;
+    verifiedIcon.hidden = !VERIFIED_USERS[otherUid];
 
 }
 
