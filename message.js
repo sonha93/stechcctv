@@ -8,7 +8,15 @@ import { getVerifiedBadge } from "./verified-users.js";
 // Firebase
 import { db, auth } from "./firebase-init.js";
 
+// ================================
+// MESSAGE SOUND
+// ================================
 
+const messageSound = new Audio(
+    "./assets/sounds/message.mp3"
+);
+
+messageSound.volume = 0.7;
 
 // ================================
 // GET CONVERSATION ID
