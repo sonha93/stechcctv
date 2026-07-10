@@ -1016,6 +1016,39 @@ object-fit:contain;
     display:inline-block;
     vertical-align:middle;
 }
+.verified-badge{
+    display:inline-flex;
+    align-items:center;
+    position:relative;
+    margin-left:4px;
+}
+
+.verified-icon{
+    width:18px;
+    height:18px;
+    flex:0 0 18px;
+}
+
+.verified-popup{
+    position:absolute;
+    left:0;
+    top:28px;
+
+    display:none;
+
+    width:260px;
+
+    background:#222;
+    color:#fff;
+
+    padding:12px;
+    border-radius:12px;
+
+    z-index:99999;
+}
+
+.verified-badge:hover .verified-popup{
+    display:block;
 }
 </style>
 </head>
