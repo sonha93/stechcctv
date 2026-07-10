@@ -172,7 +172,38 @@ db.collection("conversations")
 .orderBy("createdAt","asc")
 .onSnapshot(async snap=>{
 
+
     if(!messageBox) return;
+
+
+    // phát âm thanh khi có tin nhắn mới
+    snap.docChanges().forEach(change=>{
+
+        if(change.type === "added"){
+
+            const data = change.doc.data();
+
+
+            // chỉ kêu khi người khác gửi
+            if(
+                data.senderId !== currentUser.uid
+            ){
+
+                messageSound.play()
+                .catch(err=>{
+                    console.log(
+                        "Trình duyệt chặn âm thanh:",
+                        err
+                    );
+                });
+
+            }
+
+        }
+
+    });
+
+
 
     messageBox.innerHTML="";
 
@@ -884,7 +915,25 @@ backBtn.onclick=()=>{
 
 auth.onAuthStateChanged(
 user=>{
+document.addEventListener(
+"click",
+()=>{
 
+    messageSound.play()
+    .then(()=>{
+
+        messageSound.pause();
+
+        messageSound.currentTime = 0;
+
+    })
+    .catch(()=>{});
+
+
+},
+{
+    once:true
+});
 
 if(user){
 
