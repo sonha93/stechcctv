@@ -1055,6 +1055,18 @@ storyBar.insertAdjacentHTML(
 </div>
 `
 );
+        const video = storyBar.lastElementChild.querySelector("video");
+
+if (video) {
+    video.muted = true;
+    video.autoplay = true;
+    video.loop = true;
+    video.playsInline = true;
+
+    video.onloadedmetadata = () => {
+        video.play().catch(() => {});
+    };
+}
     });
 
 }
