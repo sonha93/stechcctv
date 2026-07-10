@@ -408,7 +408,8 @@ if (name && msg) {
         node.querySelector(
             ".avatar"
         );
-
+const avatarWrap =
+node.querySelector(".avatar-wrap");
 
 if (avatar) {
 
@@ -417,27 +418,38 @@ if (avatar) {
         otherUser.photoURL ||
         "./avatar.png";
 
-    // Thêm vòng xanh nếu có story
-    if (hasStory) {
-        avatar.classList.add("has-story");
-    }
+}
 
-    avatar.onclick = async (e) => {
+if (hasStory && avatarWrap) {
+
+    avatarWrap.classList.add("has-story");
+
+}
+
+if (avatarWrap) {
+
+    avatarWrap.onclick = async (e) => {
 
         e.stopPropagation();
 
-        const snap = await db
-            .collection("stories")
-            .where("uid", "==", otherUid)
-            .limit(1)
-            .get();
+        if (!hasStory) return;
 
-        if (snap.empty) {
-            location.href = `message.html?id=${chat.id}`;
-            return;
-        }
+        openStory(storySnap.docs[0].id);
 
-        openStory(snap.docs[0].id);
+    };
+
+}
+
+if (avatar) {
+
+    avatar.onclick = (e) => {
+
+        e.stopPropagation();
+
+        openAvatar(
+            otherUser.avatar ||
+            otherUser.photoURL
+        );
 
     };
 
@@ -671,3 +683,20 @@ user=>{
 
 
 });
+function openAvatar(src){
+
+    if(!src) return;
+
+    const box=document.createElement("div");
+
+    box.className="avatar-popup";
+
+    box.innerHTML=`
+        <img src="${src}">
+    `;
+
+    box.onclick=()=>box.remove();
+
+    document.body.appendChild(box);
+
+}
