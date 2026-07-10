@@ -143,21 +143,59 @@ window.openStory = async function(uid){
         ? userSnap.data()
         : {};
 
-    const snap = await db
-        .collection("stories")
-        .where("uid","==",uid)
-        .orderBy("createdAt","asc")
-        .get();
+  const snap = await db
+    .collection("stories")
+    .where("uid","==",uid)
+    .get();
 
-    if(snap.empty){
-        alert("Không có story");
-        return;
-    }
 
-    const stories = snap.docs.map(doc=>({
-        id:doc.id,
-        ...doc.data()
-    }));
+let stories = snap.docs.map(doc=>({
+    id:doc.id,
+    ...doc.data()
+}));
+
+
+// bỏ story hết hạn
+stories = stories.filter(s=>{
+
+    let expire =
+    s.expiresAt?.toDate
+    ? s.expiresAt.toDate()
+    : new Date(s.expiresAt);
+
+
+    return expire > new Date();
+
+});
+
+
+// sắp xếp cũ tới mới
+stories.sort((a,b)=>{
+
+    let aTime =
+    a.createdAt?.toDate
+    ? a.createdAt.toDate()
+    : new Date(a.createdAt);
+
+
+    let bTime =
+    b.createdAt?.toDate
+    ? b.createdAt.toDate()
+    : new Date(b.createdAt);
+
+
+    return aTime - bTime;
+
+});
+
+
+if(stories.length === 0){
+
+    alert("Không có story");
+
+    return;
+
+}
 
     let index = 0;
 
@@ -389,13 +427,20 @@ snap.forEach(doc => {
     const item = document.createElement("div");
     item.className = "story-item";
 
-    item.innerHTML = `
-        <div class="story-avatar">
-            <video src="${s.video}" muted></video>
-        </div>
-        <span>Story</span>
-    `;
-    console.log(doc.id, s.uid, s.video);
+   const userSnap = await db
+.collection("users")
+.doc(s.uid)
+.get();
+
+const u = userSnap.exists ? userSnap.data() : {};
+
+
+item.innerHTML = `
+    <div class="story-avatar">
+        <img src="${u.avatar || u.photoURL || "./avatar.png"}">
+    </div>
+    <span>${u.name || "Story"}</span>
+`;
     item.onclick = () => openStory(s.uid);
 
     bar.appendChild(item);
