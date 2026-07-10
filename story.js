@@ -507,14 +507,21 @@ storyUser.displayName ||
     if (expireTime < new Date()) continue;
 
     const item = document.createElement("div");
-    item.className = "story-item";
+item.className = "story-item";
 
-    item.innerHTML = `
-        <div class="story-avatar">
-            <video src="${s.video}" muted></video>
-        </div>
-       <span>${shortName}</span>
-    `;
+item.innerHTML = `
+    <div class="story-avatar">
+        <video
+            src="${s.video}"
+            muted
+            autoplay
+            loop
+            playsinline
+            preload="metadata">
+        </video>
+    </div>
+    <span>${shortName}</span>
+`;
     console.log(doc.id, s.uid, s.video);
     item.onclick = () => openStory(s.uid);
 
