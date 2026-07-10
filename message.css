@@ -465,4 +465,33 @@ margin-top:6px;
    .verified-popup{
     display:none !important;
 }
+   .chat-video{
+
+max-width:260px;
+max-height:420px;
+
+border-radius:18px;
+
+display:block;
+
+background:#000;
+
+cursor:pointer;
+
+object-fit:cover;
+
+}
+   .chat-images img{
+
+width:100%;
+
+height:150px;
+
+object-fit:cover;
+
+display:block;
+
+cursor:pointer;
+
+
 }
