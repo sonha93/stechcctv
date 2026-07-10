@@ -454,33 +454,22 @@ async function loadTab(type){
 
     if(type==="videos"){
 
-        const q = query(
-    collection(db,"stories"),
-    where("uid","==",profileUid),
-    where("storyType","==","highlight")
-);
+        const q=query(
+
+            collection(db,"videos"),
+
+            where("uid","==",profileUid),
+where("status","==","public")
+
+        );
 
         const snap=await getDocs(q);
 
 snap.forEach(doc => {
    
 });
-        snap.forEach(docSnap=>{
-    const v = docSnap.data();
+        renderVideos(snap);
 
-    grid.innerHTML += `
-    <div class="video-card"
-        onclick="location.href='review.html?story=${docSnap.id}'">
-
-        <video
-            src="${v.media}"
-            muted
-            preload="metadata">
-        </video>
-
-    </div>
-    `;
-});
     }
 
     // --------------------
@@ -990,33 +979,28 @@ storyFile.onchange = async () => {
 
     }
 
-const isHighlight = confirm("Lưu vào hồ sơ? (OK = Video hồ sơ, Cancel = Story 24h)");
+    const storyRef = await addDoc(collection(db,"stories"),{
 
-const storyRef = await addDoc(collection(db,"stories"),{
+    uid:uid,
 
-    uid: uid,
+    media:data.secure_url,
 
-    media: data.secure_url,
-
-    type: file.type.startsWith("video/")
+    type:file.type.startsWith("video/")
         ? "video"
         : "image",
 
-    storyType: isHighlight ? "highlight" : "story",
+    avatar:user.avatar || "",
 
-    avatar: user.avatar || "",
+    name:user.name || "",
 
-    name: user.name || "",
+    username:user.username || "",
 
-    username: user.username || "",
+    createdAt:serverTimestamp(),
 
-    createdAt: serverTimestamp(),
-
-    expiresAt: isHighlight
-        ? null
-        : Date.now() + 86400000
+    expiresAt:Date.now() + 86400000
 
 });
+
 
 storyFile.value = "";
 
@@ -1044,7 +1028,7 @@ async function loadStories(){
     snap.forEach(docSnap=>{
 
         const s = docSnap.data();
-if(s.storyType === "highlight") return;
+
         if(s.expiresAt < Date.now()) return;
 
 storyBar.insertAdjacentHTML(
@@ -1057,7 +1041,14 @@ storyBar.insertAdjacentHTML(
         ${
         s.type==="video"
         ?
-        `<video src="${s.media}" muted></video>`
+       <video
+    src="${s.media}"
+    muted
+    autoplay
+    loop
+    playsinline
+    preload="metadata">
+</video>
         :
         `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
         }
@@ -1071,18 +1062,6 @@ storyBar.insertAdjacentHTML(
 </div>
 `
 );
-        const video = storyBar.lastElementChild.querySelector("video");
-
-if (video) {
-    video.muted = true;
-    video.autoplay = true;
-    video.loop = true;
-    video.playsInline = true;
-
-    video.onloadedmetadata = () => {
-        video.play().catch(() => {});
-    };
-}
     });
 
 }
