@@ -35,9 +35,6 @@ const profileUid = params.get("uid");
 // ===== HTML =====
 
 const avatar = document.getElementById("profileAvatar");
-const profileMenu = document.getElementById("profileMenu");
-const viewStoryBtn = document.getElementById("viewStoryBtn");
-const viewAvatarBtn = document.getElementById("viewAvatarBtn");
 const avatarPopup = document.createElement("div");
 
 avatarPopup.id = "avatarPopup";
@@ -780,45 +777,10 @@ if (editBtn) {
 avatar.style.cursor = "pointer";
 
 avatar.onclick = () => {
-
-    profileMenu.classList.add("active");
-
-};
-viewAvatarBtn.onclick = ()=>{
-
-    profileMenu.classList.remove("active");
-
     document.getElementById("popupAvatarImg").src = avatar.src;
-
     avatarPopup.classList.add("active");
-
 };
 
-viewStoryBtn.onclick = ()=>{
-
-    profileMenu.classList.remove("active");
-
-    if(firstStoryId){
-
-        openStory(firstStoryId);
-
-    }else{
-
-        alert("Người dùng chưa có tin.");
-
-    }
-
-};
-
-profileMenu.onclick = e=>{
-
-    if(e.target===profileMenu){
-
-        profileMenu.classList.remove("active");
-
-    }
-
-};
 document.getElementById("closeAvatarPopup").onclick = () => {
     avatarPopup.classList.remove("active");
 };
@@ -1053,17 +1015,8 @@ async function loadStories(){
 
     const storyBar = document.getElementById("storyBar");
 
-if(!storyBar) return;
+    if(!storyBar) return;
 
-// Giữ lại nút đăng story
-const addBtn = document.getElementById("addStoryBtn");
-
-storyBar.innerHTML = "";
-
-if(addBtn){
-    storyBar.appendChild(addBtn);
-}
-firstStoryId = null;
 
     const snap = await getDocs(
         query(
@@ -1072,13 +1025,10 @@ firstStoryId = null;
         )
     );
 
-   snap.forEach(docSnap=>{
+    snap.forEach(docSnap=>{
 
-    if(!firstStoryId){
-        firstStoryId = docSnap.id;
-    }
+        const s = docSnap.data();
 
-    const s = docSnap.data();
         
 
 storyBar.insertAdjacentHTML(
