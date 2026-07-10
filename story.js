@@ -445,22 +445,11 @@ if(currentUser){
 
 
 
-// XÓA STORY CŨ, GIỮ LẠI NÚT ĐĂNG
-bar.querySelectorAll(".story-item:not(.add-story)")
-.forEach(el => el.remove());
-
-
-const snap = await db
-.collection("stories")
-.orderBy("createdAt","desc")
-.get();
-const showed = {};
-
-snap.forEach(doc => {
+for (const doc of snap.docs) {
 
     const s = doc.data();
 
-    if (showed[s.uid]) return;
+    if (showed[s.uid]) continue;
 
     showed[s.uid] = true;
 
@@ -468,19 +457,19 @@ snap.forEach(doc => {
         ? s.expiresAt.toDate()
         : new Date(s.expiresAt);
 
-    if (expireTime < new Date()) return;
+    if (expireTime < new Date()) continue;
 
     const item = document.createElement("div");
     item.className = "story-item";
 
     const userSnap = await db
-.collection("users")
-.doc(s.uid)
-.get();
+        .collection("users")
+        .doc(s.uid)
+        .get();
 
-const u = userSnap.exists ? userSnap.data() : {};
+    const u = userSnap.exists ? userSnap.data() : {};
 
-item.innerHTML = `
+    item.innerHTML = `
 <div class="story-avatar">
 
     <video src="${s.video}" muted></video>
@@ -499,32 +488,14 @@ item.innerHTML = `
 ${u.name || "Story"}
 </span>
 `;
+
     console.log(doc.id, s.uid, s.video);
+
     item.onclick = () => openStory(s.uid);
 
     bar.appendChild(item);
 
-});
-
-
-
-
-
-
-
 }
-
-
-
-auth.onAuthStateChanged(user=>{
-
-if(user){
-
-loadStories();
-
-}
-
-});
 function formatStoryTime(time){
 
     if(!time) return "";
