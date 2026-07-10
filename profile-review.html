@@ -989,53 +989,42 @@ text-overflow:ellipsis;
     line-height:40px;
     z-index:2;
 }
- #storyMore{
-    position:absolute;
-    top:20px;
-    right:70px;
-    color:#fff;
-    font-size:26px;
-    line-height:40px;
-    cursor:pointer;
-    z-index:5;
-}
- #storyHeader{
+#storyMore{
 
 position:absolute;
+
 top:20px;
-left:20px;
-display:flex;
-align-items:center;
-gap:10px;
-z-index:10;
+
+right:70px;
+
 color:white;
 
-}
+font-size:28px;
 
+z-index:20;
 
-#storyOwnerAvatar{
-
-width:45px;
-height:45px;
-border-radius:50%;
-object-fit:cover;
 cursor:pointer;
 
 }
 
 
-#storyOwnerName{
+#closeStory{
 
-font-size:15px;
-font-weight:600;
+position:absolute;
 
-}
+top:15px;
 
+right:20px;
 
-#storyTime{
+color:white;
 
-font-size:12px;
-opacity:.8;
+font-size:40px;
+
+line-height:40px;
+
+z-index:20;
+
+cursor:pointer;
 
 }
 </style>
@@ -1401,33 +1390,26 @@ stroke-linejoin="round">
 
 
     <!-- HEADER STORY -->
-    <div id="storyHeader">
+  <div id="storyHeader">
 
-        <img id="storyOwnerAvatar"
-        src="https://i.ibb.co/Z1kv9nJj/logo.png">
+    <img id="storyOwnerAvatar">
 
+    <div id="storyOwnerInfo">
+        <div id="storyOwnerName"></div>
+        <div id="storyTime"></div>
+    </div>
 
-        <div id="storyOwnerInfo">
-
-            <div id="storyOwnerName">
-            </div>
-
-            <div id="storyTime">
-            </div>
-
-        </div>
+</div>
 
 
-        <!-- NÚT BA CHẤM -->
-        <span id="storyMore">
-            •••
-        </span>
+<span id="storyMore">
+•••
+</span>
 
 
-        <!-- NÚT X -->
-        <span id="closeStory">
-            ×
-        </span>
+<span id="closeStory">
+×
+</span>
 
 
     </div>
