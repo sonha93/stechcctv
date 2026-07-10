@@ -135,13 +135,9 @@ async function renderChats(){
 
     const currentUser = auth.currentUser;
 
-    const oldScroll = chatList.scrollTop;
-
-chatList.innerHTML="";
-
-requestAnimationFrame(()=>{
-    chatList.scrollTop = oldScroll;
-});
+   if(chatList.children.length === 0){
+    chatList.innerHTML="";
+}
 
 
 
