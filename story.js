@@ -204,6 +204,15 @@ playsinline>
 `;
 
     document.body.appendChild(box);
+    box.querySelector(".story-user").onclick = (e)=>{
+
+    e.stopPropagation();
+
+    box.remove();
+
+    location.href = `profile-review.html?uid=${story.uid}`;
+
+};
     document.getElementById("closeStory").onclick = (e)=>{
 
     e.stopPropagation();
