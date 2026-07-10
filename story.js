@@ -368,19 +368,24 @@ bar.querySelectorAll(".story-item:not(.add-story)")
 
 const snap = await db
 .collection("stories")
-.orderBy("createdAt","desc")
 .get();
+
+const docs = snap.docs.sort((a, b) => {
+    const ta = a.data().createdAt?.seconds || 0;
+    const tb = b.data().createdAt?.seconds || 0;
+    return tb - ta;
+});
+
 const showed = {};
 
-snap.forEach(doc => {
+docs.forEach(doc => {
 
     const s = doc.data();
 
     if (showed[s.uid]) return;
-
     showed[s.uid] = true;
 
-    let expireTime = s.expiresAt?.toDate
+    const expireTime = s.expiresAt?.toDate
         ? s.expiresAt.toDate()
         : new Date(s.expiresAt);
 
@@ -395,12 +400,14 @@ snap.forEach(doc => {
         </div>
         <span>Story</span>
     `;
-    console.log(doc.id, s.uid, s.video);
+
     item.onclick = () => openStory(s.uid);
 
     bar.appendChild(item);
 
 });
+
+   
 
 
 
