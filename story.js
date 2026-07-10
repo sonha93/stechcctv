@@ -228,6 +228,7 @@ document.getElementById("storyMenu").onclick = async (e)=>{
     }
 
 };
+    };
 // ================================
 // CLICK ĐĂNG TIN
 // ================================
