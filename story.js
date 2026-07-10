@@ -230,6 +230,7 @@ if (story.uid !== auth.currentUser.uid) {
         loadStories();
     };
 }
+    }
 // ================================
 // CLICK ĐĂNG TIN
 // ================================
