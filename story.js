@@ -410,6 +410,23 @@ if(myStoryBtn && storyInput){
     };
 
 }
+function getStoryShortName(name){
+
+    if(!name) return "Story";
+
+    const words = name.trim().split(/\s+/);
+
+    if(words.length === 1){
+        return words[0];
+    }
+
+    if(words.length <= 3){
+        return words[words.length - 1];
+    }
+
+    return `${words[0]} ${words[words.length - 2]} ${words[words.length - 1]}...`;
+
+}
 // ================================
 // LOAD STORY BAR
 // ================================
@@ -463,19 +480,31 @@ const snap = await db
 .get();
 const showed = {};
 
-snap.forEach(doc => {
+for (const doc of snap.docs) {
 
     const s = doc.data();
+    const userSnap = await db
+.collection("users")
+.doc(s.uid)
+.get();
 
-    if (showed[s.uid]) return;
+const storyUser = userSnap.exists
+? userSnap.data()
+: {};
 
+const shortName = getStoryShortName(
+storyUser.name ||
+storyUser.displayName ||
+""
+);
+   if (showed[s.uid]) continue;
     showed[s.uid] = true;
 
     let expireTime = s.expiresAt?.toDate
         ? s.expiresAt.toDate()
         : new Date(s.expiresAt);
 
-    if (expireTime < new Date()) return;
+    if (expireTime < new Date()) continue;
 
     const item = document.createElement("div");
     item.className = "story-item";
@@ -484,14 +513,14 @@ snap.forEach(doc => {
         <div class="story-avatar">
             <video src="${s.video}" muted></video>
         </div>
-        <span>Story</span>
+       <span>${shortName}</span>
     `;
     console.log(doc.id, s.uid, s.video);
     item.onclick = () => openStory(s.uid);
 
     bar.appendChild(item);
 
-});
+}
 
 
 
