@@ -5,7 +5,7 @@
 
 // Firebase
 import { db, auth } from "./firebase-init.js";
-import { getVerifiedBadge } from "./verified.js";
+
 
 // ================================
 // ELEMENT
@@ -337,19 +337,23 @@ const hasStory = !storySnap.empty;
         );
 
 
-       if(name){
+        if(name){
 
-    const username =
-        otherUser.name ||
-        otherUser.displayName ||
-        "Người dùng";
-
-    name.innerHTML =
-        username +
-        getVerifiedBadge(otherUid);
+    name.textContent =
+    otherUser.name ||
+    otherUser.displayName ||
+    "Người dùng";
 
 }
 
+const verifiedIcon =
+node.querySelector(".verified-icon");
+
+if(verifiedIcon){
+
+    verifiedIcon.hidden = !otherUser.verified;
+
+}
 
         const msg =
         node.querySelector(
