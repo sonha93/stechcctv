@@ -132,7 +132,7 @@ e
 // OPEN STORY
 // ================================
 window.openStory = async function(uid){
-
+ console.log("OPEN UID:", uid);
 
     const userSnap = await db
         .collection("users")
@@ -368,24 +368,19 @@ bar.querySelectorAll(".story-item:not(.add-story)")
 
 const snap = await db
 .collection("stories")
+.orderBy("createdAt","desc")
 .get();
-
-const docs = snap.docs.sort((a, b) => {
-    const ta = a.data().createdAt?.seconds || 0;
-    const tb = b.data().createdAt?.seconds || 0;
-    return tb - ta;
-});
-
 const showed = {};
 
-docs.forEach(doc => {
+snap.forEach(doc => {
 
     const s = doc.data();
 
     if (showed[s.uid]) return;
+
     showed[s.uid] = true;
 
-    const expireTime = s.expiresAt?.toDate
+    let expireTime = s.expiresAt?.toDate
         ? s.expiresAt.toDate()
         : new Date(s.expiresAt);
 
@@ -400,14 +395,12 @@ docs.forEach(doc => {
         </div>
         <span>Story</span>
     `;
-
+    console.log(doc.id, s.uid, s.video);
     item.onclick = () => openStory(s.uid);
 
     bar.appendChild(item);
 
 });
-
-   
 
 
 
