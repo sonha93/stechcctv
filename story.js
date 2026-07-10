@@ -287,7 +287,34 @@ document.getElementById("storyBar");
 
 if(!bar) return;
 
+const currentUser = auth.currentUser;
 
+if(currentUser){
+
+    const mySnap = await db
+        .collection("users")
+        .doc(currentUser.uid)
+        .get();
+
+    if(mySnap.exists){
+
+        const me = mySnap.data();
+
+        const addAvatar =
+        bar.querySelector(".add-story img");
+
+        if(addAvatar){
+
+            addAvatar.src =
+                me.avatar ||
+                me.photoURL ||
+                "./avatar.png";
+
+        }
+
+    }
+
+}
 
 
 
