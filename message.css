@@ -771,5 +771,40 @@ height:40px;
 font-size:28px;
 
 }
+.header-info{
+    display:flex;
+    flex-direction:column;
+}
+
+
+#typingStatus{
+
+    font-size:12px;
+    color:#777;
+    height:16px;
+
+}
+
+
+.typing-dot{
+
+    animation:typing 1s infinite;
+
+}
+
+
+@keyframes typing{
+
+    0%{
+        opacity:.2;
+    }
+
+    50%{
+        opacity:1;
+    }
+
+    100%{
+        opacity:.2;
+    }
 
 }
