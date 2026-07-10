@@ -1,7 +1,7 @@
 // ================================
 // STORY JS FIREBASE V8
 // ================================
-
+import { getVerifiedBadge } from "./verified-users.js";
 import { db, auth } from "./firebase-init.js";
 
 
@@ -199,9 +199,8 @@ style="width:${i<index?100:0}%;transition:none;">
 <div>
 
 <div class="story-name">
-
-${storyUser.name || storyUser.displayName || "Người dùng"}
-
+    ${storyUser.name || storyUser.displayName || "Người dùng"}
+    ${getVerifiedBadge(uid)}
 </div>
 
 <div class="story-time">
