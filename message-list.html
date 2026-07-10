@@ -665,6 +665,54 @@ object-fit:contain;
     object-fit:cover;
 
 }
+ #avatarSheet{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.35);
+    z-index:99999;
+    display:flex;
+    align-items:flex-end;
+}
+
+#avatarSheet[hidden]{
+    display:none;
+}
+
+.sheet-box{
+    width:100%;
+    background:#fff;
+    border-radius:22px 22px 0 0;
+    padding:12px 0 24px;
+    animation:up .25s;
+}
+
+@keyframes up{
+    from{
+        transform:translateY(100%);
+    }
+    to{
+        transform:translateY(0);
+    }
+}
+
+.sheet-box button{
+    width:100%;
+    height:60px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding:0 22px;
+    font-size:20px;
+    color:#111;
+}
+
+.sheet-box button:hover{
+    background:#f5f5f5;
+}
+
+.sheet-box .material-symbols-outlined{
+    font-size:34px;
+}
 }
 </style>
 </head>
@@ -1656,7 +1704,23 @@ edit_square
     </button>
 
 </template>
+<div id="avatarSheet" hidden>
 
+    <div class="sheet-box">
+
+        <button id="viewStoryBtn">
+            <span class="material-symbols-outlined">radio_button_checked</span>
+            <span>Xem tin</span>
+        </button>
+
+        <button id="viewAvatarBtn">
+            <span class="material-symbols-outlined">account_circle</span>
+            <span>Xem ảnh đại diện</span>
+        </button>
+
+    </div>
+
+</div>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
