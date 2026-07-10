@@ -204,38 +204,6 @@ playsinline>
 `;
 
     document.body.appendChild(box);
-
-// Nút X
-document.getElementById("closeStory").onclick = () => {
-
-    box.remove();
-
-};
-
-// Nút ...
-document.getElementById("storyMenu").onclick = () => {
-
-    alert("Menu");
-
-};
-
-// Chỉ bấm ra nền mới đóng
-box.onclick = (e) => {
-
-    if (e.target === box) {
-
-        box.remove();
-
-    }
-
-};
-
-// Không đóng khi bấm thanh trên
-document.querySelector(".story-top").onclick = (e) => {
-
-    e.stopPropagation();
-
-};
     document.getElementById("closeStory").onclick = (e)=>{
 
     e.stopPropagation();
