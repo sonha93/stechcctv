@@ -403,23 +403,35 @@ if (name && msg) {
         );
 
 
-        if(
- avatar
-){
+if (avatar) {
 
- avatar.src =
- otherUser.avatar ||
- otherUser.photoURL ||
- "./avatar.png";
+    avatar.src =
+        otherUser.avatar ||
+        otherUser.photoURL ||
+        "./avatar.png";
+
+    avatar.onclick = async (e) => {
+
+        e.stopPropagation();
+
+        const snap = await db
+            .collection("stories")
+            .where("uid", "==", otherUid)
+            .limit(1)
+            .get();
+
+        if (snap.empty) {
+            // Không có story thì mở chat luôn
+            location.href = `message.html?id=${chat.id}`;
+            return;
+        }
+
+        // Có story thì mở story
+        openStory(snap.docs[0].id);
+
+    };
 
 }
-avatar.onclick=(e)=>{
-
-e.stopPropagation();
-
-openStory(otherUid);
-
-};
 
 
         chatList.appendChild(node);
