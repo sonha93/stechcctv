@@ -69,8 +69,7 @@ document.getElementById("backBtn");
     let currentUser = null;
     let userCache = {};
     let seenUserCache = {};
-    let selectedImage = null;
-
+   let selectedFiles = [];
 
 // ================================
 // LOAD CHAT INFO
@@ -323,7 +322,21 @@ onclick="showChatImage(this.src)">
 :
 ""
 }
-
+${
+msg.video
+?
+`
+<video
+class="chat-video"
+controls
+playsinline
+preload="metadata"
+src="${msg.video}">
+</video>
+`
+:
+""
+}
 ${msg.text ? `
 <div class="chat-text">
 ${escapeHTML(msg.text)}
@@ -374,9 +387,8 @@ const text =
 messageInput.value.trim();
 
 
-if(!text && !selectedImage)
+if(!text && selectedFiles.length === 0)
 return;
-
 
 if(!currentUser)
 return;
@@ -386,29 +398,27 @@ return;
 try{
 
 let imageUrl = "";
+let videoUrl = "";
 
+if(selectedFiles.length){
 
-if(selectedImage){
-
+for(const file of selectedFiles){
 
 const form = new FormData();
 
+form.append("file",file);
 
-form.append(
-"file",
-selectedImage
-);
+form.append("upload_preset","stech_up");
 
-
-form.append(
-"upload_preset",
-"stech_up"
-);
-
-
+const isVideo =
+file.type.startsWith("video");
 
 const upload = await fetch(
 
+isVideo
+?
+"https://api.cloudinary.com/v1_1/dmz9gpp1b/video/upload"
+:
 "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
 
 {
@@ -421,16 +431,38 @@ body:form
 
 );
 
-
-
 const data =
 await upload.json();
 
+await db
+.collection("conversations")
+.doc(conversationId)
+.collection("messages")
+.add({
 
+senderId:currentUser.uid,
 
-imageUrl =
-data.secure_url;
+text:"",
 
+image:isVideo ? "" : data.secure_url,
+
+video:isVideo ? data.secure_url : "",
+
+createdAt:firebase.firestore.Timestamp.now(),
+
+seenBy:[currentUser.uid]
+
+});
+
+}
+
+selectedFiles=[];
+
+imageInput.value="";
+
+document.getElementById("imagePreview").innerHTML="";
+
+if(text=="") return;
 
 }
     const now =
@@ -451,6 +483,7 @@ data.secure_url;
 
     text:text,
     image:imageUrl,
+    video:videoUrl,
     createdAt:
     now,
 
@@ -488,7 +521,7 @@ await db
 });
     messageInput.value="";
 
-    selectedImage = null;
+selectedFiles = [];
 
 imageInput.value="";
 
@@ -725,24 +758,36 @@ if(imageInput){
 
 imageInput.onchange = ()=>{
 
-    selectedImage = imageInput.files[0];
+   selectedFiles = Array.from(imageInput.files);
 
-    if(selectedImage){
+const preview =
+document.getElementById("imagePreview");
 
-        const url = URL.createObjectURL(selectedImage);
+preview.innerHTML="";
 
-        const preview =
-        document.getElementById("imagePreview");
+selectedFiles.forEach(file=>{
 
+const url =
+URL.createObjectURL(file);
 
-        if(preview){
+if(file.type.startsWith("image")){
 
-            preview.innerHTML = `
-            <img src="${url}">
-            `;
+preview.innerHTML += `
+<img src="${url}">
+`;
 
-        }
+}else{
 
+preview.innerHTML += `
+<video
+src="${url}"
+controls
+muted></video>
+`;
+
+}
+
+});
     }
 
 };
