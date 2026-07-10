@@ -332,9 +332,9 @@ onclick='showChatGallery(${JSON.stringify(msg.images)},${index})'>
 ${
 msg.images.length>4 && index===3
 ?
-<div class="more-images">
+`<div class="more-images">
 +${msg.images.length-4}
-</div>
+</div>`
 :
 ""
 }
