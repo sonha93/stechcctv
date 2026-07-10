@@ -172,9 +172,9 @@ const storyUser = userSnap.exists
                     ${storyUser.name || storyUser.displayName || "Người dùng"}
                 </div>
 
-                <div class="story-time">
-                    Vừa xong
-                </div>
+               <div class="story-time">
+    ${formatStoryTime(story.createdAt)}
+</div>
 
             </div>
 
@@ -211,24 +211,25 @@ playsinline>
 
 };
 
-document.getElementById("storyMenu").onclick = async (e)=>{
+const menuBtn = document.getElementById("storyMenu");
 
-    e.stopPropagation();
+if (story.uid !== auth.currentUser.uid) {
+    menuBtn.style.display = "none";
+} else {
+    menuBtn.onclick = async (e) => {
 
-    if(confirm("Xóa story này?")){
+        e.stopPropagation();
+
+        if (!confirm("Xóa story này?")) return;
 
         await db.collection("stories")
             .doc(id)
             .delete();
 
         box.remove();
-
         loadStories();
-
-    }
-
-};
     };
+}
 // ================================
 // CLICK ĐĂNG TIN
 // ================================
@@ -371,3 +372,19 @@ loadStories();
 }
 
 });
+function formatStoryTime(time){
+
+    if(!time) return "";
+
+    const date = time.toDate ? time.toDate() : new Date(time);
+
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+
+    if(diff < 60) return "Vừa xong";
+
+    if(diff < 3600) return Math.floor(diff/60) + " phút";
+
+    if(diff < 86400) return Math.floor(diff/3600) + " giờ";
+
+    return Math.floor(diff/86400) + " ngày";
+}
