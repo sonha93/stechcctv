@@ -447,8 +447,7 @@ if (avatarWrap) {
 
         if (hasStory) {
 
-            currentStoryId =
-                storySnap.docs[0].id;
+           currentStoryId = otherUid;
 
             avatarSheet.hidden = false;
 
