@@ -1053,9 +1053,16 @@ async function loadStories(){
 
     const storyBar = document.getElementById("storyBar");
 
-    if(!storyBar) return;
+if(!storyBar) return;
+
+// Giữ lại nút đăng story
+const addBtn = document.getElementById("addStoryBtn");
+
 storyBar.innerHTML = "";
 
+if(addBtn){
+    storyBar.appendChild(addBtn);
+}
 firstStoryId = null;
 
     const snap = await getDocs(
