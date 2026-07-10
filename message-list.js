@@ -450,33 +450,7 @@ if (avatarWrap) {
 
 }
 
-if (avatar) {
-
-   avatar.onclick = async (e)=>{
-
-    e.stopPropagation();
-
-    const snap = await db
-        .collection("stories")
-        .where("uid","==",otherUid)
-        .limit(1)
-        .get();
-
-    currentAvatar = avatar.src;
-
-    if(snap.empty){
-
-        showAvatar(currentAvatar);
-        return;
-
-    }
-
-    currentStoryId = snap.docs[0].id;
-
-    avatarSheet.hidden = false;
-
-};
-    
+ 
 
 
         chatList.appendChild(node);
