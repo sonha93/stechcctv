@@ -79,7 +79,7 @@ document.getElementById("backBtn");
     let userCache = {};
     let seenUserCache = {};
    let selectedFiles = [];
-
+    let typingTimer = null;
 // ================================
 // LOAD CHAT INFO
 // ================================
@@ -876,9 +876,83 @@ muted></video>
 
 if(messageInput){
 
+
+messageInput.addEventListener("input",()=>{
+
+
+if(!currentUser) return;
+
+
+
+db.collection("conversations")
+.doc(conversationId)
+.update({
+
+[`typing.${currentUser.uid}`]: true
+
+});
+
+
+
+clearTimeout(typingTimer);
+
+
+
+typingTimer=setTimeout(()=>{
+
+
+db.collection("conversations")
+.doc(conversationId)
+.update({
+
+[`typing.${currentUser.uid}`]: false
+
+});
+
+
+},1500);
+
+
+
+});
+
+
+
+messageInput.addEventListener("blur",()=>{
+
+
+if(!currentUser) return;
+
+
+db.collection("conversations")
+.doc(conversationId)
+.update({
+
+[`typing.${currentUser.uid}`]: false
+
+});
+
+
+});
+
+
+
 messageInput.addEventListener(
 "keydown",
 e=>{
+
+
+if(e.key==="Enter"){
+
+sendMessage();
+
+}
+
+
+});
+
+
+}
 
 
 if(
@@ -947,7 +1021,7 @@ if(user){
 
 
     loadMessages();
-
+listenTyping();
 db.collection("conversations")
 .doc(conversationId)
 .update({
@@ -1112,3 +1186,64 @@ popup.remove();
 };
 
 };
+function listenTyping(){
+
+
+const typingStatus =
+document.getElementById("typingStatus");
+
+
+if(!typingStatus) return;
+
+
+
+db.collection("conversations")
+.doc(conversationId)
+.onSnapshot(snap=>{
+
+
+const data=snap.data();
+
+
+if(!data || !data.typing){
+
+typingStatus.innerHTML="";
+return;
+
+}
+
+
+
+const otherUid =
+Object.keys(data.typing)
+.find(uid=>uid !== currentUser.uid);
+
+
+
+if(
+otherUid &&
+data.typing[otherUid] === true
+){
+
+
+typingStatus.innerHTML =
+`
+<span>Đang soạn tin</span>
+<span class="typing-dot">...</span>
+`;
+
+
+
+}else{
+
+
+typingStatus.innerHTML="";
+
+
+}
+
+
+});
+
+
+}
