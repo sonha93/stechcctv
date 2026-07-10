@@ -132,6 +132,7 @@ e
 // OPEN STORY
 // ================================
 window.openStory = async function(uid){
+ console.log("OPEN UID:", uid);
 
     const userSnap = await db
         .collection("users")
@@ -369,74 +370,42 @@ const snap = await db
 .collection("stories")
 .orderBy("createdAt","desc")
 .get();
+const showed = {};
 
+snap.forEach(doc => {
 
-snap.forEach(doc=>{
+    const s = doc.data();
 
-const s = doc.data();
+    if (showed[s.uid]) return;
 
+    showed[s.uid] = true;
 
-let expireTime = null;
+    let expireTime = s.expiresAt?.toDate
+        ? s.expiresAt.toDate()
+        : new Date(s.expiresAt);
 
+    if (expireTime < new Date()) return;
 
-if(s.expiresAt?.toDate){
+    const item = document.createElement("div");
+    item.className = "story-item";
 
-    expireTime = s.expiresAt.toDate();
+    item.innerHTML = `
+        <div class="story-avatar">
+            <video src="${s.video}" muted></video>
+        </div>
+        <span>Story</span>
+    `;
+    console.log(doc.id, s.uid, s.video);
+    item.onclick = () => openStory(s.uid);
 
-}
-else{
-
-    expireTime = new Date(
-        s.expiresAt
-    );
-
-}
-
-
-if(expireTime < new Date()){
-
-    return;
-
-}
-
-
-const item =
-document.createElement("div");
-
-
-item.className =
-"story-item";
-
-
-item.innerHTML = `
-
-<div class="story-avatar">
-
-<video
-src="${s.video}"
-muted
-></video>
-
-</div>
-
-<span>
-Story
-</span>
-
-`;
-
-
-item.onclick=()=>{
-
-    openStory(s.uid);
-
-};
-
-
-bar.appendChild(item);
-
+    bar.appendChild(item);
 
 });
+
+
+
+
+
 
 
 }
