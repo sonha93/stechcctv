@@ -1120,7 +1120,7 @@ storyOwnerName.innerHTML =
 ${s.name || "Người dùng"}
 ${getVerifiedBadge(s.uid)}
 `;
-storyText.textContent = s.text || "";
+
 
 // HIỂN THỊ NGÀY GIỜ ĐĂNG
 
