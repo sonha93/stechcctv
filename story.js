@@ -179,8 +179,10 @@ window.openStory = async function(uid){
 ${stories.map((x,i)=>`
 <div class="story-progress-item">
 
-<div class="story-progress-fill"
-style="width:${i<index?100:0}%">
+<div
+class="story-progress-fill"
+id="progress-${i}"
+style="width:${i<index?100:0}%;transition:none;">
 </div>
 
 </div>
@@ -237,20 +239,40 @@ playsinline>
 `;
 
         const video = box.querySelector("#storyVideo");
+        const fills =
+box.querySelectorAll(".story-progress-fill");
 
-        video.onloadedmetadata=()=>{
+fills.forEach((fill,i)=>{
 
-            const fill =
-            box.querySelectorAll(".story-progress-fill")[index];
+    if(i<index){
 
-            fill.style.transition=
-            `width ${video.duration}s linear`;
+        fill.style.width="100%";
 
-            requestAnimationFrame(()=>{
-                fill.style.width="100%";
-            });
+    }else{
 
-        };
+        fill.style.width="0%";
+
+    }
+
+});
+       video.onloadedmetadata = ()=>{
+
+    const fill =
+    fills[index];
+
+    fill.style.transition="none";
+    fill.style.width="0%";
+
+    requestAnimationFrame(()=>{
+
+        fill.style.transition=
+        `width ${video.duration}s linear`;
+
+        fill.style.width="100%";
+
+    });
+
+};
 
         video.onended=()=>{
 
