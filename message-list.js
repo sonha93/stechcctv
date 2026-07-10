@@ -10,7 +10,17 @@ import { db, auth } from "./firebase-init.js";
 // ================================
 // ELEMENT
 // ================================
+const avatarSheet =
+document.getElementById("avatarSheet");
 
+const viewStoryBtn =
+document.getElementById("viewStoryBtn");
+
+const viewAvatarBtn =
+document.getElementById("viewAvatarBtn");
+
+let currentStoryId = "";
+let currentAvatar = "";
 const chatList =
 document.getElementById("chatList");
 
@@ -442,19 +452,30 @@ if (avatarWrap) {
 
 if (avatar) {
 
-    avatar.onclick = (e) => {
+   avatar.onclick = async (e)=>{
 
-        e.stopPropagation();
+    e.stopPropagation();
 
-        openAvatar(
-            otherUser.avatar ||
-            otherUser.photoURL
-        );
+    const snap = await db
+        .collection("stories")
+        .where("uid","==",otherUid)
+        .limit(1)
+        .get();
 
-    };
+    currentAvatar = avatar.src;
 
-}
+    if(snap.empty){
 
+        showAvatar(currentAvatar);
+        return;
+
+    }
+
+    currentStoryId = snap.docs[0].id;
+
+    avatarSheet.hidden = false;
+
+};
     
 
 
@@ -665,7 +686,25 @@ newChatBtn.onclick=()=>{
 
 }
 
+function showAvatar(src){
 
+    const box = document.createElement("div");
+
+    box.className = "story-popup";
+
+    box.innerHTML = `
+        <img src="${src}">
+    `;
+
+    box.onclick = () => {
+
+        box.remove();
+
+    };
+
+    document.body.appendChild(box);
+
+}
 
 // ================================
 // AUTH START
@@ -700,3 +739,28 @@ function openAvatar(src){
     document.body.appendChild(box);
 
 }
+viewStoryBtn.onclick = ()=>{
+
+    avatarSheet.hidden = true;
+
+    openStory(currentStoryId);
+
+};
+
+viewAvatarBtn.onclick = ()=>{
+
+    avatarSheet.hidden = true;
+
+    showAvatar(currentAvatar);
+
+};
+
+avatarSheet.onclick = (e)=>{
+
+    if(e.target===avatarSheet){
+
+        avatarSheet.hidden = true;
+
+    }
+
+};
