@@ -1010,7 +1010,7 @@ storyFile.value = "";
 alert("Đăng story thành công");
 
 loadStories();
-
+};   
 async function loadStories(){
 
     const storyBar = document.getElementById("storyBar");
