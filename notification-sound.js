@@ -12,16 +12,36 @@ const notifySound = new Audio("./assets/sounds/message.mp3");
 
 notifySound.preload = "auto";
 notifySound.volume = 0.7;
-document.addEventListener("click",()=>{
+
+
+// mở khóa âm thanh mobile
+function unlockSound(){
 
     notifySound.play()
     .then(()=>{
+
         notifySound.pause();
-        notifySound.currentTime=0;
+        notifySound.currentTime = 0;
+
     })
     .catch(()=>{});
 
-},{once:true});
+}
+
+
+document.addEventListener(
+    "touchstart",
+    unlockSound,
+    {once:true}
+);
+
+document.addEventListener(
+    "click",
+    unlockSound,
+    {once:true}
+);
+
+
 
 auth.onAuthStateChanged(user=>{
 
@@ -48,11 +68,16 @@ auth.onAuthStateChanged(user=>{
 
 
                 notifySound.play()
+                .then(()=>{
+
+                })
                 .catch(err=>{
+
                     console.log(
-                    "Mobile chặn âm thanh:",
+                    "Không phát được âm thanh:",
                     err
                     );
+
                 });
 
 
