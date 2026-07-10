@@ -133,53 +133,73 @@ e
 // ================================
 window.openStory = async function(id){
 
-const doc =
-await db.collection("stories")
-.doc(id)
-.get();
+    const doc = await db.collection("stories").doc(id).get();
 
+    if(!doc.exists){
+        alert("Không tìm thấy story");
+        return;
+    }
 
-if(!doc.exists){
+    const story = doc.data();
+    const user = auth.currentUser;
 
-alert("Không tìm thấy story");
+    const box = document.createElement("div");
+    box.className = "story-popup";
 
-return;
+    box.innerHTML = `
+        <div class="story-header">
 
-}
+            <button class="story-close">
+                ✕
+            </button>
 
+            ${
+                user && user.uid === story.uid
+                ? `<button class="story-menu">⋮</button>`
+                : ""
+            }
 
-const story = doc.data();
+        </div>
 
+        <video
+            src="${story.video}"
+            autoplay
+            controls
+            playsinline>
+        </video>
+    `;
 
-const box =
-document.createElement("div");
+    document.body.appendChild(box);
 
+    // Nút X
+    box.querySelector(".story-close").onclick = (e)=>{
+        e.stopPropagation();
+        box.remove();
+    };
 
-box.className =
-"story-popup";
+    // Nút ...
+    const menu = box.querySelector(".story-menu");
 
+    if(menu){
 
-box.innerHTML = `
+        menu.onclick = async(e)=>{
 
-<video
-src="${story.video}"
-autoplay
-controls
-playsinline>
-</video>
+            e.stopPropagation();
 
-`;
+            if(confirm("Xóa story này?")){
 
+                await db.collection("stories")
+                    .doc(id)
+                    .delete();
 
-document.body.appendChild(box);
+                box.remove();
 
+                loadStories();
+            }
 
-box.onclick=()=>{
+        };
 
-box.remove();
-
-};
-
+    }
 
 };
 // ================================
