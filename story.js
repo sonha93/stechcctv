@@ -140,8 +140,28 @@ window.openStory = async function(uid){
         .get();
 
     const storyUser = userSnap.exists
-        ? userSnap.data()
-        : {};
+    ? userSnap.data()
+    : {};
+
+let displayName =
+    storyUser.name ||
+    storyUser.displayName ||
+    "Người dùng";
+
+if (auth.currentUser) {
+
+    const nickSnap = await db
+        .collection("users")
+        .doc(auth.currentUser.uid)
+        .collection("nicknames")
+        .doc(uid)
+        .get();
+
+    if (nickSnap.exists) {
+        displayName = nickSnap.data().nickname;
+    }
+
+}
 
     const snap = await db
         .collection("stories")
@@ -198,8 +218,7 @@ style="width:${i<index?100:0}%;transition:none;">
 
 <div>
 
-<div class="story-name">${storyUser.name || storyUser.displayName || "Người dùng"}${getVerifiedBadge(uid)}</div>
-
+<div class="story-name">${displayName}${getVerifiedBadge(uid)}</div>
 <div class="story-time">
 
 ${formatStoryTime(s.createdAt)}
