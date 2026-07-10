@@ -214,7 +214,9 @@ ${formatStoryTime(s.createdAt)}
 
 <div class="story-actions">
 
-<button id="closeStory">✕</button>
+    <button id="storyMenu">⋯</button>
+
+    <button id="closeStory">✕</button>
 
 </div>
 
@@ -282,7 +284,29 @@ playsinline>
     render();
 
 }
-    
+  const menuBtn = document.getElementById("storyMenu");
+
+if (menuBtn && auth.currentUser?.uid === uid) {
+
+    menuBtn.onclick = async () => {
+
+        if (!confirm("Xóa story này?")) return;
+
+        await db.collection("stories")
+            .doc(stories[index].id)
+            .delete();
+
+        box.remove();
+
+        loadStories();
+
+    };
+
+} else if (menuBtn) {
+
+    menuBtn.style.display = "none";
+
+}  
 // ================================
 // CLICK ĐĂNG TIN
 // ================================
