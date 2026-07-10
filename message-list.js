@@ -299,18 +299,33 @@ let otherUser = {};
 
 if(otherUid){
 
-    const userSnap =
-    await db.collection("users")
-    .doc(otherUid)
-    .get();
+   db.collection("users")
+.doc(otherUid)
+.onSnapshot(userSnap => {
 
+    if (!userSnap.exists) return;
 
-    if(userSnap.exists){
+    const otherUser = userSnap.data();
 
-        otherUser =
-        userSnap.data();
+    const name = item.querySelector(".chat-name");
 
+    if (name) {
+        name.innerHTML = `
+            ${otherUser.name || otherUser.displayName || "Người dùng"}
+            ${getVerifiedBadge(otherUid)}
+        `;
     }
+
+    const avatar = item.querySelector(".avatar");
+
+    if (avatar) {
+        avatar.src =
+            otherUser.avatar ||
+            otherUser.photoURL ||
+            "./avatar.png";
+    }
+
+});
 
 }
 // Kiểm tra người này có story không
