@@ -544,3 +544,88 @@ margin-left:0;
     padding:0 !important;
     border-radius:0 !important;
 }
+/* =========================
+   MULTI IMAGES
+========================= */
+
+.chat-images{
+display:grid;
+gap:3px;
+width:260px;
+border-radius:14px;
+overflow:hidden;
+}
+
+/* 1 ảnh */
+
+.chat-images.count-1{
+grid-template-columns:1fr;
+}
+
+.chat-images.count-1 img{
+height:260px;
+}
+
+/* 2 ảnh */
+
+.chat-images.count-2{
+grid-template-columns:1fr 1fr;
+}
+
+.chat-images.count-2 img{
+height:180px;
+}
+
+/* 3 ảnh */
+
+.chat-images.count-3{
+grid-template-columns:2fr 1fr;
+grid-template-rows:repeat(2,120px);
+}
+
+.chat-images.count-3 .chat-image-item:first-child{
+grid-row:1/3;
+}
+
+.chat-images.count-3 .chat-image-item:first-child img{
+height:243px;
+}
+
+.chat-images.count-3 .chat-image-item:not(:first-child) img{
+height:120px;
+}
+
+/* 4 ảnh */
+
+.chat-images.count-4{
+grid-template-columns:1fr 1fr;
+}
+
+.chat-images.count-4 img{
+height:120px;
+}
+
+.chat-image-item{
+position:relative;
+overflow:hidden;
+}
+
+.chat-image-item img{
+width:100%;
+height:100%;
+object-fit:cover;
+display:block;
+cursor:pointer;
+}
+
+.more-images{
+position:absolute;
+inset:0;
+background:rgba(0,0,0,.45);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+font-weight:bold;
+color:#fff;
+}
