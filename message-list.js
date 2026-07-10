@@ -5,7 +5,7 @@
 
 // Firebase
 import { db, auth } from "./firebase-init.js";
-import { VERIFIED_USERS } from "./verified.js";
+import { VERIFIED_USERS } from "./verified-users.js";
 
 // ================================
 // ELEMENT
