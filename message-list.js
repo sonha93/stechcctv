@@ -101,9 +101,7 @@ db.collection("conversations")
 .orderBy("updatedAt","desc")
 .onSnapshot(
     snap=>{
-    if(snap.metadata.hasPendingWrites){
-            return;
-        }
+
         chats=[];
 
         snap.forEach(doc=>{
@@ -135,9 +133,7 @@ async function renderChats(){
 
     const currentUser = auth.currentUser;
 
-   if(chatList.children.length === 0){
     chatList.innerHTML="";
-}
 
 
 
