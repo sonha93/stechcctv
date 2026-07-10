@@ -346,7 +346,14 @@ const hasStory = !storySnap.empty;
 
 }
 
+const verifiedIcon =
+node.querySelector(".verified-icon");
 
+if(verifiedIcon){
+
+    verifiedIcon.hidden = !otherUser.verified;
+
+}
 
         const msg =
         node.querySelector(
