@@ -955,19 +955,6 @@ sendMessage();
 }
 
 
-if(
-e.key==="Enter"
-){
-
-sendMessage();
-
-}
-
-
-});
-
-
-}
 
 
 
