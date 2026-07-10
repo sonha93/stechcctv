@@ -95,21 +95,19 @@ expire.getHours()+24
 
 
 
-await db
-.collection("stories")
-.add({
+await db.collection("stories").add({
 
-uid:user.uid,
+uid: user.uid,
 
-video:data.secure_url,
+video: data.secure_url,
 
-createdAt:now,
+url: data.secure_url,
 
-expiresAt:
-firebase.firestore.Timestamp.fromDate(expire)
+createdAt: now,
+
+expiresAt: firebase.firestore.Timestamp.fromDate(expire)
 
 });
-
 
 
 alert("Đã đăng story");
@@ -223,7 +221,7 @@ ${formatStoryTime(s.createdAt)}
 </div>
 
 <video id="storyVideo"
-src="${s.video}"
+src="${s.video || s.url}"
 autoplay
 playsinline>
 </video>
@@ -391,7 +389,7 @@ snap.forEach(doc => {
 
     item.innerHTML = `
         <div class="story-avatar">
-            <video src="${s.video}" muted></video>
+            <video src="${s.video || s.url}" muted></video>
         </div>
         <span>Story</span>
     `;
