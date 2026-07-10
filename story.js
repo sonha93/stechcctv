@@ -146,31 +146,89 @@ window.openStory = async function(id){
     const box = document.createElement("div");
     box.className = "story-popup";
 
-    box.innerHTML = `
-        <div class="story-header">
+   box.innerHTML = `
+<div class="story-top">
 
-            <button class="story-close">
-                ✕
-            </button>
+    <div class="story-progress">
+        <div class="story-progress-bar"></div>
+    </div>
 
-            ${
-                user && user.uid === story.uid
-                ? `<button class="story-menu">⋮</button>`
-                : ""
-            }
+    <div class="story-header">
+
+        <div class="story-user">
+
+            <img src="${story.avatar || "./avatar.png"}">
+
+            <div>
+
+                <div class="story-name">
+                    ${story.name || "Người dùng"}
+                </div>
+
+                <div class="story-time">
+                    Vừa xong
+                </div>
+
+            </div>
 
         </div>
 
-        <video
-            src="${story.video}"
-            autoplay
-            controls
-            playsinline>
-        </video>
-    `;
+        <div class="story-actions">
+
+            <button id="closeStory">
+                ✕
+            </button>
+
+            <button id="storyMenu">
+                ⋯
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<video
+src="${story.video}"
+autoplay
+playsinline>
+</video>
+`;
 
     document.body.appendChild(box);
 
+// Nút X
+document.getElementById("closeStory").onclick = () => {
+
+    box.remove();
+
+};
+
+// Nút ...
+document.getElementById("storyMenu").onclick = () => {
+
+    alert("Menu");
+
+};
+
+// Chỉ bấm ra nền mới đóng
+box.onclick = (e) => {
+
+    if (e.target === box) {
+
+        box.remove();
+
+    }
+
+};
+
+// Không đóng khi bấm thanh trên
+document.querySelector(".story-top").onclick = (e) => {
+
+    e.stopPropagation();
+
+};
     // Nút X
     box.querySelector(".story-close").onclick = (e)=>{
         e.stopPropagation();
