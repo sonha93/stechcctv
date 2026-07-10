@@ -95,19 +95,21 @@ expire.getHours()+24
 
 
 
-await db.collection("stories").add({
+await db
+.collection("stories")
+.add({
 
-uid: user.uid,
+uid:user.uid,
 
-video: data.secure_url,
+video:data.secure_url,
 
-url: data.secure_url,
+createdAt:now,
 
-createdAt: now,
-
-expiresAt: firebase.firestore.Timestamp.fromDate(expire)
+expiresAt:
+firebase.firestore.Timestamp.fromDate(expire)
 
 });
+
 
 
 alert("Đã đăng story");
@@ -130,7 +132,6 @@ e
 // OPEN STORY
 // ================================
 window.openStory = async function(uid){
- console.log("OPEN UID:", uid);
 
     const userSnap = await db
         .collection("users")
@@ -221,7 +222,7 @@ ${formatStoryTime(s.createdAt)}
 </div>
 
 <video id="storyVideo"
-src="${s.video || s.url}"
+src="${s.video}"
 autoplay
 playsinline>
 </video>
@@ -368,42 +369,74 @@ const snap = await db
 .collection("stories")
 .orderBy("createdAt","desc")
 .get();
-const showed = {};
 
-snap.forEach(doc => {
 
-    const s = doc.data();
+snap.forEach(doc=>{
 
-    if (showed[s.uid]) return;
+const s = doc.data();
 
-    showed[s.uid] = true;
 
-    let expireTime = s.expiresAt?.toDate
-        ? s.expiresAt.toDate()
-        : new Date(s.expiresAt);
+let expireTime = null;
 
-    if (expireTime < new Date()) return;
 
-    const item = document.createElement("div");
-    item.className = "story-item";
+if(s.expiresAt?.toDate){
 
-    item.innerHTML = `
-        <div class="story-avatar">
-            <video src="${s.video || s.url}" muted></video>
-        </div>
-        <span>Story</span>
-    `;
-    console.log(doc.id, s.uid, s.video);
-    item.onclick = () => openStory(s.uid);
+    expireTime = s.expiresAt.toDate();
 
-    bar.appendChild(item);
+}
+else{
+
+    expireTime = new Date(
+        s.expiresAt
+    );
+
+}
+
+
+if(expireTime < new Date()){
+
+    return;
+
+}
+
+
+const item =
+document.createElement("div");
+
+
+item.className =
+"story-item";
+
+
+item.innerHTML = `
+
+<div class="story-avatar">
+
+<video
+src="${s.video}"
+muted
+></video>
+
+</div>
+
+<span>
+Story
+</span>
+
+`;
+
+
+item.onclick=()=>{
+
+    openStory(s.uid);
+
+};
+
+
+bar.appendChild(item);
+
 
 });
-
-
-
-
-
 
 
 }
