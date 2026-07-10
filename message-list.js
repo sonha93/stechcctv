@@ -1,11 +1,10 @@
 // ================================
 // MESSAGE LIST JS (FIREBASE V8)
 // ================================
-
+import { getVerifiedBadge } from "./verified-users.js";
 
 // Firebase
 import { db, auth } from "./firebase-init.js";
-import { VERIFIED_USERS } from "./verified-users.js";
 
 // ================================
 // ELEMENT
