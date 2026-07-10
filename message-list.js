@@ -443,26 +443,7 @@ if (avatar) {
 
 }
 
-        e.stopPropagation();
-
-        const snap = await db
-            .collection("stories")
-            .where("uid", "==", otherUid)
-            .limit(1)
-            .get();
-
-        if (snap.empty) {
-            // Không có story thì mở chat luôn
-            location.href = `message.html?id=${chat.id}`;
-            return;
-        }
-
-        // Có story thì mở story
-        openStory(snap.docs[0].id);
-
-    };
-
-}
+    
 
 
         chatList.appendChild(node);
