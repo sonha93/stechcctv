@@ -302,7 +302,14 @@ if(otherUid){
     }
 
 }
+// Kiểm tra người này có story không
+const storySnap = await db
+    .collection("stories")
+    .where("uid", "==", otherUid)
+    .limit(1)
+    .get();
 
+const hasStory = !storySnap.empty;
 
         if(!item)
         return;
@@ -410,7 +417,31 @@ if (avatar) {
         otherUser.photoURL ||
         "./avatar.png";
 
+    // Thêm vòng xanh nếu có story
+    if (hasStory) {
+        avatar.classList.add("has-story");
+    }
+
     avatar.onclick = async (e) => {
+
+        e.stopPropagation();
+
+        const snap = await db
+            .collection("stories")
+            .where("uid", "==", otherUid)
+            .limit(1)
+            .get();
+
+        if (snap.empty) {
+            location.href = `message.html?id=${chat.id}`;
+            return;
+        }
+
+        openStory(snap.docs[0].id);
+
+    };
+
+}
 
         e.stopPropagation();
 
