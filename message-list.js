@@ -435,7 +435,14 @@ if (hasStory && avatarWrap) {
     avatarWrap.classList.add("has-story");
 
 }
+const ring =
+node.querySelector(".story-ring");
 
+if(ring){
+
+    ring.hidden = !hasStory;
+
+}
 if (avatarWrap) {
 
     avatarWrap.onclick = async (e) => {
