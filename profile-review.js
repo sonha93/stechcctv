@@ -1041,7 +1041,14 @@ storyBar.insertAdjacentHTML(
         ${
         s.type==="video"
         ?
-        `<video src="${s.media}" muted></video>`
+       <video
+    src="${s.media}"
+    muted
+    autoplay
+    loop
+    playsinline
+    preload="metadata">
+</video>
         :
         `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
         }
