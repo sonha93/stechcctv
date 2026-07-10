@@ -950,6 +950,29 @@ object-fit:contain;
 .story-touch.right{
     right:0;
 }
+ .story-progress{
+    position:absolute;
+    top:12px;
+    left:12px;
+    right:12px;
+    display:flex;
+    gap:4px;
+    z-index:100;
+}
+
+.story-progress-item{
+    flex:1;
+    height:3px;
+    background:rgba(255,255,255,.35);
+    overflow:hidden;
+    border-radius:999px;
+}
+
+.story-progress-fill{
+    width:0%;
+    height:100%;
+    background:#fff;
+}
 }
 </style>
 </head>
