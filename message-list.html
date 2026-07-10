@@ -713,6 +713,40 @@ object-fit:contain;
 .sheet-box .material-symbols-outlined{
     font-size:34px;
 }
+ #avatarSheet{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    z-index:999999;
+}
+
+#avatarSheet[hidden]{
+    display:none;
+}
+
+.avatar-sheet-box{
+    width:100%;
+    background:#181818;
+    border-radius:20px 20px 0 0;
+    overflow:hidden;
+}
+
+.avatar-sheet-box button{
+    width:100%;
+    height:58px;
+    color:#fff;
+    font-size:17px;
+    border:none;
+    background:none;
+    border-bottom:1px solid #333;
+}
+
+.avatar-sheet-box button:last-child{
+    border-bottom:none;
+}
 }
 </style>
 </head>
