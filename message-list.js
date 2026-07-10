@@ -1,10 +1,11 @@
 // ================================
 // MESSAGE LIST JS (FIREBASE V8)
 // ================================
-import { getVerifiedBadge } from "./verified-users.js";
+
 
 // Firebase
 import { db, auth } from "./firebase-init.js";
+
 
 // ================================
 // ELEMENT
@@ -350,7 +351,7 @@ node.querySelector(".verified-icon");
 
 if(verifiedIcon){
 
-    verifiedIcon.hidden = !VERIFIED_USERS[otherUid];
+    verifiedIcon.hidden = !otherUser.verified;
 
 }
 
