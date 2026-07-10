@@ -328,12 +328,18 @@ ${msg.images.slice(0,4).map((img,index)=>`
 <img
 class="chat-image"
 src="${img}"
-onclick="showChatImage('${img}')">
-
+onclick='${
+msg.images.length>4 && index===3
+? `showChatGallery(${JSON.stringify(msg.images)},3)`
+: `showChatImage("${img}")`
+}'>
 ${
 msg.images.length>4 && index===3
 ?
-`<div class="more-images">
+`<div
+class="more-images"
+onclick='showChatGallery(${JSON.stringify(msg.images)},3);event.stopPropagation();'
+>
 +${msg.images.length-4}
 </div>`
 :
