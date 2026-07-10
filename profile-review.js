@@ -1115,19 +1115,42 @@ ${getVerifiedBadge(s.uid)}
 // HIỂN THỊ NGÀY GIỜ ĐĂNG
 
 if(s.createdAt){
+const now = new Date();
+
+const time = s.createdAt.toDate();
+
+const diff = Math.floor(
+    (now - time) / 1000
+);
+
+
+if(diff < 60){
+
+    storyTime.innerText = "Vừa xong";
+
+}
+else if(diff < 3600){
 
     storyTime.innerText =
-    s.createdAt.toDate().toLocaleString(
-        "vi-VN",
-        {
-            day:"2-digit",
-            month:"2-digit",
-            year:"numeric",
-            hour:"2-digit",
-            minute:"2-digit"
-        }
-    );
+    Math.floor(diff / 60) + " phút trước";
 
+}
+else if(diff < 86400){
+
+    storyTime.innerText =
+    Math.floor(diff / 3600) + " giờ trước";
+
+}
+else{
+
+    storyTime.innerText =
+    time.toLocaleDateString("vi-VN",{
+        day:"2-digit",
+        month:"2-digit"
+    });
+
+}
+    
 }else{
 
     storyTime.innerText="";
