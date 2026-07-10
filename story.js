@@ -202,14 +202,6 @@ style="width:${i<index?100:0}%;transition:none;">
 
 ${storyUser.name || storyUser.displayName || "Người dùng"}
 
-${
-storyUser.verified
-? `<span class="material-symbols-outlined story-verified-name">
-verified
-</span>`
-: ""
-}
-
 </div>
 
 <div class="story-time">
@@ -445,11 +437,22 @@ if(currentUser){
 
 
 
-for (const doc of snap.docs) {
+// XÓA STORY CŨ, GIỮ LẠI NÚT ĐĂNG
+bar.querySelectorAll(".story-item:not(.add-story)")
+.forEach(el => el.remove());
+
+
+const snap = await db
+.collection("stories")
+.orderBy("createdAt","desc")
+.get();
+const showed = {};
+
+snap.forEach(doc => {
 
     const s = doc.data();
 
-    if (showed[s.uid]) continue;
+    if (showed[s.uid]) return;
 
     showed[s.uid] = true;
 
@@ -457,45 +460,43 @@ for (const doc of snap.docs) {
         ? s.expiresAt.toDate()
         : new Date(s.expiresAt);
 
-    if (expireTime < new Date()) continue;
+    if (expireTime < new Date()) return;
 
     const item = document.createElement("div");
     item.className = "story-item";
 
-    const userSnap = await db
-        .collection("users")
-        .doc(s.uid)
-        .get();
-
-    const u = userSnap.exists ? userSnap.data() : {};
-
     item.innerHTML = `
-<div class="story-avatar">
-
-    <video src="${s.video}" muted></video>
-
-    ${
-        u.verified
-        ? `<span class="story-verified material-symbols-outlined">
-            verified
-           </span>`
-        : ""
-    }
-
-</div>
-
-<span>
-${u.name || "Story"}
-</span>
-`;
-
+        <div class="story-avatar">
+            <video src="${s.video}" muted></video>
+        </div>
+        <span>Story</span>
+    `;
     console.log(doc.id, s.uid, s.video);
-
     item.onclick = () => openStory(s.uid);
 
     bar.appendChild(item);
 
+});
+
+
+
+
+
+
+
 }
+
+
+
+auth.onAuthStateChanged(user=>{
+
+if(user){
+
+loadStories();
+
+}
+
+});
 function formatStoryTime(time){
 
     if(!time) return "";
