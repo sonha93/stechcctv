@@ -1071,6 +1071,17 @@ if (video) {
 
 }
 const storyViewer = document.getElementById("storyViewer");
+const storyOwnerAvatar =
+document.getElementById("storyOwnerAvatar");
+
+const storyOwnerName =
+document.getElementById("storyOwnerName");
+
+const storyOwnerBadge =
+document.getElementById("storyOwnerBadge");
+
+const storyTime =
+document.getElementById("storyTime");
 const storyVideo = document.getElementById("storyVideo");
 const storyImage = document.getElementById("storyImage");
 
@@ -1087,7 +1098,47 @@ window.openStory = async function(id){
     const s = snap.data();
 
     currentStoryOwner = s.uid;
+    // HIỂN THỊ NGƯỜI ĐĂNG STORY
 
+storyOwnerAvatar.src =
+s.avatar ||
+"https://i.ibb.co/Z1kv9nJj/logo.png";
+
+
+storyOwnerName.innerHTML =
+`
+${s.name || "Người dùng"}
+${getVerifiedBadge(s.uid)}
+`;
+
+
+// HIỂN THỊ NGÀY GIỜ ĐĂNG
+
+if(s.createdAt){
+
+    storyTime.innerText =
+    s.createdAt.toDate().toLocaleString(
+        "vi-VN",
+        {
+            day:"2-digit",
+            month:"2-digit",
+            year:"numeric",
+            hour:"2-digit",
+            minute:"2-digit"
+        }
+    );
+
+}else{
+
+    storyTime.innerText="";
+
+}
+    storyOwnerAvatar.onclick = ()=>{
+
+    location.href =
+    `profile-review.html?uid=${s.uid}`;
+
+};
     storyViewer.classList.add("active");
 
 
