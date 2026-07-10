@@ -12,11 +12,13 @@ import { db, auth } from "./firebase-init.js";
 // MESSAGE SOUND
 // ================================
 
-const messageSound = new Audio(
-    "./assets/sounds/message.mp3"
-);
+const messageSound = new Audio();
 
+messageSound.src = "./assets/sounds/message.mp3";
+messageSound.preload = "auto";
 messageSound.volume = 0.7;
+
+
 
 // ================================
 // GET CONVERSATION ID
