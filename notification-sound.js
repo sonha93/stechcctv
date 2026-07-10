@@ -8,32 +8,54 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-const notifySound = new Audio("./assets/sounds/message.mp3");
+// âm thanh
+const notifySound = new Audio();
 
+notifySound.src = "./assets/sounds/message.mp3";
 notifySound.preload = "auto";
 notifySound.volume = 0.7;
+
+
+// trạng thái đã mở khóa
+let soundUnlocked = false;
 
 
 // mở khóa âm thanh mobile
 function unlockSound(){
 
-    notifySound.play()
+    if(soundUnlocked) return;
+
+    const tempSound = new Audio("./assets/sounds/message.mp3");
+
+    tempSound.volume = 0;
+
+    tempSound.play()
     .then(()=>{
 
-        notifySound.pause();
-        notifySound.currentTime = 0;
+        tempSound.pause();
+        tempSound.currentTime = 0;
+
+        soundUnlocked = true;
+
+        console.log("Âm thanh đã mở khóa");
 
     })
-    .catch(()=>{});
+    .catch(err=>{
+
+        console.log("Unlock lỗi:",err);
+
+    });
 
 }
+
 
 
 document.addEventListener(
     "touchstart",
     unlockSound,
-    {once:true}
+    {once:true, passive:true}
 );
+
 
 document.addEventListener(
     "click",
@@ -43,16 +65,25 @@ document.addEventListener(
 
 
 
+
+
 auth.onAuthStateChanged(user=>{
+
 
     if(!user) return;
 
 
+
     const q = query(
+
         collection(db,"notifications"),
+
         where("receiverId","==",user.uid),
+
         where("read","==",false)
+
     );
+
 
 
     onSnapshot(q,(snap)=>{
@@ -64,18 +95,31 @@ auth.onAuthStateChanged(user=>{
             if(change.type==="added"){
 
 
+                if(!soundUnlocked){
+
+                    console.log("Chưa mở khóa âm thanh");
+                    return;
+
+                }
+
+
+
                 notifySound.currentTime = 0;
 
 
                 notifySound.play()
+
                 .then(()=>{
 
+                    console.log("Đã phát chuông");
+
                 })
+
                 .catch(err=>{
 
                     console.log(
-                    "Không phát được âm thanh:",
-                    err
+                        "Lỗi phát âm thanh:",
+                        err
                     );
 
                 });
