@@ -1041,14 +1041,7 @@ storyBar.insertAdjacentHTML(
         ${
         s.type==="video"
         ?
-       <video
-    src="${s.media}"
-    muted
-    autoplay
-    loop
-    playsinline
-    preload="metadata">
-</video>
+        `<video src="${s.media}" muted></video>`
         :
         `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
         }
@@ -1062,6 +1055,18 @@ storyBar.insertAdjacentHTML(
 </div>
 `
 );
+        const video = storyBar.lastElementChild.querySelector("video");
+
+if (video) {
+    video.muted = true;
+    video.autoplay = true;
+    video.loop = true;
+    video.playsInline = true;
+
+    video.onloadedmetadata = () => {
+        video.play().catch(() => {});
+    };
+}
     });
 
 }
