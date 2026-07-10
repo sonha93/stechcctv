@@ -981,7 +981,7 @@ storyFile.onchange = async () => {
 
    await addDoc(collection(db,"profile_stories"),{
 
-    uid,
+    uid: uid,
 
     media: data.secure_url,
 
@@ -989,43 +989,27 @@ storyFile.onchange = async () => {
         ? "video"
         : "image",
 
+    text: prompt("Nhập nội dung story (có thể để trống):") || "",
+
     avatar: user.avatar || "",
+
     name: user.name || "",
+
     username: user.username || "",
+
+    viewers: [],
+
+    likeCount: 0,
 
     createdAt: serverTimestamp()
 
 });
 
-    uid:uid,
-
-    media:data.secure_url,
-
-    type:file.type.startsWith("video/")
-        ? "video"
-        : "image",
-
-    avatar:user.avatar || "",
-
-    name:user.name || "",
-
-    username:user.username || "",
-
-    createdAt:serverTimestamp(),
-
-    
-
-});
-
-
 storyFile.value = "";
 
 alert("Đăng story thành công");
 
-
 loadStories();
-   
-};
 
 async function loadStories(){
 
@@ -1036,7 +1020,7 @@ async function loadStories(){
 
     const snap = await getDocs(
         query(
-           collection(db,"profile_stories")
+           collection(db,"profile_stories"),
             where("uid","==",profileUid)
         )
     );
@@ -1100,7 +1084,8 @@ const storyTime =
 document.getElementById("storyTime");
 const storyVideo = document.getElementById("storyVideo");
 const storyImage = document.getElementById("storyImage");
-
+const storyText =
+document.getElementById("storyText");
 window.openStory = async function(id){
 
     currentStoryId = id;
@@ -1112,7 +1097,16 @@ window.openStory = async function(id){
     if(!snap.exists()) return;
 
     const s = snap.data();
+    if(auth.currentUser){
 
+    await updateDoc(
+        doc(db,"profile_stories",id),
+        {
+            viewers: arrayUnion(auth.currentUser.uid)
+        }
+    );
+
+}
     currentStoryOwner = s.uid;
     // HIỂN THỊ NGƯỜI ĐĂNG STORY
 
@@ -1126,7 +1120,7 @@ storyOwnerName.innerHTML =
 ${s.name || "Người dùng"}
 ${getVerifiedBadge(s.uid)}
 `;
-
+storyText.textContent = s.text || "";
 
 // HIỂN THỊ NGÀY GIỜ ĐĂNG
 
