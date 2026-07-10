@@ -446,4 +446,23 @@ margin-top:6px;
     height:14px;
     flex-shrink:0;
 }
+   #chatTitle{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    white-space:nowrap;
+}
+
+#chatTitle .verified-icon,
+#chatTitle img,
+#chatTitle svg{
+    width:18px;
+    height:18px;
+    display:inline-flex;
+    flex-shrink:0;
+    vertical-align:middle;
+}
+   .verified-popup{
+    display:none !important;
+}
 }
