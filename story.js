@@ -132,6 +132,7 @@ e
 // OPEN STORY
 // ================================
 window.openStory = async function(uid){
+ console.log("OPEN UID:", uid);
 
     const userSnap = await db
         .collection("users")
@@ -394,7 +395,7 @@ snap.forEach(doc => {
         </div>
         <span>Story</span>
     `;
-
+    console.log(doc.id, s.uid, s.video);
     item.onclick = () => openStory(s.uid);
 
     bar.appendChild(item);
