@@ -968,7 +968,54 @@ document.body.appendChild(popup);
 
 const img=
 popup.querySelector("#galleryImg");
+let startX = 0;
+let endX = 0;
 
+img.addEventListener("touchstart",(e)=>{
+
+startX = e.changedTouches[0].clientX;
+
+},{passive:true});
+
+img.addEventListener("touchend",(e)=>{
+
+endX = e.changedTouches[0].clientX;
+
+const diff = endX - startX;
+
+if(Math.abs(diff) < 50) return;
+
+// vuốt sang trái -> ảnh tiếp theo
+if(diff < 0){
+
+index++;
+
+if(index >= images.length){
+
+index = 0;
+
+}
+
+img.src = images[index];
+
+}
+
+// vuốt sang phải -> ảnh trước
+else{
+
+index--;
+
+if(index < 0){
+
+index = images.length - 1;
+
+}
+
+img.src = images[index];
+
+}
+
+},{passive:true});
 popup.querySelector("#galleryPrev").onclick=(e)=>{
 
 e.stopPropagation();
