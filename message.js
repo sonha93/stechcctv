@@ -281,7 +281,10 @@ const div=document.createElement("div");
 
 const mine =
 msg.senderId===currentUser.uid;
-
+const canRecall =
+msg.createdAt &&
+(Date.now() - msg.createdAt.toDate().getTime())
+< 24*60*60*1000;
 div.className=
 mine ? "message mine":"message other";
 
@@ -308,6 +311,9 @@ user.avatar ||
 <div class="message-body">
 
 <div class="message-content ${
+    msg.recalled
+    ? "recalled-message"
+    :
     (msg.image || (msg.images && msg.images.length))
         ? "image-only"
         : msg.video
@@ -316,10 +322,74 @@ user.avatar ||
 }">
 
 ${
+msg.recalled
+?
+`
+<div class="chat-text recalled">
+Tin nhắn đã được thu hồi
+</div>
+`
+:
+`
+
+${
 msg.images && msg.images.length
 ?
 `
 <div class="chat-images count-${Math.min(msg.images.length,4)}">
+
+${msg.images.slice(0,4).map((img,index)=>`
+
+<div class="chat-image-item">
+
+<img
+class="chat-image"
+src="${img}"
+onclick='showChatGallery(${JSON.stringify(msg.images)},${index})'>
+
+</div>
+
+`).join("")}
+
+</div>
+`
+:
+msg.image
+?
+`
+<img
+class="chat-image"
+src="${msg.image}"
+onclick="showChatImage(this.src)">
+`
+:
+""
+}
+
+${
+msg.video
+?
+`
+<video
+class="chat-video"
+controls
+playsinline
+preload="metadata"
+src="${msg.video}">
+</video>
+`
+:
+""
+}
+
+${msg.text ? `
+<div class="chat-text">
+${escapeHTML(msg.text)}
+</div>
+` : ""}
+
+`
+}
 
 ${msg.images.slice(0,4).map((img,index)=>`
 
@@ -372,11 +442,23 @@ src="${msg.video}">
 :
 ""
 }
+${
+msg.recalled
+?
+`
+<div class="chat-text recalled">
+Tin nhắn đã được thu hồi
+</div>
+`
+:
+`
 ${msg.text ? `
 <div class="chat-text">
 ${escapeHTML(msg.text)}
 </div>
 ` : ""}
+`
+}
 
 </div>
 
@@ -406,7 +488,22 @@ msg.seenBy.find(uid=>uid!==currentUser.uid)
 }
 </div>
 `;
+if(mine){
 
+div.oncontextmenu = (e)=>{
+
+e.preventDefault();
+
+showMessageMenu(
+e.pageX,
+e.pageY,
+msg.id,
+canRecall
+);
+
+};
+
+}
 messageBox.appendChild(div);
 
 }
@@ -490,7 +587,11 @@ await db
 
     createdAt: firebase.firestore.Timestamp.now(),
 
-    seenBy:[currentUser.uid]
+   seenBy:[
+currentUser.uid
+],
+
+recalled:false
 
 });
 
@@ -527,9 +628,9 @@ return;
     createdAt:
     now,
 
-    seenBy:[
-        currentUser.uid
-    ]
+ seenBy:[currentUser.uid],
+
+recalled:false
 
 });
 
@@ -670,7 +771,9 @@ createdAt:now,
 
 seenBy:[
 currentUser.uid
-]
+],
+
+recalled:false
 
 });
 
@@ -1054,3 +1157,78 @@ popup.remove();
 };
 
 };
+function showMessageMenu(x,y,messageId,canRecall){
+
+document
+.querySelectorAll(".message-menu")
+.forEach(e=>e.remove());
+
+const menu =
+document.createElement("div");
+
+menu.className="message-menu";
+
+menu.style.left=x+"px";
+
+menu.style.top=y+"px";
+
+menu.innerHTML=`
+
+${
+canRecall
+?
+`<div onclick="recallMessage('${messageId}')">
+Thu hồi
+</div>`
+:
+`<div style="color:#999">
+Đã quá 24 giờ
+</div>`
+}
+
+`;
+
+document.body.appendChild(menu);
+
+setTimeout(()=>{
+
+document.onclick=()=>{
+
+menu.remove();
+
+document.onclick=null;
+
+};
+
+},50);
+
+}
+async function recallMessage(messageId){
+
+    try{
+
+        await db
+        .collection("conversations")
+        .doc(conversationId)
+        .collection("messages")
+        .doc(messageId)
+        .update({
+
+            recalled:true,
+
+            recalledAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+
+        });
+
+
+    }catch(error){
+
+        console.error(
+            "Lỗi thu hồi tin nhắn:",
+            error
+        );
+
+    }
+
+}
