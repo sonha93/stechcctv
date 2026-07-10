@@ -131,113 +131,155 @@ e
 // ================================
 // OPEN STORY
 // ================================
-window.openStory = async function(id){
+window.openStory = async function(uid){
 
-    const doc = await db.collection("stories").doc(id).get();
+    const userSnap = await db
+        .collection("users")
+        .doc(uid)
+        .get();
 
-    if(!doc.exists){
-        alert("Không tìm thấy story");
+    const storyUser = userSnap.exists
+        ? userSnap.data()
+        : {};
+
+    const snap = await db
+        .collection("stories")
+        .where("uid","==",uid)
+        .orderBy("createdAt","asc")
+        .get();
+
+    if(snap.empty){
+        alert("Không có story");
         return;
     }
 
-    const story = doc.data();
-    const userSnap = await db
-    .collection("users")
-    .doc(story.uid)
-    .get();
+    const stories = snap.docs.map(doc=>({
+        id:doc.id,
+        ...doc.data()
+    }));
 
-const storyUser = userSnap.exists
-    ? userSnap.data()
-    : {};
-    const user = auth.currentUser;
+    let index = 0;
 
     const box = document.createElement("div");
-    box.className = "story-popup";
+    box.className="story-popup";
 
-   box.innerHTML = `
+    document.body.appendChild(box);
+
+    function render(){
+
+        const s = stories[index];
+
+        box.innerHTML=`
+
 <div class="story-top">
 
-    <div class="story-progress">
-        <div class="story-progress-bar"></div>
-    </div>
+<div class="story-progress">
 
-    <div class="story-header">
+${stories.map((x,i)=>`
+<div class="story-progress-item">
 
-        <div class="story-user">
-
-            <img src="${storyUser.avatar || storyUser.photoURL || "./avatar.png"}">
-            <div>
-
-                <div class="story-name">
-                    ${storyUser.name || storyUser.displayName || "Người dùng"}
-                </div>
-
-               <div class="story-time">
-    ${formatStoryTime(story.createdAt)}
+<div class="story-progress-fill"
+style="width:${i<index?100:0}%">
 </div>
 
-            </div>
-
-        </div>
-
-        <div class="story-actions">
-
-            <button id="closeStory">
-                ✕
-            </button>
-
-            <button id="storyMenu">
-                ⋯
-            </button>
-
-        </div>
-
-    </div>
+</div>
+`).join("")}
 
 </div>
 
-<video
-src="${story.video}"
+<div class="story-header">
+
+<div class="story-user">
+
+<img src="${storyUser.avatar || storyUser.photoURL || "./avatar.png"}">
+
+<div>
+
+<div class="story-name">
+
+${storyUser.name || storyUser.displayName || "Người dùng"}
+
+</div>
+
+<div class="story-time">
+
+${formatStoryTime(s.createdAt)}
+
+</div>
+
+</div>
+
+</div>
+
+<div class="story-actions">
+
+<button id="closeStory">✕</button>
+
+</div>
+
+</div>
+
+</div>
+
+<video id="storyVideo"
+src="${s.video}"
 autoplay
 playsinline>
 </video>
+
 `;
 
-    document.body.appendChild(box);
-    box.querySelector(".story-user").onclick = (e)=>{
+        const video = box.querySelector("#storyVideo");
 
-    e.stopPropagation();
+        video.onloadedmetadata=()=>{
 
-    box.remove();
+            const fill =
+            box.querySelectorAll(".story-progress-fill")[index];
 
-    location.href = `profile-review.html?uid=${story.uid}`;
+            fill.style.transition=
+            `width ${video.duration}s linear`;
 
-};
-    document.getElementById("closeStory").onclick = (e)=>{
+            requestAnimationFrame(()=>{
+                fill.style.width="100%";
+            });
 
-    e.stopPropagation();
-    box.remove();
+        };
 
-};
+        video.onended=()=>{
 
-const menuBtn = document.getElementById("storyMenu");
+            index++;
 
-if (story.uid !== auth.currentUser.uid) {
-    menuBtn.style.display = "none";
-} else {
-    menuBtn.onclick = async (e) => {
+            if(index<stories.length){
 
-        e.stopPropagation();
+                render();
 
-        if (!confirm("Xóa story này?")) return;
+            }else{
 
-        await db.collection("stories")
-            .doc(id)
-            .delete();
+                box.remove();
 
-        box.remove();
-        loadStories();
-    };
+            }
+
+        };
+
+        document.getElementById("closeStory").onclick=()=>{
+
+            box.remove();
+
+        };
+
+        box.querySelector(".story-user").onclick=()=>{
+
+            box.remove();
+
+            location.href=
+            `profile-review.html?uid=${uid}`;
+
+        };
+
+    }
+
+    render();
+
 }
     }
 // ================================
@@ -385,7 +427,7 @@ Story
 
 item.onclick=()=>{
 
-openStory(doc.id);
+    openStory(s.uid);
 
 };
 
