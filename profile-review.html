@@ -1101,6 +1101,47 @@ opacity:.8;
 
     z-index:50;
 }
+ .profile-menu{
+    position:fixed;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+    background:rgba(0,0,0,.45);
+    display:flex;
+    align-items:flex-end;
+    opacity:0;
+    visibility:hidden;
+    transition:.25s;
+    z-index:99999;
+}
+
+.profile-menu.active{
+    opacity:1;
+    visibility:visible;
+}
+
+.profile-menu-box{
+    width:100%;
+    background:#1d1d1d;
+    border-radius:20px 20px 0 0;
+    overflow:hidden;
+}
+
+.profile-menu-item{
+    height:60px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#fff;
+    font-size:18px;
+    border-bottom:1px solid #333;
+    cursor:pointer;
+}
+
+.profile-menu-item:last-child{
+    border-bottom:none;
+}
 </style>
 </head>
 
@@ -1494,7 +1535,21 @@ stroke-linejoin="round">
 
 </div>
 
-    
+ <div id="profileMenu" class="profile-menu">
+
+    <div class="profile-menu-box">
+
+        <div id="viewStoryBtn" class="profile-menu-item">
+            Xem tin
+        </div>
+
+        <div id="viewAvatarBtn" class="profile-menu-item">
+            Xem ảnh đại diện
+        </div>
+
+    </div>
+
+</div>   
 <script type="module" src="profile-review.js"></script>
 
 </body>
