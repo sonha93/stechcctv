@@ -483,52 +483,76 @@ const showed = {};
 for (const doc of snap.docs) {
 
     const s = doc.data();
-    const userSnap = await db
-.collection("users")
-.doc(s.uid)
-.get();
 
-const storyUser = userSnap.exists
-? userSnap.data()
-: {};
-
-const shortName = getStoryShortName(
-storyUser.name ||
-storyUser.displayName ||
-""
-);
-   if (showed[s.uid]) continue;
-    showed[s.uid] = true;
-
-    let expireTime = s.expiresAt?.toDate
+    // ===========================
+    // STORY HẾT 24H -> XÓA LUÔN
+    // ===========================
+    const expireTime = s.expiresAt?.toDate
         ? s.expiresAt.toDate()
         : new Date(s.expiresAt);
 
-    if (expireTime < new Date()) continue;
+    if (expireTime <= new Date()) {
+
+        try{
+
+            await db
+                .collection("stories")
+                .doc(doc.id)
+                .delete();
+
+            console.log("Đã xóa story hết hạn:", doc.id);
+
+        }catch(err){
+
+            console.error("Xóa story lỗi:", err);
+
+        }
+
+        continue;
+    }
+
+    const userSnap = await db
+        .collection("users")
+        .doc(s.uid)
+        .get();
+
+    const storyUser = userSnap.exists
+        ? userSnap.data()
+        : {};
+
+    const shortName = getStoryShortName(
+        storyUser.name ||
+        storyUser.displayName ||
+        ""
+    );
+
+    if (showed[s.uid]) continue;
+    showed[s.uid] = true;
 
     const item = document.createElement("div");
-item.className = "story-item";
 
-item.innerHTML = `
-    <div class="story-avatar">
-        <video
-            src="${s.video}"
-            muted
-            autoplay
-            loop
-            playsinline
-            preload="metadata">
-        </video>
-    </div>
-    <span>${shortName}</span>
-`;
-    console.log(doc.id, s.uid, s.video);
+    item.className = "story-item";
+
+    item.innerHTML = `
+        <div class="story-avatar">
+            <video
+                src="${s.video}"
+                muted
+                autoplay
+                loop
+                playsinline
+                preload="metadata">
+            </video>
+        </div>
+
+        <span>${shortName}</span>
+    `;
+
     item.onclick = () => openStory(s.uid);
 
     bar.appendChild(item);
 
 }
-
 
 
 
