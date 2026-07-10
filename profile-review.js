@@ -454,22 +454,33 @@ async function loadTab(type){
 
     if(type==="videos"){
 
-        const q=query(
-
-            collection(db,"videos"),
-
-            where("uid","==",profileUid),
-where("status","==","public")
-
-        );
+        const q = query(
+    collection(db,"stories"),
+    where("uid","==",profileUid),
+    where("storyType","==","highlight")
+);
 
         const snap=await getDocs(q);
 
 snap.forEach(doc => {
    
 });
-        renderVideos(snap);
+        snap.forEach(docSnap=>{
+    const v = docSnap.data();
 
+    grid.innerHTML += `
+    <div class="video-card"
+        onclick="location.href='review.html?story=${docSnap.id}'">
+
+        <video
+            src="${v.media}"
+            muted
+            preload="metadata">
+        </video>
+
+    </div>
+    `;
+});
     }
 
     // --------------------
@@ -979,7 +990,33 @@ storyFile.onchange = async () => {
 
     }
 
-    const storyRef = await addDoc(collection(db,"stories"),{
+const isHighlight = confirm("Lưu vào hồ sơ? (OK = Video hồ sơ, Cancel = Story 24h)");
+
+const storyRef = await addDoc(collection(db,"stories"),{
+
+    uid: uid,
+
+    media: data.secure_url,
+
+    type: file.type.startsWith("video/")
+        ? "video"
+        : "image",
+
+    storyType: isHighlight ? "highlight" : "story",
+
+    avatar: user.avatar || "",
+
+    name: user.name || "",
+
+    username: user.username || "",
+
+    createdAt: serverTimestamp(),
+
+    expiresAt: isHighlight
+        ? null
+        : Date.now() + 86400000
+
+});
 
     uid:uid,
 
@@ -1028,7 +1065,7 @@ async function loadStories(){
     snap.forEach(docSnap=>{
 
         const s = docSnap.data();
-
+if(s.storyType === "highlight") return;
         if(s.expiresAt < Date.now()) return;
 
 storyBar.insertAdjacentHTML(
