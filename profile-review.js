@@ -979,7 +979,23 @@ storyFile.onchange = async () => {
 
     }
 
-    const storyRef = await addDoc(collection(db,"stories"),{
+   await addDoc(collection(db,"profile_stories"),{
+
+    uid,
+
+    media: data.secure_url,
+
+    type: file.type.startsWith("video/")
+        ? "video"
+        : "image",
+
+    avatar: user.avatar || "",
+    name: user.name || "",
+    username: user.username || "",
+
+    createdAt: serverTimestamp()
+
+});
 
     uid:uid,
 
@@ -997,7 +1013,7 @@ storyFile.onchange = async () => {
 
     createdAt:serverTimestamp(),
 
-    expiresAt:Date.now() + 86400000
+    
 
 });
 
@@ -1020,7 +1036,7 @@ async function loadStories(){
 
     const snap = await getDocs(
         query(
-            collection(db,"stories"),
+           collection(db,"profile_stories")
             where("uid","==",profileUid)
         )
     );
@@ -1029,7 +1045,7 @@ async function loadStories(){
 
         const s = docSnap.data();
 
-        if(s.expiresAt < Date.now()) return;
+        
 
 storyBar.insertAdjacentHTML(
 "beforeend",
@@ -1090,7 +1106,7 @@ window.openStory = async function(id){
     currentStoryId = id;
 
     const snap = await getDoc(
-        doc(db,"stories",id)
+       doc(db,"profile_stories",id)
     );
 
     if(!snap.exists()) return;
@@ -1200,9 +1216,9 @@ storyMore.onclick = async ()=>{
 
     if(!confirm("Xóa story này?")) return;
 
-    await deleteDoc(
-        doc(db,"stories",currentStoryId)
-    );
+   await deleteDoc(
+    doc(db,"profile_stories",currentStoryId)
+);
 
     storyViewer.classList.remove("active");
 
