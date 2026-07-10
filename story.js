@@ -489,31 +489,31 @@ const snap = await db
 .orderBy("createdAt","desc")
 .get();
 const showed = {};
-
-snap.forEach(doc => {
+for (const doc of snap.docs) {
 
     const s = doc.data();
-const userSnap = await db
-    .collection("users")
-    .doc(s.uid)
-    .get();
 
-const storyUser = userSnap.exists
-    ? userSnap.data()
-    : {};
-
-const shortName = getStoryShortName(
-    storyUser.name || storyUser.displayName || ""
-);
-    if (showed[s.uid]) return;
-
+    if (showed[s.uid]) continue;
     showed[s.uid] = true;
 
     let expireTime = s.expiresAt?.toDate
         ? s.expiresAt.toDate()
         : new Date(s.expiresAt);
 
-    if (expireTime < new Date()) return;
+    if (expireTime < new Date()) continue;
+
+    const userSnap = await db
+        .collection("users")
+        .doc(s.uid)
+        .get();
+
+    const storyUser = userSnap.exists
+        ? userSnap.data()
+        : {};
+
+    const shortName = getStoryShortName(
+        storyUser.name || storyUser.displayName || ""
+    );
 
     const item = document.createElement("div");
     item.className = "story-item";
@@ -522,22 +522,19 @@ const shortName = getStoryShortName(
         <div class="story-avatar">
             <video src="${s.video}" muted></video>
         </div>
-<span>${shortName}</span>
+        <span>${shortName}</span>
     `;
-    console.log(doc.id, s.uid, s.video);
+
     item.onclick = () => openStory(s.uid);
 
     bar.appendChild(item);
 
-});
-
-
-
-
-
-
-
 }
+
+
+
+
+
 
 
 
