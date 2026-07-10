@@ -299,33 +299,18 @@ let otherUser = {};
 
 if(otherUid){
 
-   db.collection("users")
-.doc(otherUid)
-.onSnapshot(userSnap => {
+    const userSnap =
+    await db.collection("users")
+    .doc(otherUid)
+    .get();
 
-    if (!userSnap.exists) return;
 
-    const otherUser = userSnap.data();
+    if(userSnap.exists){
 
-    const name = item.querySelector(".chat-name");
+        otherUser =
+        userSnap.data();
 
-    if (name) {
-        name.innerHTML = `
-            ${otherUser.name || otherUser.displayName || "Người dùng"}
-            ${getVerifiedBadge(otherUid)}
-        `;
     }
-
-    const avatar = item.querySelector(".avatar");
-
-    if (avatar) {
-        avatar.src =
-            otherUser.avatar ||
-            otherUser.photoURL ||
-            "./avatar.png";
-    }
-
-});
 
 }
 // Kiểm tra người này có story không
@@ -353,10 +338,26 @@ const hasStory = !storySnap.empty;
         );
 
 
-        if (name) {
+      if (name) {
+
+    let displayName =
+        otherUser.name ||
+        otherUser.displayName ||
+        "Người dùng";
+
+    const nickSnap = await db
+        .collection("users")
+        .doc(currentUser.uid)
+        .collection("nicknames")
+        .doc(otherUid)
+        .get();
+
+    if (nickSnap.exists) {
+        displayName = nickSnap.data().nickname;
+    }
 
     name.innerHTML = `
-        ${otherUser.name || otherUser.displayName || "Người dùng"}
+        ${displayName}
         ${getVerifiedBadge(otherUid)}
     `;
 
