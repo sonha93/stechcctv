@@ -335,8 +335,6 @@ msg.images.length>4 && index===3
 <div class="more-images">
 +${msg.images.length-4}
 </div>
-+${msg.images.length-4}
-</div>`
 :
 ""
 }
