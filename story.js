@@ -410,33 +410,6 @@ if(myStoryBtn && storyInput){
     };
 
 }
-function getStoryShortName(name) {
-
-    if (!name) return "Story";
-
-    const words = name.trim().split(/\s+/);
-
-    let shortName;
-
-    if (words.length >= 4) {
-
-        // Cao Nguyễn Phương Nguyên -> Cao Nguyên Phương...
-        shortName = `${words[0]} ${words[words.length - 2]} ${words[words.length - 1]}...`;
-
-    } else if (words.length >= 2) {
-
-        // Hoàng Anh Sơn -> Sơn
-        shortName = words[words.length - 1];
-
-    } else {
-
-        shortName = words[0];
-
-    }
-
-    return shortName;
-
-}
 // ================================
 // LOAD STORY BAR
 // ================================
@@ -489,31 +462,20 @@ const snap = await db
 .orderBy("createdAt","desc")
 .get();
 const showed = {};
-for (const doc of snap.docs) {
+
+snap.forEach(doc => {
 
     const s = doc.data();
 
-    if (showed[s.uid]) continue;
+    if (showed[s.uid]) return;
+
     showed[s.uid] = true;
 
     let expireTime = s.expiresAt?.toDate
         ? s.expiresAt.toDate()
         : new Date(s.expiresAt);
 
-    if (expireTime < new Date()) continue;
-
-    const userSnap = await db
-        .collection("users")
-        .doc(s.uid)
-        .get();
-
-    const storyUser = userSnap.exists
-        ? userSnap.data()
-        : {};
-
-    const shortName = getStoryShortName(
-        storyUser.name || storyUser.displayName || ""
-    );
+    if (expireTime < new Date()) return;
 
     const item = document.createElement("div");
     item.className = "story-item";
@@ -522,19 +484,22 @@ for (const doc of snap.docs) {
         <div class="story-avatar">
             <video src="${s.video}" muted></video>
         </div>
-        <span>${shortName}</span>
+        <span>Story</span>
     `;
-
+    console.log(doc.id, s.uid, s.video);
     item.onclick = () => openStory(s.uid);
 
     bar.appendChild(item);
 
+});
+
+
+
+
+
+
+
 }
-
-
-
-
-
 
 
 
