@@ -281,7 +281,7 @@ playsinline>
     render();
 
 }
-    }
+    
 // ================================
 // CLICK ĐĂNG TIN
 // ================================
@@ -365,8 +365,9 @@ bar.querySelectorAll(".story-item:not(.add-story)")
 .forEach(el => el.remove());
 
 
-const snap =
-await db.collection("stories")
+const snap = await db
+.collection("stories")
+.orderBy("createdAt","desc")
 .get();
 
 
