@@ -269,22 +269,7 @@ playsinline>
             box.remove();
 
         };
-
-        box.querySelector(".story-user").onclick=()=>{
-
-            box.remove();
-
-            location.href=
-            `profile-review.html?uid=${uid}`;
-
-        };
-
-    }
-
-    render();
-
-}
-  const menuBtn = document.getElementById("storyMenu");
+         const menuBtn = document.getElementById("storyMenu");
 
 if (menuBtn && auth.currentUser?.uid === uid) {
 
@@ -307,6 +292,21 @@ if (menuBtn && auth.currentUser?.uid === uid) {
     menuBtn.style.display = "none";
 
 }  
+        box.querySelector(".story-user").onclick=()=>{
+
+            box.remove();
+
+            location.href=
+            `profile-review.html?uid=${uid}`;
+
+        };
+
+    }
+
+    render();
+
+}
+ 
 // ================================
 // CLICK ĐĂNG TIN
 // ================================
