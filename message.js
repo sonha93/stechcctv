@@ -314,6 +314,37 @@ user.avatar ||
 }">
 
 ${
+msg.images && msg.images.length
+?
+`
+<div class="chat-images count-${Math.min(msg.images.length,4)}">
+
+${msg.images.slice(0,4).map((img,index)=>`
+
+<div class="chat-image-item">
+
+<img
+class="chat-image"
+src="${img}"
+onclick="showChatImage('${img}')">
+
+${
+msg.images.length>4 && index===3
+?
+`<div class="more-images">
++${msg.images.length-4}
+</div>`
+:
+""
+}
+
+</div>
+
+`).join("")}
+
+</div>
+`
+:
 msg.image
 ?
 `
@@ -405,37 +436,40 @@ let videoUrl = "";
 
 if(selectedFiles.length){
 
+const images = [];
+const videos = [];
+
 for(const file of selectedFiles){
 
-const form = new FormData();
+    const form = new FormData();
 
-form.append("file",file);
+    form.append("file", file);
+    form.append("upload_preset", "stech_up");
 
-form.append("upload_preset","stech_up");
+    const isVideo = file.type.startsWith("video");
 
-const isVideo =
-file.type.startsWith("video");
+    const upload = await fetch(
 
-const upload = await fetch(
+        isVideo
+        ? "https://api.cloudinary.com/v1_1/dmz9gpp1b/video/upload"
+        : "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
 
-isVideo
-?
-"https://api.cloudinary.com/v1_1/dmz9gpp1b/video/upload"
-:
-"https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+        {
+            method:"POST",
+            body:form
+        }
 
-{
+    );
 
-method:"POST",
+    const data = await upload.json();
 
-body:form
+    if(isVideo){
+        videos.push(data.secure_url);
+    }else{
+        images.push(data.secure_url);
+    }
 
 }
-
-);
-
-const data =
-await upload.json();
 
 await db
 .collection("conversations")
@@ -443,29 +477,31 @@ await db
 .collection("messages")
 .add({
 
-senderId:currentUser.uid,
+    senderId: currentUser.uid,
 
-text:"",
+    text: text,
 
-image:isVideo ? "" : data.secure_url,
+    image: "",
 
-video:isVideo ? data.secure_url : "",
+    images: images,
 
-createdAt:firebase.firestore.Timestamp.now(),
+    video: videos.length ? videos[0] : "",
 
-seenBy:[currentUser.uid]
+    createdAt: firebase.firestore.Timestamp.now(),
+
+    seenBy:[currentUser.uid]
 
 });
 
-}
+selectedFiles = [];
 
-selectedFiles=[];
+imageInput.value = "";
 
-imageInput.value="";
+document.getElementById("imagePreview").innerHTML = "";
 
-document.getElementById("imagePreview").innerHTML="";
+messageInput.value = "";
 
-if(text=="") return;
+return;
 
 }
     const now =
