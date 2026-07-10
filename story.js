@@ -410,6 +410,33 @@ if(myStoryBtn && storyInput){
     };
 
 }
+function getStoryShortName(name) {
+
+    if (!name) return "Story";
+
+    const words = name.trim().split(/\s+/);
+
+    let shortName;
+
+    if (words.length >= 4) {
+
+        // Cao Nguyễn Phương Nguyên -> Cao Nguyên Phương...
+        shortName = `${words[0]} ${words[words.length - 2]} ${words[words.length - 1]}...`;
+
+    } else if (words.length >= 2) {
+
+        // Hoàng Anh Sơn -> Sơn
+        shortName = words[words.length - 1];
+
+    } else {
+
+        shortName = words[0];
+
+    }
+
+    return shortName;
+
+}
 // ================================
 // LOAD STORY BAR
 // ================================
@@ -466,7 +493,18 @@ const showed = {};
 snap.forEach(doc => {
 
     const s = doc.data();
+const userSnap = await db
+    .collection("users")
+    .doc(s.uid)
+    .get();
 
+const storyUser = userSnap.exists
+    ? userSnap.data()
+    : {};
+
+const shortName = getStoryShortName(
+    storyUser.name || storyUser.displayName || ""
+);
     if (showed[s.uid]) return;
 
     showed[s.uid] = true;
@@ -484,7 +522,7 @@ snap.forEach(doc => {
         <div class="story-avatar">
             <video src="${s.video}" muted></video>
         </div>
-        <span>Story</span>
+<span>${shortName}</span>
     `;
     console.log(doc.id, s.uid, s.video);
     item.onclick = () => openStory(s.uid);
