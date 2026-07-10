@@ -675,7 +675,7 @@ function showAvatar(src){
 
     const box = document.createElement("div");
 
-    box.className = "story-popup";
+  box.className = "avatar-popup";
 
     box.innerHTML = `
         <img src="${src}">
