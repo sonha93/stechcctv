@@ -1086,6 +1086,24 @@ opacity:.8;
     opacity:0 !important;
     visibility:hidden !important;
 }
+ #storyText{
+    position:absolute;
+    left:20px;
+    right:20px;
+    bottom:40px;
+
+    color:#fff;
+    font-size:16px;
+    font-weight:600;
+    text-align:center;
+
+    text-shadow:0 2px 8px rgba(0,0,0,.8);
+
+    white-space:pre-wrap;
+    word-break:break-word;
+
+    z-index:50;
+}
 </style>
 </head>
 
@@ -1447,44 +1465,37 @@ stroke-linejoin="round">
 </div>
 <div id="storyViewer">
 
-
     <div id="storyHeader">
 
         <img id="storyOwnerAvatar">
 
         <div id="storyOwnerInfo">
+
             <div id="storyOwnerName"></div>
+
             <div id="storyTime"></div>
+
         </div>
 
     </div>
 
+    <span id="storyMore">•••</span>
 
-    <span id="storyMore">
-        •••
-    </span>
+    <span id="closeStory">×</span>
 
-
-    <span id="closeStory">
-        ×
-    </span>
-
-
-
-    <video 
-    id="storyVideo"
-    controls
-    autoplay
-    playsinline>
+    <video
+        id="storyVideo"
+        controls
+        autoplay
+        playsinline>
     </video>
-
-
 
     <img id="storyImage">
 
+    <!-- Nội dung Story -->
+    <div id="storyText"></div>
 
 </div>
-
 
     
 <script type="module" src="profile-review.js"></script>
