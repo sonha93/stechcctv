@@ -14,10 +14,9 @@ import { db, auth } from "./firebase-init.js";
 
 const messageSound = new Audio();
 
-messageSound.src = "./assets/sounds/message.mp3";
+messageSound.src = "./message.mp3";
 messageSound.preload = "auto";
 messageSound.volume = 0.7;
-
 
 
 // ================================
