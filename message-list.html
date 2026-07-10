@@ -803,6 +803,77 @@ object-fit:contain;
     cursor:pointer;
 
 }
+ .story-top{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    z-index:99;
+    padding:12px;
+}
+
+.story-progress{
+    width:100%;
+    height:3px;
+    background:rgba(255,255,255,.25);
+    border-radius:999px;
+    overflow:hidden;
+    margin-bottom:12px;
+}
+
+.story-progress-bar{
+    width:0%;
+    height:100%;
+    background:#fff;
+    animation:storyBar 15s linear forwards;
+}
+
+@keyframes storyBar{
+    from{width:0;}
+    to{width:100%;}
+}
+
+.story-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.story-user{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.story-user img{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+.story-name{
+    color:#fff;
+    font-size:18px;
+    font-weight:700;
+}
+
+.story-time{
+    color:#ccc;
+    font-size:13px;
+}
+
+.story-actions{
+    display:flex;
+    gap:12px;
+}
+
+.story-actions button{
+    background:none;
+    border:none;
+    color:#fff;
+    font-size:34px;
+}
 }
 </style>
 </head>
