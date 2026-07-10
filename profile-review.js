@@ -1018,27 +1018,6 @@ const storyRef = await addDoc(collection(db,"stories"),{
 
 });
 
-    uid:uid,
-
-    media:data.secure_url,
-
-    type:file.type.startsWith("video/")
-        ? "video"
-        : "image",
-
-    avatar:user.avatar || "",
-
-    name:user.name || "",
-
-    username:user.username || "",
-
-    createdAt:serverTimestamp(),
-
-    expiresAt:Date.now() + 86400000
-
-});
-
-
 storyFile.value = "";
 
 alert("Đăng story thành công");
