@@ -338,10 +338,26 @@ const hasStory = !storySnap.empty;
         );
 
 
-        if (name) {
+      if (name) {
+
+    let displayName =
+        otherUser.name ||
+        otherUser.displayName ||
+        "Người dùng";
+
+    const nickSnap = await db
+        .collection("users")
+        .doc(currentUser.uid)
+        .collection("nicknames")
+        .doc(otherUid)
+        .get();
+
+    if (nickSnap.exists) {
+        displayName = nickSnap.data().nickname;
+    }
 
     name.innerHTML = `
-        ${otherUser.name || otherUser.displayName || "Người dùng"}
+        ${displayName}
         ${getVerifiedBadge(otherUid)}
     `;
 
