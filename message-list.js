@@ -340,8 +340,10 @@ const hasStory = !storySnap.empty;
 
         if (name) {
 
-name.textContent =
-    otherUser.name || otherUser.displayName || "Người dùng";
+    name.innerHTML = `
+        ${otherUser.name || otherUser.displayName || "Người dùng"}
+        ${getVerifiedBadge(otherUid)}
+    `;
 
 }
 
