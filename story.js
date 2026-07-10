@@ -202,6 +202,14 @@ style="width:${i<index?100:0}%;transition:none;">
 
 ${storyUser.name || storyUser.displayName || "Người dùng"}
 
+${
+storyUser.verified
+? `<span class="material-symbols-outlined story-verified-name">
+verified
+</span>`
+: ""
+}
+
 </div>
 
 <div class="story-time">
@@ -465,12 +473,32 @@ snap.forEach(doc => {
     const item = document.createElement("div");
     item.className = "story-item";
 
-    item.innerHTML = `
-        <div class="story-avatar">
-            <video src="${s.video}" muted></video>
-        </div>
-        <span>Story</span>
-    `;
+    const userSnap = await db
+.collection("users")
+.doc(s.uid)
+.get();
+
+const u = userSnap.exists ? userSnap.data() : {};
+
+item.innerHTML = `
+<div class="story-avatar">
+
+    <video src="${s.video}" muted></video>
+
+    ${
+        u.verified
+        ? `<span class="story-verified material-symbols-outlined">
+            verified
+           </span>`
+        : ""
+    }
+
+</div>
+
+<span>
+${u.name || "Story"}
+</span>
+`;
     console.log(doc.id, s.uid, s.video);
     item.onclick = () => openStory(s.uid);
 
