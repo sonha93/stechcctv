@@ -851,3 +851,15 @@ font-size:28px;
     }
 
 }
+.story-reply-card{
+    color:#000 !important;
+}
+
+.story-reply-card .story-reply-label{
+    color:#000 !important;
+    font-weight:700 !important;
+}
+
+.story-reply-card + .chat-text{
+    color:#fff !important;
+}
