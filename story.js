@@ -341,16 +341,7 @@ likeBtn.innerHTML = liked
 const sendBtn = box.querySelector("#storySendBtn");
 const comment = box.querySelector("#storyComment");
 
-likeBtn.onclick = async () => {
 
-    const me = auth.currentUser;
-
-    if(!me){
-        alert("Vui lòng đăng nhập");
-        return;
-    }
-
-    liked = !liked;
 
 likeBtn.onclick = async () => {
 
