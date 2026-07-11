@@ -37,8 +37,7 @@ params.get("uid");
 
 const chatId =
 params.get("chatId");
-console.log("UID:",uid);
-console.log("CHAT:",chatId);
+
 
 // =====================================
 // ELEMENT
