@@ -1254,3 +1254,15 @@ typingStatus.innerHTML="";
 
 
 }
+const infoBtn = document.getElementById("infoBtn");
+
+if(infoBtn){
+
+    infoBtn.onclick = () => {
+
+        window.location.href =
+        "chat-info.html?id=" + conversationId;
+
+    };
+
+}
