@@ -190,8 +190,13 @@ if (auth.currentUser) {
 
     const s = stories[index];
 
-    markStorySeen(s.id);
-showViewerFly(s.id);
+ if(auth.currentUser?.uid === uid){
+
+    showViewerFly(s.id);
+
+}
+
+markStorySeen(s.id);
         box.innerHTML=`
 
 <div class="story-top">
@@ -869,14 +874,12 @@ async function showViewerFly(storyId){
     if(!box) return;
 
 
-    const viewersSnap = await db
-    .collection("stories")
-    .doc(storyId)
-    .collection("viewers")
-    .orderBy("viewedAt","desc")
-    .limit(10)
-    .get();
-
+    db.collection("stories")
+.doc(storyId)
+.collection("viewers")
+.orderBy("viewedAt","desc")
+.limit(10)
+.onSnapshot(async viewersSnap=>{
 
     viewersSnap.forEach(async doc=>{
 
@@ -924,7 +927,7 @@ async function showViewerFly(storyId){
 
 
     });
-
+});
 
 }
 auth.onAuthStateChanged(user=>{
