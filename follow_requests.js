@@ -1,27 +1,13 @@
 // ================================
-// FOLLOW REQUEST
+// FOLLOW REQUEST (FIREBASE V8)
 // ================================
 
-import { app, auth } from "./auth.js";
+import { firebase, db, auth } from "./firebase-init.js";
 
-import {
-    getFirestore,
-    collection,
-    query,
-    where,
-    getDocs,
-    getDoc,
-    addDoc,
-    doc,
-    updateDoc,
-    deleteDoc,
-    setDoc,
-    increment,
-    serverTimestamp,
-    documentId
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// ================================
+// GỬI LỜI MỜI
+// ================================
 
-const db = getFirestore(app);
 export async function sendFollowRequest(targetUid){
 
     if(!auth.currentUser) return false;
@@ -30,67 +16,39 @@ export async function sendFollowRequest(targetUid){
 
     if(myUid === targetUid) return false;
 
-    const old = await getDocs(
-
-        query(
-
-            collection(db,"follow_requests"),
-
-            where("from","==",myUid),
-
-            where("to","==",targetUid),
-
-            where("status","==","pending")
-
-        )
-
-    );
+    const old = await db
+    .collection("follow_requests")
+    .where("from","==",myUid)
+    .where("to","==",targetUid)
+    .where("status","==","pending")
+    .get();
 
     if(!old.empty){
-
         return false;
-
     }
 
-    await addDoc(
-
-        collection(db,"follow_requests"),
-
-        {
-
-            from:myUid,
-
-            to:targetUid,
-
-            status:"pending",
-
-            createdAt:serverTimestamp()
-
-        }
-
-    );
-await addDoc(
-
-    collection(db,"notifications"),
-
-    {
-
-        uid: targetUid,
+    await db.collection("follow_requests").add({
 
         from: myUid,
+        to: targetUid,
+        status: "pending",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
+    });
+
+    await db.collection("notifications").add({
+
+        uid: targetUid,
+        from: myUid,
         type: "follow_request",
-
-        createdAt: serverTimestamp(),
-
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         read: false
 
-    }
+    });
 
-);
     return true;
-
 }
+
 // ================================
 // DANH SÁCH LỜI MỜI
 // ================================
@@ -99,108 +57,86 @@ export async function getMyFollowRequests(){
 
     if(!auth.currentUser) return [];
 
-    const snap = await getDocs(
-
-        query(
-
-            collection(db,"follow_requests"),
-
-            where("to","==",auth.currentUser.uid),
-
-            where("status","==","pending")
-
-        )
-
-    );
+    const snap = await db
+    .collection("follow_requests")
+    .where("to","==",auth.currentUser.uid)
+    .where("status","==","pending")
+    .get();
 
     return snap.docs;
-
 }
+
 // ================================
 // CHẤP NHẬN
 // ================================
 
 export async function acceptFollowRequest(requestId){
 
-    const requestRef = doc(db,"follow_requests",requestId);
+    const requestRef = db
+    .collection("follow_requests")
+    .doc(requestId);
 
-    const requestSnap = await getDoc(requestRef);
+    const requestSnap = await requestRef.get();
 
-    if(!requestSnap.exists()) return;
+    if(!requestSnap.exists){
+        return;
+    }
 
     const data = requestSnap.data();
 
     const fromUid = data.from;
     const toUid = data.to;
 
-    // A following B
-    await setDoc(
+    await db
+    .collection("users")
+    .doc(fromUid)
+    .collection("following")
+    .doc(toUid)
+    .set({
+        time: Date.now()
+    });
 
-        doc(db,"users",fromUid,"following",toUid),
+    await db
+    .collection("users")
+    .doc(toUid)
+    .collection("followers")
+    .doc(fromUid)
+    .set({
+        time: Date.now()
+    });
 
-        {
-            time:Date.now()
-        }
+    await db
+    .collection("users")
+    .doc(fromUid)
+    .update({
+        followingCount: firebase.firestore.FieldValue.increment(1)
+    });
 
-    );
+    await db
+    .collection("users")
+    .doc(toUid)
+    .update({
+        followerCount: firebase.firestore.FieldValue.increment(1)
+    });
 
-    // B followers
-    await setDoc(
-
-        doc(db,"users",toUid,"followers",fromUid),
-
-        {
-            time:Date.now()
-        }
-
-    );
-
-    await updateDoc(
-
-        doc(db,"users",fromUid),
-
-        {
-            followingCount:increment(1)
-        }
-
-    );
-
-    await updateDoc(
-
-        doc(db,"users",toUid),
-
-        {
-            followerCount:increment(1)
-        }
-
-    );
-
-    await updateDoc(
-
-        requestRef,
-
-        {
-            status:"accepted"
-        }
-
-    );
+    await requestRef.update({
+        status: "accepted"
+    });
 
 }
+
 // ================================
 // TỪ CHỐI
 // ================================
 
 export async function rejectFollowRequest(requestId){
 
-    await updateDoc(
-
-        doc(db,"follow_requests",requestId),
-
-        {
-            status:"rejected"
-        }
-
-    );
+    await db
+    .collection("follow_requests")
+    .doc(requestId)
+    .update({
+        status: "rejected"
+    });
 
 }
 
@@ -212,79 +148,59 @@ export async function cancelFollowRequest(targetUid){
 
     if(!auth.currentUser) return;
 
-    const snap = await getDocs(
+    const snap = await db
+    .collection("follow_requests")
+    .where("from","==",auth.currentUser.uid)
+    .where("to","==",targetUid)
+    .where("status","==","pending")
+    .get();
 
-        query(
+    for(const doc of snap.docs){
 
-            collection(db,"follow_requests"),
-
-            where("from","==",auth.currentUser.uid),
-
-            where("to","==",targetUid),
-
-            where("status","==","pending")
-
-        )
-
-    );
-
-    for(const d of snap.docs){
-
-        await deleteDoc(d.ref);
+        await doc.ref.delete();
 
     }
 
 }
+
 // ================================
-// ĐÃ GỬI LỜI MỜI?
+// ĐÃ GỬI LỜI MỜI ?
 // ================================
 
 export async function hasPendingFollowRequest(targetUid){
 
     if(!auth.currentUser) return false;
 
-    const snap = await getDocs(
-
-        query(
-
-            collection(db,"follow_requests"),
-
-            where("from","==",auth.currentUser.uid),
-
-            where("to","==",targetUid),
-
-            where("status","==","pending")
-
-        )
-
-    );
+    const snap = await db
+    .collection("follow_requests")
+    .where("from","==",auth.currentUser.uid)
+    .where("to","==",targetUid)
+    .where("status","==","pending")
+    .get();
 
     return !snap.empty;
 
 }
+
 // ================================
-// ĐÃ FOLLOW?
+// ĐÃ FOLLOW ?
 // ================================
 
 export async function isFollowing(targetUid){
 
     if(!auth.currentUser) return false;
 
-    const snap = await getDoc(
+    const snap = await db
+    .collection("users")
+    .doc(auth.currentUser.uid)
+    .collection("following")
+    .doc(targetUid)
+    .get();
 
-        doc(
-            db,
-            "users",
-            auth.currentUser.uid,
-            "following",
-            targetUid
-        )
-
-    );
-
-    return snap.exists();
+    return snap.exists;
 
 }
+
 // ================================
 // KIỂM TRA BẠN BÈ
 // ================================
@@ -295,32 +211,24 @@ export async function isFriend(targetUid){
 
     const myUid = auth.currentUser.uid;
 
-    const meFollow = await getDoc(
+    const meFollow = await db
+    .collection("users")
+    .doc(myUid)
+    .collection("following")
+    .doc(targetUid)
+    .get();
 
-        doc(
-            db,
-            "users",
-            myUid,
-            "following",
-            targetUid
-        )
+    if(!meFollow.exists){
+        return false;
+    }
 
-    );
+    const theyFollow = await db
+    .collection("users")
+    .doc(targetUid)
+    .collection("following")
+    .doc(myUid)
+    .get();
 
-    if(!meFollow.exists()) return false;
-
-    const theyFollow = await getDoc(
-
-        doc(
-            db,
-            "users",
-            targetUid,
-            "following",
-            myUid
-        )
-
-    );
-
-    return theyFollow.exists();
+    return theyFollow.exists;
 
 }
