@@ -777,9 +777,91 @@ if(searchInput){
 
 searchInput.addEventListener(
 "input",
-()=>{
+async ()=>{
 
-    renderChats();
+
+    const keyword =
+    searchInput.value
+    .toLowerCase()
+    .trim();
+
+
+
+    if(!keyword){
+
+        renderChats();
+
+        return;
+
+    }
+
+
+
+    const users =
+    await searchUsers(keyword);
+
+
+
+    chatList.innerHTML = "";
+
+
+
+    users.forEach(user=>{
+
+
+        chatList.innerHTML += `
+
+        <div class="chat-item"
+        data-uid="${user.uid}">
+
+
+            <div class="chat-button">
+
+
+                <div class="avatar-wrap">
+
+
+                    <img class="avatar"
+                    src="${user.avatar || './avatar.png'}">
+
+
+                </div>
+
+
+
+                <div class="chat-body">
+
+
+                    <div class="chat-name">
+
+                        ${user.name || user.displayName || "Người dùng"}
+
+                    </div>
+
+
+
+                    <div class="message-preview">
+
+                        ID: ${user.uid}
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        `;
+
+
+    });
+
+
 
 });
 
@@ -800,7 +882,57 @@ clearSearch.onclick=()=>{
 };
 
 }
+async function searchUsers(keyword){
 
+    const snap = await db
+    .collection("users")
+    .get();
+
+
+    const result = [];
+
+
+    snap.forEach(doc=>{
+
+        const data = doc.data();
+
+
+        const name =
+        (
+            data.name ||
+            data.displayName ||
+            ""
+        )
+        .toLowerCase();
+
+
+        const uid =
+        doc.id.toLowerCase();
+
+
+
+        if(
+            name.includes(keyword) ||
+            uid.includes(keyword)
+        ){
+
+            result.push({
+
+                uid: doc.id,
+
+                ...data
+
+            });
+
+        }
+
+
+    });
+
+
+    return result;
+
+}
 
 
 // ================================
