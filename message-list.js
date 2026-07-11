@@ -257,6 +257,7 @@ async function renderChats(){
 
 
 div.className = "chat-item";
+    div.dataset.uid = uid;
 const old = await db
 .collection("conversations")
 .where("members","array-contains",user.uid)
@@ -279,28 +280,7 @@ old.forEach(doc=>{
 });
 
 
-if(!conversationId){
-
-    const ref = await db
-    .collection("conversations")
-    .add({
-
-        members:[
-            user.uid,
-            uid
-        ],
-
-        lastMessage:"",
-        updatedAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
-    });
-
-
-    conversationId = ref.id;
-
-}
-
+div.dataset.uid = uid;
 
 div.dataset.conversationId = conversationId;
 
@@ -932,14 +912,25 @@ e=>{
 
 
 
-    const id =
-    item.dataset.conversationId;
+   const id =
+item.dataset.conversationId;
+
+const uid =
+item.dataset.uid;
 
 
+if(id){
 
     location.href =
     `message.html?id=${id}`;
 
+}
+else if(uid){
+
+    location.href =
+    `new-chat.html?uid=${uid}`;
+
+}
 
 });
 
