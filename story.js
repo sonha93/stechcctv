@@ -401,27 +401,33 @@ sendBtn.onclick = async () => {
     const now = firebase.firestore.Timestamp.now();
 
     // gửi tin nhắn
-    await db
-        .collection("conversations")
-        .doc(conversationId)
-        .collection("messages")
-        .add({
+   await db
+.collection("conversations")
+.doc(conversationId)
+.collection("messages")
+.add({
 
-            senderId: me.uid,
+    senderId: me.uid,
 
-           text: "Đã trả lời tin của bạn: " + text,
+    text: text,
 
-            image: "",
+    image: "",
 
-            images: [],
+    images: [],
 
-            video: "",
+    video: s.video,
 
-            createdAt: now,
+    storyId: s.id,
 
-            seenBy: [me.uid]
+    storyOwner: uid,
 
-        });
+    type: "story_reply",
+
+    createdAt: now,
+
+    seenBy:[me.uid]
+
+});
 
     // cập nhật conversation
     await db
