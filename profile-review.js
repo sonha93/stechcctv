@@ -97,7 +97,9 @@ async function loadProfile() {
     }
 
     const u = snap.data();
-  
+      console.log(u);
+console.log("followerCount =", u.followerCount);
+console.log("followingCount =", u.followingCount);
     avatar.src = u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
     sheetAvatar.src = avatar.src;
 sheetName.textContent = u.name || "Người dùng";
