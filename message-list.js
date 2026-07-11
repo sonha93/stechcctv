@@ -186,7 +186,86 @@ if(currentFilter==="requests"){
     );
 
 }
+if(currentFilter==="requests"){
 
+    chatList.innerHTML = "";
+
+    const user = auth.currentUser;
+
+    if(!user) return;
+
+    const snap = await db
+    .collection("follow_requests")
+    .where("toUid","==",user.uid)
+    .where("status","==","pending")
+    .get();
+
+
+    if(snap.empty){
+
+        chatList.innerHTML = `
+            <div style="padding:30px;text-align:center;color:#999">
+                Không có lời mời kết bạn
+            </div>
+        `;
+
+        return;
+    }
+
+
+    snap.forEach(doc=>{
+
+        const r = doc.data();
+
+
+        chatList.innerHTML += `
+
+        <div class="chat-item">
+
+            <div class="chat-button">
+
+                <div class="avatar-wrap">
+
+                    <img class="avatar"
+                    src="${r.avatar || './avatar.png'}">
+
+                </div>
+
+
+                <div class="chat-body">
+
+                    <div class="chat-name">
+                        ${r.name || "Người dùng"}
+                    </div>
+
+                    <div class="message-preview">
+
+                        <span>
+                        Đã gửi lời mời theo dõi
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <button onclick="acceptFollow('${doc.id}')">
+                    Chấp nhận
+                </button>
+
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+
+    return;
+
+}
 
     const keyword =
     searchInput?.value
@@ -792,3 +871,17 @@ if (avatarSheet) {
     };
 
 }
+window.acceptFollow = async function(id){
+
+    await db
+    .collection("follow_requests")
+    .doc(id)
+    .update({
+
+        status:"accepted"
+
+    });
+
+    alert("Đã chấp nhận");
+
+};
