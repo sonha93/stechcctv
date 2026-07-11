@@ -840,6 +840,7 @@ font-size:28px;
     font-weight:700;
     color:#000;
 }
+}
 /* Desktop */
 @media (min-width:768px){
 
@@ -984,7 +985,7 @@ font-size:28px;
         border:none;
         background:transparent;
 
-        color:#0084ff;
+        color:#000;
         cursor:pointer;
         border-radius:50%;
     }
