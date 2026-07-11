@@ -211,7 +211,7 @@ async function renderChats(){
 }
 
 
- if(currentFilter==="online"){
+   if(currentFilter==="online"){
 
     chatList.innerHTML="";
 
@@ -255,7 +255,7 @@ async function renderChats(){
 
         chatList.innerHTML += `
 
-        <div class="chat-item" data-user-id="${uid}">
+        <div class="chat-item">
 
             <div class="chat-button">
 
@@ -302,6 +302,7 @@ async function renderChats(){
     return;
 
 }
+
 
 
     if(currentFilter==="shop"){
@@ -867,23 +868,13 @@ e=>{
 
 
     const id =
-item.dataset.conversationId;
-
-const uid =
-item.dataset.userId;
+    item.dataset.conversationId;
 
 
-if(id){
 
     location.href =
     `message.html?id=${id}`;
 
-}else if(uid){
-
-    location.href =
-    `new-chat.html?uid=${uid}`;
-
-}
 
 });
 
