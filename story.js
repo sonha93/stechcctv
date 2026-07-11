@@ -550,29 +550,36 @@ if(closeBtn){
     };
 
 }
-        const menuBtn = box.querySelector("#storyMenu");
+       const menuBtn = box.querySelector("#storyMenu");
 
-if (menuBtn && auth.currentUser?.uid === uid) {
+if(menuBtn){
 
-    menuBtn.onclick = async () => {
+    if(auth.currentUser && auth.currentUser.uid === s.uid){
 
-        if (!confirm("Xóa story này?")) return;
+        menuBtn.style.display = "block";
 
-       await db.collection("stories")
-.doc(s.id)
-.delete();
+        menuBtn.onclick = async ()=>{
 
-        box.remove();
+            if(!confirm("Xóa story này?")) return;
 
-        loadStories();
+            await db
+            .collection("stories")
+            .doc(s.id)
+            .delete();
 
-    };
+            box.remove();
 
-} else if (menuBtn) {
+            loadStories();
 
-    menuBtn.style.display = "none";
+        };
 
-}  
+    }else{
+
+        menuBtn.style.display = "none";
+
+    }
+
+}
         box.querySelector(".story-user").onclick=()=>{
 
             box.remove();
