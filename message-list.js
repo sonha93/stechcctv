@@ -6,7 +6,11 @@
 // Firebase
 import { getVerifiedBadge } from "./verified-users.js";
 import { db, auth } from "./firebase-init.js";
-
+import {
+    acceptFollowRequest,
+    rejectFollowRequest,
+    getMyFollowRequests
+} from "./follow_reques
 
 // ================================
 // ELEMENT
@@ -180,60 +184,132 @@ async function renderChats(){
 
 if(currentFilter==="requests"){
 
-    list =
-    list.filter(
-        x=>x.type==="follow_request"
-    );
+    chatList.innerHTML = "";
 
-}
+    const { 
+        getMyFollowRequests,
+        acceptFollowRequest,
+        rejectFollowRequest
+    } = await import("./follow_requests.js");
 
 
-    snap.forEach(doc=>{
+    const requests = await getMyFollowRequests();
 
-        const r = doc.data();
+
+    if(requests.length === 0){
+
+        chatList.innerHTML = `
+        <div style="padding:30px;text-align:center;color:#999">
+            Không có lời mời theo dõi
+        </div>
+        `;
+
+        return;
+
+    }
+
+
+    for(const item of requests){
+
+        const data = item.data();
+
+
+        const userSnap = await db
+        .collection("users")
+        .doc(data.from)
+        .get();
+
+
+        if(!userSnap.exists)
+        continue;
+
+
+        const u = userSnap.data();
+
 
 
         chatList.innerHTML += `
 
-        <div class="chat-item">
-
-            <div class="chat-button">
-
-                <div class="avatar-wrap">
-
-                    <img class="avatar"
-                    src="${r.avatar || './avatar.png'}">
-
-                </div>
+        <div class="chat-item"
+        id="request-${item.id}">
 
 
-                <div class="chat-body">
+            <div class="avatar-wrap">
 
-                    <div class="chat-name">
-                        ${r.name || "Người dùng"}
-                    </div>
+                <img class="avatar"
+                src="${u.avatar || "./avatar.png"}">
 
-                    <div class="message-preview">
+            </div>
 
-                        <span>
-                        Đã gửi lời mời theo dõi
-                        </span>
 
-                    </div>
+            <div class="chat-body">
+
+                <div class="chat-name">
+
+                    ${u.name || "Người dùng"}
 
                 </div>
 
 
-                <button onclick="acceptFollow('${doc.id}')">
+                <div class="message-preview">
+
+                    Đã gửi lời mời theo dõi bạn
+
+                </div>
+
+
+                <button class="accept-follow"
+                data-id="${item.id}">
                     Chấp nhận
+                </button>
+
+
+                <button class="reject-follow"
+                data-id="${item.id}">
+                    Từ chối
                 </button>
 
 
             </div>
 
+
         </div>
 
         `;
+
+    }
+
+
+
+    document.querySelectorAll(".accept-follow")
+    .forEach(btn=>{
+
+        btn.onclick = async()=>{
+
+            await acceptFollowRequest(btn.dataset.id);
+
+            document
+            .getElementById("request-"+btn.dataset.id)
+            ?.remove();
+
+        };
+
+    });
+
+
+
+    document.querySelectorAll(".reject-follow")
+    .forEach(btn=>{
+
+        btn.onclick = async()=>{
+
+            await rejectFollowRequest(btn.dataset.id);
+
+            document
+            .getElementById("request-"+btn.dataset.id)
+            ?.remove();
+
+        };
 
     });
 
