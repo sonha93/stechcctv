@@ -1258,10 +1258,33 @@ const infoBtn = document.getElementById("infoBtn");
 
 if(infoBtn){
 
-    infoBtn.onclick = () => {
+    infoBtn.onclick = async () => {
+
+
+        const snap = await db
+        .collection("conversations")
+        .doc(conversationId)
+        .get();
+
+
+        if(!snap.exists) return;
+
+
+        const data = snap.data();
+
+
+        const otherUid =
+        data.members.find(
+            uid => uid !== currentUser.uid
+        );
+
 
         window.location.href =
-        "chat-info.html?id=" + conversationId;
+        "chat-info.html?uid="
+        + otherUid
+        + "&chatId="
+        + conversationId;
+
 
     };
 
