@@ -252,8 +252,6 @@ playsinline>
 
 <div class="story-touch right" id="storyNext"></div>
 
-<div class="story-bottom">
-
  <div class="story-bottom">
 
     ${
@@ -360,22 +358,7 @@ likeBtn.innerHTML = liked
 const sendBtn = box.querySelector("#storySendBtn");
 const comment = box.querySelector("#storyComment");
 
-if(sendBtn && comment){
-
-sendBtn.onclick = async () => {
-
-    const text = comment.value.trim();
-
-    if (!text) return;
-
-    const me = auth.currentUser;
-
-    if (!me) return;
-
-    // giữ nguyên toàn bộ code gửi story reply bên dưới
-};
-
-}
+    
 
 
 likeBtn.onclick = async () => {
@@ -860,22 +843,18 @@ seen
 // ================================
 async function markStorySeen(storyId){
 
-  
+    const user = auth.currentUser;
 
     if(!user) return;
 
-
     await db
-    .collection("stories")
-    .doc(storyId)
-    .collection("viewers")
-    .doc(user.uid)
-    .set({
-
-        viewedAt:
-        firebase.firestore.Timestamp.now()
-
-    });
+        .collection("stories")
+        .doc(storyId)
+        .collection("viewers")
+        .doc(user.uid)
+        .set({
+            viewedAt: firebase.firestore.Timestamp.now()
+        });
 
 }
 async function showViewerFly(){
