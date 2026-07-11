@@ -253,9 +253,9 @@ async function renderChats(){
 
 
 
-       chatList.innerHTML += `
+        chatList.innerHTML += `
 
-<div class="chat-item" data-user-id="${uid}">
+        <div class="chat-item">
 
             <div class="chat-button">
 
