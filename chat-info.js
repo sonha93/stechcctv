@@ -705,11 +705,10 @@ async function loadNickname(){
     }
 
 
-    username.innerHTML =
-    `
-    <span>${displayName}</span>
-    ${getVerifiedBadge(uid) || ""}
-    `;
+   username.innerHTML =
+`
+<span>${displayName}</span>
+`;
 
 }
 
