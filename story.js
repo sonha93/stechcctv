@@ -528,17 +528,23 @@ await db.collection("notifications").add({
     comment.value = "";
 
 };
-        document.getElementById("storyPrev").onclick = () => {
+        const prevBtn = box.querySelector("#storyPrev");
 
-    if(index > 0){
+if(prevBtn){
 
-        index--;
+    prevBtn.onclick = () => {
 
-        render();
+        if(index > 0){
 
-    }
+            index--;
 
-};
+            render();
+
+        }
+
+    };
+
+}
 
 box.querySelector("#storyNext").onclick = () => {
 
