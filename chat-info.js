@@ -515,7 +515,142 @@ alert(
 
 
 
+// ================================
+// VIEW AVATAR
+// ================================
 
+window.viewAvatar = function(){
+
+if(!avatar) return;
+
+
+const box = document.createElement("div");
+
+box.className = "avatar-viewer";
+
+
+box.innerHTML = `
+<img src="${avatar.src}">
+`;
+
+
+box.onclick = ()=>{
+
+box.remove();
+
+};
+
+
+document.body.appendChild(box);
+
+};
+
+
+
+// ================================
+// LOAD MEDIA CLICK
+// ================================
+
+async function renderMedia(){
+
+
+if(!chatId) return;
+
+
+const snap =
+await db.collection("conversations")
+.doc(chatId)
+.collection("messages")
+.get();
+
+
+let html = "";
+
+
+snap.forEach(doc=>{
+
+
+const msg = doc.data();
+
+
+
+if(msg.image){
+
+html += `
+<img src="${msg.image}"
+style="width:100px;border-radius:10px">
+`;
+
+}
+
+
+
+if(msg.link){
+
+html += `
+<a href="${msg.link}" target="_blank">
+${msg.link}
+</a>
+`;
+
+}
+
+
+
+});
+
+
+console.log(
+"MEDIA:",
+html
+);
+
+
+}
+
+
+
+renderMedia();
+
+
+
+// ================================
+// NICKNAME LOAD
+// ================================
+
+async function loadNickname(){
+
+
+const current =
+auth.currentUser;
+
+
+if(!current || !uid)
+return;
+
+
+const snap =
+await db.collection("users")
+.doc(current.uid)
+.collection("nicknames")
+.doc(uid)
+.get();
+
+
+if(snap.exists && username){
+
+
+username.innerHTML =
+snap.data().nickname;
+
+
+}
+
+
+}
+
+
+loadNickname();
 // =====================================
 // PROFILE
 // =====================================
