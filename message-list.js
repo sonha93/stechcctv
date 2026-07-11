@@ -211,16 +211,97 @@ async function renderChats(){
 }
 
 
-    if(currentFilter==="online"){
+   if(currentFilter==="online"){
+
+    chatList.innerHTML="";
+
+    const user = auth.currentUser;
+
+    if(!user) return;
 
 
-        list =
-        list.filter(
-            x=>x.online===true
-        );
+    const snap = await db
+    .collection("users")
+    .doc(user.uid)
+    .collection("following")
+    .get();
+
+
+
+    for(const doc of snap.docs){
+
+
+        const uid = doc.id;
+
+
+        const userSnap = await db
+        .collection("users")
+        .doc(uid)
+        .get();
+
+
+        if(!userSnap.exists)
+        continue;
+
+
+        const data = userSnap.data();
+
+
+
+        if(data.online !== true)
+        continue;
+
+
+
+        chatList.innerHTML += `
+
+        <div class="chat-item">
+
+            <div class="chat-button">
+
+
+                <div class="avatar-wrap">
+
+                    <img class="avatar"
+                    src="${data.avatar || './avatar.png'}">
+
+
+                    <span class="online-dot"></span>
+
+                </div>
+
+
+                <div class="chat-body">
+
+                    <div class="chat-name">
+
+                        ${data.name || "Người dùng"}
+
+                    </div>
+
+
+                    <div class="message-preview">
+
+                        Đang hoạt động
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+        `;
 
 
     }
+
+
+    return;
+
+}
 
 
 
