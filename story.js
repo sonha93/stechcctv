@@ -555,12 +555,18 @@ document.getElementById("storyNext").onclick = () => {
     }
 
 };
-        document.getElementById("closeStory").onclick=()=>{
+       const closeBtn = box.querySelector("#closeStory");
 
-            box.remove();
+if(closeBtn){
 
-        };
-         const menuBtn = document.getElementById("storyMenu");
+    closeBtn.onclick = ()=>{
+
+        box.remove();
+
+    };
+
+}
+        const menuBtn = box.querySelector("#storyMenu");
 
 if (menuBtn && auth.currentUser?.uid === uid) {
 
