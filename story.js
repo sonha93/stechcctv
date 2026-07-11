@@ -540,7 +540,7 @@ await db.collection("notifications").add({
 
 };
 
-document.getElementById("storyNext").onclick = () => {
+box.querySelector("#storyNext").onclick = () => {
 
     if(index < stories.length - 1){
 
