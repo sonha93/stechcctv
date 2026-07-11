@@ -866,16 +866,20 @@ seen
 // ================================
 async function markStorySeen(storyId){
 
-  
+    const user = auth.currentUser;
 
     if(!user) return;
 
-
     await db
-    .collection("stories")
-    .doc(storyId)
-    .collection("viewers")
-    .doc(user.uid)
+        .collection("stories")
+        .doc(storyId)
+        .collection("viewers")
+        .doc(user.uid)
+        .set({
+            viewedAt: firebase.firestore.Timestamp.now()
+        });
+
+}
     .set({
 
         viewedAt:
