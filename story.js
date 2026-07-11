@@ -528,25 +528,19 @@ await db.collection("notifications").add({
     comment.value = "";
 
 };
-        const prevBtn = box.querySelector("#storyPrev");
+        document.getElementById("storyPrev").onclick = () => {
 
-if(prevBtn){
+    if(index > 0){
 
-    prevBtn.onclick = () => {
+        index--;
 
-        if(index > 0){
+        render();
 
-            index--;
+    }
 
-            render();
+};
 
-        }
-
-    };
-
-}
-
-box.querySelector("#storyNext").onclick = () => {
+document.getElementById("storyNext").onclick = () => {
 
     if(index < stories.length - 1){
 
@@ -866,20 +860,16 @@ seen
 // ================================
 async function markStorySeen(storyId){
 
-    const user = auth.currentUser;
+  
 
     if(!user) return;
 
-    await db
-        .collection("stories")
-        .doc(storyId)
-        .collection("viewers")
-        .doc(user.uid)
-        .set({
-            viewedAt: firebase.firestore.Timestamp.now()
-        });
 
-}
+    await db
+    .collection("stories")
+    .doc(storyId)
+    .collection("viewers")
+    .doc(user.uid)
     .set({
 
         viewedAt:
