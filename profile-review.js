@@ -284,7 +284,7 @@ if(addStory){
         followBtn.innerHTML = "Follow";
 
     }
-
+        }
 });
 
 
