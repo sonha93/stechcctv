@@ -285,10 +285,6 @@ if(addStory){
 
     }
 
-}
-
-    }
-
 });
 
 
@@ -315,7 +311,7 @@ followBtn.onclick = async () => {
     }
 
 };
-};
+
 
 messageBtn.onclick = async () => {
 
