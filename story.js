@@ -383,6 +383,8 @@ likeBtn.onclick = async () => {
 
 };
 
+if(sendBtn){
+
 sendBtn.onclick = async () => {
 
     const text = comment.value.trim();
@@ -512,6 +514,7 @@ await db.collection("notifications").add({
     comment.value = "";
 
 };
+    }
         document.getElementById("storyPrev").onclick = () => {
 
     if(index > 0){
