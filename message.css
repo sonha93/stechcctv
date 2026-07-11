@@ -541,6 +541,8 @@ margin-left:0;
 }
 .message-content.video-only{
     background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
     padding:0 !important;
     border-radius:0 !important;
 }
