@@ -255,7 +255,7 @@ async function renderChats(){
 
         chatList.innerHTML += `
 
-        <div class="chat-item">
+        <div class="chat-item" data-uid="${uid}">
 
             <div class="chat-button">
 
@@ -358,8 +358,7 @@ if(currentFilter==="requests"){
 
         chatList.innerHTML += `
 
-        <div class="chat-item">
-
+          <div class="chat-item" data-uid="${r.fromUid}">
             <div class="chat-button">
 
                 <div class="avatar-wrap">
@@ -849,32 +848,68 @@ btn.onclick=()=>{
 // OPEN CHAT
 // ================================
 
-if(chatList){
+chatList.addEventListener("click", async (e) => {
 
-chatList.addEventListener(
-"click",
-e=>{
+    const item = e.target.closest(".chat-item");
+    if (!item) return;
 
+    // Nếu là cuộc trò chuyện đã có
+    if (item.dataset.conversationId) {
+        location.href = `message.html?id=${item.dataset.conversationId}`;
+        return;
+    }
 
-    const item =
-    e.target.closest(
-        ".chat-item"
-    );
+    // Nếu là người đang hoạt động
+    const uid = item.dataset.uid;
+    if (!uid) return;
 
+    const currentUser = auth.currentUser;
 
-    if(!item)
-    return;
+    // Tìm conversation giữa 2 người
+    const snap = await db
+        .collection("conversations")
+        .where("members", "array-contains", currentUser.uid)
+        .get();
 
+    let conversationId = null;
 
+    snap.forEach(doc => {
+        const data = doc.data();
 
-    const id =
-    item.dataset.conversationId;
+        if (
+            data.members &&
+            data.members.includes(uid)
+        ) {
+            conversationId = doc.id;
+        }
+    });
 
+    // Chưa có thì tạo mới
+    if (!conversationId) {
 
+        const ref = await db
+            .collection("conversations")
+            .add({
 
-    location.href =
-    `message.html?id=${id}`;
+                members: [
+                    currentUser.uid,
+                    uid
+                ],
 
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+
+                lastMessage: "",
+
+                unread: {}
+
+            });
+
+        conversationId = ref.id;
+    }
+
+    location.href = `message.html?id=${conversationId}`;
 
 });
 
