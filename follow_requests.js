@@ -119,9 +119,7 @@ export async function acceptFollowRequest(requestId){
         followerCount: firebase.firestore.FieldValue.increment(1)
     });
 
-    await requestRef.update({
-        status: "accepted"
-    });
+    await requestRef.delete();
 
 }
 
@@ -134,9 +132,7 @@ export async function rejectFollowRequest(requestId){
     await db
     .collection("follow_requests")
     .doc(requestId)
-    .update({
-        status: "rejected"
-    });
+    .delete();
 
 }
 
