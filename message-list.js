@@ -178,7 +178,14 @@ async function renderChats(){
 
     }
 
+if(currentFilter==="requests"){
 
+    list =
+    list.filter(
+        x=>x.type==="follow_request"
+    );
+
+}
 
 
     const keyword =
