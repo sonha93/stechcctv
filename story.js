@@ -342,13 +342,104 @@ likeBtn.onclick = () => {
 
 };
 
-sendBtn.onclick = () => {
+sendBtn.onclick = async () => {
 
-    if(comment.value.trim()=="") return;
+    const text = comment.value.trim();
 
-    alert("Đã gửi: " + comment.value);
+    if (!text) return;
 
-    comment.value="";
+    const me = auth.currentUser;
+
+    if (!me) return;
+
+    let conversationId = null;
+
+    // tìm conversation đã có
+    const convSnap = await db
+        .collection("conversations")
+        .where("members", "array-contains", me.uid)
+        .get();
+
+    convSnap.forEach(doc => {
+
+        const data = doc.data();
+
+        if (
+            data.members &&
+            data.members.includes(uid)
+        ) {
+            conversationId = doc.id;
+        }
+
+    });
+
+    // chưa có thì tạo
+    if (!conversationId) {
+
+        const ref = await db
+            .collection("conversations")
+            .add({
+
+                members: [
+                    me.uid,
+                    uid
+                ],
+
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+
+                lastMessage: "",
+
+                unread: {}
+
+            });
+
+        conversationId = ref.id;
+    }
+
+    const now = firebase.firestore.Timestamp.now();
+
+    // gửi tin nhắn
+    await db
+        .collection("conversations")
+        .doc(conversationId)
+        .collection("messages")
+        .add({
+
+            senderId: me.uid,
+
+           text: "Đã trả lời tin của bạn: " + text,
+
+            image: "",
+
+            images: [],
+
+            video: "",
+
+            createdAt: now,
+
+            seenBy: [me.uid]
+
+        });
+
+    // cập nhật conversation
+    await db
+        .collection("conversations")
+        .doc(conversationId)
+        .update({
+
+            lastMessage: text,
+
+            updatedAt: now,
+
+            [`unread.${uid}`]:
+                firebase.firestore.FieldValue.increment(1)
+
+        });
+
+    comment.value = "";
+
 };
         document.getElementById("storyPrev").onclick = () => {
 
