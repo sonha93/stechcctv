@@ -849,26 +849,54 @@ btn.onclick=()=>{
 // OPEN CHAT
 // ================================
 
-const item = e.target.closest(".chat-item");
+if(chatList){
 
-if(!item) return;
-
-
-const uid = item.getAttribute("data-user-id");
-
-const id = item.getAttribute("data-conversation-id");
+chatList.addEventListener(
+"click",
+e=>{
 
 
-if(uid){
+    const item =
+    e.target.closest(
+        ".chat-item"
+    );
 
-    location.href = `message.html?uid=${uid}`;
+
+    if(!item)
+    return;
+
+
+
+   const id =
+item.dataset.conversationId;
+
+const uid =
+item.dataset.userId;
+
+
+if(id){
+
+    location.href =
+    `message.html?id=${id}`;
 
 }
-else if(id){
 
-    location.href = `message.html?id=${id}`;
+else if(uid){
+
+    location.href =
+    `message.html?uid=${uid}`;
 
 }
+
+
+});
+
+
+}
+
+
+
+
 // ================================
 // BUTTON
 // ================================
