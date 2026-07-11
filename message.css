@@ -834,5 +834,9 @@ font-size:28px;
         transform:translateY(-4px);
         opacity:1;
     }
-
+.story-reply-label{
+    font-size:15px;
+    font-weight:700;
+    color:#000;
+}
 }
