@@ -938,11 +938,12 @@ object-fit:contain;
     font-size:18px;
     font-variation-settings:"FILL" 1;
 }
- .story-touch{
+.story-touch{
     position:absolute;
-    top:0;
+    top:70px;      /* không đè lên thanh trên */
+    bottom:0;
     width:50%;
-    height:100%;
+    height:auto;
     z-index:20;
 }
 
@@ -1299,32 +1300,6 @@ display:none;
     .story-reply{
         flex:1;
     }
-}
- .story-top{
-    position:absolute;
-    top:0;
-    left:0;
-    right:0;
-    z-index:99999;
-}
-
-.story-actions{
-    position:relative;
-    z-index:100000;
-}
-
-.story-actions button{
-    pointer-events:auto;
-}
-
-#storyVideo{
-    position:absolute;
-    inset:0;
-    z-index:1;
-}
-
-.story-touch{
-    z-index:2;
 }
 </style>
 </head>
