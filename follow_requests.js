@@ -35,19 +35,15 @@ export async function sendFollowRequest(targetUid){
 
     });
 
-    await db
-.collection("notifications")
-.doc(myUid + "_" + targetUid)
-.set({
+    await db.collection("notifications").add({
 
-    uid: targetUid,
-    from: myUid,
+    receiverId: targetUid,
+    senderId: myUid,
     type: "follow_request",
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    read:false
+    read:false,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
 });
-
     return true;
 }
 
