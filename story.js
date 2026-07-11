@@ -251,6 +251,28 @@ playsinline>
 
 <div class="story-touch right" id="storyNext"></div>
 
+<div class="story-bottom">
+
+    <div class="story-reply">
+        <input
+            id="storyComment"
+            type="text"
+            placeholder="Gửi tin nhắn">
+    </div>
+
+    <div class="story-bottom-actions">
+
+        <button id="storyLikeBtn" class="story-icon">
+            <i class="fa-regular fa-heart"></i>
+        </button>
+
+        <button id="storySendBtn" class="story-icon">
+            <i class="fa-regular fa-paper-plane"></i>
+        </button>
+
+    </div>
+
+</div>
 `;
 
         const video = box.querySelector("#storyVideo");
@@ -304,6 +326,30 @@ fills.forEach((fill,i)=>{
             }
 
         };
+     const likeBtn = box.querySelector("#storyLikeBtn");
+const sendBtn = box.querySelector("#storySendBtn");
+const comment = box.querySelector("#storyComment");
+
+let liked = false;
+
+likeBtn.onclick = () => {
+
+    liked = !liked;
+
+    likeBtn.innerHTML = liked
+        ? '<i class="fa-solid fa-heart" style="color:#ff3040"></i>'
+        : '<i class="fa-regular fa-heart"></i>';
+
+};
+
+sendBtn.onclick = () => {
+
+    if(comment.value.trim()=="") return;
+
+    alert("Đã gửi: " + comment.value);
+
+    comment.value="";
+};
         document.getElementById("storyPrev").onclick = () => {
 
     if(index > 0){
