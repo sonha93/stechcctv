@@ -1101,41 +1101,6 @@ opacity:.8;
 
     z-index:50;
 }
- #notificationBox{
-    position:relative;
-    cursor:pointer;
-}
-
-
-#notificationList{
-
-    position:absolute;
-
-    right:0;
-    top:45px;
-
-    width:300px;
-
-    background:#fff;
-
-    border-radius:12px;
-
-    box-shadow:0 5px 20px rgba(0,0,0,.15);
-
-    padding:10px;
-
-    display:none;
-
-    z-index:999999;
-
-}
-
-
-#notificationBox:hover #notificationList{
-
-    display:block;
-
-}
 </style>
 </head>
 
@@ -1165,15 +1130,8 @@ hidden>
     </button>
 
 </div>
-<div id="notificationBox">
 
-    🔔
 
-    <div id="notificationList">
-
-    </div>
-
-</div>
 
 <!-- Thông tin -->
 
@@ -1535,11 +1493,11 @@ stroke-linejoin="round">
 
 </div>
 
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>    
 <script type="module" src="profile-review.js"></script>
+ <script type="module" src="follow_requests.js"></script>
 <script type="module" src="./notification-sound.js"></script>
 </body>
 </html>
