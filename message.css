@@ -870,10 +870,6 @@ font-size:28px;
     color:#000 !important;
     font-weight:700 !important;
 }
-
-.story-reply-card + .chat-text{
-    color:#000 !important;
-}
 .story-reply-card + .chat-text{
     color:#000 !important;
 }
@@ -903,5 +899,15 @@ font-size:28px;
     box-shadow:
         0 16px 36px rgba(0,0,0,.28),
         0 6px 12px rgba(0,0,0,.18);
+
+}
+.story-reply-card,
+.story-reply-card + .chat-text{
+
+    width:min(220px,65vw);
+    max-width:min(220px,65vw);
+
+    word-break:break-word;
+    overflow-wrap:anywhere;
 
 }
