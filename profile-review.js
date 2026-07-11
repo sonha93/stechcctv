@@ -295,27 +295,39 @@ if(addStory){
 
 followBtn.onclick = async () => {
 
-    if (!auth.currentUser) {
-        alert("Bạn cần đăng nhập");
-        return;
-    }
+    if (followLoading) return;
 
-    if (await isFollowing(profileUid)) {
-        followSheet.classList.add("active");
-        return;
-    }
+    followLoading = true;
+    followBtn.disabled = true;
 
-    if (await hasPendingFollowRequest(profileUid)) {
+    try {
 
-        await cancelFollowRequest(profileUid);
+        if (!auth.currentUser) {
+            alert("Bạn cần đăng nhập");
+            return;
+        }
 
-        followBtn.innerHTML = "Bạn bè";
+        if (await isFollowing(profileUid)) {
+            followSheet.classList.add("active");
+            return;
+        }
 
-    } else {
+        if (await hasPendingFollowRequest(profileUid)) {
 
-        await sendFollowRequest(profileUid);
+            await cancelFollowRequest(profileUid);
+            followBtn.innerHTML = "Bạn bè";
 
-        followBtn.innerHTML = "Đã gửi";
+        } else {
+
+            await sendFollowRequest(profileUid);
+            followBtn.innerHTML = "Đã gửi";
+
+        }
+
+    } finally {
+
+        followLoading = false;
+        followBtn.disabled = false;
 
     }
 
