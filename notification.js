@@ -2,13 +2,7 @@
 // NOTIFICATION (FIREBASE V8)
 // ================================
 
-import { app, auth } from "./auth.js";
-
-import {
-    getFirestore
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const db = getFirestore(app);
+import { db, auth } from "./firebase-init.js";
 
 import {
     acceptFollowRequest,
@@ -42,10 +36,9 @@ console.log("FOLLOW REQUESTS:", requests);
 
         const data = item.data();
 
-        const userSnap = await db
-        .collection("users")
-        .doc(data.from)
-        .get();
+        const userSnap = await getDoc(
+    doc(db,"users",data.from)
+);
 
         if(!userSnap.exists){
     console.log("Không tìm thấy user gửi:", data.from);
