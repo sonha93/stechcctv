@@ -626,10 +626,13 @@ const bar =
 document.getElementById("storyBar");
 
 if(!bar) return;
+
+
 const currentUser = auth.currentUser;
 
 if(!currentUser) return;
-const currentUser = auth.currentUser;
+
+
 const friendIds = {};
 
 const followingSnap = await db
@@ -816,7 +819,7 @@ seen
 // ================================
 async function markStorySeen(storyId){
 
-    const user = auth.currentUser;
+  
 
     if(!user) return;
 
