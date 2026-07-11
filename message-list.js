@@ -257,7 +257,32 @@ async function renderChats(){
 
 
 div.className = "chat-item";
+    div.dataset.uid = uid;
+const old = await db
+.collection("conversations")
+.where("members","array-contains",user.uid)
+.get();
 
+
+let conversationId = null;
+
+
+old.forEach(doc=>{
+
+    const c = doc.data();
+
+    if(c.members.includes(uid)){
+
+        conversationId = doc.id;
+
+    }
+
+});
+
+
+div.dataset.uid = uid;
+
+div.dataset.conversationId = conversationId;
 
 div.innerHTML = `
 
@@ -275,16 +300,28 @@ div.innerHTML = `
 
     <div class="chat-body">
 
-        <div class="chat-name">
+        <div class="chat-header">
 
-            ${data.name || "Người dùng"}
+            <div class="chat-name-area">
+
+                <span class="chat-name">
+                    ${data.name || "Người dùng"}
+                </span>
+
+            </div>
 
         </div>
 
 
-        <div class="message-preview">
+        <div class="chat-footer">
 
-            Đang hoạt động
+            <div class="message-preview">
+
+                <span class="message-text">
+                    Đang hoạt động
+                </span>
+
+            </div>
 
         </div>
 
@@ -297,79 +334,12 @@ div.innerHTML = `
 
 
 
-div.onclick = async ()=>{
 
 
-    const me = auth.currentUser.uid;
-
-
-    // tìm cuộc trò chuyện đã có
-
-    const old = await db
-    .collection("conversations")
-    .where("members","array-contains",me)
-    .get();
-
-
-
-    let conversationId = null;
-
-
-    old.forEach(doc=>{
-
-        const c = doc.data();
-
-
-        if(
-            c.members &&
-            c.members.includes(uid)
-        ){
-
-            conversationId = doc.id;
-
-        }
-
-    });
-
-
-
-    // chưa có chat thì tạo
-
-    if(!conversationId){
-
-
-        const ref = await db
-        .collection("conversations")
-        .add({
-
-            members:[
-                me,
-                uid
-            ],
-
-            lastMessage:"",
-            updatedAt:
-            firebase.firestore.FieldValue.serverTimestamp()
-
-        });
-
-
-        conversationId = ref.id;
-
-    }
-
-
-
-    location.href =
-    `message.html?id=${conversationId}`;
-
-
-};
-
-
+    
 
 chatList.appendChild(div);
-        `;
+   
 
 
     }
@@ -942,14 +912,25 @@ e=>{
 
 
 
-    const id =
-    item.dataset.conversationId;
+   const id =
+item.dataset.conversationId;
+
+const uid =
+item.dataset.uid;
 
 
+if(id){
 
     location.href =
     `message.html?id=${id}`;
 
+}
+else if(uid){
+
+    location.href =
+    `new-chat.html?uid=${uid}`;
+
+}
 
 });
 
