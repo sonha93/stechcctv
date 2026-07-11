@@ -834,9 +834,20 @@ font-size:28px;
         transform:translateY(-4px);
         opacity:1;
     }
+}
 .story-reply-label{
     font-size:15px;
     font-weight:700;
     color:#000;
 }
+/* Desktop */
+@media (min-width:768px){
+
+    .chat-video:fullscreen,
+    .chat-video:-webkit-full-screen{
+        object-fit:contain !important;
+        width:100%;
+        height:100%;
+    }
+
 }
