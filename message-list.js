@@ -779,7 +779,10 @@ searchInput.addEventListener(
 "input",
 async ()=>{
 
-
+clearSearch.style.display =
+searchInput.value.trim()
+? "flex"
+: "none";
     const keyword =
     searchInput.value
     .toLowerCase()
@@ -872,11 +875,11 @@ if(clearSearch){
 
 clearSearch.onclick=()=>{
 
-
     searchInput.value="";
 
-    renderChats();
+    chatList.innerHTML="";
 
+    renderChats();
 
 };
 
