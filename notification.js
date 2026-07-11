@@ -2,7 +2,13 @@
 // NOTIFICATION (FIREBASE V8)
 // ================================
 
-import { db, auth } from "./firebase-init.js";
+import { app, auth } from "./auth.js";
+
+import {
+    getFirestore
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const db = getFirestore(app);
 
 import {
     acceptFollowRequest,
