@@ -1,7 +1,4 @@
-import * as firebase from "https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js";
-import "https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js";
-import "https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js";
-import "https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js";
+
 // ==========================
 // FIREBASE INIT
 // ==========================
