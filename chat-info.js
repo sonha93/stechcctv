@@ -19,10 +19,6 @@ location.href="login.html";
 return;
 
 }
-
-console.log(
-"Đăng nhập:",
-user.uid
 );
 
 });
