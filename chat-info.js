@@ -127,52 +127,71 @@ history.back();
 
 async function loadUserInfo(){
 
-
-if(!uid)return;
-
-
-const snap =
-await db.collection("users")
-.doc(uid)
-.get();
+    if(!uid) return;
 
 
+    const snap =
+    await db.collection("users")
+    .doc(uid)
+    .get();
 
-if(!snap.exists)return;
+
+    if(!snap.exists) return;
 
 
-
-const user =
-snap.data();
+    const user =
+    snap.data();
 
 
 
-if(avatar){
+    if(avatar){
 
-avatar.src =
-user.avatar ||
-"default-avatar.png";
+        avatar.src =
+        user.avatar ||
+        "default-avatar.png";
 
-}
-
-
-
-if(username){
-
-username.innerHTML =
-user.name ||
-"Người dùng";
-
-}
+    }
 
 
 
-if(verified && user.verified){
+    if(username){
 
-verified.innerHTML =
-getVerifiedBadge() || "";
+        let displayName =
+        user.name ||
+        "Người dùng";
 
-}
+
+        const current =
+        auth.currentUser;
+
+
+        if(current){
+
+            const nickSnap =
+            await db.collection("users")
+            .doc(current.uid)
+            .collection("nicknames")
+            .doc(uid)
+            .get();
+
+
+            if(nickSnap.exists){
+
+                displayName =
+                nickSnap.data().nickname;
+
+            }
+
+        }
+
+
+        username.innerHTML =
+        displayName +
+        getVerifiedBadge(uid);
+
+
+    }
+
 
 
 }
