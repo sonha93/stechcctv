@@ -1290,15 +1290,15 @@ display:none;
 @media (min-width:768px){
 
     .story-bottom{
-        left:0;
-        right:0;
-        padding:0 30px;
+        width:560px;          /* bằng chiều rộng khung story */
+        left:50%;
+        transform:translateX(-50%);
+        right:auto;
         justify-content:center;
     }
 
     .story-reply{
-        flex:0 0 520px;
-        max-width:520px;
+        flex:1;
     }
 
 }
