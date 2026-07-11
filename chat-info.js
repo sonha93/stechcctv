@@ -48,7 +48,52 @@ document.getElementById("avatar");
 
 const username =
 document.getElementById("username");
+// ================================
+// CLICK XEM AVATAR
+// ================================
 
+if(avatar){
+
+    avatar.style.cursor = "pointer";
+
+    avatar.onclick = ()=>{
+
+        const box = document.createElement("div");
+
+        box.style.position = "fixed";
+        box.style.top = "0";
+        box.style.left = "0";
+        box.style.width = "100%";
+        box.style.height = "100%";
+        box.style.background = "rgba(0,0,0,.8)";
+        box.style.display = "flex";
+        box.style.alignItems = "center";
+        box.style.justifyContent = "center";
+        box.style.zIndex = "99999";
+
+
+        box.innerHTML = `
+            <img src="${avatar.src}"
+            style="
+            max-width:90%;
+            max-height:90%;
+            border-radius:50%;
+            ">
+        `;
+
+
+        box.onclick = ()=>{
+
+            box.remove();
+
+        };
+
+
+        document.body.appendChild(box);
+
+    };
+
+}
 const verified =
 document.getElementById("verified");
 
@@ -150,12 +195,11 @@ if(!chatId)return;
 
 
 const snap =
-await db.collection("chats")
+await db.collection("conversations")
 .doc(chatId)
 .collection("messages")
 .orderBy("createdAt","desc")
 .get();
-
 
 
 let images=[];
@@ -393,7 +437,7 @@ firebase.firestore.FieldValue.serverTimestamp()
 alert(
 "Đã đổi biệt danh"
 );
-
+location.reload();
 
 };
 
