@@ -37,7 +37,8 @@ document.getElementById("searchInput");
 
 const clearSearch =
 document.getElementById("clearSearch");
-
+const closeUserSearch =
+document.getElementById("closeUserSearch");
 const filterBtns =
 document.querySelectorAll(".filterBtn");
 
@@ -778,7 +779,14 @@ if(searchInput){
 searchInput.addEventListener(
 "input",
 async ()=>{
+if(closeUserSearch){
 
+    closeUserSearch.style.display =
+    searchInput.value.trim()
+    ? "flex"
+    : "none";
+
+}
 clearSearch.style.display =
 searchInput.value.trim()
 ? "flex"
@@ -874,7 +882,19 @@ searchInput.value.trim()
 if(clearSearch){
 
 clearSearch.onclick=()=>{
+if(closeUserSearch){
 
+    closeUserSearch.onclick = ()=>{
+
+        searchInput.value="";
+
+        closeUserSearch.style.display="none";
+
+        renderChats();
+
+    };
+
+}
     searchInput.value="";
 
     chatList.innerHTML="";
