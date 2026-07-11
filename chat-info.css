@@ -481,6 +481,34 @@ body{
 
 }
 }
+#mediaList{
 
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+padding:15px;
+
+}
+
+
+.media-photo{
+
+width:100px;
+height:100px;
+
+object-fit:cover;
+
+border-radius:10px;
+
+}
+
+
+.media-video{
+
+width:220px;
+
+border-radius:10px;
+
+}
 
  
