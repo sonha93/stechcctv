@@ -31,7 +31,7 @@ async function loadNotifications(){
     list.innerHTML = "";
 
     const requests = await getMyFollowRequests();
-
+console.log("FOLLOW REQUESTS:", requests);
     for(const item of requests){
 
         const data = item.data();
