@@ -213,15 +213,171 @@ async function renderChats(){
 
     if(currentFilter==="online"){
 
+    chatList.innerHTML="";
 
-        list =
-        list.filter(
-            x=>x.online===true
-        );
+    const user = auth.currentUser;
+
+    if(!user) return;
+
+
+    const snap = await db
+    .collection("users")
+    .doc(user.uid)
+    .collection("following")
+    .get();
+
+
+
+    for(const doc of snap.docs){
+
+
+        const uid = doc.id;
+
+
+        const userSnap = await db
+        .collection("users")
+        .doc(uid)
+        .get();
+
+
+        if(!userSnap.exists)
+        continue;
+
+
+        const data = userSnap.data();
+
+
+
+        if(data.online !== true)
+        continue;
+
+
+
+       const div = document.createElement("div");
+
+
+div.className = "chat-item";
+
+
+div.innerHTML = `
+
+<button class="chat-button">
+
+    <div class="avatar-wrap">
+
+        <img class="avatar"
+        src="${data.avatar || './avatar.png'}">
+
+        <span class="online-dot"></span>
+
+    </div>
+
+
+    <div class="chat-body">
+
+        <div class="chat-name">
+
+            ${data.name || "Người dùng"}
+
+        </div>
+
+
+        <div class="message-preview">
+
+            Đang hoạt động
+
+        </div>
+
+    </div>
+
+
+</button>
+
+`;
+
+
+
+div.onclick = async ()=>{
+
+
+    const me = auth.currentUser.uid;
+
+
+    // tìm cuộc trò chuyện đã có
+
+    const old = await db
+    .collection("conversations")
+    .where("members","array-contains",me)
+    .get();
+
+
+
+    let conversationId = null;
+
+
+    old.forEach(doc=>{
+
+        const c = doc.data();
+
+
+        if(
+            c.members &&
+            c.members.includes(uid)
+        ){
+
+            conversationId = doc.id;
+
+        }
+
+    });
+
+
+
+    // chưa có chat thì tạo
+
+    if(!conversationId){
+
+
+        const ref = await db
+        .collection("conversations")
+        .add({
+
+            members:[
+                me,
+                uid
+            ],
+
+            lastMessage:"",
+            updatedAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+
+        });
+
+
+        conversationId = ref.id;
+
+    }
+
+
+
+    location.href =
+    `message.html?id=${conversationId}`;
+
+
+};
+
+
+
+chatList.appendChild(div);
+        `;
 
 
     }
 
+
+    return;
+
+}
 
 
     if(currentFilter==="shop"){
