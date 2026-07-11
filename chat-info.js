@@ -36,8 +36,7 @@ params.get("uid");
 
 
 const chatId =
-params.get("chatId");
-
+params.get("id");
 
 // =====================================
 // ELEMENT
@@ -127,81 +126,91 @@ history.back();
 
 async function loadUserInfo(){
 
-    if(!uid) return;
+
+if(!uid) return;
 
 
-    const snap =
-    await db.collection("users")
-    .doc(uid)
-    .get();
+const snap =
+await db.collection("users")
+.doc(uid)
+.get();
 
 
-    if(!snap.exists) return;
+if(!snap.exists) return;
 
 
-    const user =
-    snap.data();
-
-
-
-    if(avatar){
-
-        avatar.src =
-        user.avatar ||
-        "default-avatar.png";
-
-    }
+const user =
+snap.data();
 
 
 
-    if(username){
+if(avatar){
 
-        let displayName =
-        user.name ||
-        "Người dùng";
+avatar.src =
+user.avatar ||
+"default-avatar.png";
 
-
-        const current =
-        auth.currentUser;
+}
 
 
-        if(current){
 
-            const nickSnap =
-            await db.collection("users")
-            .doc(current.uid)
-            .collection("nicknames")
-            .doc(uid)
-            .get();
+if(username){
+
+let displayName =
+user.name ||
+"Người dùng";
 
 
-            if(nickSnap.exists){
-
-                displayName =
-                nickSnap.data().nickname;
-
-            }
-
-        }
+const current =
+auth.currentUser;
 
 
-        username.innerHTML =
-        displayName +
-        getVerifiedBadge(uid);
+if(current){
 
 
-    }
+const nickSnap =
+await db.collection("users")
+.doc(current.uid)
+.collection("nicknames")
+.doc(uid)
+.get();
 
+
+
+if(nickSnap.exists){
+
+displayName =
+nickSnap.data().nickname ||
+displayName;
+
+}
 
 
 }
 
 
+
+username.innerHTML =
+displayName +
+(getVerifiedBadge(uid) || "");
+
+
+}
+
+
+}
+
+
+
+auth.onAuthStateChanged(user=>{
+
+if(user){
+
 loadUserInfo();
 
+}
 
-
-
+});
 // =====================================
 // LOAD MEDIA
 // =====================================
@@ -304,7 +313,7 @@ if(!chatId)return;
 
 
 const snap =
-await db.collection("chats")
+await db.collection("conversations")
 .doc(chatId)
 .collection("messages")
 .where(
