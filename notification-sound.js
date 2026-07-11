@@ -74,16 +74,15 @@ auth.onAuthStateChanged(user=>{
 
 
 
-    const q = query(
+   const q = query(
 
-        collection(db,"notifications"),
+    collection(db,"notifications"),
 
-        where("receiverId","==",user.uid),
+    where("uid","==",user.uid),
 
-        where("read","==",false)
+    where("read","==",false)
 
-    );
-
+);
 
 
     onSnapshot(q,(snap)=>{
