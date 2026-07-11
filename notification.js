@@ -1,19 +1,8 @@
 // ================================
-// NOTIFICATION
+// NOTIFICATION (FIREBASE V8)
 // ================================
 
-import { app, auth } from "./auth.js";
-
-import {
-    getFirestore,
-    collection,
-    query,
-    where,
-    orderBy,
-    onSnapshot,
-    doc,
-    getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { db, auth } from "./firebase-init.js";
 
 import {
     acceptFollowRequest,
@@ -21,18 +10,23 @@ import {
     getMyFollowRequests
 } from "./follow_requests.js";
 
-const db = getFirestore(app);
-
 const list = document.getElementById("notificationList");
 
-auth.onAuthStateChanged(async user=>{
+auth.onAuthStateChanged(user=>{
 
     if(!user) return;
 
     loadNotifications();
 
 });
+
+// ================================
+// LOAD
+// ================================
+
 async function loadNotifications(){
+
+    if(!list) return;
 
     list.innerHTML = "";
 
@@ -42,11 +36,14 @@ async function loadNotifications(){
 
         const data = item.data();
 
-        const userSnap = await getDoc(
-            doc(db,"users",data.from)
-        );
+        const userSnap = await db
+        .collection("users")
+        .doc(data.from)
+        .get();
 
-        if(!userSnap.exists()) continue;
+        if(!userSnap.exists){
+            continue;
+        }
 
         const u = userSnap.data();
 
@@ -54,36 +51,36 @@ async function loadNotifications(){
 
 <div class="notify-item" id="request-${item.id}">
 
-<img
-src="${u.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
-class="notify-avatar">
+    <img
+        src="${u.avatar || "./avatar.png"}"
+        class="notify-avatar">
 
-<div class="notify-content">
+    <div class="notify-content">
 
-<div class="notify-title">
+        <div class="notify-title">
 
-<b>${u.name}</b>
-đã gửi lời mời theo dõi bạn
+            <b>${u.name || "Người dùng"}</b>
+            đã gửi lời mời theo dõi bạn
 
-</div>
+        </div>
 
-<div class="notify-action">
+        <div class="notify-action">
 
-<button
-class="acceptBtn"
-data-id="${item.id}">
-Chấp nhận
-</button>
+            <button
+                class="acceptBtn"
+                data-id="${item.id}">
+                Chấp nhận
+            </button>
 
-<button
-class="rejectBtn"
-data-id="${item.id}">
-Từ chối
-</button>
+            <button
+                class="rejectBtn"
+                data-id="${item.id}">
+                Từ chối
+            </button>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
 </div>
 
@@ -94,6 +91,11 @@ Từ chối
     bindButtons();
 
 }
+
+// ================================
+// BUTTON
+// ================================
+
 function bindButtons(){
 
     document
@@ -102,14 +104,10 @@ function bindButtons(){
 
         btn.onclick = async()=>{
 
-            await acceptFollowRequest(
-                btn.dataset.id
-            );
+            await acceptFollowRequest(btn.dataset.id);
 
             document
-            .getElementById(
-                "request-"+btn.dataset.id
-            )
+            .getElementById("request-"+btn.dataset.id)
             ?.remove();
 
         };
@@ -122,14 +120,10 @@ function bindButtons(){
 
         btn.onclick = async()=>{
 
-            await rejectFollowRequest(
-                btn.dataset.id
-            );
+            await rejectFollowRequest(btn.dataset.id);
 
             document
-            .getElementById(
-                "request-"+btn.dataset.id
-            )
+            .getElementById("request-"+btn.dataset.id)
             ?.remove();
 
         };
