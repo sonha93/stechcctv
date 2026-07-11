@@ -328,9 +328,10 @@ fills.forEach((fill,i)=>{
 
         };
      const likeBtn = box.querySelector("#storyLikeBtn");
-    const me = auth.currentUser;
+  const me = auth.currentUser;
 
 let liked =
+me &&
 Array.isArray(s.likes) &&
 s.likes.includes(me.uid);
 
@@ -340,7 +341,16 @@ likeBtn.innerHTML = liked
 const sendBtn = box.querySelector("#storySendBtn");
 const comment = box.querySelector("#storyComment");
 
+likeBtn.onclick = async () => {
 
+    const me = auth.currentUser;
+
+    if(!me){
+        alert("Vui lòng đăng nhập");
+        return;
+    }
+
+    liked = !liked;
 
 likeBtn.onclick = async () => {
 
@@ -532,9 +542,9 @@ if (menuBtn && auth.currentUser?.uid === uid) {
 
         if (!confirm("Xóa story này?")) return;
 
-        await db.collection("stories")
-            .doc(stories[index].id)
-            .delete();
+       await db.collection("stories")
+.doc(s.id)
+.delete();
 
         box.remove();
 
@@ -625,7 +635,9 @@ const bar =
 document.getElementById("storyBar");
 
 if(!bar) return;
+const currentUser = auth.currentUser;
 
+if(!currentUser) return;
 const currentUser = auth.currentUser;
 const friendIds = {};
 
@@ -808,7 +820,29 @@ seen
 }
 
 
+// ================================
+// MARK STORY SEEN
+// ================================
+async function markStorySeen(storyId){
 
+    const user = auth.currentUser;
+
+    if(!user) return;
+
+
+    await db
+    .collection("stories")
+    .doc(storyId)
+    .collection("viewers")
+    .doc(user.uid)
+    .set({
+
+        viewedAt:
+        firebase.firestore.Timestamp.now()
+
+    });
+
+}
 auth.onAuthStateChanged(user=>{
 
 if(user){
