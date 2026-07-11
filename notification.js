@@ -48,8 +48,9 @@ console.log("FOLLOW REQUESTS:", requests);
         .get();
 
         if(!userSnap.exists){
-            continue;
-        }
+    console.log("Không tìm thấy user gửi:", data.from);
+    continue;
+}
 
         const u = userSnap.data();
 
