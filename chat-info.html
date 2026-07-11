@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Thông tin đoạn chat</title>
+
+<link rel="stylesheet" href="chat-info.css">
+
+</head>
+
+
+<body>
+
+
+<div class="chat-info">
+
+
+
+<!-- HEADER -->
+
+<header>
+
+<button id="backBtn" class="icon-btn">
+
+<svg viewBox="0 0 24 24">
+<path d="M15 18l-6-6 6-6"/>
+</svg>
+
+</button>
+
+
+<h3>Thông tin</h3>
+
+
+<button id="menuBtn" class="icon-btn">
+
+<svg viewBox="0 0 24 24">
+<circle cx="12" cy="5" r="2"/>
+<circle cx="12" cy="12" r="2"/>
+<circle cx="12" cy="19" r="2"/>
+</svg>
+
+</button>
+
+
+</header>
+
+
+
+
+
+<!-- PROFILE -->
+
+<section class="profile">
+
+
+<img id="avatar"
+src="default-avatar.png">
+
+
+<h2 id="username">
+Người dùng
+</h2>
+
+
+<div id="verified"></div>
+
+
+</section>
+
+
+
+
+
+
+<!-- QUICK ACTION -->
+
+<section class="quick-action">
+
+
+<button onclick="openProfile()">
+
+
+<div class="round-icon">
+
+<svg viewBox="0 0 24 24">
+<path d="M12 12a5 5 0 100-10 5 5 0 000 10z"/>
+<path d="M3 22c0-5 18-5 18 0"/>
+</svg>
+
+</div>
+
+
+<span>
+Trang cá nhân
+</span>
+
+
+</button>
+
+
+
+
+
+<button onclick="changeNickname()">
+
+
+
+<div class="round-icon">
+
+<svg viewBox="0 0 24 24">
+<path d="M3 17.25V21h3.75L17.8 9.95l-3.75-3.75L3 17.25z"/>
+</svg>
+
+</div>
+
+
+<span>
+Biệt danh
+</span>
+
+
+</button>
+
+
+
+
+
+
+<button>
+
+
+<div class="round-icon">
+
+<svg viewBox="0 0 24 24">
+<circle cx="11" cy="11" r="7"/>
+<line x1="20" y1="20" x2="16" y2="16"/>
+</svg>
+
+</div>
+
+
+<span>
+Tìm kiếm
+</span>
+
+
+</button>
+
+
+
+
+
+
+<button>
+
+
+<div class="round-icon">
+
+
+<svg viewBox="0 0 24 24">
+
+<path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5z"/>
+
+<path d="M19.4 15a1.7 1.7 0 000-6l-1.5-.3a7 7 0 00-1.5-1.5l-.3-1.5a1.7 1.7 0 00-6 0l-.3 1.5a7 7 0 00-1.5 1.5L6.8 9a1.7 1.7 0 000 6l1.5.3a7 7 0 001.5 1.5l.3 1.5a1.7 1.7 0 006 0l.3-1.5a7 7 0 001.5-1.5z"/>
+
+</svg>
+
+
+</div>
+
+
+<span>
+Tùy chỉnh
+</span>
+
+
+</button>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- MEDIA -->
+
+<section class="menu">
+
+
+<h3>
+Thông tin đoạn chat
+</h3>
+
+
+
+<div class="item">
+
+<svg viewBox="0 0 24 24">
+<rect x="3" y="4" width="18" height="16" rx="2"/>
+<circle cx="8" cy="9" r="2"/>
+<path d="M21 15l-5-5L5 20"/>
+</svg>
+
+
+Ảnh & video
+
+</div>
+
+
+
+
+
+<div class="item">
+
+<svg viewBox="0 0 24 24">
+<path d="M6 2h9l3 3v17H6z"/>
+</svg>
+
+
+File
+
+</div>
+
+
+
+
+
+<div class="item">
+
+
+<svg viewBox="0 0 24 24">
+<path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1"/>
+<path d="M14 11a5 5 0 01-7 0l-3 3a5 5 0 007 7l1-1"/>
+</svg>
+
+
+Link
+
+
+</div>
+
+
+
+
+
+
+<div class="item">
+
+<svg viewBox="0 0 24 24">
+<path d="M12 17l-5 3 1-6-4-4 6-.8L12 3l2 6.2 6 .8-4 4 1 6z"/>
+</svg>
+
+
+Tin nhắn ghim
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- SETTINGS -->
+
+
+<section class="menu">
+
+
+<div class="item">
+
+
+<svg viewBox="0 0 24 24">
+<path d="M12 3a9 9 0 000 18"/>
+</svg>
+
+
+Tắt thông báo
+
+
+<input id="mute"
+type="checkbox">
+
+
+</div>
+
+
+
+
+
+
+<div class="item">
+
+
+<svg viewBox="0 0 24 24">
+<path d="M12 5v14M5 12h14"/>
+</svg>
+
+
+Thông báo & âm thanh
+
+
+</div>
+
+
+
+
+
+
+<div class="item">
+
+
+<svg viewBox="0 0 24 24">
+<path d="M16 21v-2a4 4 0 00-8 0v2"/>
+<circle cx="12" cy="7" r="4"/>
+</svg>
+
+
+Tạo nhóm
+
+
+</div>
+
+
+
+
+
+
+
+<div class="item">
+
+
+<svg viewBox="0 0 24 24">
+<path d="M12 5v14"/>
+<path d="M5 12h14"/>
+</svg>
+
+
+Tự động lưu ảnh
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- DANGER -->
+
+
+<section class="danger">
+
+
+<button onclick="blockUser()">
+
+🚫 Chặn
+
+</button>
+
+
+
+<button onclick="deleteChat()">
+
+🗑 Xóa đoạn chat
+
+</button>
+
+
+
+<button>
+
+⚠️ Báo cáo
+
+</button>
+
+
+</section>
+
+
+
+</div>
+
+
+
+<script type="module" src="chat-info.js"></script>
+
+
+</body>
+</html>
