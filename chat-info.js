@@ -7,6 +7,27 @@ import { getVerifiedBadge } from "./verified-users.js";
 
 
 // =====================================
+// CHECK LOGIN
+// =====================================
+
+auth.onAuthStateChanged(user=>{
+
+if(!user){
+
+location.href="login.html";
+
+return;
+
+}
+
+console.log(
+"Đăng nhập:",
+user.uid
+);
+
+});
+
+// =====================================
 // GET PARAM
 // =====================================
 
@@ -20,7 +41,8 @@ params.get("uid");
 
 const chatId =
 params.get("chatId");
-
+console.log("UID:",uid);
+console.log("CHAT:",chatId);
 
 // =====================================
 // ELEMENT
@@ -108,10 +130,9 @@ user.name ||
 if(verified && user.verified){
 
 verified.innerHTML =
-getVerifiedBadge();
+getVerifiedBadge() || "";
 
 }
-
 
 
 }
