@@ -26,10 +26,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 const db = getFirestore(app);
 
-    import {
+   import {
     sendFollowRequest,
     cancelFollowRequest,
     hasPendingFollowRequest,
+    isFollowing,
     isFriend
 } from "./follow_requests.js";
 // ===== Lấy uid trên URL =====
@@ -263,33 +264,34 @@ if(addStory){
     document.querySelector('[data-tab="liked"]').style.display   = isOwner ? "" : "none";
     document.querySelector('[data-tab="saved"]').style.display   = isOwner ? "" : "none";
 
-    if(user && !isOwner){
+   if(user && !isOwner){
 
-        const followRef = doc(
-            db,
-            "users",
-            user.uid,
-            "following",
-            profileUid
-        );
+  const following = await isFollowing(profileUid);
 
-        const snap = await getDoc(followRef);
+    const pending = await hasPendingFollowRequest(profileUid);
 
-        if(snap.exists()){
 
-            followBtn.innerHTML = `
-            <span class="material-symbols-outlined">
-                manage_accounts
-            </span>
-            `;
+    if(following){
 
-        }else{
-
-            followBtn.innerHTML = "Follow";
-
-        }
+        followBtn.innerHTML = `
+        <span class="material-symbols-outlined">
+            manage_accounts
+        </span>
+        `;
 
     }
+    else if(pending){
+
+        followBtn.innerHTML = "Đã gửi";
+
+    }
+    else{
+
+        followBtn.innerHTML = "Follow";
+
+    }
+
+}
 
 });
 
