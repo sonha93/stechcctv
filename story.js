@@ -254,12 +254,22 @@ playsinline>
 
 <div class="story-bottom">
 
+ <div class="story-bottom">
+
+    ${
+    auth.currentUser?.uid !== uid
+    ?
+    `
     <div class="story-reply">
         <input
             id="storyComment"
             type="text"
             placeholder="Gửi tin nhắn">
     </div>
+    `
+    :
+    ""
+    }
 
     <div class="story-bottom-actions">
 
@@ -267,9 +277,18 @@ playsinline>
             <i class="fa-regular fa-heart"></i>
         </button>
 
+
+        ${
+        auth.currentUser?.uid !== uid
+        ?
+        `
         <button id="storySendBtn" class="story-icon">
             <i class="fa-regular fa-paper-plane"></i>
         </button>
+        `
+        :
+        ""
+        }
 
     </div>
 
@@ -341,6 +360,22 @@ likeBtn.innerHTML = liked
 const sendBtn = box.querySelector("#storySendBtn");
 const comment = box.querySelector("#storyComment");
 
+if(sendBtn && comment){
+
+sendBtn.onclick = async () => {
+
+    const text = comment.value.trim();
+
+    if (!text) return;
+
+    const me = auth.currentUser;
+
+    if (!me) return;
+
+    // giữ nguyên toàn bộ code gửi story reply bên dưới
+};
+
+}
 
 
 likeBtn.onclick = async () => {
