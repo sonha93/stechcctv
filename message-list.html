@@ -1211,6 +1211,53 @@ display:none;
 .story-seen .story-avatar{
     border:3px solid #aaa;
 }
+ .story-viewer-fly{
+    position:absolute;
+    bottom:80px;
+    left:50%;
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    overflow:hidden;
+    animation: flyUp 2s ease forwards;
+    z-index:999;
+}
+
+.story-viewer-fly img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+
+@keyframes flyUp{
+
+    0%{
+        transform:translate(-50%,0) scale(.5);
+        opacity:0;
+    }
+
+    20%{
+        opacity:1;
+    }
+
+    70%{
+        transform:
+        translate(-50%,-180px)
+        rotate(10deg)
+        scale(1);
+        opacity:1;
+    }
+
+    100%{
+        transform:
+        translate(-50%,-320px)
+        rotate(-15deg)
+        scale(.3);
+        opacity:0;
+    }
+
+}
 </style>
 </head>
 
