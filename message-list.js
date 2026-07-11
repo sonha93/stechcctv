@@ -867,26 +867,13 @@ e=>{
 
 
 
-   const id =
-item.dataset.conversationId;
-
-const uid =
-item.dataset.userId;
+    const id =
+    item.dataset.conversationId;
 
 
-if(id){
 
     location.href =
     `message.html?id=${id}`;
-
-}
-
-else if(uid){
-
-    location.href =
-    `message.html?uid=${uid}`;
-
-}
 
 
 });
