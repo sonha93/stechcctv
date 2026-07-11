@@ -2,8 +2,7 @@
 // FOLLOW REQUEST (FIREBASE V8)
 // ================================
 
-import { firebase, db, auth } from "./firebase-init.js";
-
+import { db, auth } from "./firebase-init.js";
 // ================================
 // GỬI LỜI MỜI
 // ================================
