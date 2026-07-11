@@ -191,7 +191,7 @@ if (auth.currentUser) {
     const s = stories[index];
 
     markStorySeen(s.id);
-showViewerFly();
+showViewerFly(s.id);
         box.innerHTML=`
 
 <div class="story-top">
@@ -861,45 +861,56 @@ async function markStorySeen(storyId){
         });
 
 }
-async function showViewerFly(){
-
-    const user = auth.currentUser;
-
-    if(!user) return;
-
-
-    const userSnap = await db
-    .collection("users")
-    .doc(user.uid)
-    .get();
-
-
-    const data = userSnap.exists
-    ? userSnap.data()
-    : {};
-
-
-    const avatar =
-    data.avatar ||
-    data.photoURL ||
-    "./avatar.png";
-
-
-    const el = document.createElement("div");
-
-    el.className="story-viewer-fly";
-
-
-    el.innerHTML=`
-        <img src="${avatar}">
-    `;
-
+async function showViewerFly(storyId){
 
     const box =
     document.querySelector(".story-popup");
 
+    if(!box) return;
 
-    if(box){
+
+    const viewersSnap = await db
+    .collection("stories")
+    .doc(storyId)
+    .collection("viewers")
+    .orderBy("viewedAt","desc")
+    .limit(10)
+    .get();
+
+
+    viewersSnap.forEach(async doc=>{
+
+
+        const uid = doc.id;
+
+
+        const userSnap = await db
+        .collection("users")
+        .doc(uid)
+        .get();
+
+
+        if(!userSnap.exists) return;
+
+
+        const data = userSnap.data();
+
+
+        const avatar =
+        data.avatar ||
+        data.photoURL ||
+        "./avatar.png";
+
+
+        const el=document.createElement("div");
+
+        el.className="story-viewer-fly";
+
+
+        el.innerHTML=`
+            <img src="${avatar}">
+        `;
+
 
         box.appendChild(el);
 
@@ -910,7 +921,10 @@ async function showViewerFly(){
 
         },2000);
 
-    }
+
+
+    });
+
 
 }
 auth.onAuthStateChanged(user=>{
