@@ -4,7 +4,7 @@ import {
     hasPendingFollowRequest,
     isFollowing,
     isFriend
-} from "./follow-request.js";
+} from "./follow_requests.js";
 import { getVerifiedBadge } from "./verified-users.js";
 import { app, auth } from "./auth.js";
 import {
