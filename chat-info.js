@@ -705,15 +705,13 @@ async function loadNickname(){
     }
 
 
-   username.innerHTML =
-`
-<span>${displayName}</span>
-`;
+    username.innerHTML =
+    `
+    <span>${displayName}</span>
+    ${getVerifiedBadge(uid) || ""}
+    `;
 
 }
-
-
-loadNickname();
 // =====================================
 // PROFILE
 // =====================================
