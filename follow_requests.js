@@ -72,57 +72,63 @@ export async function getMyFollowRequests(){
 
 export async function acceptFollowRequest(requestId){
 
-    const requestRef = db
-    .collection("follow_requests")
-    .doc(requestId);
+    const requestRef = db.collection("follow_requests").doc(requestId);
 
     const requestSnap = await requestRef.get();
 
-    if(!requestSnap.exists){
-        return;
-    }
+    if(!requestSnap.exists) return;
 
-    const data = requestSnap.data();
+    const { from, to } = requestSnap.data();
 
-    const fromUid = data.from;
-    const toUid = data.to;
+    const batch = db.batch();
 
-    await db
-    .collection("users")
-    .doc(fromUid)
-    .collection("following")
-    .doc(toUid)
-    .set({
-        time: Date.now()
-    });
+    batch.set(
+        db.collection("users").doc(from).collection("following").doc(to),
+        { time: Date.now() },
+        { merge:true }
+    );
 
-    await db
-    .collection("users")
-    .doc(toUid)
-    .collection("followers")
-    .doc(fromUid)
-    .set({
-        time: Date.now()
-    });
+    batch.set(
+        db.collection("users").doc(to).collection("followers").doc(from),
+        { time: Date.now() },
+        { merge:true }
+    );
 
-    await db
-    .collection("users")
-    .doc(fromUid)
-    .update({
-        followingCount: firebase.firestore.FieldValue.increment(1)
-    });
+    batch.set(
+        db.collection("users").doc(to).collection("following").doc(from),
+        { time: Date.now() },
+        { merge:true }
+    );
 
-    await db
-    .collection("users")
-    .doc(toUid)
-    .update({
-        followerCount: firebase.firestore.FieldValue.increment(1)
-    });
+    batch.set(
+        db.collection("users").doc(from).collection("followers").doc(to),
+        { time: Date.now() },
+        { merge:true }
+    );
 
-    await requestRef.delete();
+    batch.update(
+        db.collection("users").doc(from),
+        {
+            followingCount: firebase.firestore.FieldValue.increment(1),
+            followerCount: firebase.firestore.FieldValue.increment(1),
+            friendCount: firebase.firestore.FieldValue.increment(1)
+        }
+    );
+
+    batch.update(
+        db.collection("users").doc(to),
+        {
+            followingCount: firebase.firestore.FieldValue.increment(1),
+            followerCount: firebase.firestore.FieldValue.increment(1),
+            friendCount: firebase.firestore.FieldValue.increment(1)
+        }
+    );
+
+    batch.delete(requestRef);
+
+    await batch.commit();
 
 }
-
 // ================================
 // TỪ CHỐI
 // ================================
@@ -152,9 +158,7 @@ export async function cancelFollowRequest(targetUid){
     .get();
 
     for(const doc of snap.docs){
-
         await doc.ref.delete();
-
     }
 
 }
