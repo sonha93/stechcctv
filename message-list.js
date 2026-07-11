@@ -320,28 +320,16 @@ div.innerHTML = `
 
     <div class="chat-body">
 
-        <div class="chat-header">
+        <div class="chat-name">
 
-            <div class="chat-name-area">
-
-                <span class="chat-name">
-                    ${data.name || "Người dùng"}
-                </span>
-
-            </div>
+            ${data.name || "Người dùng"}
 
         </div>
 
 
-        <div class="chat-footer">
+        <div class="message-preview">
 
-            <div class="message-preview">
-
-                <span class="message-text">
-                    Đang hoạt động
-                </span>
-
-            </div>
+            Đang hoạt động
 
         </div>
 
