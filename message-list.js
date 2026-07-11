@@ -257,52 +257,7 @@ async function renderChats(){
 
 
 div.className = "chat-item";
-const old = await db
-.collection("conversations")
-.where("members","array-contains",user.uid)
-.get();
 
-
-let conversationId = null;
-
-
-old.forEach(doc=>{
-
-    const c = doc.data();
-
-    if(c.members.includes(uid)){
-
-        conversationId = doc.id;
-
-    }
-
-});
-
-
-if(!conversationId){
-
-    const ref = await db
-    .collection("conversations")
-    .add({
-
-        members:[
-            user.uid,
-            uid
-        ],
-
-        lastMessage:"",
-        updatedAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
-    });
-
-
-    conversationId = ref.id;
-
-}
-
-
-div.dataset.conversationId = conversationId;
 
 div.innerHTML = `
 
@@ -342,12 +297,79 @@ div.innerHTML = `
 
 
 
+div.onclick = async ()=>{
 
 
-    
-div.dataset.conversationId = uid;
+    const me = auth.currentUser.uid;
+
+
+    // tìm cuộc trò chuyện đã có
+
+    const old = await db
+    .collection("conversations")
+    .where("members","array-contains",me)
+    .get();
+
+
+
+    let conversationId = null;
+
+
+    old.forEach(doc=>{
+
+        const c = doc.data();
+
+
+        if(
+            c.members &&
+            c.members.includes(uid)
+        ){
+
+            conversationId = doc.id;
+
+        }
+
+    });
+
+
+
+    // chưa có chat thì tạo
+
+    if(!conversationId){
+
+
+        const ref = await db
+        .collection("conversations")
+        .add({
+
+            members:[
+                me,
+                uid
+            ],
+
+            lastMessage:"",
+            updatedAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+
+        });
+
+
+        conversationId = ref.id;
+
+    }
+
+
+
+    location.href =
+    `message.html?id=${conversationId}`;
+
+
+};
+
+
+
 chatList.appendChild(div);
-   
+        `;
 
 
     }
