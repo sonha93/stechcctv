@@ -840,12 +840,11 @@ async ()=>{
 
 
 
-                    <div class="message-preview">
+                   <div class="message-preview">
 
-                        ID: ${user.uid}
+@${user.username || user.userId || ""}
 
-                    </div>
-
+</div>
 
                 </div>
 
@@ -898,24 +897,34 @@ async function searchUsers(keyword){
 
 
         const name =
-        (
-            data.name ||
-            data.displayName ||
-            ""
-        )
-        .toLowerCase();
+(
+    data.name ||
+    data.displayName ||
+    ""
+)
+.toLowerCase();
 
 
-        const uid =
-        doc.id.toLowerCase();
+const username =
+(
+    data.username ||
+    data.userId ||
+    data.id ||
+    ""
+)
+.toLowerCase();
+
+
+const uid =
+doc.id.toLowerCase();
 
 
 
-        if(
-            name.includes(keyword) ||
-            uid.includes(keyword)
-        ){
-
+if(
+    name.includes(keyword) ||
+    username.includes(keyword) ||
+    uid.includes(keyword)
+){
             result.push({
 
                 uid: doc.id,
