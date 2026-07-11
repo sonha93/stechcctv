@@ -35,7 +35,7 @@ export async function sendFollowRequest(targetUid){
 
     });
 
-    await db.collection("notifications").add({
+   await db.collection("notifications").add({
 
     receiverId: targetUid,
     senderId: myUid,
