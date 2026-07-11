@@ -1,5 +1,36 @@
-import { db, auth } from "./firebase-init.js";
+import {
+    sendFollowRequest,
+    cancelFollowRequest,
+    hasPendingFollowRequest,
+    isFollowing,
+    isFriend
+} from "./follow-request.js";
 import { getVerifiedBadge } from "./verified-users.js";
+import { app, auth } from "./auth.js";
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    getDocs,
+    collection,
+    query,
+    where,
+    updateDoc,
+    deleteDoc,
+    setDoc,
+     addDoc,
+     serverTimestamp,
+    increment,
+     arrayUnion
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+    
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+const db = getFirestore(app);
+
 // ===== Lấy uid trên URL =====
 
 const params = new URLSearchParams(location.search);
@@ -61,10 +92,8 @@ let currentStoryOwner = null;
 
 async function loadProfile() {
 
-   const snap = await db
-.collection("users")
-.doc(profileUid)
-.get();
+    const snap = await getDoc(doc(db,"users",profileUid));
+
     if(!snap.exists()){
 
         alert("Không tìm thấy người dùng");
@@ -82,12 +111,15 @@ let displayName = u.name || "Người dùng";
 
 if(auth.currentUser){
 
-    const nickSnap = await db
-.collection("users")
-.doc(auth.currentUser.uid)
-.collection("nicknames")
-.doc(profileUid)
-.get();
+    const nickSnap = await getDoc(
+        doc(
+            db,
+            "users",
+            auth.currentUser.uid,
+            "nicknames",
+            profileUid
+        )
+    );
 
     if(nickSnap.exists()){
 
@@ -160,10 +192,15 @@ ${links}
 
     let totalLike = 0;
 
-    const videoSnap = await db
-.collection("videos")
-.where("uid","==",profileUid)
-.get();
+    const q = query(
+
+        collection(db,"videos"),
+
+        where("uid","==",profileUid)
+
+    );
+
+    const videoSnap = await getDocs(q);
 
     videoSnap.forEach(d=>{
 
@@ -182,13 +219,10 @@ loadProfile();
 // HIỆN FOLLOW / EDIT
 // ===========================
 
-auth.onAuthStateChanged(async (user) => {
+onAuthStateChanged(auth, async (user) => {
 if(user){
 
-  const me = await db
-.collection("users")
-.doc(user.uid)
-.get();
+    const me = await getDoc(doc(db,"users",user.uid));
 
     if(me.exists()){
 
@@ -326,10 +360,12 @@ messageBtn.onclick = async () => {
 
     if (myUid === profileUid) return;
 
-    const snap = await db
-.collection("conversations")
-.where("members","array-contains",myUid)
-.get();
+    const snap = await getDocs(
+        query(
+            collection(db, "conversations"),
+            where("members", "array-contains", myUid)
+        )
+    );
 
     let conversationId = null;
 
@@ -343,14 +379,14 @@ messageBtn.onclick = async () => {
 
     if (!conversationId) {
 
-        const ref = await db
-.collection("conversations")
-.add({
+        const ref = await addDoc(
+            collection(db, "conversations"),
+            {
                 members: [myUid, profileUid],
                 name: document.getElementById("profileNameText").innerText,
                 avatar: avatar.src,
                 lastMessage: "",
-                updatedAt: window.firebase.firestore.FieldValue.serverTimestamp()
+                updatedAt: serverTimestamp()
             }
         );
 
@@ -412,13 +448,16 @@ async function loadTab(type){
 
     if(type==="videos"){
 
-       const snap = await db
-.collection("videos")
-.where("uid","==",profileUid)
-.where("status","==","public")
-.get();
+        const q=query(
 
-       
+            collection(db,"videos"),
+
+            where("uid","==",profileUid),
+where("status","==","public")
+
+        );
+
+        const snap=await getDocs(q);
 
 snap.forEach(doc => {
    
@@ -851,19 +890,19 @@ await deleteDoc(
 doc(db,"users",profileUid,"followers",myUid)
 );
 
-await db
-.collection("users")
-.doc(myUid)
-.update({
-    followingCount: window.firebase.firestore.FieldValue.increment(-1)
-});
+await updateDoc(
+doc(db,"users",myUid),
+{
+followingCount:increment(-1)
+}
+);
 
-await db
-.collection("users")
-.doc(profileUid)
-.update({
-    followerCount: window.firebase.firestore.FieldValue.increment(-1)
-});
+await updateDoc(
+doc(db,"users",profileUid),
+{
+followerCount:increment(-1)
+}
+);
 
 const friend = await isFriend(profileUid);
 
@@ -958,7 +997,8 @@ storyFile.onchange = async () => {
 
     likeCount: 0,
 
-    createdAt:window.firebase.firestore.FieldValue.serverTimestamp()
+    createdAt: serverTimestamp()
+
 });
 
 storyFile.value = "";
