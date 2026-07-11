@@ -321,8 +321,6 @@ followBtn.onclick = async () => {
 
 };
 
-};
-
 messageBtn.onclick = async () => {
 
     if (!auth.currentUser) {
