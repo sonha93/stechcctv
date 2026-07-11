@@ -186,31 +186,6 @@ if(currentFilter==="requests"){
     );
 
 }
-if(currentFilter==="requests"){
-
-    chatList.innerHTML = "";
-
-    const user = auth.currentUser;
-
-    if(!user) return;
-
-    const snap = await db
-    .collection("follow_requests")
-    .where("toUid","==",user.uid)
-    .where("status","==","pending")
-    .get();
-
-
-    if(snap.empty){
-
-        chatList.innerHTML = `
-            <div style="padding:30px;text-align:center;color:#999">
-                Không có lời mời kết bạn
-            </div>
-        `;
-
-        return;
-    }
 
 
     snap.forEach(doc=>{
