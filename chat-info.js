@@ -215,89 +215,74 @@ loadUserInfo();
 
 async function loadMedia(){
 
-
-if(!chatId)return;
-
+if(!chatId) return;
 
 
 const snap =
 await db.collection("conversations")
 .doc(chatId)
 .collection("messages")
-.orderBy("createdAt","desc")
 .get();
 
 
-let images=[];
-let videos=[];
-let files=[];
-let links=[];
+const mediaList =
+document.getElementById("mediaList");
 
+
+if(!mediaList) return;
+
+
+let html = "";
 
 
 snap.forEach(doc=>{
 
-
-const msg =
-doc.data();
-
+const msg = doc.data();
 
 
 if(msg.image){
 
-images.push(msg.image);
+html += `
+<img class="media-photo"
+src="${msg.image}">
+`;
 
 }
 
+
+if(msg.images){
+
+msg.images.forEach(img=>{
+
+html += `
+<img class="media-photo"
+src="${img}">
+`;
+
+});
+
+}
 
 
 if(msg.video){
 
-videos.push(msg.video);
+html += `
+<video class="media-video"
+controls
+src="${msg.video}">
+</video>
+`;
 
 }
-
-
-
-if(msg.file){
-
-files.push(msg.file);
-
-}
-
-
-
-if(msg.link){
-
-links.push(msg.link);
-
-}
-
 
 
 });
 
 
-
-console.log({
-
-images,
-videos,
-files,
-links
-
-});
+mediaList.innerHTML = html;
 
 
 }
-
-
-
-loadMedia();
-
-
-
-
 
 // =====================================
 // LOAD PINNED MESSAGE
