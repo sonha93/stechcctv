@@ -441,13 +441,13 @@ if(!bar) return;
 const currentUser = auth.currentUser;
 const friendIds = {};
 
-const friendSnap = await db
+const followingSnap = await db
     .collection("users")
     .doc(currentUser.uid)
-    .collection("friends")
+    .collection("following")
     .get();
 
-friendSnap.forEach(doc => {
+followingSnap.forEach(doc => {
     friendIds[doc.id] = true;
 });
 
