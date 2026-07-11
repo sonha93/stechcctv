@@ -37,6 +37,8 @@ document.getElementById("searchInput");
 
 const clearSearch =
 document.getElementById("clearSearch");
+const searchHistory =
+JSON.parse(localStorage.getItem("searchHistory") || "[]");
 const closeUserSearch =
 document.getElementById("closeUserSearch");
 const filterBtns =
@@ -412,25 +414,21 @@ if(currentFilter==="requests"){
 
 
 
-    if(keyword){
+   if(keyword){
 
+    list =
+    list.filter(x=>{
 
-        list =
-        list.filter(x=>{
-
-
-            return (
-                x.name ||
-                ""
-            )
+        return (
+            (x.name || "")
             .toLowerCase()
-            .includes(keyword);
+            .includes(keyword)
 
+        );
 
-        });
+    });
 
-
-    }
+}
 
 
 
@@ -881,14 +879,15 @@ searchInput.value.trim()
 
 if(clearSearch){
 
-clearSearch.onclick=()=>{
-if(closeUserSearch){
+    clearSearch.onclick = ()=>{
 
-    closeUserSearch.onclick = ()=>{
+        searchInput.value = "";
 
-        searchInput.value="";
+        clearSearch.style.display = "none";
 
-        closeUserSearch.style.display="none";
+        if(closeUserSearch){
+            closeUserSearch.style.display = "none";
+        }
 
         renderChats();
 
