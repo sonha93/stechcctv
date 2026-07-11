@@ -95,18 +95,17 @@ expire.getHours()+24
 
 
 
-await db
-.collection("stories")
-.add({
+await db.collection("stories").add({
 
 uid:user.uid,
 
 video:data.secure_url,
 
+likes: [],
+
 createdAt:now,
 
-expiresAt:
-firebase.firestore.Timestamp.fromDate(expire)
+expiresAt: firebase.firestore.Timestamp.fromDate(expire)
 
 });
 
@@ -327,18 +326,38 @@ fills.forEach((fill,i)=>{
 
         };
      const likeBtn = box.querySelector("#storyLikeBtn");
+    const me = auth.currentUser;
+
+let liked =
+Array.isArray(s.likes) &&
+s.likes.includes(me.uid);
+
+likeBtn.innerHTML = liked
+? '<i class="fa-solid fa-heart" style="color:#ff3040"></i>'
+: '<i class="fa-regular fa-heart"></i>';
 const sendBtn = box.querySelector("#storySendBtn");
 const comment = box.querySelector("#storyComment");
 
 let liked = false;
 
-likeBtn.onclick = () => {
+likeBtn.onclick = async () => {
 
     liked = !liked;
 
     likeBtn.innerHTML = liked
         ? '<i class="fa-solid fa-heart" style="color:#ff3040"></i>'
         : '<i class="fa-regular fa-heart"></i>';
+
+    await db
+        .collection("stories")
+        .doc(s.id)
+        .update({
+
+            likes: liked
+            ? firebase.firestore.FieldValue.arrayUnion(me.uid)
+            : firebase.firestore.FieldValue.arrayRemove(me.uid)
+
+        });
 
 };
 
