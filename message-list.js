@@ -24,7 +24,8 @@ let currentStoryId = "";
 let currentAvatar = "";
 const chatList =
 document.getElementById("chatList");
-
+const onlineFriends =
+document.getElementById("onlineFriends");
 const chatCount =
 document.getElementById("chatCount");
 
@@ -85,7 +86,63 @@ function showToast(text){
 
 }
 
+async function loadOnlineFriends(){
 
+    const user = auth.currentUser;
+
+    if(!user || !onlineFriends) return;
+
+
+    onlineFriends.innerHTML = "";
+
+
+    const snap = await db
+    .collection("users")
+    .doc(user.uid)
+    .collection("following")
+    .get();
+
+
+
+    for(const doc of snap.docs){
+
+        const friendUid = doc.id;
+
+
+        const userSnap = await db
+        .collection("users")
+        .doc(friendUid)
+        .get();
+
+
+        if(!userSnap.exists) continue;
+
+
+        const data = userSnap.data();
+
+
+        if(data.online !== true) continue;
+
+
+
+        onlineFriends.innerHTML += `
+
+        <div class="online-user">
+
+            <img src="${data.avatar || './avatar.png'}">
+
+            <span>
+                ${data.name || "Người dùng"}
+            </span>
+
+        </div>
+
+        `;
+
+
+    }
+
+}
 
 // ================================
 // LOAD CHAT
@@ -812,6 +869,8 @@ user=>{
     if(user){
 
         loadChats();
+
+        loadOnlineFriends();
 
     }
 
