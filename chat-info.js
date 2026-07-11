@@ -66,21 +66,7 @@ history.back();
 async function loadUserInfo(){
 
 
-console.log("CHAT INFO UID:", uid);
-
-
-
-if(!uid){
-
-    console.log("Không có UID");
-
-    return;
-
-}
-
-
-
-try{
+if(!uid)return;
 
 
 const snap =
@@ -90,23 +76,7 @@ await db.collection("users")
 
 
 
-console.log(
-"USER SNAP:",
-snap.exists
-);
-
-
-
-if(!snap.exists){
-
-    console.log(
-    "Không tìm thấy user",
-    uid
-    );
-
-    return;
-
-}
+if(!snap.exists)return;
 
 
 
@@ -115,114 +85,41 @@ snap.data();
 
 
 
-console.log(
-"USER DATA:",
-user
-);
-
-
-
-// ==========================
-// AVATAR
-// ==========================
-
 if(avatar){
 
-
 avatar.src =
-
 user.avatar ||
-
-user.photoURL ||
-
-user.image ||
-
-"./avatar.png";
-
-
-
-avatar.onerror = ()=>{
-
-avatar.src="./avatar.png";
-
-};
-
+"default-avatar.png";
 
 }
 
 
-
-// ==========================
-// NAME
-// ==========================
 
 if(username){
 
-
-username.textContent =
-
+username.innerHTML =
 user.name ||
-
-user.displayName ||
-
-user.username ||
-
 "Người dùng";
-
 
 }
 
 
 
-
-// ==========================
-// VERIFIED
-// ==========================
-
-if(verified){
-
-
-if(
-user.verified === true ||
-user.isVerified === true
-){
-
+if(verified && user.verified){
 
 verified.innerHTML =
 getVerifiedBadge();
 
-
-}else{
-
-
-verified.innerHTML="";
-
-
 }
 
 
 
 }
-
-
-
-}catch(err){
-
-
-console.error(
-"LOAD USER ERROR:",
-err
-);
-
-
-}
-
-
-}
-
 
 
 loadUserInfo();
+
+
 
 
 // =====================================
