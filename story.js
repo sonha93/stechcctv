@@ -185,9 +185,11 @@ if (auth.currentUser) {
 
     document.body.appendChild(box);
 
-    function render(){
+   function render(){
 
-        const s = stories[index];
+    const s = stories[index];
+
+    markStorySeen(s.id);
 
         box.innerHTML=`
 
@@ -449,7 +451,29 @@ sendBtn.onclick = async () => {
     seenBy:[me.uid]
 
 });
+// ================================
+// STORY REPLY NOTIFICATION
+// ================================
 
+await db.collection("notifications").add({
+
+    uid: uid,                 // người nhận (chủ story)
+
+    fromUid: me.uid,          // người trả lời
+
+    type: "story_reply",
+
+    storyId: s.id,
+
+    conversationId: conversationId,
+
+    message: text,
+
+    seen:false,
+
+    createdAt: now
+
+});
     // cập nhật conversation
     await db
         .collection("conversations")
@@ -709,9 +733,31 @@ if (!friendIds[s.uid]) {
     if (showed[s.uid]) continue;
     showed[s.uid] = true;
 
-    const item = document.createElement("div");
+   const item = document.createElement("div");
 
-    item.className = "story-item";
+
+// kiểm tra đã xem chưa
+let seen = false;
+
+const seenSnap = await db
+.collection("stories")
+.doc(doc.id)
+.collection("viewers")
+.doc(currentUser.uid)
+.get();
+
+
+if(seenSnap.exists){
+
+    seen = true;
+
+}
+
+
+item.className =
+seen
+? "story-item story-seen"
+: "story-item story-unseen";
 
     item.innerHTML = `
         <div class="story-avatar">
