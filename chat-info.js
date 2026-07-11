@@ -93,8 +93,6 @@ if(avatar){
     };
 
 }
-const verified =
-document.getElementById("verified");
 
 const backBtn =
 document.getElementById("backBtn");
@@ -692,32 +690,41 @@ renderMedia();
 
 async function loadNickname(){
 
-
-const current =
-auth.currentUser;
-
-
-if(!current || !uid)
-return;
+    const current =
+    auth.currentUser;
 
 
-const snap =
-await db.collection("users")
-.doc(current.uid)
-.collection("nicknames")
-.doc(uid)
-.get();
+    if(!current || !uid || !username)
+    return;
 
 
-if(snap.exists && username){
+    const snap =
+    await db.collection("users")
+    .doc(current.uid)
+    .collection("nicknames")
+    .doc(uid)
+    .get();
 
 
-username.innerHTML =
-snap.data().nickname;
+    let displayName =
+    username.innerText ||
+    "Người dùng";
 
 
-}
+    if(snap.exists){
 
+        displayName =
+        snap.data().nickname ||
+        displayName;
+
+    }
+
+
+    username.innerHTML =
+    `
+    <span>${displayName}</span>
+    ${getVerifiedBadge(uid) || ""}
+    `;
 
 }
 
