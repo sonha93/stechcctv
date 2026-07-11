@@ -848,31 +848,6 @@ btn.onclick=()=>{
 // OPEN CHAT
 // ================================
 
-if(chatList){
-
-chatList.addEventListener(
-"click",
-e=>{
-
-
-    const item =
-    e.target.closest(
-        ".chat-item"
-    );
-
-
-    if(!item)
-    return;
-
-
-
-    const id =
-item.dataset.conversationId;
-
-const uid =
-item.dataset.userId;
-
-
 if(id){
 
     location.href =
@@ -880,8 +855,60 @@ if(id){
 
 }else if(uid){
 
-    location.href =
-    `new-chat.html?uid=${uid}`;
+    const snap = await db
+    .collection("conversations")
+    .where("members","array-contains",auth.currentUser.uid)
+    .get();
+
+
+    let convId = null;
+
+
+    snap.forEach(doc=>{
+
+        const data = doc.data();
+
+        if(data.members.includes(uid)){
+
+            convId = doc.id;
+
+        }
+
+    });
+
+
+    if(convId){
+
+        location.href =
+        `message.html?id=${convId}`;
+
+    }else{
+
+        const newConv =
+        await db
+        .collection("conversations")
+        .add({
+
+            members:[
+                auth.currentUser.uid,
+                uid
+            ],
+
+            createdAt:
+            firebase.firestore.Timestamp.now(),
+
+            updatedAt:
+            firebase.firestore.Timestamp.now(),
+
+            lastMessage:""
+
+        });
+
+
+        location.href =
+        `message.html?id=${newConv.id}`;
+
+    }
 
 }
 
