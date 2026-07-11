@@ -25,11 +25,12 @@ import {
     
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 const db = getFirestore(app);
-import {
+
+    import {
     sendFollowRequest,
     cancelFollowRequest,
     hasPendingFollowRequest,
-    isFollowing
+    isFriend
 } from "./follow_requests.js";
 // ===== Lấy uid trên URL =====
 
@@ -307,22 +308,24 @@ followBtn.onclick = async () => {
             return;
         }
 
-        if (await isFollowing(profileUid)) {
-            followSheet.classList.add("active");
-            return;
-        }
+        if (await isFriend(profileUid)) {
+
+    followSheet.classList.add("active");
+    return;
+
+}
 
         if (await hasPendingFollowRequest(profileUid)) {
 
-            await cancelFollowRequest(profileUid);
-            followBtn.innerHTML = "Bạn bè";
+    await cancelFollowRequest(profileUid);
+    followBtn.innerHTML = "Follow";
 
-        } else {
+} else {
 
-            await sendFollowRequest(profileUid);
-            followBtn.innerHTML = "Đã gửi";
+    await sendFollowRequest(profileUid);
+    followBtn.innerHTML = "Đã gửi";
 
-        }
+}
 
     } finally {
 
