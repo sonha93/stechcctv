@@ -455,10 +455,11 @@ body{
 }
 
 #avatar{
-    width:90px;
-    height:90px;
+    width:96px;
+    height:96px;
     border-radius:50%;
     object-fit:cover;
-    display:block;
+    border:2px solid #eee;
+    cursor:pointer;
 }
 }
