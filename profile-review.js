@@ -25,7 +25,12 @@ import {
     
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 const db = getFirestore(app);
-
+import {
+    sendFollowRequest,
+    cancelFollowRequest,
+    hasPendingFollowRequest,
+    isFollowing
+} from "./follow_requests.js";
 // ===== Lấy uid trên URL =====
 
 const params = new URLSearchParams(location.search);
@@ -295,127 +300,26 @@ followBtn.onclick = async () => {
         return;
     }
 
-    const myUid = auth.currentUser.uid;
+    if (await isFollowing(profileUid)) {
+        followSheet.classList.add("active");
+        return;
+    }
 
-    if (myUid === profileUid) return;
+    if (await hasPendingFollowRequest(profileUid)) {
 
-    const followingRef = doc(
-        db,
-        "users",
-        myUid,
-        "following",
-        profileUid
-    );
+        await cancelFollowRequest(profileUid);
 
-    const followerRef = doc(
-        db,
-        "users",
-        profileUid,
-        "followers",
-        myUid
-    );
+        followBtn.innerHTML = "Bạn bè";
 
-    const snap = await getDoc(followingRef);
+    } else {
 
-    // Đã follow
-   if(snap.exists()){
+        await sendFollowRequest(profileUid);
 
-    followSheet.classList.add("active");
+        followBtn.innerHTML = "Đã gửi";
 
-    return;
+    }
 
-}
-    await setDoc(followingRef,{
-    time:Date.now()
-});
-
-await setDoc(followerRef,{
-    time:Date.now()
-});
-
-// =======================
-// FOLLOW QUA LẠI => BẠN BÈ
-// =======================
-
-const reverseFollow = await getDoc(
-    doc(
-        db,
-        "users",
-        profileUid,
-        "following",
-        myUid
-    )
-);
-
-if(reverseFollow.exists()){
-
-    const batch = writeBatch(db);
-
-    batch.set(
-        doc(
-            db,
-            "users",
-            myUid,
-            "friends",
-            profileUid
-        ),
-        {
-            uid: profileUid,
-            createdAt: Date.now()
-        }
-    );
-
-    batch.set(
-        doc(
-            db,
-            "users",
-            profileUid,
-            "friends",
-            myUid
-        ),
-        {
-            uid: myUid,
-            createdAt: Date.now()
-        }
-    );
-
-    batch.update(
-        doc(db,"users",myUid),
-        {
-            friendCount: increment(1)
-        }
-    );
-
-    batch.update(
-        doc(db,"users",profileUid),
-        {
-            friendCount: increment(1)
-        }
-    );
-
-    await batch.commit();
-
-}
-
-    await updateDoc(
-        doc(db,"users",myUid),
-        {
-            followingCount:increment(1)
-        }
-    );
-
-    await updateDoc(
-        doc(db,"users",profileUid),
-        {
-            followerCount:increment(1)
-        }
-    );
-
-    followBtn.innerHTML = `
-        <span class="material-symbols-outlined">
-            manage_accounts
-        </span>
-    `;
+};
 
 };
 
