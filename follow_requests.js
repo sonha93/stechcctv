@@ -69,7 +69,25 @@ export async function sendFollowRequest(targetUid){
         }
 
     );
+await addDoc(
 
+    collection(db,"notifications"),
+
+    {
+
+        uid: targetUid,
+
+        from: myUid,
+
+        type: "follow_request",
+
+        createdAt: serverTimestamp(),
+
+        read: false
+
+    }
+
+);
     return true;
 
 }
