@@ -19,7 +19,7 @@ location.href="login.html";
 return;
 
 }
-);
+
 
 });
 
