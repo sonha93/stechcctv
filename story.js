@@ -338,7 +338,7 @@ likeBtn.innerHTML = liked
 const sendBtn = box.querySelector("#storySendBtn");
 const comment = box.querySelector("#storyComment");
 
-let liked = false;
+
 
 likeBtn.onclick = async () => {
 
@@ -439,6 +439,8 @@ sendBtn.onclick = async () => {
     storyId: s.id,
 
     storyOwner: uid,
+
+    storyOwnerId: uid,
 
     type: "story_reply",
 
