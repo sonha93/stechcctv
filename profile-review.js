@@ -292,7 +292,7 @@ if(addStory){
 
 });
 
-
+let followLoading = false;
 followBtn.onclick = async () => {
 
     if (followLoading) return;
