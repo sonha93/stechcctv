@@ -894,15 +894,7 @@ if(clearSearch){
     };
 
 }
-    searchInput.value="";
-
-    chatList.innerHTML="";
-
-    renderChats();
-
-};
-
-}
+  
 async function searchUsers(keyword){
 
     const snap = await db
