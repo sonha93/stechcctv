@@ -18,7 +18,8 @@ import {
      addDoc,
      serverTimestamp,
     increment,
-     arrayUnion
+     arrayUnion,
+     writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
     
@@ -325,12 +326,76 @@ followBtn.onclick = async () => {
 
 }
     await setDoc(followingRef,{
-        time:Date.now()
-    });
+    time:Date.now()
+});
 
-    await setDoc(followerRef,{
-        time:Date.now()
-    });
+await setDoc(followerRef,{
+    time:Date.now()
+});
+
+// =======================
+// FOLLOW QUA LẠI => BẠN BÈ
+// =======================
+
+const reverseFollow = await getDoc(
+    doc(
+        db,
+        "users",
+        profileUid,
+        "following",
+        myUid
+    )
+);
+
+if(reverseFollow.exists()){
+
+    const batch = writeBatch(db);
+
+    batch.set(
+        doc(
+            db,
+            "users",
+            myUid,
+            "friends",
+            profileUid
+        ),
+        {
+            uid: profileUid,
+            createdAt: Date.now()
+        }
+    );
+
+    batch.set(
+        doc(
+            db,
+            "users",
+            profileUid,
+            "friends",
+            myUid
+        ),
+        {
+            uid: myUid,
+            createdAt: Date.now()
+        }
+    );
+
+    batch.update(
+        doc(db,"users",myUid),
+        {
+            friendCount: increment(1)
+        }
+    );
+
+    batch.update(
+        doc(db,"users",profileUid),
+        {
+            friendCount: increment(1)
+        }
+    );
+
+    await batch.commit();
+
+}
 
     await updateDoc(
         doc(db,"users",myUid),
@@ -894,7 +959,36 @@ doc(db,"users",myUid,"following",profileUid)
 await deleteDoc(
 doc(db,"users",profileUid,"followers",myUid)
 );
+const myFriendRef =
+doc(db,"users",myUid,"friends",profileUid);
 
+const otherFriendRef =
+doc(db,"users",profileUid,"friends",myUid);
+
+const friendSnap =
+await getDoc(myFriendRef);
+
+if(friendSnap.exists()){
+
+    await deleteDoc(myFriendRef);
+
+    await deleteDoc(otherFriendRef);
+
+    await updateDoc(
+        doc(db,"users",myUid),
+        {
+            friendCount: increment(-1)
+        }
+    );
+
+    await updateDoc(
+        doc(db,"users",profileUid),
+        {
+            friendCount: increment(-1)
+        }
+    );
+
+}
 await updateDoc(
 doc(db,"users",myUid),
 {
