@@ -1,4 +1,8 @@
-
+import {
+    sendFollowRequest,
+    hasPendingFollowRequest,
+    isFollowing
+} from "./follow_requests.js";
 import { getVerifiedBadge } from "./verified-users.js";
 import { app, auth } from "./auth.js";
 import {
@@ -261,29 +265,27 @@ if(addStory){
 
     if(user && !isOwner){
 
-        const followRef = doc(
-            db,
-            "users",
-            user.uid,
-            "following",
-            profileUid
-        );
+        if(user && !isOwner){
 
-        const snap = await getDoc(followRef);
+    if(await isFollowing(profileUid)){
 
-        if(snap.exists()){
+        followBtn.innerHTML = `
+        <span class="material-symbols-outlined">
+            manage_accounts
+        </span>
+        `;
 
-            followBtn.innerHTML = `
-            <span class="material-symbols-outlined">
-                manage_accounts
-            </span>
-            `;
+    }else if(await hasPendingFollowRequest(profileUid)){
 
-        }else{
+        followBtn.innerHTML = "Đã gửi";
 
-            followBtn.innerHTML = "Follow";
+    }else{
 
-        }
+        followBtn.innerHTML = "Follow";
+
+    }
+
+}
 
     }
 
@@ -292,69 +294,27 @@ if(addStory){
 
 followBtn.onclick = async () => {
 
-    if (!auth.currentUser) {
+    if(!auth.currentUser){
         alert("Bạn cần đăng nhập");
         return;
     }
 
-    const myUid = auth.currentUser.uid;
+    if(await isFollowing(profileUid)){
+        followSheet.classList.add("active");
+        return;
+    }
 
-    if (myUid === profileUid) return;
+    if(await hasPendingFollowRequest(profileUid)){
+        return;
+    }
 
-    const followingRef = doc(
-        db,
-        "users",
-        myUid,
-        "following",
-        profileUid
-    );
+    const ok = await sendFollowRequest(profileUid);
 
-    const followerRef = doc(
-        db,
-        "users",
-        profileUid,
-        "followers",
-        myUid
-    );
+    if(ok){
+        followBtn.innerHTML = "Đã gửi";
+    }
 
-    const snap = await getDoc(followingRef);
-
-    // Đã follow
-   if(snap.exists()){
-
-    followSheet.classList.add("active");
-
-    return;
-
-}
-    await setDoc(followingRef,{
-        time:Date.now()
-    });
-
-    await setDoc(followerRef,{
-        time:Date.now()
-    });
-
-    await updateDoc(
-        doc(db,"users",myUid),
-        {
-            followingCount:increment(1)
-        }
-    );
-
-    await updateDoc(
-        doc(db,"users",profileUid),
-        {
-            followerCount:increment(1)
-        }
-    );
-
-    followBtn.innerHTML = `
-        <span class="material-symbols-outlined">
-            manage_accounts
-        </span>
-    `;
-
+};
 };
 
 messageBtn.onclick = async () => {
