@@ -398,6 +398,26 @@ onclick="showChatImage(this.src)">
 ""
 }
 ${
+msg.type === "story_reply"
+?
+`
+<div class="story-reply-card">
+
+    <video
+        class="chat-video"
+        controls
+        playsinline
+        preload="metadata"
+        src="${msg.video}">
+    </video>
+
+    <div class="story-reply-label">
+        Đã trả lời story
+    </div>
+
+</div>
+`
+:
 msg.video
 ?
 `
