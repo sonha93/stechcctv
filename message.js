@@ -1258,8 +1258,7 @@ const infoBtn = document.getElementById("infoBtn");
 
 if(infoBtn){
 
-    infoBtn.onclick = async () => {
-
+    infoBtn.onclick = async ()=>{
 
         const snap = await db
         .collection("conversations")
@@ -1279,12 +1278,14 @@ if(infoBtn){
         );
 
 
+        if(!otherUid) return;
+
+
         window.location.href =
         "chat-info.html?uid="
         + otherUid
         + "&chatId="
         + conversationId;
-
 
     };
 
