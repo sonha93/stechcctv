@@ -102,15 +102,24 @@ function bindButtons(){
     .querySelectorAll(".acceptBtn")
     .forEach(btn=>{
 
-        btn.onclick = async()=>{
+      btn.onclick = async()=>{
 
-            await acceptFollowRequest(btn.dataset.id);
+    try{
 
-            document
-            .getElementById("request-"+btn.dataset.id)
-            ?.remove();
+        await acceptFollowRequest(btn.dataset.id);
 
-        };
+        document
+        .getElementById("request-"+btn.dataset.id)
+        ?.remove();
+
+    }catch(e){
+
+        console.error(e);
+        alert(e.message);
+
+    }
+
+};
 
     });
 
