@@ -901,13 +901,21 @@ font-size:28px;
         0 6px 12px rgba(0,0,0,.18);
 
 }
-.story-reply-card,
-.story-reply-card + .chat-text{
+.story-reply-card{
+    display:inline-block;
+    width:fit-content;
+    max-width:100%;
+}
 
-    width:min(220px,65vw);
-    max-width:min(220px,65vw);
+.story-reply-card .chat-video{
+    display:block;
+}
+
+.story-reply-label,
+.story-reply-card + .chat-text{
+    width:100%;
+    box-sizing:border-box;
 
     word-break:break-word;
     overflow-wrap:anywhere;
-
 }
