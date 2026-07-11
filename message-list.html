@@ -1197,7 +1197,33 @@ display:none;
         width:auto;
         transform:none;
     }
+.story-viewer-fly{
+    position:absolute;
+    bottom:80px;
+    left:50%;
+    transform:translateX(-50%);
 
+    width:28px !important;
+    height:28px !important;
+
+    overflow:hidden;
+    border-radius:50%;
+    border:2px solid #fff;
+
+    z-index:9999;
+    pointer-events:none;
+
+    animation:flyUp .8s ease forwards;
+}
+
+.story-viewer-fly img{
+    width:100% !important;
+    height:100% !important;
+    max-width:none !important;
+    max-height:none !important;
+    object-fit:cover;
+    border-radius:50%;
+}
 }
 </style>
 </head>
