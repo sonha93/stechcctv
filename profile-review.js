@@ -263,7 +263,7 @@ if(addStory){
     document.querySelector('[data-tab="liked"]').style.display   = isOwner ? "" : "none";
     document.querySelector('[data-tab="saved"]').style.display   = isOwner ? "" : "none";
 
-    if(user && !isOwner){
+   
 
         if(user && !isOwner){
 
