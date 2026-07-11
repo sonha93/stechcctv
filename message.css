@@ -902,20 +902,24 @@ font-size:28px;
 
 }
 .story-reply-card{
-    display:inline-block;
-    width:fit-content;
-    max-width:100%;
+    display:inline-flex;
+    flex-direction:column;
+    width:220px;
 }
 
 .story-reply-card .chat-video{
+    width:220px;
     display:block;
 }
 
 .story-reply-label,
 .story-reply-card + .chat-text{
-    width:100%;
+    width:220px;
+    max-width:220px;
+
     box-sizing:border-box;
 
+    white-space:normal;
     word-break:break-word;
     overflow-wrap:anywhere;
 }
