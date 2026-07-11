@@ -29,42 +29,9 @@ new URLSearchParams(
 );
 
 
-let conversationId =
+const conversationId =
 params.get("id");
 
-const uid =
-params.get("uid");
-
-
-if(!conversationId && uid){
-
-    const current = auth.currentUser;
-
-    if(current){
-
-        const snap = await db
-        .collection("conversations")
-        .where("members","array-contains",current.uid)
-        .get();
-
-
-        snap.forEach(doc=>{
-
-            const data = doc.data();
-
-            if(
-                data.members.includes(uid)
-            ){
-
-                conversationId = doc.id;
-
-            }
-
-        });
-
-    }
-
-}
 
 
 if(!conversationId){
@@ -74,6 +41,8 @@ if(!conversationId){
     );
 
 }
+
+
 
 // ================================
 // ELEMENT
@@ -1001,45 +970,7 @@ backBtn.onclick=()=>{
 
 
 
-async function initConversation(){
 
-    if(!conversationId && uid){
-
-        const snap = await db
-        .collection("conversations")
-        .where("members","array-contains",currentUser.uid)
-        .get();
-
-        snap.forEach(doc=>{
-
-            if(doc.data().members.includes(uid)){
-                conversationId = doc.id;
-            }
-
-        });
-
-    }
-
-
-    if(!conversationId){
-        console.error("Không tìm thấy cuộc trò chuyện");
-        return;
-    }
-
-
-    loadChatInfo();
-
-    loadMessages();
-
-    listenTyping();
-
-    db.collection("conversations")
-    .doc(conversationId)
-    .update({
-        [`unread.${currentUser.uid}`]:0
-    });
-
-}
 // ================================
 // AUTH START
 // ================================
@@ -1068,11 +999,15 @@ document.addEventListener(
 
 if(user){
 
-    currentUser = user;
 
-    initConversation();
+    currentUser =
+    user;
 
-}
+
+    loadChatInfo();
+
+
+    loadMessages();
 listenTyping();
 db.collection("conversations")
 .doc(conversationId)
