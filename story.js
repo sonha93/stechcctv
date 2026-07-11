@@ -739,19 +739,39 @@ if (!friendIds[s.uid]) {
 // kiểm tra đã xem chưa
 let seen = false;
 
-const seenSnap = await db
+
+// lấy tất cả story của user này
+const userStoriesSnap = await db
 .collection("stories")
-.doc(doc.id)
-.collection("viewers")
-.doc(currentUser.uid)
+.where("uid","==",s.uid)
 .get();
 
 
-if(seenSnap.exists){
+let hasUnseen = false;
 
-    seen = true;
+
+for(const storyDoc of userStoriesSnap.docs){
+
+
+    const viewerSnap = await db
+    .collection("stories")
+    .doc(storyDoc.id)
+    .collection("viewers")
+    .doc(currentUser.uid)
+    .get();
+
+
+    if(!viewerSnap.exists){
+
+        hasUnseen = true;
+        break;
+
+    }
 
 }
+
+
+seen = !hasUnseen;
 
 
 item.className =
