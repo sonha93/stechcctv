@@ -1,4 +1,4 @@
-import { firebase, db, auth } from "./firebase-init.js";
+import { db, auth } from "./firebase-init.js";
 import { getVerifiedBadge } from "./verified-users.js";
 // ===== Lấy uid trên URL =====
 
@@ -350,7 +350,7 @@ messageBtn.onclick = async () => {
                 name: document.getElementById("profileNameText").innerText,
                 avatar: avatar.src,
                 lastMessage: "",
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                updatedAt: window.firebase.firestore.FieldValue.serverTimestamp()
             }
         );
 
@@ -855,14 +855,14 @@ await db
 .collection("users")
 .doc(myUid)
 .update({
-    followingCount: firebase.firestore.FieldValue.increment(-1)
+    followingCount: window.firebase.firestore.FieldValue.increment(-1)
 });
 
 await db
 .collection("users")
 .doc(profileUid)
 .update({
-    followerCount: firebase.firestore.FieldValue.increment(-1)
+    followerCount: window.firebase.firestore.FieldValue.increment(-1)
 });
 
 const friend = await isFriend(profileUid);
@@ -958,7 +958,7 @@ storyFile.onchange = async () => {
 
     likeCount: 0,
 
-    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    createdAt:window.firebase.firestore.FieldValue.serverTimestamp()
 });
 
 storyFile.value = "";
