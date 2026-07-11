@@ -2,7 +2,6 @@
 // FIREBASE INIT
 // ==========================
 
-// Cấu hình Firebase của bạn
 const firebaseConfig = {
   apiKey: "AIzaSyDYVcBEYJN1HUCta3XdJAUBe4TGLnmy7y4",
   authDomain: "stech-73b89.firebaseapp.com",
@@ -14,24 +13,19 @@ const firebaseConfig = {
 };
 
 
-// Kiểm tra nếu Firebase chưa init thì init
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+window.firebase.initializeApp(firebaseConfig);
 
-// Lấy auth và database dùng chung
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage =
-firebase.storage
-? firebase.storage()
-: null; // nếu cần upload hình ảnh
 
-// Biến trạng thái Firebase sẵn sàng
-let firebaseReady = false;
+const auth = window.firebase.auth();
+const db = window.firebase.firestore();
 
-// Đặt firebaseReady = true khi auth state check xong
-auth.onAuthStateChanged(user => {
-  firebaseReady = true;
-});
-export { firebase, auth, db, storage };
+const storage = window.firebase.storage
+? window.firebase.storage()
+: null;
+
+
+export {
+    auth,
+    db,
+    storage
+};
