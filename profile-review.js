@@ -914,9 +914,6 @@ followBtn.innerHTML="Follow";
 
 followSheet.classList.remove("active");
 
-followerCount.textContent=
-Number(followerCount.textContent)-1;
-
 };
 addStoryBtn.onclick = ()=>{
 
