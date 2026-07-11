@@ -1081,3 +1081,53 @@ window.acceptFollow = async function(id){
     alert("Đã chấp nhận");
 
 };
+// ================================
+// ONLINE STATUS
+// ================================
+
+auth.onAuthStateChanged(user=>{
+
+    if(!user) return;
+
+
+    const userRef = db
+    .collection("users")
+    .doc(user.uid);
+
+
+    userRef.update({
+        online:true,
+        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+
+    window.addEventListener("beforeunload",()=>{
+
+        userRef.update({
+            online:false,
+            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+    });
+
+
+});
+setInterval(()=>{
+
+    const user = auth.currentUser;
+
+    if(!user) return;
+
+
+    db.collection("users")
+    .doc(user.uid)
+    .update({
+
+        online:true,
+        lastSeen:
+        firebase.firestore.FieldValue.serverTimestamp()
+
+    });
+
+
+},30000);
