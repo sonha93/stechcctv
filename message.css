@@ -849,7 +849,18 @@ font-size:28px;
         width:100%;
         height:100%;
     }
+.story-reply-card{
+    color:#000 !important;
+}
 
+.story-reply-card .story-reply-label{
+    color:#000 !important;
+    font-weight:700 !important;
+}
+
+.story-reply-card + .chat-text{
+    color:#000 !important;
+}
 }
 .story-reply-card{
     color:#000 !important;
