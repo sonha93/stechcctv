@@ -36,9 +36,10 @@ console.log("FOLLOW REQUESTS:", requests);
 
         const data = item.data();
 
-        const userSnap = await getDoc(
-    doc(db,"users",data.from)
-);
+        const userSnap = await db
+.collection("users")
+.doc(data.from)
+.get();
 
         if(!userSnap.exists){
     console.log("Không tìm thấy user gửi:", data.from);
