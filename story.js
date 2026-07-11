@@ -190,7 +190,7 @@ if (auth.currentUser) {
     const s = stories[index];
 
     markStorySeen(s.id);
-
+showViewerFly();
         box.innerHTML=`
 
 <div class="story-top">
@@ -870,6 +870,58 @@ async function markStorySeen(storyId){
         firebase.firestore.Timestamp.now()
 
     });
+
+}
+async function showViewerFly(){
+
+    const user = auth.currentUser;
+
+    if(!user) return;
+
+
+    const userSnap = await db
+    .collection("users")
+    .doc(user.uid)
+    .get();
+
+
+    const data = userSnap.exists
+    ? userSnap.data()
+    : {};
+
+
+    const avatar =
+    data.avatar ||
+    data.photoURL ||
+    "./avatar.png";
+
+
+    const el = document.createElement("div");
+
+    el.className="story-viewer-fly";
+
+
+    el.innerHTML=`
+        <img src="${avatar}">
+    `;
+
+
+    const box =
+    document.querySelector(".story-popup");
+
+
+    if(box){
+
+        box.appendChild(el);
+
+
+        setTimeout(()=>{
+
+            el.remove();
+
+        },2000);
+
+    }
 
 }
 auth.onAuthStateChanged(user=>{
