@@ -205,7 +205,17 @@ if(blocked){
     if(oldLink) oldLink.remove();
 
 }
+if(blocked){
 
+    document.getElementById("videosGrid").style.display = "none";
+    document.getElementById("storyBar").style.display = "none";
+
+    likeCount.innerHTML = 0;
+    followingCount.innerHTML = 0;
+    followerCount.innerHTML = 0;
+
+    return;
+}
     followingCount.innerHTML = u.followingCount || 0;
 
     followerCount.innerHTML = u.followerCount || 0;
@@ -461,8 +471,12 @@ if(auth.currentUser){
 }
 
 if(blocked){
+    grid.innerHTML = "";
+    grid.style.display = "none";
     return;
 }
+
+grid.style.display = "";
     // --------------------
     // VIDEO CÔNG KHAI
     // --------------------
@@ -1048,7 +1062,7 @@ storyFile.onchange = async () => {
 
     }
 
-   await addDoc(collection(db,"profile_stories"),{
+  await addDoc(collection(db,"profile_stories"),{
 
     uid: uid,
 
@@ -1057,6 +1071,8 @@ storyFile.onchange = async () => {
     type: file.type.startsWith("video/")
         ? "video"
         : "image",
+
+    hidden: false,
 
     text: prompt("Nhập nội dung story (có thể để trống):") || "",
 
@@ -1103,8 +1119,11 @@ if(auth.currentUser){
 
 if(blocked){
     storyBar.innerHTML = "";
+    storyBar.style.display = "none";
     return;
 }
+
+storyBar.style.display = "";
     const snap = await getDocs(
         query(
            collection(db,"profile_stories"),
