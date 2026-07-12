@@ -1179,6 +1179,71 @@ opacity:.8;
     color:#ff3b30;
     font-weight:700;
 }
+ #followListSheet{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.4);
+    display:none;
+    align-items:flex-end;
+    z-index:9999999;
+}
+
+
+#followListSheet.active{
+    display:flex;
+}
+
+
+.follow-list-box{
+
+    width:100%;
+    max-height:70vh;
+
+    background:white;
+
+    border-radius:25px 25px 0 0;
+
+    padding:20px;
+
+    overflow-y:auto;
+
+}
+
+
+.follow-list-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    font-size:20px;
+    font-weight:700;
+
+    margin-bottom:20px;
+
+}
+
+
+.follow-user{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    padding:12px 0;
+
+}
+
+
+.follow-user img{
+
+    width:48px;
+    height:48px;
+
+    border-radius:50%;
+    object-fit:cover;
+
+}
 </style>
 </head>
 
@@ -1618,6 +1683,29 @@ stroke-linejoin="round">
     Đóng
 
 </div>
+
+    </div>
+
+</div>
+ <div id="followListSheet">
+
+    <div class="follow-list-box">
+
+        <div class="follow-list-header">
+
+            <b id="followListTitle">
+                Danh sách
+            </b>
+
+            <span id="closeFollowList"
+            class="material-symbols-outlined">
+                close
+            </span>
+
+        </div>
+
+
+        <div id="followListContent"></div>
 
     </div>
 
