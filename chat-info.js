@@ -598,7 +598,7 @@ window.deleteChat = async function(){
 
         // quay lại danh sách chat
         location.href =
-        "chat.html";
+        "message-list.html";
 
 
     }
