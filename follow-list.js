@@ -175,7 +175,7 @@ async function renderUsers(list){
             `
             <div class="user-item">
 
-               <<img
+               <img
 class="user-avatar"
 data-uid="${u.uid}"
 onclick="location.href='profile-review.html?uid=${u.uid}'"
