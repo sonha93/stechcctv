@@ -214,6 +214,8 @@ if(blocked){
     followingCount.innerHTML = 0;
     followerCount.innerHTML = 0;
 
+    messageBtn.style.display = "none";
+
     return;
 }
     followingCount.innerHTML = u.followingCount || 0;
