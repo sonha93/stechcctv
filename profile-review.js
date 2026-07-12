@@ -87,7 +87,24 @@ const messageBtn = document.getElementById("messageBtn");
 const followingCount = document.getElementById("followingCount");
 
 const followerCount = document.getElementById("followerCount");
+// ===========================
+// MỞ DANH SÁCH FOLLOW
+// ===========================
 
+followingCount.style.cursor = "pointer";
+followerCount.style.cursor = "pointer";
+
+followingCount.onclick = () => {
+
+    openFollowPopup(profileUid,"following");
+
+};
+
+followerCount.onclick = () => {
+
+    openFollowPopup(profileUid,"followers");
+
+};
 const likeCount = document.getElementById("likeCount");
 const addStoryBtn = document.getElementById("addStoryBtn");
 
