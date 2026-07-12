@@ -181,11 +181,20 @@ if(chatTitle){
     `;
 }
 
-if(chatAvatar){
+if (chatAvatar) {
 
-    chatAvatar.src = blocked
-        ? "https://i.ibb.co/Z1kv9nJj/logo.png"
-        : (u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png");
+    const avatar =
+        (!blocked && u.avatar)
+            ? u.avatar
+            : "https://i.ibb.co/Z1kv9nJj/logo.png";
+
+    chatAvatar.src = avatar;
+
+    chatAvatar.onerror = function () {
+        this.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
+    };
+
+}
 
     chatAvatar.style.cursor = blocked
         ? "default"
