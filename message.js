@@ -532,6 +532,12 @@ for(const file of selectedFiles){
 
 }
 
+const urlRegex = /(https?:\/\/[^\s]+)/i;
+
+const link = urlRegex.test(text)
+? text.match(urlRegex)[0]
+: "";
+
 await db
 .collection("conversations")
 .doc(conversationId)
@@ -542,18 +548,21 @@ await db
 
     text: text,
 
+    link: link,
+
     image: "",
 
     images: images,
 
     video: videos.length ? videos[0] : "",
 
+    pinned:false,
+
     createdAt: firebase.firestore.Timestamp.now(),
 
     seenBy:[currentUser.uid]
 
 });
-
 selectedFiles = [];
 
 imageInput.value = "";
@@ -572,20 +581,31 @@ return;
 
 
 
-    await db
-    .collection("conversations")
+    const urlRegex = /(https?:\/\/[^\s]+)/i;
+
+const link = urlRegex.test(text)
+? text.match(urlRegex)[0]
+: "";
+
+await db
+.collection("conversations")
 .doc(conversationId)
 .collection("messages")
-   .add({
+.add({
 
-    senderId:
-    currentUser.uid,
+    senderId: currentUser.uid,
 
-    text:text,
-    image:imageUrl,
-    video:videoUrl,
-    createdAt:
-    now,
+    text: text,
+
+    link: link,
+
+    image: imageUrl,
+
+    video: videoUrl,
+
+    pinned: false,
+
+    createdAt: now,
 
     seenBy:[
         currentUser.uid
@@ -1290,3 +1310,21 @@ if(infoBtn){
     };
 
 }
+// ================================
+// PIN MESSAGE
+// ================================
+
+window.pinMessage = async function(messageId){
+
+    await db
+    .collection("conversations")
+    .doc(conversationId)
+    .collection("messages")
+    .doc(messageId)
+    .update({
+
+        pinned: true
+
+    });
+
+};
