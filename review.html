@@ -1200,24 +1200,16 @@ document.getElementById("myProfileBtn").onclick = () => {
 
 document.getElementById("popupLoginBtn").onclick = async () => {
 
-    const email =
-        document.getElementById("popupEmail").value.trim();
-
-    const password =
-        document.getElementById("popupPassword").value;
+    const email = document.getElementById("popupEmail").value.trim();
+    const password = document.getElementById("popupPassword").value;
 
     try{
 
-        await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
+        await signInWithEmailAndPassword(auth, email, password);
 
-        document.getElementById("loginPopup").style.display="none";
+        document.getElementById("loginFormPopup").style.display = "none";
 
-        location.href =
-            "profile-review.html?uid="+auth.currentUser.uid;
+        location.href = "profile-review.html?uid=" + auth.currentUser.uid;
 
     }catch(e){
 
@@ -1229,7 +1221,8 @@ document.getElementById("popupLoginBtn").onclick = async () => {
 };
 document.getElementById("goLogin").onclick = () => {
 
-    document.querySelectorAll("#loginPopup")[1].style.display = "flex";
+    document.getElementById("loginPopup").style.display = "none";
+    document.getElementById("loginFormPopup").style.display = "flex";
 
 };
 import {
@@ -2508,9 +2501,7 @@ cursor:pointer;
 Đóng
 </button>
 </div> 
- </div>
 <div id="uploadContainer"></div>
-<script type="module" src="inbox.js"></script>
 <script type="module" src="upload-ui.js"></script>
 
 <script type="module" src="upload-preview.js"></script>
