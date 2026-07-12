@@ -1,5 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
+    getAuth,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
     getFirestore,
     collection,
     getDocs
@@ -16,7 +20,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
+const auth = getAuth(app);
 const container = document.getElementById("reviewProducts");
 
 document.addEventListener("DOMContentLoaded", loadReview);
@@ -60,10 +64,10 @@ async function loadReview(){
             <div class="info">
                 <div>${p.name}</div>
 
-                <button class="buy-btn"
-                    onclick="location.href='logo.html?id=${docSnap.id}'">
-                    Mua ngay
-                </button>
+               <button class="buy-btn"
+data-id="${docSnap.id}">
+    Mua ngay
+</button>
             </div>
 
         </div>
@@ -73,7 +77,19 @@ async function loadReview(){
 
     setupVideo();
 }
+document.querySelectorAll(".buy-btn").forEach(btn=>{
 
+    btn.onclick=()=>{
+
+        requireLogin(()=>{
+
+            location.href="logo.html?id="+btn.dataset.id;
+
+        });
+
+    };
+
+});
 function setupVideo(){
 
     const videos=document.querySelectorAll(".review-video");
@@ -162,5 +178,32 @@ function setupVideo(){
         }
 
     });
+
+}
+const loginPopup = document.getElementById("loginPopup");
+
+document.getElementById("goLoginBtn").onclick = () => {
+
+    location.href = "login.html";
+
+};
+
+document.getElementById("closeLoginBtn").onclick = () => {
+
+    loginPopup.classList.remove("active");
+
+};
+
+function requireLogin(callback){
+
+    if(auth.currentUser){
+
+        callback();
+
+        return;
+
+    }
+
+    loginPopup.classList.add("active");
 
 }
