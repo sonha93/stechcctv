@@ -493,7 +493,23 @@ async function loadBlockStatus(){
     if(!current || !uid) return;
 
     blockState = await isBlocked(current.uid, uid);
+    if(blockState.iBlocked || blockState.blockedMe){
 
+    if(avatar){
+        avatar.src = "default-avatar.png"; // hoặc logo mặc định của web
+    }
+
+    if(username){
+        username.textContent = "Người dùng";
+    }
+
+    if(verified){
+        verified.innerHTML = "";
+    }
+
+    return;
+
+}
     const blockBtn = document.getElementById("blockBtn");
 
     if(blockBtn){
