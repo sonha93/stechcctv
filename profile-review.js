@@ -1059,7 +1059,20 @@ async function loadStories(){
     snap.forEach(docSnap=>{
 
         const s = docSnap.data();
+    for (const docSnap of snap.docs) {
 
+    const s = docSnap.data();
+
+    const block = auth.currentUser
+        ? await isBlocked(auth.currentUser.uid, s.uid)
+        : { iBlocked:false, blockedMe:false };
+
+    if(block.iBlocked || block.blockedMe){
+        continue;
+    }
+
+    // render story ở đây
+}
         
 
 storyBar.insertAdjacentHTML(
@@ -1128,6 +1141,9 @@ window.openStory = async function(id){
     if(!snap.exists()) return;
 
     const s = snap.data();
+    const block = auth.currentUser
+    ? await isBlocked(auth.currentUser.uid, s.uid)
+    : { iBlocked:false, blockedMe:false };
     if(auth.currentUser){
 
     await updateDoc(
@@ -1141,16 +1157,16 @@ window.openStory = async function(id){
     currentStoryOwner = s.uid;
     // HIỂN THỊ NGƯỜI ĐĂNG STORY
 
-storyOwnerAvatar.src =
-s.avatar ||
-"https://i.ibb.co/Z1kv9nJj/logo.png";
+storyOwnerAvatar.src = block.iBlocked || block.blockedMe
+    ? "https://i.ibb.co/Z1kv9nJj/logo.png"
+    : (s.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png");
 
-
-storyOwnerName.innerHTML =
-`
-${s.name || "Người dùng"}
-${getVerifiedBadge(s.uid)}
-`;
+storyOwnerName.innerHTML = block.iBlocked || block.blockedMe
+    ? "Người dùng"
+    : `
+        ${s.name || "Người dùng"}
+        ${getVerifiedBadge(s.uid)}
+      `;
 
 
 // HIỂN THỊ NGÀY GIỜ ĐĂNG
