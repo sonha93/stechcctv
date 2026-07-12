@@ -25,7 +25,22 @@ document.getElementById("notifySwitch");
 
 const blockedList =
 document.getElementById("blockedList");
+const myAvatar =
+document.getElementById("myAvatar");
 
+const myName =
+document.getElementById("myName");
+
+const myUsername =
+document.getElementById("myUsername");
+const userAvatar =
+document.getElementById("userAvatar");
+
+const userName =
+document.getElementById("userName");
+
+const userUsername =
+document.getElementById("userUsername");
 // =====================================
 // BACK
 // =====================================
@@ -53,12 +68,68 @@ auth.onAuthStateChanged(async user=>{
 
     }
 
+    await loadProfile();
+
     await loadSettings();
 
     await loadBlockedUsers();
 
 });
 
+// =====================================
+// LOAD PROFILE
+// =====================================
+
+async function loadProfile(){
+
+    const user = auth.currentUser;
+
+    if(!user) return;
+
+    const snap =
+    await db.collection("users")
+    .doc(user.uid)
+    .get();
+
+    if(!snap.exists) return;
+
+    const data = snap.data() || {};
+
+    if(myAvatar){
+
+        myAvatar.src =
+        data.avatar ||
+        "default-avatar.png";
+
+        myAvatar.onerror = ()=>{
+
+            myAvatar.src =
+            "default-avatar.png";
+
+        };
+
+    }
+
+    if(myName){
+
+        myName.textContent =
+        data.name ||
+        "Người dùng";
+
+    }
+
+    if(myUsername){
+
+        myUsername.textContent =
+        "@" + (
+            data.username ||
+            user.email?.split("@")[0] ||
+            "username"
+        );
+
+    }
+
+}
 // =====================================
 // LOAD SETTINGS
 // =====================================
