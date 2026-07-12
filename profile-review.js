@@ -1,5 +1,5 @@
-import { getVerifiedBadge } from "./verified-users.js";
 import { isBlocked } from "./block.js";
+import { getVerifiedBadge } from "./verified-users.js";
 import { app, auth } from "./auth.js";
 import {
     onAuthStateChanged
@@ -88,56 +88,12 @@ const storyMore = document.getElementById("storyMore");
 
 let currentStoryId = null;
 let currentStoryOwner = null;
-let blockedProfile = false;
 // ===========================
 // LOAD USER
 // ===========================
 
 async function loadProfile() {
-    // ===== KIỂM TRA BỊ CHẶN =====
-    if (auth.currentUser && auth.currentUser.uid !== profileUid) {
 
-        blockedProfile = await isBlocked(profileUid);
-
-        if (blockedProfile) {
-
-            avatar.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
-            sheetAvatar.src = avatar.src;
-
-            document.getElementById("profileName").innerHTML =
-                "<span id='profileNameText'>Người dùng</span>";
-
-            sheetName.textContent = "Người dùng";
-
-            username.innerHTML = "";
-            bio.innerHTML = "";
-
-            followingCount.innerHTML = "0";
-            followerCount.innerHTML = "0";
-            likeCount.innerHTML = "0";
-
-            const link = document.getElementById("profileLink");
-            if (link) link.remove();
-
-            followBtn.style.display = "none";
-            messageBtn.style.display = "none";
-            editBtn.style.display = "none";
-
-            document.getElementById("storyBar").innerHTML = "";
-
-            document.getElementById("videosGrid").innerHTML = `
-                <div style="
-                    padding:60px;
-                    text-align:center;
-                    color:#777;
-                ">
-                    Người dùng này không khả dụng
-                </div>
-            `;
-
-            return;
-        }
-    }
     const snap = await getDoc(doc(db,"users",profileUid));
 
     if(!snap.exists()){
@@ -149,10 +105,23 @@ async function loadProfile() {
     }
 
     const u = snap.data();
-    avatar.src = u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
+    let blocked = false;
+
+if(auth.currentUser){
+
+    const block = await isBlocked(auth.currentUser.uid, profileUid);
+
+    blocked = block.iBlocked || block.blockedMe;
+
+}
+   avatar.src = blocked
+    ? "https://i.ibb.co/Z1kv9nJj/logo.png"
+    : (u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png");
     sheetAvatar.src = avatar.src;
 sheetName.textContent = u.name || "Người dùng";
-let displayName = u.name || "Người dùng";
+let displayName = blocked
+    ? "Người dùng"
+    : (u.name || "Người dùng");
 
 if(auth.currentUser){
 
@@ -176,11 +145,13 @@ if(auth.currentUser){
 
 document.getElementById("profileName").innerHTML = `
     <span id="profileNameText">${displayName}</span>
-    ${getVerifiedBadge(profileUid)}
+    ${blocked ? "" : getVerifiedBadge(profileUid)}
 `;
 
 sheetName.textContent = displayName;
-    username.innerHTML = "@" + (u.username || "");
+   username.innerHTML = blocked
+    ? "@nguoidung"
+    : ("@" + (u.username || ""));
 
     bio.innerHTML = u.bio || "";
   // Hiển thị liên kết
@@ -225,7 +196,14 @@ ${links}
 );
 
 }
+if(blocked){
 
+    bio.innerHTML = "";
+
+    const oldLink = document.getElementById("profileLink");
+    if(oldLink) oldLink.remove();
+
+}
 
     followingCount.innerHTML = u.followingCount || 0;
 
@@ -339,9 +317,50 @@ if(addStory){
 
 });
 
-messageBtn.onclick = async () => {
+let followLoading = false;
+followBtn.onclick = async () => {
 
-    if (blockedProfile) return;
+    if (followLoading) return;
+
+    followLoading = true;
+    followBtn.disabled = true;
+
+    try {
+
+        if (!auth.currentUser) {
+            alert("Bạn cần đăng nhập");
+            return;
+        }
+
+        if (await isFriend(profileUid)) {
+
+    followSheet.classList.add("active");
+    return;
+
+}
+
+        if (await hasPendingFollowRequest(profileUid)) {
+
+    await cancelFollowRequest(profileUid);
+    followBtn.innerHTML = "Follow";
+
+} else {
+
+    await sendFollowRequest(profileUid);
+    followBtn.innerHTML = "Đã gửi";
+
+}
+
+    } finally {
+
+        followLoading = false;
+        followBtn.disabled = false;
+
+    }
+
+};
+
+messageBtn.onclick = async () => {
 
     if (!auth.currentUser) {
         alert("Bạn cần đăng nhập");
@@ -362,13 +381,11 @@ messageBtn.onclick = async () => {
     let conversationId = null;
 
     snap.forEach(docSnap => {
-
         const data = docSnap.data();
 
         if (data.members.includes(profileUid)) {
             conversationId = docSnap.id;
         }
-
     });
 
     if (!conversationId) {
@@ -385,7 +402,6 @@ messageBtn.onclick = async () => {
         );
 
         conversationId = ref.id;
-
     }
 
     location.href = `message.html?id=${conversationId}`;
@@ -434,10 +450,7 @@ tabs.forEach(tab=>{
 // ===========================
 
 async function loadTab(type){
-    if (blockedProfile) {
-        grid.innerHTML = "";
-        return;
-    }
+
     grid.innerHTML="";
 
     // --------------------
@@ -1029,29 +1042,16 @@ alert("Đăng story thành công");
 
 loadStories();
 };   
- if (blockedProfile) {
-
-        const storyBar = document.getElementById("storyBar");
-
-        if (storyBar) storyBar.innerHTML = "";
-
-        return;
-    }
 async function loadStories(){
 
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
 
-    storyBar.innerHTML = "";
-
-    if(blockedProfile){
-        return;
-    }
 
     const snap = await getDocs(
         query(
-            collection(db,"profile_stories"),
+           collection(db,"profile_stories"),
             where("uid","==",profileUid)
         )
     );
@@ -1060,43 +1060,82 @@ async function loadStories(){
 
         const s = docSnap.data();
 
-        storyBar.insertAdjacentHTML(
-            "beforeend",
-            `
-            <div class="storyItem" onclick="openStory('${docSnap.id}')">
+        
 
-                <div class="storyAvatar">
+storyBar.insertAdjacentHTML(
+"beforeend",
+`
+<div class="storyItem" onclick="openStory('${docSnap.id}')">
 
-                    ${
-                    s.type==="video"
-                    ? `<video src="${s.media}" muted></video>`
-                    : `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
-                    }
+    <div class="storyAvatar">
 
-                </div>
-
-                <div class="storyName">
-                    ${s.text || ""}
-                </div>
-
-            </div>
-            `
-        );
-
-        const video = storyBar.lastElementChild.querySelector("video");
-
-        if(video){
-            video.muted = true;
-            video.autoplay = true;
-            video.loop = true;
-            video.playsInline = true;
-
-            video.onloadedmetadata = () => {
-                video.play().catch(()=>{});
-            };
+        ${
+        s.type==="video"
+        ?
+        `<video src="${s.media}" muted></video>`
+        :
+        `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
         }
 
+    </div>
+
+    <div class="storyName">
+        ${s.text || ""}
+    </div>
+
+</div>
+`
+);
+        const video = storyBar.lastElementChild.querySelector("video");
+
+if (video) {
+    video.muted = true;
+    video.autoplay = true;
+    video.loop = true;
+    video.playsInline = true;
+
+    video.onloadedmetadata = () => {
+        video.play().catch(() => {});
+    };
+}
     });
+
+}
+const storyViewer = document.getElementById("storyViewer");
+const storyOwnerAvatar =
+document.getElementById("storyOwnerAvatar");
+
+const storyOwnerName =
+document.getElementById("storyOwnerName");
+
+const storyOwnerBadge =
+document.getElementById("storyOwnerBadge");
+
+const storyTime =
+document.getElementById("storyTime");
+const storyVideo = document.getElementById("storyVideo");
+const storyImage = document.getElementById("storyImage");
+const storyText =
+document.getElementById("storyText");
+window.openStory = async function(id){
+
+    currentStoryId = id;
+
+    const snap = await getDoc(
+       doc(db,"profile_stories",id)
+    );
+
+    if(!snap.exists()) return;
+
+    const s = snap.data();
+    if(auth.currentUser){
+
+    await updateDoc(
+        doc(db,"profile_stories",id),
+        {
+            viewers: arrayUnion(auth.currentUser.uid)
+        }
+    );
 
 }
     currentStoryOwner = s.uid;
