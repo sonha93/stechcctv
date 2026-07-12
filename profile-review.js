@@ -144,10 +144,11 @@ if(auth.currentUser){
 }
 
 document.getElementById("profileName").innerHTML = `
-    <span id="profileNameText">${displayName}</span>
+    <span id="profileNameText">
+        ${blocked ? "Người dùng" : (displayName || "Người dùng")}
+    </span>
     ${blocked ? "" : getVerifiedBadge(profileUid)}
 `;
-
 sheetName.textContent = displayName;
    username.innerHTML = blocked
     ? "@nguoidung"
@@ -589,7 +590,13 @@ if(type==="orders"){
     }
 
     grid.innerHTML = "";
+    const block = auth.currentUser
+    ? await isBlocked(auth.currentUser.uid, profileUid)
+    : { iBlocked:false, blockedMe:false };
 
+if(block.iBlocked || block.blockedMe){
+    return;
+}
     const snap = await getDocs(
         query(
             collection(db,"orders"),
@@ -1056,7 +1063,15 @@ async function loadStories(){
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
+storyBar.innerHTML = "";
 
+const block = auth.currentUser
+    ? await isBlocked(auth.currentUser.uid, profileUid)
+    : { iBlocked:false, blockedMe:false };
+
+if(block.iBlocked || block.blockedMe){
+    return;
+}
 let blocked = false;
 
 if(auth.currentUser){
