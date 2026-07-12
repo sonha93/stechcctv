@@ -1184,52 +1184,17 @@ document.getElementById("myProfileBtn").onclick = () => {
     const user = auth.currentUser;
 
     if(user){
-
-        location.href="profile-review.html?uid="+user.uid;
-
+        location.href = "profile-review.html?uid=" + user.uid;
         return;
-
     }
 
-    document.getElementById("loginPopup").style.display="flex";
+    document.getElementById("loginPopup").style.display = "flex";
 
 };
-    import {
-    signInWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-document.getElementById("popupLoginBtn").onclick = async () => {
-
-    const email =
-        document.getElementById("popupEmail").value.trim();
-
-    const password =
-        document.getElementById("popupPassword").value;
-
-    try{
-
-        await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
-
-        document.getElementById("loginPopup").style.display="none";
-
-        location.href =
-            "profile-review.html?uid="+auth.currentUser.uid;
-
-    }catch(e){
-
-        document.getElementById("popupMessage").innerText =
-            "Sai email hoặc mật khẩu";
-
-    }
-
-};
 document.getElementById("goLogin").onclick = () => {
 
-    document.querySelectorAll("#loginPopup")[1].style.display = "flex";
+    location.href = "review.html"; 
 
 };
 import {
@@ -2507,9 +2472,11 @@ cursor:pointer;
 ">
 Đóng
 </button>
-</div> 
- </div>
+
+</div>
+</div>  
 <div id="uploadContainer"></div>
+<script type="module" src="inbox.js"></script>
 <script type="module" src="upload-ui.js"></script>
 
 <script type="module" src="upload-preview.js"></script>
