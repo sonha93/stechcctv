@@ -783,9 +783,31 @@ deleteBtn.onclick = async function(){
 // LOAD MẶC ĐỊNH
 // ===========================
 
+(async()=>{
 
-loadTab("videos");
-loadStories();
+    let blocked = false;
+
+    if(auth.currentUser){
+
+        const block = await isBlocked(auth.currentUser.uid, profileUid);
+
+        blocked = block.iBlocked || block.blockedMe;
+
+    }
+
+    if(!blocked){
+
+        loadTab("videos");
+        loadStories();
+
+    }else{
+
+        document.getElementById("videosGrid").style.display = "none";
+        document.getElementById("storyBar").style.display = "none";
+
+    }
+
+})();
 // ==========================
 // MỞ TRANG SỬA HỒ SƠ
 // ==========================
