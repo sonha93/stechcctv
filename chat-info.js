@@ -725,3 +725,53 @@ location.href =
 
 
 };
+const avatarViewer =
+document.getElementById("avatarViewer");
+
+const avatarViewerImg =
+document.getElementById("avatarViewerImg");
+
+const closeAvatarViewer =
+document.getElementById("closeAvatarViewer");
+
+if(avatar){
+
+    avatar.onclick = ()=>{
+
+        avatarViewerImg.src = avatar.src;
+
+        avatarViewer.hidden = false;
+
+        requestAnimationFrame(()=>{
+
+            avatarViewer.classList.add("show");
+
+        });
+
+    };
+
+}
+
+function hideAvatarViewer(){
+
+    avatarViewer.classList.remove("show");
+
+    setTimeout(()=>{
+
+        avatarViewer.hidden = true;
+
+    },250);
+
+}
+
+closeAvatarViewer.onclick = hideAvatarViewer;
+
+avatarViewer.onclick = e=>{
+
+    if(e.target===avatarViewer){
+
+        hideAvatarViewer();
+
+    }
+
+};
