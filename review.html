@@ -1183,12 +1183,18 @@ document.getElementById("myProfileBtn").onclick = () => {
 
     const user = auth.currentUser;
 
-    if(!user){
-        alert("Bạn chưa đăng nhập");
+    if(user){
+        location.href = "profile-review.html?uid=" + user.uid;
         return;
     }
 
-    location.href = "profile-review.html?uid=" + user.uid;
+    document.getElementById("loginPopup").style.display = "flex";
+
+};
+
+document.getElementById("goLogin").onclick = () => {
+
+    location.href = "review.html"; 
 
 };
 import {
@@ -2418,6 +2424,57 @@ viewer.addEventListener("touchend",e=>{
     </div>
 
 </div>
+  <div id="loginPopup" style="
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.45);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:9999999;
+">
+
+<div style="
+width:320px;
+background:#fff;
+border-radius:16px;
+padding:24px;
+text-align:center;
+">
+
+<h3>Bạn chưa đăng nhập</h3>
+
+<p style="margin:15px 0;">
+Vui lòng đăng nhập để xem hồ sơ.
+</p>
+
+<button id="goLogin"
+style="
+background:#ff2d55;
+color:#fff;
+border:none;
+padding:12px 20px;
+border-radius:10px;
+cursor:pointer;
+">
+Đăng nhập
+</button>
+
+<br><br>
+
+<button onclick="document.getElementById('loginPopup').style.display='none'"
+style="
+background:#eee;
+border:none;
+padding:10px 18px;
+border-radius:10px;
+cursor:pointer;
+">
+Đóng
+</button>
+
+</div>
+</div>  
 <script type="module" src="inbox.js"></script>
 <div id="uploadContainer"></div>
 <script type="module" src="inbox.js"></script>
