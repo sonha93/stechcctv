@@ -1,7 +1,7 @@
 // =====================================
 // CHAT INFO JS FIREBASE V8
 // =====================================
-
+let mediaImages = [];
 import { db, auth } from "./firebase-init.js";
 import { getVerifiedBadge } from "./verified-users.js";
 
@@ -633,51 +633,37 @@ const msg = doc.data();
 
 if(msg.image){
 
-const index = mediaImages.length;
+    const index = mediaImages.length;
 
-mediaImages.push(msg.image);
+    mediaImages.push(msg.image);
 
-html += `
-<img class="media-photo"
-src="${msg.image}"
-onclick="showMedia(${index})">
-`;
-
-}
-
-
-
-const url =
-msg.link ||
-(msg.text || "").match(/https?:\/\/[^\s]+/)?.[0];
-
-if(url){
-
-html += `
-<a href="${url}" target="_blank">
-${url}
-</a>
-`;
+    html += `
+    <img
+    class="media-photo"
+    src="${msg.image}"
+    onclick="showMedia(${index})">
+    `;
 
 }
 
+if(msg.images){
 
+    msg.images.forEach(img=>{
 
-});
+        const index = mediaImages.length;
 
+        mediaImages.push(img);
 
-console.log(
-"MEDIA:",
-html
-);
+        html += `
+        <img
+        class="media-photo"
+        src="${img}"
+        onclick="showMedia(${index})">
+        `;
 
+    });
 
 }
-
-
-
-renderMedia();
-
 
 
 // ================================
