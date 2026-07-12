@@ -172,41 +172,6 @@ if(logoutBtn){
     };
 
 }
-// =====================================
-// SAVE SETTINGS
-// =====================================
-
-async function saveSettings(){
-
-    const user = auth.currentUser;
-
-    if(!user) return;
-
-    await db.collection("users")
-    .doc(user.uid)
-    .collection("private")
-    .doc("settings")
-    .set({
-
-        autoSaveMedia:
-        autoSaveMedia.checked,
-
-        darkMode:
-        darkMode.checked,
-
-        notification:
-        notifySwitch.checked,
-
-        updatedAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
-    },{
-
-        merge:true
-
-    });
-
-}
 
 // =====================================
 // SWITCH EVENTS
