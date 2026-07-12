@@ -35,8 +35,7 @@ const uid =
 params.get("uid");
 
 
-const chatId =
-params.get("chatId");
+const chatId = params.get("chatId");
 
 // =====================================
 // ELEMENT
@@ -771,4 +770,10 @@ avatarViewer.onclick = e=>{
 
     }
 
+};
+const mediaToggle = document.getElementById("mediaToggle");
+const mediaList = document.getElementById("mediaList");
+
+mediaToggle.onclick = () => {
+    mediaList.classList.toggle("show");
 };
