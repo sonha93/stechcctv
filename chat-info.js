@@ -150,14 +150,18 @@ snap.data();
 
 
 
-if(avatar){
+if (avatar) {
 
-avatar.src =
-user.avatar ||
-"default-avatar.png";
+    avatar.src =
+        user.avatar ||
+        "https://i.ibb.co/Z1kv9nJj/logo.png";
+
+    avatar.onerror = function () {
+        this.onerror = null;
+        this.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
+    };
 
 }
-
 
 
 if(username){
@@ -197,7 +201,7 @@ displayName;
 
 if(blockState.iBlocked || blockState.blockedMe){
 
-    avatar.src = "default-avatar.png";
+    avatar.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
     username.textContent = "Người dùng";
     verified.innerHTML = "";
     return;
