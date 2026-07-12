@@ -384,16 +384,21 @@ nextMsg.senderId!==msg.senderId
 
 div.innerHTML=`
 
-${showAvatar?`
+${showAvatar ? `
 <img
 class="msg-avatar"
-style="cursor:pointer"
-onclick="window.location.href='profile-review.html?uid=${msg.senderId}'"
+style="cursor:${(blockState.iBlocked || blockState.blockedMe) ? "default" : "pointer"}"
+onclick="${
+(blockState.iBlocked || blockState.blockedMe)
+? ""
+: `window.location.href='profile-review.html?uid=${msg.senderId}'`
+}"
 src="${
-user.avatar ||
-'https://i.ibb.co/Z1kv9nJj/logo.png'
+(blockState.iBlocked || blockState.blockedMe)
+? "https://i.ibb.co/Z1kv9nJj/logo.png"
+: (user.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png")
 }">
-`:"<div class='msg-avatar-space'></div>"}
+` : "<div class='msg-avatar-space'></div>"}
 
 <div class="message-body">
 
