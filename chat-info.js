@@ -36,7 +36,7 @@ params.get("uid");
 
 
 const chatId = params.get("chatId");
-let mediaImages = [];
+
 // =====================================
 // ELEMENT
 // =====================================
@@ -231,7 +231,7 @@ if(!mediaList) return;
 
 
 let html = "";
-mediaImages = [];
+
 
 snap.forEach(doc=>{
 
@@ -239,37 +239,26 @@ const msg = doc.data();
 
 
 if(msg.image){
-
-    const index = mediaImages.length;
-
-    mediaImages.push(msg.image);
-
-    html += `
-    <img
-    class="media-photo"
-    src="${msg.image}"
-    onclick="showMedia(${index})">
-    `;
+html += `
+<img class="media-photo"
+src="${msg.image}"
+onclick="showMedia('${msg.image}')">
+`;
 
 }
 
 
 if(msg.images){
 
-    msg.images.forEach(img=>{
+msg.images.forEach(img=>{
 
-        const index = mediaImages.length;
+html += `
+<img class="media-photo"
+src="${img}"
+onclick="showMedia('${img}')">
+`;
 
-        mediaImages.push(img);
-
-        html += `
-        <img
-        class="media-photo"
-        src="${img}"
-        onclick="showMedia(${index})">
-        `;
-
-    });
+});
 
 }
 
@@ -640,16 +629,10 @@ const msg = doc.data();
 
 if(msg.image){
 
-    const index = mediaImages.length;
-
-    mediaImages.push(msg.image);
-
-    html += `
-    <img
-    class="media-photo"
-    src="${msg.image}"
-    onclick="showMedia(${index})">
-    `;
+html += `
+<img src="${msg.image}"
+style="width:100px;border-radius:10px">
+`;
 
 }
 
@@ -971,71 +954,32 @@ if(pinnedToggle){
     };
 
 }
-
-window.showMedia = function(index){
-
-    let current = index;
+window.showMedia = function(src){
 
     const box = document.createElement("div");
 
-    box.style.position="fixed";
-    box.style.inset="0";
-    box.style.background="rgba(0,0,0,.95)";
-    box.style.display="flex";
-    box.style.alignItems="center";
-    box.style.justifyContent="center";
-    box.style.zIndex="999999";
+    box.style.position = "fixed";
+    box.style.top = "0";
+    box.style.left = "0";
+    box.style.width = "100%";
+    box.style.height = "100%";
+    box.style.background = "rgba(0,0,0,.9)";
+    box.style.display = "flex";
+    box.style.alignItems = "center";
+    box.style.justifyContent = "center";
+    box.style.zIndex = "999999";
 
-    box.innerHTML=`
-        <button id="prevMedia">❮</button>
-
-        <img id="mediaImg"
-        src="${mediaImages[current]}">
-
-        <button id="nextMedia">❯</button>
+    box.innerHTML = `
+        <img src="${src}"
+        style="
+            max-width:95%;
+            max-height:95%;
+            object-fit:contain;
+        ">
     `;
+
+    box.onclick = ()=>box.remove();
 
     document.body.appendChild(box);
 
-    const img = box.querySelector("#mediaImg");
-
-    function update(){
-        img.src = mediaImages[current];
-    }
-
-    box.querySelector("#prevMedia").onclick=e=>{
-        e.stopPropagation();
-        current = (current-1+mediaImages.length)%mediaImages.length;
-        update();
-    };
-
-    box.querySelector("#nextMedia").onclick=e=>{
-        e.stopPropagation();
-        current = (current+1)%mediaImages.length;
-        update();
-    };
-
-    let startX=0;
-
-    img.addEventListener("touchstart",e=>{
-        startX=e.changedTouches[0].clientX;
-    });
-
-    img.addEventListener("touchend",e=>{
-        const endX=e.changedTouches[0].clientX;
-
-        if(startX-endX>50){
-            current=(current+1)%mediaImages.length;
-            update();
-        }
-
-        if(endX-startX>50){
-            current=(current-1+mediaImages.length)%mediaImages.length;
-            update();
-        }
-    });
-
-    box.onclick=e=>{
-        if(e.target===box) box.remove();
-    };
 };
