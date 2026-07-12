@@ -1453,3 +1453,79 @@ document.getElementById("closeFollowList").onclick=()=>{
     .classList.remove("active");
 
 };
+async function loadFollowList(type){
+
+    const box =
+    document.getElementById("followListContent");
+
+
+    box.innerHTML = "Đang tải...";
+
+
+    const ref = collection(
+        db,
+        "users",
+        profileUid,
+        type
+    );
+
+
+    const snap = await getDocs(ref);
+
+
+    box.innerHTML="";
+
+
+    if(snap.empty){
+
+        box.innerHTML =
+        `
+        <div style="
+        text-align:center;
+        padding:30px;
+        color:#777;
+        ">
+        Chưa có dữ liệu
+        </div>
+        `;
+
+        return;
+    }
+
+
+    for(const item of snap.docs){
+
+
+        const uid = item.id;
+
+
+        const userSnap =
+        await getDoc(
+            doc(db,"users",uid)
+        );
+
+
+        if(!userSnap.exists()) continue;
+
+
+        const u=userSnap.data();
+
+
+        box.innerHTML +=
+        `
+        <div class="follow-user">
+
+            <img src="
+            ${u.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}
+            ">
+
+            <span>
+            ${u.name || "Người dùng"}
+            </span>
+
+        </div>
+        `;
+
+    }
+
+}
