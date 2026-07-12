@@ -622,3 +622,17 @@ border-radius:10px;
 #mediaList.show{
     display:flex;
 }
+#mediaList,
+#fileList,
+#linkList,
+#pinnedList{
+    display:none;
+    padding:10px 15px;
+}
+
+#mediaList.show,
+#fileList.show,
+#linkList.show,
+#pinnedList.show{
+    display:block;
+}
