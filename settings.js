@@ -244,7 +244,7 @@ if(logoutBtn){
 
         await auth.signOut();
 
-        location.href = "login.html";
+        location.href = "review.html";
 
     };
 
@@ -291,7 +291,7 @@ if(logoutBtn){
 
         await auth.signOut();
 
-        location.href = "login.html";
+        location.href = "review.html";
 
     };
 
