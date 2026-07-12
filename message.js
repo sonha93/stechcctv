@@ -7,7 +7,7 @@ import { getVerifiedBadge } from "./verified-users.js";
 
 // Firebase
 import { db, auth } from "./firebase-init.js";
-
+import { isBlocked } from "./block.js";
 // ================================
 // MESSAGE SOUND
 // ================================
@@ -80,6 +80,11 @@ document.getElementById("backBtn");
     let seenUserCache = {};
    let selectedFiles = [];
     let typingTimer = null;
+let otherUid = "";
+let blockState = {
+    iBlocked:false,
+    blockedMe:false
+};
 // ================================
 // LOAD CHAT INFO
 // ================================
@@ -97,8 +102,13 @@ try{
 
     const data = snap.data();
 
-    const otherUid =
-    data.members.find(uid => uid !== currentUser.uid);
+    otherUid =
+data.members.find(uid => uid !== currentUser.uid);
+
+blockState = await isBlocked(
+    currentUser.uid,
+    otherUid
+);
 
     const userSnap = await db
     .collection("users")
@@ -487,7 +497,26 @@ return;
 
 if(!currentUser)
 return;
+blockState = await isBlocked(
+    currentUser.uid,
+    otherUid
+);
 
+if(blockState.iBlocked){
+
+    alert("Bạn đã chặn người này.");
+
+    return;
+
+}
+
+if(blockState.blockedMe){
+
+    alert("Người này đã chặn bạn.");
+
+    return;
+
+}
 
 
 try{
@@ -675,7 +704,26 @@ const file = imageInput.files[0];
 
 if(!file)
 return;
+blockState = await isBlocked(
+    currentUser.uid,
+    otherUid
+);
 
+if(blockState.iBlocked){
+
+    alert("Bạn đã chặn người này.");
+
+    return;
+
+}
+
+if(blockState.blockedMe){
+
+    alert("Người này đã chặn bạn.");
+
+    return;
+
+}
 
 try{
 
