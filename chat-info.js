@@ -204,7 +204,7 @@ auth.onAuthStateChanged(user=>{
 if(user){
 
 loadUserInfo();
-
+loadMedia();
 }
 
 });
