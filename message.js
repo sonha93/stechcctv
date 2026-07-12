@@ -144,9 +144,11 @@ if(blocked){
         imageBtn.style.display = "";
 
 }
-if(messageFooter){
+const chatInput = document.querySelector(".chat-input");
 
-    messageFooter.style.display =
+if(chatInput){
+
+    chatInput.style.display =
     blocked ? "none" : "flex";
 
 }
