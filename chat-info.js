@@ -4,7 +4,7 @@
 
 import { db, auth } from "./firebase-init.js";
 import { getVerifiedBadge } from "./verified-users.js";
-
+import { isBlocked } from "./block.js";
 
 // =====================================
 // CHECK LOGIN
@@ -12,14 +12,16 @@ import { getVerifiedBadge } from "./verified-users.js";
 
 auth.onAuthStateChanged(user=>{
 
-if(!user){
+    if(!user){
 
-location.href="login.html";
+        location.href = "login.html";
+        return;
 
-return;
+    }
 
-}
-
+    loadUserInfo();
+    loadMedia();
+    loadBlockStatus();
 
 });
 
@@ -36,7 +38,12 @@ params.get("uid");
 
 
 const chatId = params.get("chatId");
+let blockState = {
 
+    iBlocked:false,
+    blockedMe:false
+
+};
 // =====================================
 // ELEMENT
 // =====================================
@@ -198,15 +205,7 @@ verified.innerHTML = getVerifiedBadge(uid);
 
 
 
-auth.onAuthStateChanged(user=>{
 
-if(user){
-
-loadUserInfo();
-loadMedia();
-}
-
-});
 // =====================================
 // LOAD MEDIA
 // =====================================
@@ -487,47 +486,67 @@ mute.checked
 
 
 
+async function loadBlockStatus(){
 
+    const current = auth.currentUser;
+
+    if(!current || !uid) return;
+
+    blockState = await isBlocked(current.uid, uid);
+
+    const blockBtn = document.getElementById("blockBtn");
+
+    if(blockBtn){
+
+        blockBtn.textContent = blockState.iBlocked
+            ? "Bỏ chặn"
+            : "Chặn";
+
+    }
+
+}
 
 // =====================================
 // BLOCK USER
 // =====================================
 
-window.blockUser =
-async function(){
+window.blockUser = async ()=>{
 
+    if(blockState.iBlocked){
 
-const current =
-auth.currentUser;
+        await db.collection("users")
+        .doc(auth.currentUser.uid)
+        .update({
 
+            blockedUsers:
+            firebase.firestore.FieldValue.arrayRemove(uid)
 
-if(!current)return;
+        });
 
+        await loadBlockStatus();
 
+        alert("Đã bỏ chặn.");
 
-await db.collection("users")
-.doc(current.uid)
-.update({
+        return;
 
-blockedUsers:
-firebase.firestore.FieldValue
-.arrayUnion(uid)
+    }
 
-});
+    if(!confirm("Chặn người này?")) return;
 
+    await db.collection("users")
+    .doc(auth.currentUser.uid)
+    .update({
 
+        blockedUsers:
+        firebase.firestore.FieldValue.arrayUnion(uid)
 
-alert(
-"Đã chặn người dùng"
-);
+    });
 
+    await loadBlockStatus();
+
+    alert("Đã chặn người dùng.");
 
 };
-
-
-
-
-
 
 // =====================================
 // DELETE CHAT FOR ME
