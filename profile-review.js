@@ -204,9 +204,6 @@ if(blocked){
     const oldLink = document.getElementById("profileLink");
     if(oldLink) oldLink.remove();
 
-    document.getElementById("storyBar").innerHTML = "";
-    document.getElementById("videosGrid").innerHTML = "";
-
 }
 
     followingCount.innerHTML = u.followingCount || 0;
@@ -644,22 +641,17 @@ snap.forEach(docSnap => {
 // HIỂN THỊ DANH SÁCH
 // ===========================
 
-async function renderVideos(snap){
-
-    const block = auth.currentUser
-        ? await isBlocked(auth.currentUser.uid, profileUid)
-        : { iBlocked:false, blockedMe:false };
-
-    if(block.iBlocked || block.blockedMe){
-        grid.innerHTML = "";
-        return;
-    }
+function renderVideos(snap){
 
     snap.forEach(docSnap=>{
+
         renderOne(docSnap);
+
     });
 
 }
+
+
 
 // ===========================
 // 1 VIDEO
@@ -749,10 +741,10 @@ await updateDoc(ref,{
         : "public"
 });
     videoMenu.classList.remove("active");
-if(!blocked){
+
     loadTab("videos");
-    loadStories();
-}
+loadStories();
+};
 commentBtn.onclick = async function(){
 
     if(!selectedVideoId) return;
