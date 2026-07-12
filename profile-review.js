@@ -1,5 +1,5 @@
-import { isBlocked } from "./block.js";
 import { getVerifiedBadge } from "./verified-users.js";
+import { isBlocked } from "./block.js";
 import { app, auth } from "./auth.js";
 import {
     onAuthStateChanged
@@ -88,28 +88,36 @@ const storyMore = document.getElementById("storyMore");
 
 let currentStoryId = null;
 let currentStoryOwner = null;
+let blockedProfile = false;
 // ===========================
 // LOAD USER
 // ===========================
 
 async function loadProfile() {
-async function loadProfile() {
+    // ===== KIỂM TRA BỊ CHẶN =====
+    if (auth.currentUser && auth.currentUser.uid !== profileUid) {
 
-    // KIỂM TRA BỊ CHẶN
-    if(auth.currentUser && auth.currentUser.uid !== profileUid){
+        blockedProfile = await isBlocked(profileUid);
 
-        const blocked = await isBlocked(profileUid);
-
-        if(blocked){
+        if (blockedProfile) {
 
             avatar.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
+            sheetAvatar.src = avatar.src;
 
             document.getElementById("profileName").innerHTML =
-            "Người dùng";
+                "<span id='profileNameText'>Người dùng</span>";
+
+            sheetName.textContent = "Người dùng";
 
             username.innerHTML = "";
-
             bio.innerHTML = "";
+
+            followingCount.innerHTML = "0";
+            followerCount.innerHTML = "0";
+            likeCount.innerHTML = "0";
+
+            const link = document.getElementById("profileLink");
+            if (link) link.remove();
 
             followBtn.style.display = "none";
             messageBtn.style.display = "none";
@@ -117,15 +125,14 @@ async function loadProfile() {
 
             document.getElementById("storyBar").innerHTML = "";
 
-            document.getElementById("videosGrid").innerHTML =
-            `
-            <div style="
-            text-align:center;
-            padding:50px;
-            color:#777;
-            ">
-            Không thể xem trang cá nhân này
-            </div>
+            document.getElementById("videosGrid").innerHTML = `
+                <div style="
+                    padding:60px;
+                    text-align:center;
+                    color:#777;
+                ">
+                    Người dùng này không khả dụng
+                </div>
             `;
 
             return;
@@ -333,6 +340,7 @@ if(addStory){
 });
 
 let followLoading = false;
+ if (blockedProfile) return;
 followBtn.onclick = async () => {
 
     if (followLoading) return;
@@ -374,7 +382,7 @@ followBtn.onclick = async () => {
     }
 
 };
-
+    if (blockedProfile) return;
 messageBtn.onclick = async () => {
 
     if (!auth.currentUser) {
@@ -459,34 +467,16 @@ tabs.forEach(tab=>{
 
 });
 
-async function loadTab(type){
 
-    if(auth.currentUser && auth.currentUser.uid !== profileUid){
-
-        const blocked = await isBlocked(profileUid);
-
-        if(blocked){
-
-            grid.innerHTML =
-            `
-            <div style="
-            text-align:center;
-            padding:50px;
-            color:#777;
-            ">
-            Không có nội dung
-            </div>
-            `;
-
-            return;
-        }
-    }
 // ===========================
 // LOAD TAB
 // ===========================
 
 async function loadTab(type){
-
+    if (blockedProfile) {
+        grid.innerHTML = "";
+        return;
+    }
     grid.innerHTML="";
 
     // --------------------
@@ -1078,20 +1068,27 @@ alert("Đăng story thành công");
 
 loadStories();
 };   
+ if (blockedProfile) {
+
+        const storyBar = document.getElementById("storyBar");
+
+        if (storyBar) storyBar.innerHTML = "";
+
+        return;
+    }
 async function loadStories(){
 
-    if(auth.currentUser && auth.currentUser.uid !== profileUid){
+    const storyBar = document.getElementById("storyBar");
 
-        const blocked = await isBlocked(profileUid);
+    if(!storyBar) return;
 
-        if(blocked){
 
-            document.getElementById("storyBar").innerHTML="";
-            return;
-
-        }
-
-    }
+    const snap = await getDocs(
+        query(
+           collection(db,"profile_stories"),
+            where("uid","==",profileUid)
+        )
+    );
 
     snap.forEach(docSnap=>{
 
@@ -1154,18 +1151,7 @@ const storyVideo = document.getElementById("storyVideo");
 const storyImage = document.getElementById("storyImage");
 const storyText =
 document.getElementById("storyText");
-
-window.openStory = async function(id){
-
-    if(auth.currentUser){
-
-        const blocked = await isBlocked(profileUid);
-
-        if(blocked){
-            return;
-        }
-
-    }
+    if (blockedProfile) return;
 window.openStory = async function(id){
 
     currentStoryId = id;
@@ -1310,4 +1296,3 @@ document.getElementById("closeStory").onclick=()=>{
     storyVideo.src="";
 
 };
-   });
