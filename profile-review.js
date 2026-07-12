@@ -1142,19 +1142,23 @@ const storyVideo = document.getElementById("storyVideo");
 const storyImage = document.getElementById("storyImage");
 const storyText =
 document.getElementById("storyText");
-if(auth.currentUser){
 
-    const block = await isBlocked(
-        auth.currentUser.uid,
-        profileUid
-    );
+window.openStory = async function(id){
 
-    if(block.iBlocked || block.blockedMe){
-        return;
+    if(auth.currentUser){
+
+        const block = await isBlocked(
+            auth.currentUser.uid,
+            profileUid
+        );
+
+        if(block.iBlocked || block.blockedMe){
+            return;
+        }
+
     }
 
-}
-window.openStory = async function(id){
+    currentStoryId = id;
 
     currentStoryId = id;
 
