@@ -498,9 +498,9 @@ async function loadBlockStatus(){
 
     if(blockBtn){
 
-        blockBtn.textContent = blockState.iBlocked
-            ? "Bỏ chặn"
-            : "Chặn";
+        blockBtn.innerHTML = blockState.iBlocked
+    ? "🚫 Bỏ chặn"
+    : "🚫 Chặn";
 
     }
 
