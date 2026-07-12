@@ -121,7 +121,35 @@ blockState = await isBlocked(
 
 const blocked =
 blockState.iBlocked || blockState.blockedMe;
+if(blocked){
 
+    if(messageInput)
+        messageInput.style.display = "none";
+
+    if(sendBtn)
+        sendBtn.style.display = "none";
+
+    if(imageBtn)
+        imageBtn.style.display = "none";
+
+}else{
+
+    if(messageInput)
+        messageInput.style.display = "";
+
+    if(sendBtn)
+        sendBtn.style.display = "";
+
+    if(imageBtn)
+        imageBtn.style.display = "";
+
+}
+if(messageFooter){
+
+    messageFooter.style.display =
+    blocked ? "none" : "flex";
+
+}
 if(chatTitle){
 
     let displayName = blocked
