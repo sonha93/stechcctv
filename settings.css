@@ -14,7 +14,7 @@ body{
     color:#111;
 }
 
-.settings-page{
+.settings-container{
 
     width:100%;
     max-width:700px;
@@ -502,7 +502,7 @@ body{
 
 @media(max-width:768px){
 
-    .settings-page{
+ .settings-container{
 
         max-width:none;
 
@@ -553,7 +553,7 @@ body{
 
 @media(min-width:769px){
 
-    .settings-page{
+.settings-container{
 
         box-shadow:
         0 6px 30px rgba(0,0,0,.08);
