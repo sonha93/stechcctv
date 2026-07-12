@@ -38,10 +38,12 @@ const empty = document.getElementById("empty");
 const userList = document.getElementById("userList");
 const searchInput = document.getElementById("searchInput");
 
-pageTitle.innerText =
-type === "following"
-? "Đã follow"
-: "Follower";
+if(pageTitle){
+    pageTitle.innerText =
+    type === "following"
+    ? "Đã follow"
+    : "Follower";
+}
 
 document.getElementById("backBtn").onclick = () => history.back();
 
