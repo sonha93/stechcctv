@@ -231,7 +231,7 @@ if(!mediaList) return;
 
 
 let html = "";
-
+mediaImages = [];
 
 snap.forEach(doc=>{
 
@@ -239,11 +239,17 @@ const msg = doc.data();
 
 
 if(msg.image){
-html += `
-<img class="media-photo"
-src="${msg.image}"
-onclick="showMedia('${msg.image}')">
-`;
+
+    const index = mediaImages.length;
+
+    mediaImages.push(msg.image);
+
+    html += `
+    <img
+    class="media-photo"
+    src="${msg.image}"
+    onclick="showMedia(${index})">
+    `;
 
 }
 
@@ -965,7 +971,6 @@ if(pinnedToggle){
     };
 
 }
-let mediaImages = [];
 
 window.showMedia = function(index){
 
