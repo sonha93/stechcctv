@@ -33,14 +33,6 @@ document.getElementById("myName");
 
 const myUsername =
 document.getElementById("myUsername");
-const userAvatar =
-document.getElementById("userAvatar");
-
-const userName =
-document.getElementById("userName");
-
-const userUsername =
-document.getElementById("userUsername");
 // =====================================
 // BACK
 // =====================================
@@ -86,25 +78,46 @@ async function loadProfile(){
 
     if(!user) return;
 
-    const snap =
-    await db.collection("users")
+    const snap = await db
+    .collection("users")
     .doc(user.uid)
     .get();
 
-    if(!snap.exists) return;
+    let data = {};
 
-    const data = snap.data() || {};
+    if(snap.exists){
+
+        data = snap.data() || {};
+
+    }
+
+    const avatar =
+        data.avatar ||
+        data.photoURL ||
+        user.photoURL ||
+        "default-avatar.png";
+
+    const name =
+        data.name ||
+        data.displayName ||
+        user.displayName ||
+        "Người dùng";
+
+    const username =
+        data.username ||
+        data.userName ||
+        data.user ||
+        (user.email
+            ? user.email.split("@")[0]
+            : "username");
 
     if(myAvatar){
 
-        myAvatar.src =
-        data.avatar ||
-        "default-avatar.png";
+        myAvatar.src = avatar;
 
         myAvatar.onerror = ()=>{
 
-            myAvatar.src =
-            "default-avatar.png";
+            myAvatar.src = "default-avatar.png";
 
         };
 
@@ -112,20 +125,13 @@ async function loadProfile(){
 
     if(myName){
 
-        myName.textContent =
-        data.name ||
-        "Người dùng";
+        myName.textContent = name;
 
     }
 
     if(myUsername){
 
-        myUsername.textContent =
-        "@" + (
-            data.username ||
-            user.email?.split("@")[0] ||
-            "username"
-        );
+        myUsername.textContent = "@" + username;
 
     }
 
