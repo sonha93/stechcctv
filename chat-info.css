@@ -423,31 +423,7 @@ body{
 
 
 
-  .verified-badge{
-
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-
-    width:17px;
-    height:17px;
-
-    margin-left:4px;
-
-    border-radius:50%;
-
-    background:#1877f2;
-
-    color:white;
-
-    font-size:11px;
-
-    font-weight:900;
-
-    transform:translateY(-1px);
-
-}
-
+  
 
 /* ================================
    MOBILE
@@ -617,17 +593,19 @@ border-radius:10px;
 
 }
 
-#verified .verified-badge{
-
-    margin:0;
-
+.verified-badge{
+    position: relative;
 }
 
-#verified .verified-icon{
+.verified-popup{
+    display: none;
+    position: absolute;
+    top: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+}
 
-    width:20px;
-    height:20px;
-
-    display:block;
-
+.verified-badge:hover .verified-popup{
+    display: block;
 }
