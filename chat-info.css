@@ -609,3 +609,6 @@ border-radius:10px;
 .verified-badge:hover .verified-popup{
     display: block;
 }
+.verified-popup{
+    display: none !important;
+}
