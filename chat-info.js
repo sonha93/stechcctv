@@ -533,41 +533,90 @@ alert(
 // DELETE CHAT FOR ME
 // =====================================
 
-window.deleteChat =
-async function(){
+// =====================================
+// DELETE CHAT
+// =====================================
+
+window.deleteChat = async function(){
+
+    if(!chatId) return;
 
 
-if(!chatId)return;
+    const current = auth.currentUser;
+
+    if(!current) return;
+
+
+    const ok = confirm(
+        "Bạn có chắc muốn xóa đoạn chat này?"
+    );
+
+
+    if(!ok) return;
+
+
+    try{
+
+
+        // Xóa tin nhắn trong conversation
+        const messages =
+        await db.collection("conversations")
+        .doc(chatId)
+        .collection("messages")
+        .get();
 
 
 
-const current =
-auth.currentUser;
+        const batch =
+        db.batch();
 
 
 
-await db.collection("chats")
-.doc(chatId)
-.update({
+        messages.forEach(doc=>{
 
-deletedFor:
-firebase.firestore.FieldValue
-.arrayUnion(current.uid)
+            batch.delete(doc.ref);
 
-});
+        });
 
 
 
-alert(
-"Đã xóa đoạn chat"
-);
+        // Xóa conversation
+        batch.delete(
+            db.collection("conversations")
+            .doc(chatId)
+        );
+
+
+        await batch.commit();
+
+
+
+        alert(
+            "Đã xóa đoạn chat"
+        );
+
+
+        // quay lại danh sách chat
+        location.href =
+        "chat.html";
+
+
+    }
+    catch(err){
+
+        console.error(
+            "Lỗi xóa chat:",
+            err
+        );
+
+        alert(
+            "Không thể xóa đoạn chat"
+        );
+
+    }
 
 
 };
-
-
-
-
 // ================================
 // VIEW AVATAR
 // ================================
