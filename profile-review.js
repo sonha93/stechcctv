@@ -1,4 +1,4 @@
-
+import { isBlocked } from "./block.js";
 import { getVerifiedBadge } from "./verified-users.js";
 import { app, auth } from "./auth.js";
 import {
@@ -93,7 +93,44 @@ let currentStoryOwner = null;
 // ===========================
 
 async function loadProfile() {
+async function loadProfile() {
 
+    // KIỂM TRA BỊ CHẶN
+    if(auth.currentUser && auth.currentUser.uid !== profileUid){
+
+        const blocked = await isBlocked(profileUid);
+
+        if(blocked){
+
+            avatar.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
+
+            document.getElementById("profileName").innerHTML =
+            "Người dùng";
+
+            username.innerHTML = "";
+
+            bio.innerHTML = "";
+
+            followBtn.style.display = "none";
+            messageBtn.style.display = "none";
+            editBtn.style.display = "none";
+
+            document.getElementById("storyBar").innerHTML = "";
+
+            document.getElementById("videosGrid").innerHTML =
+            `
+            <div style="
+            text-align:center;
+            padding:50px;
+            color:#777;
+            ">
+            Không thể xem trang cá nhân này
+            </div>
+            `;
+
+            return;
+        }
+    }
     const snap = await getDoc(doc(db,"users",profileUid));
 
     if(!snap.exists()){
@@ -422,7 +459,28 @@ tabs.forEach(tab=>{
 
 });
 
+async function loadTab(type){
 
+    if(auth.currentUser && auth.currentUser.uid !== profileUid){
+
+        const blocked = await isBlocked(profileUid);
+
+        if(blocked){
+
+            grid.innerHTML =
+            `
+            <div style="
+            text-align:center;
+            padding:50px;
+            color:#777;
+            ">
+            Không có nội dung
+            </div>
+            `;
+
+            return;
+        }
+    }
 // ===========================
 // LOAD TAB
 // ===========================
@@ -1022,6 +1080,20 @@ loadStories();
 };   
 async function loadStories(){
 
+    if(auth.currentUser && auth.currentUser.uid !== profileUid){
+
+        const blocked = await isBlocked(profileUid);
+
+        if(blocked){
+
+            document.getElementById("storyBar").innerHTML="";
+            return;
+
+        }
+
+    }
+async function loadStories(){
+
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
@@ -1095,6 +1167,18 @@ const storyVideo = document.getElementById("storyVideo");
 const storyImage = document.getElementById("storyImage");
 const storyText =
 document.getElementById("storyText");
+
+window.openStory = async function(id){
+
+    if(auth.currentUser){
+
+        const blocked = await isBlocked(profileUid);
+
+        if(blocked){
+            return;
+        }
+
+    }
 window.openStory = async function(id){
 
     currentStoryId = id;
