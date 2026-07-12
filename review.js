@@ -76,20 +76,21 @@ data-id="${docSnap.id}">
     });
 
     setupVideo();
-}
-document.querySelectorAll(".buy-btn").forEach(btn=>{
+    document.querySelectorAll(".buy-btn").forEach(btn => {
 
-    btn.onclick=()=>{
+    btn.onclick = () => {
 
-        requireLogin(()=>{
+        requireLogin(() => {
 
-            location.href="logo.html?id="+btn.dataset.id;
+            location.href = "logo.html?id=" + btn.dataset.id;
 
         });
 
     };
 
 });
+}
+
 function setupVideo(){
 
     const videos=document.querySelectorAll(".review-video");
@@ -182,17 +183,29 @@ function setupVideo(){
 }
 const loginPopup = document.getElementById("loginPopup");
 
-document.getElementById("goLoginBtn").onclick = () => {
+const goLoginBtn = document.getElementById("goLoginBtn");
 
-    location.href = "login.html";
+const closeLoginBtn = document.getElementById("closeLoginBtn");
 
-};
+if (goLoginBtn) {
 
-document.getElementById("closeLoginBtn").onclick = () => {
+    goLoginBtn.onclick = () => {
 
-    loginPopup.classList.remove("active");
+        location.href = "login.html";
 
-};
+    };
+
+}
+
+if (closeLoginBtn && loginPopup) {
+
+    closeLoginBtn.onclick = () => {
+
+        loginPopup.classList.remove("active");
+
+    };
+
+}
 
 function requireLogin(callback){
 
