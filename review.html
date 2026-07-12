@@ -1184,14 +1184,49 @@ document.getElementById("myProfileBtn").onclick = () => {
     const user = auth.currentUser;
 
     if(user){
-        location.href = "profile-review.html?uid=" + user.uid;
+
+        location.href="profile-review.html?uid="+user.uid;
+
         return;
+
     }
 
-    document.getElementById("loginPopup").style.display = "flex";
+    document.getElementById("loginPopup").style.display="flex";
 
 };
+    import {
+    signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+document.getElementById("popupLoginBtn").onclick = async () => {
+
+    const email =
+        document.getElementById("popupEmail").value.trim();
+
+    const password =
+        document.getElementById("popupPassword").value;
+
+    try{
+
+        await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+        document.getElementById("loginPopup").style.display="none";
+
+        location.href =
+            "profile-review.html?uid="+auth.currentUser.uid;
+
+    }catch(e){
+
+        document.getElementById("popupMessage").innerText =
+            "Sai email hoặc mật khẩu";
+
+    }
+
+};
 document.getElementById("goLogin").onclick = () => {
 
     location.href = "review.html"; 
