@@ -1,0 +1,563 @@
+/* ======================================
+   SETTINGS CSS
+====================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f0f2f5;
+    color:#111;
+}
+
+.settings-page{
+
+    width:100%;
+    max-width:700px;
+
+    margin:auto;
+
+    min-height:100vh;
+
+    background:#fff;
+
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.settings-header{
+
+    position:sticky;
+    top:0;
+
+    z-index:100;
+
+    height:60px;
+
+    display:flex;
+    align-items:center;
+
+    gap:12px;
+
+    padding:0 16px;
+
+    background:#fff;
+
+    border-bottom:1px solid #e5e5e5;
+
+}
+
+.settings-header h2{
+
+    font-size:20px;
+    font-weight:700;
+
+    flex:1;
+
+}
+
+#backBtn{
+
+    width:40px;
+    height:40px;
+
+    border:none;
+    background:none;
+
+    border-radius:50%;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+}
+
+#backBtn:hover{
+
+    background:#f2f2f2;
+
+}
+
+#backBtn svg{
+
+    width:24px;
+    height:24px;
+
+    fill:#111;
+
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.settings-content{
+
+    padding:16px;
+
+}
+
+.settings-card{
+
+    background:#fff;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    margin-bottom:18px;
+
+    border:1px solid #ececec;
+
+}
+
+.setting-title{
+
+    padding:14px 18px;
+
+    font-size:15px;
+    font-weight:700;
+
+    color:#666;
+
+    background:#fafafa;
+
+    border-bottom:1px solid #eee;
+
+}
+/* =========================
+   SETTING ITEM
+========================= */
+
+.setting-item{
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:16px 18px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    border-bottom:1px solid #f2f2f2;
+
+}
+
+.setting-item:last-child{
+
+    border-bottom:none;
+
+}
+
+.setting-item:hover{
+
+    background:#f7f7f7;
+
+}
+
+.setting-left{
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+
+}
+
+.setting-left svg{
+
+    width:24px;
+    height:24px;
+
+    fill:#1877f2;
+
+    flex-shrink:0;
+
+}
+
+.setting-left span{
+
+    font-size:15px;
+    font-weight:500;
+
+}
+
+.setting-right{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    color:#888;
+
+}
+
+.setting-right svg{
+
+    width:20px;
+    height:20px;
+
+    fill:#999;
+
+}
+
+/* =========================
+   IOS SWITCH
+========================= */
+
+.switch{
+
+    position:relative;
+
+    display:inline-block;
+
+    width:52px;
+
+    height:30px;
+
+}
+
+.switch input{
+
+    display:none;
+
+}
+
+.slider{
+
+    position:absolute;
+
+    inset:0;
+
+    cursor:pointer;
+
+    background:#cfcfcf;
+
+    transition:.25s;
+
+    border-radius:999px;
+
+}
+
+.slider::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:3px;
+    top:3px;
+
+    width:24px;
+    height:24px;
+
+    background:#fff;
+
+    border-radius:50%;
+
+    transition:.25s;
+
+    box-shadow:0 2px 5px rgba(0,0,0,.25);
+
+}
+
+.switch input:checked + .slider{
+
+    background:#1877f2;
+
+}
+
+.switch input:checked + .slider::before{
+
+    transform:translateX(22px);
+
+}
+/* =========================
+   DANGER
+========================= */
+
+.danger{
+
+    color:#e53935;
+
+}
+
+.danger .setting-left svg{
+
+    fill:#e53935;
+
+}
+
+.danger:hover{
+
+    background:#fff4f4;
+
+}
+
+/* =========================
+   VERSION
+========================= */
+
+.version{
+
+    text-align:center;
+
+    padding:30px 20px;
+
+    color:#888;
+
+    font-size:13px;
+
+    line-height:1.8;
+
+}
+
+.version strong{
+
+    color:#111;
+
+    font-size:14px;
+
+}
+
+/* =========================
+   BLOCKED LIST
+========================= */
+
+#blockedList{
+
+    display:flex;
+    flex-direction:column;
+
+}
+
+.block-user{
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:14px 18px;
+
+    border-bottom:1px solid #f1f1f1;
+
+}
+
+.block-user:last-child{
+
+    border-bottom:none;
+
+}
+
+.block-left{
+
+    display:flex;
+    align-items:center;
+
+    gap:12px;
+
+}
+
+.block-avatar{
+
+    width:46px;
+    height:46px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    flex-shrink:0;
+
+}
+
+.block-name{
+
+    font-size:15px;
+    font-weight:600;
+
+    color:#111;
+
+}
+
+.unblock-btn{
+
+    border:none;
+
+    background:#1877f2;
+
+    color:#fff;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    padding:8px 16px;
+
+    border-radius:999px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.unblock-btn:hover{
+
+    background:#1664d6;
+
+}
+/* =========================
+   EMPTY
+========================= */
+
+.empty-block{
+
+    padding:30px 20px;
+
+    text-align:center;
+
+    color:#888;
+
+    font-size:14px;
+
+}
+
+/* =========================
+   DIVIDER
+========================= */
+
+.divider{
+
+    height:10px;
+
+    background:#f0f2f5;
+
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#c9c9c9;
+
+    border-radius:999px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#a9a9a9;
+
+}
+
+/* =========================
+   ANIMATION
+========================= */
+
+.settings-card{
+
+    animation:fadeIn .25s ease;
+
+}
+
+@keyframes fadeIn{
+
+    from{
+
+        opacity:0;
+        transform:translateY(8px);
+
+    }
+
+    to{
+
+        opacity:1;
+        transform:translateY(0);
+
+    }
+
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:768px){
+
+    .settings-page{
+
+        max-width:none;
+
+    }
+
+    .settings-content{
+
+        padding:12px;
+
+    }
+
+    .settings-header{
+
+        padding:0 12px;
+
+    }
+
+    .setting-item{
+
+        padding:15px 14px;
+
+    }
+
+    .setting-left{
+
+        gap:12px;
+
+    }
+
+    .setting-left span{
+
+        font-size:15px;
+
+    }
+
+    .block-avatar{
+
+        width:42px;
+        height:42px;
+
+    }
+
+}
+
+/* =========================
+   DESKTOP
+========================= */
+
+@media(min-width:769px){
+
+    .settings-page{
+
+        box-shadow:
+        0 6px 30px rgba(0,0,0,.08);
+
+    }
+
+}
