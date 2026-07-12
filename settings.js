@@ -87,11 +87,17 @@ async function loadProfile(){
     if(!user) return;
 
     const snap =
-    await db.collection("users")
-    .doc(user.uid)
-    .get();
+await db.collection("users")
+.doc(user.uid)
+.get();
 
-    if(!snap.exists) return;
+if(!snap.exists){
+
+    alert("Không tìm thấy hồ sơ người dùng");
+
+    return;
+
+}
 
     const data = snap.data() || {};
 
