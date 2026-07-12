@@ -452,18 +452,7 @@ tabs.forEach(tab=>{
 async function loadTab(type){
 
     grid.innerHTML="";
-if(auth.currentUser){
 
-    const block = await isBlocked(
-        auth.currentUser.uid,
-        profileUid
-    );
-
-    if(block.iBlocked || block.blockedMe){
-        return;
-    }
-
-}
     // --------------------
     // VIDEO CÔNG KHAI
     // --------------------
@@ -1059,20 +1048,6 @@ async function loadStories(){
 
     if(!storyBar) return;
 
-    storyBar.innerHTML = "";
-
-    if(auth.currentUser){
-
-        const block = await isBlocked(
-            auth.currentUser.uid,
-            profileUid
-        );
-
-        if(block.iBlocked || block.blockedMe){
-            return;
-        }
-
-    }
 
     const snap = await getDocs(
         query(
@@ -1142,23 +1117,7 @@ const storyVideo = document.getElementById("storyVideo");
 const storyImage = document.getElementById("storyImage");
 const storyText =
 document.getElementById("storyText");
-
 window.openStory = async function(id){
-
-    if(auth.currentUser){
-
-        const block = await isBlocked(
-            auth.currentUser.uid,
-            profileUid
-        );
-
-        if(block.iBlocked || block.blockedMe){
-            return;
-        }
-
-    }
-
-    currentStoryId = id;
 
     currentStoryId = id;
 
@@ -1301,4 +1260,4 @@ document.getElementById("closeStory").onclick=()=>{
     storyVideo.pause();
     storyVideo.src="";
 
-};
+};    
