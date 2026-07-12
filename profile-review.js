@@ -1045,64 +1045,61 @@ loadStories();
 async function loadStories(){
 
     const storyBar = document.getElementById("storyBar");
+
     if(!storyBar) return;
 
-    storyBar.innerHTML = "";
 
     const snap = await getDocs(
         query(
-            collection(db,"profile_stories"),
+           collection(db,"profile_stories"),
             where("uid","==",profileUid)
         )
     );
 
-    for(const docSnap of snap.docs){
+    snap.forEach(docSnap=>{
 
         const s = docSnap.data();
 
-        const block = auth.currentUser
-            ? await isBlocked(auth.currentUser.uid, s.uid)
-            : { iBlocked:false, blockedMe:false };
+        
 
-        if(block.iBlocked || block.blockedMe){
-            continue;
+storyBar.insertAdjacentHTML(
+"beforeend",
+`
+<div class="storyItem" onclick="openStory('${docSnap.id}')">
+
+    <div class="storyAvatar">
+
+        ${
+        s.type==="video"
+        ?
+        `<video src="${s.media}" muted></video>`
+        :
+        `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
         }
 
-        storyBar.insertAdjacentHTML(
-            "beforeend",
-            `
-            <div class="storyItem" onclick="openStory('${docSnap.id}')">
+    </div>
 
-                <div class="storyAvatar">
+    <div class="storyName">
+        ${s.text || ""}
+    </div>
 
-                    ${
-                        s.type === "video"
-                        ? `<video src="${s.media}" muted></video>`
-                        : `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
-                    }
-
-                </div>
-
-                <div class="storyName">
-                    ${s.text || ""}
-                </div>
-
-            </div>
-            `
-        );
-
+</div>
+`
+);
         const video = storyBar.lastElementChild.querySelector("video");
 
-        if(video){
-            video.muted = true;
-            video.autoplay = true;
-            video.loop = true;
-            video.playsInline = true;
-            video.onloadedmetadata = () => {
-                video.play().catch(()=>{});
-            };
-        }
-    }
+if (video) {
+    video.muted = true;
+    video.autoplay = true;
+    video.loop = true;
+    video.playsInline = true;
+
+    video.onloadedmetadata = () => {
+        video.play().catch(() => {});
+    };
+}
+    });
+
 }
 const storyViewer = document.getElementById("storyViewer");
 const storyOwnerAvatar =
@@ -1131,9 +1128,6 @@ window.openStory = async function(id){
     if(!snap.exists()) return;
 
     const s = snap.data();
-    const block = auth.currentUser
-    ? await isBlocked(auth.currentUser.uid, s.uid)
-    : { iBlocked:false, blockedMe:false };
     if(auth.currentUser){
 
     await updateDoc(
@@ -1147,16 +1141,16 @@ window.openStory = async function(id){
     currentStoryOwner = s.uid;
     // HIỂN THỊ NGƯỜI ĐĂNG STORY
 
-storyOwnerAvatar.src = block.iBlocked || block.blockedMe
-    ? "https://i.ibb.co/Z1kv9nJj/logo.png"
-    : (s.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png");
+storyOwnerAvatar.src =
+s.avatar ||
+"https://i.ibb.co/Z1kv9nJj/logo.png";
 
-storyOwnerName.innerHTML = block.iBlocked || block.blockedMe
-    ? "Người dùng"
-    : `
-        ${s.name || "Người dùng"}
-        ${getVerifiedBadge(s.uid)}
-      `;
+
+storyOwnerName.innerHTML =
+`
+${s.name || "Người dùng"}
+${getVerifiedBadge(s.uid)}
+`;
 
 
 // HIỂN THỊ NGÀY GIỜ ĐĂNG
