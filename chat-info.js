@@ -260,7 +260,7 @@ src="${img}">
 });
 
 }
-console.log(html);
+
 
 if(msg.video){
 
@@ -320,9 +320,7 @@ pinned.push(doc.data());
 
 
 
-console.log(
-"Tin nhắn ghim:",
-pinned
+
 );
 
 
@@ -657,9 +655,7 @@ ${url}
 });
 
 
-console.log(
-"MEDIA:",
-html
+
 );
 
 
