@@ -612,3 +612,13 @@ border-radius:10px;
 .verified-popup{
     display: none !important;
 }
+#mediaList{
+    display:none;
+    padding:15px;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+#mediaList.show{
+    display:flex;
+}
