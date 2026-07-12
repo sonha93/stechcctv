@@ -173,12 +173,13 @@ async function renderUsers(list){
             `
             <div class="user-item">
 
-                <img
-                class="user-avatar"
-                src="${
-                    u.avatar ||
-                    "https://i.ibb.co/Z1kv9nJj/logo.png"
-                }">
+               <img
+class="user-avatar"
+data-uid="${u.uid}"
+src="${
+    u.avatar ||
+    "https://i.ibb.co/Z1kv9nJj/logo.png"
+}">
 
                 <div class="user-info">
 
@@ -208,13 +209,7 @@ async function renderUsers(list){
 
         const item = userList.lastElementChild;
 
-        item.querySelector(".user-avatar").onclick = ()=>{
-
-            location.href =
-            `profile-review.html?uid=${u.uid}`;
-
-        };
-
+        
         item.querySelector(".user-info").onclick = ()=>{
 
             location.href =
@@ -349,6 +344,22 @@ await updateDoc(
     }finally{
 
         btn.disabled=false;
+
+    }
+
+});
+document.addEventListener("click", e=>{
+
+    const avatar = e.target.closest(".user-avatar");
+
+    if(!avatar) return;
+
+    const uid = avatar.dataset.uid;
+
+    if(uid){
+
+        location.href =
+        `profile-review.html?uid=${uid}`;
 
     }
 
