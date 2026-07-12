@@ -239,10 +239,10 @@ const msg = doc.data();
 
 
 if(msg.image){
-
 html += `
 <img class="media-photo"
-src="${msg.image}">
+src="${msg.image}"
+onclick="showMedia('${msg.image}')">
 `;
 
 }
@@ -254,7 +254,8 @@ msg.images.forEach(img=>{
 
 html += `
 <img class="media-photo"
-src="${img}">
+src="${img}"
+onclick="showMedia('${img}')">
 `;
 
 });
@@ -953,3 +954,32 @@ if(pinnedToggle){
     };
 
 }
+window.showMedia = function(src){
+
+    const box = document.createElement("div");
+
+    box.style.position = "fixed";
+    box.style.top = "0";
+    box.style.left = "0";
+    box.style.width = "100%";
+    box.style.height = "100%";
+    box.style.background = "rgba(0,0,0,.9)";
+    box.style.display = "flex";
+    box.style.alignItems = "center";
+    box.style.justifyContent = "center";
+    box.style.zIndex = "999999";
+
+    box.innerHTML = `
+        <img src="${src}"
+        style="
+            max-width:95%;
+            max-height:95%;
+            object-fit:contain;
+        ">
+    `;
+
+    box.onclick = ()=>box.remove();
+
+    document.body.appendChild(box);
+
+};
