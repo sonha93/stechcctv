@@ -1045,74 +1045,64 @@ loadStories();
 async function loadStories(){
 
     const storyBar = document.getElementById("storyBar");
-
     if(!storyBar) return;
 
+    storyBar.innerHTML = "";
 
     const snap = await getDocs(
         query(
-           collection(db,"profile_stories"),
+            collection(db,"profile_stories"),
             where("uid","==",profileUid)
         )
     );
 
-    snap.forEach(docSnap=>{
+    for(const docSnap of snap.docs){
 
         const s = docSnap.data();
-    for (const docSnap of snap.docs) {
 
-    const s = docSnap.data();
+        const block = auth.currentUser
+            ? await isBlocked(auth.currentUser.uid, s.uid)
+            : { iBlocked:false, blockedMe:false };
 
-    const block = auth.currentUser
-        ? await isBlocked(auth.currentUser.uid, s.uid)
-        : { iBlocked:false, blockedMe:false };
-
-    if(block.iBlocked || block.blockedMe){
-        continue;
-    }
-
-    // render story ở đây
-}
-        
-
-storyBar.insertAdjacentHTML(
-"beforeend",
-`
-<div class="storyItem" onclick="openStory('${docSnap.id}')">
-
-    <div class="storyAvatar">
-
-        ${
-        s.type==="video"
-        ?
-        `<video src="${s.media}" muted></video>`
-        :
-        `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
+        if(block.iBlocked || block.blockedMe){
+            continue;
         }
 
-    </div>
+        storyBar.insertAdjacentHTML(
+            "beforeend",
+            `
+            <div class="storyItem" onclick="openStory('${docSnap.id}')">
 
-    <div class="storyName">
-        ${s.text || ""}
-    </div>
+                <div class="storyAvatar">
 
-</div>
-`
-);
+                    ${
+                        s.type === "video"
+                        ? `<video src="${s.media}" muted></video>`
+                        : `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
+                    }
+
+                </div>
+
+                <div class="storyName">
+                    ${s.text || ""}
+                </div>
+
+            </div>
+            `
+        );
+
         const video = storyBar.lastElementChild.querySelector("video");
 
-if (video) {
-    video.muted = true;
-    video.autoplay = true;
-    video.loop = true;
-    video.playsInline = true;
-
-    video.onloadedmetadata = () => {
-        video.play().catch(() => {});
-    };
-}
-    });
-
+        if(video){
+            video.muted = true;
+            video.autoplay = true;
+            video.loop = true;
+            video.playsInline = true;
+            video.onloadedmetadata = () => {
+                video.play().catch(()=>{});
+            };
+        }
+    }
 }
 const storyViewer = document.getElementById("storyViewer");
 const storyOwnerAvatar =
