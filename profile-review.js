@@ -339,51 +339,9 @@ if(addStory){
 
 });
 
-let followLoading = false;
- if (blockedProfile) return;
-followBtn.onclick = async () => {
-
-    if (followLoading) return;
-
-    followLoading = true;
-    followBtn.disabled = true;
-
-    try {
-
-        if (!auth.currentUser) {
-            alert("Bạn cần đăng nhập");
-            return;
-        }
-
-        if (await isFriend(profileUid)) {
-
-    followSheet.classList.add("active");
-    return;
-
-}
-
-        if (await hasPendingFollowRequest(profileUid)) {
-
-    await cancelFollowRequest(profileUid);
-    followBtn.innerHTML = "Follow";
-
-} else {
-
-    await sendFollowRequest(profileUid);
-    followBtn.innerHTML = "Đã gửi";
-
-}
-
-    } finally {
-
-        followLoading = false;
-        followBtn.disabled = false;
-
-    }
-
-};
-    if (blockedProfile) return;
 messageBtn.onclick = async () => {
+
+    if (blockedProfile) return;
 
     if (!auth.currentUser) {
         alert("Bạn cần đăng nhập");
@@ -404,11 +362,13 @@ messageBtn.onclick = async () => {
     let conversationId = null;
 
     snap.forEach(docSnap => {
+
         const data = docSnap.data();
 
         if (data.members.includes(profileUid)) {
             conversationId = docSnap.id;
         }
+
     });
 
     if (!conversationId) {
@@ -425,6 +385,7 @@ messageBtn.onclick = async () => {
         );
 
         conversationId = ref.id;
+
     }
 
     location.href = `message.html?id=${conversationId}`;
