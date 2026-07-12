@@ -1260,4 +1260,4 @@ document.getElementById("closeStory").onclick=()=>{
     storyVideo.pause();
     storyVideo.src="";
 
-};    
+};
