@@ -313,4 +313,9 @@ MOBILE
 
 }
 
+.user-avatar{
+    cursor:pointer;
+    pointer-events:auto;
+    position:relative;
+    z-index:10;
 }
