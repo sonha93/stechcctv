@@ -596,4 +596,38 @@ border-radius:10px;
     background:rgba(255,255,255,.28);
 
 }
- 
+ .profile-name{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+
+    margin-top:12px;
+
+    font-size:22px;
+    font-weight:700;
+
+}
+
+#verified{
+
+    display:flex;
+    align-items:center;
+
+}
+
+#verified .verified-badge{
+
+    margin:0;
+
+}
+
+#verified .verified-icon{
+
+    width:20px;
+    height:20px;
+
+    display:block;
+
+}
