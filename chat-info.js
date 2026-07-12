@@ -1,7 +1,7 @@
 // =====================================
 // CHAT INFO JS FIREBASE V8
 // =====================================
-let mediaImages = [];
+
 import { db, auth } from "./firebase-init.js";
 import { getVerifiedBadge } from "./verified-users.js";
 
@@ -252,14 +252,10 @@ if(msg.images){
 
 msg.images.forEach(img=>{
 
-const index = mediaImages.length;
-
-mediaImages.push(img);
-
 html += `
 <img class="media-photo"
 src="${img}"
-onclick="showMedia(${index})">
+onclick="showMedia('${img}')">
 `;
 
 });
@@ -622,7 +618,7 @@ await db.collection("conversations")
 
 
 let html = "";
-mediaImages = [];
+
 
 snap.forEach(doc=>{
 
@@ -633,37 +629,46 @@ const msg = doc.data();
 
 if(msg.image){
 
-    const index = mediaImages.length;
-
-    mediaImages.push(msg.image);
-
-    html += `
-    <img
-    class="media-photo"
-    src="${msg.image}"
-    onclick="showMedia(${index})">
-    `;
+html += `
+<img src="${msg.image}"
+style="width:100px;border-radius:10px">
+`;
 
 }
 
-if(msg.images){
 
-    msg.images.forEach(img=>{
 
-        const index = mediaImages.length;
+const url =
+msg.link ||
+(msg.text || "").match(/https?:\/\/[^\s]+/)?.[0];
 
-        mediaImages.push(img);
+if(url){
 
-        html += `
-        <img
-        class="media-photo"
-        src="${img}"
-        onclick="showMedia(${index})">
-        `;
-
-    });
+html += `
+<a href="${url}" target="_blank">
+${url}
+</a>
+`;
 
 }
+
+
+
+});
+
+
+console.log(
+"MEDIA:",
+html
+);
+
+
+}
+
+
+
+renderMedia();
+
 
 
 // ================================
@@ -949,79 +954,32 @@ if(pinnedToggle){
     };
 
 }
-window.showMedia = function(index){
+window.showMedia = function(src){
 
-let current = index;
+    const box = document.createElement("div");
 
-const box = document.createElement("div");
+    box.style.position = "fixed";
+    box.style.top = "0";
+    box.style.left = "0";
+    box.style.width = "100%";
+    box.style.height = "100%";
+    box.style.background = "rgba(0,0,0,.9)";
+    box.style.display = "flex";
+    box.style.alignItems = "center";
+    box.style.justifyContent = "center";
+    box.style.zIndex = "999999";
 
-box.style.position="fixed";
-box.style.inset="0";
-box.style.background="rgba(0,0,0,.95)";
-box.style.display="flex";
-box.style.alignItems="center";
-box.style.justifyContent="center";
-box.style.zIndex="999999";
+    box.innerHTML = `
+        <img src="${src}"
+        style="
+            max-width:95%;
+            max-height:95%;
+            object-fit:contain;
+        ">
+    `;
 
-box.innerHTML=`
-<button id="prevMedia"
-style="position:absolute;left:15px;font-size:40px;background:none;border:none;color:#fff;">❮</button>
+    box.onclick = ()=>box.remove();
 
-<img id="mediaImg"
-src="${mediaImages[current]}"
-style="max-width:95%;max-height:95%;object-fit:contain;">
+    document.body.appendChild(box);
 
-<button id="nextMedia"
-style="position:absolute;right:15px;font-size:40px;background:none;border:none;color:#fff;">❯</button>
-`;
-
-document.body.appendChild(box);
-
-const img = box.querySelector("#mediaImg");
-
-function update(){
-    img.src = mediaImages[current];
-}
-
-box.querySelector("#prevMedia").onclick = e=>{
-    e.stopPropagation();
-    current--;
-    if(current < 0) current = mediaImages.length-1;
-    update();
-};
-
-box.querySelector("#nextMedia").onclick = e=>{
-    e.stopPropagation();
-    current++;
-    if(current >= mediaImages.length) current = 0;
-    update();
-};
-
-let startX=0;
-
-img.addEventListener("touchstart",e=>{
-    startX=e.touches[0].clientX;
-},{passive:true});
-
-img.addEventListener("touchend",e=>{
-
-const endX=e.changedTouches[0].clientX;
-
-if(endX-startX>60){
-    current--;
-    if(current<0) current=mediaImages.length-1;
-    update();
-}
-
-if(startX-endX>60){
-    current++;
-    if(current>=mediaImages.length) current=0;
-    update();
-}
-
-},{passive:true});
-
-box.onclick=e=>{
-    if(e.target===box) box.remove();
-};
 };
