@@ -117,46 +117,58 @@ blockState = await isBlocked(
 
     if(userSnap.exists){
 
-        const u = userSnap.data();
+  const u = userSnap.data();
 
-        if(chatTitle){
-           let displayName = u.name || "Người dùng";
+const blocked =
+blockState.iBlocked || blockState.blockedMe;
 
-const nickSnap = await db
-.collection("users")
-.doc(currentUser.uid)
-.collection("nicknames")
-.doc(otherUid)
-.get();
+if(chatTitle){
 
-if(nickSnap.exists){
+    let displayName = blocked
+        ? "Người dùng"
+        : (u.name || "Người dùng");
 
-    displayName = nickSnap.data().nickname;
+    if(!blocked){
 
-}
+        const nickSnap = await db
+        .collection("users")
+        .doc(currentUser.uid)
+        .collection("nicknames")
+        .doc(otherUid)
+        .get();
 
-chatTitle.innerHTML = `
-<span>${displayName}</span>
-${getVerifiedBadge(otherUid)}
-`;
+        if(nickSnap.exists){
+
+            displayName = nickSnap.data().nickname;
+
         }
 
-        if(chatAvatar){
+    }
 
-    chatAvatar.src =
-    u.avatar ||
-    "https://i.ibb.co/Z1kv9nJj/logo.png";
+    chatTitle.innerHTML = blocked
+    ? `<span>Người dùng</span>`
+    : `
+        <span>${displayName}</span>
+        ${getVerifiedBadge(otherUid)}
+    `;
+}
 
+if(chatAvatar){
 
-    chatAvatar.style.cursor = "pointer";
+    chatAvatar.src = blocked
+        ? "https://i.ibb.co/Z1kv9nJj/logo.png"
+        : (u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png");
 
+    chatAvatar.style.cursor = blocked
+        ? "default"
+        : "pointer";
 
-    chatAvatar.onclick = ()=>{
-
-        window.location.href =
-        "profile-review.html?uid=" + otherUid;
-
-    };
+    chatAvatar.onclick = blocked
+        ? null
+        : ()=>{
+            location.href =
+            "profile-review.html?uid=" + otherUid;
+        };
 
 }
 
