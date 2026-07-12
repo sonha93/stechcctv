@@ -510,5 +510,90 @@ width:220px;
 border-radius:10px;
 
 }
+/* =========================
+   FACEBOOK AVATAR VIEWER
+========================= */
 
+#avatarViewer{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.82);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    z-index:999999;
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:.25s;
+
+}
+
+#avatarViewer.show{
+
+    opacity:1;
+    visibility:visible;
+
+}
+
+#avatarViewer img{
+
+    width:min(82vw,380px);
+    height:min(82vw,380px);
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:6px solid #fff;
+
+    box-shadow:
+        0 12px 40px rgba(0,0,0,.45);
+
+    transform:scale(.85);
+
+    transition:.25s;
+
+}
+
+#avatarViewer.show img{
+
+    transform:scale(1);
+
+}
+
+#closeAvatarViewer{
+
+    position:absolute;
+
+    top:18px;
+    right:18px;
+
+    width:42px;
+    height:42px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.15);
+
+    color:#fff;
+
+    font-size:28px;
+
+    cursor:pointer;
+
+}
+
+#closeAvatarViewer:hover{
+
+    background:rgba(255,255,255,.28);
+
+}
  
