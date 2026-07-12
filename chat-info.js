@@ -771,12 +771,15 @@ avatarViewer.onclick = e=>{
     }
 
 };
-const mediaToggle = document.getElementById("mediaToggle");
-const mediaList = document.getElementById("mediaList");
+if(mediaToggle){
 
-mediaToggle.onclick = () => {
-    mediaList.classList.toggle("show");
-};
+    mediaToggle.onclick = ()=>{
+
+        mediaList.classList.toggle("show");
+
+    };
+
+}
 // ================================
 // LOAD FILES
 // ================================
