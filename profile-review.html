@@ -1101,6 +1101,80 @@ opacity:.8;
 
     z-index:50;
 }
+ #settingMenu{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.35);
+    display:flex;
+    align-items:flex-end;
+    opacity:0;
+    pointer-events:none;
+    transition:.25s;
+    z-index:9999999;
+}
+
+#settingMenu.active{
+    opacity:1;
+    pointer-events:auto;
+}
+
+.setting-box{
+    width:100%;
+    background:#fff;
+    border-radius:26px 26px 0 0;
+    padding:18px;
+    transform:translateY(100%);
+    transition:.25s;
+}
+
+#settingMenu.active .setting-box{
+    transform:translateY(0);
+}
+
+.setting-title{
+    text-align:center;
+    font-size:20px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.setting-item{
+    height:60px;
+    display:flex;
+    align-items:center;
+    gap:15px;
+    font-size:17px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.block-user{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 0;
+}
+
+.block-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.block-avatar{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+.unblock-btn{
+    border:none;
+    background:#111;
+    color:white;
+    padding:8px 14px;
+    border-radius:20px;
+}
 </style>
 </head>
 
@@ -1492,12 +1566,54 @@ stroke-linejoin="round">
     <div id="storyText"></div>
 
 </div>
+<!-- SETTING MENU -->
 
+<div id="settingMenu">
+
+    <div class="setting-box">
+
+        <div class="setting-title">
+            Cài đặt
+        </div>
+
+
+        <div class="setting-item" id="blockedBtn">
+
+            <span class="material-symbols-outlined">
+                block
+            </span>
+
+            Người đã chặn
+
+        </div>
+
+
+        <div id="blockedPanel">
+
+            <div id="blockedList"></div>
+
+        </div>
+
+
+        <div class="setting-item" id="closeSetting">
+
+            <span class="material-symbols-outlined">
+                close
+            </span>
+
+            Đóng
+
+        </div>
+
+
+    </div>
+
+</div>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script type="module" src="profile-review.js"></script>
  <script type="module" src="./notification.js"></script>
-
+<script type="module" src="./setting.js"></script>
 </body>
 </html>
