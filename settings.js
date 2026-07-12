@@ -63,7 +63,7 @@ auth.onAuthStateChanged(async user=>{
 
     if(!user){
 
-        location.href = "login.html";
+        location.href = "review.html";
         return;
 
     }
