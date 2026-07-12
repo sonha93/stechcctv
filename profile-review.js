@@ -452,7 +452,16 @@ tabs.forEach(tab=>{
 async function loadTab(type){
 
     grid.innerHTML="";
+let blocked = false;
 
+if(auth.currentUser){
+    const block = await isBlocked(auth.currentUser.uid, profileUid);
+    blocked = block.iBlocked || block.blockedMe;
+}
+
+if(blocked){
+    return;
+}
     // --------------------
     // VIDEO CÔNG KHAI
     // --------------------
@@ -1048,7 +1057,17 @@ async function loadStories(){
 
     if(!storyBar) return;
 
+let blocked = false;
 
+if(auth.currentUser){
+    const block = await isBlocked(auth.currentUser.uid, profileUid);
+    blocked = block.iBlocked || block.blockedMe;
+}
+
+if(blocked){
+    storyBar.innerHTML = "";
+    return;
+}
     const snap = await getDocs(
         query(
            collection(db,"profile_stories"),
@@ -1118,7 +1137,16 @@ const storyImage = document.getElementById("storyImage");
 const storyText =
 document.getElementById("storyText");
 window.openStory = async function(id){
+let blocked = false;
 
+if(auth.currentUser){
+    const block = await isBlocked(auth.currentUser.uid, profileUid);
+    blocked = block.iBlocked || block.blockedMe;
+}
+
+if(blocked){
+    return;
+}
     currentStoryId = id;
 
     const snap = await getDoc(
