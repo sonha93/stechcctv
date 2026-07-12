@@ -638,11 +638,15 @@ style="width:100px;border-radius:10px">
 
 
 
-if(msg.link){
+const url =
+msg.link ||
+(msg.text || "").match(/https?:\/\/[^\s]+/)?.[0];
+
+if(url){
 
 html += `
-<a href="${msg.link}" target="_blank">
-${msg.link}
+<a href="${url}" target="_blank">
+${url}
 </a>
 `;
 
