@@ -1310,3 +1310,4 @@ document.getElementById("closeStory").onclick=()=>{
     storyVideo.src="";
 
 };
+   });
