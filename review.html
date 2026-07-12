@@ -1179,24 +1179,38 @@ const params = new URLSearchParams(location.search);
 
 const openVideoId = params.get("video");
 const profileUid = params.get("uid");
-document.getElementById("myProfileBtn").onclick = () => {
+window.addEventListener("DOMContentLoaded", () => {
 
-    const user = auth.currentUser;
+    const myProfileBtn = document.getElementById("myProfileBtn");
+    const goLogin = document.getElementById("goLogin");
 
-    if(user){
-        location.href = "profile-review.html?uid=" + user.uid;
-        return;
+    if (myProfileBtn) {
+
+        myProfileBtn.onclick = () => {
+
+            const user = auth.currentUser;
+
+            if (user) {
+                location.href = "profile-review.html?uid=" + user.uid;
+            } else {
+                document.getElementById("loginPopup").style.display = "flex";
+            };
+
+        };
+
     }
 
-    document.getElementById("loginPopup").style.display = "flex";
+    if (goLogin) {
 
-};
+        goLogin.onclick = () => {
 
-document.getElementById("goLogin").onclick = () => {
+            location.href = "login.html";
 
-    location.href = "review.html"; 
+        };
 
-};
+    }
+
+});
 import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -2040,9 +2054,8 @@ window.likeComment = async function(productId, commentId){
 
     if(likeSnap.exists()){
 
-        await deleteDoc(likeRef);
-await deleteDoc(
-    doc(db, "users", user.uid, "likes", id)
+       await deleteDoc(
+    doc(db, "users", user.uid, "commentLikes", commentId)
 );
         await updateDoc(commentRef,{
             likeCount:increment(-1)
@@ -2262,44 +2275,40 @@ window.closeImage = function(){
     document.getElementById("imageViewer").style.display = "none";
 
 }
-const viewer=document.getElementById("imageViewer");
+const viewer = document.getElementById("imageViewer");
 
-viewer.addEventListener("touchstart",e=>{
+if (viewer) {
 
-    touchStartX=e.changedTouches[0].screenX;
+    viewer.addEventListener("touchstart", e => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
 
-});
+    viewer.addEventListener("touchend", e => {
 
-viewer.addEventListener("touchend",e=>{
+        touchEndX = e.changedTouches[0].screenX;
 
-    touchEndX=e.changedTouches[0].screenX;
+        const dx = touchEndX - touchStartX;
 
-    const dx=touchEndX-touchStartX;
+        if (Math.abs(dx) < 50) return;
 
-    if(Math.abs(dx)<50) return;
+        if (dx < 0) {
 
-    if(dx<0){
+            if (currentImageIndex < commentImages.length - 1)
+                currentImageIndex++;
 
-        if(currentImageIndex<commentImages.length-1){
+        } else {
 
-            currentImageIndex++;
-
-        }
-
-    }else{
-
-        if(currentImageIndex>0){
-
-            currentImageIndex--;
+            if (currentImageIndex > 0)
+                currentImageIndex--;
 
         }
 
-    }
+        document.getElementById("viewerImage").src =
+            commentImages[currentImageIndex];
 
-    document.getElementById("viewerImage").src=
-        commentImages[currentImageIndex];
+    });
 
-});
+}
 </script>
 <div id="imageViewer" onclick="closeImage()">
     <img id="viewerImage">
