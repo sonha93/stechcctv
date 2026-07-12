@@ -350,7 +350,7 @@ await updateDoc(
     }
 
 });
-document.addEventListener("click", e=>{
+userList.addEventListener("click", e=>{
 
     const avatar = e.target.closest(".user-avatar");
 
@@ -359,10 +359,8 @@ document.addEventListener("click", e=>{
     const uid = avatar.dataset.uid;
 
     if(uid){
-
-        location.href =
-        `profile-review.html?uid=${uid}`;
-
+        window.location.href =
+        "profile-review.html?uid=" + uid;
     }
 
 });
