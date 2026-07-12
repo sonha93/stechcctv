@@ -1403,3 +1403,53 @@ document.getElementById("closeStory").onclick=()=>{
     storyVideo.src="";
 
 };
+const followingCountBtn =
+document.getElementById("followingCount").parentElement;
+
+
+const followerCountBtn =
+document.getElementById("followerCount").parentElement;
+
+
+
+followingCountBtn.onclick = ()=>{
+
+    openFollowList("following");
+
+};
+
+
+followerCountBtn.onclick = ()=>{
+
+    openFollowList("followers");
+
+};
+
+
+
+function openFollowList(type){
+
+    document
+    .getElementById("followListSheet")
+    .classList.add("active");
+
+
+    document.getElementById("followListTitle").innerText =
+    type === "following"
+    ? "Đã follow"
+    : "Follower";
+
+
+    loadFollowList(type);
+
+}
+
+
+
+document.getElementById("closeFollowList").onclick=()=>{
+
+    document
+    .getElementById("followListSheet")
+    .classList.remove("active");
+
+};
