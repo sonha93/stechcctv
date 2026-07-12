@@ -1043,10 +1043,15 @@ async function loadStories(){
 
     if(!storyBar) return;
 
+    storyBar.innerHTML = "";
+
+    if(blockedProfile){
+        return;
+    }
 
     const snap = await getDocs(
         query(
-           collection(db,"profile_stories"),
+            collection(db,"profile_stories"),
             where("uid","==",profileUid)
         )
     );
@@ -1055,83 +1060,43 @@ async function loadStories(){
 
         const s = docSnap.data();
 
-        
+        storyBar.insertAdjacentHTML(
+            "beforeend",
+            `
+            <div class="storyItem" onclick="openStory('${docSnap.id}')">
 
-storyBar.insertAdjacentHTML(
-"beforeend",
-`
-<div class="storyItem" onclick="openStory('${docSnap.id}')">
+                <div class="storyAvatar">
 
-    <div class="storyAvatar">
+                    ${
+                    s.type==="video"
+                    ? `<video src="${s.media}" muted></video>`
+                    : `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
+                    }
 
-        ${
-        s.type==="video"
-        ?
-        `<video src="${s.media}" muted></video>`
-        :
-        `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
-        }
+                </div>
 
-    </div>
+                <div class="storyName">
+                    ${s.text || ""}
+                </div>
 
-    <div class="storyName">
-        ${s.text || ""}
-    </div>
+            </div>
+            `
+        );
 
-</div>
-`
-);
         const video = storyBar.lastElementChild.querySelector("video");
 
-if (video) {
-    video.muted = true;
-    video.autoplay = true;
-    video.loop = true;
-    video.playsInline = true;
+        if(video){
+            video.muted = true;
+            video.autoplay = true;
+            video.loop = true;
+            video.playsInline = true;
 
-    video.onloadedmetadata = () => {
-        video.play().catch(() => {});
-    };
-}
-    });
-
-}
-const storyViewer = document.getElementById("storyViewer");
-const storyOwnerAvatar =
-document.getElementById("storyOwnerAvatar");
-
-const storyOwnerName =
-document.getElementById("storyOwnerName");
-
-const storyOwnerBadge =
-document.getElementById("storyOwnerBadge");
-
-const storyTime =
-document.getElementById("storyTime");
-const storyVideo = document.getElementById("storyVideo");
-const storyImage = document.getElementById("storyImage");
-const storyText =
-document.getElementById("storyText");
-    if (blockedProfile) return;
-window.openStory = async function(id){
-
-    currentStoryId = id;
-
-    const snap = await getDoc(
-       doc(db,"profile_stories",id)
-    );
-
-    if(!snap.exists()) return;
-
-    const s = snap.data();
-    if(auth.currentUser){
-
-    await updateDoc(
-        doc(db,"profile_stories",id),
-        {
-            viewers: arrayUnion(auth.currentUser.uid)
+            video.onloadedmetadata = () => {
+                video.play().catch(()=>{});
+            };
         }
-    );
+
+    });
 
 }
     currentStoryOwner = s.uid;
