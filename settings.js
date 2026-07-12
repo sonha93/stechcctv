@@ -366,29 +366,49 @@ window.unblockUser = async function(uid){
 
 };
 // =====================================
-// MENU
+// MENU SETTING
 // =====================================
 
 const menuBtn = document.getElementById("menuBtn");
-const menuSheet = document.getElementById("menuSheet");
+const settingMenu = document.getElementById("settingMenu");
+const closeSetting = document.getElementById("closeSetting");
 
 
-if(menuBtn && menuSheet){
+if(menuBtn && settingMenu){
 
     menuBtn.onclick = ()=>{
 
-        menuSheet.classList.add("active");
+        settingMenu.classList.add("active");
 
     };
 
+}
 
-    menuSheet.onclick = (e)=>{
 
-        if(e.target === menuSheet){
+// Đóng khi bấm nền ngoài
 
-            menuSheet.classList.remove("active");
+if(settingMenu){
+
+    settingMenu.onclick = (e)=>{
+
+        if(e.target === settingMenu){
+
+            settingMenu.classList.remove("active");
 
         }
+
+    };
+
+}
+
+
+// Nút đóng
+
+if(closeSetting){
+
+    closeSetting.onclick = ()=>{
+
+        settingMenu.classList.remove("active");
 
     };
 
