@@ -777,3 +777,173 @@ const mediaList = document.getElementById("mediaList");
 mediaToggle.onclick = () => {
     mediaList.classList.toggle("show");
 };
+// ================================
+// LOAD FILES
+// ================================
+
+async function loadFiles(){
+
+    if(!chatId) return;
+
+    const snap = await db.collection("conversations")
+    .doc(chatId)
+    .collection("messages")
+    .get();
+
+    const fileList = document.getElementById("fileList");
+
+    if(!fileList) return;
+
+    let html = "";
+
+    snap.forEach(doc=>{
+
+        const msg = doc.data();
+
+        if(msg.file){
+
+            html += `
+            <div class="file-item">
+                <a href="${msg.file}" target="_blank">
+                    📄 ${msg.fileName || "Tệp đính kèm"}
+                </a>
+            </div>
+            `;
+
+        }
+
+    });
+
+    fileList.innerHTML = html || "Không có tệp";
+
+}
+// ================================
+// LOAD LINKS
+// ================================
+
+async function loadLinks(){
+
+    if(!chatId) return;
+
+    const snap = await db.collection("conversations")
+    .doc(chatId)
+    .collection("messages")
+    .get();
+
+    const linkList = document.getElementById("linkList");
+
+    if(!linkList) return;
+
+    let html = "";
+
+    snap.forEach(doc=>{
+
+        const msg = doc.data();
+
+        if(msg.link){
+
+            html += `
+            <div class="link-item">
+                <a href="${msg.link}" target="_blank">
+                    🔗 ${msg.link}
+                </a>
+            </div>
+            `;
+
+        }
+
+    });
+
+    linkList.innerHTML = html || "Không có liên kết";
+
+}
+// ================================
+// LOAD PINNED
+// ================================
+
+async function loadPinnedMessages(){
+
+    if(!chatId) return;
+
+    const snap = await db.collection("conversations")
+    .doc(chatId)
+    .collection("messages")
+    .where("pinned","==",true)
+    .get();
+
+    const pinnedList = document.getElementById("pinnedList");
+
+    if(!pinnedList) return;
+
+    let html = "";
+
+    snap.forEach(doc=>{
+
+        const msg = doc.data();
+
+        html += `
+        <div class="pinned-item">
+
+            ${msg.text || ""}
+
+            ${msg.image ? `
+                <br><img src="${msg.image}" class="media-photo">
+            ` : ""}
+
+        </div>
+        `;
+
+    });
+
+    pinnedList.innerHTML = html || "Không có tin nhắn ghim";
+
+}
+const fileToggle = document.getElementById("fileToggle");
+const linkToggle = document.getElementById("linkToggle");
+const pinnedToggle = document.getElementById("pinnedToggle");
+
+const fileList = document.getElementById("fileList");
+const linkList = document.getElementById("linkList");
+const pinnedList = document.getElementById("pinnedList");
+
+if(fileToggle){
+
+    fileToggle.onclick = async ()=>{
+
+        if(!fileList.innerHTML.trim()){
+            await loadFiles();
+        }
+
+        fileList.classList.toggle("show");
+
+    };
+
+}
+
+if(linkToggle){
+
+    linkToggle.onclick = async ()=>{
+
+        if(!linkList.innerHTML.trim()){
+            await loadLinks();
+        }
+
+        linkList.classList.toggle("show");
+
+    };
+
+}
+
+if(pinnedToggle){
+
+    pinnedToggle.onclick = async ()=>{
+
+        if(!pinnedList.innerHTML.trim()){
+            await loadPinnedMessages();
+        }
+
+        pinnedList.classList.toggle("show");
+
+    };
+
+}
