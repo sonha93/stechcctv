@@ -1,4 +1,4 @@
-
+import { isBlocked } from "./block.js";
 import { getVerifiedBadge } from "./verified-users.js";
 import { app, auth } from "./auth.js";
 import {
@@ -105,10 +105,23 @@ async function loadProfile() {
     }
 
     const u = snap.data();
-    avatar.src = u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
+    let blocked = false;
+
+if(auth.currentUser){
+
+    const block = await isBlocked(auth.currentUser.uid, profileUid);
+
+    blocked = block.iBlocked || block.blockedMe;
+
+}
+   avatar.src = blocked
+    ? "https://i.ibb.co/Z1kv9nJj/logo.png"
+    : (u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png");
     sheetAvatar.src = avatar.src;
 sheetName.textContent = u.name || "Người dùng";
-let displayName = u.name || "Người dùng";
+let displayName = blocked
+    ? "Người dùng"
+    : (u.name || "Người dùng");
 
 if(auth.currentUser){
 
@@ -132,11 +145,13 @@ if(auth.currentUser){
 
 document.getElementById("profileName").innerHTML = `
     <span id="profileNameText">${displayName}</span>
-    ${getVerifiedBadge(profileUid)}
+    ${blocked ? "" : getVerifiedBadge(profileUid)}
 `;
 
 sheetName.textContent = displayName;
-    username.innerHTML = "@" + (u.username || "");
+   username.innerHTML = blocked
+    ? "@nguoidung"
+    : ("@" + (u.username || ""));
 
     bio.innerHTML = u.bio || "";
   // Hiển thị liên kết
@@ -181,7 +196,14 @@ ${links}
 );
 
 }
+if(blocked){
 
+    bio.innerHTML = "";
+
+    const oldLink = document.getElementById("profileLink");
+    if(oldLink) oldLink.remove();
+
+}
 
     followingCount.innerHTML = u.followingCount || 0;
 
