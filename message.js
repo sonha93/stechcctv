@@ -395,8 +395,8 @@ onclick="${
 }"
 src="${
 (blockState.iBlocked || blockState.blockedMe)
-? "./avatar.png"
-: (user.avatar || "./avatar.png")
+? "https://i.ibb.co/Z1kv9nJj/logo.png"
+: (user.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png")
 }">
 ` : "<div class='msg-avatar-space'></div>"}
 
