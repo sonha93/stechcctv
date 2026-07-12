@@ -260,7 +260,7 @@ src="${img}">
 });
 
 }
-
+console.log(html);
 
 if(msg.video){
 
