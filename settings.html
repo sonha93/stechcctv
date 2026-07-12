@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Cài đặt</title>
+
+<link
+rel="stylesheet"
+href="settings.css">
+
+</head>
+
+<body>
+
+<div class="settings-container">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="settings-header">
+
+        <button
+        id="backBtn"
+        class="icon-btn">
+
+            <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+
+                <path d="M15 18l-6-6 6-6"/>
+
+            </svg>
+
+        </button>
+
+        <div class="header-title">
+
+            Cài đặt
+
+        </div>
+
+    </div>
+
+    <!-- =========================
+         PROFILE
+    ========================== -->
+
+    <div class="profile-card">
+
+        <img
+        id="myAvatar"
+        class="profile-avatar"
+        src="default-avatar.png">
+
+        <div class="profile-info">
+
+            <div id="myName">
+
+                Người dùng
+
+            </div>
+
+            <div id="myUsername">
+
+                @username
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =========================
+         TÀI KHOẢN
+    ========================== -->
+
+    <div class="group-title">
+
+        Tài khoản
+
+    </div>
+
+    <div class="settings-card">
+
+        <!-- Thông tin cá nhân -->
+
+        <div
+        class="setting-item"
+        id="profileSetting">
+
+            <div class="setting-left">
+
+                <div class="setting-icon">
+
+                    <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2">
+
+                        <circle
+                        cx="12"
+                        cy="8"
+                        r="4"/>
+
+                        <path
+                        d="M4 20c2-4 14-4 16 0"/>
+
+                    </svg>
+
+                </div>
+
+                <div>
+
+                    <div class="setting-title">
+
+                        Thông tin cá nhân
+
+                    </div>
+
+                    <div class="setting-desc">
+
+                        Chỉnh sửa hồ sơ
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="setting-right">
+
+                <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2">
+
+                    <path d="M9 18l6-6-6-6"/>
+
+                </svg>
+
+            </div>
+
+        </div>
+
+        <!-- Đổi mật khẩu -->
+
+        <div
+        class="setting-item"
+        id="passwordSetting">
+
+            <div class="setting-left">
+
+                <div class="setting-icon">
+
+                    <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2">
+
+                        <rect
+                        x="5"
+                        y="11"
+                        width="14"
+                        height="9"
+                        rx="2"/>
+
+                        <path
+                        d="M8 11V8a4 4 0 118 0v3"/>
+
+                    </svg>
+
+                </div>
+
+                <div>
+
+                    <div class="setting-title">
+
+                        Đổi mật khẩu
+
+                    </div>
+
+                    <div class="setting-desc">
+
+                        Bảo vệ tài khoản
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="setting-right">
+
+                <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2">
+
+                    <path d="M9 18l6-6-6-6"/>
+
+                </svg>
+
+            </div>
+
+        </div>
+
+        <!-- Thiết bị -->
+
+        <div
+        class="setting-item"
+        id="deviceSetting">
+
+            <div class="setting-left">
+
+                <div class="setting-icon">
+
+                    <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2">
+
+                        <rect
+                        x="7"
+                        y="2"
+                        width="10"
+                        height="20"
+                        rx="2"/>
+
+                        <path
+                        d="M11 18h2"/>
+
+                    </svg>
+
+                </div>
+
+                <div>
+
+                    <div class="setting-title">
+
+                        Thiết bị đăng nhập
+
+                    </div>
+
+                    <div class="setting-desc">
+
+                        Quản lý phiên hoạt động
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="setting-right">
+
+                <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2">
+
+                    <path d="M9 18l6-6-6-6"/>
+
+                </svg>
+
+            </div>
+
+        </div>
+
+    </div>
+            </div>
+
+        <!-- ĐĂNG XUẤT -->
+        <div class="settings-card">
+
+            <div class="setting-title">
+                Tài khoản
+            </div>
+
+            <div class="setting-item danger" id="logoutBtn">
+
+                <div class="setting-left">
+
+                    <svg viewBox="0 0 24 24">
+                        <path d="M10 17l5-5-5-5v3H3v4h7v3zm9-14H9v2h10v14H9v2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                    </svg>
+
+                    <span>Đăng xuất</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script type="module" src="settings.js"></script>
+
+</body>
+</html>
