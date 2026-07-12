@@ -252,10 +252,14 @@ if(msg.images){
 
 msg.images.forEach(img=>{
 
+const index = mediaImages.length;
+
+mediaImages.push(img);
+
 html += `
 <img class="media-photo"
 src="${img}"
-onclick="showMedia('${img}')">
+onclick="showMedia(${index})">
 `;
 
 });
@@ -618,7 +622,7 @@ await db.collection("conversations")
 
 
 let html = "";
-
+mediaImages = [];
 
 snap.forEach(doc=>{
 
@@ -629,9 +633,14 @@ const msg = doc.data();
 
 if(msg.image){
 
+const index = mediaImages.length;
+
+mediaImages.push(msg.image);
+
 html += `
-<img src="${msg.image}"
-style="width:100px;border-radius:10px">
+<img class="media-photo"
+src="${msg.image}"
+onclick="showMedia(${index})">
 `;
 
 }
@@ -954,32 +963,79 @@ if(pinnedToggle){
     };
 
 }
-window.showMedia = function(src){
+window.showMedia = function(index){
 
-    const box = document.createElement("div");
+let current = index;
 
-    box.style.position = "fixed";
-    box.style.top = "0";
-    box.style.left = "0";
-    box.style.width = "100%";
-    box.style.height = "100%";
-    box.style.background = "rgba(0,0,0,.9)";
-    box.style.display = "flex";
-    box.style.alignItems = "center";
-    box.style.justifyContent = "center";
-    box.style.zIndex = "999999";
+const box = document.createElement("div");
 
-    box.innerHTML = `
-        <img src="${src}"
-        style="
-            max-width:95%;
-            max-height:95%;
-            object-fit:contain;
-        ">
-    `;
+box.style.position="fixed";
+box.style.inset="0";
+box.style.background="rgba(0,0,0,.95)";
+box.style.display="flex";
+box.style.alignItems="center";
+box.style.justifyContent="center";
+box.style.zIndex="999999";
 
-    box.onclick = ()=>box.remove();
+box.innerHTML=`
+<button id="prevMedia"
+style="position:absolute;left:15px;font-size:40px;background:none;border:none;color:#fff;">❮</button>
 
-    document.body.appendChild(box);
+<img id="mediaImg"
+src="${mediaImages[current]}"
+style="max-width:95%;max-height:95%;object-fit:contain;">
 
+<button id="nextMedia"
+style="position:absolute;right:15px;font-size:40px;background:none;border:none;color:#fff;">❯</button>
+`;
+
+document.body.appendChild(box);
+
+const img = box.querySelector("#mediaImg");
+
+function update(){
+    img.src = mediaImages[current];
+}
+
+box.querySelector("#prevMedia").onclick = e=>{
+    e.stopPropagation();
+    current--;
+    if(current < 0) current = mediaImages.length-1;
+    update();
+};
+
+box.querySelector("#nextMedia").onclick = e=>{
+    e.stopPropagation();
+    current++;
+    if(current >= mediaImages.length) current = 0;
+    update();
+};
+
+let startX=0;
+
+img.addEventListener("touchstart",e=>{
+    startX=e.touches[0].clientX;
+},{passive:true});
+
+img.addEventListener("touchend",e=>{
+
+const endX=e.changedTouches[0].clientX;
+
+if(endX-startX>60){
+    current--;
+    if(current<0) current=mediaImages.length-1;
+    update();
+}
+
+if(startX-endX>60){
+    current++;
+    if(current>=mediaImages.length) current=0;
+    update();
+}
+
+},{passive:true});
+
+box.onclick=e=>{
+    if(e.target===box) box.remove();
+};
 };
