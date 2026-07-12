@@ -47,6 +47,8 @@ document.getElementById("avatar");
 
 const username =
 document.getElementById("username");
+const verified =
+document.getElementById("verified");
 // ================================
 // CLICK XEM AVATAR
 // ================================
@@ -188,11 +190,9 @@ displayName;
 
 
 
-username.innerHTML =
-displayName +
-(getVerifiedBadge(uid) || "");
+username.textContent = displayName;
 
-
+verified.innerHTML = getVerifiedBadge(uid);
 }
 
 
@@ -705,11 +705,9 @@ async function loadNickname(){
     }
 
 
-    username.innerHTML =
-    `
-    <span>${displayName}</span>
-    ${getVerifiedBadge(uid) || ""}
-    `;
+    username.textContent = displayName;
+
+verified.innerHTML = getVerifiedBadge(uid);
 
 }
 // =====================================
