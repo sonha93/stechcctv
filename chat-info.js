@@ -191,8 +191,6 @@ displayName;
 
 
 username.textContent = displayName;
-
-verified.innerHTML = getVerifiedBadge(uid);
 }
 
 
