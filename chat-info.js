@@ -10,18 +10,18 @@ import { isBlocked } from "./block.js";
 // CHECK LOGIN
 // =====================================
 
-auth.onAuthStateChanged(user=>{
+auth.onAuthStateChanged(async user=>{
 
     if(!user){
 
-        location.href = "login.html";
+        location.href="login.html";
         return;
 
     }
 
-    loadUserInfo();
+    await loadBlockStatus();
+    await loadUserInfo();
     loadMedia();
-    loadBlockStatus();
 
 });
 
@@ -195,7 +195,14 @@ displayName;
 }
 
 
+if(blockState.iBlocked || blockState.blockedMe){
 
+    avatar.src = "default-avatar.png";
+    username.textContent = "Người dùng";
+    verified.innerHTML = "";
+    return;
+
+}
 username.textContent = displayName;
 verified.innerHTML = getVerifiedBadge(uid);
 }
@@ -791,8 +798,15 @@ async function loadNickname(){
     }
 
 
-    username.textContent = displayName;
+  if(blockState.iBlocked || blockState.blockedMe){
 
+    username.textContent = "Người dùng";
+    verified.innerHTML = "";
+    return;
+
+}
+
+username.textContent = displayName;
 verified.innerHTML = getVerifiedBadge(uid);
 
 }
