@@ -1092,19 +1092,6 @@ async function loadStories(){
         }
 
     }
-async function loadStories(){
-
-    const storyBar = document.getElementById("storyBar");
-
-    if(!storyBar) return;
-
-
-    const snap = await getDocs(
-        query(
-           collection(db,"profile_stories"),
-            where("uid","==",profileUid)
-        )
-    );
 
     snap.forEach(docSnap=>{
 
