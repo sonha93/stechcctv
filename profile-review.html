@@ -1178,6 +1178,69 @@ opacity:.8;
  #logoutBtn{
     color:#ff3b30;
     font-weight:700;
+}
+ #followListSheet{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.4);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:9999999;
+}
+
+
+#followListSheet.active{
+    display:flex;
+}
+
+
+.follow-list-box{
+    width:90%;
+    max-width:450px;
+    max-height:70vh;
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:20px;
+
+    overflow-y:auto;
+}
+
+.follow-list-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    font-size:20px;
+    font-weight:700;
+
+    margin-bottom:20px;
+
+}
+
+
+.follow-user{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    padding:12px 0;
+
+}
+
+
+.follow-user img{
+
+    width:48px;
+    height:48px;
+
+    border-radius:50%;
+    object-fit:cover;
 
 }
 
