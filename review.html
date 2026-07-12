@@ -1131,7 +1131,7 @@ body{
 
 
 <div id="feed"></div>
-
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 <script type="module">
 
 import { getVerifiedBadge } from "./verified-users.js";
@@ -1203,17 +1203,18 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 import {
     getAuth,
+    onAuthStateChanged,
     signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 onAuthStateChanged(auth, async (user) => {
 
     const img = document.getElementById("commentAvatar");
 
     if (!img) return;
-    
+
     if (!user) {
-     
-       img.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
+        img.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
         return;
     }
 
