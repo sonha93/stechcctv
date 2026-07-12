@@ -365,3 +365,31 @@ window.unblockUser = async function(uid){
 
 
 };
+// =====================================
+// MENU
+// =====================================
+
+const menuBtn = document.getElementById("menuBtn");
+const menuSheet = document.getElementById("menuSheet");
+
+
+if(menuBtn && menuSheet){
+
+    menuBtn.onclick = ()=>{
+
+        menuSheet.classList.add("active");
+
+    };
+
+
+    menuSheet.onclick = (e)=>{
+
+        if(e.target === menuSheet){
+
+            menuSheet.classList.remove("active");
+
+        }
+
+    };
+
+}
