@@ -136,7 +136,9 @@ export async function acceptFollowRequest(requestId){
     );
 
     batch.delete(requestRef);
-
+    batch.delete(
+    db.collection("notifications").doc(requestId)
+);
     await batch.commit();
 
 }
@@ -186,17 +188,16 @@ export async function hasPendingFollowRequest(targetUid){
 
     if(!auth.currentUser) return false;
 
-    const snap = await db
-    .collection("follow_requests")
-    .where("from","==",auth.currentUser.uid)
-    .where("to","==",targetUid)
-    .where("status","==","pending")
-    .get();
+    const requestId = `${auth.currentUser.uid}_${targetUid}`;
 
-    return !snap.empty;
+    const snap = await db
+        .collection("follow_requests")
+        .doc(requestId)
+        .get();
+
+    return snap.exists;
 
 }
-
 // ================================
 // ĐÃ FOLLOW ?
 // ================================
