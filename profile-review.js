@@ -25,7 +25,35 @@ import {
     
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 const db = getFirestore(app);
+// ===========================
+// CHECK PRIVACY FOLLOW
+// ===========================
+async function canViewContent(setting){
 
+    if(auth.currentUser?.uid === profileUid){
+        return true;
+    }
+
+    const privacySnap = await getDoc(
+        doc(db, "users", profileUid, "private", "settings")
+    );
+
+    if(!privacySnap.exists()){
+        return true;
+    }
+
+    const privacy = privacySnap.data();
+
+    if(privacy[setting] !== false){
+        return true;
+    }
+
+    if(!auth.currentUser){
+        return false;
+    }
+
+    return await isFollowing(profileUid);
+}
    import {
     sendFollowRequest,
     cancelFollowRequest,
@@ -557,7 +585,17 @@ if(blocked){
     grid.style.display = "none";
     return;
 }
+if(type === "videos"){
 
+    if(!(await canViewContent("showVideos"))){
+
+        grid.innerHTML = "";
+
+        return;
+
+    }
+
+}
 grid.style.display = "";
     // --------------------
     // VIDEO CÔNG KHAI
@@ -1183,27 +1221,16 @@ alert("Đăng story thành công");
 loadStories();
 };   
 async function loadStories(){
-const privacySnap = await getDoc(
-   doc(db,"users",profileUid,"private","settings")
-);
+if(!(await canViewContent("showStory"))){
 
+    const storyBar = document.getElementById("storyBar");
 
-if(privacySnap.exists()){
-
-    const privacy = privacySnap.data();
-
-
-    if(
-        privacy.showStory === false &&
-        auth.currentUser?.uid !== profileUid
-    ){
-
+    if(storyBar){
         storyBar.innerHTML = "";
-
-        return;
-
+        storyBar.style.display = "none";
     }
 
+    return;
 }
     const storyBar = document.getElementById("storyBar");
 
