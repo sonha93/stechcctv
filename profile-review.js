@@ -25,7 +25,35 @@ import {
     
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 const db = getFirestore(app);
+// ===========================
+// CHECK PRIVACY FOLLOW
+// ===========================
+async function canViewContent(setting){
 
+    if(auth.currentUser?.uid === profileUid){
+        return true;
+    }
+
+    const privacySnap = await getDoc(
+        doc(db, "users", profileUid, "private", "settings")
+    );
+
+    if(!privacySnap.exists()){
+        return true;
+    }
+
+    const privacy = privacySnap.data();
+
+    if(privacy[setting] !== false){
+        return true;
+    }
+
+    if(!auth.currentUser){
+        return false;
+    }
+
+    return await isFollowing(profileUid);
+}
    import {
     sendFollowRequest,
     cancelFollowRequest,
@@ -106,7 +134,7 @@ followerCount.onclick = () => {
 
 };
 const likeCount = document.getElementById("likeCount");
-const addStoryBtn = document.getElementById("addStoryBtn");
+
 
 const storyFile = document.getElementById("storyFile");
 
@@ -290,9 +318,15 @@ if(user){
 
     if(me.exists()){
 
-        myStoryAvatar.src =
-            me.data().avatar ||
-            "https://i.ibb.co/Z1kv9nJj/logo.png";
+        const myStoryAvatar = document.getElementById("myStoryAvatar");
+
+        if(myStoryAvatar){
+
+            myStoryAvatar.src =
+                me.data().avatar ||
+                "https://i.ibb.co/Z1kv9nJj/logo.png";
+
+        }
 
     }
 
@@ -374,23 +408,23 @@ followBtn.onclick = async () => {
         }
 
         if (await isFriend(profileUid)) {
+            followSheet.classList.add("active");
+            return;
+        }
 
-    followSheet.classList.add("active");
-    return;
+        const pending = await hasPendingFollowRequest(profileUid);
 
-}
+        if (pending) {
 
-        if (await hasPendingFollowRequest(profileUid)) {
+            await cancelFollowRequest(profileUid);
+            followBtn.innerHTML = "Follow";
 
-    await cancelFollowRequest(profileUid);
-    followBtn.innerHTML = "Follow";
+        } else {
 
-} else {
+            await sendFollowRequest(profileUid);
+            followBtn.innerHTML = "Đã gửi";
 
-    await sendFollowRequest(profileUid);
-    followBtn.innerHTML = "Đã gửi";
-
-}
+        }
 
     } finally {
 
@@ -402,6 +436,41 @@ followBtn.onclick = async () => {
 };
 
 messageBtn.onclick = async () => {
+
+
+    if (!auth.currentUser) {
+        alert("Bạn cần đăng nhập");
+        return;
+    }
+
+
+    // ==========================
+    // CHECK QUYỀN NHẮN TIN
+    // ==========================
+
+    const privacySnap = await getDoc(
+       doc(db,"users",profileUid,"private","settings")
+    );
+
+
+    if(privacySnap.exists()){
+
+        const privacy = privacySnap.data();
+
+
+        if(
+            privacy.allowMessage === false &&
+            auth.currentUser.uid !== profileUid
+        ){
+
+            alert("Người dùng không cho phép nhận tin nhắn");
+
+            return;
+
+        }
+
+    }
+
 
     if (!auth.currentUser) {
         alert("Bạn cần đăng nhập");
@@ -455,6 +524,23 @@ messageBtn.onclick = async () => {
 document
 .getElementById("backBtn")
 .onclick=()=>history.back();
+// ==========================
+// SETTINGS PAGE
+// ==========================
+
+const menuBtn = document.getElementById("menuBtn");
+const settingsPage = document.getElementById("settingsPage");
+const closeSettings = document.getElementById("closeSettings");
+
+menuBtn.onclick = () => {
+    settingsPage.classList.add("active");
+    document.body.style.overflow = "hidden";
+};
+
+closeSettings.onclick = () => {
+    settingsPage.classList.remove("active");
+    document.body.style.overflow = "";
+};
 // ===========================
 // TAB
 // ===========================
@@ -505,14 +591,35 @@ if(blocked){
     grid.style.display = "none";
     return;
 }
+if(type === "videos"){
 
+    if(!(await canViewContent("showVideos"))){
+
+        grid.innerHTML = "";
+
+        return;
+
+    }
+
+}
 grid.style.display = "";
     // --------------------
     // VIDEO CÔNG KHAI
     // --------------------
+const privacySnap = await getDoc(
+    doc(db, "users", profileUid, "private", "settings")
+);
 
+if (
+    privacySnap.exists() &&
+    privacySnap.data().showVideos === false &&
+    auth.currentUser?.uid !== profileUid
+) {
+    grid.innerHTML = "";
+    return;
+}
     if(type==="videos"){
-
+    
         const q=query(
 
             collection(db,"videos"),
@@ -634,13 +741,6 @@ if(type==="orders"){
     }
 
     grid.innerHTML = "";
-    const block = auth.currentUser
-    ? await isBlocked(auth.currentUser.uid, profileUid)
-    : { iBlocked:false, blockedMe:false };
-
-if(block.iBlocked || block.blockedMe){
-    return;
-}
     const snap = await getDocs(
         query(
             collection(db,"orders"),
@@ -687,11 +787,11 @@ snap.forEach(docSnap => {
 
 function renderVideos(snap){
 
-    snap.forEach(docSnap=>{
+  for(const docSnap of snap.docs){
 
         renderOne(docSnap);
 
-    });
+}
 
 }
 
@@ -1031,19 +1131,7 @@ followBtn.innerHTML="Follow";
 followSheet.classList.remove("active");
 
 };
-addStoryBtn.onclick = ()=>{
 
-    if(!auth.currentUser){
-
-        alert("Bạn cần đăng nhập");
-
-        return;
-
-    }
-
-    storyFile.click();
-
-};
 storyFile.onchange = async () => {
 
     const file = storyFile.files[0];
@@ -1095,7 +1183,7 @@ storyFile.onchange = async () => {
   await addDoc(collection(db,"profile_stories"),{
 
     uid: uid,
-
+  privacy: "public",
     media: data.secure_url,
 
     type: file.type.startsWith("video/")
@@ -1126,41 +1214,37 @@ alert("Đăng story thành công");
 
 loadStories();
 };   
-async function loadStories(){
+storyBar.innerHTML = "";
 
-    const storyBar = document.getElementById("storyBar");
+const isOwner =
+    auth.currentUser &&
+    auth.currentUser.uid === profileUid;
 
-    if(!storyBar) return;
-storyBar.innerHTML = `
-<div class="storyItem" id="addStoryBtn">
+if (isOwner) {
 
-    <div class="storyAvatar mine">
+    storyBar.innerHTML = `
+    <div class="storyItem" id="addStoryBtn">
 
-        <img
-        id="myStoryAvatar"
-        src="${auth.currentUser?.photoURL || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
+        <div class="storyAvatar mine">
 
-        <span class="storyPlus">+</span>
+            <img
+            id="myStoryAvatar"
+            src="${auth.currentUser.photoURL || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
+
+            <span class="storyPlus">+</span>
+
+        </div>
+
+        <div class="storyName">Story</div>
 
     </div>
+    `;
 
-    <div class="storyName">
-        Story
-    </div>
+    document.getElementById("addStoryBtn").onclick = () => {
+        storyFile.click();
+    };
 
-</div>
-`;
-
-document.getElementById("addStoryBtn").onclick = () => {
-
-    if(!auth.currentUser){
-        alert("Bạn cần đăng nhập");
-        return;
-    }
-
-    storyFile.click();
-
-};
+}
 const block = auth.currentUser
     ? await isBlocked(auth.currentUser.uid, profileUid)
     : { iBlocked:false, blockedMe:false };
@@ -1189,11 +1273,32 @@ storyBar.style.display = "";
         )
     );
 
-    snap.forEach(docSnap=>{
+ for(const docSnap of snap.docs){
 
         const s = docSnap.data();
 
-        
+        // ===== CHECK STORY PRIVACY =====
+
+if(
+    s.privacy === "private" &&
+    auth.currentUser?.uid !== profileUid
+){
+    continue;
+}
+
+
+if(
+    s.privacy === "friends" &&
+    auth.currentUser?.uid !== s.uid
+){
+
+    const friend = await isFriend(s.uid);
+
+    if(!friend){
+        continue;
+    }
+
+}
 
 storyBar.insertAdjacentHTML(
 "beforeend",
@@ -1231,7 +1336,7 @@ if (video) {
         video.play().catch(() => {});
     };
 }
-    });
+   }
 
 }
 const storyViewer = document.getElementById("storyViewer");
@@ -1268,10 +1373,38 @@ if(blocked){
     );
 
     if(!snap.exists()) return;
-
+    
     const s = snap.data();
-    if(auth.currentUser){
+    // CHECK QUYỀN STORY
 
+if(
+    s.privacy === "private" &&
+    auth.currentUser?.uid !== s.uid
+){
+
+    alert("Story này đang riêng tư");
+    return;
+
+}
+
+
+if(
+    s.privacy === "friends" &&
+    auth.currentUser?.uid !== s.uid
+){
+
+    const friend = await isFriend(s.uid);
+
+    if(!friend){
+
+        alert("Chỉ bạn bè mới xem được story này");
+        return;
+
+    }
+
+}
+    if(auth.currentUser){
+    
     await updateDoc(
         doc(db,"profile_stories",id),
         {
@@ -1377,20 +1510,73 @@ else{
     }
 
 };
+
 storyMore.onclick = async ()=>{
 
     if(!currentStoryId) return;
 
-    if(!confirm("Xóa story này?")) return;
 
-   await deleteDoc(
-    doc(db,"profile_stories",currentStoryId)
-);
+    const choice = prompt(
+`Quyền riêng tư story:
 
-    storyViewer.classList.remove("active");
+1 - Công khai
+2 - Bạn bè
+3 - Riêng tư
+4 - Xóa story`
+    );
 
-    storyVideo.pause();
-    storyVideo.src="";
+
+    if(choice==="1"){
+
+        await updateDoc(
+            doc(db,"profile_stories",currentStoryId),
+            {
+                privacy:"public"
+            }
+        );
+
+    }
+
+
+    if(choice==="2"){
+
+        await updateDoc(
+            doc(db,"profile_stories",currentStoryId),
+            {
+                privacy:"friends"
+            }
+        );
+
+    }
+
+
+    if(choice==="3"){
+
+        await updateDoc(
+            doc(db,"profile_stories",currentStoryId),
+            {
+                privacy:"private"
+            }
+        );
+
+    }
+
+
+    if(choice==="4"){
+
+        if(!confirm("Xóa story này?")) return;
+
+        await deleteDoc(
+            doc(db,"profile_stories",currentStoryId)
+        );
+
+        storyViewer.classList.remove("active");
+
+        storyVideo.pause();
+        storyVideo.src="";
+
+    }
+
 
     loadStories();
 
@@ -1526,6 +1712,112 @@ async function loadFollowList(type){
         </div>
         `;
 
+    }
+
+}
+// ==========================
+// SETTINGS BUTTONS
+// ==========================
+
+document.getElementById("accountBtn").onclick = () => {
+    location.href = "edit-profile.html";
+};
+
+document.getElementById("securityBtn").onclick = () => {
+    location.href = "security.html";
+};
+
+document.getElementById("deviceBtn").onclick = () => {
+    location.href = "devices.html";
+};
+
+document.getElementById("privateBtn").onclick = () => {
+    location.href = "private-account.html";
+};
+
+const blockedBtn = document.getElementById("blockedBtn");
+
+if(blockedBtn){
+
+    blockedBtn.addEventListener("click",()=>{
+
+        const list=document.getElementById("blockedList");
+
+        if(!list){
+            alert("Thiếu id blockedList trong HTML");
+            return;
+        }
+
+        list.style.display="block";
+
+        loadBlockedUsers();
+
+    });
+
+}
+
+document.getElementById("commentSetting").onclick = () => {
+    location.href = "comment-settings.html";
+};
+
+document.getElementById("messageSetting").onclick = () => {
+    location.href = "message-settings.html";
+};
+
+document.getElementById("mentionSetting").onclick = () => {
+    location.href = "mention-settings.html";
+};
+
+document.getElementById("logoutBtn").onclick = async () => {
+
+    if (!confirm("Đăng xuất?")) return;
+
+    await auth.signOut();
+
+    location.href = "index.html";
+};
+async function loadBlockedUsers(){
+
+    const list = document.getElementById("blockedList");
+
+    if(!list) return;
+
+    list.innerHTML = "Đang tải...";
+
+    const snap = await getDocs(
+        collection(db,"users",auth.currentUser.uid,"blocked")
+    );
+
+    list.innerHTML = "";
+
+    if(snap.empty){
+        list.innerHTML = "<div>Chưa chặn ai.</div>";
+        return;
+    }
+
+    for(const item of snap.docs){
+
+        const uid = item.id;
+
+        const userSnap = await getDoc(
+            doc(db,"users",uid)
+        );
+
+        if(!userSnap.exists()) continue;
+
+        const u = userSnap.data();
+
+        list.innerHTML += `
+            <div class="blocked-item">
+                <img
+                    src="${u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}"
+                    width="40"
+                    height="40"
+                    style="border-radius:50%;margin-right:10px">
+
+                <span>${u.name || "Người dùng"}</span>
+            </div>
+        `;
     }
 
 }
