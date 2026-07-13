@@ -37,19 +37,8 @@ const db = getFirestore(app);
 
 const params = new URLSearchParams(location.search);
 
-let profileUid = params.get("uid");
+const profileUid = params.get("uid");
 
-onAuthStateChanged(auth, user => {
-
-    if (!profileUid && user) {
-
-        location.replace(
-            `profile-review.html?uid=${user.uid}`
-        );
-
-    }
-
-});
 
 // ===== HTML =====
 
@@ -87,24 +76,7 @@ const messageBtn = document.getElementById("messageBtn");
 const followingCount = document.getElementById("followingCount");
 
 const followerCount = document.getElementById("followerCount");
-// ===========================
-// MỞ DANH SÁCH FOLLOW
-// ===========================
 
-followingCount.style.cursor = "pointer";
-followerCount.style.cursor = "pointer";
-
-followingCount.onclick = () => {
-
-    openFollowPopup(profileUid,"following");
-
-};
-
-followerCount.onclick = () => {
-
-    openFollowPopup(profileUid,"followers");
-
-};
 const likeCount = document.getElementById("likeCount");
 const addStoryBtn = document.getElementById("addStoryBtn");
 
@@ -455,23 +427,6 @@ messageBtn.onclick = async () => {
 document
 .getElementById("backBtn")
 .onclick=()=>history.back();
-// ==========================
-// SETTINGS PAGE
-// ==========================
-
-const menuBtn = document.getElementById("menuBtn");
-const settingsPage = document.getElementById("settingsPage");
-const closeSettings = document.getElementById("closeSettings");
-
-menuBtn.onclick = () => {
-    settingsPage.classList.add("active");
-    document.body.style.overflow = "hidden";
-};
-
-closeSettings.onclick = () => {
-    settingsPage.classList.remove("active");
-    document.body.style.overflow = "";
-};
 // ===========================
 // TAB
 // ===========================
@@ -1148,36 +1103,8 @@ async function loadStories(){
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
-storyBar.innerHTML = `
-<div class="storyItem" id="addStoryBtn">
+storyBar.innerHTML = "";
 
-    <div class="storyAvatar mine">
-
-        <img
-        id="myStoryAvatar"
-        src="${auth.currentUser?.photoURL || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
-
-        <span class="storyPlus">+</span>
-
-    </div>
-
-    <div class="storyName">
-        Story
-    </div>
-
-</div>
-`;
-
-document.getElementById("addStoryBtn").onclick = () => {
-
-    if(!auth.currentUser){
-        alert("Bạn cần đăng nhập");
-        return;
-    }
-
-    storyFile.click();
-
-};
 const block = auth.currentUser
     ? await isBlocked(auth.currentUser.uid, profileUid)
     : { iBlocked:false, blockedMe:false };
@@ -1419,185 +1346,4 @@ document.getElementById("closeStory").onclick=()=>{
     storyVideo.pause();
     storyVideo.src="";
 
-};
-const followingCountBtn =
-document.getElementById("followingCount").parentElement;
-
-
-const followerCountBtn =
-document.getElementById("followerCount").parentElement;
-
-
-
-followingCountBtn.onclick = ()=>{
-
-    openFollowList("following");
-
-};
-
-
-followerCountBtn.onclick = ()=>{
-
-    openFollowList("followers");
-
-};
-
-
-
-function openFollowList(type){
-
-    document
-    .getElementById("followListSheet")
-    .classList.add("active");
-
-
-    document.getElementById("followListTitle").innerText =
-    type === "following"
-    ? "Đã follow"
-    : "Follower";
-
-
-    loadFollowList(type);
-
-}
-
-
-
-document.getElementById("closeFollowList").onclick=()=>{
-
-    document
-    .getElementById("followListSheet")
-    .classList.remove("active");
-
-};
-async function loadFollowList(type){
-
-    const box =
-    document.getElementById("followListContent");
-
-
-    box.innerHTML = "Đang tải...";
-
-
-    const ref = collection(
-        db,
-        "users",
-        profileUid,
-        type
-    );
-
-
-    const snap = await getDocs(ref);
-
-
-    box.innerHTML="";
-
-
-    if(snap.empty){
-
-        box.innerHTML =
-        `
-        <div style="
-        text-align:center;
-        padding:30px;
-        color:#777;
-        ">
-        Chưa có dữ liệu
-        </div>
-        `;
-
-        return;
-    }
-
-
-    for(const item of snap.docs){
-
-
-        const uid = item.id;
-
-
-        const userSnap =
-        await getDoc(
-            doc(db,"users",uid)
-        );
-
-
-        if(!userSnap.exists()) continue;
-
-
-        const u=userSnap.data();
-
-
-        box.innerHTML +=
-        `
-        <div class="follow-user">
-
-            <img src="
-            ${u.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}
-            ">
-
-            <span>
-            ${u.name || "Người dùng"}
-            </span>
-
-        </div>
-        `;
-
-    }
-
-}
-// ==========================
-// SETTINGS BUTTONS
-// ==========================
-
-document.getElementById("accountBtn").onclick = () => {
-    location.href = "edit-profile.html";
-};
-
-document.getElementById("securityBtn").onclick = () => {
-    location.href = "security.html";
-};
-
-document.getElementById("deviceBtn").onclick = () => {
-    location.href = "devices.html";
-};
-
-document.getElementById("privateBtn").onclick = () => {
-    location.href = "private-account.html";
-};
-
-document.getElementById("blockedBtn").onclick = () => {
-
-    const list = document.getElementById("blockedList");
-
-    if (!list) {
-        alert("Không tìm thấy danh sách người đã chặn.");
-        return;
-    }
-
-    list.style.display = "block";
-
-    loadBlockedUsers();
-
-};
-
-document.getElementById("commentSetting").onclick = () => {
-    location.href = "comment-settings.html";
-};
-
-document.getElementById("messageSetting").onclick = () => {
-    location.href = "message-settings.html";
-};
-
-document.getElementById("mentionSetting").onclick = () => {
-    location.href = "mention-settings.html";
-};
-
-document.getElementById("logoutBtn").onclick = async () => {
-
-    if (!confirm("Đăng xuất?")) return;
-
-    await auth.signOut();
-
-    location.href = "index.html";
 };
