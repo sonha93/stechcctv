@@ -402,23 +402,23 @@ followBtn.onclick = async () => {
         }
 
         if (await isFriend(profileUid)) {
+            followSheet.classList.add("active");
+            return;
+        }
 
-    followSheet.classList.add("active");
-    return;
+        const pending = await hasPendingFollowRequest(profileUid);
 
-}
+        if (pending) {
 
-        else {
+            await cancelFollowRequest(profileUid);
+            followBtn.innerHTML = "Follow";
 
-    await sendFollowRequest(profileUid);
+        } else {
 
-    const check =
-    await hasPendingFollowRequest(profileUid);
+            await sendFollowRequest(profileUid);
+            followBtn.innerHTML = "Đã gửi";
 
-    followBtn.innerHTML =
-    check ? "Đã gửi" : "Follow";
-
-}
+        }
 
     } finally {
 
