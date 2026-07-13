@@ -739,11 +739,11 @@ snap.forEach(docSnap => {
 
 function renderVideos(snap){
 
-    snap.forEach(docSnap=>{
+  for(const docSnap of snap.docs){
 
         renderOne(docSnap);
 
-    });
+}
 
 }
 
@@ -1147,7 +1147,7 @@ storyFile.onchange = async () => {
   await addDoc(collection(db,"profile_stories"),{
 
     uid: uid,
-
+  privacy: "public",
     media: data.secure_url,
 
     type: file.type.startsWith("video/")
@@ -1245,7 +1245,29 @@ storyBar.style.display = "";
 
         const s = docSnap.data();
 
-        
+        // ===== CHECK STORY PRIVACY =====
+
+if(
+    s.privacy === "private" &&
+    auth.currentUser?.uid !== profileUid
+){
+    return;
+}
+
+
+if(
+    s.privacy === "friends" &&
+    (!auth.currentUser ||
+    auth.currentUser.uid !== profileUid)
+){
+
+    const friend = await isFriend(profileUid);
+
+    if(!friend){
+        return;
+    }
+
+}
 
 storyBar.insertAdjacentHTML(
 "beforeend",
@@ -1429,6 +1451,42 @@ else{
     }
 
 };
+const snap = await getDoc(
+    doc(db,"profile_stories",currentStoryId)
+);
+
+if(snap.exists()){
+
+    const s = snap.data();
+
+    const choice = prompt(
+`Quyền riêng tư story:
+
+1 - Công khai
+2 - Bạn bè
+3 - Riêng tư`
+    );
+
+
+    let privacy="public";
+
+    if(choice==="2"){
+        privacy="friends";
+    }
+
+    if(choice==="3"){
+        privacy="private";
+    }
+
+
+    await updateDoc(
+        doc(db,"profile_stories",currentStoryId),
+        {
+            privacy:privacy
+        }
+    );
+
+}
 storyMore.onclick = async ()=>{
 
     if(!currentStoryId) return;
