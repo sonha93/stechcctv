@@ -31,7 +31,10 @@ async function loadNotifications(){
     list.innerHTML = "";
 
     const requests = await getMyFollowRequests();
-console.log("FOLLOW REQUESTS:", requests);
+    
+const notifications = await getNotifications();
+
+console.log("NOTIFICATIONS:", notifications);
     for(const item of requests){
 
         const data = item.data();
@@ -88,10 +91,52 @@ console.log("FOLLOW REQUESTS:", requests);
 `;
 
     }
+for(const item of notifications){
 
+        const data = item.data();
+
+        const userSnap = await db
+        .collection("users")
+        .doc(data.senderId)
+        .get();
+
+        if(!userSnap.exists) continue;
+
+        const u = userSnap.data();
+
+        list.innerHTML += `
+
+<div class="notify-item">
+
+    <img
+        src="${u.avatar || "./avatar.png"}"
+        class="notify-avatar">
+
+    <div class="notify-content">
+
+        <b>${u.name || "Người dùng"}</b>
+        đã theo dõi bạn
+
+    </div>
+
+</div>
+
+`;
+
+    }
     bindButtons();
 
 }
+
+async function getNotifications(){
+
+    const snap = await db
+    .collection("notifications")
+    .where("receiverId","==",auth.currentUser.uid)
+    .orderBy("createdAt","desc")
+    .get();
+
+    return snap.docs;
 
 // ================================
 // BUTTON
