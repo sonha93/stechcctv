@@ -408,15 +408,15 @@ followBtn.onclick = async () => {
 
 }
 
-        if (await hasPendingFollowRequest(profileUid)) {
-
-    await cancelFollowRequest(profileUid);
-    followBtn.innerHTML = "Follow";
-
-} else {
+        else {
 
     await sendFollowRequest(profileUid);
-    followBtn.innerHTML = "Đã gửi";
+
+    const check =
+    await hasPendingFollowRequest(profileUid);
+
+    followBtn.innerHTML =
+    check ? "Đã gửi" : "Follow";
 
 }
 
