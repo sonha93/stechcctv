@@ -121,18 +121,7 @@ blockState = await isBlocked(
 
 const blocked =
 blockState.iBlocked || blockState.blockedMe;
-        
-const privacySnap = await db
-.collection("users")
-.doc(otherUid)
-.collection("private")
-.doc("settings")
-.get();
-
-const messageDisabled =
-privacySnap.exists &&
-privacySnap.data().allowMessage === false;
-if(blocked || messageDisabled){
+if(blocked){
 
     if(messageInput)
         messageInput.style.display = "none";
@@ -160,7 +149,8 @@ const chatInput = document.querySelector(".chat-input");
 if(chatInput){
 
     chatInput.style.display =
- (blocked || messageDisabled) ? "none" : "flex";
+    blocked ? "none" : "flex";
+
 }
 if(chatTitle){
 
@@ -554,28 +544,6 @@ return;
 
 if(!currentUser)
 return;
-// CHECK QUYỀN NHẬN TIN NHẮN
-const privacySnap = await db
-.collection("users")
-.doc(otherUid)
-.collection("private")
-.doc("settings")
-.get();
-
-
-if(privacySnap.exists){
-
-    const privacy = privacySnap.data();
-
-    if(privacy.allowMessage === false){
-
-        alert("Người dùng đã tắt nhận tin nhắn");
-
-        return;
-
-    }
-
-}
 blockState = await isBlocked(
     currentUser.uid,
     otherUid
@@ -783,27 +751,6 @@ const file = imageInput.files[0];
 
 if(!file)
 return;
-const privacySnap = await db
-.collection("users")
-.doc(otherUid)
-.collection("private")
-.doc("settings")
-.get();
-
-
-if(privacySnap.exists){
-
-    const privacy = privacySnap.data();
-
-    if(privacy.allowMessage === false){
-
-        alert("Người dùng đã tắt nhận tin nhắn");
-
-        return;
-
-    }
-
-}
 blockState = await isBlocked(
     currentUser.uid,
     otherUid
