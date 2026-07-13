@@ -148,10 +148,13 @@ export async function acceptFollowRequest(requestId){
 
 export async function rejectFollowRequest(requestId){
 
-    await db
-    .collection("follow_requests")
-    .doc(requestId)
-    .delete();
+    await db.collection("follow_requests")
+        .doc(requestId)
+        .delete();
+
+    await db.collection("notifications")
+        .doc(requestId)
+        .delete();
 
 }
 
