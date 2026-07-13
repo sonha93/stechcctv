@@ -290,5 +290,11 @@ MOBILE
         height:32px;
         font-size:12px;
     }
-
+.notification-popup{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.4);
+    z-index:9999;
+}
 }
