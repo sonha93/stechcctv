@@ -67,7 +67,7 @@ try{
     for(const docSnap of snap.docs){
 
         const data = docSnap.data();
-
+        const requestId = requestId || docSnap.id;
         if(data.type !== "follow_request") continue;
 
         const userSnap = await db
@@ -80,7 +80,7 @@ try{
         const u = userSnap.data();
 
         list.innerHTML += `
-<div class="notify-item" id="request-${data.requestId}">
+<div class="notify-item" id="request-${requestId}">
 
     <img
         src="${u.avatar || "./avatar.png"}"
@@ -97,13 +97,13 @@ try{
 
             <button
                 class="acceptBtn"
-                data-id="${data.requestId}">
+                data-id="${requestId}">
                 Chấp nhận
             </button>
 
             <button
                 class="rejectBtn"
-                data-id="${data.requestId}">
+                data-id="${requestId}">
                 Từ chối
             </button>
 
