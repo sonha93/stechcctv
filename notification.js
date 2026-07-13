@@ -26,8 +26,14 @@ auth.onAuthStateChanged(user=>{
 
 async function loadNotifications(){
 
-    if(!list) return;
+    console.log("LOAD NOTIFICATIONS");
 
+    if(!list) {
+        console.log("Không có notificationList");
+        return;
+    }
+
+    console.log("UID:", auth.currentUser.uid);
     list.innerHTML = "";
 
     const snap = await db
