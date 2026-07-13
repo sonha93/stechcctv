@@ -564,6 +564,7 @@ grid.style.display = "";
     // --------------------
 
     if(type==="videos"){
+        
 const privacySnap = await getDoc(
     doc(db,"users",profileUid,"settings","privacy")
 );
@@ -1193,6 +1194,25 @@ alert("Đăng story thành công");
 
 loadStories();
 };   
+const privacySnap = await getDoc(
+    doc(db,"users",profileUid,"settings","privacy")
+);
+
+if(privacySnap.exists()){
+
+    const privacy = privacySnap.data();
+
+    if(
+        privacy.showStory === false &&
+        auth.currentUser?.uid !== profileUid
+    ){
+
+        storyBar.innerHTML="";
+        return;
+
+    }
+
+}
 async function loadStories(){
 const privacySnap = await getDoc(
     doc(db,"users",profileUid,"settings","privacy")
