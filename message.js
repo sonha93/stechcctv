@@ -544,6 +544,28 @@ return;
 
 if(!currentUser)
 return;
+// CHECK QUYỀN NHẬN TIN NHẮN
+const privacySnap = await db
+.collection("users")
+.doc(otherUid)
+.collection("settings")
+.doc("privacy")
+.get();
+
+
+if(privacySnap.exists){
+
+    const privacy = privacySnap.data();
+
+    if(privacy.allowMessage === false){
+
+        alert("Người dùng đã tắt nhận tin nhắn");
+
+        return;
+
+    }
+
+}
 blockState = await isBlocked(
     currentUser.uid,
     otherUid
@@ -751,6 +773,27 @@ const file = imageInput.files[0];
 
 if(!file)
 return;
+const privacySnap = await db
+.collection("users")
+.doc(otherUid)
+.collection("settings")
+.doc("privacy")
+.get();
+
+
+if(privacySnap.exists){
+
+    const privacy = privacySnap.data();
+
+    if(privacy.allowMessage === false){
+
+        alert("Người dùng đã tắt nhận tin nhắn");
+
+        return;
+
+    }
+
+}
 blockState = await isBlocked(
     currentUser.uid,
     otherUid
