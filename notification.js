@@ -29,48 +29,7 @@ async function loadNotifications(){
     if(!list) return;
 
     list.innerHTML = "";
-const notifySnap = await db
-.collection("notifications")
-.where("receiverId","==",auth.currentUser.uid)
-.orderBy("createdAt","desc")
-.get();
 
-for(const docSnap of notifySnap.docs){
-
-    const n = docSnap.data();
-
-    if(n.type !== "follow_request") continue;
-
-    const userSnap = await db
-    .collection("users")
-    .doc(n.senderId)
-    .get();
-
-    if(!userSnap.exists) continue;
-
-    const u = userSnap.data();
-
-    list.innerHTML += `
-<div class="notify-item">
-
-<img
-src="${u.avatar || "./avatar.png"}"
-class="notify-avatar">
-
-<div class="notify-content">
-
-<div class="notify-title">
-
-<b>${u.name || "Người dùng"}</b>
-đã gửi lời mời theo dõi bạn
-
-</div>
-
-</div>
-
-</div>
-`;
-}
     const requests = await getMyFollowRequests();
 console.log("FOLLOW REQUESTS:", requests);
     for(const item of requests){
