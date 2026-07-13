@@ -131,9 +131,19 @@ async function renderUsers(list){
 
         let buttonHtml = "";
 
-        if(auth.currentUser && auth.currentUser.uid !== u.uid){
+       if(auth.currentUser && auth.currentUser.uid !== u.uid){
 
-    if(await isFriend(u.uid)){
+    const friend = await isFriend(u.uid);
+    const following = await isFollowing(u.uid);
+    const pending = await hasPendingFollowRequest(u.uid);
+
+    console.log("DEBUG:", u.uid, {
+        friend,
+        following,
+        pending
+    });
+
+    if(friend){
 
         buttonHtml = `
         <button
@@ -145,7 +155,7 @@ async function renderUsers(list){
 
     }
 
-    else if(await isFollowing(u.uid)){
+    else if(following){
 
         buttonHtml = `
         <button
@@ -157,7 +167,7 @@ async function renderUsers(list){
 
     }
 
-    else if(await hasPendingFollowRequest(u.uid)){
+    else if(pending){
 
         buttonHtml = `
         <button
