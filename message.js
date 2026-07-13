@@ -121,11 +121,12 @@ blockState = await isBlocked(
 
 const blocked =
 blockState.iBlocked || blockState.blockedMe;
-        const privacySnap = await db
+        
+const privacySnap = await db
 .collection("users")
 .doc(otherUid)
-.collection("settings")
-.doc("privacy")
+.collection("private")
+.doc("settings")
 .get();
 
 const messageDisabled =
@@ -557,8 +558,8 @@ return;
 const privacySnap = await db
 .collection("users")
 .doc(otherUid)
-.collection("settings")
-.doc("privacy")
+.collection("private")
+.doc("settings")
 .get();
 
 
@@ -785,8 +786,8 @@ return;
 const privacySnap = await db
 .collection("users")
 .doc(otherUid)
-.collection("settings")
-.doc("privacy")
+.collection("private")
+.doc("settings")
 .get();
 
 
