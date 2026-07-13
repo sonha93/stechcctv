@@ -443,49 +443,30 @@ window.unblockUser = async function(uid){
 
 };
 // =====================================
-// MENU SETTING
+// SETTINGS PAGE (NEW)
 // =====================================
 
 const menuBtn = document.getElementById("menuBtn");
-const settingMenu = document.getElementById("settingMenu");
-const closeSetting = document.getElementById("closeSetting");
+const settingsPage = document.getElementById("settingsPage");
+const closeSettings = document.getElementById("closeSettings");
 
+if (menuBtn && settingsPage) {
 
-if(menuBtn && settingMenu){
+    menuBtn.onclick = () => {
 
-    menuBtn.onclick = ()=>{
-
-        settingMenu.classList.add("active");
-
-    };
-
-}
-
-
-// Đóng khi bấm nền ngoài
-
-if(settingMenu){
-
-    settingMenu.onclick = (e)=>{
-
-        if(e.target === settingMenu){
-
-            settingMenu.classList.remove("active");
-
-        }
+        settingsPage.classList.add("active");
+        document.body.style.overflow = "hidden";
 
     };
 
 }
 
+if (closeSettings) {
 
-// Nút đóng
+    closeSettings.onclick = () => {
 
-if(closeSetting){
-
-    closeSetting.onclick = ()=>{
-
-        settingMenu.classList.remove("active");
+        settingsPage.classList.remove("active");
+        document.body.style.overflow = "";
 
     };
 
