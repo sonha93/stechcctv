@@ -180,21 +180,22 @@ LIST
 }
 
 .user-name{
-
     display:flex;
     align-items:center;
-
-    gap:4px;
+    gap:5px;
 
     font-size:16px;
     font-weight:700;
 
+    min-width:0;
+    overflow:hidden;
     white-space:nowrap;
+}
+.user-name span{
     overflow:hidden;
     text-overflow:ellipsis;
-
+    white-space:nowrap;
 }
-
 .user-username{
 
     margin-top:4px;
@@ -208,7 +209,11 @@ LIST
     text-overflow:ellipsis;
 
 }
-
+.user-name svg{
+    width:18px;
+    height:18px;
+    flex-shrink:0;
+}
 /* ===========================
 BUTTON
 =========================== */
@@ -264,20 +269,26 @@ BUTTON
 VERIFIED
 =========================== */
 
-.verified-badge{
+/* ===========================
+VERIFIED
+=========================== */
 
+.verified-badge{
     display:inline-flex;
     align-items:center;
-
+    justify-content:center;
+    margin-left:4px;
+    flex-shrink:0;
+    vertical-align:middle;
 }
 
 .verified-icon{
-
     width:18px;
     height:18px;
-
+    display:block;
+    object-fit:contain;
+    flex-shrink:0;
 }
-
 /* ===========================
 MOBILE
 =========================== */
