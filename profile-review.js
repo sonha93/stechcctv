@@ -1,4 +1,3 @@
-
 import {
     getDoc,
     doc,
@@ -13,11 +12,9 @@ import {
     serverTimestamp,
     arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-    followUser,
-    unfollowUser,
-    isFollowing
-} from "./follow.js";
+
+import { auth, db } from "./firebase.js";
+
 // ===== Lấy uid trên URL =====
 
 const params = new URLSearchParams(location.search);
