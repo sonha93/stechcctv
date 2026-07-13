@@ -30,27 +30,34 @@ async function loadNotifications(){
 
     list.innerHTML = "";
 
-    const requests = await getMyFollowRequests();
-console.log("FOLLOW REQUESTS:", requests);
-    for(const item of requests){
+    const snap = await db
+        .collection("notifications")
+        .where("receiverId","==",auth.currentUser.uid)
+        .orderBy("createdAt","desc")
+        .get();
 
-        const data = item.data();
+    if(snap.empty){
+        list.innerHTML = `<div class="notify-empty">Chưa có thông báo</div>`;
+        return;
+    }
+
+    for(const docSnap of snap.docs){
+
+        const data = docSnap.data();
+
+        if(data.type !== "follow_request") continue;
 
         const userSnap = await db
-.collection("users")
-.doc(data.from)
-.get();
+            .collection("users")
+            .doc(data.senderId)
+            .get();
 
-        if(!userSnap.exists){
-    console.log("Không tìm thấy user gửi:", data.from);
-    continue;
-}
+        if(!userSnap.exists) continue;
 
         const u = userSnap.data();
 
         list.innerHTML += `
-
-<div class="notify-item" id="request-${item.id}">
+<div class="notify-item" id="request-${data.requestId}">
 
     <img
         src="${u.avatar || "./avatar.png"}"
@@ -59,23 +66,21 @@ console.log("FOLLOW REQUESTS:", requests);
     <div class="notify-content">
 
         <div class="notify-title">
-
             <b>${u.name || "Người dùng"}</b>
             đã gửi lời mời theo dõi bạn
-
         </div>
 
         <div class="notify-action">
 
             <button
                 class="acceptBtn"
-                data-id="${item.id}">
+                data-id="${data.requestId}">
                 Chấp nhận
             </button>
 
             <button
                 class="rejectBtn"
-                data-id="${item.id}">
+                data-id="${data.requestId}">
                 Từ chối
             </button>
 
@@ -83,14 +88,10 @@ console.log("FOLLOW REQUESTS:", requests);
 
     </div>
 
-</div>
-
-`;
-
+</div>`;
     }
 
     bindButtons();
-
 }
 
 // ================================
