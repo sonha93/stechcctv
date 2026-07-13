@@ -14,28 +14,26 @@ document.getElementById("backBtn");
 const ids = [
 
 "privateAccount",
-"showProfile",
-"showStory",
-"showVideos",
-"showLikes",
-"showFollow",
 
-"allowMessage",
-"messageRequest",
-"limitThreeMessages",
+"hideProfile",
+"hideFollowList",
 
-"allowComment",
-"allowLike",
-"allowShare",
-"allowMention",
+"friendOnlyMessage",
+"limitMessage",
+
+"storyFriendOnly",
 
 "showOnline",
-"allowSearch",
-"syncContacts",
-"showLocation"
+
+"allowMention",
+
+"allowVoiceCall",
+
+"allowVideoCall",
+
+"searchByUsername"
 
 ];
-
 const controls = {};
 
 ids.forEach(id=>{
@@ -67,28 +65,34 @@ const DEFAULT_SETTINGS = {
 
     privateAccount:false,
 
-    showProfile:true,
-    showStory:true,
-    showVideos:true,
-    showLikes:true,
-    showFollow:true,
+    hideProfile:false,
 
-    allowMessage:true,
-    messageRequest:true,
-    limitThreeMessages:true,
+    hideFollowList:false,
 
-    allowComment:true,
-    allowLike:true,
-    allowShare:true,
-    allowMention:true,
+
+    friendOnlyMessage:false,
+
+    limitMessage:true,
+
+
+    storyFriendOnly:false,
+
 
     showOnline:true,
-    allowSearch:true,
-    syncContacts:false,
-    showLocation:false
+
+
+    allowMention:true,
+
+
+    allowVoiceCall:true,
+
+
+    allowVideoCall:true,
+
+
+    searchByUsername:true
 
 };
-
 // =====================================
 // CHECK LOGIN
 // =====================================
