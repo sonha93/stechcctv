@@ -178,17 +178,13 @@ async function savePrivacy(key,value){
 
         [key]:value,
 
-        updatedAt:
-        firebase.firestore.FieldValue.serverTimestamp()
+        updatedAt:new Date()
 
     },{
-
         merge:true
-
     });
 
 }
-
 // =====================================
 // BIND
 // =====================================
