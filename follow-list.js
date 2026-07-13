@@ -27,7 +27,7 @@ import {
 
 const db = getFirestore(app);
 
-const params = new URLSearchParams(location.search);
+
 
 const params = new URLSearchParams(location.search);
 const type = params.get("type") || "followers";
@@ -35,11 +35,7 @@ const type = params.get("type") || "followers";
 let profileUid = params.get("uid");
 const type = params.get("type") || "followers";
 
-if(!profileUid){
-    console.error("follow-list thiếu uid");
-    alert("Không tìm thấy người dùng");
-    throw new Error("Missing uid");
-}
+
 const pageTitle = document.getElementById("pageTitle");
 const loading = document.getElementById("loading");
 const empty = document.getElementById("empty");
