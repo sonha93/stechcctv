@@ -26,93 +26,84 @@ auth.onAuthStateChanged(user=>{
 
 async function loadNotifications(){
 
-    console.log("LOAD NOTIFICATIONS");
+    if(!list) return;
 
-    if(!list) {
-        console.log("Không có notificationList");
-        return;
-    }
-
-    console.log("UID:", auth.currentUser.uid);
     list.innerHTML = "";
 
-    let snap;
-
-try{
-
-    snap = await db
+    const snap = await db
         .collection("notifications")
         .where("receiverId","==",auth.currentUser.uid)
         .orderBy("createdAt","desc")
         .get();
 
-}catch(e){
-
-    console.error("NOTIFICATION QUERY:", e);
-
-    list.innerHTML = `
-        <div class="notify-empty">
-            ${e.message}
-        </div>
-    `;
-
-    return;
-
-}
     if(snap.empty){
         list.innerHTML = `<div class="notify-empty">Chưa có thông báo</div>`;
         return;
     }
 
+    let html = "";
+
     for(const docSnap of snap.docs){
 
         const data = docSnap.data();
-        const requestId = requestId || docSnap.id;
+
         if(data.type !== "follow_request") continue;
 
-        const userSnap = await db
-            .collection("users")
-            .doc(data.senderId)
-            .get();
+        const requestId = data.requestId || docSnap.id;
 
-        if(!userSnap.exists) continue;
+        let name = "Người dùng";
+        let avatar = "./avatar.png";
 
-        const u = userSnap.data();
+        try{
 
-        list.innerHTML += `
-<div class="notify-item" id="request-${requestId}">
+            const userSnap = await db
+                .collection("users")
+                .doc(data.senderId)
+                .get();
 
-    <img
-        src="${u.avatar || "./avatar.png"}"
-        class="notify-avatar">
+            if(userSnap.exists){
+                const u = userSnap.data();
+                name = u.name || name;
+                avatar = u.avatar || avatar;
+            }
 
-    <div class="notify-content">
+        }catch(e){}
 
-        <div class="notify-title">
-            <b>${u.name || "Người dùng"}</b>
-            đã gửi lời mời theo dõi bạn
-        </div>
+        html += `
+        <div class="notify-item" id="request-${requestId}">
 
-        <div class="notify-action">
+            <img
+                src="${avatar}"
+                class="notify-avatar">
 
-            <button
-                class="acceptBtn"
-                data-id="${requestId}">
-                Chấp nhận
-            </button>
+            <div class="notify-content">
 
-            <button
-                class="rejectBtn"
-                data-id="${requestId}">
-                Từ chối
-            </button>
+                <div class="notify-title">
+                    <b>${name}</b> đã gửi lời mời theo dõi bạn
+                </div>
 
-        </div>
+                <div class="notify-action">
 
-    </div>
+                    <button
+                        class="acceptBtn"
+                        data-id="${requestId}">
+                        Chấp nhận
+                    </button>
 
-</div>`;
+                    <button
+                        class="rejectBtn"
+                        data-id="${requestId}">
+                        Từ chối
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>`;
     }
+
+    list.innerHTML = html || `<div class="notify-empty">Chưa có thông báo</div>`;
 
     bindButtons();
 }
