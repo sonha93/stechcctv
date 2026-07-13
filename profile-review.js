@@ -537,7 +537,48 @@ tabs.forEach(tab=>{
 
 });
 
+async function canViewVideo(ownerUid){
 
+    if(!auth.currentUser)
+        return false;
+
+
+    // Chủ video luôn xem được
+    if(auth.currentUser.uid === ownerUid)
+        return true;
+
+
+    const privacySnap = await getDoc(
+        doc(
+            db,
+            "users",
+            ownerUid,
+            "private",
+            "settings"
+        )
+    );
+
+
+    if(!privacySnap.exists())
+        return true;
+
+
+    const privacy = privacySnap.data();
+
+
+    // true = ai cũng xem
+    if(privacy.showVideos === true)
+        return true;
+
+
+    // false = không cho xem
+    if(privacy.showVideos === false)
+        return false;
+
+
+    return true;
+
+}
 // ===========================
 // LOAD TAB
 // ===========================
@@ -609,9 +650,28 @@ snap.forEach(doc => {
 
         );
 
-        const snap=await getDocs(q);
+        const snap = await getDocs(q);
 
-        renderVideos(snap);
+
+const allow =
+await canViewVideo(profileUid);
+
+
+if(!allow){
+
+    grid.innerHTML =
+    `
+    <p style="padding:40px;text-align:center">
+    Không có quyền xem video.
+    </p>
+    `;
+
+    return;
+
+}
+
+
+renderVideos(snap);
 
     }
 
