@@ -292,3 +292,45 @@ MOBILE
     }
 
 }
+/* các CSS cũ của bạn */
+
+
+/* ==========================
+   NOTIFICATION FOLLOW POPUP
+   ========================== */
+
+.notification-popup {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    width: 350px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    z-index: 9999;
+    display: none;
+    overflow: hidden;
+}
+
+.notification-box {
+    width: 100%;
+}
+
+.notification-header {
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+    background: #f8f8f8;
+}
+
+#notificationList {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notify-empty {
+    padding: 30px 15px;
+    text-align: center;
+    color: #777;
+}
