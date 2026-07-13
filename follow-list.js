@@ -39,10 +39,15 @@ const userList = document.getElementById("userList");
 const searchInput = document.getElementById("searchInput");
 
 if(pageTitle){
-    pageTitle.innerText =
-    type === "following"
-    ? "Đã follow"
-    : "Follower";
+
+    if(type === "following")
+        pageTitle.innerText = "Đã follow";
+
+    else if(type === "blocked")
+        pageTitle.innerText = "Người đã chặn";
+
+    else
+        pageTitle.innerText = "Follower";
 }
 
 document.getElementById("backBtn").onclick = () => history.back();
@@ -64,19 +69,43 @@ async function loadUsers(){
 
     allUsers = [];
 
-    const snap = await getDocs(
+    let ids = [];
 
+if(type === "blocked"){
+
+    const me = await getDoc(doc(db,"users",profileUid));
+
+    ids = me.exists()
+        ? (me.data().blockedUsers || [])
+        : [];
+
+}else{
+
+    const snap = await getDocs(
         query(
-            collection(
-                db,
-                "users",
-                profileUid,
-                type
-            ),
+            collection(db,"users",profileUid,type),
             orderBy("__name__")
         )
-
     );
+
+    ids = snap.docs.map(d => d.id);
+
+}
+
+for(const uid of ids){
+
+    const userSnap = await getDoc(
+        doc(db,"users",uid)
+    );
+
+    if(!userSnap.exists()) continue;
+
+    allUsers.push({
+        uid,
+        ...userSnap.data()
+    });
+
+}
 
     for(const item of snap.docs){
 
