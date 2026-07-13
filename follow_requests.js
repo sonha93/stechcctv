@@ -7,7 +7,7 @@ import { db, auth } from "./firebase-init.js";
 // GỬI LỜI MỜI
 // ================================
 
-export async function sendFollowRequest(targetUid){
+export async function toggleFollow(targetUid){
 
     if(!auth.currentUser) return false;
 
@@ -15,38 +15,64 @@ export async function sendFollowRequest(targetUid){
 
     if(myUid === targetUid) return false;
 
-    const old = await db
-    .collection("follow_requests")
-    .where("from","==",myUid)
-    .where("to","==",targetUid)
-    .where("status","==","pending")
-    .get();
 
-    if(!old.empty){
+    const followingRef = db
+    .collection("users")
+    .doc(myUid)
+    .collection("following")
+    .doc(targetUid);
+
+
+    const check = await followingRef.get();
+
+
+    // ĐANG FOLLOW -> HỦY FOLLOW
+    if(check.exists){
+
+        await followingRef.delete();
+
+        await db
+        .collection("users")
+        .doc(targetUid)
+        .collection("followers")
+        .doc(myUid)
+        .delete();
+
         return false;
     }
 
-    await db.collection("follow_requests").add({
 
-        from: myUid,
-        to: targetUid,
-        status: "pending",
+    // CHƯA FOLLOW -> FOLLOW
+
+    await followingRef.set({
+        time: Date.now()
+    });
+
+
+    await db
+    .collection("users")
+    .doc(targetUid)
+    .collection("followers")
+    .doc(myUid)
+    .set({
+        time: Date.now()
+    });
+
+
+    await db.collection("notifications").add({
+
+        receiverId: targetUid,
+        senderId: myUid,
+        type:"follow",
+        read:false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
     });
 
-   await db.collection("notifications").add({
 
-    receiverId: targetUid,
-    senderId: myUid,
-    type: "follow_request",
-    read:false,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-
-});
     return true;
-}
 
+}
 // ================================
 // DANH SÁCH LỜI MỜI
 // ================================
@@ -124,7 +150,7 @@ export async function acceptFollowRequest(requestId){
 
     batch.delete(requestRef);
 
-   batch.delete(requestRef);
+  
 
 await batch.commit();
 
