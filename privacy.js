@@ -187,20 +187,35 @@ async function loadPrivacy(){
 
 async function savePrivacy(key,value){
 
-    const uid = auth.currentUser.uid;
+    const user = auth.currentUser;
+
+    if(!user){
+        console.log("Chưa đăng nhập");
+        return;
+    }
 
     await db.collection("users")
-    .doc(uid)
+    .doc(user.uid)
     .collection("private")
     .doc("settings")
     .set({
 
-        [key]:value,
+        [key]: value,
 
-        updatedAt:new Date()
+        updatedAt: new Date()
 
     },{
         merge:true
+    })
+    .then(()=>{
+
+        console.log("Đã lưu:", key, value);
+
+    })
+    .catch(error=>{
+
+        console.error("Lỗi lưu privacy:", error);
+
     });
 
 }
