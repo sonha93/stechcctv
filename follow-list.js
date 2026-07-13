@@ -27,13 +27,24 @@ import {
 
 const db = getFirestore(app);
 
-
-
 const params = new URLSearchParams(location.search);
-const type = params.get("type") || "followers";
 
 let profileUid = params.get("uid");
 
+onAuthStateChanged(auth, user => {
+
+    if (!profileUid && user) {
+        profileUid = user.uid;
+        loadUsers();
+        return;
+    }
+
+    if (profileUid) {
+        loadUsers();
+    }
+
+});
+const type = params.get("type") || "followers";
 
 const pageTitle = document.getElementById("pageTitle");
 const loading = document.getElementById("loading");
@@ -48,27 +59,11 @@ if(pageTitle){
     : "Follower";
 }
 
-const backBtn = document.getElementById("backBtn");
+document.getElementById("backBtn").onclick = () => history.back();
 
-if(backBtn){
-    backBtn.onclick = () => history.back();
-}
 let allUsers = [];
 
-onAuthStateChanged(auth, async (user)=>{
 
-    if(!profileUid){
-        profileUid = user?.uid;
-    }
-
-    if(!profileUid){
-        console.error("Không có UID");
-        return;
-    }
-
-    await loadUsers();
-
-});
 async function loadUsers(){
 
     loading.style.display = "block";
@@ -81,12 +76,15 @@ async function loadUsers(){
 
     const snap = await getDocs(
 
-        collection(
-    db,
-    "users",
-    profileUid,
-    type
-)
+        query(
+            collection(
+                db,
+                "users",
+                profileUid,
+                type
+            ),
+            orderBy("__name__")
+        )
 
     );
 
@@ -131,19 +129,9 @@ async function renderUsers(list){
 
         let buttonHtml = "";
 
-       if(auth.currentUser && auth.currentUser.uid !== u.uid){
+        if(auth.currentUser && auth.currentUser.uid !== u.uid){
 
-    const friend = await isFriend(u.uid);
-    const following = await isFollowing(u.uid);
-    const pending = await hasPendingFollowRequest(u.uid);
-
-    console.log("DEBUG:", u.uid, {
-        friend,
-        following,
-        pending
-    });
-
-    if(friend){
+    if(await isFriend(u.uid)){
 
         buttonHtml = `
         <button
@@ -155,7 +143,7 @@ async function renderUsers(list){
 
     }
 
-    else if(following){
+    else if(await isFollowing(u.uid)){
 
         buttonHtml = `
         <button
@@ -167,7 +155,7 @@ async function renderUsers(list){
 
     }
 
-    else if(pending){
+    else if(await hasPendingFollowRequest(u.uid)){
 
         buttonHtml = `
         <button
