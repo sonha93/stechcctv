@@ -157,8 +157,8 @@ if(auth.currentUser && auth.currentUser.uid !== u.uid){
             `
             <div class="user-item">
 
-               <img
-class="user-avatar"
+              <img
+class="follow-avatar"
 data-uid="${u.uid}"
 src="${
     u.avatar ||
@@ -302,7 +302,7 @@ document.addEventListener("click",async e=>{
 });
 userList.addEventListener("click", e=>{
 
-    const avatar = e.target.closest(".user-avatar");
+  const avatar = e.target.closest(".follow-avatar");
 
     if(!avatar) return;
 
