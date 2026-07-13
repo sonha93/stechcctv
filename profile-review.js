@@ -1,20 +1,4 @@
-import {
-    getDoc,
-    doc,
-    collection,
-    query,
-    where,
-    getDocs,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    setDoc,
-    serverTimestamp,
-    arrayUnion
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 import { auth, db } from "./firebase.js";
-
 // ===== Lấy uid trên URL =====
 
 const params = new URLSearchParams(location.search);
