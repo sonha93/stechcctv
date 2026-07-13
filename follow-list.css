@@ -25,24 +25,32 @@ HEADER
     position:sticky;
     top:0;
     z-index:1000;
+
     display:flex;
     align-items:center;
     justify-content:space-between;
+
     height:56px;
     padding:0 12px;
+
     background:#fff;
+
     border-bottom:1px solid #ececec;
 }
 
 .icon-btn{
     width:40px;
     height:40px;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
     border:none;
     background:none;
+
     border-radius:50%;
+
     cursor:pointer;
 }
 
@@ -67,10 +75,15 @@ SEARCH
     display:flex;
     align-items:center;
     gap:10px;
+
     margin:14px;
+
     height:46px;
+
     padding:0 14px;
+
     background:#f5f5f5;
+
     border-radius:14px;
 }
 
@@ -80,22 +93,30 @@ SEARCH
 
 #searchInput{
     flex:1;
+
     border:none;
     outline:none;
+
     background:transparent;
+
     font-size:15px;
 }
 
 /* ===========================
-LOADING
+LOADING / EMPTY
 =========================== */
 
 #loading,
 #empty{
+
     padding:35px;
+
     text-align:center;
+
     color:#888;
+
     font-size:15px;
+
 }
 
 #empty{
@@ -107,128 +128,209 @@ LIST
 =========================== */
 
 #userList{
+
     padding:0 10px 20px;
+
 }
 
 .user-item{
+
     display:flex;
     align-items:center;
+
     gap:12px;
+
     padding:12px 8px;
+
     border-bottom:1px solid #f3f3f3;
+
     cursor:pointer;
-    transition:.2s;
+
+    transition:.18s;
+
 }
 
 .user-item:hover{
+
     background:#fafafa;
+
 }
 
 .user-avatar{
+
     width:56px;
     height:56px;
+
     border-radius:50%;
+
     object-fit:cover;
+
     flex-shrink:0;
+
     background:#eee;
-    cursor:pointer;
+
 }
 
 .user-info{
+
     flex:1;
+
     min-width:0;
+
 }
 
 .user-name{
     display:flex;
     align-items:center;
     gap:5px;
+
     font-size:16px;
     font-weight:700;
+
     min-width:0;
-}
-
-.user-name-text{
     overflow:hidden;
     white-space:nowrap;
-    text-overflow:ellipsis;
 }
-
+.user-name span{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
 .user-username{
-    margin-top:4px;
-    color:#777;
-    font-size:14px;
-    overflow:hidden;
-    white-space:nowrap;
-    text-overflow:ellipsis;
-}
 
+    margin-top:4px;
+
+    color:#777;
+
+    font-size:14px;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+
+}
+.user-name svg{
+    width:18px;
+    height:18px;
+    flex-shrink:0;
+}
 /* ===========================
-FOLLOW BUTTON
+BUTTON
 =========================== */
 
 .follow-btn{
+
     min-width:92px;
+
     height:36px;
+
     border:none;
+
     border-radius:999px;
+
     font-size:14px;
     font-weight:700;
+
     cursor:pointer;
+
+    transition:.18s;
+
 }
 
 .follow-btn.follow{
+
     background:#0a84ff;
     color:#fff;
+
 }
 
 .follow-btn.following{
+
     background:#efefef;
     color:#111;
+
 }
 
 .follow-btn.friend{
+
     background:#111;
     color:#fff;
+
 }
 
 .follow-btn.request{
+
     background:#ffd84d;
     color:#111;
+
 }
 
+
 /* ===========================
-VERIFIED
+MOBILE
 =========================== */
 
+@media(max-width:768px){
+
+.user-avatar{
+
+    width:50px;
+    height:50px;
+
+}
+
+.user-name{
+
+    font-size:15px;
+
+}
+
+.user-username{
+
+    font-size:13px;
+
+}
+
+.follow-btn{
+
+    min-width:84px;
+
+    height:34px;
+
+    font-size:13px;
+
+}
+
+.user-avatar{
+    cursor:pointer;
+    pointer-events:auto;
+    position:relative;
+    z-index:10;
+}
 .verified-badge{
     position:relative;
     display:inline-flex;
     align-items:center;
-    justify-content:center;
     margin-left:4px;
-    flex-shrink:0;
     cursor:pointer;
-}
-
-.verified-icon{
-    width:18px;
-    height:18px;
-    display:block;
-    flex-shrink:0;
 }
 
 .verified-popup{
     position:absolute;
-    left:0;
     top:28px;
-    width:260px;
+    left:0;
+
     display:none;
+
+    width:260px;
+
     background:#fff;
     border-radius:12px;
     padding:14px;
-    box-shadow:0 8px 25px rgba(0,0,0,.18);
-    z-index:99999;
+
+    box-shadow:0 8px 30px rgba(0,0,0,.18);
+
+    z-index:9999;
 }
 
 .verified-badge:hover .verified-popup{
@@ -254,30 +356,48 @@ VERIFIED
     line-height:1.5;
     color:#444;
 }
+    .verified-badge{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    margin-left:4px;
+    cursor:pointer;
+}
 
-/* ===========================
-MOBILE
-=========================== */
+.verified-popup{
+    position:absolute;
+    top:28px;
+    left:0;
+    display:none;
+    width:260px;
+    background:#fff;
+    border-radius:12px;
+    padding:14px;
+    box-shadow:0 8px 30px rgba(0,0,0,.18);
+    z-index:9999;
+}
 
-@media(max-width:768px){
+.verified-badge:hover .verified-popup{
+    display:block;
+}
 
-    .user-avatar{
-        width:50px;
-        height:50px;
-    }
+.verified-popup-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    margin-bottom:8px;
+}
 
-    .user-name{
-        font-size:15px;
-    }
+.verified-popup-icon{
+    width:22px;
+    height:22px;
+    flex-shrink:0;
+}
 
-    .user-username{
-        font-size:13px;
-    }
-
-    .follow-btn{
-        min-width:84px;
-        height:34px;
-        font-size:13px;
-    }
-
+.verified-popup-text{
+    font-size:14px;
+    line-height:1.5;
+    color:#444;
+}
 }
