@@ -328,6 +328,7 @@ MOBILE
     text-align: center;
     color: #777;
 }
+}
 .notification-popup{
     display:none;
     position:fixed;
