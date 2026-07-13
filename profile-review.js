@@ -537,48 +537,7 @@ tabs.forEach(tab=>{
 
 });
 
-async function canViewVideo(ownerUid){
 
-    if(!auth.currentUser)
-        return false;
-
-
-    // Chủ video luôn xem được
-    if(auth.currentUser.uid === ownerUid)
-        return true;
-
-
-    const privacySnap = await getDoc(
-        doc(
-            db,
-            "users",
-            ownerUid,
-            "private",
-            "settings"
-        )
-    );
-
-
-    if(!privacySnap.exists())
-        return true;
-
-
-    const privacy = privacySnap.data();
-
-
-    // true = ai cũng xem
-    if(privacy.showVideos === true)
-        return true;
-
-
-    // false = không cho xem
-    if(privacy.showVideos === false)
-        return false;
-
-
-    return true;
-
-}
 // ===========================
 // LOAD TAB
 // ===========================
@@ -605,7 +564,19 @@ grid.style.display = "";
     // --------------------
 
     if(type==="videos"){
+const allow = await canViewVideo(profileUid);
 
+if(!allow){
+
+    grid.innerHTML =
+    `
+    <p style="padding:40px;text-align:center">
+    Không có quyền xem video.
+    </p>
+    `;
+
+    return;
+}
         const q=query(
 
             collection(db,"videos"),
@@ -650,7 +621,7 @@ snap.forEach(doc => {
 
         );
 
-        const snap = await getDocs(q);
+       const snap = await getDocs(q);
 
 
 const allow =
@@ -659,10 +630,11 @@ await canViewVideo(profileUid);
 
 if(!allow){
 
-    grid.innerHTML =
-    `
-    <p style="padding:40px;text-align:center">
-    Không có quyền xem video.
+    grid.innerHTML = `
+    <p style="
+    padding:40px;
+    text-align:center">
+    Người này không cho phép xem video.
     </p>
     `;
 
@@ -1243,6 +1215,43 @@ async function loadStories(){
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
+    // ================================
+// CHECK QUYỀN XEM STORY
+// ================================
+
+if(auth.currentUser && auth.currentUser.uid !== profileUid){
+
+    const privacySnap = await getDoc(
+        doc(db,"users",profileUid,"settings","privacy")
+    );
+
+
+    if(privacySnap.exists()){
+
+        const privacy = privacySnap.data();
+
+
+        // false = không cho người lạ xem
+        if(privacy.allowStory === false){
+
+            const friend = await isFriend(profileUid);
+
+
+            if(!friend){
+
+                storyBar.innerHTML = "";
+
+                storyBar.style.display = "none";
+
+                return;
+
+            }
+
+        }
+
+    }
+
+}
 storyBar.innerHTML = `
 <div class="storyItem" id="addStoryBtn">
 
