@@ -341,5 +341,15 @@ MOBILE
 .verified-badge:hover .verified-popup{
     display:none !important;
 }
-
+.follow-avatar{
+    width:42px !important;
+    height:42px !important;
+    min-width:42px !important;
+    max-width:42px !important;
+    min-height:42px !important;
+    max-height:42px !important;
+    border-radius:50% !important;
+    object-fit:cover !important;
+    flex-shrink:0 !important;
+}
 }
