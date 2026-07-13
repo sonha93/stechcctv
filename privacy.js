@@ -51,7 +51,7 @@ if(backBtn){
 
     backBtn.onclick = ()=>{
 
-        history.back();
+        location.href = "profile-review.html";
 
     };
 
