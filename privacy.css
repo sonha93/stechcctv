@@ -1,0 +1,487 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    background:#f5f5f7;
+    font-family:Arial,Helvetica,sans-serif;
+    color:#111;
+}
+
+body{
+    padding-bottom:40px;
+}
+
+/*=========================
+HEADER
+=========================*/
+
+.header{
+
+    position:sticky;
+    top:0;
+
+    height:56px;
+
+    background:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-bottom:1px solid #ececec;
+
+    z-index:1000;
+
+}
+
+.title{
+
+    font-size:18px;
+    font-weight:700;
+
+}
+
+.back-btn{
+
+    position:absolute;
+    left:10px;
+
+    width:40px;
+    height:40px;
+
+    border:none;
+    background:none;
+
+    cursor:pointer;
+
+    border-radius:50%;
+
+}
+
+.back-btn:hover{
+
+    background:#f2f2f2;
+
+}
+
+.back-btn svg{
+
+    width:22px;
+    height:22px;
+
+}
+
+/*=========================
+CONTENT
+=========================*/
+
+.content{
+
+    max-width:700px;
+
+    margin:auto;
+
+    padding:18px;
+
+}
+
+/*=========================
+GROUP
+=========================*/
+
+.group{
+
+    background:#fff;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    margin-bottom:22px;
+
+    box-shadow:0 2px 12px rgba(0,0,0,.04);
+
+}
+
+.group-title{
+
+    padding:18px 20px;
+
+    font-size:13px;
+
+    color:#888;
+
+    font-weight:700;
+
+    letter-spacing:.4px;
+
+    text-transform:uppercase;
+
+    background:#fafafa;
+
+}
+
+/*=========================
+ITEM
+=========================*/
+
+.item{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:15px;
+
+    padding:18px 20px;
+
+    border-top:1px solid #f0f0f0;
+
+}
+
+.item:first-of-type{
+
+    border-top:none;
+
+}
+
+.left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    flex:1;
+
+}
+
+/*=========================
+ICON
+=========================*/
+
+.icon{
+
+    width:44px;
+    height:44px;
+
+    border-radius:14px;
+
+    background:#f3f4f6;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    flex:none;
+
+}
+
+.icon svg{
+
+    width:22px;
+    height:22px;
+
+    color:#222;
+
+}
+
+.name{
+
+    font-size:16px;
+
+    font-weight:600;
+
+}
+
+.desc{
+
+    margin-top:3px;
+
+    font-size:13px;
+
+    color:#888;
+
+    line-height:1.45;
+
+}
+/*=========================
+IOS SWITCH
+=========================*/
+
+.switch{
+
+    position:relative;
+
+    width:52px;
+    height:32px;
+
+    flex:none;
+
+}
+
+.switch input{
+
+    display:none;
+
+}
+
+.slider{
+
+    position:absolute;
+    inset:0;
+
+    cursor:pointer;
+
+    background:#d1d1d6;
+
+    border-radius:999px;
+
+    transition:.28s cubic-bezier(.4,0,.2,1);
+
+}
+
+.slider::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:28px;
+    height:28px;
+
+    left:2px;
+    top:2px;
+
+    border-radius:50%;
+
+    background:#fff;
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.18),
+        0 1px 2px rgba(0,0,0,.10);
+
+    transition:.28s cubic-bezier(.4,0,.2,1);
+
+}
+
+/* ON */
+
+.switch input:checked + .slider{
+
+    background:#34c759;
+
+}
+
+.switch input:checked + .slider::before{
+
+    transform:translateX(20px);
+
+}
+
+/* CLICK */
+
+.switch:active .slider::before{
+
+    width:31px;
+
+}
+
+/* DISABLED */
+
+.switch input:disabled + .slider{
+
+    opacity:.45;
+
+    cursor:not-allowed;
+
+}
+
+/* FOCUS */
+
+.switch input:focus + .slider{
+
+    box-shadow:
+        0 0 0 4px rgba(52,199,89,.18);
+
+}
+
+/*=========================
+HOVER
+=========================*/
+
+.item{
+
+    transition:.18s;
+
+}
+
+.item:hover{
+
+    background:#fafafa;
+
+}
+
+.item:active{
+
+    background:#f2f2f2;
+
+}
+
+/*=========================
+SCROLLBAR
+=========================*/
+
+::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#d4d4d4;
+
+    border-radius:999px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#bcbcbc;
+
+}
+
+/*=========================
+MOBILE
+=========================*/
+
+@media(max-width:768px){
+
+.content{
+
+    padding:12px;
+
+}
+
+.group{
+
+    border-radius:16px;
+
+    margin-bottom:16px;
+
+}
+
+.item{
+
+    padding:15px;
+
+}
+
+.icon{
+
+    width:42px;
+    height:42px;
+
+}
+
+.icon svg{
+
+    width:20px;
+    height:20px;
+
+}
+
+.name{
+
+    font-size:15px;
+
+}
+
+.desc{
+
+    font-size:12px;
+
+}
+
+.switch{
+
+    width:50px;
+    height:30px;
+
+}
+
+.slider::before{
+
+    width:26px;
+    height:26px;
+
+}
+
+.switch input:checked + .slider::before{
+
+    transform:translateX(20px);
+
+}
+
+}
+
+/*=========================
+PC
+=========================*/
+
+@media(min-width:769px){
+
+.group{
+
+    transition:.25s;
+
+}
+
+.group:hover{
+
+    box-shadow:
+        0 10px 28px rgba(0,0,0,.08);
+
+}
+
+}
+
+/*=========================
+ANIMATION
+=========================*/
+
+.group{
+
+    animation:fadeUp .35s ease;
+
+}
+
+@keyframes fadeUp{
+
+from{
+
+    opacity:0;
+
+    transform:translateY(18px);
+
+}
+
+to{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+}
+
+}
