@@ -290,5 +290,18 @@ MOBILE
         height:32px;
         font-size:12px;
     }
-
+.user-item img.user-avatar{
+    width:45px !important;
+    height:45px !important;
+    min-width:45px;
+    max-width:45px;
+    border-radius:50%;
+    object-fit:cover;
+}
+.user-item img.user-avatar{
+    width:40px !important;
+    height:40px !important;
+}
+.verified-badge:hover .verified-popup{
+    display:none !important;
 }
