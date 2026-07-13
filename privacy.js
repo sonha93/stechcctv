@@ -224,57 +224,42 @@ function bindEvents(){
 
 function updateDepend(){
 
-    // ======================
-    // NHẮN TIN
-    // ======================
 
-    if(!controls.allowMessage.checked){
+    // Ẩn hồ sơ
 
-        controls.messageRequest.disabled = true;
+    if(
+        controls.hideProfile &&
+        controls.hideProfile.checked
+    ){
 
-        controls.limitThreeMessages.disabled = true;
+        if(controls.storyFriendOnly){
 
-        return;
+            controls.storyFriendOnly.disabled = true;
+
+        }
+
+    }
+    else{
+
+        if(controls.storyFriendOnly){
+
+            controls.storyFriendOnly.disabled = false;
+
+        }
 
     }
 
-    controls.messageRequest.disabled = false;
 
-    if(!controls.messageRequest.checked){
+    // Tin nhắn
 
-        controls.limitThreeMessages.disabled = true;
+    if(
+        controls.friendOnlyMessage &&
+        controls.limitMessage
+    ){
 
-    }else{
-
-        controls.limitThreeMessages.disabled = false;
+        controls.limitMessage.disabled = false;
 
     }
 
-}
-// tài khoản riêng tư
-
-if(!controls.privateAccount.checked){
-
-    controls.showFollow.disabled = false;
-
-}else{
-
-    controls.showFollow.disabled = false;
-
-}
-
-// nếu ẩn profile
-
-if(!controls.showProfile.checked){
-
-    controls.showStory.disabled = true;
-
-    controls.showVideos.disabled = true;
-
-}else{
-
-    controls.showStory.disabled = false;
-
-    controls.showVideos.disabled = false;
 
 }
