@@ -29,7 +29,21 @@ const db = getFirestore(app);
 
 const params = new URLSearchParams(location.search);
 
-const profileUid = params.get("uid");
+let profileUid = params.get("uid");
+
+onAuthStateChanged(auth, user => {
+
+    if (!profileUid && user) {
+        profileUid = user.uid;
+        loadUsers();
+        return;
+    }
+
+    if (profileUid) {
+        loadUsers();
+    }
+
+});
 const type = params.get("type") || "followers";
 
 const pageTitle = document.getElementById("pageTitle");
@@ -49,11 +63,7 @@ document.getElementById("backBtn").onclick = () => history.back();
 
 let allUsers = [];
 
-onAuthStateChanged(auth, async () => {
 
-    await loadUsers();
-
-});
 async function loadUsers(){
 
     loading.style.display = "block";
