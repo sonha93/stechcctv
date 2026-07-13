@@ -44,10 +44,14 @@ await notifyRef.set({
 
     userId: targetUid,
     receiverId: targetUid,
+
     senderId: myUid,
     requestId: requestId,
+
     type: "follow_request",
-    read:false,
+
+    read: false,
+
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
 });
