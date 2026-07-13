@@ -471,3 +471,28 @@ if (closeSettings) {
     };
 
 }
+const blockedBtn = document.getElementById("blockedBtn");
+const blockedPage = document.getElementById("blockedPage");
+const closeBlockedPage = document.getElementById("closeBlockedPage");
+
+if (blockedBtn && blockedPage) {
+
+    blockedBtn.onclick = async () => {
+
+        blockedPage.style.display = "block";
+
+        await loadBlockedUsers();
+
+    };
+
+}
+
+if (closeBlockedPage && blockedPage) {
+
+    closeBlockedPage.onclick = () => {
+
+        blockedPage.style.display = "none";
+
+    };
+
+}
