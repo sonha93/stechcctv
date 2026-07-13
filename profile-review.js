@@ -1171,25 +1171,6 @@ alert("Đăng story thành công");
 
 loadStories();
 };   
-const privacySnap = await getDoc(
-    doc(db,"users",profileUid,"settings","privacy")
-);
-
-if(privacySnap.exists()){
-
-    const privacy = privacySnap.data();
-
-    if(
-        privacy.showStory === false &&
-        auth.currentUser?.uid !== profileUid
-    ){
-
-        storyBar.innerHTML="";
-        return;
-
-    }
-
-}
 async function loadStories(){
 const privacySnap = await getDoc(
     doc(db,"users",profileUid,"settings","privacy")
@@ -1290,14 +1271,13 @@ if(
 
 if(
     s.privacy === "friends" &&
-    (!auth.currentUser ||
-    auth.currentUser.uid !== profileUid)
+    auth.currentUser?.uid !== s.uid
 ){
 
-    const friend = await isFriend(profileUid);
+    const friend = await isFriend(s.uid);
 
     if(!friend){
-      continue;
+        continue;
     }
 
 }
