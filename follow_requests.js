@@ -16,17 +16,15 @@ export async function sendFollowRequest(targetUid){
     if(myUid === targetUid) return false;
 
     const old = await db
-    .collection("follow_requests")
-    .where("from","==",myUid)
-    .where("to","==",targetUid)
-    .where("status","==","pending")
-    .get();
+        .collection("follow_requests")
+        .where("from","==",myUid)
+        .where("to","==",targetUid)
+        .where("status","==","pending")
+        .get();
 
-    if(!old.empty){
-        return false;
-    }
+    if(!old.empty) return false;
 
-    await db.collection("follow_requests").add({
+    const requestRef = await db.collection("follow_requests").add({
 
         from: myUid,
         to: targetUid,
@@ -35,18 +33,19 @@ export async function sendFollowRequest(targetUid){
 
     });
 
-   await db.collection("notifications").add({
+    await db.collection("notifications").add({
 
-    receiverId: targetUid,
-    senderId: myUid,
-    type: "follow_request",
-    read:false,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        receiverId: targetUid,
+        senderId: myUid,
+        requestId: requestRef.id,
+        type: "follow_request",
+        read: false,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
-});
+    });
+
     return true;
 }
-
 // ================================
 // DANH SÁCH LỜI MỜI
 // ================================
