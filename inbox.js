@@ -42,7 +42,7 @@ function listenNotificationBadge() {
 
     const q = query(
         collection(db, "notifications"),
-        where("receiverId", "==", currentUser.uid)
+        where("userId", "==", currentUser.uid),
         orderBy("createdAt", "desc")
     );
 
@@ -179,10 +179,10 @@ function loadInbox(){
         collection(db,"notifications"),
 
         where(
-    "receiverId",
-    "==",
-    currentUser.uid
-)
+            "userId",
+            "==",
+            currentUser.uid
+        ),
 
         orderBy(
             "createdAt",
@@ -226,42 +226,6 @@ function loadInbox(){
         snap.forEach(docSnap=>{
 
             const n=docSnap.data();
-            if(n.type === "follow_request"){
-
-    list.innerHTML += `
-
-    <div class="notifyItem">
-
-        <div class="notifyLeft">
-            <div class="notifyStatus">
-                👤
-            </div>
-        </div>
-
-
-        <div class="notifyContent">
-
-            <div class="notifyTitle">
-                Có lời mời theo dõi mới
-            </div>
-
-            <div class="notifyMessage">
-                Một người dùng muốn theo dõi bạn
-            </div>
-
-            <div class="notifyTime">
-                ${timeAgo(n.createdAt)}
-            </div>
-
-        </div>
-
-    </div>
-
-    `;
-
-    return;
-
-}
                if (!n.read) unreadCount++; 
             const image =
                 n.image ||
