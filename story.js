@@ -103,7 +103,7 @@ uid:user.uid,
 video:data.secure_url,
 
 likes: [],
-
+privacy:"public",
 createdAt:now,
 
 expiresAt: firebase.firestore.Timestamp.fromDate(expire)
@@ -174,10 +174,40 @@ if (auth.currentUser) {
         return;
     }
 
-    const stories = snap.docs.map(doc=>({
-        id:doc.id,
-        ...doc.data()
-    }));
+    const stories = snap.docs
+.filter(doc=>{
+
+    const s = doc.data();
+
+
+    // CHỦ STORY LUÔN XEM ĐƯỢC
+    if(auth.currentUser?.uid === uid){
+        return true;
+    }
+
+
+    // RIÊNG TƯ
+    if(s.privacy === "private"){
+        return false;
+    }
+
+
+    // BẠN BÈ
+    if(s.privacy === "friends"){
+
+        return false; 
+        // tạm thời khóa, lát thêm check bạn bè
+
+    }
+
+
+    return true;
+
+})
+.map(doc=>({
+    id:doc.id,
+    ...doc.data()
+}));
 
     let index = 0;
 
@@ -189,7 +219,14 @@ if (auth.currentUser) {
    function render(){
 
     const s = stories[index];
-
+if(
+    s.privacy === "private" &&
+    auth.currentUser?.uid !== uid
+){
+    box.remove();
+    alert("Story này đang riêng tư");
+    return;
+}
  if(auth.currentUser?.uid === uid){
 
     showViewerFly(s.id);
@@ -564,17 +601,59 @@ if (menuBtn && auth.currentUser?.uid === uid) {
 
     menuBtn.onclick = async () => {
 
-        if (!confirm("Xóa story này?")) return;
 
-       await db.collection("stories")
+const choice = prompt(
+"Quyền riêng tư:\n1 Công khai\n2 Bạn bè\n3 Riêng tư\n4 Xóa"
+);
+
+
+if(choice==="1"){
+
+await db.collection("stories")
+.doc(s.id)
+.update({
+privacy:"public"
+});
+
+}
+
+
+if(choice==="2"){
+
+await db.collection("stories")
+.doc(s.id)
+.update({
+privacy:"friends"
+});
+
+}
+
+
+if(choice==="3"){
+
+await db.collection("stories")
+.doc(s.id)
+.update({
+privacy:"private"
+});
+
+}
+
+
+if(choice==="4"){
+
+await db.collection("stories")
 .doc(s.id)
 .delete();
 
-        box.remove();
+}
 
-        loadStories();
 
-    };
+box.remove();
+
+loadStories();
+
+};
 
 } else if (menuBtn) {
 
@@ -723,9 +802,21 @@ const showed = {};
 for (const doc of snap.docs) {
 
     const s = doc.data();
-// Không phải bạn bè thì bỏ qua
-if (!friendIds[s.uid]) {
+// KIỂM TRA QUYỀN STORY
+
+if(s.privacy === "private" &&
+currentUser.uid !== s.uid){
+
     continue;
+
+}
+
+
+if(s.privacy === "friends" &&
+!friendIds[s.uid]){
+
+    continue;
+
 }
     // ===========================
     // STORY HẾT 24H -> XÓA LUÔN
