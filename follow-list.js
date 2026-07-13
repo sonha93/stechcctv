@@ -131,62 +131,64 @@ async function renderUsers(list){
 
         let buttonHtml = "";
 
-       if(auth.currentUser && auth.currentUser.uid !== u.uid){
+      if(auth.currentUser && auth.currentUser.uid !== u.uid){
 
     const friend = await isFriend(u.uid);
     const following = await isFollowing(u.uid);
     const pending = await hasPendingFollowRequest(u.uid);
 
-    });
-
     if(friend){
 
         buttonHtml = `
-        <button
-        class="follow-btn friend"
-        data-uid="${u.uid}">
+        <button class="follow-btn friend" data-uid="${u.uid}">
             Bạn bè
         </button>
         `;
 
-    }
-
-    else if(following){
+    }else if(following){
 
         buttonHtml = `
-        <button
-        class="follow-btn following"
-        data-uid="${u.uid}">
+        <button class="follow-btn following" data-uid="${u.uid}">
             Đã follow
         </button>
         `;
 
-    }
-
-    else if(pending){
+    }else if(pending){
 
         buttonHtml = `
-        <button
-        class="follow-btn request"
-        data-uid="${u.uid}">
+        <button class="follow-btn request" data-uid="${u.uid}">
             Đã gửi
         </button>
         `;
 
-    }
-
-    else{
+    }else{
 
         buttonHtml = `
-        <button
-        class="follow-btn follow"
-        data-uid="${u.uid}">
+        <button class="follow-btn follow" data-uid="${u.uid}">
             Follow
         </button>
         `;
 
     }
 
+}
+    }else if(pending){
+
+        buttonHtml = `
+        <button class="follow-btn request" data-uid="${u.uid}">
+            Đã gửi
+        </button>
+        `;
+
+    }else{
+
+        buttonHtml = `
+        <button class="follow-btn follow" data-uid="${u.uid}">
+            Follow
+        </button>
+        `;
+
+    }
 }
         userList.insertAdjacentHTML(
             "beforeend",
