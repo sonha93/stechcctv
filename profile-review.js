@@ -1244,7 +1244,7 @@ if(
     s.privacy === "private" &&
     auth.currentUser?.uid !== profileUid
 ){
-    return;
+    continue;
 }
 
 
@@ -1335,10 +1335,38 @@ if(blocked){
     );
 
     if(!snap.exists()) return;
-
+    
     const s = snap.data();
-    if(auth.currentUser){
+    // CHECK QUYỀN STORY
 
+if(
+    s.privacy === "private" &&
+    auth.currentUser?.uid !== s.uid
+){
+
+    alert("Story này đang riêng tư");
+    return;
+
+}
+
+
+if(
+    s.privacy === "friends" &&
+    auth.currentUser?.uid !== s.uid
+){
+
+    const friend = await isFriend(s.uid);
+
+    if(!friend){
+
+        alert("Chỉ bạn bè mới xem được story này");
+        return;
+
+    }
+
+}
+    if(auth.currentUser){
+    
     await updateDoc(
         doc(db,"profile_stories",id),
         {
