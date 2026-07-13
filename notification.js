@@ -36,12 +36,29 @@ async function loadNotifications(){
     console.log("UID:", auth.currentUser.uid);
     list.innerHTML = "";
 
-    const snap = await db
+    let snap;
+
+try{
+
+    snap = await db
         .collection("notifications")
         .where("receiverId","==",auth.currentUser.uid)
         .orderBy("createdAt","desc")
         .get();
 
+}catch(e){
+
+    console.error("NOTIFICATION QUERY:", e);
+
+    list.innerHTML = `
+        <div class="notify-empty">
+            ${e.message}
+        </div>
+    `;
+
+    return;
+
+}
     if(snap.empty){
         list.innerHTML = `<div class="notify-empty">Chưa có thông báo</div>`;
         return;
