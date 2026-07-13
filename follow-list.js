@@ -137,10 +137,6 @@ async function renderUsers(list){
     const following = await isFollowing(u.uid);
     const pending = await hasPendingFollowRequest(u.uid);
 
-    console.log("DEBUG:", u.uid, {
-        friend,
-        following,
-        pending
     });
 
     if(friend){
