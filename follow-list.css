@@ -315,3 +315,11 @@ MOBILE
     border-radius:50%;
     object-fit:cover;
 }
+.follow-list-avatar{
+    width:44px !important;
+    height:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    border-radius:50%;
+    object-fit:cover;
+    flex-shrink:0;
