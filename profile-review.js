@@ -402,6 +402,41 @@ followBtn.onclick = async () => {
 };
 
 messageBtn.onclick = async () => {
+messageBtn.onclick = async () => {
+
+    if (!auth.currentUser) {
+        alert("Bạn cần đăng nhập");
+        return;
+    }
+
+
+    // ==========================
+    // CHECK QUYỀN NHẮN TIN
+    // ==========================
+
+    const privacySnap = await getDoc(
+        doc(db,"users",profileUid,"settings","privacy")
+    );
+
+
+    if(privacySnap.exists()){
+
+        const privacy = privacySnap.data();
+
+
+        if(
+            privacy.allowMessage === false &&
+            auth.currentUser.uid !== profileUid
+        ){
+
+            alert("Người dùng không cho phép nhận tin nhắn");
+
+            return;
+
+        }
+
+    }
+
 
     if (!auth.currentUser) {
         alert("Bạn cần đăng nhập");
@@ -455,6 +490,23 @@ messageBtn.onclick = async () => {
 document
 .getElementById("backBtn")
 .onclick=()=>history.back();
+// ==========================
+// SETTINGS PAGE
+// ==========================
+
+const menuBtn = document.getElementById("menuBtn");
+const settingsPage = document.getElementById("settingsPage");
+const closeSettings = document.getElementById("closeSettings");
+
+menuBtn.onclick = () => {
+    settingsPage.classList.add("active");
+    document.body.style.overflow = "hidden";
+};
+
+closeSettings.onclick = () => {
+    settingsPage.classList.remove("active");
+    document.body.style.overflow = "";
+};
 // ===========================
 // TAB
 // ===========================
@@ -1453,3 +1505,179 @@ document.getElementById("closeFollowList").onclick=()=>{
     .classList.remove("active");
 
 };
+async function loadFollowList(type){
+
+    const box =
+    document.getElementById("followListContent");
+
+
+    box.innerHTML = "Đang tải...";
+
+
+    const ref = collection(
+        db,
+        "users",
+        profileUid,
+        type
+    );
+
+
+    const snap = await getDocs(ref);
+
+
+    box.innerHTML="";
+
+
+    if(snap.empty){
+
+        box.innerHTML =
+        `
+        <div style="
+        text-align:center;
+        padding:30px;
+        color:#777;
+        ">
+        Chưa có dữ liệu
+        </div>
+        `;
+
+        return;
+    }
+
+
+    for(const item of snap.docs){
+
+
+        const uid = item.id;
+
+
+        const userSnap =
+        await getDoc(
+            doc(db,"users",uid)
+        );
+
+
+        if(!userSnap.exists()) continue;
+
+
+        const u=userSnap.data();
+
+
+        box.innerHTML +=
+        `
+        <div class="follow-user">
+
+            <img src="
+            ${u.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}
+            ">
+
+            <span>
+            ${u.name || "Người dùng"}
+            </span>
+
+        </div>
+        `;
+
+    }
+
+}
+// ==========================
+// SETTINGS BUTTONS
+// ==========================
+
+document.getElementById("accountBtn").onclick = () => {
+    location.href = "edit-profile.html";
+};
+
+document.getElementById("securityBtn").onclick = () => {
+    location.href = "security.html";
+};
+
+document.getElementById("deviceBtn").onclick = () => {
+    location.href = "devices.html";
+};
+
+document.getElementById("privateBtn").onclick = () => {
+    location.href = "private-account.html";
+};
+
+document.getElementById("blockedBtn").onclick = () => {
+
+    const list = document.getElementById("blockedList");
+
+    if (!list) {
+        alert("Không tìm thấy danh sách người đã chặn.");
+        return;
+    }
+
+    list.style.display = "block";
+
+    loadBlockedUsers();
+
+};
+
+document.getElementById("commentSetting").onclick = () => {
+    location.href = "comment-settings.html";
+};
+
+document.getElementById("messageSetting").onclick = () => {
+    location.href = "message-settings.html";
+};
+
+document.getElementById("mentionSetting").onclick = () => {
+    location.href = "mention-settings.html";
+};
+
+document.getElementById("logoutBtn").onclick = async () => {
+
+    if (!confirm("Đăng xuất?")) return;
+
+    await auth.signOut();
+
+    location.href = "index.html";
+};
+async function loadBlockedUsers(){
+
+    const list = document.getElementById("blockedList");
+
+    if(!list) return;
+
+    list.innerHTML = "Đang tải...";
+
+    const snap = await getDocs(
+        collection(db,"users",auth.currentUser.uid,"blocked")
+    );
+
+    list.innerHTML = "";
+
+    if(snap.empty){
+        list.innerHTML = "<div>Chưa chặn ai.</div>";
+        return;
+    }
+
+    for(const item of snap.docs){
+
+        const uid = item.id;
+
+        const userSnap = await getDoc(
+            doc(db,"users",uid)
+        );
+
+        if(!userSnap.exists()) continue;
+
+        const u = userSnap.data();
+
+        list.innerHTML += `
+            <div class="blocked-item">
+                <img
+                    src="${u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}"
+                    width="40"
+                    height="40"
+                    style="border-radius:50%;margin-right:10px">
+
+                <span>${u.name || "Người dùng"}</span>
+            </div>
+        `;
+    }
+
+}
