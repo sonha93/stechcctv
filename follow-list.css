@@ -303,8 +303,6 @@ MOBILE
     width:40px !important;
     height:40px !important;
 }
-.verified-badge:hover .verified-popup{
-    display:none !important;
 }
 .notification img,
 .notification-avatar{
@@ -323,3 +321,7 @@ MOBILE
     border-radius:50%;
     object-fit:cover;
     flex-shrink:0;
+}
+}
+.verified-badge:hover .verified-popup{
+    display:none !important;
