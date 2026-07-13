@@ -686,13 +686,6 @@ if(type==="orders"){
     }
 
     grid.innerHTML = "";
-    const block = auth.currentUser
-    ? await isBlocked(auth.currentUser.uid, profileUid)
-    : { iBlocked:false, blockedMe:false };
-
-if(block.iBlocked || block.blockedMe){
-    return;
-}
     const snap = await getDocs(
         query(
             collection(db,"orders"),
@@ -1241,7 +1234,7 @@ storyBar.style.display = "";
         )
     );
 
-    snap.forEach(docSnap=>{
+ for(const docSnap of snap.docs){
 
         const s = docSnap.data();
 
@@ -1305,7 +1298,7 @@ if (video) {
         video.play().catch(() => {});
     };
 }
-    });
+   }
 
 }
 const storyViewer = document.getElementById("storyViewer");
@@ -1451,56 +1444,73 @@ else{
     }
 
 };
-const snap = await getDoc(
-    doc(db,"profile_stories",currentStoryId)
-);
 
-if(snap.exists()){
+storyMore.onclick = async ()=>{
 
-    const s = snap.data();
+    if(!currentStoryId) return;
+
 
     const choice = prompt(
 `Quyền riêng tư story:
 
 1 - Công khai
 2 - Bạn bè
-3 - Riêng tư`
+3 - Riêng tư
+4 - Xóa story`
     );
 
 
-    let privacy="public";
+    if(choice==="1"){
+
+        await updateDoc(
+            doc(db,"profile_stories",currentStoryId),
+            {
+                privacy:"public"
+            }
+        );
+
+    }
+
 
     if(choice==="2"){
-        privacy="friends";
+
+        await updateDoc(
+            doc(db,"profile_stories",currentStoryId),
+            {
+                privacy:"friends"
+            }
+        );
+
     }
+
 
     if(choice==="3"){
-        privacy="private";
+
+        await updateDoc(
+            doc(db,"profile_stories",currentStoryId),
+            {
+                privacy:"private"
+            }
+        );
+
     }
 
 
-    await updateDoc(
-        doc(db,"profile_stories",currentStoryId),
-        {
-            privacy:privacy
-        }
-    );
+    if(choice==="4"){
 
-}
-storyMore.onclick = async ()=>{
+        if(!confirm("Xóa story này?")) return;
 
-    if(!currentStoryId) return;
+        await deleteDoc(
+            doc(db,"profile_stories",currentStoryId)
+        );
 
-    if(!confirm("Xóa story này?")) return;
+        storyViewer.classList.remove("active");
 
-   await deleteDoc(
-    doc(db,"profile_stories",currentStoryId)
-);
+        storyVideo.pause();
+        storyVideo.src="";
 
-    storyViewer.classList.remove("active");
+    }
 
-    storyVideo.pause();
-    storyVideo.src="";
 
     loadStories();
 
