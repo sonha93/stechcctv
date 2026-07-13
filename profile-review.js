@@ -1601,3 +1601,30 @@ document.getElementById("logoutBtn").onclick = async () => {
 
     location.href = "index.html";
 };
+async function loadBlockedUsers(){
+
+    const list = document.getElementById("blockedList");
+
+    if(!list) return;
+
+    list.innerHTML = "Đang tải...";
+
+    const snap = await getDocs(
+        collection(db,"users",auth.currentUser.uid,"blocked")
+    );
+
+    list.innerHTML="";
+
+    snap.forEach(doc=>{
+
+        const data = doc.data();
+
+        list.innerHTML += `
+        <div class="blocked-item">
+            ${data.name || "Người dùng"}
+        </div>
+        `;
+
+    });
+
+}
