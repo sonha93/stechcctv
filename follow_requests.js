@@ -15,19 +15,18 @@ export async function sendFollowRequest(targetUid){
 
     if(myUid === targetUid) return false;
 
-    const requestId = `${myUid}_${targetUid}`;
+    const old = await db
+    .collection("follow_requests")
+    .where("from","==",myUid)
+    .where("to","==",targetUid)
+    .where("status","==","pending")
+    .get();
 
-    const requestRef = db
-        .collection("follow_requests")
-        .doc(requestId);
-
-    const requestSnap = await requestRef.get();
-
-    if(requestSnap.exists){
+    if(!old.empty){
         return false;
     }
 
-    await requestRef.set({
+    await db.collection("follow_requests").add({
 
         from: myUid,
         to: targetUid,
@@ -36,28 +35,18 @@ export async function sendFollowRequest(targetUid){
 
     });
 
-   const notifyRef = db
-    .collection("notifications")
-    .doc(requestId);
+   await db.collection("notifications").add({
 
-await notifyRef.set({
-
-    userId: targetUid,
     receiverId: targetUid,
-
     senderId: myUid,
-    requestId: requestId,
-
     type: "follow_request",
-
-    read: false,
-
+    read:false,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
 });
     return true;
-
 }
+
 // ================================
 // DANH SÁCH LỜI MỜI
 // ================================
@@ -134,9 +123,7 @@ export async function acceptFollowRequest(requestId){
     );
 
     batch.delete(requestRef);
-    batch.delete(
-    db.collection("notifications").doc(requestId)
-);
+
     await batch.commit();
 
 }
@@ -146,13 +133,10 @@ export async function acceptFollowRequest(requestId){
 
 export async function rejectFollowRequest(requestId){
 
-    await db.collection("follow_requests")
-        .doc(requestId)
-        .delete();
-
-    await db.collection("notifications")
-        .doc(requestId)
-        .delete();
+    await db
+    .collection("follow_requests")
+    .doc(requestId)
+    .delete();
 
 }
 
@@ -164,23 +148,19 @@ export async function cancelFollowRequest(targetUid){
 
     if(!auth.currentUser) return;
 
-    const myUid = auth.currentUser.uid;
+    const snap = await db
+    .collection("follow_requests")
+    .where("from","==",auth.currentUser.uid)
+    .where("to","==",targetUid)
+    .where("status","==","pending")
+    .get();
 
-    const requestId = `${myUid}_${targetUid}`;
-
-    await db
-        .collection("follow_requests")
-        .doc(requestId)
-        .delete()
-        .catch(()=>{});
-
-    await db
-        .collection("notifications")
-        .doc(requestId)
-        .delete()
-        .catch(()=>{});
+    for(const doc of snap.docs){
+        await doc.ref.delete();
+    }
 
 }
+
 // ================================
 // ĐÃ GỬI LỜI MỜI ?
 // ================================
@@ -189,16 +169,17 @@ export async function hasPendingFollowRequest(targetUid){
 
     if(!auth.currentUser) return false;
 
-    const requestId = `${auth.currentUser.uid}_${targetUid}`;
-
     const snap = await db
-        .collection("follow_requests")
-        .doc(requestId)
-        .get();
+    .collection("follow_requests")
+    .where("from","==",auth.currentUser.uid)
+    .where("to","==",targetUid)
+    .where("status","==","pending")
+    .get();
 
-    return snap.exists;
+    return !snap.empty;
 
 }
+
 // ================================
 // ĐÃ FOLLOW ?
 // ================================
