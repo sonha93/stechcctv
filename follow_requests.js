@@ -36,26 +36,20 @@ export async function sendFollowRequest(targetUid){
 
     });
 
-    const notifyRef = db
-        .collection("notifications")
-        .doc(requestId);
+   const notifyRef = db
+    .collection("notifications")
+    .doc(requestId);
 
-    const notifySnap = await notifyRef.get();
+await notifyRef.set({
 
-    if(!notifySnap.exists){
+    receiverId: targetUid,
+    senderId: myUid,
+    requestId: requestId,
+    type: "follow_request",
+    read: false,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
-        await notifyRef.set({
-
-            receiverId: targetUid,
-            senderId: myUid,
-            requestId: requestId,
-            type: "follow_request",
-            read: false,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-
-        });
-
-    }
+});
 
     return true;
 
