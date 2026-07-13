@@ -121,7 +121,17 @@ blockState = await isBlocked(
 
 const blocked =
 blockState.iBlocked || blockState.blockedMe;
-if(blocked){
+        const privacySnap = await db
+.collection("users")
+.doc(otherUid)
+.collection("settings")
+.doc("privacy")
+.get();
+
+const messageDisabled =
+privacySnap.exists &&
+privacySnap.data().allowMessage === false;
+if(blocked || messageDisabled){
 
     if(messageInput)
         messageInput.style.display = "none";
@@ -149,8 +159,7 @@ const chatInput = document.querySelector(".chat-input");
 if(chatInput){
 
     chatInput.style.display =
-    blocked ? "none" : "flex";
-
+ (blocked || messageDisabled) ? "none" : "flex";
 }
 if(chatTitle){
 
