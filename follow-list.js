@@ -33,7 +33,6 @@ const params = new URLSearchParams(location.search);
 const type = params.get("type") || "followers";
 
 let profileUid = params.get("uid");
-const type = params.get("type") || "followers";
 
 
 const pageTitle = document.getElementById("pageTitle");
@@ -49,8 +48,11 @@ if(pageTitle){
     : "Follower";
 }
 
-document.getElementById("backBtn").onclick = () => history.back();
+const backBtn = document.getElementById("backBtn");
 
+if(backBtn){
+    backBtn.onclick = () => history.back();
+}
 let allUsers = [];
 
 onAuthStateChanged(auth, async (user)=>{
