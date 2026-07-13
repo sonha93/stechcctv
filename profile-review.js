@@ -564,30 +564,7 @@ grid.style.display = "";
     // --------------------
 
     if(type==="videos"){
-        
-const privacySnap = await getDoc(
-    doc(db,"users",profileUid,"settings","privacy")
-);
-
-
-if(privacySnap.exists()){
-
-    const privacy = privacySnap.data();
-
-
-    if(
-        privacy.showVideos === false &&
-        auth.currentUser?.uid !== profileUid
-    ){
-
-        grid.innerHTML =
-        "<p style='padding:40px;text-align:center'>Người dùng đã tắt xem video.</p>";
-
-        return;
-
-    }
-
-}
+    
         const q=query(
 
             collection(db,"videos"),
@@ -1320,7 +1297,7 @@ if(
     const friend = await isFriend(profileUid);
 
     if(!friend){
-        return;
+      continue;
     }
 
 }
