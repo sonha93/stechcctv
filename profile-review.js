@@ -402,41 +402,6 @@ followBtn.onclick = async () => {
 };
 
 messageBtn.onclick = async () => {
-messageBtn.onclick = async () => {
-
-    if (!auth.currentUser) {
-        alert("Bạn cần đăng nhập");
-        return;
-    }
-
-
-    // ==========================
-    // CHECK QUYỀN NHẮN TIN
-    // ==========================
-
-    const privacySnap = await getDoc(
-        doc(db,"users",profileUid,"settings","privacy")
-    );
-
-
-    if(privacySnap.exists()){
-
-        const privacy = privacySnap.data();
-
-
-        if(
-            privacy.allowMessage === false &&
-            auth.currentUser.uid !== profileUid
-        ){
-
-            alert("Người dùng không cho phép nhận tin nhắn");
-
-            return;
-
-        }
-
-    }
-
 
     if (!auth.currentUser) {
         alert("Bạn cần đăng nhập");
@@ -1602,18 +1567,7 @@ document.getElementById("privateBtn").onclick = () => {
 };
 
 document.getElementById("blockedBtn").onclick = () => {
-
-    const list = document.getElementById("blockedList");
-
-    if (!list) {
-        alert("Không tìm thấy danh sách người đã chặn.");
-        return;
-    }
-
-    list.style.display = "block";
-
-    loadBlockedUsers();
-
+    location.href = "blocked-users.html";
 };
 
 document.getElementById("commentSetting").onclick = () => {
@@ -1636,48 +1590,3 @@ document.getElementById("logoutBtn").onclick = async () => {
 
     location.href = "index.html";
 };
-async function loadBlockedUsers(){
-
-    const list = document.getElementById("blockedList");
-
-    if(!list) return;
-
-    list.innerHTML = "Đang tải...";
-
-    const snap = await getDocs(
-        collection(db,"users",auth.currentUser.uid,"blocked")
-    );
-
-    list.innerHTML = "";
-
-    if(snap.empty){
-        list.innerHTML = "<div>Chưa chặn ai.</div>";
-        return;
-    }
-
-    for(const item of snap.docs){
-
-        const uid = item.id;
-
-        const userSnap = await getDoc(
-            doc(db,"users",uid)
-        );
-
-        if(!userSnap.exists()) continue;
-
-        const u = userSnap.data();
-
-        list.innerHTML += `
-            <div class="blocked-item">
-                <img
-                    src="${u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}"
-                    width="40"
-                    height="40"
-                    style="border-radius:50%;margin-right:10px">
-
-                <span>${u.name || "Người dùng"}</span>
-            </div>
-        `;
-    }
-
-}
