@@ -141,3 +141,34 @@ function bindButtons(){
     });
 
 }
+// ================================
+// POPUP OPEN / CLOSE
+// ================================
+
+const notificationPopup =
+document.getElementById("notificationPopup");
+
+
+window.openNotification = function(){
+
+    if(notificationPopup){
+
+        notificationPopup.style.display = "flex";
+
+    }
+
+    loadNotifications();
+
+};
+
+
+
+window.closeNotification = function(){
+
+    if(notificationPopup){
+
+        notificationPopup.style.display = "none";
+
+    }
+
+};
