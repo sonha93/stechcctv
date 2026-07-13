@@ -455,6 +455,23 @@ messageBtn.onclick = async () => {
 document
 .getElementById("backBtn")
 .onclick=()=>history.back();
+// ==========================
+// SETTINGS PAGE
+// ==========================
+
+const menuBtn = document.getElementById("menuBtn");
+const settingsPage = document.getElementById("settingsPage");
+const closeSettings = document.getElementById("closeSettings");
+
+menuBtn.onclick = () => {
+    settingsPage.classList.add("active");
+    document.body.style.overflow = "hidden";
+};
+
+closeSettings.onclick = () => {
+    settingsPage.classList.remove("active");
+    document.body.style.overflow = "";
+};
 // ===========================
 // TAB
 // ===========================
@@ -1529,3 +1546,47 @@ async function loadFollowList(type){
     }
 
 }
+// ==========================
+// SETTINGS BUTTONS
+// ==========================
+
+document.getElementById("accountBtn").onclick = () => {
+    location.href = "edit-profile.html";
+};
+
+document.getElementById("securityBtn").onclick = () => {
+    location.href = "security.html";
+};
+
+document.getElementById("deviceBtn").onclick = () => {
+    location.href = "devices.html";
+};
+
+document.getElementById("privateBtn").onclick = () => {
+    location.href = "private-account.html";
+};
+
+document.getElementById("blockedBtn").onclick = () => {
+    location.href = "blocked-users.html";
+};
+
+document.getElementById("commentSetting").onclick = () => {
+    location.href = "comment-settings.html";
+};
+
+document.getElementById("messageSetting").onclick = () => {
+    location.href = "message-settings.html";
+};
+
+document.getElementById("mentionSetting").onclick = () => {
+    location.href = "mention-settings.html";
+};
+
+document.getElementById("logoutBtn").onclick = async () => {
+
+    if (!confirm("Đăng xuất?")) return;
+
+    await auth.signOut();
+
+    location.href = "index.html";
+};
