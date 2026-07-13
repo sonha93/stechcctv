@@ -1220,51 +1220,37 @@ alert("Đăng story thành công");
 
 loadStories();
 };   
-async function loadStories(){
-if(!(await canViewContent("showStory"))){
+storyBar.innerHTML = "";
 
-    const storyBar = document.getElementById("storyBar");
+const isOwner =
+    auth.currentUser &&
+    auth.currentUser.uid === profileUid;
 
-    if(storyBar){
-        storyBar.innerHTML = "";
-        storyBar.style.display = "none";
-    }
+if (isOwner) {
 
-    return;
+    storyBar.innerHTML = `
+    <div class="storyItem" id="addStoryBtn">
+
+        <div class="storyAvatar mine">
+
+            <img
+            id="myStoryAvatar"
+            src="${auth.currentUser.photoURL || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
+
+            <span class="storyPlus">+</span>
+
+        </div>
+
+        <div class="storyName">Story</div>
+
+    </div>
+    `;
+
+    document.getElementById("addStoryBtn").onclick = () => {
+        storyFile.click();
+    };
+
 }
-    const storyBar = document.getElementById("storyBar");
-
-    if(!storyBar) return;
-storyBar.innerHTML = `
-<div class="storyItem" id="addStoryBtn">
-
-    <div class="storyAvatar mine">
-
-        <img
-        id="myStoryAvatar"
-        src="${auth.currentUser?.photoURL || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
-
-        <span class="storyPlus">+</span>
-
-    </div>
-
-    <div class="storyName">
-        Story
-    </div>
-
-</div>
-`;
-
-document.getElementById("addStoryBtn").onclick = () => {
-
-    if(!auth.currentUser){
-        alert("Bạn cần đăng nhập");
-        return;
-    }
-
-    storyFile.click();
-
-};
 const block = auth.currentUser
     ? await isBlocked(auth.currentUser.uid, profileUid)
     : { iBlocked:false, blockedMe:false };
