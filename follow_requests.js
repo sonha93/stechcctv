@@ -42,25 +42,15 @@ export async function sendFollowRequest(targetUid){
 
 await notifyRef.set({
 
-    userId: targetUid,          // người nhận thông báo
-
-    senderId: myUid,            // người gửi follow
-
+    userId: targetUid,
+    receiverId: targetUid,
+    senderId: myUid,
     requestId: requestId,
-
-    type:"follow_request",
-
-    title:"Lời mời theo dõi",
-
-    message:"Bạn có một lời mời theo dõi mới",
-
+    type: "follow_request",
     read:false,
-
-    createdAt:
-    firebase.firestore.FieldValue.serverTimestamp()
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
 });
-
     return true;
 
 }
