@@ -1,11 +1,43 @@
-import { auth, db } from "./firebase.js";
+import { isBlocked } from "./block.js";
+import { getVerifiedBadge } from "./verified-users.js";
+import { app, auth } from "./auth.js";
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    getDocs,
+    collection,
+    query,
+    where,
+    updateDoc,
+    deleteDoc,
+    setDoc,
+     addDoc,
+     serverTimestamp,
+    increment,
+     arrayUnion,
+     writeBatch
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+    
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+const db = getFirestore(app);
+
+ import {
+    followUser,
+    unfollowUser,
+    isFollowing
+} from "./follow.js";
 // ===== Lấy uid trên URL =====
 
 const params = new URLSearchParams(location.search);
 
 let profileUid = params.get("uid");
 
-auth.onAuthStateChanged(async user=>{
+onAuthStateChanged(auth, user => {
 
     if (!profileUid && user) {
 
@@ -13,7 +45,6 @@ auth.onAuthStateChanged(async user=>{
             `profile-review.html?uid=${user.uid}`
         );
 
-        return;
     }
 
 });
@@ -89,9 +120,7 @@ let currentStoryOwner = null;
 
 async function loadProfile() {
 
-    const snap = await getDoc(
-    doc(db,"users",profileUid)
-);
+    const snap = await getDoc(doc(db,"users",profileUid));
 
     if(!snap.exists()){
 
@@ -252,56 +281,57 @@ loadProfile();
 // HIỆN FOLLOW / EDIT
 // ===========================
 
-auth.onAuthStateChanged(async user=>{
+onAuthStateChanged(auth, async (user) => {
+if(user){
 
-    if(user){
+    const me = await getDoc(doc(db,"users",user.uid));
 
-        const me = await getDoc(
-            doc(db,"users",user.uid)
-        );
+    if(me.exists()){
 
-        if(me.exists()){
-
-            myStoryAvatar.src =
-                me.data().avatar ||
-                "https://i.ibb.co/Z1kv9nJj/logo.png";
-
-        }
+        myStoryAvatar.src =
+            me.data().avatar ||
+            "https://i.ibb.co/Z1kv9nJj/logo.png";
 
     }
 
+}
     const isOwner = user && user.uid === profileUid;
+const addStory = document.getElementById("addStoryBtn");
 
-    const addStory = document.getElementById("addStoryBtn");
+if(addStory){
 
-    if(addStory){
-        addStory.style.display = isOwner ? "" : "none";
-    }
+    addStory.style.display = isOwner ? "" : "none";
 
-    if(isOwner){
+}
+   if (isOwner) {
 
-        followBtn.style.display="none";
-        editBtn.style.display="block";
-        messageBtn.style.display="none";
+    followBtn.style.display = "none";
+    editBtn.style.display = "block";
 
-    }else{
+    // Ẩn nhắn tin khi xem chính mình
+    messageBtn.style.display = "none";
 
-        followBtn.style.display="block";
-        editBtn.style.display="none";
-        messageBtn.style.display="block";
+} else {
 
-    }
+    followBtn.style.display = "block";
+    editBtn.style.display = "none";
+
+    // Hiện nhắn tin khi xem người khác
+    messageBtn.style.display = "block";
+
+}
 
     document.querySelector('[data-tab="private"]').style.display = isOwner ? "" : "none";
     document.querySelector('[data-tab="liked"]').style.display   = isOwner ? "" : "none";
     document.querySelector('[data-tab="saved"]').style.display   = isOwner ? "" : "none";
 
-    if(user && !isOwner){
+  if (user && !isOwner) {
 
-        const following = await isFollowing(profileUid);
+    const following = await isFollowing(profileUid);
 
-        followBtn.innerHTML = following ? "Đang Follow" : "Follow";
-    }
+    followBtn.innerHTML = following ? "Đang Follow" : "Follow";
+
+}
 
 });
 
@@ -352,16 +382,14 @@ messageBtn.onclick = async () => {
     const myUid = auth.currentUser.uid;
 
     if (myUid === profileUid) return;
-const snap = await getDocs(
-    query(
-        collection(db,"conversations"),
-        where(
-            "members",
-            "array-contains",
-            myUid
+
+    const snap = await getDocs(
+        query(
+            collection(db, "conversations"),
+            where("members", "array-contains", myUid)
         )
-    )
-);
+    );
+
     let conversationId = null;
 
     snap.forEach(docSnap => {
@@ -696,9 +724,8 @@ window.openVideoMenu = async function(videoId){
 
     selectedVideoId = videoId;
 
- const snap = await getDoc(
-    doc(db,"videos",videoId)
-);
+    const snap = await getDoc(doc(db,"videos",videoId));
+
     if(snap.exists()){
 
         const v = snap.data();
@@ -738,18 +765,17 @@ privacyBtn.onclick = async function(){
 
     if(!snap.exists()) return;
 
-    const current = snap.data().status || "public";
+   const current = snap.data().status || "public";
 
-    await updateDoc(ref,{
-        status: current === "public"
-            ? "private"
-            : "public"
-    });
-
+await updateDoc(ref,{
+    status: current === "public"
+        ? "private"
+        : "public"
+});
     videoMenu.classList.remove("active");
 
     loadTab("videos");
-    loadStories();
+loadStories();
 };
 commentBtn.onclick = async function(){
 
@@ -876,10 +902,12 @@ saveNickname.onclick = async () => {
     if(value === ""){
 
         await deleteDoc(ref);
+
         // Hiện lại tên gốc
-      const userSnap = await getDoc(
-    doc(db,"users",profileUid)
-);
+        const userSnap = await getDoc(
+            doc(db,"users",profileUid)
+        );
+
         profileNameText.innerText =
             userSnap.data().name || "Người dùng";
 
@@ -965,10 +993,8 @@ storyFile.onchange = async () => {
     }
 
     const uid = auth.currentUser.uid;
-const userSnap =
-await getDoc(
-    doc(db,"users",uid)
-);
+
+    const userSnap = await getDoc(doc(db,"users",uid));
 
     if(!userSnap.exists()) return;
 
@@ -1409,10 +1435,12 @@ async function loadFollowList(type){
 
         const uid = item.id;
 
-const userSnap =
+
+        const userSnap =
         await getDoc(
             doc(db,"users",uid)
         );
+
 
         if(!userSnap.exists()) continue;
 
