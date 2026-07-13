@@ -1637,40 +1637,102 @@ stroke-linejoin="round">
 </div>
 <!-- SETTING MENU -->
 
-<div id="settingMenu">
+<div id="settingsPage">
 
-    <div class="setting-box">
+    <div class="settings-header">
 
-        <div class="setting-title">
-            Cài đặt
-        </div>
-
-
-        <div class="setting-item" id="blockedBtn">
-
+        <button id="closeSettings">
             <span class="material-symbols-outlined">
-                block
+                arrow_back
             </span>
+        </button>
 
-            Người đã chặn
+        <h2>Cài đặt & quyền riêng tư</h2>
+
+    </div>
+
+    <div class="settings-scroll">
+
+        <!-- Account -->
+
+        <div class="settings-group">
+
+            <div class="group-title">
+                Tài khoản
+            </div>
+
+            <div class="setting-item" id="accountBtn">
+                <span>Tài khoản</span>
+                <span class="material-symbols-outlined">chevron_right</span>
+            </div>
+
+            <div class="setting-item" id="securityBtn">
+                <span>Bảo mật</span>
+                <span class="material-symbols-outlined">chevron_right</span>
+            </div>
+
+            <div class="setting-item" id="deviceBtn">
+                <span>Thiết bị đăng nhập</span>
+                <span class="material-symbols-outlined">chevron_right</span>
+            </div>
 
         </div>
 
 
-        <div id="blockedPanel">
+        <div class="settings-group">
 
-            <div id="blockedList"></div>
+            <div class="group-title">
+                Hiển thị
+            </div>
+
+            <div class="setting-item" id="privateBtn">
+                <span>Tài khoản riêng tư</span>
+                <span class="material-symbols-outlined">chevron_right</span>
+            </div>
+
+            <div class="setting-item" id="blockedBtn">
+                <span>Người đã chặn</span>
+                <span class="material-symbols-outlined">chevron_right</span>
+            </div>
 
         </div>
 
 
-        <div class="setting-item" id="logoutBtn">
+        <div class="settings-group">
 
-    <span class="material-symbols-outlined">
-        logout
-    </span>
+            <div class="group-title">
+                Tương tác
+            </div>
 
-    Đăng xuất
+            <div class="setting-item" id="commentSetting">
+                <span>Bình luận</span>
+                <span class="material-symbols-outlined">chevron_right</span>
+            </div>
+
+            <div class="setting-item" id="messageSetting">
+                <span>Tin nhắn trực tiếp</span>
+                <span class="material-symbols-outlined">chevron_right</span>
+            </div>
+
+            <div class="setting-item" id="mentionSetting">
+                <span>Nhắc đến</span>
+                <span class="material-symbols-outlined">chevron_right</span>
+            </div>
+
+        </div>
+
+
+        <div class="settings-group">
+
+            <div class="setting-item logout" id="logoutBtn">
+
+                <span>Đăng xuất</span>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
