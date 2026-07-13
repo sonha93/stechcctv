@@ -152,7 +152,12 @@ if(auth.currentUser && auth.currentUser.uid !== u.uid){
 
 }
   
-                     <img
+        userList.insertAdjacentHTML(
+            "beforeend",
+            `
+            <div class="user-item">
+
+              <img
 class="follow-avatar"
 data-uid="${u.uid}"
 src="${
@@ -297,7 +302,8 @@ document.addEventListener("click",async e=>{
 });
 userList.addEventListener("click", e=>{
 
-const avatar = e.target.closest(".follow-avatar");
+  const avatar = e.target.closest(".follow-avatar");
+
     if(!avatar) return;
 
     const uid = avatar.dataset.uid;
