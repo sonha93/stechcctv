@@ -15,23 +15,37 @@ const ids = [
 
 "privateAccount",
 
-"hideProfile",
-"hideFollowList",
+"showProfile",
 
-"friendOnlyMessage",
-"limitMessage",
+"showStory",
 
-"storyFriendOnly",
+"showVideos",
 
-"showOnline",
+"showLikes",
+
+"showFollow",
+
+"allowMessage",
+
+"messageRequest",
+
+"limitThreeMessages",
+
+"allowComment",
+
+"allowLike",
+
+"allowShare",
 
 "allowMention",
 
-"allowVoiceCall",
+"showOnline",
 
-"allowVideoCall",
+"allowSearch",
 
-"searchByUsername"
+"syncContacts",
+
+"showLocation"
 
 ];
 const controls = {};
