@@ -415,7 +415,7 @@ messageBtn.onclick = async () => {
     // ==========================
 
     const privacySnap = await getDoc(
-        doc(db,"users",profileUid,"settings","privacy")
+       doc(db,"users",profileUid,"private","settings")
     );
 
 
@@ -562,7 +562,18 @@ grid.style.display = "";
     // --------------------
     // VIDEO CÔNG KHAI
     // --------------------
+const privacySnap = await getDoc(
+    doc(db, "users", profileUid, "private", "settings")
+);
 
+if (
+    privacySnap.exists() &&
+    privacySnap.data().showVideos === false &&
+    auth.currentUser?.uid !== profileUid
+) {
+    grid.innerHTML = "";
+    return;
+}
     if(type==="videos"){
     
         const q=query(
@@ -1173,7 +1184,7 @@ loadStories();
 };   
 async function loadStories(){
 const privacySnap = await getDoc(
-    doc(db,"users",profileUid,"settings","privacy")
+   doc(db,"users",profileUid,"private","settings")
 );
 
 
