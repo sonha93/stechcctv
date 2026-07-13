@@ -1613,18 +1613,36 @@ async function loadBlockedUsers(){
         collection(db,"users",auth.currentUser.uid,"blocked")
     );
 
-    list.innerHTML="";
+    list.innerHTML = "";
 
-    snap.forEach(doc=>{
+    if(snap.empty){
+        list.innerHTML = "<div>Chưa chặn ai.</div>";
+        return;
+    }
 
-        const data = doc.data();
+    for(const item of snap.docs){
+
+        const uid = item.id;
+
+        const userSnap = await getDoc(
+            doc(db,"users",uid)
+        );
+
+        if(!userSnap.exists()) continue;
+
+        const u = userSnap.data();
 
         list.innerHTML += `
-        <div class="blocked-item">
-            ${data.name || "Người dùng"}
-        </div>
-        `;
+            <div class="blocked-item">
+                <img
+                    src="${u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}"
+                    width="40"
+                    height="40"
+                    style="border-radius:50%;margin-right:10px">
 
-    });
+                <span>${u.name || "Người dùng"}</span>
+            </div>
+        `;
+    }
 
 }
