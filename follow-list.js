@@ -29,9 +29,16 @@ const db = getFirestore(app);
 
 const params = new URLSearchParams(location.search);
 
-const profileUid = params.get("uid");
+const profileUid =
+params.get("uid") ||
+auth.currentUser?.uid;
 const type = params.get("type") || "followers";
 
+if(!profileUid){
+    console.error("follow-list thiếu uid");
+    alert("Không tìm thấy người dùng");
+    throw new Error("Missing uid");
+}
 const pageTitle = document.getElementById("pageTitle");
 const loading = document.getElementById("loading");
 const empty = document.getElementById("empty");
@@ -66,15 +73,12 @@ async function loadUsers(){
 
     const snap = await getDocs(
 
-        query(
-            collection(
-                db,
-                "users",
-                profileUid,
-                type
-            ),
-            orderBy("__name__")
-        )
+        collection(
+    db,
+    "users",
+    profileUid,
+    type
+)
 
     );
 
