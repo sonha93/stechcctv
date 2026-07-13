@@ -25,10 +25,23 @@ export async function followUser(targetUid) {
 
     if (await isFollowing(targetUid)) return true;
 
-    await addDoc(collection(db, "follows"), {
+  await addDoc(collection(db, "follows"), {
+
     fromUid: auth.currentUser.uid,
     toUid: targetUid,
     createdAt: serverTimestamp()
+
+});
+
+
+await addDoc(collection(db,"notifications"),{
+
+    receiverId: targetUid,
+    senderId: auth.currentUser.uid,
+    type:"follow",
+    read:false,
+    createdAt: serverTimestamp()
+
 });
 
 
