@@ -79,32 +79,37 @@ const DEFAULT_SETTINGS = {
 
     privateAccount:false,
 
-    hideProfile:false,
+    showProfile:true,
 
-    hideFollowList:false,
+    showStory:true,
 
+    showVideos:true,
 
-    friendOnlyMessage:false,
+    showLikes:true,
 
-    limitMessage:true,
+    showFollow:true,
 
+    allowMessage:true,
 
-    storyFriendOnly:false,
+    messageRequest:true,
 
+    limitThreeMessages:false,
 
-    showOnline:true,
+    allowComment:true,
 
+    allowLike:true,
+
+    allowShare:true,
 
     allowMention:true,
 
+    showOnline:true,
 
-    allowVoiceCall:true,
+    allowSearch:true,
 
+    syncContacts:false,
 
-    allowVideoCall:true,
-
-
-    searchByUsername:true
+    showLocation:false
 
 };
 // =====================================
@@ -234,42 +239,58 @@ function bindEvents(){
 
 function updateDepend(){
 
-
-    // Ẩn hồ sơ
+    // Nếu tài khoản riêng tư bật
+    // có thể giới hạn một số hiển thị
 
     if(
-        controls.hideProfile &&
-        controls.hideProfile.checked
+        controls.privateAccount
     ){
 
-        if(controls.storyFriendOnly){
+        const privateMode =
+        controls.privateAccount.checked;
 
-            controls.storyFriendOnly.disabled = true;
+
+        if(controls.showProfile){
+
+            controls.showProfile.disabled =
+            privateMode;
+
+        }
+
+
+        if(controls.showFollow){
+
+            controls.showFollow.disabled =
+            privateMode;
 
         }
 
     }
-    else{
 
-        if(controls.storyFriendOnly){
 
-            controls.storyFriendOnly.disabled = false;
+    // Nếu không cho nhắn tin
+    // khóa yêu cầu tin nhắn
+
+    if(
+        controls.allowMessage &&
+        controls.messageRequest
+    ){
+
+        if(
+            !controls.allowMessage.checked
+        ){
+
+            controls.messageRequest.disabled = true;
+
+            controls.messageRequest.checked = false;
+
+        }
+        else{
+
+            controls.messageRequest.disabled = false;
 
         }
 
     }
-
-
-    // Tin nhắn
-
-    if(
-        controls.friendOnlyMessage &&
-        controls.limitMessage
-    ){
-
-        controls.limitMessage.disabled = false;
-
-    }
-
 
 }
