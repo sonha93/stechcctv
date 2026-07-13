@@ -322,14 +322,6 @@ MOBILE
     object-fit:cover;
     flex-shrink:0;
 }
-
-/* Ẩn popup tích xanh trong danh sách */
-.verified-popup{
-    display:none !important;
-}
-
-.verified-badge:hover .verified-popup{
-    display:none !important;
 }
 .follow-avatar{
     width:42px !important;
@@ -341,4 +333,14 @@ MOBILE
     border-radius:50% !important;
     object-fit:cover !important;
     flex-shrink:0;
+}
+
+.verified-popup{
+    display:none !important;
+}
+
+.verified-badge:hover .verified-popup{
+    display:none !important;
+}
+
 }
