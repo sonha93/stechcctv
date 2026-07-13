@@ -113,3 +113,12 @@ NOTIFICATION POPUP
     background:rgba(0,0,0,.4);
     z-index:9999;
 }
+.notify-avatar{
+    width:32px !important;
+    height:32px !important;
+    max-width:32px !important;
+    max-height:32px !important;
+    border-radius:50%;
+    object-fit:cover;
+    flex-shrink:0;
+}
