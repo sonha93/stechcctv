@@ -26,13 +26,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 const db = getFirestore(app);
 
-   import {
-    sendFollowRequest,
-    cancelFollowRequest,
-    hasPendingFollowRequest,
-    isFollowing,
-    isFriend
-} from "./follow_requests.js";
+ import {
+    followUser,
+    unfollowUser,
+    isFollowing
+} from "./follow.js";
 // ===== Lấy uid trên URL =====
 
 const params = new URLSearchParams(location.search);
@@ -327,32 +325,11 @@ if(addStory){
     document.querySelector('[data-tab="liked"]').style.display   = isOwner ? "" : "none";
     document.querySelector('[data-tab="saved"]').style.display   = isOwner ? "" : "none";
 
-   if(user && !isOwner){
+  if (user && !isOwner) {
 
-  const following = await isFollowing(profileUid);
+    const following = await isFollowing(profileUid);
 
-    const pending = await hasPendingFollowRequest(profileUid);
-
-
-    if(following){
-
-        followBtn.innerHTML = `
-        <span class="material-symbols-outlined">
-            manage_accounts
-        </span>
-        `;
-
-    }
-    else if(pending){
-
-        followBtn.innerHTML = "Đã gửi";
-
-    }
-    else{
-
-        followBtn.innerHTML = "Follow";
-
-    }
+    followBtn.innerHTML = following ? "Đang Follow" : "Follow";
 
 }
 
@@ -361,43 +338,37 @@ if(addStory){
 let followLoading = false;
 followBtn.onclick = async () => {
 
-    if (followLoading) return;
+    if (!auth.currentUser) {
+        alert("Bạn cần đăng nhập");
+        return;
+    }
 
-    followLoading = true;
     followBtn.disabled = true;
 
     try {
 
-        if (!auth.currentUser) {
-            alert("Bạn cần đăng nhập");
-            return;
+        const following = await isFollowing(profileUid);
+
+        if (following) {
+
+            await unfollowUser(profileUid);
+            followBtn.innerHTML = "Follow";
+
+        } else {
+
+            await followUser(profileUid);
+            followBtn.innerHTML = "Đang Follow";
+
         }
 
-        if (await isFriend(profileUid)) {
+    } catch (e) {
 
-    followSheet.classList.add("active");
-    return;
-
-}
-
-        if (await hasPendingFollowRequest(profileUid)) {
-
-    await cancelFollowRequest(profileUid);
-    followBtn.innerHTML = "Follow";
-
-} else {
-
-    await sendFollowRequest(profileUid);
-    followBtn.innerHTML = "Đã gửi";
-
-}
-
-    } finally {
-
-        followLoading = false;
-        followBtn.disabled = false;
+        console.error(e);
+        alert("Có lỗi xảy ra.");
 
     }
+
+    followBtn.disabled = false;
 
 };
 
@@ -988,64 +959,13 @@ editNickname.onclick = async () => {
     }, 100);
 
 };
-unfollowBtn.onclick=async()=>{
+unfollowBtn.onclick = async () => {
 
-const myUid=auth.currentUser.uid;
+    await unfollowUser(profileUid);
 
-await deleteDoc(
-doc(db,"users",myUid,"following",profileUid)
-);
+    followBtn.innerHTML = "Follow";
 
-await deleteDoc(
-doc(db,"users",profileUid,"followers",myUid)
-);
-const myFriendRef =
-doc(db,"users",myUid,"friends",profileUid);
-
-const otherFriendRef =
-doc(db,"users",profileUid,"friends",myUid);
-
-const friendSnap =
-await getDoc(myFriendRef);
-
-if(friendSnap.exists()){
-
-    await deleteDoc(myFriendRef);
-
-    await deleteDoc(otherFriendRef);
-
-    await updateDoc(
-        doc(db,"users",myUid),
-        {
-            friendCount: increment(-1)
-        }
-    );
-
-    await updateDoc(
-        doc(db,"users",profileUid),
-        {
-            friendCount: increment(-1)
-        }
-    );
-
-}
-await updateDoc(
-doc(db,"users",myUid),
-{
-followingCount:increment(-1)
-}
-);
-
-await updateDoc(
-doc(db,"users",profileUid),
-{
-followerCount:increment(-1)
-}
-);
-
-followBtn.innerHTML="Follow";
-
-followSheet.classList.remove("active");
+    followSheet.classList.remove("active");
 
 };
 addStoryBtn.onclick = ()=>{
