@@ -137,7 +137,7 @@ async function getNotifications(){
     .get();
 
     return snap.docs;
-
+}
 // ================================
 // BUTTON
 // ================================
