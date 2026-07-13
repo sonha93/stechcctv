@@ -172,24 +172,7 @@ async function renderUsers(list){
     }
 
 }
-    }else if(pending){
-
-        buttonHtml = `
-        <button class="follow-btn request" data-uid="${u.uid}">
-            Đã gửi
-        </button>
-        `;
-
-    }else{
-
-        buttonHtml = `
-        <button class="follow-btn follow" data-uid="${u.uid}">
-            Follow
-        </button>
-        `;
-
-    }
-}
+  
         userList.insertAdjacentHTML(
             "beforeend",
             `
