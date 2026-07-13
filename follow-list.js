@@ -29,9 +29,10 @@ const db = getFirestore(app);
 
 const params = new URLSearchParams(location.search);
 
-const profileUid =
-params.get("uid") ||
-auth.currentUser?.uid;
+const params = new URLSearchParams(location.search);
+const type = params.get("type") || "followers";
+
+let profileUid = params.get("uid");
 const type = params.get("type") || "followers";
 
 if(!profileUid){
@@ -56,7 +57,16 @@ document.getElementById("backBtn").onclick = () => history.back();
 
 let allUsers = [];
 
-onAuthStateChanged(auth, async () => {
+onAuthStateChanged(auth, async (user)=>{
+
+    if(!profileUid){
+        profileUid = user?.uid;
+    }
+
+    if(!profileUid){
+        console.error("Không có UID");
+        return;
+    }
 
     await loadUsers();
 
