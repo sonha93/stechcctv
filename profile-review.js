@@ -757,30 +757,18 @@ privacyBtn.onclick = async function(){
 
     if(!snap.exists()) return;
 
-  
-
-
-    if(!selectedVideoId) return;
-
-    const ref = doc(db,"videos",selectedVideoId);
-
-    const snap = await getDoc(ref);
-
-    if(!snap.exists()) return;
-
     const current = snap.data().status || "public";
 
     await updateDoc(ref,{
         status: current === "public"
-        ? "private"
-        : "public"
+            ? "private"
+            : "public"
     });
 
     videoMenu.classList.remove("active");
 
     loadTab("videos");
     loadStories();
-
 };
 commentBtn.onclick = async function(){
 
