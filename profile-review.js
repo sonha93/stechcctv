@@ -409,21 +409,7 @@ messageBtn.onclick = async () => {
         return;
     }
 
-const privacySnap = await getDoc(
-    doc(db,"users",profileUid,"settings","privacy")
-);
 
-if(privacySnap.exists()){
-
-    const privacy = privacySnap.data();
-
-    if(privacy.allowMessage === false){
-
-        alert("Người dùng đã tắt nhận tin nhắn");
-        return;
-
-    }
-}
     // ==========================
     // CHECK QUYỀN NHẮN TIN
     // ==========================
