@@ -564,7 +564,29 @@ grid.style.display = "";
     // --------------------
 
     if(type==="videos"){
+const privacySnap = await getDoc(
+    doc(db,"users",profileUid,"settings","privacy")
+);
 
+
+if(privacySnap.exists()){
+
+    const privacy = privacySnap.data();
+
+
+    if(
+        privacy.showVideos === false &&
+        auth.currentUser?.uid !== profileUid
+    ){
+
+        grid.innerHTML =
+        "<p style='padding:40px;text-align:center'>Người dùng đã tắt xem video.</p>";
+
+        return;
+
+    }
+
+}
         const q=query(
 
             collection(db,"videos"),
@@ -1172,7 +1194,28 @@ alert("Đăng story thành công");
 loadStories();
 };   
 async function loadStories(){
+const privacySnap = await getDoc(
+    doc(db,"users",profileUid,"settings","privacy")
+);
 
+
+if(privacySnap.exists()){
+
+    const privacy = privacySnap.data();
+
+
+    if(
+        privacy.showStory === false &&
+        auth.currentUser?.uid !== profileUid
+    ){
+
+        storyBar.innerHTML = "";
+
+        return;
+
+    }
+
+}
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
