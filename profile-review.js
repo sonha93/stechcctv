@@ -402,7 +402,7 @@ followBtn.onclick = async () => {
 };
 
 messageBtn.onclick = async () => {
-messageBtn.onclick = async () => {
+
 
     if (!auth.currentUser) {
         alert("Bạn cần đăng nhập");
