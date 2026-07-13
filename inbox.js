@@ -259,8 +259,8 @@ list.innerHTML += `
 
     </div>
 
- <div class="notifyItem"
-     onclick="openNotification('${docSnap.id}','${n.type}','${n.requestId}')">
+    <div class="notifyItem"
+         onclick="openOrder('${docSnap.id}','${n.orderId}')">
 
         <div class="notifyLeft">
 
