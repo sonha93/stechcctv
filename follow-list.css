@@ -330,3 +330,52 @@ MOBILE
     position:relative;
     z-index:10;
 }
+.verified-badge{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    margin-left:4px;
+    cursor:pointer;
+}
+
+.verified-popup{
+    position:absolute;
+    top:28px;
+    left:0;
+
+    display:none;
+
+    width:260px;
+
+    background:#fff;
+    border-radius:12px;
+    padding:14px;
+
+    box-shadow:0 8px 30px rgba(0,0,0,.18);
+
+    z-index:9999;
+}
+
+.verified-badge:hover .verified-popup{
+    display:block;
+}
+
+.verified-popup-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.verified-popup-icon{
+    width:22px;
+    height:22px;
+    flex-shrink:0;
+}
+
+.verified-popup-text{
+    font-size:14px;
+    line-height:1.5;
+    color:#444;
+}
