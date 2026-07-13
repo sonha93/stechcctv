@@ -402,6 +402,41 @@ followBtn.onclick = async () => {
 };
 
 messageBtn.onclick = async () => {
+messageBtn.onclick = async () => {
+
+    if (!auth.currentUser) {
+        alert("Bạn cần đăng nhập");
+        return;
+    }
+
+
+    // ==========================
+    // CHECK QUYỀN NHẮN TIN
+    // ==========================
+
+    const privacySnap = await getDoc(
+        doc(db,"users",profileUid,"settings","privacy")
+    );
+
+
+    if(privacySnap.exists()){
+
+        const privacy = privacySnap.data();
+
+
+        if(
+            privacy.allowMessage === false &&
+            auth.currentUser.uid !== profileUid
+        ){
+
+            alert("Người dùng không cho phép nhận tin nhắn");
+
+            return;
+
+        }
+
+    }
+
 
     if (!auth.currentUser) {
         alert("Bạn cần đăng nhập");
