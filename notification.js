@@ -30,82 +30,67 @@ async function loadNotifications(){
 
     list.innerHTML = "";
 
-    const snap = await db
-        .collection("notifications")
-        .where("receiverId","==",auth.currentUser.uid)
-        .orderBy("createdAt","desc")
-        .get();
+    const requests = await getMyFollowRequests();
+console.log("FOLLOW REQUESTS:", requests);
+    for(const item of requests){
 
-    if(snap.empty){
-        list.innerHTML = `<div class="notify-empty">Chưa có thông báo</div>`;
-        return;
+        const data = item.data();
+
+        const userSnap = await db
+.collection("users")
+.doc(data.from)
+.get();
+
+        if(!userSnap.exists){
+    console.log("Không tìm thấy user gửi:", data.from);
+    continue;
+}
+
+        const u = userSnap.data();
+
+        list.innerHTML += `
+
+<div class="notify-item" id="request-${item.id}">
+
+    <img
+        src="${u.avatar || "./avatar.png"}"
+        class="notify-avatar">
+
+    <div class="notify-content">
+
+        <div class="notify-title">
+
+            <b>${u.name || "Người dùng"}</b>
+            đã gửi lời mời theo dõi bạn
+
+        </div>
+
+        <div class="notify-action">
+
+            <button
+                class="acceptBtn"
+                data-id="${item.id}">
+                Chấp nhận
+            </button>
+
+            <button
+                class="rejectBtn"
+                data-id="${item.id}">
+                Từ chối
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+`;
+
     }
-
-    let html = "";
-
-    for(const docSnap of snap.docs){
-
-        const data = docSnap.data();
-
-        if(data.type !== "follow_request") continue;
-
-        const requestId = data.requestId || docSnap.id;
-
-        let name = "Người dùng";
-        let avatar = "./avatar.png";
-
-        try{
-
-            const userSnap = await db
-                .collection("users")
-                .doc(data.senderId)
-                .get();
-
-            if(userSnap.exists){
-                const u = userSnap.data();
-                name = u.name || name;
-                avatar = u.avatar || avatar;
-            }
-
-        }catch(e){}
-
-        html += `
-        <div class="notify-item" id="request-${requestId}">
-
-            <img
-                src="${avatar}"
-                class="notify-avatar">
-
-            <div class="notify-content">
-
-                <div class="notify-title">
-                    <b>${name}</b> đã gửi lời mời theo dõi bạn
-                </div>
-
-                <div class="notify-action">
-
-                    <button
-                        class="acceptBtn"
-                        data-id="${requestId}">
-                        Chấp nhận
-                    </button>
-
-                    <button
-                        class="rejectBtn"
-                        data-id="${requestId}">
-                        Từ chối
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>`;
-    }
-
-    list.innerHTML = html || `<div class="notify-empty">Chưa có thông báo</div>`;
 
     bindButtons();
+
 }
 
 // ================================
