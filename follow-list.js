@@ -1,13 +1,10 @@
 import { app, auth } from "./auth.js";
 import { getVerifiedBadge } from "./verified-users.js";
 import {
-    sendFollowRequest,
-    cancelFollowRequest,
-    hasPendingFollowRequest,
-    isFollowing,
-    isFriend
-} from "./follow_requests.js";
-
+    followUser,
+    unfollowUser,
+    isFollowing
+} from "./follow.js";
 import {
     getFirestore,
     doc,
@@ -131,33 +128,15 @@ async function renderUsers(list){
 
         let buttonHtml = "";
 
-      if(auth.currentUser && auth.currentUser.uid !== u.uid){
+if(auth.currentUser && auth.currentUser.uid !== u.uid){
 
-    const friend = await isFriend(u.uid);
     const following = await isFollowing(u.uid);
-    const pending = await hasPendingFollowRequest(u.uid);
 
-    if(friend){
-
-        buttonHtml = `
-        <button class="follow-btn friend" data-uid="${u.uid}">
-            Bạn bè
-        </button>
-        `;
-
-    }else if(following){
+    if(following){
 
         buttonHtml = `
         <button class="follow-btn following" data-uid="${u.uid}">
             Đã follow
-        </button>
-        `;
-
-    }else if(pending){
-
-        buttonHtml = `
-        <button class="follow-btn request" data-uid="${u.uid}">
-            Đã gửi
         </button>
         `;
 
@@ -289,56 +268,24 @@ document.addEventListener("click",async e=>{
 
         if(btn.classList.contains("follow")){
 
-            await sendFollowRequest(uid);
+    await followUser(uid);
 
-            btn.classList.remove("follow");
-            btn.classList.add("request");
+    btn.classList.remove("follow");
+    btn.classList.add("following");
 
-            btn.innerText="Đã gửi";
+    btn.innerText="Đã follow";
 
-        }
-
-        else if(btn.classList.contains("request")){
-
-            await cancelFollowRequest(uid);
-
-            btn.classList.remove("request");
-            btn.classList.add("follow");
-
-            btn.innerText="Follow";
-
-        }
-
-        else if(btn.classList.contains("following")){
+}
+        
+    else if(btn.classList.contains("following")){
 
             if(!confirm("Hủy follow người này?")){
-
                 btn.disabled=false;
                 return;
-
             }
 
-        await deleteDoc(
-    doc(db, "users", auth.currentUser.uid, "following", uid)
-);
+            await unfollowUser(uid);
 
-await deleteDoc(
-    doc(db, "users", uid, "followers", auth.currentUser.uid)
-);
-
-await updateDoc(
-    doc(db, "users", auth.currentUser.uid),
-    {
-        followingCount: increment(-1)
-    }
-);
-
-await updateDoc(
-    doc(db, "users", uid),
-    {
-        followerCount: increment(-1)
-    }
-);
             btn.classList.remove("following");
             btn.classList.add("follow");
 
