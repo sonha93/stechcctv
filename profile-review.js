@@ -134,7 +134,7 @@ followerCount.onclick = () => {
 
 };
 const likeCount = document.getElementById("likeCount");
-const addStoryBtn = document.getElementById("addStoryBtn");
+
 
 const storyFile = document.getElementById("storyFile");
 
@@ -318,9 +318,15 @@ if(user){
 
     if(me.exists()){
 
-        myStoryAvatar.src =
-            me.data().avatar ||
-            "https://i.ibb.co/Z1kv9nJj/logo.png";
+        const myStoryAvatar = document.getElementById("myStoryAvatar");
+
+        if(myStoryAvatar){
+
+            myStoryAvatar.src =
+                me.data().avatar ||
+                "https://i.ibb.co/Z1kv9nJj/logo.png";
+
+        }
 
     }
 
@@ -1125,19 +1131,7 @@ followBtn.innerHTML="Follow";
 followSheet.classList.remove("active");
 
 };
-addStoryBtn.onclick = ()=>{
 
-    if(!auth.currentUser){
-
-        alert("Bạn cần đăng nhập");
-
-        return;
-
-    }
-
-    storyFile.click();
-
-};
 storyFile.onchange = async () => {
 
     const file = storyFile.files[0];
