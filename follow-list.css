@@ -322,17 +322,6 @@ MOBILE
     object-fit:cover;
     flex-shrink:0;
 }
-.follow-avatar{
-    width:42px !important;
-    height:42px !important;
-    min-width:42px !important;
-    max-width:42px !important;
-    min-height:42px !important;
-    max-height:42px !important;
-    border-radius:50% !important;
-    object-fit:cover !important;
-    flex-shrink:0;
-}
 
 .verified-popup{
     display:none !important;
