@@ -346,61 +346,39 @@ async function loadBlockedUsers(){
     let html = "";
 
 
-    for(const uid of blockedUsers){
+   for (const uid of blockedUsers) {
 
+    if (!uid || typeof uid !== "string") {
+        continue;
+    }
 
-        const snap =
-        await db.collection("users")
+    const snap = await db.collection("users")
         .doc(uid)
         .get();
 
+    if (!snap.exists) continue;
 
-        if(!snap.exists) continue;
+    const u = snap.data();
 
-
-        const u = snap.data();
-
-
-        html += `
-
-        <div class="block-user">
-
-
-            <div class="block-left">
-
-
-                <img
+    html += `
+    <div class="block-user">
+        <div class="block-left">
+            <img
                 class="block-avatar"
-                src="${
-                    u.avatar ||
-                    "https://i.ibb.co/Z1kv9nJj/logo.png"
-                }">
+                src="${u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}">
 
-
-                <div class="block-name">
-                    ${u.name || "Người dùng"}
-                </div>
-
-
+            <div class="block-name">
+                ${u.name || "Người dùng"}
             </div>
-
-
-
-            <button
-            class="unblock-btn"
-            onclick="unblockUser('${uid}')">
-
-                Bỏ chặn
-
-            </button>
-
-
         </div>
 
-        `;
-
-
-    }
+        <button
+            class="unblock-btn"
+            onclick="unblockUser('${uid}')">
+            Bỏ chặn
+        </button>
+    </div>`;
+}
 
 
     blockedList.innerHTML = html;
