@@ -297,7 +297,8 @@ document.addEventListener("click",async e=>{
         if(btn.classList.contains("follow")){
 
             await sendFollowRequest(uid);
-
+            await loadUsers();
+return;
             btn.classList.remove("follow");
             btn.classList.add("request");
 
