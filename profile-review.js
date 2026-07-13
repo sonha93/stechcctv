@@ -1735,20 +1735,26 @@ document.getElementById("privateBtn").onclick = () => {
     location.href = "private-account.html";
 };
 
-document.getElementById("blockedBtn").onclick = () => {
+const blockedBtn = document.getElementById("blockedBtn");
 
-    const list = document.getElementById("blockedList");
+if(blockedBtn){
 
-    if (!list) {
-        alert("Không tìm thấy danh sách người đã chặn.");
-        return;
-    }
+    blockedBtn.addEventListener("click",()=>{
 
-    list.style.display = "block";
+        const list=document.getElementById("blockedList");
 
-    loadBlockedUsers();
+        if(!list){
+            alert("Thiếu id blockedList trong HTML");
+            return;
+        }
 
-};
+        list.style.display="block";
+
+        loadBlockedUsers();
+
+    });
+
+}
 
 document.getElementById("commentSetting").onclick = () => {
     location.href = "comment-settings.html";
