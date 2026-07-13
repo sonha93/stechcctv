@@ -124,9 +124,23 @@ export async function acceptFollowRequest(requestId){
 
     batch.delete(requestRef);
 
-    await batch.commit();
+   batch.delete(requestRef);
+
+await batch.commit();
+
+
+await db.collection("notifications").add({
+
+    receiverId: to,
+    senderId: from,
+    type: "follow",
+    read:false,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+
+});
 
 }
+
 // ================================
 // TỪ CHỐI
 // ================================
