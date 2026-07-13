@@ -15,16 +15,19 @@ export async function sendFollowRequest(targetUid){
 
     if(myUid === targetUid) return false;
 
-    const old = await db
+    const requestId = `${myUid}_${targetUid}`;
+
+    const requestRef = db
         .collection("follow_requests")
-        .where("from","==",myUid)
-        .where("to","==",targetUid)
-        .where("status","==","pending")
-        .get();
+        .doc(requestId);
 
-    if(!old.empty) return false;
+    const requestSnap = await requestRef.get();
 
-    const requestRef = await db.collection("follow_requests").add({
+    if(requestSnap.exists){
+        return false;
+    }
+
+    await requestRef.set({
 
         from: myUid,
         to: targetUid,
@@ -33,18 +36,29 @@ export async function sendFollowRequest(targetUid){
 
     });
 
-    await db.collection("notifications").add({
+    const notifyRef = db
+        .collection("notifications")
+        .doc(requestId);
 
-        receiverId: targetUid,
-        senderId: myUid,
-        requestId: requestRef.id,
-        type: "follow_request",
-        read: false,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    const notifySnap = await notifyRef.get();
 
-    });
+    if(!notifySnap.exists){
+
+        await notifyRef.set({
+
+            receiverId: targetUid,
+            senderId: myUid,
+            requestId: requestId,
+            type: "follow_request",
+            read: false,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+
+        });
+
+    }
 
     return true;
+
 }
 // ================================
 // DANH SÁCH LỜI MỜI
@@ -147,19 +161,23 @@ export async function cancelFollowRequest(targetUid){
 
     if(!auth.currentUser) return;
 
-    const snap = await db
-    .collection("follow_requests")
-    .where("from","==",auth.currentUser.uid)
-    .where("to","==",targetUid)
-    .where("status","==","pending")
-    .get();
+    const myUid = auth.currentUser.uid;
 
-    for(const doc of snap.docs){
-        await doc.ref.delete();
-    }
+    const requestId = `${myUid}_${targetUid}`;
+
+    await db
+        .collection("follow_requests")
+        .doc(requestId)
+        .delete()
+        .catch(()=>{});
+
+    await db
+        .collection("notifications")
+        .doc(requestId)
+        .delete()
+        .catch(()=>{});
 
 }
-
 // ================================
 // ĐÃ GỬI LỜI MỜI ?
 // ================================
