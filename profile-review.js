@@ -1567,7 +1567,18 @@ document.getElementById("privateBtn").onclick = () => {
 };
 
 document.getElementById("blockedBtn").onclick = () => {
-    location.href = "blocked-users.html";
+
+    const list = document.getElementById("blockedList");
+
+    if (!list) {
+        alert("Không tìm thấy danh sách người đã chặn.");
+        return;
+    }
+
+    list.style.display = "block";
+
+    loadBlockedUsers();
+
 };
 
 document.getElementById("commentSetting").onclick = () => {
