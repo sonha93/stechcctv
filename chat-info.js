@@ -1086,6 +1086,9 @@ window.showMedia = function(src){
 // ================================
 // CHAT THEME
 // ================================
+// ================================
+// CHAT THEME
+// ================================
 
 const themeBtn = document.getElementById("themeBtn");
 const themeModal = document.getElementById("themeModal");
@@ -1097,55 +1100,54 @@ const saveTheme = document.getElementById("saveTheme");
 let selectedTheme = "default";
 
 
-if(themeBtn && themeModal){
+console.log("THEME INIT", themeBtn, themeModal);
 
-    themeBtn.onclick = ()=>{
 
-        themeModal.classList.remove("hidden");
-        themeModal.classList.add("show");
+// MỞ THEME
 
-    };
+if(themeBtn){
+
+    themeBtn.addEventListener("click", ()=>{
+
+        console.log("CLICK THEME");
+
+        if(themeModal){
+
+            themeModal.classList.remove("hidden");
+            themeModal.classList.add("show");
+
+        }
+
+    });
+
+}
+
+
+// ĐÓNG THEME
+
+function closeThemeBox(){
+
+    if(themeModal){
+
+        themeModal.classList.remove("show");
+        themeModal.classList.add("hidden");
+
+    }
 
 }
 
 
 if(closeTheme){
-
-    closeTheme.onclick = ()=>{
-
-        themeModal.classList.remove("show");
-        themeModal.classList.add("hidden");
-
-    };
-
+    closeTheme.onclick = closeThemeBox;
 }
 
 
 if(cancelTheme){
-
-    cancelTheme.onclick = ()=>{
-
-        themeModal.classList.remove("show");
-        themeModal.classList.add("hidden");
-
-    };
-
+    cancelTheme.onclick = closeThemeBox;
 }
 
 
-if(cancelTheme){
-
-    cancelTheme.onclick = ()=>{
-
-        themeModal.classList.remove("show");
-        themeModal.classList.add("hidden");
-
-    };
-
-}
-
-
-// chọn theme
+// CHỌN THEME
 
 document.querySelectorAll(".theme-card[data-theme]")
 .forEach(btn=>{
@@ -1159,144 +1161,40 @@ document.querySelectorAll(".theme-card[data-theme]")
     };
 
 });
-// ================================
-// UPLOAD ẢNH THEME TỪ THIẾT BỊ
-// ================================
-
-const customTheme =
-document.getElementById("customTheme");
-
-const themeUpload =
-document.getElementById("themeUpload");
 
 
-if(customTheme && themeUpload){
-
-    customTheme.onclick = ()=>{
-
-        themeUpload.click();
-
-    };
-
-
-    themeUpload.onchange = e=>{
-
-        const file =
-        e.target.files[0];
-
-
-        if(!file) return;
-
-
-        const reader =
-        new FileReader();
-
-
-        reader.onload = ()=>{
-
-            selectedTheme =
-            "custom";
-
-
-            document.body.style.backgroundImage =
-            `url("${reader.result}")`;
-
-
-            document.body.dataset.theme =
-            "custom";
-
-
-            localStorage.setItem(
-                "chatCustomTheme",
-                reader.result
-            );
-
-        };
-
-
-        reader.readAsDataURL(file);
-
-    };
-
-}
-// lưu theme
+// LƯU
 
 if(saveTheme){
 
-saveTheme.onclick = async ()=>{
+    saveTheme.onclick = async ()=>{
 
+        if(themeModal){
 
-    if(!chatId || !auth.currentUser)
-    return;
+            themeModal.classList.remove("show");
+            themeModal.classList.add("hidden");
 
-
-    document.body.dataset.theme =
-    selectedTheme;
-
-
-
-    await db.collection("conversations")
-    .doc(chatId)
-    .set({
-
-        theme:{
-            [auth.currentUser.uid]:
-            selectedTheme
         }
 
-    },{
-        merge:true
-    });
+
+        if(!chatId || !auth.currentUser)
+            return;
 
 
+        await db.collection("conversations")
+        .doc(chatId)
+        .set({
 
-    if(themeModal){
+            theme:{
+                [auth.currentUser.uid]: selectedTheme
+            }
 
-        themeModal.classList.remove("show");
+        },{
 
-    }
+            merge:true
 
+        });
 
-};
-
-
-}
-
-
-
-// load theme
-
-async function loadTheme(){
-
-
-if(!chatId || !auth.currentUser)
-return;
-
-
-const snap =
-await db.collection("conversations")
-.doc(chatId)
-.get();
-
-
-
-if(!snap.exists)
-return;
-
-
-const theme =
-snap.data().theme?.[auth.currentUser.uid]
-|| "default";
-
-
-document.body.dataset.theme =
-theme;
-
-
-selectedTheme = theme;
-
+    };
 
 }
-
-
-loadTheme();
