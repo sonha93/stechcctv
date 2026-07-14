@@ -1098,11 +1098,31 @@ document.getElementById("themeUpload");
 const currentThemePreview =
 document.getElementById("currentThemePreview");
 
+let selectedThemeFile = null;
 
-    currentThemePreview.src =
-    URL.createObjectURL(file);
 
-};
+if(themeUpload){
+
+    themeUpload.onchange = e=>{
+
+        const file = e.target.files[0];
+
+        if(!file) return;
+
+
+        selectedThemeFile = file;
+
+
+        if(currentThemePreview){
+
+            currentThemePreview.src =
+            URL.createObjectURL(file);
+
+        }
+
+    };
+
+}
 let selectedTheme = "default";
 // ================================
 // UPLOAD THEME IMAGE CLOUDINARY
@@ -1162,7 +1182,7 @@ async function uploadThemeImage(file){
     }
 
 }
-let selectedThemeFile = null;
+
 
 if(customTheme && themeUpload){
 
