@@ -1159,7 +1159,66 @@ document.querySelectorAll(".theme-card[data-theme]")
     };
 
 });
+// ================================
+// UPLOAD ẢNH THEME TỪ THIẾT BỊ
+// ================================
 
+const customTheme =
+document.getElementById("customTheme");
+
+const themeUpload =
+document.getElementById("themeUpload");
+
+
+if(customTheme && themeUpload){
+
+    customTheme.onclick = ()=>{
+
+        themeUpload.click();
+
+    };
+
+
+    themeUpload.onchange = e=>{
+
+        const file =
+        e.target.files[0];
+
+
+        if(!file) return;
+
+
+        const reader =
+        new FileReader();
+
+
+        reader.onload = ()=>{
+
+            selectedTheme =
+            "custom";
+
+
+            document.body.style.backgroundImage =
+            `url("${reader.result}")`;
+
+
+            document.body.dataset.theme =
+            "custom";
+
+
+            localStorage.setItem(
+                "chatCustomTheme",
+                reader.result
+            );
+
+        };
+
+
+        reader.readAsDataURL(file);
+
+    };
+
+}
 // lưu theme
 
 if(saveTheme){
