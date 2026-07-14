@@ -43,18 +43,6 @@ await addDoc(collection(db,"notifications"),{
     createdAt: serverTimestamp()
 
 });
-
-
-await addDoc(collection(db, "notifications"), {
-
-    receiverId: targetUid,
-    senderId: auth.currentUser.uid,
-    type: "follow",
-    read: false,
-    createdAt: serverTimestamp()
-
-});
-
     return true;
 }
 
