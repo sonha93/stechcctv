@@ -162,7 +162,9 @@ buttonHtml = `
   `;
 
 }
-       userList.insertAdjacentHTML(
+}
+      
+   userList.insertAdjacentHTML(
     "beforeend",
     `
     <div class="user-item" data-uid="${u.uid}">
@@ -209,6 +211,7 @@ onclick="location.href='profile-review.html?uid=${u.uid}'">
 
     }
 
+}
 }
 searchInput.oninput = ()=>{
 
