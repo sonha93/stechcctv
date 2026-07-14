@@ -14,39 +14,26 @@ export async function toggleFollow(targetUid){
     const myUid = auth.currentUser.uid;
 
     if(myUid === targetUid) return false;
+const requestRef = await db.collection("follow_requests")
+.where("from","==",myUid)
+.where("to","==",targetUid)
+.where("status","==","pending")
+.get();
 
+if(!requestRef.empty){
+    return false;
+}
 
-    const followingRef = db
-    .collection("users")
-    .doc(myUid)
-    .collection("following")
-    .doc(targetUid);
+await db.collection("follow_requests").add({
 
+    from: myUid,
+    to: targetUid,
+    status: "pending",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
-    const check = await followingRef.get();
+});
 
-
-    // ĐANG FOLLOW -> HỦY FOLLOW
-    if(check.exists){
-
-        await followingRef.delete();
-
-        await db
-        .collection("users")
-        .doc(targetUid)
-        .collection("followers")
-        .doc(myUid)
-        .delete();
-
-        return false;
-    }
-
-
-    // CHƯA FOLLOW -> FOLLOW
-
-    await followingRef.set({
-        time: Date.now()
-    });
+  
 
 
     await db
@@ -63,7 +50,7 @@ export async function toggleFollow(targetUid){
 
         receiverId: targetUid,
         senderId: myUid,
-        type:"follow",
+        type:"follow_request"
         read:false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
