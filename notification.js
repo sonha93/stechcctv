@@ -104,18 +104,28 @@ for(const item of notifications){
 
         const u = userSnap.data();
 
-        list.innerHTML += `
+       list.innerHTML += `
 
 <div class="notify-item">
 
     <img
-        src="${u.avatar || "./avatar.png"}"
-        class="notify-avatar">
+        src="${u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}"
+        class="notify-avatar"
+        data-uid="${data.senderId}">
 
-    <div class="notify-content">
+    <div class="notify-content" data-uid="${data.senderId}">
 
-        <b>${u.name || "Người dùng"}</b>
-        đã theo dõi bạn
+        <div class="notify-name">
+            <b>${u.name || "Người dùng"}</b>
+        </div>
+
+        <div class="notify-username">
+            @${u.username || ""}
+        </div>
+
+        <div class="notify-text">
+            Đã theo dõi bạn
+        </div>
 
     </div>
 
