@@ -340,11 +340,7 @@ async function updateFollowButton(){
 
     if(following){
 
-        followBtn.innerHTML = `
-        <span class="material-icons">
-        manage_accounts
-        </span>
-        `;
+        followBtn.innerHTML = "⚙";
 
         followBtn.dataset.state = "following";
 
