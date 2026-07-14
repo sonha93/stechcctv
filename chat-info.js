@@ -1089,19 +1089,30 @@ window.showMedia = function(src){
 
 const themeBtn = document.getElementById("themeBtn");
 const themeModal = document.getElementById("themeModal");
-const customTheme =
-document.getElementById("customTheme");
+const customTheme = document.getElementById("customTheme");
+const themeUpload = document.getElementById("themeUpload");
+const currentThemePreview = document.getElementById("currentThemePreview");
 
-const themeUpload =
-document.getElementById("themeUpload");
-
-const currentThemePreview =
-document.getElementById("currentThemePreview");
+const closeTheme = document.getElementById("closeTheme");
+const cancelTheme = document.getElementById("cancelTheme");
+const saveTheme = document.getElementById("saveTheme");
 
 let selectedThemeFile = null;
+let selectedTheme = "default";
 
 
-if(themeUpload){
+// ================================
+// OPEN UPLOAD IMAGE
+// ================================
+
+if(customTheme && themeUpload){
+
+    customTheme.onclick = ()=>{
+
+        themeUpload.click();
+
+    };
+
 
     themeUpload.onchange = e=>{
 
@@ -1123,14 +1134,16 @@ if(themeUpload){
     };
 
 }
-let selectedTheme = "default";
+
+
 // ================================
-// UPLOAD THEME IMAGE CLOUDINARY
+// UPLOAD CLOUDINARY
 // ================================
 
 async function uploadThemeImage(file){
 
     if(!file) return null;
+
 
     const formData = new FormData();
 
@@ -1139,10 +1152,12 @@ async function uploadThemeImage(file){
         file
     );
 
+
     formData.append(
         "upload_preset",
         "stech_up"
     );
+
 
     try{
 
@@ -1158,16 +1173,7 @@ async function uploadThemeImage(file){
         const data = await res.json();
 
 
-        if(!data.secure_url){
-
-            console.error(data);
-
-            return null;
-
-        }
-
-
-        return data.secure_url;
+        return data.secure_url || null;
 
 
     }catch(err){
@@ -1184,145 +1190,193 @@ async function uploadThemeImage(file){
 }
 
 
-if(customTheme && themeUpload){
+// ================================
+// OPEN MODAL
+// ================================
 
-    customTheme.onclick = ()=>{
-
-        themeUpload.click();
-
-    };
-
-
-    themeUpload.onchange = e=>{
-
-        const file = e.target.files[0];
-
-        if(!file) return;
-
-
-        const url = URL.createObjectURL(file);
-
-
-        if(currentThemePreview){
-            currentThemePreview.src = url;
-        }
-
-
-        selectedThemeFile = file;
-
-    };
-
-}
 if(themeBtn && themeModal){
 
-themeBtn.onclick = ()=>{
+    themeBtn.onclick = ()=>{
 
-    themeModal.classList.add("show");
+        themeModal.classList.remove("hidden");
 
-};
+        themeModal.classList.add("show");
+
+    };
 
 }
 
-// đóng
 
-const closeTheme =
-document.getElementById("closeTheme");
+// ================================
+// CLOSE MODAL
+// ================================
 
-const cancelTheme =
-document.getElementById("cancelTheme");
+function closeThemeModal(){
+
+    if(!themeModal) return;
+
+
+    themeModal.classList.remove("show");
+
+    themeModal.classList.add("hidden");
+
+}
 
 
 if(closeTheme){
 
-closeTheme.onclick = ()=>{
-
-    themeModal.classList.remove("show");
-
-};
+    closeTheme.onclick =
+    closeThemeModal;
 
 }
 
 
 if(cancelTheme){
 
-cancelTheme.onclick = ()=>{
-
-    themeModal.classList.remove("show");
-
-};
+    cancelTheme.onclick =
+    closeThemeModal;
 
 }
 
 
-// chọn theme
+// ================================
+// SELECT THEME CARD
+// ================================
 
 document.querySelectorAll(".theme-card[data-theme]")
 .forEach(btn=>{
 
 
-btn.onclick = ()=>{
+    btn.onclick = ()=>{
 
-    selectedTheme = btn.dataset.theme;
+        selectedTheme =
+        btn.dataset.theme;
 
-};
+    };
 
 
 });
 
-document.getElementById("saveTheme").onclick = async ()=>{
 
-document.body.dataset.theme =
-selectedTheme;
-await db.collection("conversations")
-.doc(chatId)
-.set({
+// ================================
+// SAVE THEME
+// ================================
 
-theme:{
-    [auth.currentUser.uid]: selectedTheme
+if(saveTheme){
+
+saveTheme.onclick = async ()=>{
+
+
+    let themeUrl = null;
+
+
+    if(selectedThemeFile){
+
+        themeUrl =
+        await uploadThemeImage(
+            selectedThemeFile
+        );
+
+    }
+
+
+    await db.collection("conversations")
+    .doc(chatId)
+    .set({
+
+        theme:{
+
+            [auth.currentUser.uid]:{
+
+                type:selectedTheme,
+
+                image:
+                themeUrl || null
+
+            }
+
+        }
+
+    },{
+        merge:true
+    });
+
+
+
+    document.body.dataset.theme =
+    selectedTheme;
+
+
+    closeThemeModal();
+
+
+};
+
+
 }
 
-},{
-merge:true
-});
 
-
-themeModal.classList.remove("show");
-
-
-};
-
-
-
-// load theme
+// ================================
+// LOAD THEME
+// ================================
 
 async function loadTheme(){
 
 
-if(!chatId || !auth.currentUser)
-return;
+    if(!chatId || !auth.currentUser)
+    return;
 
 
-const snap =
-await db.collection("conversations")
-.doc(chatId)
-.get();
+    const snap =
+    await db.collection("conversations")
+    .doc(chatId)
+    .get();
 
 
 
-if(!snap.exists)
-return;
+    if(!snap.exists)
+    return;
 
 
-const theme =
-snap.data().theme?.[auth.currentUser.uid]
-|| "default";
+
+    const theme =
+    snap.data().theme?.[auth.currentUser.uid];
 
 
-document.body.dataset.theme =
-theme;
+
+    if(!theme)
+    return;
 
 
-selectedTheme = theme;
+
+    if(typeof theme === "string"){
+
+        document.body.dataset.theme =
+        theme;
+
+        selectedTheme =
+        theme;
+
+    }
+    else{
+
+
+        document.body.dataset.theme =
+        theme.type || "default";
+
+
+        selectedTheme =
+        theme.type || "default";
+
+
+        if(theme.image && currentThemePreview){
+
+            currentThemePreview.src =
+            theme.image;
+
+        }
+
+    }
 
 
 }
