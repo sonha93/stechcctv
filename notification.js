@@ -10,7 +10,7 @@ import {
     getMyFollowRequests
 } from "./follow_requests.js";
 
-const list = document.getElementById("requestList");
+const list = document.getElementById("notificationList");
 
 auth.onAuthStateChanged(user=>{
 
