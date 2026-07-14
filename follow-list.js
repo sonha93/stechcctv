@@ -267,17 +267,15 @@ document.addEventListener("click",async e=>{
 
 
         // đang follow thì không hủy ngay nữa
-        if(btn.classList.contains("following")){
+       if(btn.classList.contains("following")){
 
+    openFollowPopup(uid);
 
-            alert("Đã follow. Mở quản lý follow tại đây.");
+    btn.disabled=false;
 
+    return;
 
-            btn.disabled=false;
-
-            return;
-
-        }
+}
 
 
 
@@ -320,3 +318,26 @@ document.addEventListener("click",async e=>{
 
 
 });
+async function openFollowPopup(uid){
+
+    document.getElementById("followPopup").style.display="flex";
+
+    document.getElementById("unfollowBtn").onclick = async ()=>{
+
+        await deleteDoc(doc(db,"users",auth.currentUser.uid,"following",uid));
+
+        await deleteDoc(doc(db,"users",uid,"followers",auth.currentUser.uid));
+
+        document.getElementById("followPopup").style.display="none";
+
+        loadUsers();
+
+    };
+
+}
+
+document.getElementById("closeFollowPopup").onclick=()=>{
+
+    document.getElementById("followPopup").style.display="none";
+
+};
