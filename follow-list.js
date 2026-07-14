@@ -296,19 +296,12 @@ document.addEventListener("click",async e=>{
         if(btn.classList.contains("follow")){
 
 
-            await toggleFollow(uid);
+          await toggleFollow(uid);
 
+btn.classList.remove("follow");
+btn.classList.add("following");
 
-
-            btn.classList.remove("follow");
-
-            btn.classList.add("following");
-
-
-
-            btn.textContent = "Bạn bè";
-
-        }
+btn.textContent = "Đã gửi";
 
 
 
