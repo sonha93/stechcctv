@@ -1,3 +1,4 @@
+
 import { app, auth } from "./auth.js";
 import { getVerifiedBadge } from "./verified-users.js";
    import {
@@ -210,6 +211,7 @@ onclick="location.href='profile-review.html?uid=${u.uid}'">
     }
 
 }
+   } 
 searchInput.oninput = ()=>{
 
     const keyword =
