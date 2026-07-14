@@ -196,3 +196,11 @@ function bindButtons(){
     });
 
 }
+list.addEventListener("click", e => {
+
+    const target = e.target.closest("[data-uid]");
+    if (!target) return;
+
+    location.href = `profile-review.html?uid=${target.dataset.uid}`;
+
+});
