@@ -1112,6 +1112,14 @@ async function loadStories(){
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
+const mySnap = auth.currentUser
+    ? await getDoc(doc(db, "users", auth.currentUser.uid))
+    : null;
+
+const myAvatar = mySnap?.exists()
+    ? (mySnap.data().avatar || "https://i.ibb.co/Z1kv9nJj/logo.png")
+    : "https://i.ibb.co/Z1kv9nJj/logo.png";
+
 storyBar.innerHTML = `
 <div class="storyItem" id="addStoryBtn">
 
@@ -1119,14 +1127,14 @@ storyBar.innerHTML = `
 
         <img
         id="myStoryAvatar"
-        src="${auth.currentUser?.photoURL || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
+        src="${myAvatar}">
 
         <span class="storyPlus">+</span>
 
     </div>
 
     <div class="storyName">
-        Story
+        
     </div>
 
 </div>
