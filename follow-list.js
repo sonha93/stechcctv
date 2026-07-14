@@ -1,8 +1,10 @@
 import { app, auth } from "./auth.js";
 import { getVerifiedBadge } from "./verified-users.js";
 import {
+   import {
     toggleFollow,
-    isFollowing
+    isFollowing,
+    unfollowUser
 } from "./follow_requests.js";
 import {
     getFirestore,
