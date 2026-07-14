@@ -415,10 +415,18 @@ if(currentFilter==="requests"){
     }
 
 
-    snap.forEach(doc=>{
+    for(const doc of snap.docs){
 
-        const r = doc.data();
+    const r = doc.data();
 
+    const userSnap = await db
+    .collection("users")
+    .doc(r.fromUid)
+    .get();
+
+    const userData = userSnap.exists
+    ? userSnap.data()
+    : {};
 
         chatList.innerHTML += `
 
@@ -428,7 +436,7 @@ if(currentFilter==="requests"){
                 <div class="avatar-wrap">
 
                     <img class="avatar"
-                    src="${r.avatar || './avatar.png'}">
+                   src="${userData.avatar || './avatar.png'}"
 
                 </div>
 
@@ -436,7 +444,7 @@ if(currentFilter==="requests"){
                 <div class="chat-body">
 
                     <div class="chat-name">
-                        ${r.name || "Người dùng"}
+                       ${userData.name || "Người dùng"}
                     </div>
 
                     <div class="message-preview">
@@ -450,9 +458,9 @@ if(currentFilter==="requests"){
                 </div>
 
 
-                <button onclick="acceptFollow('${doc.id}')">
-                    Chấp nhận
-                </button>
+                <button onclick="event.stopPropagation(); acceptFollow('${doc.id}')">
+    Chấp nhận
+</button>
 
 
             </div>
