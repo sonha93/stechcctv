@@ -369,3 +369,24 @@ MOBILE
     object-fit:cover !important;
     flex:0 0 42px;
 }
+.notify-content{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    cursor:pointer;
+}
+
+.notify-name{
+    font-size:17px;
+    font-weight:700;
+}
+
+.notify-username{
+    font-size:14px;
+    color:#777;
+}
+
+.notify-text{
+    font-size:15px;
+    color:#222;
+}
