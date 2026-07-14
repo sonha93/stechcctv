@@ -333,7 +333,7 @@ async function renderChats(){
     if(!user) return;
 
 
-    const snap = await db
+   const snap = await db
     .collection("notifications")
     .where("receiverId","==",user.uid)
     .orderBy("createdAt","desc")
