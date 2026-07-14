@@ -162,7 +162,6 @@ buttonHtml = `
   
         userList.insertAdjacentHTML(
             "beforeend",
-            `
            <div class="user-item" data-uid="${u.uid}">
 
              <img
