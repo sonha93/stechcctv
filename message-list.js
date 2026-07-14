@@ -24,6 +24,8 @@ let currentStoryId = "";
 let currentAvatar = "";
 const chatList =
 document.getElementById("chatList");
+const notificationList =
+document.getElementById("notificationList");
 const onlineFriends =
 document.getElementById("onlineFriends");
 const chatCount =
@@ -319,12 +321,71 @@ async function renderChats(){
 
     }
 
-if(currentFilter==="requests"){
 
-    list =
-    list.filter(
-        x=>x.type==="follow_request"
-    );
+ if(currentFilter==="notifications"){
+
+    chatList.innerHTML = "";
+
+   chatList.hidden = false;
+
+    const user = auth.currentUser;
+
+    if(!user) return;
+
+
+    const snap = await db
+    .collection("notifications")
+    .where("uid","==",user.uid)
+    .orderBy("createdAt","desc")
+    .get();
+
+
+    if(snap.empty){
+
+        chatList.innerHTML = `
+        <div style="padding:30px;text-align:center;color:#999">
+            Không có thông báo
+        </div>
+        `;
+
+        return;
+
+    }
+
+
+    snap.forEach(doc=>{
+
+        const data = doc.data();
+
+
+        chatList.innerHTML += `
+
+        <div class="chat-item">
+
+            <div class="chat-button">
+
+                <div class="chat-body">
+
+                    <div class="chat-name">
+                    ${data.title || "Thông báo"}
+                    </div>
+
+                    <div class="message-preview">
+                    ${data.message || ""}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+
+    return;
 
 }
 if(currentFilter==="requests"){
@@ -407,6 +468,8 @@ if(currentFilter==="requests"){
 
 }
 
+
+chatList.hidden = false;
     const keyword =
     searchInput?.value
     ?.toLowerCase()
