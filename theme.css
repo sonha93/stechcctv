@@ -1444,4 +1444,27 @@ cursor:pointer;
     stroke:currentColor;
     stroke-width:2;
 }
+.theme-modal{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:999999;
+    background:rgba(0,0,0,.5);
+}
 
+.theme-modal.hidden{
+    display:none;
+}
+
+.theme-modal.show{
+    display:flex;
+}
+
+.theme-window{
+    width:420px;
+    max-width:90%;
+    background:white;
+    border-radius:16px;
+}
