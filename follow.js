@@ -8,42 +8,82 @@ import {
     deleteDoc,
     query,
     where,
-    serverTimestamp
+    serverTimestamp,
+    doc,
+setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const db = getFirestore(app);
-
+let followLock = false;
 // ===============================
 // FOLLOW
 // ===============================
 
 export async function followUser(targetUid) {
 
-    if (!auth.currentUser) return false;
+    if (followLock) return false;
 
-    if (auth.currentUser.uid === targetUid) return false;
+    followLock = true;
 
-    if (await isFollowing(targetUid)) return true;
+    try {
 
-  await addDoc(collection(db, "follows"), {
+        if (!auth.currentUser) return false;
 
-    fromUid: auth.currentUser.uid,
-    toUid: targetUid,
-    createdAt: serverTimestamp()
+        const myUid = auth.currentUser.uid;
 
-});
+        if (myUid === targetUid) return false;
 
 
-await addDoc(collection(db,"notifications"),{
+        // đã follow thì không tạo thêm
+        if (await isFollowing(targetUid)) {
+            return true;
+        }
 
-    receiverId: targetUid,
-    senderId: auth.currentUser.uid,
-    type:"follow",
-    read:false,
-    createdAt: serverTimestamp()
 
-});
-    return true;
+        await addDoc(collection(db,"follows"),{
+
+            fromUid: myUid,
+            toUid: targetUid,
+            createdAt: serverTimestamp()
+
+        });
+
+await setDoc(
+    doc(db,"users",myUid,"following",targetUid),
+    {
+        uid: targetUid,
+        createdAt: serverTimestamp()
+    }
+);
+
+
+await setDoc(
+    doc(db,"users",targetUid,"followers",myUid),
+    {
+        uid: myUid,
+        createdAt: serverTimestamp()
+    }
+);
+        await addDoc(collection(db,"notifications"),{
+
+            receiverId: targetUid,
+            senderId: myUid,
+            type:"follow",
+            read:false,
+            createdAt:serverTimestamp()
+
+        });
+
+
+        return true;
+
+
+    } finally {
+
+        followLock = false;
+
+    }
+
 }
 
 // ===============================
@@ -54,17 +94,33 @@ export async function unfollowUser(targetUid) {
 
     if (!auth.currentUser) return;
 
-    const q = query(
-        collection(db, "follows"),
-        where("fromUid", "==", auth.currentUser.uid),
-        where("toUid", "==", targetUid)
-    );
+    await deleteDoc(
+    doc(
+        db,
+        "follows",
+        `${auth.currentUser.uid}_${targetUid}`
+    )
+);
+await deleteDoc(
+    doc(
+        db,
+        "users",
+        auth.currentUser.uid,
+        "following",
+        targetUid
+    )
+);
 
-    const snap = await getDocs(q);
 
-    for (const docSnap of snap.docs) {
-        await deleteDoc(docSnap.ref);
-    }
+await deleteDoc(
+    doc(
+        db,
+        "users",
+        targetUid,
+        "followers",
+        auth.currentUser.uid
+    )
+);
 }
 
 // ===============================
@@ -109,14 +165,19 @@ export async function loadMyFollow(uid) {
 // ĐẾM FOLLOW
 // ===============================
 
-export async function getFollowCount(uid) {
+export async function getFollowerCount(uid){
 
-    const q = query(
-        collection(db, "follows"),
-        where("fromUid", "==", uid)
+    const snap = await getDocs(
+        collection(db,"users",uid,"followers")
     );
 
-    const snap = await getDocs(q);
+    return snap.size;
+}
+export async function getFollowingCount(uid){
+
+    const snap = await getDocs(
+        collection(db,"users",uid,"following")
+    );
 
     return snap.size;
 }
