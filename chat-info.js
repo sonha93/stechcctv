@@ -210,13 +210,7 @@ if(blockState.iBlocked || blockState.blockedMe){
 username.textContent = displayName;
 verified.innerHTML = getVerifiedBadge(uid);
 }
-
-
 }
-
-
-
-
 // =====================================
 // LOAD MEDIA
 // =====================================
@@ -516,8 +510,8 @@ async function loadBlockStatus(){
     if(blockState.iBlocked || blockState.blockedMe){
 
         if(avatar){
-            avatar.src = "default-avatar.png";
-        }
+    avatar.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
+}
 
         if(username){
             username.textContent = "Người dùng";
@@ -875,6 +869,11 @@ avatarViewer.onclick = e=>{
     }
 
 };
+const mediaToggle =
+document.getElementById("mediaToggle");
+
+const mediaList =
+document.getElementById("mediaList");
 if(mediaToggle){
 
     mediaToggle.onclick = ()=>{
@@ -1097,15 +1096,6 @@ document.getElementById("themeUpload");
 
 const currentThemePreview =
 document.getElementById("currentThemePreview");
-
-
-customTheme.onclick = ()=>{
-
-    themeUpload.click();
-
-};
-
-
 themeUpload.onchange = e=>{
 
     const file =
@@ -1254,21 +1244,15 @@ btn.onclick = ()=>{
 });
 
 
-
-// áp dụng
-if(selectedThemeFile){
-
-    selectedTheme =
-    await uploadThemeImage(selectedThemeFile);
-
-}
-if(selectedThemeFile){
-
-    selectedTheme =
-    await uploadThemeImage(selectedThemeFile);
-
-}
 document.getElementById("saveTheme").onclick = async ()=>{
+
+
+if(selectedThemeFile){
+
+    selectedTheme =
+    await uploadThemeImage(selectedThemeFile);
+
+}
 
 
 document.body.dataset.theme =
@@ -1289,19 +1273,10 @@ merge:true
 });
 
 
-
-localStorage.setItem(
-"chatTheme",
-selectedTheme
-);
-
-
-
 themeModal.classList.remove("show");
 
 
 };
-
 
 
 
