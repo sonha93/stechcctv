@@ -886,68 +886,44 @@ searchInput.value.trim()
 
 
 
-    users.forEach(user=>{
-
+     users.forEach(user=>{
 
         chatList.innerHTML += `
 
         <div class="chat-item"
         data-uid="${user.uid}">
 
-
             <div class="chat-button">
 
-
                 <div class="avatar-wrap">
-
 
                     <img class="avatar"
                     src="${user.avatar || './avatar.png'}">
 
-
                 </div>
-
-
 
                 <div class="chat-body">
 
-
                     <div class="chat-name">
-
                         ${user.name || user.displayName || "Người dùng"}
-
                     </div>
 
-
-
-                   <div class="message-preview">
-
-@${user.username || user.userId || ""}
-
-</div>
+                    <div class="message-preview">
+                        @${user.username || user.userId || ""}
+                    </div>
 
                 </div>
 
-
             </div>
-
 
         </div>
 
-
         `;
-
 
     });
 
-
-
 });
-
-}
-
-
-
+} 
 if(clearSearch){
 
     clearSearch.onclick = ()=>{
