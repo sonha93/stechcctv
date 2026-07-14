@@ -1,10 +1,9 @@
 import { app, auth } from "./auth.js";
 import { getVerifiedBadge } from "./verified-users.js";
- import {
+   import {
     toggleFollow,
     isFollowing,
-    unfollowUser,
-    hasPendingFollowRequest
+    unfollowUser
 } from "./follow_requests.js";
 import {
     getFirestore,
@@ -131,38 +130,24 @@ async function renderUsers(list){
 
 if(auth.currentUser && auth.currentUser.uid !== u.uid){
 
-  const following = await isFollowing(u.uid);
+    const following = await isFollowing(u.uid);
 
-if(following){
+   if(following){
+
+   buttonHtml = `
+<button class="follow-btn following" data-uid="${u.uid}">
+    Bạn bè
+</button>
+`;
+}else{
 
     buttonHtml = `
-    <button class="follow-btn following" data-uid="${u.uid}">
-        Bạn bè
+    <button class="follow-btn follow" data-uid="${u.uid}">
+        Follow
     </button>
     `;
 
-}else{
-
-    const pending = await hasPendingFollowRequest(u.uid);
-
-    if(pending){
-
-        buttonHtml = `
-        <button class="follow-btn following" data-uid="${u.uid}">
-            Đã gửi
-        </button>
-        `;
-
-    }else{
-
-        buttonHtml = `
-        <button class="follow-btn follow" data-uid="${u.uid}">
-            Follow
-        </button>
-        `;
-
-    }
-
+}
 }
   
         userList.insertAdjacentHTML(
@@ -251,13 +236,15 @@ searchInput.oninput = ()=>{
 
 };
 
-document.addEventListener("click", async e=>{
+document.addEventListener("click",async e=>{
 
-    const btn = e.target.closest(".follow-btn");
+    const btn=e.target.closest(".follow-btn");
 
     if(!btn) return;
 
+
     e.stopPropagation();
+
 
     if(!auth.currentUser){
 
@@ -267,37 +254,47 @@ document.addEventListener("click", async e=>{
 
     }
 
-    const uid = btn.dataset.uid;
 
-    btn.disabled = true;
+    const uid=btn.dataset.uid;
+
+
+    btn.disabled=true;
+
 
     try{
 
-        if(btn.classList.contains("following")){
 
-            openFollowPopup(uid);
+        // đang follow thì không hủy ngay nữa
+       if(btn.classList.contains("following")){
 
-            btn.disabled = false;
+    openFollowPopup(uid);
 
-            return;
+    btn.disabled=false;
 
-        }
+    return;
+
+}
 
 
+
+        // chưa follow
         if(btn.classList.contains("follow")){
 
-            const result = await toggleFollow(uid);
 
-            if(result){
+            await toggleFollow(uid);
 
-                btn.classList.remove("follow");
-                btn.classList.add("following");
 
-                btn.textContent = "Đã gửi";
 
-            }
+            btn.classList.remove("follow");
+
+            btn.classList.add("following");
+
+
+
+            btn.textContent = "Bạn bè";
 
         }
+
 
 
     }catch(err){
@@ -309,7 +306,9 @@ document.addEventListener("click", async e=>{
     }
 
 
-    btn.disabled = false;
+
+    btn.disabled=false;
+
 
 });
 async function openFollowPopup(uid){
