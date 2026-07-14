@@ -327,51 +327,91 @@ if(addStory){
 
   if (user && !isOwner) {
 
-    const following = await isFollowing(profileUid);
-
-    followBtn.innerHTML = following ? "Đang Follow" : "Follow";
+    updateFollowButton();
 
 }
 
 });
 
-let followLoading = false;
-followBtn.onclick = async () => {
+async function updateFollowButton(){
 
-    if (!auth.currentUser) {
-        alert("Bạn cần đăng nhập");
-        return;
+    const following = await isFollowing(profileUid);
+
+
+    if(following){
+
+        followBtn.innerHTML = `
+        <span class="material-icons">
+        manage_accounts
+        </span>
+        `;
+
+        followBtn.dataset.state = "following";
+
+
+    }else{
+
+        followBtn.innerHTML = "Follow";
+
+        followBtn.dataset.state = "follow";
+
     }
 
-    followBtn.disabled = true;
+}
 
-    try {
 
-        const following = await isFollowing(profileUid);
 
-        if (following) {
+followBtn.onclick = async()=>{
 
-            await unfollowUser(profileUid);
-            followBtn.innerHTML = "Follow";
 
-        } else {
+    if(!auth.currentUser){
 
-            await followUser(profileUid);
-            followBtn.innerHTML = "Đang Follow";
+        alert("Bạn cần đăng nhập");
 
-        }
+        return;
 
-    } catch (e) {
+    }
+
+
+    if(followBtn.dataset.state === "following"){
+
+
+        followSheet.classList.add("active");
+
+
+        return;
+
+    }
+
+
+
+    try{
+
+
+        followBtn.disabled = true;
+
+
+        await followUser(profileUid);
+
+
+        await updateFollowButton();
+
+
+
+    }catch(e){
 
         console.error(e);
-        alert("Có lỗi xảy ra.");
+
+        alert("Có lỗi xảy ra");
 
     }
+
+
 
     followBtn.disabled = false;
 
-};
 
+};
 messageBtn.onclick = async () => {
 
     if (!auth.currentUser) {
@@ -963,9 +1003,9 @@ unfollowBtn.onclick = async () => {
 
     await unfollowUser(profileUid);
 
-    followBtn.innerHTML = "Follow";
-
     followSheet.classList.remove("active");
+
+    await updateFollowButton();
 
 };
 addStoryBtn.onclick = ()=>{
