@@ -1091,7 +1091,51 @@ const themeBtn = document.getElementById("themeBtn");
 const themeModal = document.getElementById("themeModal");
 
 let selectedTheme = "default";
+const customTheme =
+document.getElementById("customTheme");
 
+const themeUpload =
+document.getElementById("themeUpload");
+
+const currentThemePreview =
+document.getElementById("currentThemePreview");
+
+
+if(customTheme && themeUpload){
+
+    customTheme.onclick = ()=>{
+
+        themeUpload.click();
+
+    };
+
+
+    themeUpload.onchange = e=>{
+
+        const file =
+        e.target.files[0];
+
+
+        if(!file) return;
+
+
+        const url =
+        URL.createObjectURL(file);
+
+
+        selectedTheme = url;
+
+
+        if(currentThemePreview){
+
+            currentThemePreview.src = url;
+
+        }
+
+
+    };
+
+}
 
 if(themeBtn){
 
@@ -1144,11 +1188,14 @@ selectedTheme;
 
 await db.collection("conversations")
 .doc(chatId)
-.update({
+.set({
 
-[`theme.${auth.currentUser.uid}`]:
-selectedTheme
+theme:{
+    [auth.currentUser.uid]: selectedTheme
+}
 
+},{
+merge:true
 });
 
 
