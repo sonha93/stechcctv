@@ -1089,8 +1089,98 @@ window.showMedia = function(src){
 
 const themeBtn = document.getElementById("themeBtn");
 const themeModal = document.getElementById("themeModal");
+const customTheme =
+document.getElementById("customTheme");
 
+const themeUpload =
+document.getElementById("themeUpload");
+
+const currentThemePreview =
+document.getElementById("currentThemePreview");
+
+
+customTheme.onclick = ()=>{
+
+    themeUpload.click();
+
+};
+
+
+themeUpload.onchange = e=>{
+
+    const file =
+    e.target.files[0];
+
+    if(!file) return;
+
+
+    selectedThemeFile = file;
+
+
+    currentThemePreview.src =
+    URL.createObjectURL(file);
+
+};
 let selectedTheme = "default";
+// ================================
+// UPLOAD THEME IMAGE CLOUDINARY
+// ================================
+
+async function uploadThemeImage(file){
+
+    if(!file) return null;
+
+    const formData = new FormData();
+
+    formData.append(
+        "file",
+        file
+    );
+
+    formData.append(
+        "upload_preset",
+        "stech_up"
+    );
+
+    try{
+
+        const res = await fetch(
+            "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+            {
+                method:"POST",
+                body:formData
+            }
+        );
+
+
+        const data = await res.json();
+
+
+        if(!data.secure_url){
+
+            console.error(data);
+
+            return null;
+
+        }
+
+
+        return data.secure_url;
+
+
+    }catch(err){
+
+        console.error(
+            "Upload theme lỗi:",
+            err
+        );
+
+        return null;
+
+    }
+
+}
+let selectedThemeFile = null;
 const customTheme =
 document.getElementById("customTheme");
 
@@ -1119,16 +1209,14 @@ if(customTheme && themeUpload){
         if(!file) return;
 
 
-        const url =
-        URL.createObjectURL(file);
+       const url =
+URL.createObjectURL(file);
 
 
-        selectedTheme = url;
+currentThemePreview.src = url;
 
 
-        if(currentThemePreview){
-
-            currentThemePreview.src = url;
+selectedThemeFile = file;
 
         }
 
@@ -1177,7 +1265,18 @@ btn.onclick = ()=>{
 
 
 // áp dụng
+if(selectedThemeFile){
 
+    selectedTheme =
+    await uploadThemeImage(selectedThemeFile);
+
+}
+if(selectedThemeFile){
+
+    selectedTheme =
+    await uploadThemeImage(selectedThemeFile);
+
+}
 document.getElementById("saveTheme").onclick = async ()=>{
 
 
