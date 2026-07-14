@@ -1106,11 +1106,12 @@ let selectedTheme = "default";
 
 if(themeBtn && themeModal){
 
-    themeBtn.onclick = ()=>{
+   themeBtn.onclick = ()=>{
 
-        themeModal.classList.add("show");
+    themeModal.classList.remove("hidden");
+    themeModal.classList.add("show");
 
-    };
+};
 
 }
 
@@ -1122,6 +1123,19 @@ if(closeTheme){
     closeTheme.onclick = ()=>{
 
         themeModal.classList.remove("show");
+        themeModal.classList.add("hidden");
+
+    };
+
+}
+
+
+if(cancelTheme){
+
+    cancelTheme.onclick = ()=>{
+
+        themeModal.classList.remove("show");
+        themeModal.classList.add("hidden");
 
     };
 
