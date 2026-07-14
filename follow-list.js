@@ -1,6 +1,5 @@
 import { app, auth } from "./auth.js";
 import { getVerifiedBadge } from "./verified-users.js";
-import {
    import {
     toggleFollow,
     isFollowing,
@@ -326,9 +325,7 @@ async function openFollowPopup(uid){
 
     document.getElementById("unfollowBtn").onclick = async ()=>{
 
-        await deleteDoc(doc(db,"users",auth.currentUser.uid,"following",uid));
-
-        await deleteDoc(doc(db,"users",uid,"followers",auth.currentUser.uid));
+        await unfollowUser(uid);
 
         document.getElementById("followPopup").style.display="none";
 
