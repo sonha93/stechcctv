@@ -334,13 +334,15 @@ MOBILE
     object-fit:cover !important;
     flex-shrink:0;
 }
-
+.notify-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
 .verified-popup{
     display:none !important;
 }
 
 .verified-badge:hover .verified-popup{
     display:none !important;
-}
-
 }
