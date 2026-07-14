@@ -436,7 +436,7 @@ if(currentFilter==="requests"){
                 <div class="avatar-wrap">
 
                     <img class="avatar"
-                   src="${userData.avatar || './avatar.png'}"
+                   src="${userData.avatar || './avatar.png'}">
 
                 </div>
 
