@@ -1,4 +1,3 @@
-
 import { app, auth } from "./auth.js";
 import { getVerifiedBadge } from "./verified-users.js";
    import {
@@ -160,13 +159,17 @@ buttonHtml = `
 <button class="follow-btn follow" data-uid="${u.uid}">
     Follow
 </button>
-  `;
+`;
 
 }
-       userList.insertAdjacentHTML(
-    "beforeend",
-    `
-    <div class="user-item" data-uid="${u.uid}">
+    
+}
+  
+        userList.insertAdjacentHTML(
+            "beforeend",
+            `
+           <div class="user-item" data-uid="${u.uid}">
+
              <img
 class="follow-avatar"
 src="${u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}"
@@ -203,15 +206,14 @@ onclick="location.href='profile-review.html?uid=${u.uid}'">
         
         item.querySelector(".user-info").onclick = ()=>{
 
-           location.href =
-`profile-review.html?uid=${u.uid}`;
+            location.href =
+            `profile-review.html?uid=${u.uid}`;
 
         };
 
     }
 
 }
-   } 
 searchInput.oninput = ()=>{
 
     const keyword =
@@ -291,16 +293,15 @@ document.addEventListener("click",async e=>{
 
 
         // chưa follow
-       if(btn.classList.contains("follow")){
+        if(btn.classList.contains("follow")){
 
-    await toggleFollow(uid);
 
-    btn.classList.remove("follow");
-    btn.classList.add("following");
+          await toggleFollow(uid);
 
-    btn.textContent = "Đã gửi";
+btn.classList.remove("follow");
+btn.classList.add("following");
 
-}
+btn.textContent = "Đã gửi";
 
 
 
