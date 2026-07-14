@@ -358,3 +358,14 @@ MOBILE
     flex:0 0 42px;
     cursor:pointer;
 }
+.notify-avatar{
+    width:42px !important;
+    height:42px !important;
+    min-width:42px !important;
+    max-width:42px !important;
+    min-height:42px !important;
+    max-height:42px !important;
+    border-radius:50% !important;
+    object-fit:cover !important;
+    flex:0 0 42px;
+}
