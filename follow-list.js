@@ -131,30 +131,31 @@ if(auth.currentUser && auth.currentUser.uid !== u.uid){
 
     const following = await isFollowing(u.uid);
 
-    if(following){
+   if(following){
 
-        buttonHtml = `
-        <button class="follow-btn following" data-uid="${u.uid}">
-            Đã follow
-        </button>
-        `;
+    buttonHtml = `
+    <button class="follow-btn following" data-uid="${u.uid}">
+        <span class="material-icons">
+            manage_accounts
+        </span>
+    </button>
+    `;
 
-    }else{
+}else{
 
-        buttonHtml = `
-        <button class="follow-btn follow" data-uid="${u.uid}">
-            Follow
-        </button>
-        `;
+    buttonHtml = `
+    <button class="follow-btn follow" data-uid="${u.uid}">
+        Follow
+    </button>
+    `;
 
-    }
-
+}
 }
   
         userList.insertAdjacentHTML(
             "beforeend",
             `
-            <div class="user-item">
+           <div class="user-item" data-uid="${u.uid}">
 
              <img
 class="follow-avatar"
@@ -243,70 +244,79 @@ document.addEventListener("click",async e=>{
 
     if(!btn) return;
 
+
     e.stopPropagation();
+
 
     if(!auth.currentUser){
 
         alert("Bạn cần đăng nhập");
+
         return;
 
     }
 
+
     const uid=btn.dataset.uid;
+
 
     btn.disabled=true;
 
+
     try{
 
-        if(btn.classList.contains("friend")){
+
+        // đang follow thì không hủy ngay nữa
+        if(btn.classList.contains("following")){
+
+
+            alert("Đã follow. Mở quản lý follow tại đây.");
+
+
+            btn.disabled=false;
+
             return;
+
         }
 
+
+
+        // chưa follow
         if(btn.classList.contains("follow")){
 
-   await toggleFollow(uid);
 
-    btn.classList.remove("follow");
-    btn.classList.add("following");
+            await toggleFollow(uid);
 
-    btn.innerText="Đã follow";
 
-}
-        
-    else if(btn.classList.contains("following")){
 
-            if(!confirm("Hủy follow người này?")){
-                btn.disabled=false;
-                return;
-            }
+            btn.classList.remove("follow");
 
-           await toggleFollow(uid);
+            btn.classList.add("following");
 
-            btn.classList.remove("following");
-            btn.classList.add("follow");
 
-            btn.innerText="Follow";
+
+            btn.innerHTML = `
+            <span class="material-icons">
+                manage_accounts
+            </span>
+            `;
+
 
         }
 
-    }finally{
 
-        btn.disabled=false;
+
+    }catch(err){
+
+        console.error(err);
+
+        alert("Có lỗi xảy ra");
 
     }
 
-});
-userList.addEventListener("click", e => {
 
-    const item = e.target.closest(".user-item");
-    if (!item) return;
 
-    // Không chuyển trang khi bấm nút Follow
-    if (e.target.closest(".follow-btn")) return;
+    btn.disabled=false;
 
-    const uid = item.dataset.uid;
-    if (!uid) return;
-
-    location.href = `profile-review.html?uid=${uid}`;
 
 });
