@@ -3,6 +3,7 @@ import { getVerifiedBadge } from "./verified-users.js";
    import {
     toggleFollow,
     isFollowing,
+    isFriend,
     unfollowUser
 } from "./follow_requests.js";
 import {
@@ -129,25 +130,39 @@ async function renderUsers(list){
         let buttonHtml = "";
 
 if(auth.currentUser && auth.currentUser.uid !== u.uid){
+   const friend = await isFriend(u.uid);
 
-    const following = await isFollowing(u.uid);
+const following = await isFollowing(u.uid);
 
-   if(following){
 
-   buttonHtml = `
+if(friend){
+
+buttonHtml = `
 <button class="follow-btn following" data-uid="${u.uid}">
     Bạn bè
 </button>
 `;
-}else{
-
-    buttonHtml = `
-    <button class="follow-btn follow" data-uid="${u.uid}">
-        Follow
-    </button>
-    `;
 
 }
+else if(following){
+
+buttonHtml = `
+<button class="follow-btn following" data-uid="${u.uid}">
+    Đã gửi
+</button>
+`;
+
+}
+else{
+
+buttonHtml = `
+<button class="follow-btn follow" data-uid="${u.uid}">
+    Follow
+</button>
+`;
+
+}
+    
 }
   
         userList.insertAdjacentHTML(
