@@ -1181,15 +1181,6 @@ async function uploadThemeImage(file){
 
 }
 let selectedThemeFile = null;
-const customTheme =
-document.getElementById("customTheme");
-
-const themeUpload =
-document.getElementById("themeUpload");
-
-const currentThemePreview =
-document.getElementById("currentThemePreview");
-
 
 if(customTheme && themeUpload){
 
