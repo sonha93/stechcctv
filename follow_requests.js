@@ -255,3 +255,48 @@ export async function isFriend(targetUid){
     return theyFollow.exists;
 
 }
+// ================================
+// HỦY FOLLOW
+// ================================
+
+export async function unfollowUser(targetUid){
+
+    if(!auth.currentUser) return;
+
+    const myUid = auth.currentUser.uid;
+
+    const batch = db.batch();
+
+    batch.delete(
+        db.collection("users")
+        .doc(myUid)
+        .collection("following")
+        .doc(targetUid)
+    );
+
+    batch.delete(
+        db.collection("users")
+        .doc(targetUid)
+        .collection("followers")
+        .doc(myUid)
+    );
+
+    batch.update(
+        db.collection("users").doc(myUid),
+        {
+            followingCount: firebase.firestore.FieldValue.increment(-1),
+            friendCount: firebase.firestore.FieldValue.increment(-1)
+        }
+    );
+
+    batch.update(
+        db.collection("users").doc(targetUid),
+        {
+            followerCount: firebase.firestore.FieldValue.increment(-1),
+            friendCount: firebase.firestore.FieldValue.increment(-1)
+        }
+    );
+
+    await batch.commit();
+
+}
