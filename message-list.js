@@ -398,8 +398,8 @@ if(currentFilter==="requests"){
 
     const snap = await db
     .collection("follow_requests")
-    .where("toUid","==",user.uid)
-    .where("status","==","pending")
+.where("to","==",user.uid)
+.where("status","==","pending")
     .get();
 
 
@@ -421,7 +421,7 @@ if(currentFilter==="requests"){
 
     const userSnap = await db
     .collection("users")
-    .doc(r.fromUid)
+    .doc(r.from)
     .get();
 
     const userData = userSnap.exists
@@ -430,7 +430,7 @@ if(currentFilter==="requests"){
 
         chatList.innerHTML += `
 
-          <div class="chat-item" data-uid="${r.fromUid}">
+          <div class="chat-item" data-uid="${r.from}">
             <div class="chat-button">
 
                 <div class="avatar-wrap">
