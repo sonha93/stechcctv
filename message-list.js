@@ -2,7 +2,10 @@
 // MESSAGE LIST JS (FIREBASE V8)
 // ================================
 
-
+import {
+    acceptFollowRequest,
+    rejectFollowRequest
+} from "./follow-request.js";
 // Firebase
 import { getVerifiedBadge } from "./verified-users.js";
 import { db, auth } from "./firebase-init.js";
@@ -360,31 +363,48 @@ async function renderChats(){
 
         chatList.innerHTML += `
 
-        <div class="chat-item">
+<div class="chat-item">
 
-            <div class="chat-button">
+    <div class="chat-button">
 
-                <div class="chat-body">
+        <div class="avatar-wrap">
 
-                    <div class="chat-name">
-                    ${data.title || "Thông báo"}
-                    </div>
+            <img class="avatar"
+            src="${userData.avatar || "./avatar.png"}">
 
-                    <div class="message-preview">
-                    ${data.message || ""}
-                    </div>
+        </div>
 
-                </div>
+        <div class="chat-body">
+
+            <div class="chat-name">
+                ${userData.name || "Người dùng"}
+            </div>
+
+            <div class="message-preview">
+                Đã gửi lời mời theo dõi
+            </div>
+
+            <div style="margin-top:10px;display:flex;gap:8px">
+
+                <button
+                onclick="event.stopPropagation();acceptFollow('${doc.id}')">
+                    Chấp nhận
+                </button>
+
+                <button
+                onclick="event.stopPropagation();rejectFollow('${doc.id}')">
+                    Từ chối
+                </button>
 
             </div>
 
         </div>
 
-        `;
+    </div>
 
-    });
+</div>
 
-
+`;
     return;
 
 }
@@ -1254,15 +1274,20 @@ if (avatarSheet) {
 }
 window.acceptFollow = async function(id){
 
-    await db
-    .collection("follow_requests")
-    .doc(id)
-    .update({
+    await acceptFollowRequest(id);
 
-        status:"accepted"
+    renderChats();
 
-    });
+    showToast("Đã chấp nhận lời mời");
 
-    alert("Đã chấp nhận");
+};
+
+window.rejectFollow = async function(id){
+
+    await rejectFollowRequest(id);
+
+    renderChats();
+
+    showToast("Đã từ chối lời mời");
 
 };
