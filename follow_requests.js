@@ -142,14 +142,13 @@ await batch.commit();
 
 await db.collection("notifications").add({
 
-        receiverId: from,
-        senderId: to,
-        type: "follow_accept",
-        read: false,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    receiverId: to,
+    senderId: from,
+    type: "follow",
+    read:false,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
-    });
-
+});
 
 }
 
