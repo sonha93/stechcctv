@@ -3,7 +3,6 @@ import { getVerifiedBadge } from "./verified-users.js";
    import {
     toggleFollow,
     isFollowing,
-    isFriend,
     unfollowUser
 } from "./follow_requests.js";
 import {
@@ -130,39 +129,28 @@ async function renderUsers(list){
         let buttonHtml = "";
 
 if(auth.currentUser && auth.currentUser.uid !== u.uid){
-   const friend = await isFriend(u.uid);
 
-const following = await isFollowing(u.uid);
+    const following = await isFollowing(u.uid);
 
+   if(following){
 
-if(friend){
+    buttonHtml = `
+    <button class="follow-btn following" data-uid="${u.uid}">
+        <span class="material-icons">
+           Bạn bè
+        </span>
+    </button>
+    `;
 
-buttonHtml = `
-<button class="follow-btn following" data-uid="${u.uid}">
-    Bạn bè
-</button>
-`;
+}else{
 
-}
-else if(following){
-
-buttonHtml = `
-<button class="follow-btn following" data-uid="${u.uid}">
-    Đã gửi
-</button>
-`;
-
-}
-else{
-
-buttonHtml = `
-<button class="follow-btn follow" data-uid="${u.uid}">
-    Follow
-</button>
-`;
+    buttonHtml = `
+    <button class="follow-btn follow" data-uid="${u.uid}">
+        Follow
+    </button>
+    `;
 
 }
-    
 }
   
         userList.insertAdjacentHTML(
@@ -296,12 +284,24 @@ document.addEventListener("click",async e=>{
         if(btn.classList.contains("follow")){
 
 
-          await toggleFollow(uid);
+            await toggleFollow(uid);
 
-btn.classList.remove("follow");
-btn.classList.add("following");
 
-btn.textContent = "Đã gửi";
+
+            btn.classList.remove("follow");
+
+            btn.classList.add("following");
+
+
+
+            btn.innerHTML = `
+            <span class="material-icons">
+                manage_accounts
+            </span>
+            `;
+
+
+        }
 
 
 
