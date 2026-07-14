@@ -396,12 +396,10 @@ if(currentFilter==="requests"){
 
     if(!user) return;
 
-    const snap = await db
-    .collection("follow_requests")
+  const snap = await db
+.collection("follow_requests")
 .where("to","==",user.uid)
-.where("status","==","pending")
-    .get();
-
+.get();
 
     if(snap.empty){
 
