@@ -244,10 +244,18 @@ if(blocked){
 
     return;
 }
-    followingCount.innerHTML = u.followingCount || 0;
+   const followingSnap = await getDocs(
+    collection(db,"users",profileUid,"following")
+);
 
-    followerCount.innerHTML = u.followerCount || 0;
+const followerSnap = await getDocs(
+    collection(db,"users",profileUid,"followers")
+);
 
+
+followingCount.innerHTML = followingSnap.size;
+
+followerCount.innerHTML = followerSnap.size;
 
 
     // ===== TÍNH TỔNG LIKE VIDEO =====
