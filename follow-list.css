@@ -431,3 +431,9 @@ MOBILE
     background:#efefef;
     color:#111;
 }
+/* Khung chứa nút */
+.notify-action{
+    display:flex;
+    gap:10px;
+    margin-left:auto;
+}
