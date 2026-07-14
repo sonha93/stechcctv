@@ -828,7 +828,7 @@ document.getElementById("avatarViewerImg");
 const closeAvatarViewer =
 document.getElementById("closeAvatarViewer");
 
-if(avatar){
+if(avatar && avatarViewer && avatarViewerImg){
 
     avatar.onclick = ()=>{
 
