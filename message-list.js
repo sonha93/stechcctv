@@ -856,10 +856,14 @@ if(closeUserSearch){
     : "none";
 
 }
-clearSearch.style.display =
-searchInput.value.trim()
-? "flex"
-: "none";
+if(clearSearch){
+
+    clearSearch.style.display =
+    searchInput.value.trim()
+    ? "flex"
+    : "none";
+
+}
     const keyword =
     searchInput.value
     .toLowerCase()
