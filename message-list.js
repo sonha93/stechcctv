@@ -904,7 +904,7 @@ if(clearSearch){
                 <div class="chat-body">
 
                     <div class="chat-name">
-                        ${user.name || user.displayName || "Người dùng"}
+                        ${user.name || user.displayName || user.username || user.userId || "Người dùng"}
                     </div>
 
                     <div class="message-preview">
