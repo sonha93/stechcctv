@@ -201,7 +201,7 @@ onclick="location.href='profile-review.html?uid=${u.uid}'">
         item.querySelector(".user-info").onclick = ()=>{
 
             location.href =
-            `profile-review.html?uid=${u.uid}`;
+            profile-review.html?uid=${u.uid}`;
 
         };
 
