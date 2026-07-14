@@ -1090,33 +1090,24 @@ window.showMedia = function(src){
 const themeBtn = document.getElementById("themeBtn");
 const themeModal = document.getElementById("themeModal");
 
-const closeTheme =
-document.getElementById("closeTheme");
-
-const cancelTheme =
-document.getElementById("cancelTheme");
-
-const saveTheme =
-document.getElementById("saveTheme");
+const closeTheme = document.getElementById("closeTheme");
+const cancelTheme = document.getElementById("cancelTheme");
+const saveTheme = document.getElementById("saveTheme");
 
 let selectedTheme = "default";
 
 
-// mở popup theme
-
 if(themeBtn && themeModal){
 
-   themeBtn.onclick = ()=>{
+    themeBtn.onclick = ()=>{
 
-    themeModal.classList.remove("hidden");
-    themeModal.classList.add("show");
+        themeModal.classList.remove("hidden");
+        themeModal.classList.add("show");
 
-};
+    };
 
 }
 
-
-// đóng popup
 
 if(closeTheme){
 
@@ -1147,6 +1138,7 @@ if(cancelTheme){
     cancelTheme.onclick = ()=>{
 
         themeModal.classList.remove("show");
+        themeModal.classList.add("hidden");
 
     };
 
