@@ -56,7 +56,7 @@ console.log("NOTIFICATIONS:", notifications);
 <div class="notify-item" id="request-${item.id}">
 
     <img
-        src="${u.avatar || "./avatar.png"}"
+        src="${u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}"
         class="notify-avatar">
 
     <div class="notify-content">
