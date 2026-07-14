@@ -469,7 +469,7 @@ if(currentFilter==="requests"){
 
         `;
 
-    });
+    }
 
 
     return;
