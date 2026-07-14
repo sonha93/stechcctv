@@ -1083,3 +1083,130 @@ window.showMedia = function(src){
     document.body.appendChild(box);
 
 };
+// ================================
+// CHAT THEME
+// ================================
+
+const themeBtn =
+document.querySelector(".quick-action button:nth-child(4)");
+
+
+// tạo bảng theme
+if(themeBtn){
+
+themeBtn.onclick = ()=>{
+
+let panel = document.createElement("div");
+
+panel.className = "theme-panel";
+
+panel.innerHTML = `
+
+<h3>Chủ đề đoạn chat</h3>
+
+<button data-theme="default">
+Mặc định
+</button>
+
+<button data-theme="blue">
+Xanh
+</button>
+
+<button data-theme="pink">
+Hồng
+</button>
+
+<button data-theme="dark">
+Tối
+</button>
+
+`;
+
+document.body.appendChild(panel);
+
+
+
+panel.querySelectorAll("[data-theme]")
+.forEach(btn=>{
+
+
+btn.onclick = async ()=>{
+
+
+const theme =
+btn.dataset.theme;
+
+
+// lưu Firestore
+await db.collection("conversations")
+.doc(chatId)
+.update({
+
+[`theme.${auth.currentUser.uid}`]:
+theme
+
+});
+
+
+// áp dụng ngay
+document.body.dataset.theme = theme;
+
+
+// lưu local
+localStorage.setItem(
+"chatTheme",
+theme
+);
+
+
+panel.remove();
+
+
+};
+
+
+});
+
+
+};
+
+
+}
+
+
+
+// LOAD THEME
+
+async function loadTheme(){
+
+
+if(!chatId) return;
+
+
+const snap =
+await db.collection("conversations")
+.doc(chatId)
+.get();
+
+
+
+if(!snap.exists)return;
+
+
+const data=snap.data();
+
+
+const theme =
+data.theme?.[auth.currentUser.uid] ||
+"default";
+
+
+document.body.dataset.theme =
+theme;
+
+
+}
+
+
+
+loadTheme();
