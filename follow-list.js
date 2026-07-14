@@ -157,13 +157,10 @@ if(auth.currentUser && auth.currentUser.uid !== u.uid){
             `
             <div class="user-item">
 
-              <img
+             <img
 class="follow-avatar"
-data-uid="${u.uid}"
-src="${
-    u.avatar ||
-    "https://i.ibb.co/Z1kv9nJj/logo.png"
-}">
+src="${u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}"
+onclick="location.href='profile-review.html?uid=${u.uid}'">
 
                 <div class="user-info">
 
@@ -297,27 +294,6 @@ document.addEventListener("click",async e=>{
 
         btn.disabled=false;
 
-    }
-
-});
-userList.addEventListener("click", e => {
-
-    const avatar = e.target.closest(".follow-avatar");
-
-    if (avatar) {
-        e.stopPropagation();
-
-        location.href = `profile-review.html?uid=${avatar.dataset.uid}`;
-        return;
-    }
-
-    const info = e.target.closest(".user-info");
-
-    if (info) {
-        const item = info.closest(".user-item");
-        const img = item.querySelector(".follow-avatar");
-
-        location.href = `profile-review.html?uid=${img.dataset.uid}`;
     }
 
 });
