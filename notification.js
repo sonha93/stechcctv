@@ -62,27 +62,25 @@ console.log("NOTIFICATIONS:", notifications);
     <div class="notify-content">
 
         <div class="notify-title">
-
             <b>${u.name || "Người dùng"}</b>
             đã gửi lời mời theo dõi bạn
-
         </div>
 
-        <div class="notify-action">
+    </div>
 
-            <button
-                class="acceptBtn"
-                data-id="${item.id}">
-                Chấp nhận
-            </button>
+    <div class="notify-action">
 
-            <button
-                class="rejectBtn"
-                data-id="${item.id}">
-                Từ chối
-            </button>
+        <button
+            class="acceptBtn"
+            data-id="${item.id}">
+            Chấp nhận
+        </button>
 
-        </div>
+        <button
+            class="rejectBtn"
+            data-id="${item.id}">
+            Từ chối
+        </button>
 
     </div>
 
