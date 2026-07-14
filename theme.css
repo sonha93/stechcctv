@@ -1392,4 +1392,32 @@ border-radius:12px;
 border:0;
 
 }
+   .theme-panel{
+
+padding:15px;
+background:white;
+border-radius:15px;
+margin:10px;
+
+}
+
+
+.theme-list{
+
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+
+}
+
+
+.theme-list button{
+
+padding:10px 15px;
+border-radius:10px;
+border:1px solid #ddd;
+background:#fff;
+cursor:pointer;
+
+}
 }
