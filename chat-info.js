@@ -1146,13 +1146,13 @@ document.querySelectorAll(".theme-card[data-theme]")
 
     btn.onclick = ()=>{
 
-        selectedTheme =
-        btn.dataset.theme;
+        selectedTheme = btn.dataset.theme;
+
+        document.body.dataset.theme = selectedTheme;
 
     };
 
 });
-
 
 // lưu theme
 
