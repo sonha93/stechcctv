@@ -134,14 +134,11 @@ if(auth.currentUser && auth.currentUser.uid !== u.uid){
 
    if(following){
 
-    buttonHtml = `
-    <button class="follow-btn following" data-uid="${u.uid}">
-        <span class="material-icons">
-           Bạn bè
-        </span>
-    </button>
-    `;
-
+   buttonHtml = `
+<button class="follow-btn following" data-uid="${u.uid}">
+    Bạn bè
+</button>
+`;
 }else{
 
     buttonHtml = `
@@ -294,12 +291,7 @@ document.addEventListener("click",async e=>{
 
 
 
-            btn.innerHTML = `
-            <span class="material-icons">
-                manage_accounts
-            </span>
-            `;
-
+            btn.textContent = "Bạn bè";
 
         }
 
