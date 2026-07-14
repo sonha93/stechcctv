@@ -335,7 +335,7 @@ async function renderChats(){
 
     const snap = await db
     .collection("notifications")
-    .where("uid","==",user.uid)
+    .where("receiverId","==",user.uid)
     .orderBy("createdAt","desc")
     .get();
 
