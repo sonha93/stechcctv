@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Chat Theme</title>
+
+<link rel="stylesheet" href="theme.css">
+
+</head>
+
+<body>
+
+<!-- ===========================
+THEME POPUP
+============================ -->
+
+<div id="themeModal" class="theme-modal">
+
+<div class="theme-window">
+
+<!-- HEADER -->
+
+<div class="theme-header">
+
+<div class="theme-title">
+
+<div class="theme-icon">
+
+<svg viewBox="0 0 24 24">
+<path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/>
+</svg>
+
+</div>
+
+<div>
+
+<h2>Tùy chỉnh cuộc trò chuyện</h2>
+
+<p>Cá nhân hóa giao diện chat</p>
+
+</div>
+
+</div>
+
+<button id="closeTheme" class="close-btn">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M18 6L6 18M6 6l12 12"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<!-- BODY -->
+
+<div class="theme-body">
+
+<!-- LEFT -->
+
+<div class="theme-sidebar">
+
+<button class="theme-menu active" data-tab="background">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M4 5h16v14H4z"/>
+
+<circle cx="8" cy="9" r="2"/>
+
+<path d="M4 16l5-5 4 4 3-3 4 4"/>
+
+</svg>
+
+<span>Ảnh nền</span>
+
+</button>
+
+<button class="theme-menu" data-tab="color">
+
+<svg viewBox="0 0 24 24">
+
+<circle cx="12" cy="12" r="9"/>
+
+<path d="M12 3v18"/>
+
+<path d="M3 12h18"/>
+
+</svg>
+
+<span>Màu sắc</span>
+
+</button>
+
+<button class="theme-menu" data-tab="effect">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"/>
+
+</svg>
+
+<span>Hiệu ứng</span>
+
+</button>
+
+<button class="theme-menu" data-tab="setting">
+
+<svg viewBox="0 0 24 24">
+
+<circle cx="12" cy="12" r="3"/>
+
+<path d="M19.4 15a7.7 7.7 0 000-6l2-1.5-2-3.5-2.4.9a8 8 0 00-5.9-2.4L10.5 0H7l-.6 2.5A8 8 0 002.5 5L0 4l-2 3.5L0 9a7.7 7.7 0 000 6l-2 1.5L0 20l2.5-.9A8 8 0 008.4 22l.6 2.5h3.5l.6-2.5A8 8 0 0019 20l2.4.9 2-3.5z"/>
+
+</svg>
+
+<span>Cài đặt</span>
+
+</button>
+
+</div>
+
+<!-- CONTENT -->
+
+<div class="theme-content">
+
+<!-- BACKGROUND -->
+
+<section id="backgroundTab" class="tab active">
+
+<h3>Ảnh nền cuộc trò chuyện</h3>
+
+<div class="preview-box">
+
+<img id="previewImage" src="images/default-chat.jpg">
+
+<div class="preview-overlay">
+
+<button id="chooseImage">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M12 5v14"/>
+
+<path d="M5 12h14"/>
+
+</svg>
+
+<span>Chọn ảnh</span>
+
+</button>
+
+</div>
+
+</div>
+
+<input
+type="file"
+id="themeImage"
+accept="image/*"
+hidden>
+
+<div class="theme-option">
+
+<label class="radio-box">
+
+<input
+type="radio"
+name="scope"
+value="me"
+checked>
+
+<span></span>
+
+Chỉ mình tôi
+
+</label>
+
+<label class="radio-box">
+
+<input
+type="radio"
+name="scope"
+value="both">
+
+<span></span>
+
+Cả hai người
+
+</label>
+
+</div>
+
+<div class="button-row">
+
+<button id="removeImage" class="gray-btn">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M4 7h16"/>
+
+<path d="M9 7V4h6v3"/>
+
+<path d="M7 7l1 13h8l1-13"/>
+
+</svg>
+
+Xóa nền
+
+</button>
+
+<button id="defaultTheme" class="gray-btn">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M4 12a8 8 0 1016 0"/>
+
+<path d="M4 12V7"/>
+
+<path d="M4 12h5"/>
+
+</svg>
+
+Mặc định
+
+</button>
+
+</div>
+
+</section>
+<!-- ===========================
+COLOR TAB
+=========================== -->
+
+<section id="colorTab" class="tab">
+
+<h3>Màu chủ đề</h3>
+
+<p class="tab-desc">
+Chọn màu bong bóng tin nhắn
+</p>
+
+<div class="color-grid">
+
+<div class="theme-color active" data-color="#0084ff"></div>
+
+<div class="theme-color" data-color="#0A84FF"></div>
+
+<div class="theme-color" data-color="#00C853"></div>
+
+<div class="theme-color" data-color="#ff1744"></div>
+
+<div class="theme-color" data-color="#ff9800"></div>
+
+<div class="theme-color" data-color="#ffd600"></div>
+
+<div class="theme-color" data-color="#651fff"></div>
+
+<div class="theme-color" data-color="#9c27b0"></div>
+
+<div class="theme-color" data-color="#e91e63"></div>
+
+<div class="theme-color" data-color="#00bcd4"></div>
+
+<div class="theme-color" data-color="#009688"></div>
+
+<div class="theme-color" data-color="#4caf50"></div>
+
+<div class="theme-color" data-color="#3f51b5"></div>
+
+<div class="theme-color" data-color="#607d8b"></div>
+
+<div class="theme-color" data-color="#212121"></div>
+
+</div>
+
+<h3 class="mt30">
+
+Gradient Messenger
+
+</h3>
+
+<div class="gradient-grid">
+
+<div class="gradient-item active"
+
+data-gradient="linear-gradient(135deg,#0084ff,#6f42c1)">
+
+</div>
+
+<div class="gradient-item"
+
+data-gradient="linear-gradient(135deg,#ff0080,#7928ca)">
+
+</div>
+
+<div class="gradient-item"
+
+data-gradient="linear-gradient(135deg,#00c6ff,#0072ff)">
+
+</div>
+
+<div class="gradient-item"
+
+data-gradient="linear-gradient(135deg,#f7971e,#ffd200)">
+
+</div>
+
+<div class="gradient-item"
+
+data-gradient="linear-gradient(135deg,#11998e,#38ef7d)">
+
+</div>
+
+<div class="gradient-item"
+
+data-gradient="linear-gradient(135deg,#fc466b,#3f5efb)">
+
+</div>
+
+<div class="gradient-item"
+
+data-gradient="linear-gradient(135deg,#ff512f,#dd2476)">
+
+</div>
+
+<div class="gradient-item"
+
+data-gradient="linear-gradient(135deg,#8e2de2,#4a00e0)">
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ===========================
+EFFECT TAB
+=========================== -->
+
+<section id="effectTab" class="tab">
+
+<h3>Hiệu ứng nền</h3>
+
+<div class="slider-box">
+
+<label>
+
+Blur
+
+</label>
+
+<input
+type="range"
+id="blurRange"
+min="0"
+max="20"
+value="0">
+
+<span id="blurValue">
+
+0 px
+
+</span>
+
+</div>
+
+<div class="slider-box">
+
+<label>
+
+Độ sáng
+
+</label>
+
+<input
+type="range"
+id="brightnessRange"
+min="40"
+max="100"
+value="100">
+
+<span id="brightnessValue">
+
+100%
+
+</span>
+
+</div>
+
+<div class="slider-box">
+
+<label>
+
+Độ trong suốt
+
+</label>
+
+<input
+type="range"
+id="opacityRange"
+min="20"
+max="100"
+value="100">
+
+<span id="opacityValue">
+
+100%
+
+</span>
+
+</div>
+
+<label class="switch-row">
+
+<input
+type="checkbox"
+id="darkTheme">
+
+<span class="switch"></span>
+
+Bật Dark Theme
+
+</label>
+
+</section>
+
+<!-- ===========================
+SETTING TAB
+=========================== -->
+
+<section id="settingTab" class="tab">
+
+<h3>Tùy chọn</h3>
+
+<label class="check-box">
+
+<input
+type="checkbox"
+id="animateTheme"
+checked>
+
+<span></span>
+
+Hiệu ứng chuyển nền
+
+</label>
+
+<label class="check-box">
+
+<input
+type="checkbox"
+id="syncTheme">
+
+<span></span>
+
+Đồng bộ mọi thiết bị
+
+</label>
+
+<label class="check-box">
+
+<input
+type="checkbox"
+id="rememberTheme"
+checked>
+
+<span></span>
+
+Ghi nhớ chủ đề
+
+</label>
+
+<label class="check-box">
+
+<input
+type="checkbox"
+id="autoCompress"
+checked>
+
+<span></span>
+
+Tự động nén ảnh nền
+
+</label>
+
+</section>
+
+</div>
+
+</div>
+
+<!-- FOOTER -->
+
+<div class="theme-footer">
+
+<button id="cancelTheme"
+
+class="btn btn-gray">
+
+Hủy
+
+</button>
+
+<button id="resetTheme"
+
+class="btn btn-light">
+
+Khôi phục
+
+</button>
+
+<button id="saveTheme"
+
+class="btn btn-primary">
+
+Lưu thay đổi
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script type="module"
+
+src="theme.js">
+
+</script>
+
+</body>
+
+</html>
