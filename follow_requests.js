@@ -50,7 +50,7 @@ await db.collection("follow_requests").add({
 
         receiverId: targetUid,
         senderId: myUid,
-        type:"follow_request"
+        type:"follow_request",
         read:false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
