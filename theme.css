@@ -1338,5 +1338,58 @@ flex-direction:column;
 width:100%;
 
 }
+/* THEME */
 
+body[data-theme="blue"] .chat-box,
+body[data-theme="blue"] .message{
+    background:#2196f3;
+}
+
+
+body[data-theme="pink"] .chat-box,
+body[data-theme="pink"] .message{
+    background:#ff80ab;
+}
+
+
+body[data-theme="dark"]{
+    background:#121212;
+    color:white;
+}
+
+
+.theme-panel{
+
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+
+background:white;
+padding:20px;
+
+border-radius:20px;
+
+z-index:99999;
+
+box-shadow:0 5px 20px #0005;
+
+}
+
+
+.theme-panel button{
+
+display:block;
+
+width:200px;
+
+padding:12px;
+
+margin:8px;
+
+border-radius:12px;
+
+border:0;
+
+}
 }
