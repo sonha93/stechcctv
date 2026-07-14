@@ -291,17 +291,24 @@ document.addEventListener("click",async e=>{
 }
 
 
-try {
+
         // chưa follow
         if(btn.classList.contains("follow")){
 
 
-          await toggleFollow(uid);
+            await toggleFollow(uid);
 
-btn.classList.remove("follow");
-btn.classList.add("following");
 
-btn.textContent = "Đã gửi";
+
+            btn.classList.remove("follow");
+
+            btn.classList.add("following");
+
+
+
+            btn.textContent = "Bạn bè";
+
+        }
 
 
 
