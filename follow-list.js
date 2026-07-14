@@ -159,11 +159,13 @@ buttonHtml = `
 <button class="follow-btn follow" data-uid="${u.uid}">
     Follow
 </button>
-  
-        userList.insertAdjacentHTML(
-            "beforeend",
-           <div class="user-item" data-uid="${u.uid}">
+  `;
 
+}
+       userList.insertAdjacentHTML(
+    "beforeend",
+    `
+    <div class="user-item" data-uid="${u.uid}">
              <img
 class="follow-avatar"
 src="${u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}"
@@ -192,7 +194,7 @@ onclick="location.href='profile-review.html?uid=${u.uid}'">
                 ${buttonHtml}
 
             </div>
-            
+            `
         );
 
         const item = userList.lastElementChild;
@@ -200,8 +202,8 @@ onclick="location.href='profile-review.html?uid=${u.uid}'">
         
         item.querySelector(".user-info").onclick = ()=>{
 
-            location.href =
-            profile-review.html?uid=${u.uid}`;
+           location.href =
+`profile-review.html?uid=${u.uid}`;
 
         };
 
