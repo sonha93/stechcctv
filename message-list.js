@@ -435,7 +435,7 @@ if(currentFilter==="requests"){
                 <div class="avatar-wrap">
 
                     <img class="avatar"
-                  src="${userData.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
+                  src="${userData.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
 
                 </div>
 
@@ -898,7 +898,7 @@ if(clearSearch){
                 <div class="avatar-wrap">
 
                     <img class="avatar"
-                    src="${user.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
+                    src="${user.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
                 </div>
 
                 <div class="chat-body">
