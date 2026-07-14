@@ -1,9 +1,10 @@
 import { app, auth } from "./auth.js";
 import { getVerifiedBadge } from "./verified-users.js";
-   import {
+ import {
     toggleFollow,
     isFollowing,
-    unfollowUser
+    unfollowUser,
+    hasPendingFollowRequest
 } from "./follow_requests.js";
 import {
     getFirestore,
@@ -130,24 +131,38 @@ async function renderUsers(list){
 
 if(auth.currentUser && auth.currentUser.uid !== u.uid){
 
-    const following = await isFollowing(u.uid);
+  const following = await isFollowing(u.uid);
 
-   if(following){
-
-   buttonHtml = `
-<button class="follow-btn following" data-uid="${u.uid}">
-    Bạn bè
-</button>
-`;
-}else{
+if(following){
 
     buttonHtml = `
-    <button class="follow-btn follow" data-uid="${u.uid}">
-        Follow
+    <button class="follow-btn following" data-uid="${u.uid}">
+        Bạn bè
     </button>
     `;
 
-}
+}else{
+
+    const pending = await hasPendingFollowRequest(u.uid);
+
+    if(pending){
+
+        buttonHtml = `
+        <button class="follow-btn following" data-uid="${u.uid}">
+            Đã gửi
+        </button>
+        `;
+
+    }else{
+
+        buttonHtml = `
+        <button class="follow-btn follow" data-uid="${u.uid}">
+            Follow
+        </button>
+        `;
+
+    }
+
 }
   
         userList.insertAdjacentHTML(
@@ -281,19 +296,16 @@ document.addEventListener("click",async e=>{
         if(btn.classList.contains("follow")){
 
 
-            await toggleFollow(uid);
+          const result = await toggleFollow(uid);
 
+if(result){
 
+    btn.classList.remove("follow");
+    btn.classList.add("following");
 
-            btn.classList.remove("follow");
+    btn.textContent = "Đã gửi";
 
-            btn.classList.add("following");
-
-
-
-            btn.textContent = "Bạn bè";
-
-        }
+}
 
 
 
