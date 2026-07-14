@@ -297,3 +297,17 @@ document.addEventListener("click",async e=>{
     }
 
 });
+userList.addEventListener("click", e => {
+
+    const item = e.target.closest(".user-item");
+    if (!item) return;
+
+    // Không chuyển trang khi bấm nút Follow
+    if (e.target.closest(".follow-btn")) return;
+
+    const uid = item.dataset.uid;
+    if (!uid) return;
+
+    location.href = `profile-review.html?uid=${uid}`;
+
+});
