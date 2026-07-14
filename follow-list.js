@@ -192,7 +192,7 @@ onclick="location.href='profile-review.html?uid=${u.uid}'">
                 ${buttonHtml}
 
             </div>
-            `
+            
         );
 
         const item = userList.lastElementChild;
