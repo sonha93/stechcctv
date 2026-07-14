@@ -159,20 +159,6 @@ buttonHtml = `
 <button class="follow-btn follow" data-uid="${u.uid}">
     Follow
 </button>
-`;
-
-}
-else{
-
-buttonHtml = `
-<button class="follow-btn follow" data-uid="${u.uid}">
-    Follow
-</button>
-`;
-
-}
-    
-}
   
         userList.insertAdjacentHTML(
             "beforeend",
