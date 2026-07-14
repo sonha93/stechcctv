@@ -300,17 +300,24 @@ document.addEventListener("click",async e=>{
     }
 
 });
-userList.addEventListener("click", e=>{
+userList.addEventListener("click", e => {
 
-  const avatar = e.target.closest(".follow-avatar");
+    const avatar = e.target.closest(".follow-avatar");
 
-    if(!avatar) return;
+    if (avatar) {
+        e.stopPropagation();
 
-    const uid = avatar.dataset.uid;
+        location.href = `profile-review.html?uid=${avatar.dataset.uid}`;
+        return;
+    }
 
-    if(uid){
-        window.location.href =
-        "profile-review.html?uid=" + uid;
+    const info = e.target.closest(".user-info");
+
+    if (info) {
+        const item = info.closest(".user-item");
+        const img = item.querySelector(".follow-avatar");
+
+        location.href = `profile-review.html?uid=${img.dataset.uid}`;
     }
 
 });
