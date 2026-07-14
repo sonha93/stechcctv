@@ -1,9 +1,8 @@
 import { app, auth } from "./auth.js";
 import { getVerifiedBadge } from "./verified-users.js";
-   import {
+import {
     toggleFollow,
-    isFollowing,
-    unfollowUser
+    isFollowing
 } from "./follow_requests.js";
 import {
     getFirestore,
@@ -137,7 +136,7 @@ if(auth.currentUser && auth.currentUser.uid !== u.uid){
     buttonHtml = `
     <button class="follow-btn following" data-uid="${u.uid}">
         <span class="material-icons">
-           Bạn bè
+            manage_accounts
         </span>
     </button>
     `;
@@ -268,15 +267,17 @@ document.addEventListener("click",async e=>{
 
 
         // đang follow thì không hủy ngay nữa
-       if(btn.classList.contains("following")){
+        if(btn.classList.contains("following")){
 
-    openFollowPopup(uid);
 
-    btn.disabled=false;
+            alert("Đã follow. Mở quản lý follow tại đây.");
 
-    return;
 
-}
+            btn.disabled=false;
+
+            return;
+
+        }
 
 
 
@@ -319,24 +320,3 @@ document.addEventListener("click",async e=>{
 
 
 });
-async function openFollowPopup(uid){
-
-    document.getElementById("followPopup").style.display="flex";
-
-    document.getElementById("unfollowBtn").onclick = async ()=>{
-
-        await unfollowUser(uid);
-
-        document.getElementById("followPopup").style.display="none";
-
-        loadUsers();
-
-    };
-
-}
-
-document.getElementById("closeFollowPopup").onclick=()=>{
-
-    document.getElementById("followPopup").style.display="none";
-
-};
