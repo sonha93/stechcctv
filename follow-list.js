@@ -136,7 +136,7 @@ if(auth.currentUser && auth.currentUser.uid !== u.uid){
     buttonHtml = `
     <button class="follow-btn following" data-uid="${u.uid}">
         <span class="material-icons">
-            manage_accounts
+           Bạn bè
         </span>
     </button>
     `;
