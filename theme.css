@@ -1420,4 +1420,21 @@ background:#fff;
 cursor:pointer;
 
 }
+   .theme-modal{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:rgba(0,0,0,.5);
+    z-index:999999;
+}
+
+.theme-modal.hidden{
+    display:none;
+}
+
+.theme-modal.show{
+    display:flex;
+}
 }
