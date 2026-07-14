@@ -1087,100 +1087,94 @@ window.showMedia = function(src){
 // CHAT THEME
 // ================================
 
-const themeBtn =
-document.querySelector(".quick-action button:nth-child(4)");
+const themeBtn = document.getElementById("themeBtn");
+const themeModal = document.getElementById("themeModal");
+
+let selectedTheme = "default";
 
 
-// tạo bảng theme
 if(themeBtn){
 
 themeBtn.onclick = ()=>{
 
-let panel = document.createElement("div");
+    themeModal.classList.add("show");
 
-panel.className = "theme-panel";
+};
 
-panel.innerHTML = `
+}
 
-<h3>Chủ đề đoạn chat</h3>
 
-<button data-theme="default">
-Mặc định
-</button>
+// đóng
 
-<button data-theme="blue">
-Xanh
-</button>
+document.getElementById("closeTheme").onclick =
+document.getElementById("cancelTheme").onclick = ()=>{
 
-<button data-theme="pink">
-Hồng
-</button>
+    themeModal.classList.remove("show");
 
-<button data-theme="dark">
-Tối
-</button>
-
-`;
-
-document.body.appendChild(panel);
+};
 
 
 
-panel.querySelectorAll("[data-theme]")
+// chọn theme
+
+document.querySelectorAll(".theme-card[data-theme]")
 .forEach(btn=>{
 
 
-btn.onclick = async ()=>{
+btn.onclick = ()=>{
+
+    selectedTheme = btn.dataset.theme;
+
+};
 
 
-const theme =
-btn.dataset.theme;
+});
 
 
-// lưu Firestore
+
+// áp dụng
+
+document.getElementById("saveTheme").onclick = async ()=>{
+
+
+document.body.dataset.theme =
+selectedTheme;
+
+
+
 await db.collection("conversations")
 .doc(chatId)
 .update({
 
 [`theme.${auth.currentUser.uid}`]:
-theme
+selectedTheme
 
 });
 
 
-// áp dụng ngay
-document.body.dataset.theme = theme;
 
-
-// lưu local
 localStorage.setItem(
 "chatTheme",
-theme
+selectedTheme
 );
 
 
-panel.remove();
+
+themeModal.classList.remove("show");
 
 
 };
 
 
-});
 
 
-};
-
-
-}
-
-
-
-// LOAD THEME
+// load theme
 
 async function loadTheme(){
 
 
-if(!chatId) return;
+if(!chatId || !auth.currentUser)
+return;
 
 
 const snap =
@@ -1190,23 +1184,23 @@ await db.collection("conversations")
 
 
 
-if(!snap.exists)return;
-
-
-const data=snap.data();
+if(!snap.exists)
+return;
 
 
 const theme =
-data.theme?.[auth.currentUser.uid] ||
-"default";
+snap.data().theme?.[auth.currentUser.uid]
+|| "default";
 
 
 document.body.dataset.theme =
 theme;
 
 
-}
+selectedTheme = theme;
 
+
+}
 
 
 loadTheme();
