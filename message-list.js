@@ -267,9 +267,8 @@ async function renderChats(){
 
                 <div class="avatar-wrap">
 
-                    <img class="avatar"
-                    src="${data.avatar || './avatar.png'}">
-
+                  <img class="avatar"
+                src="${data.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
 
                     <span class="online-dot"></span>
 
@@ -436,7 +435,7 @@ if(currentFilter==="requests"){
                 <div class="avatar-wrap">
 
                     <img class="avatar"
-                   src="${userData.avatar || './avatar.png'}">
+                  src="${userData.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
 
                 </div>
 
@@ -733,10 +732,7 @@ node.querySelector(".avatar-wrap");
 
 if (avatar) {
 
-    avatar.src =
-        otherUser.avatar ||
-        otherUser.photoURL ||
-        "./avatar.png";
+    avatar.src = otherUser.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
 
 }
 
@@ -902,8 +898,7 @@ if(clearSearch){
                 <div class="avatar-wrap">
 
                     <img class="avatar"
-                    src="${user.avatar || './avatar.png'}">
-
+                    src="${user.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
                 </div>
 
                 <div class="chat-body">
