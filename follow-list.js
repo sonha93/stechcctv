@@ -291,7 +291,7 @@ document.addEventListener("click",async e=>{
 }
 
 
-
+try {
         // chưa follow
         if(btn.classList.contains("follow")){
 
