@@ -1097,15 +1097,6 @@ document.getElementById("themeUpload");
 
 const currentThemePreview =
 document.getElementById("currentThemePreview");
-themeUpload.onchange = e=>{
-
-    const file =
-    e.target.files[0];
-
-    if(!file) return;
-
-
-    selectedThemeFile = file;
 
 
     currentThemePreview.src =
@@ -1202,7 +1193,7 @@ if(customTheme && themeUpload){
     };
 
 }
-if(themeBtn){
+if(themeBtn && themeModal){
 
 themeBtn.onclick = ()=>{
 
@@ -1212,16 +1203,35 @@ themeBtn.onclick = ()=>{
 
 }
 
-
 // đóng
 
-document.getElementById("closeTheme").onclick =
-document.getElementById("cancelTheme").onclick = ()=>{
+const closeTheme =
+document.getElementById("closeTheme");
+
+const cancelTheme =
+document.getElementById("cancelTheme");
+
+
+if(closeTheme){
+
+closeTheme.onclick = ()=>{
 
     themeModal.classList.remove("show");
 
 };
 
+}
+
+
+if(cancelTheme){
+
+cancelTheme.onclick = ()=>{
+
+    themeModal.classList.remove("show");
+
+};
+
+}
 
 
 // chọn theme
