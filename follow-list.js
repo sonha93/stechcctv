@@ -251,15 +251,13 @@ searchInput.oninput = ()=>{
 
 };
 
-document.addEventListener("click",async e=>{
+document.addEventListener("click", async e=>{
 
-    const btn=e.target.closest(".follow-btn");
+    const btn = e.target.closest(".follow-btn");
 
     if(!btn) return;
 
-
     e.stopPropagation();
-
 
     if(!auth.currentUser){
 
@@ -269,44 +267,37 @@ document.addEventListener("click",async e=>{
 
     }
 
+    const uid = btn.dataset.uid;
 
-    const uid=btn.dataset.uid;
-
-
-    btn.disabled=true;
-
+    btn.disabled = true;
 
     try{
 
+        if(btn.classList.contains("following")){
 
-        // đang follow thì không hủy ngay nữa
-       if(btn.classList.contains("following")){
+            openFollowPopup(uid);
 
-    openFollowPopup(uid);
+            btn.disabled = false;
 
-    btn.disabled=false;
+            return;
 
-    return;
-
-}
+        }
 
 
-
-        // chưa follow
         if(btn.classList.contains("follow")){
 
+            const result = await toggleFollow(uid);
 
-          const result = await toggleFollow(uid);
+            if(result){
 
-if(result){
+                btn.classList.remove("follow");
+                btn.classList.add("following");
 
-    btn.classList.remove("follow");
-    btn.classList.add("following");
+                btn.textContent = "Đã gửi";
 
-    btn.textContent = "Đã gửi";
+            }
 
-}
-
+        }
 
 
     }catch(err){
@@ -318,9 +309,7 @@ if(result){
     }
 
 
-
-    btn.disabled=false;
-
+    btn.disabled = false;
 
 });
 async function openFollowPopup(uid){
