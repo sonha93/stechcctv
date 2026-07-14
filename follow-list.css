@@ -401,39 +401,45 @@ MOBILE
 
 /* Phần thông tin bên trái */
 .notify-content{
-    flex: 1;
+    flex:1;
+    display:flex;
+    flex-direction:column;
 }
 
-/* Hàng nút */
-.notify-actions{
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-left: auto;
-}
-
-/* Nút */
-.notify-actions button{
-    border: none;
-    border-radius: 999px;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.notify-actions button:first-child{
-    background:#0095f6;
-    color:#fff;
-}
-
-.notify-actions button:last-child{
-    background:#efefef;
-    color:#111;
-}
-/* Khung chứa nút */
 .notify-action{
     display:flex;
+    align-items:center;
     gap:10px;
     margin-left:auto;
+}
+
+.notify-action button{
+    border:none;
+    border-radius:999px;
+    padding:10px 18px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.acceptBtn{
+    background:linear-gradient(135deg,#00b4ff,#006cff);
+    color:#fff;
+    box-shadow:0 4px 12px rgba(0,123,255,.35);
+}
+
+.acceptBtn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(0,123,255,.45);
+}
+
+.rejectBtn{
+    background:#f2f2f2;
+    color:#222;
+}
+
+.rejectBtn:hover{
+    background:#ff4d4f;
+    color:#fff;
 }
