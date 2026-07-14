@@ -118,22 +118,20 @@ export async function acceptFollowRequest(requestId){
     );
 
     batch.update(
-        db.collection("users").doc(from),
-        {
-            followingCount: firebase.firestore.FieldValue.increment(1),
-            followerCount: firebase.firestore.FieldValue.increment(1),
-            friendCount: firebase.firestore.FieldValue.increment(1)
-        }
-    );
+    db.collection("users").doc(from),
+    {
+        followingCount: firebase.firestore.FieldValue.increment(1),
+        friendCount: firebase.firestore.FieldValue.increment(1)
+    }
+);
 
-    batch.update(
-        db.collection("users").doc(to),
-        {
-            followingCount: firebase.firestore.FieldValue.increment(1),
-            followerCount: firebase.firestore.FieldValue.increment(1),
-            friendCount: firebase.firestore.FieldValue.increment(1)
-        }
-    );
+batch.update(
+    db.collection("users").doc(to),
+    {
+        followerCount: firebase.firestore.FieldValue.increment(1),
+        friendCount: firebase.firestore.FieldValue.increment(1)
+    }
+);
 
     batch.delete(requestRef);
 
