@@ -162,6 +162,15 @@ buttonHtml = `
 `;
 
 }
+else{
+
+buttonHtml = `
+<button class="follow-btn follow" data-uid="${u.uid}">
+    Follow
+</button>
+`;
+
+}
     
 }
   
@@ -293,22 +302,16 @@ document.addEventListener("click",async e=>{
 
 
         // chưa follow
-        if(btn.classList.contains("follow")){
+       if(btn.classList.contains("follow")){
 
+    await toggleFollow(uid);
 
-            await toggleFollow(uid);
+    btn.classList.remove("follow");
+    btn.classList.add("following");
 
+    btn.textContent = "Đã gửi";
 
-
-            btn.classList.remove("follow");
-
-            btn.classList.add("following");
-
-
-
-            btn.textContent = "Bạn bè";
-
-        }
+}
 
 
 
