@@ -1,10 +1,9 @@
 import { app, auth } from "./auth.js";
 import { getVerifiedBadge } from "./verified-users.js";
 import {
-    followUser,
-    unfollowUser,
+    toggleFollow,
     isFollowing
-} from "./follow.js";
+} from "./follow_requests.js";
 import {
     getFirestore,
     doc,
@@ -265,7 +264,7 @@ document.addEventListener("click",async e=>{
 
         if(btn.classList.contains("follow")){
 
-    await followUser(uid);
+   await toggleFollow(uid);
 
     btn.classList.remove("follow");
     btn.classList.add("following");
@@ -281,7 +280,7 @@ document.addEventListener("click",async e=>{
                 return;
             }
 
-            await unfollowUser(uid);
+           await toggleFollow(uid);
 
             btn.classList.remove("following");
             btn.classList.add("follow");
