@@ -874,6 +874,7 @@ document.getElementById("mediaToggle");
 
 const mediaList =
 document.getElementById("mediaList");
+
 if(mediaToggle){
 
     mediaToggle.onclick = ()=>{
@@ -1183,29 +1184,24 @@ if(customTheme && themeUpload){
 
     themeUpload.onchange = e=>{
 
-        const file =
-        e.target.files[0];
-
+        const file = e.target.files[0];
 
         if(!file) return;
 
 
-       const url =
-URL.createObjectURL(file);
+        const url = URL.createObjectURL(file);
 
 
-currentThemePreview.src = url;
-
-
-selectedThemeFile = file;
-
+        if(currentThemePreview){
+            currentThemePreview.src = url;
         }
 
+
+        selectedThemeFile = file;
 
     };
 
 }
-
 if(themeBtn){
 
 themeBtn.onclick = ()=>{
@@ -1243,23 +1239,10 @@ btn.onclick = ()=>{
 
 });
 
-
 document.getElementById("saveTheme").onclick = async ()=>{
-
-
-if(selectedThemeFile){
-
-    selectedTheme =
-    await uploadThemeImage(selectedThemeFile);
-
-}
-
 
 document.body.dataset.theme =
 selectedTheme;
-
-
-
 await db.collection("conversations")
 .doc(chatId)
 .set({
