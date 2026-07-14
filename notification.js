@@ -123,11 +123,13 @@ for(const item of notifications){
             @${u.username || ""}
         </div>
 
-        <div class="notify-text">
-            Đã theo dõi bạn
-        </div>
-
-    </div>
+      <div class="notify-text">
+    ${
+        data.type === "follow_accept"
+        ? "Đã chấp nhận lời follow của bạn"
+        : "Đã theo dõi bạn"
+    }
+</div>
 
 </div>
 
