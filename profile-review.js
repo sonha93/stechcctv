@@ -1119,8 +1119,7 @@ storyBar.innerHTML = `
 
         <img
         id="myStoryAvatar"
-        src="${auth.currentUser?.photoURL || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
-
+        src="${avatar.src || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
         <span class="storyPlus">+</span>
 
     </div>
