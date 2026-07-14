@@ -420,26 +420,26 @@ MOBILE
     font-size:14px;
     font-weight:700;
     cursor:pointer;
-    transition:.25s;
+    transition:none;
 }
 
+/* Chấp nhận */
 .acceptBtn{
-    background:linear-gradient(135deg,#00b4ff,#006cff);
+    background:#111;
     color:#fff;
-    box-shadow:0 4px 12px rgba(0,123,255,.35);
 }
 
-.acceptBtn:hover{
-    transform:translateY(-2px);
-    box-shadow:0 8px 18px rgba(0,123,255,.45);
-}
-
+/* Từ chối */
 .rejectBtn{
-    background:#f2f2f2;
-    color:#222;
+    background:#111;
+    color:#fff;
 }
 
+/* Không đổi khi rê chuột */
+.acceptBtn:hover,
 .rejectBtn:hover{
-    background:#ff4d4f;
+    background:#111;
     color:#fff;
+    transform:none;
+    box-shadow:none;
 }
