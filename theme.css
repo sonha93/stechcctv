@@ -1437,4 +1437,11 @@ cursor:pointer;
 .theme-modal.show{
     display:flex;
 }
+   .custom-card svg{
+    width:24px;
+    height:24px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2;
 }
+
