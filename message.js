@@ -679,7 +679,20 @@ imageInput.value = "";
 document.getElementById("imagePreview").innerHTML = "";
 
 messageInput.value = "";
+replyMessage = null;
 
+
+const preview =
+document.getElementById("replyPreview");
+
+
+if(preview){
+
+    preview.innerHTML="";
+
+    preview.classList.remove("active");
+
+}
 return;
 
 }
