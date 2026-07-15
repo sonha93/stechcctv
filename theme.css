@@ -3527,3 +3527,21 @@ THEME FIX
     padding:20px;
 }
 }
+#customTheme{
+    display:flex !important;
+    justify-content:center !important;
+    align-items:center !important;
+    gap:10px !important;
+
+    text-align:center !important;
+    padding:0 !important;
+}
+
+#customTheme svg{
+    flex:0 0 auto;
+}
+
+#customTheme span{
+    flex:0 0 auto;
+    margin:0;
+}
