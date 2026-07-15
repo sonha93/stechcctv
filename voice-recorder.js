@@ -114,7 +114,9 @@ function startTimer(){
             seconds%60
         ).padStart(2,"0");
 
-        recordTime.textContent=`${m}:${s}`;
+     if(recordTime){
+    recordTime.textContent=`${m}:${s}`;
+}
 
     },1000);
 
