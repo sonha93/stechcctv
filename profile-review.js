@@ -1183,13 +1183,14 @@ storyBar.insertAdjacentHTML(
 
     <div class="storyAvatar">
 
-        ${
-        s.type==="video"
-        ?
-        `<video src="${s.media}" muted></video>`
-        :
-        `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
-        }
+       <img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
+${
+s.type==="video"
+?
+`<span class="story-video-icon">▶</span>`
+:
+""
+}
 
     </div>
 
@@ -1264,17 +1265,18 @@ if(blocked){
     currentStoryOwner = s.uid;
     // HIỂN THỊ NGƯỜI ĐĂNG STORY
 
-storyOwnerAvatar.src =
-s.avatar ||
-"https://i.ibb.co/Z1kv9nJj/logo.png";
+const userSnap = await getDoc(doc(db,"users",s.uid));
+const storyUser = userSnap.exists() ? userSnap.data() : {};
 
+storyOwnerAvatar.src =
+storyUser.avatar ||
+"https://i.ibb.co/Z1kv9nJj/logo.png";
 
 storyOwnerName.innerHTML =
 `
-${s.name || "Người dùng"}
+${storyUser.name || "Người dùng"}
 ${getVerifiedBadge(s.uid)}
 `;
-
 
 // HIỂN THỊ NGÀY GIỜ ĐĂNG
 
