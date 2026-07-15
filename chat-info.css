@@ -677,3 +677,13 @@ border-radius:10px;
     display:flex;
 
 }
+.quick-action{
+    position: relative;
+    z-index: 10;
+}
+
+.quick-action button{
+    position: relative;
+    z-index: 11;
+    pointer-events: auto;
+}
