@@ -1020,4 +1020,54 @@ font-size:28px;
         display:block;
     }
 
+.chat-avatar-wrap.has-story{
+
+    padding:3px;
+
+    border-radius:50%;
+
+    background:
+    linear-gradient(
+        45deg,
+        #ff0055,
+        #ffcc00,
+        #9b00ff
+    );
+
+}
+
+
+.chat-avatar-wrap.has-story img{
+
+    border:3px solid white;
+
+}
+
+
+
+.story-viewer{
+
+    position:fixed;
+
+    inset:0;
+
+    background:#000;
+
+    z-index:9999;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+
+.story-viewer video{
+
+    width:100%;
+
+    max-height:100%;
+
 }
