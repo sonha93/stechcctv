@@ -411,7 +411,8 @@ function drawWave(){
 
 }
 async function saveVoiceMessage(audioUrl, duration){
-
+   console.log("receiver:", window.currentChatUid);
+    console.log("sender:", auth.currentUser.uid);
 
 
     await db.collection("messages").add({
@@ -460,7 +461,7 @@ async function saveVoiceMessage(audioUrl, duration){
 
 }
 async function uploadVoiceToFirebase(voice){
-
+console.log("START UPLOAD", voice.blob.size);
     if(isUploading) return;
 
     isUploading = true;
@@ -524,7 +525,7 @@ storage.ref()
 
                 const audioUrl =
                 await storageRef.getDownloadURL();
-
+                console.log("URL:", audioUrl);
                 await saveVoiceMessage(
 
                     audioUrl,
