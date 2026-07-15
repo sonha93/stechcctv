@@ -806,14 +806,3 @@ if(themeBtn){
     });
 
 }
-const themeBtn = document.getElementById("themeBtn");
-
-if(themeBtn){
-
-    themeBtn.onclick = function(){
-
-        openTheme("chat");
-
-    };
-
-}
