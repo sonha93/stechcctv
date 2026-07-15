@@ -1,4 +1,11 @@
 // ===============================
+// Upload State
+// ===============================
+
+let uploadTask = null;
+
+let isUploading = false;
+// ===============================
 // Voice Recorder
 // HTML + CSS + JS
 // Firebase v8 Ready
@@ -178,19 +185,7 @@ drawWave();
             cleanupRecorder();
 
         };
-        cancelAnimationFrame(
-
-    animationFrame
-
-);
-
-if(audioContext){
-
-    audioContext.close();
-
-    audioContext=null;
-
-}
+       
         mediaRecorder.start(200);
 
         isRecording = true;
@@ -285,19 +280,10 @@ function finishRecorder(){
     audioBlob = new Blob(audioChunks,{
         type:"audio/webm"
     });
+cleanupRecorder();
+player.classList.remove("hidden");
 
-    cleanupRecorder();
-function resetRecorderUI(){
-
-    pauseBtn.classList.remove("hidden");
-
-    resumeBtn.classList.add("hidden");
-
-    player.classList.add("hidden");
-
-    progress.value = 0;
-
-}
+duration.textContent = recordTime.textContent;
     if(objectURL){
 
         URL.revokeObjectURL(objectURL);
@@ -313,17 +299,7 @@ function resetRecorderUI(){
     duration.textContent = recordTime.textContent;
 
 }
-cleanupRecorder();
 
-if(objectURL){
-
-    URL.revokeObjectURL(objectURL);
-
-}
-
-objectURL = URL.createObjectURL(audioBlob);
-
-audio.src = objectURL;
 // ===============================
 // Play
 // ===============================
@@ -392,9 +368,9 @@ audio.onended=()=>{
 // ===============================
 // Cancel
 // ===============================
-
 cancelBtn.onclick=()=>{
 
+    cancelUpload();
     cleanupRecorder();
 
     if(objectURL){
@@ -424,11 +400,61 @@ cancelBtn.onclick=()=>{
     resetTimer();
 
 };
+function cancelUpload(){
+
+    if(uploadTask){
+
+        uploadTask.cancel();
+
+    }
+
+}
+async function saveVoiceMessage(
+
+    audioUrl,
+
+    duration
+
+){
+
+    await db
+    .collection("messages")
+    .add({
+
+        type:"audio",
+
+        audioUrl,
+
+        duration,
+
+        senderId:
+
+        auth.currentUser.uid,
+
+        receiverId:
+
+        window.currentChatUid,
+
+        createdAt:
+
+        firebase.firestore
+        .FieldValue
+        .serverTimestamp(),
+
+        seen:false,
+
+        recalled:false,
+
+        deleted:false
+
+    });
+
+}
 // ===============================
 // Send
 // ===============================
 
-sendBtn.onclick=()=>{
+sendBtn.onclick = async ()=>{
 
     if(!audioBlob){
 
@@ -450,28 +476,28 @@ sendBtn.onclick=()=>{
 
     };
 
-    console.log(voiceData);
+  await uploadVoiceToFirebase(
 
-    // ==================================
-    // Firebase v8
-    // uploadVoice(voiceData)
-    // ==================================
+    voiceData
 
-    document.dispatchEvent(
-
-        new CustomEvent("voiceRecorded",{
-
-            detail:voiceData
-
-        })
-
-    );
+);
 
     panel.classList.add("hidden");
 
     resetTimer();
 
 };
+function resetRecorderUI(){
+
+    pauseBtn.classList.remove("hidden");
+
+    resumeBtn.classList.add("hidden");
+
+    player.classList.add("hidden");
+
+    progress.value = 0;
+
+}
 function cleanupRecorder(){
 
     stopTimer();
@@ -490,7 +516,21 @@ function cleanupRecorder(){
 
     }
 
+    cancelAnimationFrame(animationFrame);
+
+    if(audioContext){
+
+        audioContext.close();
+
+        audioContext = null;
+
+    }
+
     mediaRecorder = null;
+
+    uploadTask = null;
+
+    isUploading = false;
 
 }
 function drawWave(){
@@ -552,6 +592,87 @@ function drawWave(){
         );
 
         x+=width+gap;
+
+    }
+
+}
+async function uploadVoiceToFirebase(voice){
+
+    if(isUploading) return;
+
+    isUploading = true;
+
+    try{
+
+        const uid = auth.currentUser.uid;
+
+        const filePath =
+        `voices/${uid}/${voice.fileName}`;
+
+        const storageRef =
+        firebase.storage()
+        .ref()
+        .child(filePath);
+
+        uploadTask =
+        storageRef.put(voice.blob);
+
+        uploadTask.on(
+
+            "state_changed",
+
+            snapshot=>{
+
+                const percent = Math.floor(
+
+                    snapshot.bytesTransferred
+                    /
+                    snapshot.totalBytes
+                    *100
+
+                );
+
+                console.log(
+                    "Upload:",
+                    percent+"%"
+                );
+
+            },
+
+            err=>{
+
+                console.error(err);
+
+                isUploading=false;
+
+                alert("Upload thất bại.");
+
+            },
+
+            async()=>{
+
+                const audioUrl =
+                await storageRef.getDownloadURL();
+
+                await saveVoiceMessage(
+
+                    audioUrl,
+
+                    voice.duration
+
+                );
+
+                isUploading=false;
+
+            }
+
+        );
+
+    }catch(err){
+
+        console.error(err);
+
+        isUploading=false;
 
     }
 
