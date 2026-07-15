@@ -412,109 +412,44 @@ function drawWave(){
 
 }
 async function saveVoiceMessage(audioUrl, duration){
-   console.log("receiver:", window.currentChatUid);
+
+    const receiver = window.currentChatUid;
+
+    console.log("receiver:", receiver);
     console.log("sender:", auth.currentUser.uid);
+
+
+    if(!receiver){
+
+        console.error("Không có người nhận!");
+
+        alert("Chưa chọn người chat");
+
+        return;
+
+    }
 
 
     await db.collection("messages").add({
 
-
-
         type:"audio",
-
-
 
         audioUrl,
 
-
-
         duration,
-
-
 
         senderId: auth.currentUser.uid,
 
-
-
-        receiverId: window.currentChatUid,
-
-
+        receiverId: receiver,
 
         createdAt: FieldValue.serverTimestamp(),
 
-
-
         seen:false,
-
-
 
         recalled:false,
 
-
-
         deleted:false
 
-
-
     });
-
-
-
-}
-async function uploadVoiceToCloudinary(voice){
-
-    if(isUploading) return;
-
-    isUploading = true;
-
-    try{
-
-        const formData = new FormData();
-
-        formData.append(
-            "file",
-            voice.blob,
-            voice.fileName
-        );
-
-        formData.append(
-            "upload_preset",
-            UPLOAD_PRESET
-        );
-
-        formData.append(
-            "resource_type",
-            "video"
-        );
-
-
-        const res = await fetch(
-            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`,
-            {
-                method:"POST",
-                body:formData
-            }
-        );
-
-
-        const data = await res.json();
-        console.log("CLOUDINARY:", data);
-
-        await saveVoiceMessage(
-            data.secure_url,
-            voice.duration
-        );
-
-
-        isUploading=false;
-
-
-    }catch(err){
-
-        console.error(err);
-
-        isUploading=false;
-
-    }
 
 }
