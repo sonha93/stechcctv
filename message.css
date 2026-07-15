@@ -1218,3 +1218,25 @@ font-size:28px;
     white-space:nowrap;
     text-overflow:ellipsis;
 }
+.message-reply-btn button{
+    color:#333;
+    background:#f1f1f1;
+    border:1px solid #ddd;
+    padding:5px 10px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+
+.message-reply-btn button:hover{
+    background:#e5e5e5;
+}
+
+
+.message-reply-btn{
+    display:flex;
+    gap:8px;
+    margin-top:5px;
+}
