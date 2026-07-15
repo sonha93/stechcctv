@@ -761,9 +761,22 @@ await db
     firebase.firestore.FieldValue.increment(1)
 
 });
-    messageInput.value="";
-    
+   messageInput.value="";
+
 replyMessage = null;
+
+const preview =
+document.getElementById("replyPreview");
+
+if(preview){
+
+    preview.innerHTML="";
+
+    preview.classList.remove("active");
+
+}
+
+
 selectedFiles = [];
 
 imageInput.value="";
