@@ -795,3 +795,14 @@ window.listenTheme = listenTheme;
 window.applyTheme = applyTheme;
 
 window.removeTheme = removeTheme;
+const themeBtn = document.getElementById("themeBtn");
+
+if(themeBtn){
+
+    themeBtn.addEventListener("click",()=>{
+
+        openTheme(roomId);
+
+    });
+
+}
