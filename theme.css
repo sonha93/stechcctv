@@ -1468,3 +1468,22 @@ cursor:pointer;
     background:white;
     border-radius:16px;
 }
+body[data-theme="default"]{
+    --chat-bg:#f0f2f5;
+}
+
+body[data-theme="dark"]{
+    --chat-bg:#121212;
+}
+
+body[data-theme="blue"]{
+    --chat-bg:#dff1ff;
+}
+
+body[data-theme="pink"]{
+    --chat-bg:#ffe5f2;
+}
+
+.message-box{
+    background:var(--chat-bg,#f0f2f5);
+}
