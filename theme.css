@@ -3526,7 +3526,7 @@ THEME FIX
     gap:15px;
     padding:20px;
 }
-}
+
 #customTheme{
     display:flex !important;
     justify-content:center !important;
@@ -3544,4 +3544,18 @@ THEME FIX
 #customTheme span{
     flex:0 0 auto;
     margin:0;
+}
+#customTheme{
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    align-items:center !important;
+    gap:12px !important;
+}
+
+#customTheme svg,
+#customTheme span{
+    margin:0 !important;
+    position:static !important;
+    transform:none !important;
 }
