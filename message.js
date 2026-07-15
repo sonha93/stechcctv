@@ -1461,18 +1461,19 @@ window.loadTheme = async function(chatId){
         document.body.dataset.theme = theme;
     }
 
-    const bg =
-        data.themeImage?.[auth.currentUser.uid];
+   const bg = data.themeImage?.[auth.currentUser.uid];
 
-    if(bg){
+if(bg){
 
-        document.body.style.backgroundImage =
-            `url(${bg})`;
+    document.body.style.backgroundImage = `url(${bg})`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
 
-        document.body.style.backgroundSize = "cover";
-        document.body.style.backgroundPosition = "center";
-    }
+}else{
 
+    document.body.style.backgroundImage = "";
+
+}
 };
 // ================================
 // LISTEN THEME REALTIME
@@ -1488,26 +1489,24 @@ window.listenTheme = function(chatId){
 
         const data = doc.data();
 
-        const theme =
-            data.theme?.[auth.currentUser.uid];
-
-        if(theme){
-
-            document.body.dataset.theme = theme;
-        }
+        document.body.dataset.theme =
+            data.theme?.[auth.currentUser.uid] || "default";
 
         const bg =
             data.themeImage?.[auth.currentUser.uid];
 
         if(bg){
 
-            document.body.style.backgroundImage =
-                `url(${bg})`;
+            document.body.style.backgroundImage=`url(${bg})`;
+            document.body.style.backgroundSize="cover";
+            document.body.style.backgroundPosition="center";
 
-            document.body.style.backgroundSize = "cover";
-            document.body.style.backgroundPosition = "center";
+        }else{
+
+            document.body.style.backgroundImage="";
+
         }
 
     });
 
-};
+}
