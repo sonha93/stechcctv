@@ -897,33 +897,4 @@ hr{
     height:56px;
     font-size:22px;
 }
-   /* Ô chọn ảnh */
-.upload-box,
-#chooseImage{
-    width:220px;
-    height:140px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border:2px dashed #d7d7d7;
-    border-radius:20px;
-
-    background:#fff;
-
-    text-align:center;
-
-    padding:20px;
-
-    font-size:18px;
-    font-weight:600;
-    color:#555;
-
-    line-height:1.4;
-
-    white-space:normal;
-    word-break:keep-all;
-    overflow-wrap:normal;
-}
 }
