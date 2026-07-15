@@ -723,8 +723,6 @@ for(const docSnap of snap.docs){
 
         renderOne(docSnap);
 
-    });
-
 }
 
 }
@@ -1164,7 +1162,7 @@ storyBar.style.display = "";
         )
     );
 
-    snap.forEach(docSnap=>{
+    for (const docSnap of snap.docs) {
 
        const s = docSnap.data();
 
@@ -1212,9 +1210,9 @@ if (video) {
         video.play().catch(() => {});
     };
 }
-    });
+   }
 
-}
+
 const storyViewer = document.getElementById("storyViewer");
 const storyOwnerAvatar =
 document.getElementById("storyOwnerAvatar");
