@@ -1266,9 +1266,6 @@ if(blocked){
 const userSnap = await getDoc(doc(db,"users", s.uid));
 const user = userSnap.exists() ? userSnap.data() : {};
 
-const userSnap = await getDoc(doc(db,"users", s.uid));
-const user = userSnap.exists() ? userSnap.data() : {};
-
 storyOwnerAvatar.src =
 user.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
 
