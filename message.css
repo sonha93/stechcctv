@@ -1021,3 +1021,113 @@ font-size:28px;
     }
 
 }
+/* ================================
+   REPLY MESSAGE
+================================ */
+
+.reply-box{
+
+    background:rgba(0,0,0,0.08);
+
+    border-left:4px solid #2196f3;
+
+    padding:8px 10px;
+
+    margin-bottom:8px;
+
+    border-radius:8px;
+
+    font-size:13px;
+
+    color:#555;
+
+    cursor:pointer;
+
+    max-width:250px;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+
+.message.mine .reply-box{
+
+    background:rgba(255,255,255,0.25);
+
+    color:#fff;
+
+    border-left-color:#fff;
+
+}
+
+
+
+.reply-box:hover{
+
+    opacity:.8;
+
+}
+
+
+
+/* nút trả lời */
+
+.message-reply-btn{
+
+    margin-top:4px;
+
+}
+
+
+.message-reply-btn button{
+
+    border:none;
+
+    background:none;
+
+    cursor:pointer;
+
+    font-size:12px;
+
+    color:#777;
+
+}
+
+
+.message.mine .message-reply-btn button{
+
+    color:#eee;
+
+}
+
+
+.message-reply-btn button:hover{
+
+    text-decoration:underline;
+
+}
+.message-body{
+
+    position:relative;
+
+}
+
+
+.message-reply-btn{
+
+    opacity:0;
+
+    transition:.2s;
+
+}
+
+
+.message:hover .message-reply-btn{
+
+    opacity:1;
+
+}
