@@ -210,7 +210,13 @@ if(blockState.iBlocked || blockState.blockedMe){
 username.textContent = displayName;
 verified.innerHTML = getVerifiedBadge(uid);
 }
+
+
 }
+
+
+
+
 // =====================================
 // LOAD MEDIA
 // =====================================
@@ -510,8 +516,8 @@ async function loadBlockStatus(){
     if(blockState.iBlocked || blockState.blockedMe){
 
         if(avatar){
-    avatar.src = "https://i.ibb.co/Z1kv9nJj/logo.png";
-}
+            avatar.src = "default-avatar.png";
+        }
 
         if(username){
             username.textContent = "Người dùng";
@@ -828,7 +834,7 @@ document.getElementById("avatarViewerImg");
 const closeAvatarViewer =
 document.getElementById("closeAvatarViewer");
 
-if(avatar && avatarViewer && avatarViewerImg){
+if(avatar){
 
     avatar.onclick = ()=>{
 
@@ -869,12 +875,6 @@ avatarViewer.onclick = e=>{
     }
 
 };
-const mediaToggle =
-document.getElementById("mediaToggle");
-
-const mediaList =
-document.getElementById("mediaList");
-
 if(mediaToggle){
 
     mediaToggle.onclick = ()=>{
@@ -1083,208 +1083,3 @@ window.showMedia = function(src){
     document.body.appendChild(box);
 
 };
-// ================================
-// CHAT THEME
-// ================================
-// ================================
-// CHAT THEME
-// ================================
-
-const themeBtn = document.getElementById("themeBtn");
-const themeModal = document.getElementById("themeModal");
-
-const closeTheme = document.getElementById("closeTheme");
-const cancelTheme = document.getElementById("cancelTheme");
-const saveTheme = document.getElementById("saveTheme");
-
-let selectedTheme = "default";
-let selectedThemeImage = "";
-
-console.log("THEME INIT", themeBtn, themeModal);
-
-
-// MỞ THEME
-
-if(themeBtn){
-
-    themeBtn.addEventListener("click", ()=>{
-
-        console.log("CLICK THEME");
-
-        if(themeModal){
-
-            themeModal.classList.remove("hidden");
-            themeModal.classList.add("show");
-
-        }
-
-    });
-
-}
-
-
-// ĐÓNG THEME
-
-function closeThemeBox(){
-
-    if(themeModal){
-
-        themeModal.classList.remove("show");
-        themeModal.classList.add("hidden");
-
-    }
-
-}
-
-
-if(closeTheme){
-    closeTheme.onclick = closeThemeBox;
-}
-
-
-if(cancelTheme){
-    cancelTheme.onclick = closeThemeBox;
-}
-
-
-// CHỌN THEME
-
-document.querySelectorAll(".theme-card[data-theme]")
-.forEach(btn => {
-
-    btn.onclick = () => {
-
-        selectedTheme = btn.dataset.theme;
-        selectedThemeImage = "";
-        const preview = document.getElementById("currentThemePreview");
-
-        if (preview) {
-            preview.className = "theme-preview " + selectedTheme;
-        }
-
-        const title = document.getElementById("currentThemeName");
-
-        if (title) {
-            title.textContent = btn.querySelector("span").textContent;
-        }
-
-    };
-
-});
-
-const customTheme = document.getElementById("customTheme");
-const themeUpload = document.getElementById("themeUpload");
-
-if(customTheme){
-
-    customTheme.onclick = ()=>{
-
-        themeUpload.click();
-
-    };
-
-}
-
-if(themeUpload){
-
-    themeUpload.onchange = async ()=>{
-
-        const file = themeUpload.files[0];
-
-        if(!file) return;
-
-        const form = new FormData();
-
-        form.append("file", file);
-        form.append("upload_preset", "stech_up");
-
-        customTheme.innerHTML = "Đang tải...";
-
-        const upload = await fetch(
-            "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
-            {
-                method:"POST",
-                body:form
-            }
-        );
-
-        const data = await upload.json();
-
-        if(!data.secure_url){
-
-            alert("Upload thất bại");
-
-            return;
-
-        }
-
-        selectedThemeImage = data.secure_url;
-
-        document.getElementById("currentThemePreview").style.backgroundImage =
-            `url(${selectedThemeImage})`;
-
-        document.getElementById("currentThemePreview").style.backgroundSize =
-            "cover";
-
-        document.getElementById("currentThemeName").innerText =
-            "Ảnh nền";
-
-        customTheme.innerHTML =
-            "✔ Đã chọn ảnh";
-
-    };
-
-}
-// LƯU
-
-if(saveTheme){
-
-    saveTheme.onclick = async ()=>{
-
-        if(themeModal){
-
-            themeModal.classList.remove("show");
-            themeModal.classList.add("hidden");
-
-        }
-
-
-        if(!chatId || !auth.currentUser)
-            return;
-
-
-       const data = {
-    theme:{
-        [auth.currentUser.uid]: selectedTheme
-    },
-    themeImage:{
-        [auth.currentUser.uid]:
-            selectedThemeImage || ""
-    }
-};
-
-await db.collection("conversations")
-.doc(chatId)
-.set(data,{
-    merge:true
-});
-        document.body.dataset.theme = selectedTheme;
-
-if(selectedThemeImage){
-
-    document.body.classList.add("has-theme-image");
-
-    document.body.style.backgroundImage =
-        `url("${selectedThemeImage}")`;
-
-}else{
-
-    document.body.classList.remove("has-theme-image");
-
-    document.body.style.backgroundImage = "";
-
-}
-closeThemeBox();
-    };
-
-}
