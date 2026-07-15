@@ -505,11 +505,24 @@ src="${msg.video}">
 :
 ""
 }
-${msg.text ? `
+${
+msg.recalled
+?
+`
+<div class="chat-text">
+Tin nhắn đã được thu hồi
+</div>
+`
+:
+msg.text
+?
+`
 <div class="chat-text">
 ${escapeHTML(msg.text)}
 </div>
-` : ""}
+`
+:""
+}
 
 </div>
 
@@ -526,8 +539,19 @@ ${formatTime(msg.createdAt)}
 ↩ Trả lời
 </button>
 
-</div>
 
+${
+mine
+?
+`
+<button onclick="recallMessage('${msg.id}')">
+Thu hồi
+</button>
+`
+:""
+}
+
+</div>
 ${
 mine &&
 msg.seenBy &&
@@ -1675,5 +1699,31 @@ window.cancelReply = function(){
         preview.classList.remove("active");
 
     }
+
+};
+// ================================
+// RECALL MESSAGE
+// ================================
+
+window.recallMessage = async function(id){
+
+    if(!confirm("Thu hồi tin nhắn này?"))
+    return;
+
+
+    await db
+    .collection("conversations")
+    .doc(conversationId)
+    .collection("messages")
+    .doc(id)
+    .update({
+
+        text:"Tin nhắn đã được thu hồi",
+        image:"",
+        images:[],
+        video:"",
+        recalled:true
+
+    });
 
 };
