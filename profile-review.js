@@ -1170,50 +1170,51 @@ storyBar.style.display = "";
         )
     );
 
-   snap.forEach(async (docSnap)=>{
+    snap.forEach(docSnap=>{
 
-    const s = docSnap.data();
+        const s = docSnap.data();
 
-    const userSnap = await getDoc(doc(db,"users", s.uid));
-    const user = userSnap.exists() ? userSnap.data() : {};
+        
 
-    storyBar.insertAdjacentHTML(
-    "beforeend",
-    `
-    <div class="storyItem" onclick="openStory('${docSnap.id}')">
+storyBar.insertAdjacentHTML(
+"beforeend",
+`
+<div class="storyItem" onclick="openStory('${docSnap.id}')">
 
-        <div class="storyAvatar">
+    <div class="storyAvatar">
 
-            ${
-            s.type==="video"
-            ? `<video src="${s.media}" muted></video>`
-            : `<img src="${user.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
-            }
-
-        </div>
-
-        <div class="storyName">
-            ${s.text || ""}
-        </div>
+        ${
+        s.type==="video"
+        ?
+        `<video src="${s.media}" muted></video>`
+        :
+        `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
+        }
 
     </div>
-    `
-    );
 
-    const video = storyBar.lastElementChild.querySelector("video");
+    <div class="storyName">
+        ${s.text || ""}
+    </div>
 
-    if(video){
-        video.muted = true;
-        video.autoplay = true;
-        video.loop = true;
-        video.playsInline = true;
+</div>
+`
+);
+        const video = storyBar.lastElementChild.querySelector("video");
 
-        video.onloadedmetadata = () => {
-            video.play().catch(() => {});
-        };
-    }
+if (video) {
+    video.muted = true;
+    video.autoplay = true;
+    video.loop = true;
+    video.playsInline = true;
 
-});
+    video.onloadedmetadata = () => {
+        video.play().catch(() => {});
+    };
+}
+    });
+
+}
 const storyViewer = document.getElementById("storyViewer");
 const storyOwnerAvatar =
 document.getElementById("storyOwnerAvatar");
@@ -1263,16 +1264,17 @@ if(blocked){
     currentStoryOwner = s.uid;
     // HIỂN THỊ NGƯỜI ĐĂNG STORY
 
-const userSnap = await getDoc(doc(db,"users", s.uid));
-const user = userSnap.exists() ? userSnap.data() : {};
-
 storyOwnerAvatar.src =
-user.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
+s.avatar ||
+"https://i.ibb.co/Z1kv9nJj/logo.png";
 
-storyOwnerName.innerHTML = `
-${user.name || "Người dùng"}
+
+storyOwnerName.innerHTML =
+`
+${s.name || "Người dùng"}
 ${getVerifiedBadge(s.uid)}
 `;
+
 
 // HIỂN THỊ NGÀY GIỜ ĐĂNG
 
