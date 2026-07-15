@@ -1436,3 +1436,78 @@ window.pinMessage = async function(messageId){
     });
 
 };
+// ================================
+// LOAD CHAT THEME
+// ================================
+
+window.loadTheme = async function(chatId){
+
+    if(!chatId) return;
+
+    const doc = await db
+        .collection("conversations")
+        .doc(chatId)
+        .get();
+
+    if(!doc.exists) return;
+
+    const data = doc.data();
+
+    const theme =
+        data.theme?.[auth.currentUser.uid];
+
+    if(theme){
+
+        document.body.dataset.theme = theme;
+    }
+
+    const bg =
+        data.themeImage?.[auth.currentUser.uid];
+
+    if(bg){
+
+        document.body.style.backgroundImage =
+            `url(${bg})`;
+
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center";
+    }
+
+};
+// ================================
+// LISTEN THEME REALTIME
+// ================================
+
+window.listenTheme = function(chatId){
+
+    db.collection("conversations")
+    .doc(chatId)
+    .onSnapshot(doc=>{
+
+        if(!doc.exists) return;
+
+        const data = doc.data();
+
+        const theme =
+            data.theme?.[auth.currentUser.uid];
+
+        if(theme){
+
+            document.body.dataset.theme = theme;
+        }
+
+        const bg =
+            data.themeImage?.[auth.currentUser.uid];
+
+        if(bg){
+
+            document.body.style.backgroundImage =
+                `url(${bg})`;
+
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundPosition = "center";
+        }
+
+    });
+
+};
