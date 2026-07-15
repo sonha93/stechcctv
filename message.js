@@ -1143,7 +1143,20 @@ if(user){
 
 
     loadMessages();
-listenTyping();
+    listenTyping();
+    if(window.loadTheme){
+    window.loadTheme(conversationId);
+}
+
+if(window.listenTheme){
+    window.listenTheme(conversationId);
+}
+
+db.collection("conversations")
+.doc(conversationId)
+.update({
+    [`unread.${currentUser.uid}`]:0
+});
 db.collection("conversations")
 .doc(conversationId)
 .update({
