@@ -1,0 +1,417 @@
+/* ==========================
+   Voice Recorder
+========================== */
+
+.voice-recorder{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* ==========================
+   Open Button
+========================== */
+
+.vr-open-btn{
+    width:42px;
+    height:42px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#0084ff;
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+    transition:.25s;
+}
+
+.vr-open-btn:hover{
+    transform:scale(1.08);
+}
+
+.vr-icon{
+    width:22px;
+    height:22px;
+}
+
+/* ==========================
+   Panel
+========================== */
+
+.vr-panel{
+
+    position:absolute;
+
+    bottom:60px;
+    right:0;
+
+    width:340px;
+
+    background:#fff;
+
+    border-radius:18px;
+
+    padding:18px;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.15);
+
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+
+    z-index:9999;
+
+}
+
+.hidden{
+    display:none !important;
+}
+
+/* ==========================
+   Header
+========================== */
+
+.vr-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+}
+
+.vr-title{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    font-size:15px;
+    font-weight:600;
+
+}
+
+.vr-dot{
+
+    width:10px;
+    height:10px;
+
+    background:#ff3b30;
+
+    border-radius:50%;
+
+    animation:blink .8s infinite;
+
+}
+
+@keyframes blink{
+
+    0%{
+        opacity:1;
+    }
+
+    50%{
+        opacity:.25;
+    }
+
+    100%{
+        opacity:1;
+    }
+
+}
+
+.vr-time{
+
+    font-size:15px;
+    font-weight:bold;
+
+}
+
+/* ==========================
+   Wave
+========================== */
+
+.vr-wave{
+
+    height:60px;
+
+    display:flex;
+
+    align-items:flex-end;
+
+    justify-content:center;
+
+    gap:5px;
+
+}
+
+.vr-wave span{
+
+    width:5px;
+
+    height:18px;
+
+    border-radius:20px;
+
+    background:#0084ff;
+
+    animation:wave .9s infinite ease-in-out;
+
+}
+
+.vr-wave span:nth-child(2){
+
+    animation-delay:.1s;
+
+}
+
+.vr-wave span:nth-child(3){
+
+    animation-delay:.2s;
+
+}
+
+.vr-wave span:nth-child(4){
+
+    animation-delay:.3s;
+
+}
+
+.vr-wave span:nth-child(5){
+
+    animation-delay:.4s;
+
+}
+
+.vr-wave span:nth-child(6){
+
+    animation-delay:.5s;
+
+}
+
+.vr-wave span:nth-child(7){
+
+    animation-delay:.6s;
+
+}
+
+.vr-wave span:nth-child(8){
+
+    animation-delay:.7s;
+
+}
+
+@keyframes wave{
+
+    0%{
+
+        height:12px;
+
+    }
+
+    50%{
+
+        height:52px;
+
+    }
+
+    100%{
+
+        height:12px;
+
+    }
+
+}
+
+/* ==========================
+   Player
+========================== */
+
+.vr-player{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+}
+
+.vr-player input{
+
+    flex:1;
+    cursor:pointer;
+
+}
+
+.vr-control{
+
+    width:36px;
+    height:36px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#0084ff;
+
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+
+}
+
+.vr-control svg{
+
+    width:18px;
+    height:18px;
+
+}
+
+/* ==========================
+   Footer
+========================== */
+
+.vr-footer{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.vr-btn{
+
+    width:42px;
+    height:42px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#f2f2f2;
+
+    color:#444;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.vr-btn:hover{
+
+    background:#ddd;
+
+}
+
+.vr-btn svg{
+
+    width:22px;
+
+    height:22px;
+
+}
+
+.vr-send{
+
+    width:46px;
+
+    height:46px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#0084ff;
+
+    color:#fff;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.vr-send:hover{
+
+    transform:scale(1.08);
+
+}
+
+.vr-send svg{
+
+    width:22px;
+
+    height:22px;
+
+}
+
+/* ==========================
+   Dark Mode
+========================== */
+
+@media(prefers-color-scheme:dark){
+
+    .vr-panel{
+
+        background:#242526;
+
+        color:#fff;
+
+    }
+
+    .vr-btn{
+
+        background:#3a3b3c;
+
+        color:#fff;
+
+    }
+
+    .vr-btn:hover{
+
+        background:#4e4f50;
+
+    }
+
+}
+
+/* ==========================
+   Mobile
+========================== */
+
+@media(max-width:768px){
+
+    .vr-panel{
+
+        width:100%;
+
+        max-width:330px;
+
+        right:0;
+
+    }
+
+}
