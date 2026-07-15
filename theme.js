@@ -707,22 +707,20 @@ function listenTheme(roomId){
 
 function applyTheme(data){
 
-   const chatBody =
-document.getElementById("messageBox");
+    const chatBody = document.querySelector(".chat-container");
+    const messageBox = document.getElementById("messageBox");
 
-    if(!chatBody) return;
+    if(!chatBody || !messageBox) return;
 
-    if(data.background){
+    chatBody.style.backgroundImage = data.background
+        ? `url(${data.background})`
+        : "none";
 
-        chatBody.style.backgroundImage =
-        `url(${data.background})`;
+    chatBody.style.backgroundSize = "cover";
+    chatBody.style.backgroundPosition = "center";
+    chatBody.style.backgroundRepeat = "no-repeat";
 
-        chatBody.style.backgroundSize="cover";
-
-        chatBody.style.backgroundPosition="center";
-
-    }
-
+    messageBox.style.background = "transparent";
     chatBody.style.filter =
 
     `brightness(${data.brightness}%)
