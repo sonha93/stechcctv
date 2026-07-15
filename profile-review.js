@@ -1072,7 +1072,7 @@ storyFile.onchange = async () => {
         return;
 
     }
-
+console.log("Avatar user =", user.avatar);
   await addDoc(collection(db,"profile_stories"),{
 
     uid: uid,
