@@ -1,0 +1,153 @@
+<div class="voice-recorder" id="voiceRecorder">
+
+    <!-- Nút mở ghi âm -->
+    <button class="vr-open-btn" id="openRecorderBtn" title="Ghi âm">
+
+        <svg viewBox="0 0 24 24" class="vr-icon">
+            <path fill="currentColor"
+                d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a1 1 0 1 1 2 0a7 7 0 0 1-6 6.93V22h3a1 1 0 1 1 0 2H8a1 1 0 1 1 0-2h3v-3.07A7 7 0 0 1 5 12a1 1 0 1 1 2 0a5 5 0 0 0 10 0Z"/>
+        </svg>
+
+    </button>
+
+    <!-- Popup ghi âm -->
+    <div class="vr-panel hidden" id="voicePanel">
+
+        <!-- Header -->
+        <div class="vr-header">
+
+            <span class="vr-title">
+
+                <span class="vr-dot"></span>
+
+                Đang ghi âm
+
+            </span>
+
+            <span class="vr-time" id="recordTime">
+                00:00
+            </span>
+
+        </div>
+
+        <!-- Wave -->
+        <div class="vr-wave">
+
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </div>
+
+        <!-- Player -->
+        <div class="vr-player hidden" id="voicePlayer">
+
+            <button id="playVoiceBtn" class="vr-control">
+
+                <svg viewBox="0 0 24 24">
+
+                    <path fill="currentColor"
+                        d="M8 5v14l11-7z"/>
+
+                </svg>
+
+            </button>
+
+            <input
+                type="range"
+                id="voiceProgress"
+                value="0"
+                min="0"
+                max="100">
+
+            <span id="voiceDuration">
+
+                00:00
+
+            </span>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="vr-footer">
+
+            <!-- Hủy -->
+            <button id="cancelRecordBtn" class="vr-btn">
+
+                <svg viewBox="0 0 24 24">
+
+                    <path fill="currentColor"
+                        d="M6 6L18 18M18 6L6 18"/>
+
+                </svg>
+
+            </button>
+
+            <!-- Pause -->
+            <button id="pauseRecordBtn" class="vr-btn">
+
+                <svg viewBox="0 0 24 24">
+
+                    <path fill="currentColor"
+                        d="M7 5h4v14H7zm6 0h4v14h-4z"/>
+
+                </svg>
+
+            </button>
+
+            <!-- Resume -->
+            <button id="resumeRecordBtn"
+                    class="vr-btn hidden">
+
+                <svg viewBox="0 0 24 24">
+
+                    <path fill="currentColor"
+                        d="M8 5v14l11-7z"/>
+
+                </svg>
+
+            </button>
+
+            <!-- Stop -->
+            <button id="stopRecordBtn"
+                    class="vr-btn">
+
+                <svg viewBox="0 0 24 24">
+
+                    <rect
+                        x="6"
+                        y="6"
+                        width="12"
+                        height="12"
+                        fill="currentColor"/>
+
+                </svg>
+
+            </button>
+
+            <!-- Send -->
+            <button id="sendRecordBtn"
+                    class="vr-send">
+
+                <svg viewBox="0 0 24 24">
+
+                    <path
+                        fill="currentColor"
+                        d="M2 21L23 12L2 3V10L17 12L2 14Z"/>
+
+                </svg>
+
+            </button>
+
+        </div>
+
+        <audio id="voiceAudio" hidden></audio>
+
+    </div>
+
+</div>
