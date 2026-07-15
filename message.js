@@ -53,8 +53,7 @@ document.getElementById("chatTitle");
 
 const chatAvatar =
 document.getElementById("chatAvatar");
-const chatAvatarWrap =
-document.getElementById("chatAvatarWrap");
+
 const messageBox =
 document.getElementById("messageBox");
 
@@ -186,191 +185,20 @@ if(chatTitle){
 
 if(chatAvatar){
 
-
     chatAvatar.src = blocked
         ? "https://i.ibb.co/Z1kv9nJj/logo.png"
         : (u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png");
-    let storySnap = await db
-.collection("stories")
-.where("uid","==",otherUid)
-.orderBy("createdAt","desc")
-.limit(1)
-.get();
 
-
-if(!storySnap.empty && chatAvatarWrap){
-
-    const story =
-    storySnap.docs[0].data();
-
-
-    const time =
-    story.createdAt.toDate().getTime();
-
-
-    if(Date.now() - time < 86400000){
-
-        chatAvatarWrap.classList.add(
-            "has-story"
-        );
-
-    }
-
-}
- // kiểm tra story video
-    let hasStory = false;
-
-
-    const storySnap = await db
-    .collection("stories")
-    .where("uid","==",otherUid)
-    .orderBy("createdAt","desc")
-    .limit(1)
-    .get();
-
-
-
-    if(!storySnap.empty){
-
-
-        const story =
-        storySnap.docs[0].data();
-
-
-
-        if(story.createdAt){
-
-
-            const time =
-            story.createdAt
-            .toDate()
-            .getTime();
-
-
-
-            if(Date.now() - time < 86400000){
-
-                hasStory = true;
-
-            }
-
-
-        }
-
-
-    }
-
-
-
-    const avatarBox =
-    chatAvatar.parentElement;
-
-
-
-    if(avatarBox){
-
-
-        if(hasStory){
-
-            avatarBox.classList.add(
-                "has-story"
-            );
-
-
-        }else{
-
-
-            avatarBox.classList.remove(
-                "has-story"
-            );
-
-
-        }
-
-
-    }
-
-
-
-    chatAvatar.style.cursor =
-    blocked
-    ? "default"
-    : "pointer";
-
-
-
-    chatAvatar.onclick =
-    blocked
-    ? null
-    : async ()=>{
-
-
-        if(hasStory){
-
-
-            const storySnap =
-            await db
-            .collection("stories")
-            .where("uid","==",otherUid)
-            .orderBy("createdAt","desc")
-            .limit(1)
-            .get();
-
-
-
-            if(!storySnap.empty){
-
-
-                const story =
-                storySnap.docs[0].data();
-
-
-
-                // mở video story
-                const box =
-                document.createElement("div");
-
-
-                box.className =
-                "story-viewer";
-
-
-                box.innerHTML = `
-
-                <video
-                src="${story.video}"
-                autoplay
-                controls
-                playsinline>
-                </video>
-
-                `;
-
-
-                box.onclick=()=>{
-                    box.remove();
-                };
-
-
-                document.body.appendChild(box);
-
-
-                return;
-
-            }
-
-
-        }
-
-
-
-        location.href =
-        "profile-review.html?uid="
-        + otherUid;
-
-
-    };
-
+    chatAvatar.style.cursor = blocked
+        ? "default"
+        : "pointer";
+
+    chatAvatar.onclick = blocked
+        ? null
+        : ()=>{
+            location.href =
+            "profile-review.html?uid=" + otherUid;
+        };
 
 }
 
