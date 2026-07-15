@@ -1072,35 +1072,18 @@ storyFile.onchange = async () => {
         return;
 
     }
-
-  await addDoc(collection(db,"profile_stories"),{
-
-    uid: uid,
-
+await addDoc(collection(db,"profile_stories"),{
+    uid,
     media: data.secure_url,
-
-    type: file.type.startsWith("video/")
-        ? "video"
-        : "image",
-
-    hidden: false,
-
+    type: file.type.startsWith("video/") ? "video" : "image",
+    hidden:false,
     text: prompt("Nhập nội dung story (có thể để trống):") || "",
-
-    avatar: user.avatar || "",
-
     name: user.name || "",
-
     username: user.username || "",
-
-    viewers: [],
-
-    likeCount: 0,
-
+    viewers:[],
+    likeCount:0,
     createdAt: serverTimestamp()
-
 });
-
 storyFile.value = "";
 
 alert("Đăng story thành công");
@@ -1185,40 +1168,40 @@ storyBar.style.display = "";
 
    snap.forEach(docSnap=>{
 
+   for (const docSnap of snap.docs) {
+
     const s = docSnap.data();
 
-    console.log({
-        id: docSnap.id,
-        uid: s.uid,
-        avatar: s.avatar
-    });
+    const userSnap = await getDoc(doc(db, "users", s.uid));
 
+    const user = userSnap.exists() ? userSnap.data() : {};
 
-storyBar.insertAdjacentHTML(
-"beforeend",
-`
-<div class="storyItem" onclick="openStory('${docSnap.id}')">
+    storyBar.insertAdjacentHTML(
+    "beforeend",
+    `
+    <div class="storyItem" onclick="openStory('${docSnap.id}')">
 
-    <div class="storyAvatar">
+        <div class="storyAvatar">
 
-       <img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
-${
-s.type==="video"
-?
-`<span class="story-video-icon"></span>`
-:
-""
+            <img src="${user.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}">
+
+            ${
+                s.type === "video"
+                ? `<span class="story-video-icon"></span>`
+                : ""
+            }
+
+        </div>
+
+        <div class="storyName">
+            ${s.text || ""}
+        </div>
+
+    </div>
+    `
+    );
+
 }
-
-    </div>
-
-    <div class="storyName">
-        ${s.text || ""}
-    </div>
-
-</div>
-`
-);
         const video = storyBar.lastElementChild.querySelector("video");
 
 if (video) {
