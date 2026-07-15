@@ -1464,16 +1464,22 @@ body[data-theme="pink"]{
 }
 
 .theme-card{
-    width:90px;
-    height:90px;
+
     border:none;
     border-radius:16px;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
+    flex-direction:column;
+    gap:10px;
+
     cursor:pointer;
+
     color:#fff;
     font-weight:bold;
+
 }
 
 .theme-card.default,
@@ -3284,8 +3290,11 @@ hr{
 }
 
 .theme-body{
-    display:block;
+    display:grid;
+    grid-template-columns:220px 1fr;
+    gap:40px;
     padding:32px;
+    align-items:start;
 }
 
 .current-theme{
