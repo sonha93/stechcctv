@@ -1613,7 +1613,15 @@ if(preview){
 
     preview.innerHTML =
     `
-    ↩ ${escapeHTML(text)}
+    <span class="reply-text">
+        ↩ ${escapeHTML(text)}
+    </span>
+
+    <button 
+    class="reply-close"
+    onclick="cancelReply()">
+        ×
+    </button>
     `;
 
     preview.classList.add("active");
@@ -1645,5 +1653,27 @@ block:"center"
 
 }
 
+
+};
+// ================================
+// CANCEL REPLY
+// ================================
+
+window.cancelReply = function(){
+
+    replyMessage = null;
+
+
+    const preview =
+    document.getElementById("replyPreview");
+
+
+    if(preview){
+
+        preview.innerHTML = "";
+
+        preview.classList.remove("active");
+
+    }
 
 };
