@@ -1465,13 +1465,21 @@ window.loadTheme = async function(chatId){
 
 if(bg){
 
-    document.body.style.backgroundImage = `url(${bg})`;
-    document.body.style.backgroundSize = "cover";
-    document.body.style.backgroundPosition = "center";
+   const messageArea = document.getElementById("messageBox");
 
+if(messageArea){
+    messageArea.style.backgroundImage = `url(${bg})`;
+    messageArea.style.backgroundSize = "cover";
+    messageArea.style.backgroundPosition = "center";
+    messageArea.style.backgroundRepeat = "no-repeat";
+}
 }else{
 
-    document.body.style.backgroundImage = "";
+    const messageArea = document.getElementById("messageBox");
+
+if(messageArea){
+    messageArea.style.backgroundImage = "";
+}
 
 }
 };
@@ -1497,13 +1505,21 @@ window.listenTheme = function(chatId){
 
         if(bg){
 
-            document.body.style.backgroundImage=`url(${bg})`;
-            document.body.style.backgroundSize="cover";
-            document.body.style.backgroundPosition="center";
+           const messageArea = document.getElementById("messageBox");
 
+if(messageArea){
+    messageArea.style.backgroundImage = `url(${bg})`;
+    messageArea.style.backgroundSize = "cover";
+    messageArea.style.backgroundPosition = "center";
+    messageArea.style.backgroundRepeat = "no-repeat";
+}
         }else{
 
-            document.body.style.backgroundImage="";
+           const messageArea = document.getElementById("messageBox");
+
+if(messageArea){
+    messageArea.style.backgroundImage = "";
+}
 
         }
 
