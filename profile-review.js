@@ -719,7 +719,7 @@ snap.forEach(docSnap => {
 
 function renderVideos(snap){
 
-    snap.forEach(docSnap=>{
+for(const docSnap of snap.docs){
 
         renderOne(docSnap);
 
@@ -727,7 +727,7 @@ function renderVideos(snap){
 
 }
 
-
+}
 
 // ===========================
 // 1 VIDEO
@@ -1087,12 +1087,6 @@ storyFile.onchange = async () => {
 
     text: prompt("Nhập nội dung story (có thể để trống):") || "",
 
-    avatar: user.avatar || "",
-
-    name: user.name || "",
-
-    username: user.username || "",
-
     viewers: [],
 
     likeCount: 0,
@@ -1172,7 +1166,13 @@ storyBar.style.display = "";
 
     snap.forEach(docSnap=>{
 
-        const s = docSnap.data();
+       const s = docSnap.data();
+
+const userSnap = await getDoc(doc(db,"users",s.uid));
+
+const u = userSnap.exists()
+? userSnap.data()
+: {};
 
         
 
@@ -1188,7 +1188,7 @@ storyBar.insertAdjacentHTML(
         ?
         `<video src="${s.media}" muted></video>`
         :
-        `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
+        `<img src="${u.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
         }
 
     </div>
@@ -1251,6 +1251,11 @@ if(blocked){
     if(!snap.exists()) return;
 
     const s = snap.data();
+    const userSnap = await getDoc(doc(db,"users",s.uid));
+
+const u = userSnap.exists()
+? userSnap.data()
+: {};
     if(auth.currentUser){
 
     await updateDoc(
@@ -1265,13 +1270,12 @@ if(blocked){
     // HIỂN THỊ NGƯỜI ĐĂNG STORY
 
 storyOwnerAvatar.src =
-s.avatar ||
+u.avatar ||
 "https://i.ibb.co/Z1kv9nJj/logo.png";
-
 
 storyOwnerName.innerHTML =
 `
-${s.name || "Người dùng"}
+${u.name || "Người dùng"}
 ${getVerifiedBadge(s.uid)}
 `;
 
