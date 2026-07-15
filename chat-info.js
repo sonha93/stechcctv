@@ -1098,7 +1098,7 @@ const cancelTheme = document.getElementById("cancelTheme");
 const saveTheme = document.getElementById("saveTheme");
 
 let selectedTheme = "default";
-
+let selectedThemeImage = "";
 
 console.log("THEME INIT", themeBtn, themeModal);
 
@@ -1172,7 +1172,69 @@ document.querySelectorAll(".theme-card[data-theme]")
 
 });
 
+const customTheme = document.getElementById("customTheme");
+const themeUpload = document.getElementById("themeUpload");
 
+if(customTheme){
+
+    customTheme.onclick = ()=>{
+
+        themeUpload.click();
+
+    };
+
+}
+
+if(themeUpload){
+
+    themeUpload.onchange = async ()=>{
+
+        const file = themeUpload.files[0];
+
+        if(!file) return;
+
+        const form = new FormData();
+
+        form.append("file", file);
+        form.append("upload_preset", "stech_up");
+
+        customTheme.innerHTML = "Đang tải...";
+
+        const upload = await fetch(
+            "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+            {
+                method:"POST",
+                body:form
+            }
+        );
+
+        const data = await upload.json();
+
+        if(!data.secure_url){
+
+            alert("Upload thất bại");
+
+            return;
+
+        }
+
+        selectedThemeImage = data.secure_url;
+
+        document.getElementById("currentThemePreview").style.backgroundImage =
+            `url(${selectedThemeImage})`;
+
+        document.getElementById("currentThemePreview").style.backgroundSize =
+            "cover";
+
+        document.getElementById("currentThemeName").innerText =
+            "Ảnh nền";
+
+        customTheme.innerHTML =
+            "✔ Đã chọn ảnh";
+
+    };
+
+}
 // LƯU
 
 if(saveTheme){
@@ -1191,20 +1253,29 @@ if(saveTheme){
             return;
 
 
-        await db.collection("conversations")
-        .doc(chatId)
-        .set({
+        const data = {
 
-            theme:{
-                [auth.currentUser.uid]: selectedTheme
-            }
+    theme:{
+        [auth.currentUser.uid]: selectedTheme
+    }
 
-        },{
+};
 
-            merge:true
+if(selectedThemeImage){
 
-        });
+    data.themeImage = {
 
+        [auth.currentUser.uid]: selectedThemeImage
+
+    };
+
+}
+
+await db.collection("conversations")
+.doc(chatId)
+.set(data,{
+    merge:true
+});
     };
 
 }
