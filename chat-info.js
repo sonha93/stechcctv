@@ -1155,7 +1155,7 @@ document.querySelectorAll(".theme-card[data-theme]")
     btn.onclick = () => {
 
         selectedTheme = btn.dataset.theme;
-
+        selectedThemeImage = "";
         const preview = document.getElementById("currentThemePreview");
 
         if (preview) {
@@ -1253,23 +1253,15 @@ if(saveTheme){
             return;
 
 
-        const data = {
-
+       const data = {
     theme:{
         [auth.currentUser.uid]: selectedTheme
+    },
+    themeImage:{
+        [auth.currentUser.uid]:
+            selectedThemeImage || ""
     }
-
 };
-
-if(selectedThemeImage){
-
-    data.themeImage = {
-
-        [auth.currentUser.uid]: selectedThemeImage
-
-    };
-
-}
 
 await db.collection("conversations")
 .doc(chatId)
@@ -1286,7 +1278,8 @@ if(selectedThemeImage){
 }else{
 
     document.body.style.backgroundImage = "";
-
+    document.body.style.backgroundSize = "";
+    document.body.style.backgroundPosition = "";
 }
 
 closeThemeBox();
