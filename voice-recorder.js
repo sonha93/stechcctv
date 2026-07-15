@@ -3,7 +3,9 @@
 // ===============================
 import {
     db,
-    auth
+    auth,
+    FieldValue,
+     storage
 } from "./firebase-init.js";
 let uploadTask = null;
 
@@ -63,9 +65,11 @@ const progress = document.getElementById("voiceProgress");
 const duration = document.getElementById("voiceDuration");
 
 const audio = document.getElementById("voiceAudio");
-const waveCanvas=document.getElementById("waveCanvas");
+const waveCanvas = document.getElementById("waveCanvas");
 
-const waveCtx=waveCanvas.getContext("2d");
+const waveCtx = waveCanvas 
+    ? waveCanvas.getContext("2d") 
+    : null;
 // ===============================
 // Open
 // ===============================
@@ -135,7 +139,11 @@ async function startRecorder(){
 
         });
 audioContext=new AudioContext();
+if(audioContext.state==="suspended"){
 
+    await audioContext.resume();
+
+}
 sourceNode=
 
 audioContext.createMediaStreamSource(
@@ -166,7 +174,13 @@ drawWave();
         audioBlob = null;
 
         resetTimer();
+        if(!window.MediaRecorder){
 
+    alert("Trình duyệt không hỗ trợ ghi âm");
+
+    return;
+
+}
         mediaRecorder = new MediaRecorder(mediaStream);
 
         mediaRecorder.ondataavailable = (e)=>{
@@ -186,12 +200,12 @@ drawWave();
             console.error(err);
 
             cleanupRecorder();
-
+            
         };
        
-        mediaRecorder.start(200);
+           isRecording = true;
 
-        isRecording = true;
+        mediaRecorder.start(200);
 
         isPaused = false;
 
@@ -283,26 +297,24 @@ function finishRecorder(){
     audioBlob = new Blob(audioChunks,{
         type:"audio/webm"
     });
-cleanupRecorder();
-player.classList.remove("hidden");
 
-duration.textContent = recordTime.textContent;
-    if(objectURL){
 
-        URL.revokeObjectURL(objectURL);
+    objectURL =
+    URL.createObjectURL(audioBlob);
 
-    }
-
-    objectURL = URL.createObjectURL(audioBlob);
 
     audio.src = objectURL;
 
+
     player.classList.remove("hidden");
 
-    duration.textContent = recordTime.textContent;
+
+    audioChunks=[];
+
+
+    cleanupRecorder();
 
 }
-
 // ===============================
 // Play
 // ===============================
@@ -398,9 +410,7 @@ cancelBtn.onclick=()=>{
 
     player.classList.add("hidden");
     resetRecorderUI();
-    panel.classList.add("hidden");
-    resetRecorderUI();
-    resetTimer();
+
 
 };
 function cancelUpload(){
@@ -438,12 +448,8 @@ async function saveVoiceMessage(
 
         window.currentChatUid,
 
-        createdAt:
-
-        firebase.firestore
-        .FieldValue
-        .serverTimestamp(),
-
+           createdAt:
+FieldValue.serverTimestamp(),
         seen:false,
 
         recalled:false,
@@ -538,63 +544,53 @@ function cleanupRecorder(){
 }
 function drawWave(){
 
-    animationFrame=
+    if(!analyser || !dataArray || !waveCtx){
+        return;
+    }
 
+    animationFrame =
     requestAnimationFrame(drawWave);
+
 
     analyser.getByteFrequencyData(dataArray);
 
+
     waveCtx.clearRect(
-
         0,
-
         0,
-
         waveCanvas.width,
-
         waveCanvas.height
-
     );
 
-    const width=4;
 
-    const gap=2;
+    const width = 4;
+    const gap = 2;
 
-    let x=0;
+    let x = 0;
 
-    for(
 
-        let i=0;
+    for(let i=0;i<40;i++){
 
-        i<40;
+        const value =
+        dataArray[i] / 255;
 
-        i++
 
-    ){
+        const h =
+        value * 55 + 4;
 
-        const value=
-
-        dataArray[i]/255;
-
-        const h=
-
-        value*55+4;
 
         waveCtx.fillStyle="#0084ff";
 
+
         waveCtx.fillRect(
-
             x,
-
             waveCanvas.height-h,
-
             width,
-
             h
-
         );
 
-        x+=width+gap;
+
+        x += width + gap;
 
     }
 
@@ -607,16 +603,24 @@ async function uploadVoiceToFirebase(voice){
 
     try{
 
-        const uid = auth.currentUser.uid;
+       if(!auth.currentUser){
+
+    alert("Chưa đăng nhập");
+
+    isUploading=false;
+
+    return;
+
+}
+
+const uid = auth.currentUser.uid;
 
         const filePath =
         `voices/${uid}/${voice.fileName}`;
 
         const storageRef =
-        firebase.storage()
-        .ref()
-        .child(filePath);
-
+storage.ref()
+.child(filePath);
         uploadTask =
         storageRef.put(voice.blob);
 
