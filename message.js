@@ -1453,16 +1453,20 @@ window.loadTheme = async function(chatId){
 
     const data = doc.data();
 
-    const theme =
-        data.theme?.[auth.currentUser.uid];
+    const theme = data.theme;
 
-    if(theme){
+if(theme){
 
-        document.body.dataset.theme = theme;
-    }
+    document.body.dataset.theme = theme;
 
-   const bg = data.themeImage?.[auth.currentUser.uid];
+}else{
 
+    document.body.dataset.theme = "default";
+
+}
+
+
+const bg = data.themeImage;
 if(bg){
 
    const messageArea = document.getElementById("messageBox");
@@ -1497,11 +1501,12 @@ window.listenTheme = function(chatId){
 
         const data = doc.data();
 
-        document.body.dataset.theme =
-            data.theme?.[auth.currentUser.uid] || "default";
+       document.body.dataset.theme =
+    data.theme || "default";
 
-        const bg =
-            data.themeImage?.[auth.currentUser.uid];
+
+const bg =
+    data.themeImage || "";
 
         if(bg){
 
