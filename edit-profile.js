@@ -63,8 +63,16 @@ const res = await fetch(
 
     const data = await res.json();
 
-    avatarUrl = data.secure_url;
+console.log(data);
 
+if (!data.secure_url) {
+    alert("Upload avatar thất bại");
+    console.log(data);
+    return;
+}
+
+avatarUrl = data.secure_url;
+console.log("Avatar URL:", avatarUrl);
 };
 
 // ==========================
@@ -237,7 +245,7 @@ saveBtn.onclick = async () => {
     // ==========================
     // Lưu Firestore
     // ==========================
-
+    console.log("Lưu avatar:", avatarUrl);
     await updateDoc(
         doc(db, "users", currentUser.uid),
         {
