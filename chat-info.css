@@ -975,35 +975,5 @@ THEME FIX
     gap:15px;
     padding:20px;
 }
-
-   /* FIX NÚT CHỌN ẢNH */
-.custom-card{
-
-    display:flex !important;
-
-    align-items:center !important;
-
-    justify-content:center !important;
-
-    text-align:center !important;
-
 }
-
-
-.custom-card span,
-.custom-card label,
-.custom-card p{
-
-    width:100%;
-
-    text-align:center;
-
-}
-
-
-.custom-card input{
-
-    display:none;
-
-}
-}
+   
