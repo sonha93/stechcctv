@@ -428,13 +428,6 @@ onclick="scrollToMessage('${msg.replyTo.id}')">
 `
 :""
 }
-    (msg.image || (msg.images && msg.images.length))
-        ? "image-only"
-        : msg.video
-        ? "video-only"
-        : ""
-}">
-
 ${
 msg.images && msg.images.length
 ?
@@ -723,9 +716,11 @@ await db
 
     image: imageUrl,
 
-    video: videoUrl,
+   video: videoUrl,
 
-    pinned: false,
+replyTo: replyMessage,
+
+pinned: false,
 
     createdAt: now,
 
@@ -1629,22 +1624,6 @@ if(preview){
 messageInput.focus();
 
 };
-
-replyMessage = {
-
-    id:id,
-    text:text,
-    senderId:senderId
-
-};
-
-
-messageInput.focus();
-
-
-};
-
-
 
 window.scrollToMessage = function(id){
 
