@@ -1198,3 +1198,23 @@ font-size:28px;
     padding:0 8px;
 
 }
+.chat-container{
+    display:flex;
+    flex-direction:column;
+}
+
+
+#replyPreview{
+    order:2;
+}
+
+
+.chat-input{
+    order:3;
+}
+.reply-text{
+    max-width:calc(100% - 40px);
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
