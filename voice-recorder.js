@@ -10,7 +10,31 @@ let audioBlob = null;
 
 let timer = null;
 let seconds = 0;
+// ===============================
+// State
+// ===============================
 
+let mediaStream = null;
+// ===============================
+// Audio Wave
+// ===============================
+
+let audioContext = null;
+
+let analyser = null;
+
+let sourceNode = null;
+
+let animationFrame = null;
+
+let dataArray = null;
+let isRecording = false;
+
+let isPaused = false;
+
+const MAX_RECORD_SECONDS = 300;
+
+let objectURL = null;
 const openBtn = document.getElementById("openRecorderBtn");
 const panel = document.getElementById("voicePanel");
 
@@ -46,30 +70,29 @@ function startTimer(){
 
     timer = setInterval(()=>{
 
+        if(!isRecording) return;
+
         seconds++;
 
-        const m = String(Math.floor(seconds/60)).padStart(2,"0");
-        const s = String(seconds%60).padStart(2,"0");
+        if(seconds>=MAX_RECORD_SECONDS){
 
-        recordTime.textContent = `${m}:${s}`;
+            stopBtn.click();
+
+            return;
+
+        }
+
+        const m = String(
+            Math.floor(seconds/60)
+        ).padStart(2,"0");
+
+        const s = String(
+            seconds%60
+        ).padStart(2,"0");
+
+        recordTime.textContent=`${m}:${s}`;
 
     },1000);
-
-}
-
-function stopTimer(){
-
-    clearInterval(timer);
-
-}
-
-function resetTimer(){
-
-    stopTimer();
-
-    seconds = 0;
-
-    recordTime.textContent = "00:00";
 
 }
 
@@ -79,25 +102,60 @@ function resetTimer(){
 
 async function startRecorder(){
 
+    if(isRecording) return;
+
+    if(
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ){
+
+        alert("Trình duyệt không hỗ trợ ghi âm.");
+
+        return;
+
+    }
+
     try{
 
-        const stream = await navigator.mediaDevices.getUserMedia({
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+
             audio:true
+
         });
 
         audioChunks = [];
 
-        mediaRecorder = new MediaRecorder(stream);
+        audioBlob = null;
 
-        mediaRecorder.ondataavailable=(e)=>{
+        resetTimer();
 
-            audioChunks.push(e.data);
+        mediaRecorder = new MediaRecorder(mediaStream);
+
+        mediaRecorder.ondataavailable = (e)=>{
+
+            if(e.data && e.data.size>0){
+
+                audioChunks.push(e.data);
+
+            }
 
         };
 
-        mediaRecorder.onstop=finishRecorder;
+        mediaRecorder.onstop = finishRecorder;
 
-        mediaRecorder.start();
+        mediaRecorder.onerror=(err)=>{
+
+            console.error(err);
+
+            cleanupRecorder();
+
+        };
+
+        mediaRecorder.start(200);
+
+        isRecording = true;
+
+        isPaused = false;
 
         panel.classList.remove("hidden");
 
@@ -111,9 +169,9 @@ async function startRecorder(){
 
     }catch(err){
 
-        alert("Không thể sử dụng microphone.");
-
         console.error(err);
+
+        alert("Không thể truy cập microphone.");
 
     }
 
@@ -123,11 +181,15 @@ async function startRecorder(){
 // Pause
 // ===============================
 
-pauseBtn.onclick=()=>{
+pauseBtn.onclick = () => {
 
-    if(!mediaRecorder) return;
+    if (!mediaRecorder) return;
+
+    if (mediaRecorder.state !== "recording") return;
 
     mediaRecorder.pause();
+
+    isPaused = true;
 
     stopTimer();
 
@@ -136,16 +198,19 @@ pauseBtn.onclick=()=>{
     resumeBtn.classList.remove("hidden");
 
 };
-
 // ===============================
 // Resume
 // ===============================
 
-resumeBtn.onclick=()=>{
+resumeBtn.onclick = () => {
 
-    if(!mediaRecorder) return;
+    if (!mediaRecorder) return;
+
+    if (mediaRecorder.state !== "paused") return;
 
     mediaRecorder.resume();
+
+    isPaused = false;
 
     startTimer();
 
@@ -159,9 +224,11 @@ resumeBtn.onclick=()=>{
 // Stop
 // ===============================
 
-stopBtn.onclick=()=>{
+stopBtn.onclick = () => {
 
-    if(!mediaRecorder) return;
+    if (!mediaRecorder) return;
+
+    if (mediaRecorder.state === "inactive") return;
 
     mediaRecorder.stop();
 
@@ -179,14 +246,44 @@ function finishRecorder(){
         type:"audio/webm"
     });
 
-    audio.src = URL.createObjectURL(audioBlob);
+    cleanupRecorder();
+function resetRecorderUI(){
+
+    pauseBtn.classList.remove("hidden");
+
+    resumeBtn.classList.add("hidden");
+
+    player.classList.add("hidden");
+
+    progress.value = 0;
+
+}
+    if(objectURL){
+
+        URL.revokeObjectURL(objectURL);
+
+    }
+
+    objectURL = URL.createObjectURL(audioBlob);
+
+    audio.src = objectURL;
 
     player.classList.remove("hidden");
 
     duration.textContent = recordTime.textContent;
 
 }
+cleanupRecorder();
 
+if(objectURL){
+
+    URL.revokeObjectURL(objectURL);
+
+}
+
+objectURL = URL.createObjectURL(audioBlob);
+
+audio.src = objectURL;
 // ===============================
 // Play
 // ===============================
@@ -258,26 +355,35 @@ audio.onended=()=>{
 
 cancelBtn.onclick=()=>{
 
-    if(audio.src){
+    cleanupRecorder();
 
-        URL.revokeObjectURL(audio.src);
+    if(objectURL){
+
+        URL.revokeObjectURL(objectURL);
+
+        objectURL=null;
 
     }
 
     audio.pause();
 
-    audio.src="";
+    audio.removeAttribute("src");
+
+    audio.load();
 
     audioBlob=null;
 
+    audioChunks=[];
+
+    progress.value=0;
+
     player.classList.add("hidden");
-
+    resetRecorderUI();
     panel.classList.add("hidden");
-
+    resetRecorderUI();
     resetTimer();
 
 };
-
 // ===============================
 // Send
 // ===============================
@@ -326,3 +432,24 @@ sendBtn.onclick=()=>{
     resetTimer();
 
 };
+function cleanupRecorder(){
+
+    stopTimer();
+
+    isRecording = false;
+
+    isPaused = false;
+
+    if(mediaStream){
+
+        mediaStream
+            .getTracks()
+            .forEach(track=>track.stop());
+
+        mediaStream = null;
+
+    }
+
+    mediaRecorder = null;
+
+}
