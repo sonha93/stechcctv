@@ -257,8 +257,6 @@ function finishRecorder(){
 // ===============================
 cancelBtn.onclick = ()=>{
 
-    cancelUpload();
-
     cleanupRecorder();
 
     audioBlob = null;
@@ -500,7 +498,7 @@ async function uploadVoiceToCloudinary(voice){
 
 
         const data = await res.json();
-
+        console.log("CLOUDINARY:", data);
 
         await saveVoiceMessage(
             data.secure_url,
