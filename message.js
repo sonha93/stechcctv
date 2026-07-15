@@ -1727,3 +1727,16 @@ window.recallMessage = async function(id){
     });
 
 };
+document.addEventListener("voiceRecorded",async(e)=>{
+
+    const voice=e.detail;
+
+    console.log(voice);
+
+    /*
+        blob
+        duration
+        fileName
+    */
+
+});
