@@ -707,8 +707,8 @@ function listenTheme(roomId){
 
 function applyTheme(data){
 
-    const chatBody =
-    document.querySelector(".chat-body");
+   const chatBody =
+document.getElementById("messageBox");
 
     if(!chatBody) return;
 
