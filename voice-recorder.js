@@ -23,6 +23,22 @@ let audioBlob = null;
 let timer = null;
 let seconds = 0;
 // ===============================
+// RESET TIMER
+// ===============================
+function resetTimer() {
+
+    clearInterval(timer);
+
+    timer = null;
+    seconds = 0;
+
+    const timeEl = document.getElementById("recordTime");
+
+    if (timeEl) {
+        timeEl.textContent = "00:00";
+    }
+}
+// ===============================
 // State
 // ===============================
 
