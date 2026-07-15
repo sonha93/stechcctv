@@ -1166,57 +1166,52 @@ storyBar.style.display = "";
         )
     );
 
-   snap.forEach(docSnap=>{
-
    for (const docSnap of snap.docs) {
 
     const s = docSnap.data();
 
     const userSnap = await getDoc(doc(db, "users", s.uid));
-
     const user = userSnap.exists() ? userSnap.data() : {};
 
     storyBar.insertAdjacentHTML(
-    "beforeend",
-    `
-    <div class="storyItem" onclick="openStory('${docSnap.id}')">
+        "beforeend",
+        `
+        <div class="storyItem" onclick="openStory('${docSnap.id}')">
 
-        <div class="storyAvatar">
+            <div class="storyAvatar">
 
-            <img src="${user.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}">
+                <img src="${user.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}">
 
-            ${
-                s.type === "video"
-                ? `<span class="story-video-icon"></span>`
-                : ""
-            }
+                ${
+                    s.type === "video"
+                    ? `<span class="story-video-icon"></span>`
+                    : ""
+                }
+
+            </div>
+
+            <div class="storyName">
+                ${s.text || ""}
+            </div>
 
         </div>
-
-        <div class="storyName">
-            ${s.text || ""}
-        </div>
-
-    </div>
-    `
+        `
     );
 
-}
-        const video = storyBar.lastElementChild.querySelector("video");
+    const video = storyBar.lastElementChild.querySelector("video");
 
-if (video) {
-    video.muted = true;
-    video.autoplay = true;
-    video.loop = true;
-    video.playsInline = true;
+    if (video) {
+        video.muted = true;
+        video.autoplay = true;
+        video.loop = true;
+        video.playsInline = true;
 
-    video.onloadedmetadata = () => {
-        video.play().catch(() => {});
-    };
+        video.onloadedmetadata = () => {
+            video.play().catch(() => {});
+        };
+    }
 }
-    });
 
-}
 const storyViewer = document.getElementById("storyViewer");
 const storyOwnerAvatar =
 document.getElementById("storyOwnerAvatar");
