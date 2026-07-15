@@ -5,12 +5,13 @@ import {
     collection,
     addDoc,
     getDocs,
+    getDoc,
     deleteDoc,
     query,
     where,
     serverTimestamp,
     doc,
-setDoc
+    setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const db = getFirestore(app);
@@ -133,17 +134,18 @@ export async function isFollowing(targetUid) {
 
     if (!auth.currentUser) return false;
 
-    const q = query(
-        collection(db, "follows"),
-        where("fromUid", "==", auth.currentUser.uid),
-        where("toUid", "==", targetUid)
+    const snap = await getDoc(
+        doc(
+            db,
+            "follows",
+            `${auth.currentUser.uid}_${targetUid}`
+        )
     );
 
-    const snap = await getDocs(q);
+    console.log("exists =", snap.exists());
 
-    return !snap.empty;
+    return snap.exists();
 }
-
 // ===============================
 // DANH SÁCH FOLLOW
 // ===============================
