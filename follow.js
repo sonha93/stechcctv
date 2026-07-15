@@ -33,59 +33,51 @@ export async function followUser(targetUid) {
 
         if (myUid === targetUid) return false;
 
-
-        // đã follow thì không tạo thêm
         if (await isFollowing(targetUid)) {
             return true;
         }
 
+        await setDoc(
+            doc(db, "follows", `${myUid}_${targetUid}`),
+            {
+                fromUid: myUid,
+                toUid: targetUid,
+                createdAt: serverTimestamp()
+            }
+        );
 
-        await addDoc(collection(db,"follows"),{
+        await setDoc(
+            doc(db, "users", myUid, "following", targetUid),
+            {
+                uid: targetUid,
+                createdAt: serverTimestamp()
+            }
+        );
 
-            fromUid: myUid,
-            toUid: targetUid,
-            createdAt: serverTimestamp()
+        await setDoc(
+            doc(db, "users", targetUid, "followers", myUid),
+            {
+                uid: myUid,
+                createdAt: serverTimestamp()
+            }
+        );
 
-        });
-
-await setDoc(
-    doc(db,"users",myUid,"following",targetUid),
-    {
-        uid: targetUid,
-        createdAt: serverTimestamp()
-    }
-);
-
-
-await setDoc(
-    doc(db,"users",targetUid,"followers",myUid),
-    {
-        uid: myUid,
-        createdAt: serverTimestamp()
-    }
-);
-        await addDoc(collection(db,"notifications"),{
-
+        await addDoc(collection(db, "notifications"), {
             receiverId: targetUid,
             senderId: myUid,
-            type:"follow",
-            read:false,
-            createdAt:serverTimestamp()
-
+            type: "follow",
+            read: false,
+            createdAt: serverTimestamp()
         });
 
-
         return true;
-
 
     } finally {
 
         followLock = false;
 
     }
-
 }
-
 // ===============================
 // UNFOLLOW
 // ===============================
