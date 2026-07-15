@@ -1072,18 +1072,35 @@ storyFile.onchange = async () => {
         return;
 
     }
-await addDoc(collection(db,"profile_stories"),{
-    uid,
+
+  await addDoc(collection(db,"profile_stories"),{
+
+    uid: uid,
+
     media: data.secure_url,
-    type: file.type.startsWith("video/") ? "video" : "image",
-    hidden:false,
+
+    type: file.type.startsWith("video/")
+        ? "video"
+        : "image",
+
+    hidden: false,
+
     text: prompt("Nhập nội dung story (có thể để trống):") || "",
+
+    avatar: user.avatar || "",
+
     name: user.name || "",
+
     username: user.username || "",
-    viewers:[],
-    likeCount:0,
+
+    viewers: [],
+
+    likeCount: 0,
+
     createdAt: serverTimestamp()
+
 });
+
 storyFile.value = "";
 
 alert("Đăng story thành công");
@@ -1166,52 +1183,50 @@ storyBar.style.display = "";
         )
     );
 
-   for (const docSnap of snap.docs) {
+   snap.forEach(docSnap=>{
 
     const s = docSnap.data();
 
-    const userSnap = await getDoc(doc(db, "users", s.uid));
-    const user = userSnap.exists() ? userSnap.data() : {};
+storyBar.insertAdjacentHTML(
+"beforeend",
+`
+<div class="storyItem" onclick="openStory('${docSnap.id}')">
 
-    storyBar.insertAdjacentHTML(
-        "beforeend",
-        `
-        <div class="storyItem" onclick="openStory('${docSnap.id}')">
+    <div class="storyAvatar">
 
-            <div class="storyAvatar">
-
-                <img src="${user.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png"}">
-
-                ${
-                    s.type === "video"
-                    ? `<span class="story-video-icon"></span>`
-                    : ""
-                }
-
-            </div>
-
-            <div class="storyName">
-                ${s.text || ""}
-            </div>
-
-        </div>
-        `
-    );
-
-    const video = storyBar.lastElementChild.querySelector("video");
-
-    if (video) {
-        video.muted = true;
-        video.autoplay = true;
-        video.loop = true;
-        video.playsInline = true;
-
-        video.onloadedmetadata = () => {
-            video.play().catch(() => {});
-        };
-    }
+       <img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
+${
+s.type==="video"
+?
+`<span class="story-video-icon"></span>`
+:
+""
 }
 
+    </div>
+
+    <div class="storyName">
+        ${s.text || ""}
+    </div>
+
+</div>
+`
+);
+        const video = storyBar.lastElementChild.querySelector("video");
+
+if (video) {
+    video.muted = true;
+    video.autoplay = true;
+    video.loop = true;
+    video.playsInline = true;
+
+    video.onloadedmetadata = () => {
+        video.play().catch(() => {});
+    };
+}
+    });
+
+}
 const storyViewer = document.getElementById("storyViewer");
 const storyOwnerAvatar =
 document.getElementById("storyOwnerAvatar");
