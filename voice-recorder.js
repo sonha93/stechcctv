@@ -53,7 +53,9 @@ const progress = document.getElementById("voiceProgress");
 const duration = document.getElementById("voiceDuration");
 
 const audio = document.getElementById("voiceAudio");
+const waveCanvas=document.getElementById("waveCanvas");
 
+const waveCtx=waveCanvas.getContext("2d");
 // ===============================
 // Open
 // ===============================
@@ -122,7 +124,33 @@ async function startRecorder(){
             audio:true
 
         });
+audioContext=new AudioContext();
 
+sourceNode=
+
+audioContext.createMediaStreamSource(
+
+    mediaStream
+
+);
+
+analyser=
+
+audioContext.createAnalyser();
+
+analyser.fftSize=256;
+
+sourceNode.connect(analyser);
+
+dataArray=
+
+new Uint8Array(
+
+    analyser.frequencyBinCount
+
+);
+
+drawWave();
         audioChunks = [];
 
         audioBlob = null;
@@ -150,7 +178,19 @@ async function startRecorder(){
             cleanupRecorder();
 
         };
+        cancelAnimationFrame(
 
+    animationFrame
+
+);
+
+if(audioContext){
+
+    audioContext.close();
+
+    audioContext=null;
+
+}
         mediaRecorder.start(200);
 
         isRecording = true;
@@ -451,5 +491,68 @@ function cleanupRecorder(){
     }
 
     mediaRecorder = null;
+
+}
+function drawWave(){
+
+    animationFrame=
+
+    requestAnimationFrame(drawWave);
+
+    analyser.getByteFrequencyData(dataArray);
+
+    waveCtx.clearRect(
+
+        0,
+
+        0,
+
+        waveCanvas.width,
+
+        waveCanvas.height
+
+    );
+
+    const width=4;
+
+    const gap=2;
+
+    let x=0;
+
+    for(
+
+        let i=0;
+
+        i<40;
+
+        i++
+
+    ){
+
+        const value=
+
+        dataArray[i]/255;
+
+        const h=
+
+        value*55+4;
+
+        waveCtx.fillStyle="#0084ff";
+
+        waveCtx.fillRect(
+
+            x,
+
+            waveCanvas.height-h,
+
+            width,
+
+            h
+
+        );
+
+        x+=width+gap;
+
+    }
 
 }
