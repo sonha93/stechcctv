@@ -1150,13 +1150,23 @@ if(cancelTheme){
 // CHỌN THEME
 
 document.querySelectorAll(".theme-card[data-theme]")
-.forEach(btn=>{
+.forEach(btn => {
 
-    btn.onclick = ()=>{
+    btn.onclick = () => {
 
         selectedTheme = btn.dataset.theme;
 
-        document.body.dataset.theme = selectedTheme;
+        const preview = document.getElementById("currentThemePreview");
+
+        if (preview) {
+            preview.className = "theme-preview " + selectedTheme;
+        }
+
+        const title = document.getElementById("currentThemeName");
+
+        if (title) {
+            title.textContent = btn.querySelector("span").textContent;
+        }
 
     };
 
