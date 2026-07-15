@@ -35,6 +35,7 @@ export async function followUser(targetUid) {
 
 
         // đã follow thì không tạo thêm
+        console.log(await isFollowing(profileUid));
         if (await isFollowing(targetUid)) {
             return true;
         }
