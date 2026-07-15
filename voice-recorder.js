@@ -1,7 +1,10 @@
 // ===============================
 // Upload State
 // ===============================
-
+import {
+    db,
+    auth
+} from "./firebase-init.js";
 let uploadTask = null;
 
 let isUploading = false;
