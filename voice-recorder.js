@@ -4,12 +4,13 @@
 import {
     db,
     auth,
-    FieldValue,
-     storage
+    FieldValue
 } from "./firebase-init.js";
 let uploadTask = null;
 
 let isUploading = false;
+const CLOUD_NAME = "dmz9gpp1b";
+const UPLOAD_PRESET = "stech_up";
 // ===============================
 // Voice Recorder
 // HTML + CSS + JS
@@ -298,7 +299,7 @@ sendBtn.onclick = async ()=>{
         };
 
 
-        await uploadVoiceToFirebase(voiceData);
+      await uploadVoiceToCloudinary(voiceData);
 
 
         panel.classList.add("hidden");
@@ -462,85 +463,53 @@ async function saveVoiceMessage(audioUrl, duration){
 
 
 }
-async function uploadVoiceToFirebase(voice){
-console.log("START UPLOAD", voice.blob.size);
+async function uploadVoiceToCloudinary(voice){
+
     if(isUploading) return;
 
     isUploading = true;
 
     try{
 
-       if(!auth.currentUser){
+        const formData = new FormData();
 
-    alert("Chưa đăng nhập");
-
-    isUploading=false;
-
-    return;
-
-}
-
-const uid = auth.currentUser.uid;
-
-        const filePath =
-        `voices/${uid}/${voice.fileName}`;
-
-        const storageRef =
-storage.ref()
-.child(filePath);
-        uploadTask =
-        storageRef.put(voice.blob);
-
-        uploadTask.on(
-
-            "state_changed",
-
-            snapshot=>{
-
-                const percent = Math.floor(
-
-                    snapshot.bytesTransferred
-                    /
-                    snapshot.totalBytes
-                    *100
-
-                );
-
-                console.log(
-                    "Upload:",
-                    percent+"%"
-                );
-
-            },
-
-            err=>{
-
-                console.error(err);
-
-                isUploading=false;
-
-                alert("Upload thất bại.");
-
-            },
-
-            async()=>{
-
-                const audioUrl =
-                await storageRef.getDownloadURL();
-                console.log("URL:", audioUrl);
-                await saveVoiceMessage(
-
-                    audioUrl,
-
-                    voice.duration
-
-                );
-
-                isUploading=false;
-
-            }
-
+        formData.append(
+            "file",
+            voice.blob,
+            voice.fileName
         );
+
+        formData.append(
+            "upload_preset",
+            UPLOAD_PRESET
+        );
+
+        formData.append(
+            "resource_type",
+            "video"
+        );
+
+
+        const res = await fetch(
+            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`,
+            {
+                method:"POST",
+                body:formData
+            }
+        );
+
+
+        const data = await res.json();
+
+
+        await saveVoiceMessage(
+            data.secure_url,
+            voice.duration
+        );
+
+
+        isUploading=false;
+
 
     }catch(err){
 
