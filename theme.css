@@ -50,6 +50,10 @@ sans-serif;
 body{
 
 background:#eef2f6;
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
+background-attachment:fixed;
 
 }
 
@@ -1558,4 +1562,12 @@ body[data-theme="pink"]{
 /* Hồng */
 .theme-preview.pink{
     background:#ff4fa3;
+}
+body.has-theme-image{
+
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
+background-attachment:fixed;
+
 }
