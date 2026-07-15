@@ -79,7 +79,8 @@ document.getElementById("backBtn");
     let userCache = {};
     let seenUserCache = {};
    let selectedFiles = [];
-    let typingTimer = null;
+let typingTimer = null;
+let replyMessage = null;
 let otherUid = "";
 let blockState = {
     iBlocked:false,
@@ -376,7 +377,7 @@ msg.senderId===currentUser.uid;
 
 div.className=
 mine ? "message mine":"message other";
-
+div.dataset.messageId = msg.id;
 const showAvatar =
 !mine &&
 (
@@ -405,6 +406,28 @@ src="${
 <div class="message-body">
 
 <div class="message-content ${
+    (msg.image || (msg.images && msg.images.length))
+        ? "image-only"
+        : msg.video
+        ? "video-only"
+        : ""
+}">
+
+
+${
+msg.replyTo
+?
+`
+<div 
+class="reply-box"
+onclick="scrollToMessage('${msg.replyTo.id}')">
+
+↩ ${escapeHTML(msg.replyTo.text)}
+
+</div>
+`
+:""
+}
     (msg.image || (msg.images && msg.images.length))
         ? "image-only"
         : msg.video
@@ -500,7 +523,17 @@ ${escapeHTML(msg.text)}
 <div class="message-time">
 ${formatTime(msg.createdAt)}
 </div>
+<div class="message-reply-btn">
 
+<button onclick="replyMessageFn(
+'${msg.id}',
+'${escapeHTML(msg.text || "Hình ảnh")}',
+'${msg.senderId}'
+)">
+↩ Trả lời
+</button>
+
+</div>
 
 ${
 mine &&
@@ -631,7 +664,7 @@ await db
     images: images,
 
     video: videos.length ? videos[0] : "",
-
+     replyTo: replyMessage,
     pinned:false,
 
     createdAt: firebase.firestore.Timestamp.now(),
@@ -716,7 +749,7 @@ await db
 
 });
     messageInput.value="";
-
+replyMessage = null;
 selectedFiles = [];
 
 imageInput.value="";
@@ -1531,3 +1564,51 @@ if(messageArea){
     });
 
 }
+// ================================
+// REPLY MESSAGE
+// ================================
+
+window.replyMessageFn = function(
+id,
+text,
+senderId
+){
+
+replyMessage = {
+
+    id:id,
+    text:text,
+    senderId:senderId
+
+};
+
+
+messageInput.focus();
+
+
+};
+
+
+
+window.scrollToMessage = function(id){
+
+
+const el =
+document.querySelector(
+`[data-message-id="${id}"]`
+);
+
+
+if(el){
+
+el.scrollIntoView({
+
+behavior:"smooth",
+block:"center"
+
+});
+
+}
+
+
+};
