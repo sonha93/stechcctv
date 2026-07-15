@@ -200,104 +200,45 @@ fill="currentColor">
 
 
 
-
 <!-- VOICE PANEL -->
 
-
-<div id="voicePanel"
-class="voice-panel hidden">
+<div id="voicePanel" class="voice-panel hidden">
 
 
-
-<div class="voice-recording">
-
-
-<span id="recordTime">
-00:00
-</span>
+    <canvas
+    id="waveCanvas"
+    width="220"
+    height="60">
+    </canvas>
 
 
+    <!-- XÓA GHI ÂM -->
 
-<canvas
-id="waveCanvas"
-width="200"
-height="50">
-</canvas>
+    <button id="cancelRecordBtn"
+    class="voice-trash">
 
+        <svg viewBox="0 0 24 24">
+            <path fill="currentColor"
+            d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4z"/>
+        </svg>
 
-
-
-<button id="pauseRecordBtn">
-⏸
-</button>
+    </button>
 
 
 
-<button id="resumeRecordBtn"
-class="hidden">
-▶
-</button>
+    <!-- GỬI -->
 
+    <button id="sendRecordBtn"
+    class="voice-send">
 
+        <svg viewBox="0 0 24 24">
 
-<button id="stopRecordBtn">
-⏹
-</button>
+            <path fill="currentColor"
+            d="M2 21L23 12 2 3v7l15 2-15 2z"/>
 
+        </svg>
 
-
-<button id="cancelRecordBtn">
-✖
-</button>
-
-
-
-</div>
-
-
-
-
-
-
-<div id="voicePlayer"
-class="hidden">
-
-
-
-<button id="playVoiceBtn">
-
-▶
-
-</button>
-
-
-
-<input
-id="voiceProgress"
-type="range"
-min="0"
-max="100"
-value="0">
-
-
-
-<span id="voiceDuration">
-00:00
-</span>
-
-
-
-<audio id="voiceAudio"></audio>
-
-
-
-
-<button id="sendRecordBtn">
-
-Gửi
-
-</button>
-
+    </button>
 
 
 </div>
