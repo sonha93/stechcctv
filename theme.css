@@ -61,32 +61,33 @@ background-attachment:fixed;
 
 .theme-modal{
 
-position:fixed;
+    position:fixed;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
 
-left:0;
-top:0;
+    display:flex;
 
-width:100%;
-height:100%;
+    justify-content:center;
+    align-items:center;
 
-display:none;
+    background:rgba(0,0,0,.45);
 
-justify-content:center;
-align-items:center;
+    backdrop-filter:blur(8px);
 
-background:
-rgba(0,0,0,.45);
+    z-index:99999;
 
-backdrop-filter:
-blur(8px);
+    opacity:0;
+    visibility:hidden;
+}
+.theme-modal.show{
 
-z-index:99999;
-
-animation:
-fadeIn .25s;
+    display:flex;
+    opacity:1;
+    visibility:visible;
 
 }
-
 /* ========================= */
 
 .theme-window{
