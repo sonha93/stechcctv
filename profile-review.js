@@ -1212,7 +1212,7 @@ if (video) {
 }
    }
 
-
+}
 const storyViewer = document.getElementById("storyViewer");
 const storyOwnerAvatar =
 document.getElementById("storyOwnerAvatar");
