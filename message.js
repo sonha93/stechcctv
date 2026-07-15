@@ -1453,20 +1453,30 @@ window.loadTheme = async function(chatId){
 
     const data = doc.data();
 
-    const theme = data.theme;
+    let theme =
+    data.theme;
 
-if(theme){
+let bg =
+    data.themeImage || "";
 
-    document.body.dataset.theme = theme;
 
-}else{
+const privateTheme =
+    data.privateTheme?.[auth.currentUser.uid];
 
-    document.body.dataset.theme = "default";
+
+if(privateTheme){
+
+    theme =
+    privateTheme.theme || "default";
+
+    bg =
+    privateTheme.themeImage || "";
 
 }
 
 
-const bg = data.themeImage;
+document.body.dataset.theme =
+theme || "default";
 if(bg){
 
    const messageArea = document.getElementById("messageBox");
@@ -1501,12 +1511,30 @@ window.listenTheme = function(chatId){
 
         const data = doc.data();
 
-       document.body.dataset.theme =
+       let theme =
     data.theme || "default";
 
-
-const bg =
+let bg =
     data.themeImage || "";
+
+
+const privateTheme =
+    data.privateTheme?.[auth.currentUser.uid];
+
+
+if(privateTheme){
+
+    theme =
+    privateTheme.theme || "default";
+
+    bg =
+    privateTheme.themeImage || "";
+
+}
+
+
+document.body.dataset.theme =
+theme;
 
         if(bg){
 
