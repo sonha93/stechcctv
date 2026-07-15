@@ -1187,7 +1187,10 @@ storyBar.style.display = "";
 
         const s = docSnap.data();
 
-        
+      console.log(
+        "Story:", docSnap.id,
+        "Avatar:", s.avatar
+    );   
 
 storyBar.insertAdjacentHTML(
 "beforeend",
