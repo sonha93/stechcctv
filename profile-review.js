@@ -1183,14 +1183,17 @@ storyBar.style.display = "";
         )
     );
 
-    snap.forEach(docSnap=>{
+   snap.forEach(docSnap=>{
 
-        const s = docSnap.data();
+    const s = docSnap.data();
 
-      console.log(
-        "Story:", docSnap.id,
-        "Avatar:", s.avatar
-    );   
+    console.log({
+        id: docSnap.id,
+        uid: s.uid,
+        avatar: s.avatar
+    });
+
+    storyBar.insertAdjacentHTML(
 
 storyBar.insertAdjacentHTML(
 "beforeend",
