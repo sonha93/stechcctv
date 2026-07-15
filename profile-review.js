@@ -344,7 +344,7 @@ if(addStory){
 async function updateFollowButton(){
 
     const following = await isFollowing(profileUid);
-  console.log("following =", following);
+
 
     if(following){
 
