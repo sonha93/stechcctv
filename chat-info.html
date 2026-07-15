@@ -8,7 +8,7 @@
 <title>Thông tin đoạn chat</title>
 
 <link rel="stylesheet" href="chat-info.css">
-
+<link rel="stylesheet" href="theme.css">
 </head>
 
 
@@ -153,47 +153,20 @@ Tìm kiếm
 
 </button>
 
-
-
-
-
-
-<button>
-
+<button id="themeBtn">
 
 <div class="round-icon">
 
-
 <svg viewBox="0 0 24 24">
-
-<path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5z"/>
-
-<path d="M19.4 15a1.7 1.7 0 000-6l-1.5-.3a7 7 0 00-1.5-1.5l-.3-1.5a1.7 1.7 0 00-6 0l-.3 1.5a7 7 0 00-1.5 1.5L6.8 9a1.7 1.7 0 000 6l1.5.3a7 7 0 001.5 1.5l.3 1.5a1.7 1.7 0 006 0l.3-1.5a7 7 0 001.5-1.5z"/>
-
+<path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/>
 </svg>
-
 
 </div>
 
-
-<span>
-Tùy chỉnh
-</span>
-
+<span>Theme</span>
 
 </button>
-
-
-
 </section>
-
-
-
-
-
-
-
-
 <!-- MEDIA -->
 
 <section class="menu">
@@ -380,11 +353,6 @@ Tự động lưu ảnh
 
 
 </section>
-
-
-
-</div>
-
 <!-- Avatar Viewer -->
 
 <div id="avatarViewer" hidden>
@@ -394,6 +362,109 @@ Tự động lưu ảnh
     <img id="avatarViewerImg" src="" alt="Avatar">
 
 </div>
+<!-- =========================
+THEME MODAL
+========================= -->
+
+<div id="themeModal" class="theme-modal hidden">
+<div class="theme-window">
+
+<div class="theme-header">
+
+<h2>Theme cuộc trò chuyện</h2>
+
+<button id="closeTheme">
+
+<svg viewBox="0 0 24 24">
+
+<path d="M6 6l12 12"/>
+
+<path d="M18 6L6 18"/>
+
+</svg>
+
+</button>
+
+</div>
+
+<div class="theme-body">
+
+    <div class="current-theme">
+
+      <div id="currentThemePreview" class="theme-preview default"></div>
+
+        <div class="current-theme-info">
+
+            <h4 id="currentThemeName">
+                Mặc định
+            </h4>
+
+            <p>Theme hiện đang sử dụng</p>
+
+        </div>
+
+    </div>
+    <hr>
+
+    <h3>Ảnh nền</h3>
+<div class="theme-list">
+
+<button class="theme-card default" data-theme="default">
+    <span>Mặc định</span>
+</button>
+
+<button class="theme-card dark" data-theme="dark">
+    <span>Tối</span>
+</button>
+
+<button class="theme-card blue" data-theme="blue">
+    <span>Xanh</span>
+</button>
+
+<button class="theme-card pink" data-theme="pink">
+    <span>Hồng</span>
+</button>
+
+</div>
+    <button id="customTheme"
+            class="theme-card custom-card">
+
+        <svg viewBox="0 0 24 24">
+            <path d="M12 5v14"/>
+            <path d="M5 12h14"/>
+        </svg>
+
+        <span>Chọn ảnh từ thiết bị</span>
+
+    </button>
+<input 
+id="themeUpload"
+type="file"
+accept="image/*"
+hidden>
+</div>
+
+<div class="theme-footer">
+
+    <button id="cancelTheme"
+            class="gray-btn">
+
+        Hủy
+
+    </button>
+
+    <button id="saveTheme"
+            class="btn">
+
+        Áp dụng
+
+    </button>
+
+</div>
+</div>
+
+</div>
+
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 
@@ -411,6 +482,6 @@ Tự động lưu ảnh
 <!-- CHAT INFO -->
 <script type="module" src="chat-info.js"></script>
 
-
+<script src="theme.js"></script>
 </body>
 </html>
