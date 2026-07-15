@@ -2412,6 +2412,11 @@ hr{
     height:170px;
     border-radius:18px;
     border:1px solid #ddd;
+
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:contain;   /* Hiện toàn bộ ảnh */
+    background-color:#fff;
 }
 
 .current-theme-info h4{
