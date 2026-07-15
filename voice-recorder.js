@@ -90,7 +90,9 @@ const waveCtx = waveCanvas
 // Open
 // ===============================
 
-openBtn.addEventListener("click", startRecorder);
+if (openBtn) {
+    openBtn.addEventListener("click", startRecorder);
+}
 
 // ===============================
 // Timer
@@ -149,11 +151,15 @@ async function startRecorder(){
 
     try{
 
-        mediaStream = await navigator.mediaDevices.getUserMedia({
+       console.log("mediaDevices:", navigator.mediaDevices);
 
-            audio:true
-
-        });
+mediaStream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+    }
+});
 audioContext=new AudioContext();
 if(audioContext.state==="suspended"){
 
