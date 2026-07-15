@@ -79,15 +79,7 @@ const playBtn = document.getElementById("playVoiceBtn");
 
 const progress = document.getElementById("voiceProgress");
 const duration = document.getElementById("voiceDuration");
-audio.onloadedmetadata = () => {
-    const sec = Math.floor(audio.duration || 0);
-    const m = String(Math.floor(sec / 60)).padStart(2, "0");
-    const s = String(sec % 60).padStart(2, "0");
 
-    if (duration) {
-        duration.textContent = `${m}:${s}`;
-    }
-};
 const audio = document.getElementById("voiceAudio");
 const waveCanvas = document.getElementById("waveCanvas");
 
@@ -132,16 +124,12 @@ function startTimer(){
             seconds%60
         ).padStart(2,"0");
 
-      if (recordTime) {
-    recordTime.textContent = `${m}:${s}`;
-}
+        recordTime.textContent=`${m}:${s}`;
+
     },1000);
 
 }
-function stopTimer() {
-    clearInterval(timer);
-    timer = null;
-}
+
 // ===============================
 // Recorder
 // ===============================
@@ -702,10 +690,7 @@ storage.ref()
             }
 
         );
-await saveVoiceMessage(
-    audioUrl,
-    voice.duration
-);    
+
     }catch(err){
 
         console.error(err);
