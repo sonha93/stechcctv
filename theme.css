@@ -1487,3 +1487,43 @@ body[data-theme="pink"]{
 .message-box{
     background:var(--chat-bg,#f0f2f5);
 }
+.theme-preview{
+    width:100%;
+    height:120px;
+    border-radius:16px;
+    border:1px solid #ddd;
+}
+
+.theme-card{
+    width:90px;
+    height:90px;
+    border:none;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:#fff;
+    font-weight:bold;
+}
+
+.theme-card.default,
+.theme-preview.default{
+    background:#f0f2f5;
+    color:#222;
+}
+
+.theme-card.dark,
+.theme-preview.dark{
+    background:#121212;
+}
+
+.theme-card.blue,
+.theme-preview.blue{
+    background:#1877f2;
+}
+
+.theme-card.pink,
+.theme-preview.pink{
+    background:#ff4fa3;
+}
