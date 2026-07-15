@@ -96,7 +96,15 @@ function openTheme(id){
 
     roomId = id;
 
-    themeModal.style.display = "flex";
+    if(!themeModal){
+
+        console.error("Không tìm thấy themeModal");
+
+        return;
+
+    }
+
+    themeModal.style.display="flex";
 
 }
 
