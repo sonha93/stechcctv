@@ -1272,16 +1272,18 @@ await db.collection("conversations")
 
 if(selectedThemeImage){
 
+    document.body.classList.add("has-theme-image");
+
     document.body.style.backgroundImage =
-        `url(${selectedThemeImage})`;
+        `url("${selectedThemeImage}")`;
 
 }else{
 
-    document.body.style.backgroundImage = "";
-    document.body.style.backgroundSize = "";
-    document.body.style.backgroundPosition = "";
-}
+    document.body.classList.remove("has-theme-image");
 
+    document.body.style.backgroundImage = "";
+
+}
 closeThemeBox();
     };
 
