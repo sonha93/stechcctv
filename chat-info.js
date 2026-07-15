@@ -1276,6 +1276,20 @@ await db.collection("conversations")
 .set(data,{
     merge:true
 });
+        document.body.dataset.theme = selectedTheme;
+
+if(selectedThemeImage){
+
+    document.body.style.backgroundImage =
+        `url(${selectedThemeImage})`;
+
+}else{
+
+    document.body.style.backgroundImage = "";
+
+}
+
+closeThemeBox();
     };
 
 }
