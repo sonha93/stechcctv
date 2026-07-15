@@ -1242,3 +1242,6 @@ font-size:28px;
     gap:8px;
     margin-top:5px;
 }
+#replyPreview:empty{
+    display:none;
+}
