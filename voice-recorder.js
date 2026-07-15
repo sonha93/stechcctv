@@ -79,6 +79,9 @@ const playBtn = document.getElementById("playVoiceBtn");
 
 const progress = document.getElementById("voiceProgress");
 const duration = document.getElementById("voiceDuration");
+
+const audio = document.getElementById("voiceAudio");
+
 audio.onloadedmetadata = () => {
     const sec = Math.floor(audio.duration || 0);
     const m = String(Math.floor(sec / 60)).padStart(2, "0");
@@ -88,11 +91,11 @@ audio.onloadedmetadata = () => {
         duration.textContent = `${m}:${s}`;
     }
 };
-const audio = document.getElementById("voiceAudio");
+
 const waveCanvas = document.getElementById("waveCanvas");
 
-const waveCtx = waveCanvas 
-    ? waveCanvas.getContext("2d") 
+const waveCtx = waveCanvas
+    ? waveCanvas.getContext("2d")
     : null;
 // ===============================
 // Open
