@@ -26,7 +26,7 @@ const chooseImage = document.getElementById("chooseImage");
 const removeImage = document.getElementById("removeImage");
 const defaultTheme = document.getElementById("defaultTheme");
 
-const fileInput = document.getElementById("themeImage");
+const fileInput = document.getElementById("themeUpload");
 const previewImage = document.getElementById("previewImage");
 
 // ==============================
