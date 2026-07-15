@@ -28,6 +28,10 @@ firebase.storage
 ? firebase.storage()
 : null; // nếu cần upload hình ảnh
 
+// thêm dòng này
+const FieldValue =
+firebase.firestore.FieldValue;
+
 // Biến trạng thái Firebase sẵn sàng
 let firebaseReady = false;
 
