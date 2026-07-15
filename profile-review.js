@@ -1112,20 +1112,6 @@ async function loadStories(){
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
-let myAvatar = "https://i.ibb.co/Z1kv9nJj/logo.png";
-
-if(auth.currentUser){
-
-    const me = await getDoc(doc(db,"users",auth.currentUser.uid));
-
-    if(me.exists()){
-
-        myAvatar = me.data().avatar || myAvatar;
-
-    }
-
-}
-
 storyBar.innerHTML = `
 <div class="storyItem" id="addStoryBtn">
 
@@ -1133,7 +1119,7 @@ storyBar.innerHTML = `
 
         <img
         id="myStoryAvatar"
-        src="${myAvatar}">
+        src="${document.getElementById('profileAvatar')?.src || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
 
         <span class="storyPlus">+</span>
 
@@ -1145,6 +1131,7 @@ storyBar.innerHTML = `
 
 </div>
 `;
+
 document.getElementById("addStoryBtn").onclick = () => {
 
     if(!auth.currentUser){
@@ -1196,14 +1183,13 @@ storyBar.insertAdjacentHTML(
 
     <div class="storyAvatar">
 
-       <img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
-${
-s.type==="video"
-?
-`<span class="story-video-icon"></span>`
-:
-""
-}
+        ${
+        s.type==="video"
+        ?
+        `<video src="${s.media}" muted></video>`
+        :
+        `<img src="${s.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
+        }
 
     </div>
 
@@ -1278,18 +1264,17 @@ if(blocked){
     currentStoryOwner = s.uid;
     // HIỂN THỊ NGƯỜI ĐĂNG STORY
 
-const userSnap = await getDoc(doc(db,"users",s.uid));
-const storyUser = userSnap.exists() ? userSnap.data() : {};
-
 storyOwnerAvatar.src =
-storyUser.avatar ||
+s.avatar ||
 "https://i.ibb.co/Z1kv9nJj/logo.png";
+
 
 storyOwnerName.innerHTML =
 `
-${storyUser.name || "Người dùng"}
+${s.name || "Người dùng"}
 ${getVerifiedBadge(s.uid)}
 `;
+
 
 // HIỂN THỊ NGÀY GIỜ ĐĂNG
 
