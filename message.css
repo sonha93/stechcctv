@@ -1161,3 +1161,40 @@ font-size:28px;
     display:block;
 
 }
+#replyPreview{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+}
+
+
+.reply-text{
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
+
+}
+
+
+.reply-close{
+
+    border:none;
+
+    background:none;
+
+    font-size:22px;
+
+    cursor:pointer;
+
+    line-height:1;
+
+    padding:0 8px;
+
+}
