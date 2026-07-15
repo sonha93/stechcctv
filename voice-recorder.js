@@ -79,9 +79,6 @@ const playBtn = document.getElementById("playVoiceBtn");
 
 const progress = document.getElementById("voiceProgress");
 const duration = document.getElementById("voiceDuration");
-
-const audio = document.getElementById("voiceAudio");
-
 audio.onloadedmetadata = () => {
     const sec = Math.floor(audio.duration || 0);
     const m = String(Math.floor(sec / 60)).padStart(2, "0");
@@ -91,11 +88,11 @@ audio.onloadedmetadata = () => {
         duration.textContent = `${m}:${s}`;
     }
 };
-
+const audio = document.getElementById("voiceAudio");
 const waveCanvas = document.getElementById("waveCanvas");
 
-const waveCtx = waveCanvas
-    ? waveCanvas.getContext("2d")
+const waveCtx = waveCanvas 
+    ? waveCanvas.getContext("2d") 
     : null;
 // ===============================
 // Open
@@ -655,48 +652,62 @@ storage.ref()
         uploadTask =
         storageRef.put(voice.blob);
 
-    uploadTask.on(
+        uploadTask.on(
 
-    "state_changed",
+            "state_changed",
 
-    snapshot => {
+            snapshot=>{
 
-        const percent = Math.floor(
-            snapshot.bytesTransferred /
-            snapshot.totalBytes * 100
+                const percent = Math.floor(
+
+                    snapshot.bytesTransferred
+                    /
+                    snapshot.totalBytes
+                    *100
+
+                );
+
+                console.log(
+                    "Upload:",
+                    percent+"%"
+                );
+
+            },
+
+            err=>{
+
+                console.error(err);
+
+                isUploading=false;
+
+                alert("Upload thất bại.");
+
+            },
+
+            async()=>{
+
+                const audioUrl =
+                await storageRef.getDownloadURL();
+
+                await saveVoiceMessage(
+
+                    audioUrl,
+
+                    voice.duration
+
+                );
+
+                isUploading=false;
+
+            }
+
         );
+await saveVoiceMessage(
+    audioUrl,
+    voice.duration
+);    
+    }catch(err){
 
-        console.log("Upload:", percent + "%");
-
-    },
-
-    err => {
-
-        console.error(err);
-
-        isUploading = false;
-
-        alert("Upload thất bại.");
-
-    },
-
-    async () => {
-
-        const audioUrl = await storageRef.getDownloadURL();
-
-        await saveVoiceMessage(
-            audioUrl,
-            voice.duration
-        );
-
-        isUploading = false;
-
-        panel.classList.add("hidden");
-        resetTimer();
-
-    }
-
-);
         console.error(err);
 
         isUploading=false;
