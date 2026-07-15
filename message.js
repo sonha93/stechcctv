@@ -749,6 +749,7 @@ await db
 
 });
     messageInput.value="";
+    
 replyMessage = null;
 selectedFiles = [];
 
@@ -1573,6 +1574,35 @@ id,
 text,
 senderId
 ){
+
+replyMessage = {
+
+    id:id,
+    text:text,
+    senderId:senderId
+
+};
+
+
+const preview =
+document.getElementById("replyPreview");
+
+
+if(preview){
+
+    preview.innerHTML =
+    `
+    ↩ ${escapeHTML(text)}
+    `;
+
+    preview.classList.add("active");
+
+}
+
+
+messageInput.focus();
+
+};
 
 replyMessage = {
 
