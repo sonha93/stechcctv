@@ -78,15 +78,26 @@ body{
 
     display:flex;
     flex-direction:column;
-}
-.chat-container{
 
     position:relative;
+    z-index:1;
+}
+.chat-container{
+    width:100%;
+    max-width:700px;
+    height:100vh;
+    margin:auto;
 
+    position:relative;
+    overflow:hidden;
+
+    background:#fff;
     background-size:cover;
     background-position:center;
     background-repeat:no-repeat;
 
+    display:flex;
+    flex-direction:column;
 }
 /* ROW */
 
