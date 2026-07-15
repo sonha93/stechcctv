@@ -1254,13 +1254,11 @@ if(saveTheme){
 
 
        const data = {
-    theme:{
-        [auth.currentUser.uid]: selectedTheme
-    },
-    themeImage:{
-        [auth.currentUser.uid]:
-            selectedThemeImage || ""
-    }
+
+    theme: selectedTheme,
+
+    themeImage: selectedThemeImage || ""
+
 };
 
 await db.collection("conversations")
