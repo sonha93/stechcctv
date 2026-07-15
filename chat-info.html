@@ -407,6 +407,7 @@ THEME MODAL
     <hr>
 
     <h3>Ảnh nền</h3>
+
 <div class="theme-list">
 
 <button class="theme-card default" data-theme="default">
@@ -426,38 +427,60 @@ THEME MODAL
 </button>
 
 </div>
-    <button id="customTheme"
-            class="theme-card custom-card">
 
-        <svg viewBox="0 0 24 24">
-            <path d="M12 5v14"/>
-            <path d="M5 12h14"/>
-        </svg>
 
-        <span>Chọn ảnh từ thiết bị</span>
+<button id="customTheme"
+        class="theme-card custom-card">
 
-    </button>
+    <svg viewBox="0 0 24 24">
+        <path d="M12 5v14"/>
+        <path d="M5 12h14"/>
+    </svg>
+
+    <span>Chọn ảnh từ thiết bị</span>
+
+</button>
+
+
 <input 
 id="themeUpload"
 type="file"
 accept="image/*"
 hidden>
+
+
+<div class="theme-scope">
+
+    <label>
+        <input 
+        type="radio"
+        name="scope"
+        value="me"
+        checked>
+        Chỉ mình tôi
+    </label>
+
+    <label>
+        <input 
+        type="radio"
+        name="scope"
+        value="everyone">
+        Cả hai người
+    </label>
+
 </div>
+
 
 <div class="theme-footer">
 
     <button id="cancelTheme"
             class="gray-btn">
-
         Hủy
-
     </button>
 
     <button id="saveTheme"
             class="btn">
-
         Áp dụng
-
     </button>
 
 </div>
