@@ -1440,5 +1440,89 @@ window.pinMessage = async function(messageId){
 // LOAD CHAT THEME
 // ================================
 
-window.loadTheme = loadTheme;
-window.listenTheme = listenTheme;
+window.loadTheme = async function(chatId){
+
+    if(!chatId) return;
+
+    const doc = await db
+        .collection("conversations")
+        .doc(chatId)
+        .get();
+
+    if(!doc.exists) return;
+
+    const data = doc.data();
+
+    const theme =
+        data.theme?.[auth.currentUser.uid];
+
+    if(theme){
+
+        document.body.dataset.theme = theme;
+    }
+
+   const bg = data.themeImage?.[auth.currentUser.uid];
+
+if(bg){
+
+   const messageArea = document.getElementById("messageBox");
+
+if(messageArea){
+    messageArea.style.backgroundImage = `url(${bg})`;
+    messageArea.style.backgroundSize = "cover";
+    messageArea.style.backgroundPosition = "center";
+    messageArea.style.backgroundRepeat = "no-repeat";
+}
+}else{
+
+    const messageArea = document.getElementById("messageBox");
+
+if(messageArea){
+    messageArea.style.backgroundImage = "";
+}
+
+}
+};
+// ================================
+// LISTEN THEME REALTIME
+// ================================
+
+window.listenTheme = function(chatId){
+
+    db.collection("conversations")
+    .doc(chatId)
+    .onSnapshot(doc=>{
+
+        if(!doc.exists) return;
+
+        const data = doc.data();
+
+        document.body.dataset.theme =
+            data.theme?.[auth.currentUser.uid] || "default";
+
+        const bg =
+            data.themeImage?.[auth.currentUser.uid];
+
+        if(bg){
+
+           const messageArea = document.getElementById("messageBox");
+
+if(messageArea){
+    messageArea.style.backgroundImage = `url(${bg})`;
+    messageArea.style.backgroundSize = "cover";
+    messageArea.style.backgroundPosition = "center";
+    messageArea.style.backgroundRepeat = "no-repeat";
+}
+        }else{
+
+           const messageArea = document.getElementById("messageBox");
+
+if(messageArea){
+    messageArea.style.backgroundImage = "";
+}
+
+        }
+
+    });
+
+}
