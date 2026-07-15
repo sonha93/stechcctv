@@ -199,7 +199,7 @@ drawWave();
 
         };
 
-        mediaRecorder.onstop = finishRecorder;
+       
 
         mediaRecorder.onerror=(err)=>{
 
@@ -273,37 +273,46 @@ cancelBtn.onclick = ()=>{
 
 sendBtn.onclick = async ()=>{
 
-    if(mediaRecorder && mediaRecorder.state === "recording"){
+    if(!mediaRecorder){
+        return;
+    }
 
-        mediaRecorder.onstop = async ()=>{
+    mediaRecorder.onstop = async ()=>{
 
-            finishRecorder();
+        audioBlob = new Blob(audioChunks,{
+            type:"audio/webm"
+        });
 
-            const voiceData={
+        const voiceData = {
 
-                type:"audio",
+            type:"audio",
 
-                blob:audioBlob,
+            blob:audioBlob,
 
-                duration:seconds,
+            duration:seconds,
 
-                fileName:`voice_${Date.now()}.webm`
-
-            };
-
-            await uploadVoiceToFirebase(voiceData);
-
-            panel.classList.add("hidden");
-
-            cleanupRecorder();
-
-            resetTimer();
+            fileName:`voice_${Date.now()}.webm`
 
         };
 
-        mediaRecorder.stop();
 
-        return;
+        await uploadVoiceToFirebase(voiceData);
+
+
+        panel.classList.add("hidden");
+
+
+        cleanupRecorder();
+
+
+        resetTimer();
+
+    };
+
+
+    if(mediaRecorder.state === "recording"){
+
+        mediaRecorder.stop();
 
     }
 
