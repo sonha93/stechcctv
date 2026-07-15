@@ -40,13 +40,14 @@ export async function followUser(targetUid) {
         }
 
 
-        await addDoc(collection(db,"follows"),{
-
-            fromUid: myUid,
-            toUid: targetUid,
-            createdAt: serverTimestamp()
-
-        });
+        await setDoc(
+    doc(db,"follows",`${myUid}_${targetUid}`),
+    {
+        fromUid: myUid,
+        toUid: targetUid,
+        createdAt: serverTimestamp()
+    }
+);
 
 await setDoc(
     doc(db,"users",myUid,"following",targetUid),
