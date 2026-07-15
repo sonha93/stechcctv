@@ -1,10 +1,10 @@
 import { app, auth } from "./auth.js";
 import { getVerifiedBadge } from "./verified-users.js";
-   import {
-    toggleFollow,
+  import {
+    followUser,
     isFollowing,
     unfollowUser
-} from "./follow_requests.js";
+} from "./follow.js";
 import {
     getFirestore,
     doc,
@@ -281,7 +281,7 @@ document.addEventListener("click",async e=>{
         if(btn.classList.contains("follow")){
 
 
-            await toggleFollow(uid);
+await followUser(uid);
 
 
 
