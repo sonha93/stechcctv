@@ -655,62 +655,48 @@ storage.ref()
         uploadTask =
         storageRef.put(voice.blob);
 
-        uploadTask.on(
+    uploadTask.on(
 
-            "state_changed",
+    "state_changed",
 
-            snapshot=>{
+    snapshot => {
 
-                const percent = Math.floor(
-
-                    snapshot.bytesTransferred
-                    /
-                    snapshot.totalBytes
-                    *100
-
-                );
-
-                console.log(
-                    "Upload:",
-                    percent+"%"
-                );
-
-            },
-
-            err=>{
-
-                console.error(err);
-
-                isUploading=false;
-
-                alert("Upload thất bại.");
-
-            },
-
-            async()=>{
-
-                const audioUrl =
-                await storageRef.getDownloadURL();
-
-                await saveVoiceMessage(
-
-                    audioUrl,
-
-                    voice.duration
-
-                );
-
-                isUploading=false;
-
-            }
-
+        const percent = Math.floor(
+            snapshot.bytesTransferred /
+            snapshot.totalBytes * 100
         );
-await saveVoiceMessage(
-    audioUrl,
-    voice.duration
-);    
-    }catch(err){
 
+        console.log("Upload:", percent + "%");
+
+    },
+
+    err => {
+
+        console.error(err);
+
+        isUploading = false;
+
+        alert("Upload thất bại.");
+
+    },
+
+    async () => {
+
+        const audioUrl = await storageRef.getDownloadURL();
+
+        await saveVoiceMessage(
+            audioUrl,
+            voice.duration
+        );
+
+        isUploading = false;
+
+        panel.classList.add("hidden");
+        resetTimer();
+
+    }
+
+);
         console.error(err);
 
         isUploading=false;
