@@ -37,38 +37,53 @@ const saveBtn = document.getElementById("saveBtn");
 // Avatar Preview
 // ==========================
 
-avatarInput.onchange = async e=>{
+avatarInput.onchange = async e => {
 
     const file = e.target.files[0];
 
-    if(!file) return;
+    if (!file) return;
 
     avatarPreview.src = URL.createObjectURL(file);
 
+    uploadingAvatar = true;
+    saveBtn.disabled = true;
+
     const form = new FormData();
 
-    form.append("file",file);
+    form.append("file", file);
+    form.append("upload_preset", "stech_up");
 
-  form.append(
-    "upload_preset",
-    "stech_up"
-);
-const res = await fetch(
-    "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
-    {
-        method:"POST",
-        body:form
+    try {
+
+        const res = await fetch(
+            "https://api.cloudinary.com/v1_1/dmz9gpp1b/image/upload",
+            {
+                method: "POST",
+                body: form
+            }
+        );
+
+        const data = await res.json();
+
+        if (!data.secure_url) {
+            alert("Upload avatar thất bại");
+            return;
+        }
+
+        avatarUrl = data.secure_url;
+
+    } catch (err) {
+
+        console.error(err);
+        alert("Upload avatar thất bại");
+
+    } finally {
+
+        uploadingAvatar = false;
+        saveBtn.disabled = false;
+
     }
-);
 
-    const data = await res.json();
-
-if (!data.secure_url) {
-    alert("Upload avatar thất bại");
-    return;
-}
-
-avatarUrl = data.secure_url;
 };
 
 // ==========================
@@ -99,6 +114,7 @@ let oldUsername = "";
 let usernameChangedAt = 0;
 
 let avatarUrl = "";
+let uploadingAvatar = false;
 onAuthStateChanged(auth, async(user)=>{
 
     if(!user){
@@ -173,7 +189,10 @@ import {
 saveBtn.onclick = async () => {
 
     if (!currentUser) return;
-
+if (uploadingAvatar) {
+    alert("Đang tải ảnh lên, vui lòng chờ...");
+    return;
+}
     const name = nameInput.value.trim();
     const username = usernameInput.value.trim().toLowerCase();
     if (
