@@ -272,7 +272,8 @@ saveBtn.onclick = async () => {
 
         }
     );
-
+const check = await getDoc(doc(db, "users", currentUser.uid));
+console.log("Avatar trong Firestore:", check.data().avatar);
     oldUsername = username;
 
     if (changedUsername) {
