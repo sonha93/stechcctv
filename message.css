@@ -1131,3 +1131,33 @@ font-size:28px;
     opacity:1;
 
 }
+/* ================================
+   REPLY PREVIEW INPUT
+================================ */
+
+#replyPreview{
+
+    display:none;
+
+    width:100%;
+
+    padding:8px 12px;
+
+    background:#f1f1f1;
+
+    border-left:4px solid #2196f3;
+
+    border-radius:8px;
+
+    font-size:13px;
+
+    color:#555;
+
+}
+
+
+#replyPreview.active{
+
+    display:block;
+
+}
