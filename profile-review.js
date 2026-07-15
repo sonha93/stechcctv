@@ -1187,7 +1187,7 @@ storyBar.insertAdjacentHTML(
 ${
 s.type==="video"
 ?
-`<span class="story-video-icon">▶</span>`
+`<span class="story-video-icon"></span>`
 :
 ""
 }
