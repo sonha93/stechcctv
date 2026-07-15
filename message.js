@@ -1453,30 +1453,20 @@ window.loadTheme = async function(chatId){
 
     const data = doc.data();
 
-    let theme =
-    data.theme;
+    const theme = data.theme;
 
-let bg =
-    data.themeImage || "";
+if(theme){
 
+    document.body.dataset.theme = theme;
 
-const privateTheme =
-    data.privateTheme?.[auth.currentUser.uid];
+}else{
 
-
-if(privateTheme){
-
-    theme =
-    privateTheme.theme || "default";
-
-    bg =
-    privateTheme.themeImage || "";
+    document.body.dataset.theme = "default";
 
 }
 
 
-document.body.dataset.theme =
-theme || "default";
+const bg = data.themeImage;
 if(bg){
 
    const messageArea = document.getElementById("messageBox");
@@ -1511,30 +1501,12 @@ window.listenTheme = function(chatId){
 
         const data = doc.data();
 
-       let theme =
+       document.body.dataset.theme =
     data.theme || "default";
 
-let bg =
+
+const bg =
     data.themeImage || "";
-
-
-const privateTheme =
-    data.privateTheme?.[auth.currentUser.uid];
-
-
-if(privateTheme){
-
-    theme =
-    privateTheme.theme || "default";
-
-    bg =
-    privateTheme.themeImage || "";
-
-}
-
-
-document.body.dataset.theme =
-theme;
 
         if(bg){
 
