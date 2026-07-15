@@ -695,36 +695,15 @@ async function loadTheme(roomId){
 
 function listenTheme(roomId){
 
-    if(!auth.currentUser) return;
+    db.collection("chatThemes")
 
-    // Theme cá nhân
-    db.collection("users")
-    .doc(auth.currentUser.uid)
-    .collection("chatThemes")
     .doc(roomId)
+
     .onSnapshot(doc=>{
 
-        if(doc.exists){
+        if(!doc.exists) return;
 
-            applyTheme(doc.data());
-
-            return;
-
-        }
-
-        // Nếu không có thì dùng theme chung
-        db.collection("chatThemes")
-        .doc(roomId)
-        .get()
-        .then(common=>{
-
-            if(common.exists){
-
-                applyTheme(common.data());
-
-            }
-
-        });
+        applyTheme(doc.data());
 
     });
 
@@ -736,57 +715,55 @@ function listenTheme(roomId){
 
 function applyTheme(data){
 
-    const chatContainer = document.querySelector(".chat-container");
+    const chatBody = document.querySelector(".chat-container");
     const messageBox = document.getElementById("messageBox");
 
-    if(!chatContainer) return;
+    if(!chatBody || !messageBox) return;
 
-    // Ảnh nền
-    chatContainer.style.backgroundImage =
-        data.background
+    chatBody.style.backgroundImage = data.background
         ? `url(${data.background})`
         : "none";
 
-    chatContainer.style.backgroundSize = "cover";
-    chatContainer.style.backgroundPosition = "center";
-    chatContainer.style.backgroundRepeat = "no-repeat";
+    chatBody.style.backgroundSize = "cover";
+    chatBody.style.backgroundPosition = "center";
+    chatBody.style.backgroundRepeat = "no-repeat";
 
-    // Chỉ vùng tin nhắn trong suốt
-    if(messageBox){
-        messageBox.style.background = "transparent";
-        messageBox.style.filter =
-            `brightness(${data.brightness}%)
-             opacity(${data.opacity}%)`;
-    }
+    messageBox.style.background = "transparent";
+    chatBody.style.filter =
 
-    // Màu bong bóng chat
-    chatContainer.style.setProperty(
+    `brightness(${data.brightness}%)
+     opacity(${data.opacity}%)`;
+
+    chatBody.style.setProperty(
+
         "--chat-color",
-        data.color || "#0084ff"
+
+        data.color
+
     );
 
     if(data.gradient){
 
-        chatContainer.style.setProperty(
+        chatBody.style.setProperty(
+
             "--chat-gradient",
+
             data.gradient
-        );
 
-    }else{
-
-        chatContainer.style.removeProperty(
-            "--chat-gradient"
         );
 
     }
 
-    // Dark mode
     document.body.classList.toggle(
+
         "dark-chat",
-        !!data.dark
+
+        data.dark
+
     );
 
 }
+
 // ==============================
 // REMOVE
 // ==============================
