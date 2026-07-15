@@ -1193,7 +1193,6 @@ storyBar.style.display = "";
         avatar: s.avatar
     });
 
-    storyBar.insertAdjacentHTML(
 
 storyBar.insertAdjacentHTML(
 "beforeend",
