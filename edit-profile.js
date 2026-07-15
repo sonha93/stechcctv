@@ -63,16 +63,12 @@ const res = await fetch(
 
     const data = await res.json();
 
-console.log(data);
-
 if (!data.secure_url) {
     alert("Upload avatar thất bại");
-    console.log(data);
     return;
 }
 
 avatarUrl = data.secure_url;
-console.log("Avatar URL:", avatarUrl);
 };
 
 // ==========================
@@ -272,8 +268,6 @@ saveBtn.onclick = async () => {
 
         }
     );
-const check = await getDoc(doc(db, "users", currentUser.uid));
-console.log("Avatar trong Firestore:", check.data().avatar);
     oldUsername = username;
 
     if (changedUsername) {
