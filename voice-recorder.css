@@ -413,5 +413,13 @@
         right:0;
 
     }
+.voice-recorder{
+    position: relative;
+    z-index: 999999;
+}
 
+.vr-open-btn{
+    position: relative;
+    z-index: 999999;
+}
 }
