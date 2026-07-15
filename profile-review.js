@@ -1072,7 +1072,7 @@ storyFile.onchange = async () => {
         return;
 
     }
-console.log("Avatar user =", user.avatar);
+
   await addDoc(collection(db,"profile_stories"),{
 
     uid: uid,
@@ -1186,6 +1186,13 @@ storyBar.style.display = "";
    snap.forEach(docSnap=>{
 
     const s = docSnap.data();
+
+    console.log({
+        id: docSnap.id,
+        uid: s.uid,
+        avatar: s.avatar
+    });
+
 
 storyBar.insertAdjacentHTML(
 "beforeend",
