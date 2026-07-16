@@ -468,10 +468,9 @@ async function uploadVoiceToCloudinary(voiceData){
 
         formData.append("file", voiceData.blob);
         formData.append("upload_preset", UPLOAD_PRESET);
-        console.log("Duration lưu Firestore:", voiceData.duration);
-console.log("Blob trước upload:", voiceData.blob.size);
-        const res = await fetch(
-            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,
+       
+            const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`,
             {
                 method: "POST",
                 body: formData
@@ -483,11 +482,7 @@ console.log("Blob trước upload:", voiceData.blob.size);
         }
 
         const data = await res.json();
-        console.log("Cloudinary:", data);
-console.log("Cloudinary duration:", data.duration);
-console.log("Cloudinary bytes:", data.bytes);
-console.log("Cloudinary format:", data.format);
-console.log("Cloudinary resource_type:", data.resource_type);
+       
         if(!data.secure_url){
             throw new Error("Không lấy được URL");
         }
