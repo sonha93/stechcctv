@@ -207,11 +207,7 @@ window.open(
 // ================================
 
 async function incomingCall(call){
-    if(window.callOpened){
-        return;
-    }
 
-    window.callOpened = true;
 
     currentCallId =
     call.id;
@@ -236,7 +232,7 @@ const userAvatar =
     userData.image ||
     "default-avatar.png";
 window.open(
-    `call.html?uid=${call.from}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=1&type=${call.type}`,
+    `call.html?uid=${otherUid}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=0&type=${type}`,
     "callWindow",
     "width=420,height=700"
 );
