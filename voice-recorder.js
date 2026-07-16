@@ -302,7 +302,7 @@ sendBtn.onclick = async ()=>{
 
         };
 
-console.log("Bắt đầu upload", voiceData);
+
       await uploadVoiceToCloudinary(voiceData);
 
 
