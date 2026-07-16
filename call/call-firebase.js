@@ -283,3 +283,116 @@ export async function getCall(callId){
 
 
 }
+// =====================================
+// SAVE OFFER
+// =====================================
+
+export async function saveOffer(callId, offer){
+
+    return db.collection("calls")
+
+    .doc(callId)
+
+    .update({
+
+        offer
+
+    });
+
+}
+
+
+
+// =====================================
+// SAVE ANSWER
+// =====================================
+
+export async function saveAnswer(callId, answer){
+
+    return db.collection("calls")
+
+    .doc(callId)
+
+    .update({
+
+        answer
+
+    });
+
+}
+
+
+
+// =====================================
+// LISTEN SIGNAL (OFFER / ANSWER)
+// =====================================
+
+export function listenSignal(callId, callback){
+
+    return db.collection("calls")
+
+    .doc(callId)
+
+    .onSnapshot(doc=>{
+
+        if(!doc.exists)
+        return;
+
+        callback({
+
+            id:doc.id,
+
+            ...doc.data()
+
+        });
+
+    });
+
+}
+
+
+
+// =====================================
+// ADD ICE CANDIDATE
+// =====================================
+
+export async function addIceCandidate(callId, candidate){
+
+    return db.collection("calls")
+
+    .doc(callId)
+
+    .collection("candidates")
+
+    .add(candidate);
+
+}
+
+
+
+// =====================================
+// LISTEN ICE CANDIDATES
+// =====================================
+
+export function listenIceCandidates(callId, callback){
+
+    return db.collection("calls")
+
+    .doc(callId)
+
+    .collection("candidates")
+
+    .onSnapshot(snapshot=>{
+
+        snapshot.docChanges().forEach(change=>{
+
+            if(change.type !== "added")
+            return;
+
+            callback(change.doc.data());
+
+        });
+
+    });
+
+}
