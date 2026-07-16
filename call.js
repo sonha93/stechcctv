@@ -3,7 +3,9 @@
 // ================================
 
 import { auth, db } from "./firebase-init.js";
-
+import {
+    updateCallStatus
+} from "./call-firebase.js";
 // ================================
 // ELEMENT
 // ================================
@@ -66,7 +68,8 @@ new URLSearchParams(location.search);
 
 const uid =
 params.get("uid");
-
+const callId =
+params.get("callId");
 const name =
 params.get("name") ||
 "Người dùng";
@@ -204,10 +207,10 @@ async()=>{
     ringtone.pause();
 
 
-    await updateCallStatus(
-        uid,
-        "accepted"
-    );
+   await updateCallStatus(
+    callId,
+    "accepted"
+);
 
 
     try{
@@ -251,9 +254,14 @@ async()=>{
 // REJECT
 // ================================
 
-rejectBtn.onclick = ()=>{
+rejectBtn.onclick = async()=>{
 
     ringtone.pause();
+
+    await updateCallStatus(
+        callId,
+        "rejected"
+    );
 
     window.close();
 
