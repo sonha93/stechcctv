@@ -203,6 +203,13 @@ async()=>{
 
     ringtone.pause();
 
+
+    await updateCallStatus(
+        uid,
+        "accepted"
+    );
+
+
     try{
 
         localStream =
@@ -221,6 +228,7 @@ async()=>{
         return;
 
     }
+
 
     acceptBtn.style.display =
     "none";
