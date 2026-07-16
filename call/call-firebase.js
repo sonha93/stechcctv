@@ -439,3 +439,60 @@ export async function timeoutCall(callId){
     });
 
 }
+// =====================================
+// ADD ICE CANDIDATE
+// =====================================
+
+export async function addIceCandidate(
+    callId,
+    candidate
+){
+
+    return db.collection("calls")
+    .doc(callId)
+    .collection("candidates")
+    .add({
+
+        candidate:
+        candidate
+
+    });
+
+}
+
+
+
+// =====================================
+// LISTEN ICE CANDIDATES
+// =====================================
+
+export function listenIceCandidates(
+    callId,
+    callback
+){
+
+    return db.collection("calls")
+    .doc(callId)
+    .collection("candidates")
+    .onSnapshot(snapshot=>{
+
+
+        snapshot.docChanges()
+        .forEach(change=>{
+
+
+            if(change.type !== "added")
+            return;
+
+
+            callback(
+                change.doc.data()
+            );
+
+
+        });
+
+
+    });
+
+}
