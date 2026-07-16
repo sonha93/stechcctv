@@ -1,0 +1,300 @@
+/* ============================
+   CALL PAGE
+============================ */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+
+    width:100%;
+    height:100%;
+
+    font-family:
+    system-ui,
+    sans-serif;
+
+    overflow:hidden;
+
+    background:#0b1018;
+
+}
+
+.call-page{
+
+    position:fixed;
+    inset:0;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    align-items:center;
+
+}
+
+
+/* ============================
+   BACKGROUND
+============================ */
+
+.call-bg{
+
+    position:absolute;
+    inset:0;
+
+    background:
+    radial-gradient(circle at top,
+    #2f6cff,
+    #162236 55%,
+    #0b1018);
+
+    z-index:-2;
+
+}
+
+.call-bg::after{
+
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    backdrop-filter:blur(40px);
+
+    background:
+    rgba(0,0,0,.18);
+
+}
+
+
+/* ============================
+   TOP
+============================ */
+
+.call-top{
+
+    width:100%;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    padding-top:70px;
+
+}
+
+.call-avatar{
+
+    width:150px;
+    height:150px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:5px solid rgba(255,255,255,.18);
+
+    box-shadow:
+    0 15px 45px rgba(0,0,0,.35);
+
+}
+
+.call-name{
+
+    margin-top:28px;
+
+    color:#fff;
+
+    font-size:30px;
+
+    font-weight:700;
+
+    text-align:center;
+
+}
+
+.call-status{
+
+    margin-top:12px;
+
+    color:#d6d6d6;
+
+    font-size:18px;
+
+}
+
+.call-timer{
+
+    margin-top:12px;
+
+    color:#fff;
+
+    font-size:20px;
+
+    font-weight:600;
+
+}
+
+
+/* ============================
+   BUTTONS
+============================ */
+
+.call-actions{
+
+    width:100%;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    gap:22px;
+
+    padding:50px 20px;
+
+}
+
+.call-btn{
+
+    width:68px;
+    height:68px;
+
+    border:none;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    color:#fff;
+
+}
+
+.call-btn svg{
+
+    width:32px;
+    height:32px;
+
+}
+
+
+/* MIC */
+
+#muteBtn{
+
+    background:#3a3f47;
+
+}
+
+
+/* LOA */
+
+#speakerBtn{
+
+    background:#3a3f47;
+
+}
+
+
+/* NHẬN */
+
+.accept{
+
+    background:#19b955;
+
+}
+
+
+/* TỪ CHỐI */
+
+.reject{
+
+    background:#f44336;
+
+}
+
+
+/* KẾT THÚC */
+
+.end{
+
+    background:#f44336;
+
+    display:none;
+
+}
+
+
+/* ============================
+   HOVER
+============================ */
+
+.call-btn:hover{
+
+    transform:scale(1.08);
+
+}
+
+.call-btn:active{
+
+    transform:scale(.94);
+
+}
+
+
+/* ============================
+   MOBILE
+============================ */
+
+@media(max-width:480px){
+
+.call-avatar{
+
+    width:120px;
+    height:120px;
+
+}
+
+.call-name{
+
+    font-size:24px;
+
+}
+
+.call-status{
+
+    font-size:16px;
+
+}
+
+.call-actions{
+
+    gap:16px;
+
+}
+
+.call-btn{
+
+    width:62px;
+    height:62px;
+
+}
+
+.call-btn svg{
+
+    width:28px;
+    height:28px;
+
+}
+
+}
