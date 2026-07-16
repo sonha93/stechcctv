@@ -546,18 +546,6 @@ Tin nhắn đã được thu hồi
 </div>
 `
 :
-(
-msg.replyTo &&
-messageMap[msg.replyTo.id] &&
-messageMap[msg.replyTo.id].recalled
-)
-?
-`
-<div class="chat-text">
-Tin nhắn đã được thu hồi
-</div>
-`
-:
 msg.text
 ?
 `
