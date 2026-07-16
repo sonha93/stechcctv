@@ -85,7 +85,7 @@ function startVibrate(){
     500,
     1000
 ]);
-        ]);
+    
 
     }
 
