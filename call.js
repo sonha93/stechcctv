@@ -70,7 +70,36 @@ let callTimeout = null;
 let timer=null;
 
 let seconds=0;
+// ================================
+// VIBRATION
+// ================================
 
+function startVibrate(){
+
+    if(navigator.vibrate){
+
+        navigator.vibrate([
+            800,
+            300,
+            800,
+            300,
+            800
+        ]);
+
+    }
+
+}
+
+
+function stopVibrate(){
+
+    if(navigator.vibrate){
+
+        navigator.vibrate(0);
+
+    }
+
+}
 
 
 const params =
@@ -361,9 +390,17 @@ if (incoming) {
 
     callStatus.textContent = "Cuộc gọi đến";
 
+    // rung máy
+    startVibrate();
+
+    // bật chuông
+    ringtone.play().catch(()=>{});
+
     acceptBtn.style.display = "flex";
     rejectBtn.style.display = "flex";
     endBtn.style.display = "none";
+
+}
 
 } else {
 
@@ -457,7 +494,8 @@ await db.collection("calls")
 
 acceptBtn.onclick =
 async()=>{
-
+stopVibrate();
+ringtone.pause();
 
 ringtone.pause();
 
@@ -645,7 +683,7 @@ remoteAudio.muted?.45:1;
 
 rejectBtn.onclick =
 async()=>{
-
+stopVibrate();
 
 ringtone.pause();
 
@@ -699,7 +737,7 @@ window.close();
 // ================================
 // END
 // ================================
-
+stopVibrate();
 
 endBtn.onclick =
 async()=>{
