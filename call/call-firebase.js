@@ -373,26 +373,6 @@ export function listenSignal(callId, callback){
 
 }
 
-
-
-// =====================================
-// ADD ICE CANDIDATE
-// =====================================
-
-export async function addIceCandidate(callId, candidate){
-
-    return db.collection("calls")
-
-    .doc(callId)
-
-    .collection("candidates")
-
-    .add(candidate);
-
-}
-
-
-
 // =====================================
 // LISTEN ICE CANDIDATES
 // =====================================
