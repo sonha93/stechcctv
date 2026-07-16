@@ -2,10 +2,12 @@
 // CALL UI JS
 // ================================
 
-import { auth, db } from "./firebase-init.js";
 import {
-    updateCallStatus
+    updateCallStatus,
+    endCall
 } from "./call-firebase.js";
+
+
 // ================================
 // ELEMENT
 // ================================
@@ -44,133 +46,312 @@ const endBtn =
 document.getElementById("endBtn");
 
 
+
 // ================================
 // DATA
 // ================================
 
-let localStream = null;
+let localStream=null;
 
-let muted = false;
+let peer=null;
 
-let speaker = true;
+let muted=false;
 
-let timer = null;
+let timer=null;
 
-let seconds = 0;
+let seconds=0;
 
 
-// ================================
-// URL PARAM
-// ================================
 
 const params =
 new URLSearchParams(location.search);
 
-const uid =
-params.get("uid");
+
 const callId =
 params.get("callId");
-const name =
-params.get("name") ||
-"Người dùng";
 
-const avatar =
-params.get("avatar") ||
-"default-avatar.png";
 
 const incoming =
-params.get("incoming") === "1";
+params.get("incoming")==="1";
 
-
-// ================================
-// LOAD
-// ================================
 
 callName.textContent =
-decodeURIComponent(name);
+decodeURIComponent(
+params.get("name") || "Người dùng"
+);
+
 
 callAvatar.src =
-decodeURIComponent(avatar);
+decodeURIComponent(
+params.get("avatar") || "default-avatar.png"
+);
+
 
 
 // ================================
-// STATUS
+// WEBRTC
 // ================================
 
-if(incoming){
 
-    callStatus.textContent =
-    "Cuộc gọi đến";
+function createPeer(){
 
-}else{
 
-    callStatus.textContent =
-    "Đang gọi...";
+peer = new RTCPeerConnection({
 
-    ringtone.play().catch(()=>{});
+    iceServers:[
+
+        {
+        urls:
+        "stun:stun.l.google.com:19302"
+        }
+
+    ]
+
+});
+
+
+
+peer.ontrack=e=>{
+
+    remoteAudio.srcObject =
+    e.streams[0];
+
+};
+
+
+
+peer.onicecandidate=e=>{
+
+
+if(e.candidate){
+
+
+db.collection("calls")
+.doc(callId)
+.collection("candidates")
+.add({
+
+candidate:
+e.candidate.toJSON()
+
+});
+
 
 }
+
+
+};
+
+
+
+}
+
+
+
+// ================================
+// MIC
+// ================================
+
+
+async function openMic(){
+
+
+localStream =
+await navigator.mediaDevices.getUserMedia({
+
+audio:true
+
+});
+
+
+localStream
+.getTracks()
+.forEach(track=>{
+
+peer.addTrack(
+track,
+localStream
+);
+
+});
+
+
+}
+
 
 
 // ================================
 // TIMER
 // ================================
 
+
 function startTimer(){
 
-    clearInterval(timer);
 
-    seconds = 0;
+timer=setInterval(()=>{
 
-    timer = setInterval(()=>{
 
-        seconds++;
+seconds++;
 
-        const m =
-        String(Math.floor(seconds/60))
-        .padStart(2,"0");
 
-        const s =
-        String(seconds%60)
-        .padStart(2,"0");
+callTimer.textContent =
 
-        callTimer.textContent =
-        `${m}:${s}`;
+String(
+Math.floor(seconds/60)
+).padStart(2,"0")
 
-    },1000);
++":"
+
++
+String(seconds%60)
+.padStart(2,"0");
+
+
+},1000);
+
 
 }
 
 
+
 // ================================
-// MICROPHONE
+// INCOMING
 // ================================
 
-if(muteBtn){
 
-muteBtn.onclick = ()=>{
+if(incoming){
 
-    if(!localStream)
-    return;
 
-    muted =
-    !muted;
+callStatus.textContent =
+"Cuộc gọi đến";
 
-    localStream
-    .getAudioTracks()
-    .forEach(track=>{
 
-        track.enabled =
-        !muted;
+}else{
 
-    });
 
-    muteBtn.style.opacity =
-    muted ? .45 : 1;
+callStatus.textContent =
+"Đang gọi...";
+
+
+ringtone.play()
+.catch(()=>{});
+
+
+}
+
+
+
+// ================================
+// ACCEPT
+// ================================
+
+
+acceptBtn.onclick =
+async()=>{
+
+
+ringtone.pause();
+
+
+createPeer();
+
+
+await openMic();
+
+
+
+await updateCallStatus(
+callId,
+"accepted"
+);
+
+
+
+const offerSnap =
+await db.collection("calls")
+.doc(callId)
+.get();
+
+
+
+const offer =
+offerSnap.data().offer;
+
+
+
+await peer.setRemoteDescription(
+new RTCSessionDescription(offer)
+);
+
+
+
+const answer =
+await peer.createAnswer();
+
+
+await peer.setLocalDescription(answer);
+
+
+
+await db.collection("calls")
+.doc(callId)
+.update({
+
+answer:
+answer
+
+});
+
+
+
+acceptBtn.style.display="none";
+
+rejectBtn.style.display="none";
+
+endBtn.style.display="flex";
+
+
+callStatus.textContent =
+"Đã kết nối";
+
+
+startTimer();
+
 
 };
 
-}
+
+
+
+// ================================
+// MUTE
+// ================================
+
+
+muteBtn.onclick=()=>{
+
+
+if(!localStream)
+return;
+
+
+muted=!muted;
+
+
+localStream
+.getAudioTracks()
+.forEach(t=>{
+
+t.enabled=!muted;
+
+});
+
+
+muteBtn.style.opacity =
+muted?.45:1;
+
+
+};
 
 
 
@@ -179,140 +360,84 @@ muteBtn.onclick = ()=>{
 // SPEAKER
 // ================================
 
-if(speakerBtn){
 
-speakerBtn.onclick = ()=>{
+speakerBtn.onclick=()=>{
 
-    speaker =
-    !speaker;
 
-    remoteAudio.muted =
-    !speaker;
+remoteAudio.muted =
+!remoteAudio.muted;
 
-    speakerBtn.style.opacity =
-    speaker ? 1 : .45;
+
+speakerBtn.style.opacity =
+remoteAudio.muted?.45:1;
+
 
 };
 
-}
 
-
-// ================================
-// ACCEPT
-// ================================
-
-acceptBtn.onclick =
-async()=>{
-
-    ringtone.pause();
-
-
-   await updateCallStatus(
-    callId,
-    "accepted"
-);
-
-
-    try{
-
-        localStream =
-        await navigator
-        .mediaDevices
-        .getUserMedia({
-
-            audio:true
-
-        });
-
-    }catch(e){
-
-        alert("Không cấp quyền microphone.");
-
-        return;
-
-    }
-
-
-    acceptBtn.style.display =
-    "none";
-
-    rejectBtn.style.display =
-    "none";
-
-    endBtn.style.display =
-    "flex";
-
-    callStatus.textContent =
-    "Đã kết nối";
-
-    startTimer();
-
-};
 
 
 // ================================
 // REJECT
 // ================================
 
-rejectBtn.onclick = async()=>{
 
-    ringtone.pause();
+rejectBtn.onclick=
+async()=>{
 
-    await updateCallStatus(
-        callId,
-        "rejected"
-    );
 
-    window.close();
+ringtone.pause();
+
+
+await updateCallStatus(
+callId,
+"rejected"
+);
+
+
+window.close();
+
 
 };
+
+
 
 
 // ================================
 // END
 // ================================
 
-endBtn.onclick = ()=>{
 
-    ringtone.pause();
+endBtn.onclick=
+async()=>{
 
-    clearInterval(timer);
 
-    if(localStream){
+ringtone.pause();
 
-        localStream
-        .getTracks()
-        .forEach(track=>{
 
-            track.stop();
+clearInterval(timer);
 
-        });
 
-    }
 
-    window.close();
+if(localStream)
+
+localStream
+.getTracks()
+.forEach(t=>t.stop());
+
+
+
+if(peer)
+
+peer.close();
+
+
+
+await endCall(callId);
+
+
+
+window.close();
+
 
 };
-
-
-// ================================
-// UNLOAD
-// ================================
-
-window.addEventListener(
-"beforeunload",
-()=>{
-
-    if(localStream){
-
-        localStream
-        .getTracks()
-        .forEach(track=>{
-
-            track.stop();
-
-        });
-
-    }
-
-});
