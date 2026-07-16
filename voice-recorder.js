@@ -282,27 +282,25 @@ sendBtn.onclick = async ()=>{
         return;
     }
 
-    mediaRecorder.onstop = async ()=>{
+   mediaRecorder.onstop = async ()=>{
 
-        audioBlob = new Blob(audioChunks,{
-            type:"audio/webm"
-        });
+    audioBlob = new Blob(audioChunks,{
+        type:"audio/webm"
+    });
 
-        const voiceData = {
+    const duration = seconds;
 
-            type:"audio",
+    const voiceData = {
 
-            blob:audioBlob,
+        type:"audio",
 
-            duration: Math.max(
-    1,
-    Math.round((Date.now() - recordStartTime) / 1000)
-),
-            fileName:`voice_${Date.now()}.webm`
+        blob:audioBlob,
 
-        };
+      duration: Number(duration) || 0,
 
+        fileName:`voice_${Date.now()}.webm`
 
+    };
       await uploadVoiceToCloudinary(voiceData);
 
 
