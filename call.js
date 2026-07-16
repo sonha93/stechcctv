@@ -2,11 +2,13 @@
 // CALL UI JS
 // ================================
 
+import { db } from "../firebase-init.js";
+
 import {
     updateCallStatus,
-    endCall
+    endCall,
+    listenCallStatus
 } from "./call-firebase.js";
-
 
 // ================================
 // ELEMENT
@@ -70,13 +72,93 @@ console.log(location.href);
 const callId =
 params.get("callId");
 
+listenCallStatus(callId, async (call) => {
+
+    // NHẬN ANSWER TỪ BÊN KIA
+    if (
+        call.answer &&
+        peer &&
+        !peer.currentRemoteDescription
+    ) {
+
+        await peer.setRemoteDescription(
+            new RTCSessionDescription(call.answer)
+        );
+
+    }
+
+    switch (call.status) {
+
+        case "calling":
+            callStatus.textContent = "Đang kết nối...";
+            break;
+
+        case "accepted":
+
+            ringtone.pause();
+
+            if (!peer) {
+                createPeer();
+                await openMic();
+            }
+
+            callStatus.textContent = "Đã kết nối";
+
+            if (!timer)
+                startTimer();
+
+            break;
+
+        case "rejected":
+
+            ringtone.pause();
+
+            callStatus.textContent = "Đã từ chối";
+
+            setTimeout(() => {
+                window.close();
+            }, 1000);
+
+            break;
+
+        case "ended":
+
+            ringtone.pause();
+
+            clearInterval(timer);
+
+            callStatus.textContent = "Cuộc gọi kết thúc";
+
+            if (localStream)
+                localStream.getTracks().forEach(t => t.stop());
+
+            if (peer)
+                peer.close();
+
+            setTimeout(() => {
+                window.close();
+            }, 1000);
+
+            break;
+
+        case "busy":
+
+            ringtone.pause();
+
+            callStatus.textContent = "Máy bận";
+
+            setTimeout(() => {
+                window.close();
+            }, 1000);
+
+            break;
+
+    }
+
+});
 
 const incoming =
 params.get("incoming")==="1";
-console.log("incoming =", incoming);
-console.log("name =", params.get("name"));
-console.log("avatar =", params.get("avatar"));
-
 callName.textContent =
 decodeURIComponent(
 params.get("name") || "Người dùng"
@@ -146,7 +228,30 @@ e.candidate.toJSON()
 
 
 
-}
+db.collection("calls")
+.doc(callId)
+.collection("candidates")
+.onSnapshot(snapshot => {
+
+    snapshot.docChanges().forEach(async change => {
+
+        if (change.type !== "added") return;
+
+        try {
+
+            await peer.addIceCandidate(
+                new RTCIceCandidate(
+                    change.doc.data().candidate
+                )
+            );
+
+        } catch (e) {
+            console.error(e);
+        }
+
+    });
+
+});
 
 
 
@@ -238,7 +343,55 @@ if (incoming) {
     callStatus.textContent = "Đang gọi...";
 
     ringtone.play().catch(() => {});
+    createPeer();
 
+await openMic();
+
+const offer = await peer.createOffer();
+
+await peer.setLocalDescription(offer);
+
+await db.collection("calls")
+.doc(callId)
+.update({
+    offer
+});
+// Tạo Peer + mở mic
+createPeer();
+await openMic();
+
+// Tạo Offer
+const offer = await peer.createOffer();
+
+await peer.setLocalDescription(offer);
+
+// Lưu Offer lên Firestore
+await db.collection("calls")
+.doc(callId)
+.update({
+    offer
+});
+
+// Chờ Answer
+db.collection("calls")
+.doc(callId)
+.onSnapshot(async snap => {
+
+    const data = snap.data();
+
+    if (
+        data &&
+        data.answer &&
+        !peer.currentRemoteDescription
+    ) {
+
+        await peer.setRemoteDescription(
+            new RTCSessionDescription(data.answer)
+        );
+
+    }
+
+});
     // Người gọi không được thấy nút bắt máy
     acceptBtn.style.display = "none";
     rejectBtn.style.display = "none";
@@ -308,7 +461,28 @@ answer
 
 });
 
+db.collection("calls")
+.doc(callId)
+.collection("candidates")
+.onSnapshot(snapshot => {
 
+    snapshot.docChanges().forEach(async change => {
+
+        if (change.type !== "added") return;
+
+        try {
+
+            await peer.addIceCandidate(
+                new RTCIceCandidate(
+                    change.doc.data().candidate
+                )
+            );
+
+        } catch(e){}
+
+    });
+
+});
 
 acceptBtn.style.display="none";
 
@@ -433,9 +607,14 @@ localStream
 
 
 
-if(peer)
+if(peer){
 
+peer.ontrack = null;
+peer.onicecandidate = null;
 peer.close();
+peer = null;
+
+}
 
 
 
