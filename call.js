@@ -79,11 +79,12 @@ function startVibrate(){
     if(navigator.vibrate){
 
         navigator.vibrate([
-            800,
-            300,
-            800,
-            300,
-            800
+    1000,
+    500,
+    1000,
+    500,
+    1000
+]);
         ]);
 
     }
