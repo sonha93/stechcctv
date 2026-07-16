@@ -32,7 +32,8 @@ if(callTimer){
 }
 const ringtone =
 document.getElementById("ringtone");
-
+const callingTone =
+document.getElementById("callingTone");
 const remoteAudio =
 document.getElementById("remoteAudio");
 
@@ -149,7 +150,11 @@ break;
 }
         case "accepted":
 
-            ringtone.pause();
+    ringtone.pause();
+
+    if(callingTone){
+        callingTone.pause();
+    }
 
             if (!peer) {
                 createPeer();
@@ -400,7 +405,7 @@ if (incoming) {
 
     callStatus.textContent = "Đang gọi...";
 
-    ringtone.play().catch(() => {});
+    callingTone.play().catch(() => {});
 
     startCaller();
 
@@ -680,7 +685,9 @@ async()=>{
     stopVibrate();
 
 ringtone.pause();
-
+if(callingTone){
+    callingTone.pause();
+}
 
 if(callTimeout){
 
@@ -738,7 +745,9 @@ async()=>{
 
  stopVibrate();
     ringtone.pause();
-
+if(callingTone){
+    callingTone.pause();
+}
 
     if(timer){
 
