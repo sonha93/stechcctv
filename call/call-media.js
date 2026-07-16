@@ -198,3 +198,114 @@ export function closeMedia(){
 
 
 }
+// ================================
+// GET PEER
+// ================================
+
+export function getPeer(){
+
+    return peerConnection;
+
+}
+
+
+
+// ================================
+// GET LOCAL STREAM
+// ================================
+
+export function getLocalStream(){
+
+    return localStream;
+
+}
+
+
+
+// ================================
+// CREATE OFFER
+// ================================
+
+export async function createOffer(){
+
+    if(!peerConnection)
+    return null;
+
+    const offer =
+    await peerConnection.createOffer();
+
+    await peerConnection
+    .setLocalDescription(
+        offer
+    );
+
+    return offer;
+
+}
+
+
+
+// ================================
+// CREATE ANSWER
+// ================================
+
+export async function createAnswer(){
+
+    if(!peerConnection)
+    return null;
+
+    const answer =
+    await peerConnection.createAnswer();
+
+    await peerConnection
+    .setLocalDescription(
+        answer
+    );
+
+    return answer;
+
+}
+
+
+
+// ================================
+// SET REMOTE DESCRIPTION
+// ================================
+
+export async function setRemoteDescription(description){
+
+    if(!peerConnection)
+    return;
+
+    await peerConnection
+    .setRemoteDescription(
+
+        new RTCSessionDescription(
+            description
+        )
+
+    );
+
+}
+
+
+
+// ================================
+// ADD REMOTE ICE
+// ================================
+
+export async function addRemoteIceCandidate(candidate){
+
+    if(!peerConnection)
+    return;
+
+    await peerConnection
+    .addIceCandidate(
+
+        new RTCIceCandidate(
+            candidate
+        )
+
+    );
+
+}
