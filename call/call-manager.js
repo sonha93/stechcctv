@@ -100,16 +100,7 @@ if(audioBtn){
 
 
 
-    if(videoBtn){
-
-        videoBtn.onclick = ()=>{
-
-            startCall(
-                "video"
-            );
-
-        };
-
+    
     }
 
 
