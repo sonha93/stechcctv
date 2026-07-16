@@ -11,19 +11,26 @@ export async function createCall(from, to, type = "audio") {
 
     const callData = {
 
-        from,
+    from,
 
-        to,
+    to,
 
-        type,
+    type,
 
-        status: "calling",
+    status:"calling",
 
-        createdAt:
-        firebase.firestore.FieldValue.serverTimestamp()
+    offer:null,
 
-    };
+    answer:null,
 
+    createdAt:
+    firebase.firestore.FieldValue.serverTimestamp(),
+
+    acceptedAt:null,
+
+    endedAt:null
+
+};
 
     const ref =
     await db.collection("calls")
@@ -165,19 +172,43 @@ export async function rejectCall(callId){
 // UPDATE CALL STATUS
 // =====================================
 
-export async function updateCallStatus(callId, status){
+export async function updateCallStatus(callId,status){
 
+    const data={
+
+        status
+
+    };
+
+    if(status==="accepted"){
+
+        data.acceptedAt=
+        firebase.firestore.FieldValue.serverTimestamp();
+
+    }
+
+    if(
+
+        status==="ended" ||
+
+        status==="rejected" ||
+
+        status==="busy" ||
+
+        status==="timeout"
+
+    ){
+
+        data.endedAt=
+        firebase.firestore.FieldValue.serverTimestamp();
+
+    }
 
     return db.collection("calls")
 
     .doc(callId)
 
-    .update({
-
-        status: status
-
-    });
-
+    .update(data);
 
 }
 
@@ -187,20 +218,12 @@ export async function updateCallStatus(callId, status){
 
 export async function endCall(callId){
 
+    await updateCallStatus(
+        callId,
+        "ended"
+    );
 
-    return db.collection("calls")
-
-    .doc(callId)
-
-    .update({
-
-        status:"ended",
-
-        endedAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
-    });
-
+    return removeCall(callId);
 
 }
 
@@ -392,6 +415,26 @@ export function listenIceCandidates(callId, callback){
             callback(change.doc.data());
 
         });
+
+    });
+
+}
+// =====================================
+// CALL TIMEOUT
+// =====================================
+
+export async function timeoutCall(callId){
+
+    return db.collection("calls")
+
+    .doc(callId)
+
+    .update({
+
+        status:"timeout",
+
+        endedAt:
+        firebase.firestore.FieldValue.serverTimestamp()
 
     });
 
