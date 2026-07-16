@@ -1300,3 +1300,26 @@ font-size:28px;
     width:240px;
     max-width:100%;
 }
+.message-content.audio-only{
+    background: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}
+
+.message-content.audio-only .chat-audio{
+    display: inline-block;
+}
+
+.chat-audio audio{
+    width: 260px;
+    display: block;
+}
+
+.audio-duration{
+    margin-top: 4px;
+    font-size: 12px;
+    color: #666;
+}
+.mine .chat-audio{
+    max-width: 260px;
+}
