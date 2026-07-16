@@ -453,7 +453,6 @@ async function saveVoiceMessage(audioUrl, duration){
 
 });
 
-console.log("Đã lưu Firestore");
 }
 // ===============================
 // Upload Voice To Cloudinary
