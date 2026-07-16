@@ -406,7 +406,9 @@ src="${
 <div class="message-body">
 
 <div class="message-content ${
-    (msg.image || (msg.images && msg.images.length))
+    msg.type === "audio"
+        ? "audio-only"
+        : (msg.image || (msg.images && msg.images.length))
         ? "image-only"
         : msg.video
         ? "video-only"
