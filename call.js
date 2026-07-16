@@ -159,17 +159,20 @@ listenCallStatus(callId, async (call) => {
 
 const incoming =
 params.get("incoming")==="1";
-callName.textContent =
-decodeURIComponent(
-params.get("name") || "Người dùng"
-);
+const userName = params.get("name");
+const userAvatar = params.get("avatar");
 
+callName.textContent =
+userName ? decodeURIComponent(userName) : "Người dùng";
 
 callAvatar.src =
-decodeURIComponent(
-params.get("avatar") || "default-avatar.png"
-);
+userAvatar
+? decodeURIComponent(userAvatar)
+: "./default-avatar.png";
 
+callAvatar.onerror = () => {
+    callAvatar.src = "./default-avatar.png";
+};
 
 
 // ================================
