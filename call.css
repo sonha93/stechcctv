@@ -298,12 +298,16 @@ body{
 }
 }
 .avatar-ring{
+
     width:180px;
     height:180px;
+
     display:flex;
     justify-content:center;
     align-items:center;
+
     position:relative;
+
 }
 
 
@@ -318,54 +322,49 @@ body{
 
     border-radius:50%;
 
-    border:3px solid rgba(255,255,255,.7);
+    border:3px solid rgba(255,255,255,.65);
 
-    animation:ringPulse 1.5s infinite;
+    animation:ringPulse 2.4s infinite;
 
 }
 
 
+/* vòng 2 */
 .avatar-ring::after{
 
-    animation-delay:.7s;
+    animation-delay:.6s;
 
 }
 
 
+/* tạo thêm vòng */
+.avatar-ring{
 
-.call-avatar{
+    box-shadow:
+    0 0 0 20px rgba(255,255,255,.15),
+    0 0 0 40px rgba(255,255,255,.10),
+    0 0 0 60px rgba(255,255,255,.05);
 
-    width:150px;
-    height:150px;
-
-    border-radius:50%;
-
-    object-fit:cover;
-
-    position:relative;
-
-    z-index:2;
+    animation:ringGlow 2.4s infinite;
 
 }
 
 
+@keyframes ringGlow{
 
-@keyframes ringPulse{
-
-    from{
-
-        transform:scale(1);
-
-        opacity:.8;
-
+    0%{
+        box-shadow:
+        0 0 0 0 rgba(255,255,255,.35),
+        0 0 0 0 rgba(255,255,255,.2),
+        0 0 0 0 rgba(255,255,255,.1);
     }
 
-    to{
 
-        transform:scale(1.5);
-
-        opacity:0;
-
+    100%{
+        box-shadow:
+        0 0 0 35px rgba(255,255,255,0),
+        0 0 0 55px rgba(255,255,255,0),
+        0 0 0 75px rgba(255,255,255,0);
     }
 
 }
