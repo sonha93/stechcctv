@@ -65,7 +65,7 @@ let seconds=0;
 
 const params =
 new URLSearchParams(location.search);
-
+console.log(location.href);
 
 const callId =
 params.get("callId");
@@ -219,26 +219,30 @@ String(seconds%60)
 // ================================
 
 
-if(incoming){
+// ================================
+// INCOMING
+// ================================
 
+if (incoming) {
 
-callStatus.textContent =
-"Cuộc gọi đến";
+    callStatus.textContent = "Cuộc gọi đến";
 
+    acceptBtn.style.display = "flex";
+    rejectBtn.style.display = "flex";
+    endBtn.style.display = "none";
 
-}else{
+} else {
 
+    callStatus.textContent = "Đang gọi...";
 
-callStatus.textContent =
-"Đang gọi...";
+    ringtone.play().catch(() => {});
 
-
-ringtone.play()
-.catch(()=>{});
-
+    // Người gọi không được thấy nút bắt máy
+    acceptBtn.style.display = "none";
+    rejectBtn.style.display = "none";
+    endBtn.style.display = "flex";
 
 }
-
 
 
 // ================================
