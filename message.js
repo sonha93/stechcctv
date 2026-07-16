@@ -1236,43 +1236,7 @@ backBtn.onclick=()=>{
 };
 
 }
-if(audioCallBtn){
 
-    audioCallBtn.onclick = async ()=>{
-
-        const userSnap = await db
-        .collection("users")
-        .doc(otherUid)
-        .get();
-
-        if(userSnap.exists){
-
-            const u = userSnap.data();
-
-            callAvatar.src =
-                u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
-
-            callName.textContent =
-                u.name || "Người dùng";
-
-        }
-
-        callStatus.textContent = "Đang gọi...";
-
-        callPopup.classList.remove("hidden");
-
-        rejectBtn.classList.remove("hidden");
-        acceptBtn.classList.add("hidden");
-        endBtn.classList.add("hidden");
-
-    };
-
-}
-rejectBtn.onclick = ()=>{
-
-    callPopup.classList.add("hidden");
-
-};
 
 // ================================
 // AUTH START
