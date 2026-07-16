@@ -8,7 +8,7 @@ import { getVerifiedBadge } from "./verified-users.js";
 // Firebase
 import { db, auth } from "./firebase-init.js";
 import { isBlocked } from "./block.js";
-import { initCallSystem } from "./call.js";
+
 // ================================
 // MESSAGE SOUND
 // ================================
@@ -1265,17 +1265,6 @@ if(user){
 
     loadMessages();
     listenTyping();
-        initCallSystem({
-
-        db: db,
-
-        auth: auth,
-
-        conversationId: conversationId,
-
-        currentUser: currentUser
-
-    });
     if(window.loadTheme){
     window.loadTheme(conversationId);
 }
