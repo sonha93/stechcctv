@@ -7,7 +7,10 @@ import { db } from "./firebase-init.js";
 import {
     updateCallStatus,
     endCall,
-    listenCallStatus
+    listenCallStatus,
+    timeoutCall,
+    addIceCandidate,
+    listenIceCandidates
 } from "./call-firebase.js";
 
 // ================================
@@ -60,7 +63,11 @@ let localStream=null;
 let peer=null;
 
 let muted=false;
+let candidateUnsubscribe = null;
 
+let callUnsubscribe = null;
+
+let callTimeout = null;
 let timer=null;
 
 let seconds=0;
@@ -74,8 +81,8 @@ console.log(location.href);
 const callId =
 params.get("callId");
 
+callUnsubscribe =
 listenCallStatus(callId, async (call) => {
-
     // NHẬN ANSWER TỪ BÊN KIA
     if (
         call.answer &&
@@ -94,6 +101,13 @@ listenCallStatus(callId, async (call) => {
         case "calling":
     callStatus.textContent = "";
 break;
+            if(callTimeout){
+
+    clearTimeout(callTimeout);
+
+    callTimeout=null;
+
+}
         case "accepted":
 
             ringtone.pause();
@@ -137,13 +151,31 @@ break;
                 peer.close();
 
             setTimeout(() => {
-                window.close();
-            }, 1000);
+    window.close();
+}, 1000);
 
-            break;
+break;
 
-        case "busy":
 
+case "timeout":
+
+    ringtone.pause();
+
+    callStatus.textContent =
+    "Không trả lời";
+
+
+    setTimeout(()=>{
+
+        window.close();
+
+    },1000);
+
+
+break;
+
+
+case "busy":
             ringtone.pause();
 
             callStatus.textContent = "Máy bận";
@@ -228,35 +260,40 @@ e.candidate.toJSON()
 
 
 };
+// ================================
+// LISTEN REMOTE ICE
+// ================================
 
+candidateUnsubscribe =
+listenIceCandidates(
+    callId,
+    async data=>{
 
+        if(!peer)
+        return;
 
-db.collection("calls")
-.doc(callId)
-.collection("candidates")
-.onSnapshot(snapshot => {
-
-    snapshot.docChanges().forEach(async change => {
-
-        if (change.type !== "added") return;
-
-        try {
+        try{
 
             await peer.addIceCandidate(
+
                 new RTCIceCandidate(
-                    change.doc.data().candidate
+                    data.candidate
                 )
+
             );
 
-        } catch (e) {
-            console.error(e);
+        }catch(e){
+
+            console.error(
+                "ICE ERROR",
+                e
+            );
+
         }
 
-    });
+    }
+);
 
-});
-
-}
 
 // ================================
 // MIC
@@ -322,13 +359,6 @@ String(seconds%60)
 
 }
 
-
-
-// ================================
-// INCOMING
-// ================================
-
-
 // ================================
 // INCOMING
 // ================================
@@ -354,21 +384,54 @@ if (incoming) {
 
 }
 
+
 async function startCaller(){
 
     createPeer();
 
     await openMic();
 
-    const offer = await peer.createOffer();
 
-    await peer.setLocalDescription(offer);
+    callTimeout =
+    setTimeout(async()=>{
 
-    await db.collection("calls")
-    .doc(callId)
-    .update({
-        offer
-    });
+        const snap =
+        await db.collection("calls")
+        .doc(callId)
+        .get();
+
+
+        if(
+            snap.exists &&
+            snap.data().status==="calling"
+        ){
+
+            await timeoutCall(callId);
+
+            window.close();
+
+        }
+
+    },30000);
+    const offer =
+await peer.createOffer();
+
+
+await peer.setLocalDescription(
+    offer
+);
+
+
+await db.collection("calls")
+.doc(callId)
+.update({
+
+    offer:{
+        type:offer.type,
+        sdp:offer.sdp
+    }
+
+});
 
     db.collection("calls")
     .doc(callId)
@@ -404,7 +467,11 @@ async()=>{
 ringtone.pause();
 
 
-createPeer();
+if(!peer){
+
+    createPeer();
+
+}
 
 
 await openMic();
@@ -429,9 +496,27 @@ const offer =
 offerSnap.data().offer;
 
 
+if(!offer){
+
+    console.error(
+        "Không có offer"
+    );
+
+    return;
+
+}
+
 
 await peer.setRemoteDescription(
-new RTCSessionDescription(offer)
+
+    new RTCSessionDescription({
+
+        type: offer.type,
+
+        sdp: offer.sdp
+
+    })
+
 );
 
 
@@ -440,42 +525,51 @@ const answer =
 await peer.createAnswer();
 
 
-await peer.setLocalDescription(answer);
-
+await peer.setLocalDescription(
+    answer
+);
 
 
 await db.collection("calls")
 .doc(callId)
 .update({
 
-answer:
-answer
+answer:{
+
+    type:answer.type,
+
+    sdp:answer.sdp
+
+}
 
 });
 
-db.collection("calls")
-.doc(callId)
-.collection("candidates")
-.onSnapshot(snapshot => {
+candidateUnsubscribe =
+listenIceCandidates(
+    callId,
+    async data=>{
 
-    snapshot.docChanges().forEach(async change => {
-
-        if (change.type !== "added") return;
-
-        try {
+        try{
 
             await peer.addIceCandidate(
+
                 new RTCIceCandidate(
-                    change.doc.data().candidate
+                    data.candidate
                 )
+
             );
 
-        } catch(e){}
+        }catch(e){
 
-    });
+            console.error(
+                "ICE ERROR",
+                e
+            );
 
-});
+        }
 
+    }
+);
 acceptBtn.style.display="none";
 
 rejectBtn.style.display="none";
@@ -554,17 +648,49 @@ remoteAudio.muted?.45:1;
 // ================================
 
 
-rejectBtn.onclick=
+rejectBtn.onclick =
 async()=>{
 
 
 ringtone.pause();
 
 
+if(callTimeout){
+
+    clearTimeout(callTimeout);
+
+    callTimeout=null;
+
+}
+
+
 await updateCallStatus(
-callId,
-"rejected"
+
+    callId,
+
+    "rejected"
+
 );
+
+
+if(localStream){
+
+    localStream
+    .getTracks()
+    .forEach(t=>t.stop());
+
+    localStream=null;
+
+}
+
+
+if(peer){
+
+    peer.close();
+
+    peer=null;
+
+}
 
 
 window.close();
@@ -580,41 +706,81 @@ window.close();
 // ================================
 
 
-endBtn.onclick=
+endBtn.onclick =
 async()=>{
 
 
-ringtone.pause();
+    ringtone.pause();
 
 
-clearInterval(timer);
+    if(timer){
+
+        clearInterval(timer);
+
+        timer=null;
+
+    }
 
 
+    if(callTimeout){
 
-if(localStream)
+        clearTimeout(callTimeout);
 
-localStream
-.getTracks()
-.forEach(t=>t.stop());
+        callTimeout=null;
 
-
-
-if(peer){
-
-peer.ontrack = null;
-peer.onicecandidate = null;
-peer.close();
-peer = null;
-
-}
+    }
 
 
+    if(candidateUnsubscribe){
 
-await endCall(callId);
+        candidateUnsubscribe();
+
+        candidateUnsubscribe=null;
+
+    }
 
 
+    if(callUnsubscribe){
 
-window.close();
+        callUnsubscribe();
+
+        callUnsubscribe=null;
+
+    }
+
+
+    if(localStream){
+
+        localStream
+        .getTracks()
+        .forEach(t=>{
+
+            t.stop();
+
+        });
+
+        localStream=null;
+
+    }
+
+
+    if(peer){
+
+        peer.ontrack=null;
+
+        peer.onicecandidate=null;
+
+        peer.close();
+
+        peer=null;
+
+    }
+
+
+    await endCall(callId);
+
+
+    window.close();
 
 
 };
