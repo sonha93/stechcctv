@@ -277,14 +277,14 @@ listenIceCandidates(
 
             console.error(
                 "ICE ERROR",
-                e
+                
             );
 
         }
 
     }
 );
-
+}
 
 // ================================
 // MIC
