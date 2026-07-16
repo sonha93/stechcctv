@@ -1323,3 +1323,18 @@ font-size:28px;
 .mine .chat-audio{
     max-width: 260px;
 }
+.chat-audio{
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.chat-audio audio{
+    display:block;
+    width:100%;
+    border:none !important;
+    outline:none !important;
+    box-shadow:none !important;
+    background:transparent !important;
+}
