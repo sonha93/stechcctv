@@ -25,7 +25,9 @@ document.getElementById("callStatus");
 
 const callTimer =
 document.getElementById("callTimer");
-
+if(callTimer){
+    callTimer.textContent = "";
+}
 const ringtone =
 document.getElementById("ringtone");
 
@@ -90,9 +92,8 @@ listenCallStatus(callId, async (call) => {
     switch (call.status) {
 
         case "calling":
-            callStatus.textContent = "Đang kết nối...";
-            break;
-
+    callStatus.textContent = "";
+break;
         case "accepted":
 
             ringtone.pause();
@@ -162,14 +163,13 @@ params.get("incoming")==="1";
 const userName = params.get("name");
 const userAvatar = params.get("avatar");
 
-callName.textContent =
-userName ? decodeURIComponent(userName) : "Người dùng";
+if(userName){
+    callName.textContent = decodeURIComponent(userName);
+}
 
-callAvatar.src =
-userAvatar
-? decodeURIComponent(userAvatar)
-: "./default-avatar.png";
-
+if(userAvatar){
+    callAvatar.src = decodeURIComponent(userAvatar);
+}
 callAvatar.onerror = () => {
     callAvatar.src = "./default-avatar.png";
 };
