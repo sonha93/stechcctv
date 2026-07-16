@@ -82,6 +82,7 @@ document.getElementById("backBtn");
 let typingTimer = null;
 let replyMessage = null;
 let otherUid = "";
+let messageMap = {};
 let blockState = {
     iBlocked:false,
     blockedMe:false
@@ -272,7 +273,13 @@ db.collection("conversations")
     messages.push(data);
 
 });
+messageMap = {};
 
+messages.forEach(m => {
+
+    messageMap[m.id] = m;
+
+});
     for(let i=0;i<messages.length;i++){
 
         const msg = messages[i];
@@ -420,11 +427,16 @@ ${
 msg.replyTo
 ?
 `
-<div 
+<div
 class="reply-box"
 onclick="scrollToMessage('${msg.replyTo.id}')">
 
-↩ ${escapeHTML(msg.replyTo.text)}
+↩ ${
+messageMap[msg.replyTo.id] &&
+!messageMap[msg.replyTo.id].recalled
+? escapeHTML(messageMap[msg.replyTo.id].text || "")
+: "Tin nhắn đã được thu hồi"
+}
 
 </div>
 `
@@ -564,7 +576,7 @@ ${formatTime(msg.createdAt)}
 
 
 ${
-mine
+mine && !msg.recalled
 ?
 `
 <button onclick="recallMessage('${msg.id}')">
@@ -573,7 +585,6 @@ Thu hồi
 `
 :""
 }
-
 </div>
 ${
 mine &&
