@@ -6,7 +6,7 @@ import {
     updateCallStatus,
     endCall
 } from "./call-firebase.js";
-import { db } from "./firebase-init.js";
+
 
 // ================================
 // ELEMENT
@@ -63,30 +63,32 @@ let seconds=0;
 
 
 
+const params =
+new URLSearchParams(location.search);
+console.log(location.href);
 
-const params = new URLSearchParams(window.location.search);
+const callId =
+params.get("callId");
 
-const callId = params.get("callId");
-const incoming = params.get("incoming") === "1";
 
-const name = params.get("name");
-const avatar = params.get("avatar");
+const incoming =
+params.get("incoming")==="1";
+console.log("incoming =", incoming);
+console.log("name =", params.get("name"));
+console.log("avatar =", params.get("avatar"));
 
-if (callName) {
-    callName.textContent = name
-        ? decodeURIComponent(name)
-        : "Người dùng";
-}
+callName.textContent =
+decodeURIComponent(
+params.get("name") || "Người dùng"
+);
 
-if (callAvatar) {
-    callAvatar.src = avatar
-        ? decodeURIComponent(avatar)
-        : "default-avatar.png";
 
-    callAvatar.onerror = () => {
-        callAvatar.src = "default-avatar.png";
-    };
-}
+callAvatar.src =
+decodeURIComponent(
+params.get("avatar") || "default-avatar.png"
+);
+
+
 
 // ================================
 // WEBRTC
