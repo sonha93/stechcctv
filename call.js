@@ -98,7 +98,7 @@ listenCallStatus(callId, async (call) => {
     switch (call.status) {
 
         case "calling":
-    callStatus.textContent = "";
+    callStatus.textContent = "Cuộc gọi đến";
 break;
             if(callTimeout){
 
