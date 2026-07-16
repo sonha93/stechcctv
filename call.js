@@ -11,7 +11,7 @@ import {
     timeoutCall,
     addIceCandidate,
     listenIceCandidates
-import { db } from "../firebase-init.js";
+} from "./call-firebase.js";
 
 // ================================
 // ELEMENT
