@@ -413,42 +413,28 @@ function drawWave(){
 }
 async function saveVoiceMessage(audioUrl, duration){
 
-    const receiver = window.currentChatUid;
-
-    console.log("receiver:", receiver);
-    console.log("sender:", auth.currentUser.uid);
-
-
-    if(!receiver){
-
-        console.error("Không có người nhận!");
-
-        alert("Chưa chọn người chat");
-
+    if(!window.currentConversationId){
+        alert("Không có cuộc trò chuyện");
         return;
-
     }
 
-
-    await db.collection("messages").add({
-
-        type:"audio",
-
-        audioUrl,
-
-        duration,
+    await db
+    .collection("conversations")
+    .doc(window.currentConversationId)
+    .collection("messages")
+    .add({
 
         senderId: auth.currentUser.uid,
 
-        receiverId: receiver,
+        type: "audio",
 
-        createdAt: FieldValue.serverTimestamp(),
+        audioUrl: audioUrl,
 
-        seen:false,
+        duration: duration,
 
-        recalled:false,
+        createdAt: firebase.firestore.Timestamp.now(),
 
-        deleted:false
+        seenBy: [auth.currentUser.uid]
 
     });
 
