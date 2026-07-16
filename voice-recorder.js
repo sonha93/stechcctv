@@ -453,3 +453,52 @@ async function saveVoiceMessage(audioUrl, duration){
     });
 
 }
+// ===============================
+// Upload Voice To Cloudinary
+// ===============================
+async function uploadVoiceToCloudinary(voiceData){
+
+    try{
+
+        isUploading = true;
+
+        const formData = new FormData();
+
+        formData.append("file", voiceData.blob);
+        formData.append("upload_preset", UPLOAD_PRESET);
+
+        const res = await fetch(
+            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        if(!res.ok){
+            throw new Error("Upload thất bại");
+        }
+
+        const data = await res.json();
+
+        if(!data.secure_url){
+            throw new Error("Không lấy được URL");
+        }
+
+        await saveVoiceMessage(
+            data.secure_url,
+            voiceData.duration
+        );
+
+    }catch(err){
+
+        console.error("Upload voice error:", err);
+        alert("Gửi ghi âm thất bại.");
+
+    }finally{
+
+        isUploading = false;
+
+    }
+
+}
