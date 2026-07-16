@@ -8,6 +8,9 @@ import { getVerifiedBadge } from "./verified-users.js";
 // Firebase
 import { db, auth } from "./firebase-init.js";
 import { isBlocked } from "./block.js";
+import {
+    initCallSystem
+} from "./call/call-manager.js";
 // ================================
 // MESSAGE SOUND
 // ================================
@@ -1260,7 +1263,12 @@ if(user){
     currentUser =
     user;
 
-
+    initCallSystem({
+    db,
+    auth,
+    conversationId,
+    currentUser
+});
     loadChatInfo();
 
 
