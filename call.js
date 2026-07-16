@@ -79,7 +79,11 @@ console.log(location.href);
 
 const callId =
 params.get("callId");
+const incoming =
+params.get("incoming")==="1";
 
+const userName = params.get("name");
+const userAvatar = params.get("avatar");
 callUnsubscribe =
 listenCallStatus(callId, async (call) => {
     // NHẬN ANSWER TỪ BÊN KIA
@@ -97,8 +101,14 @@ listenCallStatus(callId, async (call) => {
 
     switch (call.status) {
 
-        case "calling":
-    callStatus.textContent = "Cuộc gọi đến";
+       case "calling":
+
+    if(incoming){
+        callStatus.textContent = "Cuộc gọi đến";
+    }else{
+        callStatus.textContent = "Đang gọi...";
+    }
+
 break;
             if(callTimeout){
 
@@ -188,11 +198,6 @@ case "busy":
     }
 
 });
-
-const incoming =
-params.get("incoming")==="1";
-const userName = params.get("name");
-const userAvatar = params.get("avatar");
 
 if(userName){
     callName.textContent = decodeURIComponent(userName);
