@@ -43,7 +43,7 @@ let peer = null;
 // ================================
 
 export function initCallSystem(data){
-
+console.log("CALL INIT OK");
 
     db = data.db;
 
@@ -80,7 +80,7 @@ export function initCallSystem(data){
     if(audioBtn){
 
         audioBtn.onclick = ()=>{
-
+ console.log("ĐÃ BẤM GỌI");
             startCall(
                 "audio"
             );
@@ -152,14 +152,9 @@ const userData = userSnap.exists
 
 
 window.open(
-    `call.html?uid=${otherUid}
-    &callId=${currentCallId}
-    &name=${encodeURIComponent(userData.name || "Người dùng")}
-    &avatar=${encodeURIComponent(userData.avatar || "")}
-    &incoming=0
-    &type=${type}`,
-    "callWindow",
-    "width=420,height=700"
+`call.html?uid=${otherUid}&callId=${currentCallId}&name=${encodeURIComponent(userData.name || "Người dùng")}&avatar=${encodeURIComponent(userData.avatar || "")}&incoming=0&type=${type}`,
+"callWindow",
+"width=420,height=700"
 );
 
     if(type==="video"){
