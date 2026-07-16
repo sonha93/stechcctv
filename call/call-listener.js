@@ -2,7 +2,7 @@
 // GLOBAL CALL LISTENER
 // ================================
 
-import { auth } from "../firebase-init.js";
+import { auth, db } from "../firebase-init.js";
 
 import {
     listenIncomingCall
@@ -26,7 +26,7 @@ auth.onAuthStateChanged(user=>{
 
 
 
-function incomingCall(call){
+async function incomingCall(call){
 
 
     console.log(
@@ -35,9 +35,37 @@ function incomingCall(call){
     );
 
 
+    const userSnap = await db
+    .collection("users")
+    .doc(call.from)
+    .get();
+
+
+    const userData =
+    userSnap.exists
+    ? userSnap.data()
+    : {};
+
+
+    const userName =
+    userData.name ||
+    userData.displayName ||
+    userData.username ||
+    "Người dùng";
+
+
+    const userAvatar =
+    userData.avatar ||
+    userData.photoURL ||
+    userData.photo ||
+    userData.image ||
+    "default-avatar.png";
+
+
+
     window.open(
 
-        `call.html?uid=${call.from}&callId=${call.id}&incoming=1&type=${call.type}`,
+        `call.html?uid=${call.from}&callId=${call.id}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=1&type=${call.type}`,
 
         "callWindow",
 
