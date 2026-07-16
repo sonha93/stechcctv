@@ -239,25 +239,16 @@ peer.ontrack=e=>{
 
 
 
-peer.onicecandidate=e=>{
+peer.onicecandidate = e => {
 
+    if(e.candidate){
 
-if(e.candidate){
+        addIceCandidate(
+            callId,
+            e.candidate.toJSON()
+        );
 
-
-db.collection("calls")
-.doc(callId)
-.collection("candidates")
-.add({
-
-candidate:
-e.candidate.toJSON()
-
-});
-
-
-}
-
+    }
 
 };
 // ================================
