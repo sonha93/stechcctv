@@ -98,3 +98,32 @@
     height:32px;
 
 }
+.voice-actions{
+    display:flex;
+    justify-content:space-between;
+    margin-top:18px;
+}
+
+.voice-trash,
+.voice-send{
+    width:110px;
+    border:none;
+    background:none;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+}
+
+.voice-trash svg,
+.voice-send svg{
+    width:34px;
+    height:34px;
+}
+
+.voice-trash span,
+.voice-send span{
+    font-size:18px;
+    color:#222;
+}
