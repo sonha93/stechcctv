@@ -418,26 +418,27 @@ async function saveVoiceMessage(audioUrl, duration){
         return;
     }
 
-    await db
-    .collection("conversations")
-    .doc(window.currentConversationId)
-    .collection("messages")
-    .add({
+  await db
+.collection("conversations")
+.doc(window.currentConversationId)
+.collection("messages")
+.add({
 
-        senderId: auth.currentUser.uid,
+    senderId: auth.currentUser.uid,
 
-        type: "audio",
+    type: "audio",
 
-        audioUrl: audioUrl,
+    audioUrl,
 
-        duration: duration,
+    duration,
 
-        createdAt: firebase.firestore.Timestamp.now(),
+    createdAt: FieldValue.serverTimestamp(),
 
-        seenBy: [auth.currentUser.uid]
+    seenBy: [auth.currentUser.uid]
 
-    });
+});
 
+console.log("Đã lưu Firestore");
 }
 // ===============================
 // Upload Voice To Cloudinary
