@@ -216,13 +216,17 @@ async function incomingCall(call){
     currentCallId =
     call.id;
 
+const userSnap = await db
+.collection("users")
+.doc(call.from)
+.get();
+
+const userData = userSnap.exists ? userSnap.data() : {};
+
 window.open(
-    `call.html?uid=${call.from}
-    &callId=${call.id}
-    &incoming=1
-    &type=${call.type}`,
-    "callWindow",
-    "width=420,height=700"
+`call.html?uid=${call.from}&callId=${call.id}&name=${encodeURIComponent(userData.name || "Người dùng")}&avatar=${encodeURIComponent(userData.avatar || "")}&incoming=1&type=${call.type}`,
+"callWindow",
+"width=420,height=700"
 );
 
     console.log(
