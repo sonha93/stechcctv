@@ -2,13 +2,13 @@
 // CALL UI JS
 // ================================
 
-import { db } from "../firebase-init.js";
+import { db } from "./firebase-init.js";
 
 import {
     updateCallStatus,
     endCall,
     listenCallStatus
-} from "./call/call-firebase.js";
+} from "./call-firebase.js";
 
 // ================================
 // ELEMENT
