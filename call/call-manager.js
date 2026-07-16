@@ -63,10 +63,7 @@ export function initCallSystem(data){
 
 
 
-    listenIncomingCall(
-        currentUser.uid,
-        incomingCall
-    );
+   
 
 
 
