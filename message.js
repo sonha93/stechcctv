@@ -424,32 +424,20 @@ src="${
 
 
 ${
-(() => {
+msg.replyTo &&
+messageMap[msg.replyTo.id] &&
+!messageMap[msg.replyTo.id].recalled
+?
+`
+<div
+class="reply-box"
+onclick="scrollToMessage('${msg.replyTo.id}')">
 
-    if (!msg.replyTo) return "";
+↩ ${escapeHTML(messageMap[msg.replyTo.id].text || "")}
 
-    const original = messageMap[msg.replyTo.id];
-
-    // Không tìm thấy hoặc đã thu hồi -> hiện dòng thu hồi
-    if (!original || original.recalled) {
-        return `
-        <div class="chat-text recalled-reply">
-            Tin nhắn đã được thu hồi
-        </div>
-        `;
-    }
-
-    return `
-    <div
-    class="reply-box"
-    onclick="scrollToMessage('${msg.replyTo.id}')">
-
-        ↩ ${escapeHTML(original.text || "")}
-
-    </div>
-    `;
-
-})()
+</div>
+`
+:""
 }
 ${
 msg.images && msg.images.length
@@ -551,6 +539,18 @@ ${msg.duration || 0}s
 }
 ${
 msg.recalled
+?
+`
+<div class="chat-text">
+Tin nhắn đã được thu hồi
+</div>
+`
+:
+(
+msg.replyTo &&
+messageMap[msg.replyTo.id] &&
+messageMap[msg.replyTo.id].recalled
+)
 ?
 `
 <div class="chat-text">
@@ -1664,8 +1664,11 @@ senderId
 ){
 
 replyMessage = {
-    id: id,
-    senderId: senderId
+
+    id:id,
+    text:text,
+    senderId:senderId
+
 };
 
 
@@ -1751,21 +1754,20 @@ window.recallMessage = async function(id){
     return;
 
 
-   await db
-.collection("conversations")
-.doc(conversationId)
-.collection("messages")
-.doc(id)
-.update({
+    await db
+    .collection("conversations")
+    .doc(conversationId)
+    .collection("messages")
+    .doc(id)
+    .update({
 
-    text:"",
-    image:"",
-    images:[],
-    video:"",
-    audioUrl:"",
-    recalled:true
+        text:"Tin nhắn đã được thu hồi",
+        image:"",
+        images:[],
+        video:"",
+        recalled:true
 
-});
+    });
 
 };
 document.addEventListener("voiceRecorded",async(e)=>{
