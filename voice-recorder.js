@@ -296,7 +296,7 @@ sendBtn.onclick = async ()=>{
 
         };
 
-
+console.log("Bắt đầu upload", voiceData);
       await uploadVoiceToCloudinary(voiceData);
 
 
@@ -466,7 +466,7 @@ async function uploadVoiceToCloudinary(voiceData){
         }
 
         const data = await res.json();
-
+console.log("Cloudinary:", data);
         if(!data.secure_url){
             throw new Error("Không lấy được URL");
         }
