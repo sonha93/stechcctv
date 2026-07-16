@@ -4,7 +4,7 @@
 // MESSAGE JS (FIREBASE V8)
 // ================================
 import { getVerifiedBadge } from "./verified-users.js";
-import { initCallSystem } from "./call-manager.js";
+import { initCallSystem } from "./call/call-manager.js";
 // Firebase
 import { db, auth } from "./firebase-init.js";
 import { isBlocked } from "./block.js";
