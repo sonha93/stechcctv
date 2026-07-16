@@ -2,7 +2,7 @@
 // CALL UI JS
 // ================================
 
-import { auth } from "../firebase-init.js";
+import { auth, db } from "./firebase-init.js";
 
 // ================================
 // ELEMENT
@@ -143,6 +143,8 @@ function startTimer(){
 // MICROPHONE
 // ================================
 
+if(muteBtn){
+
 muteBtn.onclick = ()=>{
 
     if(!localStream)
@@ -165,10 +167,16 @@ muteBtn.onclick = ()=>{
 
 };
 
+}
+
+
+
 
 // ================================
 // SPEAKER
 // ================================
+
+if(speakerBtn){
 
 speakerBtn.onclick = ()=>{
 
@@ -182,6 +190,8 @@ speakerBtn.onclick = ()=>{
     speaker ? 1 : .45;
 
 };
+
+}
 
 
 // ================================
