@@ -139,7 +139,27 @@ async function startCall(type){
         type
     );
 
+// MỞ GIAO DIỆN CUỘC GỌI
 
+const userSnap = await db
+.collection("users")
+.doc(otherUid)
+.get();
+
+const userData = userSnap.exists
+? userSnap.data()
+: {};
+
+
+window.open(
+    `call.html?uid=${otherUid}
+    &name=${encodeURIComponent(userData.name || "Người dùng")}
+    &avatar=${encodeURIComponent(userData.avatar || "")}
+    &incoming=0
+    &type=${type}`,
+    "callWindow",
+    "width=420,height=700"
+);
 
     if(type==="video"){
 
@@ -208,7 +228,13 @@ async function incomingCall(call){
     currentCallId =
     call.id;
 
-
+window.open(
+    `call.html?uid=${call.from}
+    &incoming=1
+    &type=${call.type}`,
+    "callWindow",
+    "width=420,height=700"
+);
 
     console.log(
         "Có cuộc gọi đến",
