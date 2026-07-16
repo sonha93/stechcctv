@@ -424,19 +424,16 @@ src="${
 
 
 ${
-msg.replyTo
+msg.replyTo &&
+messageMap[msg.replyTo.id] &&
+!messageMap[msg.replyTo.id].recalled
 ?
 `
 <div
 class="reply-box"
 onclick="scrollToMessage('${msg.replyTo.id}')">
 
-↩ ${
-messageMap[msg.replyTo.id] &&
-!messageMap[msg.replyTo.id].recalled
-? escapeHTML(messageMap[msg.replyTo.id].text || "")
-: "Tin nhắn đã được thu hồi"
-}
+↩ ${escapeHTML(messageMap[msg.replyTo.id].text || "")}
 
 </div>
 `
@@ -542,6 +539,18 @@ ${msg.duration || 0}s
 }
 ${
 msg.recalled
+?
+`
+<div class="chat-text">
+Tin nhắn đã được thu hồi
+</div>
+`
+:
+(
+msg.replyTo &&
+messageMap[msg.replyTo.id] &&
+messageMap[msg.replyTo.id].recalled
+)
 ?
 `
 <div class="chat-text">
