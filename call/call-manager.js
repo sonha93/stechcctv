@@ -143,18 +143,12 @@ const userData = userSnap.exists
 : {};
 
 
-const userSnap = await db
-.collection("users")
-.doc(call.from)
-.get();
-
-const userData = userSnap.exists ? userSnap.data() : {};
-
 window.open(
-`call.html?uid=${call.from}&callId=${call.id}&name=${encodeURIComponent(userData.name || "Người dùng")}&avatar=${encodeURIComponent(userData.avatar || "")}&incoming=1&type=${call.type}`,
+`call.html?uid=${otherUid}&callId=${currentCallId}&name=${encodeURIComponent(userData.name || "Người dùng")}&avatar=${encodeURIComponent(userData.avatar || "")}&incoming=0&type=${type}`,
 "callWindow",
 "width=420,height=700"
 );
+
     if(type==="video"){
 
         await getVideoStream();
