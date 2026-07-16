@@ -206,113 +206,77 @@ window.open(
 // INCOMING CALL
 // ================================
 
+// ================================
+// INCOMING CALL
+// ================================
+
 async function incomingCall(call){
 
+    currentCallId = call.id;
 
-    currentCallId =
-    call.id;
+    const userSnap = await db
+        .collection("users")
+        .doc(call.from)
+        .get();
 
-const userSnap = await db
-.collection("users")
-.doc(call.from)
-.get();
+    const userData = userSnap.exists ? userSnap.data() : {};
 
-const userData = userSnap.exists ? userSnap.data() : {};
+    const userName =
+        userData.name ||
+        userData.displayName ||
+        userData.username ||
+        "Người dùng";
 
-const userName =
-    userData.name ||
-    userData.displayName ||
-    userData.username ||
-    "Người dùng";
+    const userAvatar =
+        userData.avatar ||
+        userData.photoURL ||
+        userData.photo ||
+        userData.image ||
+        "default-avatar.png";
 
-const userAvatar =
-    userData.avatar ||
-    userData.photoURL ||
-    userData.photo ||
-    userData.image ||
-    "default-avatar.png";
-window.open(
-    `call.html?uid=${otherUid}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=0&type=${type}`,
-    "callWindow",
-    "width=420,height=700"
-);
-    console.log(
-        "Có cuộc gọi đến",
-        call
+    window.open(
+        `call.html?uid=${call.from}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=1&type=${call.type}`,
+        "callWindow",
+        "width=420,height=700"
     );
 
+    console.log("Có cuộc gọi đến", call);
 
+    const accept = document.getElementById("acceptBtn");
 
-    const accept =
-    document.getElementById(
-        "acceptBtn"
-    );
+    if (accept) {
 
+        accept.onclick = async () => {
 
-    if(accept){
-
-        accept.onclick =
-        async()=>{
-
-
-            await updateCallStatus(
-                currentCallId,
-                "accepted"
-            );
-
+            await updateCallStatus(currentCallId,"accepted");
 
             if(call.type==="video"){
-
                 await getVideoStream();
-
             }else{
-
                 await getAudioStream();
-
             }
 
-
-            peer =
-            createPeer();
-
-
+            peer = createPeer();
 
         };
 
     }
 
+    const reject = document.getElementById("rejectBtn");
 
+    if (reject) {
 
-    const reject =
-    document.getElementById(
-        "rejectBtn"
-    );
+        reject.onclick = async () => {
 
+            await updateCallStatus(currentCallId,"rejected");
 
-    if(reject){
-
-        reject.onclick =
-        async()=>{
-
-
-            await updateCallStatus(
-                currentCallId,
-                "rejected"
-            );
-
-
-            await removeCall(
-                currentCallId
-            );
-
+            await removeCall(currentCallId);
 
         };
 
     }
-
 
 }
-
 
 
 // ================================
