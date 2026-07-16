@@ -23,6 +23,7 @@ let audioBlob = null;
 
 let timer = null;
 let seconds = 0;
+let recordStartTime = 0;
 // ===============================
 // RESET TIMER
 // ===============================
@@ -213,7 +214,7 @@ drawWave();
         };
        
            isRecording = true;
-
+            recordStartTime = Date.now();
            mediaRecorder.start(200);
 
 isPaused = false;
@@ -292,8 +293,10 @@ sendBtn.onclick = async ()=>{
 
             blob:audioBlob,
 
-            duration:seconds,
-
+            duration: Math.max(
+    1,
+    Math.round((Date.now() - recordStartTime) / 1000)
+),
             fileName:`voice_${Date.now()}.webm`
 
         };
@@ -337,6 +340,7 @@ panel.classList.add("hidden");
     }
 clearInterval(timer);
 timer = null;
+    recordStartTime = 0;
     isRecording = false;
 
     isPaused = false;
