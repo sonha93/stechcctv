@@ -7,8 +7,14 @@
 import {
     createCall,
     listenIncomingCall,
+    listenCallStatus,
     updateCallStatus,
-    removeCall
+    removeCall,
+    saveOffer,
+    saveAnswer,
+    listenSignal,
+    addIceCandidate,
+    listenIceCandidates
 }
 from "./call-firebase.js";
 
@@ -181,34 +187,17 @@ window.open(
 
 
 
-    onIceCandidate(
-        candidate=>{
+    onIceCandidate(candidate=>{
 
+    addIceCandidate(currentCallId, candidate);
 
-            db.collection("calls")
-            .doc(currentCallId)
-            .collection("candidates")
-            .add(
-                candidate
-            );
-
-
-        }
-    );
-
+});
 
 }
 
-
-
 // ================================
 // INCOMING CALL
 // ================================
-
-// ================================
-// INCOMING CALL
-// ================================
-
 async function incomingCall(call){
 
     currentCallId = call.id;
