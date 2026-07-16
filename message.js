@@ -424,20 +424,32 @@ src="${
 
 
 ${
-msg.replyTo &&
-messageMap[msg.replyTo.id] &&
-!messageMap[msg.replyTo.id].recalled
-?
-`
-<div
-class="reply-box"
-onclick="scrollToMessage('${msg.replyTo.id}')">
+(() => {
 
-↩ ${escapeHTML(messageMap[msg.replyTo.id].text || "")}
+    if (!msg.replyTo) return "";
 
-</div>
-`
-:""
+    const original = messageMap[msg.replyTo.id];
+
+    // Không tìm thấy hoặc đã thu hồi -> hiện dòng thu hồi
+    if (!original || original.recalled) {
+        return `
+        <div class="chat-text recalled-reply">
+            Tin nhắn đã được thu hồi
+        </div>
+        `;
+    }
+
+    return `
+    <div
+    class="reply-box"
+    onclick="scrollToMessage('${msg.replyTo.id}')">
+
+        ↩ ${escapeHTML(original.text || "")}
+
+    </div>
+    `;
+
+})()
 }
 ${
 msg.images && msg.images.length
@@ -1652,11 +1664,8 @@ senderId
 ){
 
 replyMessage = {
-
-    id:id,
-    text:text,
-    senderId:senderId
-
+    id: id,
+    senderId: senderId
 };
 
 
@@ -1742,20 +1751,21 @@ window.recallMessage = async function(id){
     return;
 
 
-    await db
-    .collection("conversations")
-    .doc(conversationId)
-    .collection("messages")
-    .doc(id)
-    .update({
+   await db
+.collection("conversations")
+.doc(conversationId)
+.collection("messages")
+.doc(id)
+.update({
 
-        text:"Tin nhắn đã được thu hồi",
-        image:"",
-        images:[],
-        video:"",
-        recalled:true
+    text:"",
+    image:"",
+    images:[],
+    video:"",
+    audioUrl:"",
+    recalled:true
 
-    });
+});
 
 };
 document.addEventListener("voiceRecorded",async(e)=>{
