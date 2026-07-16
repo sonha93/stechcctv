@@ -80,9 +80,6 @@ const callStatus = document.getElementById("callStatus");
 const rejectBtn = document.getElementById("rejectBtn");
 const acceptBtn = document.getElementById("acceptBtn");
 const endBtn = document.getElementById("endBtn");
-const audioCallBtn =
-document.getElementById("audioCallBtn");
-
 
 // ================================
 // DATA
