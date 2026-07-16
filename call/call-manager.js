@@ -138,14 +138,24 @@ const userSnap = await db
 .doc(otherUid)
 .get();
 
-const userData = userSnap.exists
-? userSnap.data()
-: {};
+const userData = userSnap.exists ? userSnap.data() : {};
+
+const userName =
+    userData.name ||
+    userData.displayName ||
+    userData.username ||
+    "Người dùng";
+
+const userAvatar =
+    userData.avatar ||
+    userData.photoURL ||
+    userData.photo ||
+    userData.image ||
+    "default-avatar.png";
 
 
 window.open(
-`call.html?uid=${otherUid}&callId=${currentCallId}&name=${encodeURIComponent(userData.name || "Người dùng")}&avatar=${encodeURIComponent(userData.avatar || "")}&incoming=0&type=${type}`,
-"callWindow",
+`call.html?uid=${otherUid}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=0&type=${type}`,
 "width=420,height=700"
 );
 
@@ -223,9 +233,20 @@ const userSnap = await db
 
 const userData = userSnap.exists ? userSnap.data() : {};
 
+const userName =
+    userData.name ||
+    userData.displayName ||
+    userData.username ||
+    "Người dùng";
+
+const userAvatar =
+    userData.avatar ||
+    userData.photoURL ||
+    userData.photo ||
+    userData.image ||
+    "default-avatar.png";
 window.open(
-`call.html?uid=${call.from}&callId=${call.id}&name=${encodeURIComponent(userData.name || "Người dùng")}&avatar=${encodeURIComponent(userData.avatar || "")}&incoming=1&type=${call.type}`,
-"callWindow",
+`call.html?uid=${call.from}&callId=${call.id}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=1&type=${call.type}`,
 "width=420,height=700"
 );
 
