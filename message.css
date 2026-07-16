@@ -155,10 +155,9 @@ body{
      padding:8px 12px;
     border-radius:18px;
 }
-.message.other .message-content{
-    background:#fff;
-    border:1px solid #ddd;
-    color:#111;
+.message.other .message-content.audio-only{
+    border:none !important;
+    background:transparent !important;
 }
 
 .message.mine .message-content{
