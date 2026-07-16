@@ -207,7 +207,11 @@ window.open(
 // ================================
 
 async function incomingCall(call){
+    if(window.callOpened){
+        return;
+    }
 
+    window.callOpened = true;
 
     currentCallId =
     call.id;
