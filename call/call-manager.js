@@ -68,35 +68,21 @@ export function initCallSystem(data){
 
 console.log("TÌM NÚT GỌI:", audioBtn);
 
-
-if(audioBtn){
-
-    audioBtn.addEventListener("click", ()=>{
-
-    
-
-
-}else{
+if (!audioBtn) {
 
     console.log("KHÔNG CÓ NÚT GỌI");
 
-}
+} else {
 
+    audioBtn.onclick = () => {
 
-    if(audioBtn){
+        console.log("ĐÃ BẤM GỌI");
 
-        audioBtn.onclick = ()=>{
- console.log("ĐÃ BẤM GỌI");
-            startCall(
-                "audio"
-            );
+        startCall("audio");
 
-        };
-
-    }
+    };
 
 }
-
 // ================================
 // START CALL
 // ================================
