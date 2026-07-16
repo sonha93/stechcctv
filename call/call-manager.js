@@ -66,7 +66,6 @@ export function initCallSystem(data){
 
    const audioBtn = document.querySelector("#audioCallBtn");
 
-console.log("TÌM NÚT GỌI:", audioBtn);
 
 if (!audioBtn) {
 
