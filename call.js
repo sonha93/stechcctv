@@ -73,7 +73,9 @@ params.get("callId");
 
 const incoming =
 params.get("incoming")==="1";
-
+console.log("incoming =", incoming);
+console.log("name =", params.get("name"));
+console.log("avatar =", params.get("avatar"));
 
 callName.textContent =
 decodeURIComponent(
