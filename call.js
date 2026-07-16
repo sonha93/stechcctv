@@ -329,7 +329,6 @@ String(seconds%60)
 // ================================
 // INCOMING
 // ================================
-
 if (incoming) {
 
     callStatus.textContent = "Cuộc gọi đến";
@@ -343,62 +342,52 @@ if (incoming) {
     callStatus.textContent = "Đang gọi...";
 
     ringtone.play().catch(() => {});
-    createPeer();
 
-await openMic();
+    startCaller();
 
-const offer = await peer.createOffer();
-
-await peer.setLocalDescription(offer);
-
-await db.collection("calls")
-.doc(callId)
-.update({
-    offer
-});
-// Tạo Peer + mở mic
-createPeer();
-await openMic();
-
-// Tạo Offer
-const offer = await peer.createOffer();
-
-await peer.setLocalDescription(offer);
-
-// Lưu Offer lên Firestore
-await db.collection("calls")
-.doc(callId)
-.update({
-    offer
-});
-
-// Chờ Answer
-db.collection("calls")
-.doc(callId)
-.onSnapshot(async snap => {
-
-    const data = snap.data();
-
-    if (
-        data &&
-        data.answer &&
-        !peer.currentRemoteDescription
-    ) {
-
-        await peer.setRemoteDescription(
-            new RTCSessionDescription(data.answer)
-        );
-
-    }
-
-});
-    // Người gọi không được thấy nút bắt máy
     acceptBtn.style.display = "none";
     rejectBtn.style.display = "none";
     endBtn.style.display = "flex";
 
 }
 
+async function startCaller(){
+
+    createPeer();
+
+    await openMic();
+
+    const offer = await peer.createOffer();
+
+    await peer.setLocalDescription(offer);
+
+    await db.collection("calls")
+    .doc(callId)
+    .update({
+        offer
+    });
+
+    db.collection("calls")
+    .doc(callId)
+    .onSnapshot(async snap=>{
+
+        const data = snap.data();
+
+        if(
+            data &&
+            data.answer &&
+            !peer.currentRemoteDescription
+        ){
+
+            await peer.setRemoteDescription(
+                new RTCSessionDescription(data.answer)
+            );
+
+        }
+
+    });
+
+}
 
 // ================================
 // ACCEPT
