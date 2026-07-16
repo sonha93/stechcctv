@@ -176,7 +176,25 @@ export async function rejectCall(callId){
 }
 
 
+// =====================================
+// UPDATE CALL STATUS
+// =====================================
 
+export async function updateCallStatus(callId, status){
+
+
+    return db.collection("calls")
+
+    .doc(callId)
+
+    .update({
+
+        status: status
+
+    });
+
+
+}
 
 // =====================================
 // END CALL
