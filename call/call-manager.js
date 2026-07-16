@@ -73,11 +73,8 @@ if(audioBtn){
 
     audioBtn.addEventListener("click", ()=>{
 
-        console.log("ĐÃ BẤM GỌI");
+    
 
-        startCall("audio");
-
-    });
 
 }else{
 
