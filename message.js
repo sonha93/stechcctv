@@ -70,7 +70,8 @@ const imageInput =
 document.getElementById("imageInput");
 const backBtn =
 document.getElementById("backBtn");
-
+const audioCallBtn =
+document.getElementById("audioCallBtn");
 
 
 // ================================
@@ -1225,7 +1226,15 @@ backBtn.onclick=()=>{
 };
 
 }
+if(audioCallBtn){
 
+    audioCallBtn.onclick = ()=>{
+
+        console.log("Đã bấm gọi");
+
+    };
+
+}
 
 
 
