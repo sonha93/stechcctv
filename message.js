@@ -506,6 +506,27 @@ src="${msg.video}">
 ""
 }
 ${
+msg.type === "audio"
+?
+`
+<div class="chat-audio">
+
+<audio
+controls
+preload="metadata"
+src="${msg.audioUrl}">
+</audio>
+
+<div class="audio-duration">
+${msg.duration || 0}s
+</div>
+
+</div>
+`
+:
+""
+}
+${
 msg.recalled
 ?
 `
