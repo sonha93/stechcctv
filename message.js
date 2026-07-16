@@ -70,6 +70,16 @@ const imageInput =
 document.getElementById("imageInput");
 const backBtn =
 document.getElementById("backBtn");
+const audioCallBtn = document.getElementById("audioCallBtn");
+
+const callPopup = document.getElementById("callPopup");
+const callAvatar = document.getElementById("callAvatar");
+const callName = document.getElementById("callName");
+const callStatus = document.getElementById("callStatus");
+
+const rejectBtn = document.getElementById("rejectBtn");
+const acceptBtn = document.getElementById("acceptBtn");
+const endBtn = document.getElementById("endBtn");
 const audioCallBtn =
 document.getElementById("audioCallBtn");
 
@@ -1228,15 +1238,41 @@ backBtn.onclick=()=>{
 }
 if(audioCallBtn){
 
-    audioCallBtn.onclick = ()=>{
+    audioCallBtn.onclick = async ()=>{
 
-        console.log("Đã bấm gọi");
+        const userSnap = await db
+        .collection("users")
+        .doc(otherUid)
+        .get();
+
+        if(userSnap.exists){
+
+            const u = userSnap.data();
+
+            callAvatar.src =
+                u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png";
+
+            callName.textContent =
+                u.name || "Người dùng";
+
+        }
+
+        callStatus.textContent = "Đang gọi...";
+
+        callPopup.classList.remove("hidden");
+
+        rejectBtn.classList.remove("hidden");
+        acceptBtn.classList.add("hidden");
+        endBtn.classList.add("hidden");
 
     };
 
 }
+rejectBtn.onclick = ()=>{
 
+    callPopup.classList.add("hidden");
 
+};
 
 // ================================
 // AUTH START
