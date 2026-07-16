@@ -42,53 +42,38 @@ export async function createCall(from, to, type = "audio") {
 
 export function listenIncomingCall(uid, callback) {
 
+    let firstSnapshot = true;
 
     return db.collection("calls")
 
-    .where("to","==",uid)
+        .where("to","==",uid)
 
-    .where("status","==","calling")
+        .where("status","==","calling")
 
-    .onSnapshot(snapshot=>{
+        .onSnapshot(snapshot=>{
 
+            if(firstSnapshot){
+                firstSnapshot = false;
+                return;
+            }
 
-        snapshot.docChanges()
-        .forEach(change=>{
+            snapshot.docChanges().forEach(change=>{
 
-
-            if(change.type === "added"){
-
-
-                const data =
-                change.doc.data();
-
-
+                if(change.type !== "added") return;
 
                 callback({
 
-                    id:change.doc.id,
+                    id: change.doc.id,
 
-                    ...data
+                    ...change.doc.data()
 
                 });
 
-
-
-            }
-
-
+            });
 
         });
 
-
-
-    });
-
-
 }
-
-
-
 // =====================================
 // LISTEN CALL STATUS
 // =====================================
