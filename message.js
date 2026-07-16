@@ -516,12 +516,13 @@ msg.type === "audio"
 <audio
 controls
 preload="metadata"
-src="${msg.audioUrl}"
-onloadedmetadata="
-this.currentTime = this.duration;
-setTimeout(()=>this.currentTime=0,0);
-">
+src="${msg.audioUrl}">
 </audio>
+
+<div class="audio-duration">
+${msg.duration || 0}s
+</div>
+
 </div>
 `
 :
