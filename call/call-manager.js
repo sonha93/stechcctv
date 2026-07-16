@@ -155,8 +155,9 @@ const userAvatar =
 
 
 window.open(
-`call.html?uid=${otherUid}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=0&type=${type}`,
-"width=420,height=700"
+    `call.html?uid=${otherUid}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=0&type=${type}`,
+    "callWindow",
+    "width=420,height=700"
 );
 
     if(type==="video"){
@@ -246,10 +247,10 @@ const userAvatar =
     userData.image ||
     "default-avatar.png";
 window.open(
-`call.html?uid=${call.from}&callId=${call.id}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=1&type=${call.type}`,
-"width=420,height=700"
+    `call.html?uid=${otherUid}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=0&type=${type}`,
+    "callWindow",
+    "width=420,height=700"
 );
-
     console.log(
         "Có cuộc gọi đến",
         call
