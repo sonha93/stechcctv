@@ -31,7 +31,7 @@ new URLSearchParams(
 
 const conversationId =
 params.get("id");
-
+window.currentConversationId = conversationId;
 
 
 if(!conversationId){
