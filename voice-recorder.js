@@ -214,14 +214,16 @@ drawWave();
        
            isRecording = true;
 
-        mediaRecorder.start(200);
+           mediaRecorder.start(200);
 
-        isPaused = false;
+isPaused = false;
 
-      panel.classList.remove("hidden");
+panel.classList.remove("hidden");
 
-        startTimer();
+sendBtn.disabled = false;
+cancelBtn.disabled = false;
 
+startTimer();
     }catch(err){
 
         console.error(err);
@@ -323,8 +325,16 @@ function resetRecorderUI(){
     panel.classList.add("hidden");
 
 }
-function cleanupRecorder(){
 
+function cleanupRecorder(){
+panel.classList.add("hidden");
+
+    audioChunks = [];
+    audioBlob = null;
+
+    if (waveCtx) {
+        waveCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+    }
 clearInterval(timer);
 timer = null;
     isRecording = false;
