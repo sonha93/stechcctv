@@ -388,7 +388,7 @@ String(seconds%60)
 // INCOMING
 // ================================
 if (incoming) {
-
+  navigator.vibrate(2000);
     callStatus.textContent = "Cuộc gọi đến";
 
     startVibrate();
