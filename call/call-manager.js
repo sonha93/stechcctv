@@ -43,7 +43,7 @@ let peer = null;
 // ================================
 
 export function initCallSystem(data){
-console.log("CALL INIT OK");
+
 
     db = data.db;
 
