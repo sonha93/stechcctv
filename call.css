@@ -311,60 +311,81 @@ body{
 }
 
 
-.avatar-ring::before,
+/* vòng ngoài 1 */
+.avatar-ring::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:180px;
+    height:180px;
+
+    border-radius:50%;
+
+    border:3px solid rgba(255,255,255,.7);
+
+    animation:ringPulse 1.8s infinite;
+
+}
+
+
+/* vòng ngoài 2 */
 .avatar-ring::after{
 
     content:"";
 
     position:absolute;
 
-    inset:0;
+    width:180px;
+    height:180px;
 
     border-radius:50%;
 
-    border:3px solid rgba(255,255,255,.65);
+    border:3px solid rgba(255,255,255,.35);
 
-    animation:ringPulse 2.4s infinite;
+    animation:ringPulse 1.8s infinite;
 
-}
-
-
-/* vòng 2 */
-.avatar-ring::after{
-
-    animation-delay:.6s;
+    animation-delay:.8s;
 
 }
 
 
-/* tạo thêm vòng */
-.avatar-ring{
 
-    box-shadow:
-    0 0 0 20px rgba(255,255,255,.15),
-    0 0 0 40px rgba(255,255,255,.10),
-    0 0 0 60px rgba(255,255,255,.05);
+.call-avatar{
 
-    animation:ringGlow 2.4s infinite;
+    width:150px;
+    height:150px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    position:relative;
+
+    z-index:2;
 
 }
 
 
-@keyframes ringGlow{
+
+@keyframes ringPulse{
 
     0%{
-        box-shadow:
-        0 0 0 0 rgba(255,255,255,.35),
-        0 0 0 0 rgba(255,255,255,.2),
-        0 0 0 0 rgba(255,255,255,.1);
+
+        transform:scale(1);
+
+        opacity:.9;
+
     }
 
 
     100%{
-        box-shadow:
-        0 0 0 35px rgba(255,255,255,0),
-        0 0 0 55px rgba(255,255,255,0),
-        0 0 0 75px rgba(255,255,255,0);
+
+        transform:scale(1.6);
+
+        opacity:0;
+
     }
 
 }
