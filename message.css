@@ -1025,18 +1025,42 @@ font-size:28px;
 ================================ */
 
 .reply-box{
-    background:#e9ecef;
+
+    background:rgba(0,0,0,0.08);
+
     border-left:4px solid #2196f3;
-    color:#000;          /* chữ đen */
-    font-weight:500;
+
+    padding:8px 10px;
+
+    margin-bottom:8px;
+
+    border-radius:8px;
+
+    font-size:13px;
+
+    color:#555;
+
+    cursor:pointer;
+
+    max-width:250px;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
 }
 
 
 .message.mine .reply-box{
-    background:rgba(255,255,255,.35);
-    color:#000;          /* đổi từ trắng sang đen */
+
+    background:rgba(255,255,255,0.25);
+
+    color:#fff;
+
     border-left-color:#fff;
-    font-weight:500;
+
 }
 
 
