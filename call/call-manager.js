@@ -64,17 +64,26 @@ console.log("CALL INIT OK");
 
 
 
-    const audioBtn =
-    document.getElementById(
-        "audioCallBtn"
-    );
+   const audioBtn = document.querySelector("#audioCallBtn");
+
+console.log("TÌM NÚT GỌI:", audioBtn);
 
 
-    const videoBtn =
-    document.getElementById(
-        "videoCallBtn"
-    );
+if(audioBtn){
 
+    audioBtn.addEventListener("click", ()=>{
+
+        console.log("ĐÃ BẤM GỌI");
+
+        startCall("audio");
+
+    });
+
+}else{
+
+    console.log("KHÔNG CÓ NÚT GỌI");
+
+}
 
 
     if(audioBtn){
