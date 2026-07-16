@@ -153,6 +153,7 @@ const userData = userSnap.exists
 
 window.open(
     `call.html?uid=${otherUid}
+    &callId=${currentCallId}
     &name=${encodeURIComponent(userData.name || "Người dùng")}
     &avatar=${encodeURIComponent(userData.avatar || "")}
     &incoming=0
@@ -230,6 +231,7 @@ async function incomingCall(call){
 
 window.open(
     `call.html?uid=${call.from}
+    &callId=${call.id}
     &incoming=1
     &type=${call.type}`,
     "callWindow",
