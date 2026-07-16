@@ -599,6 +599,22 @@ msg.seenBy.find(uid=>uid!==currentUser.uid)
 
 messageBox.appendChild(div);
 
+const audio = div.querySelector(".chat-audio audio");
+
+if (audio) {
+
+    audio.onloadedmetadata = () => {
+
+        const duration = div.querySelector(".audio-duration");
+
+        if (duration) {
+            duration.textContent = Math.round(audio.duration) + "s";
+        }
+
+    };
+
+}
+
 }
 
 // ================================
