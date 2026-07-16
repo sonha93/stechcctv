@@ -204,47 +204,49 @@ fill="currentColor">
 
 <div id="voicePanel" class="voice-popup hidden">
 
+    <canvas id="waveCanvas" width="260" height="60"></canvas>
 
-    <canvas
-    id="waveCanvas"
-    width="220"
-    height="60">
-    </canvas>
-<div id="recordTime">
-    00:00
-</div>
+    <div id="recordTime">00:00</div>
 
-    <!-- XÓA GHI ÂM -->
+    <div class="voice-actions">
 
-    <button id="cancelRecordBtn"
-    class="voice-trash">
+        <!-- XÓA -->
+        <button id="cancelRecordBtn" class="voice-action">
 
-        <svg viewBox="0 0 24 24">
-            <path fill="currentColor"
-            d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4z"/>
-        </svg>
+            <svg viewBox="0 0 24 24">
+                <path fill="currentColor"
+                d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
 
-    </button>
+            <span>Xóa</span>
 
+        </button>
 
+        <!-- GỬI -->
+        <button id="sendRecordBtn" class="voice-send">
 
-    <!-- GỬI -->
+            <svg viewBox="0 0 24 24">
+                <path fill="currentColor"
+                d="M8 5v14l11-7z"/>
+            </svg>
 
-    <button id="sendRecordBtn"
-    class="voice-send">
+            <span>Gửi</span>
 
-        <svg viewBox="0 0 24 24">
+        </button>
 
-            <path fill="currentColor"
-            d="M2 21L23 12 2 3v7l15 2-15 2z"/>
+        <!-- NGHE LẠI -->
+        <button id="previewRecordBtn" class="voice-action">
 
-        </svg>
+            <svg viewBox="0 0 24 24">
+                <path fill="currentColor"
+                d="M12 5V2L7 7l5 5V9a4 4 0 110 8 4 4 0 01-3.87-3H6.05A6.002 6.002 0 0012 20a6 6 0 000-12z"/>
+            </svg>
 
-    </button>
+            <span>Nghe lại</span>
 
+        </button>
 
-</div>
-
+    </div>
 
 </div>
 
