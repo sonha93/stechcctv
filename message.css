@@ -1401,3 +1401,30 @@ font-size:28px;
     width:20px;
     height:20px;
 }
+.chat-call{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px 14px;
+    border-radius:14px;
+    background:#f5f5f5;
+}
+
+.message.mine .chat-call{
+    background:#d8ecff;
+}
+
+.call-icon{
+    font-size:26px;
+}
+
+.call-title{
+    font-weight:600;
+    font-size:14px;
+}
+
+.call-duration{
+    font-size:12px;
+    color:#777;
+    margin-top:3px;
+}
