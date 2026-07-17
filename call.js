@@ -290,22 +290,23 @@ peer = new RTCPeerConnection({
 
 
 
-peer.ontrack=e=>{
+peer.ontrack = e => {
 
+    const stream = e.streams[0];
 
-const stream =
-e.streams[0];
+    if (remoteVideo) {
+        remoteVideo.srcObject = stream;
+        remoteVideo.muted = false;
+        remoteVideo.play().catch(() => {});
+    }
 
+    if (remoteAudio) {
+        remoteAudio.srcObject = stream;
+        remoteAudio.muted = false;
+        remoteAudio.play().catch(() => {});
+    }
 
-// nhận video
-
-if(remoteVideo){
-
-    remoteVideo.srcObject =
-    stream;
-
-}
-
+};
 
 // nhận âm thanh
 
