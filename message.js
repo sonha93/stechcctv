@@ -1001,35 +1001,29 @@ err
 
 function formatTime(time){
 
+    if(!time)
+    return "";
 
-if(!time)
-return "";
+    if(time.toDate){
 
+        return time
+        .toDate()
+        .toLocaleString(
+            "vi-VN",
+            {
+                day:"2-digit",
+                month:"2-digit",
+                year:"numeric",
+                hour:"2-digit",
+                minute:"2-digit"
+            }
+        );
 
+    }
 
-if(time.toDate){
-
-    return time
-    .toDate()
-    .toLocaleTimeString(
-        "vi-VN",
-        {
-            hour:"2-digit",
-            minute:"2-digit"
-        }
-    );
-
-}
-
-
-
-return "";
+    return "";
 
 }
-
-
-
-
 // ================================
 // ESCAPE HTML
 // ================================
