@@ -405,4 +405,33 @@ body{
     border-radius:15px;
     z-index:10;
 }
+.video-box{
+    position:absolute;
+    top:100px;
+    left:0;
+    right:0;
+    bottom:120px;
+    z-index:1;
+}
+
+
+.call-actions{
+    position:absolute;
+    bottom:30px;
+    left:0;
+    right:0;
+    z-index:99;
+}
+
+
+.call-top{
+    position:relative;
+    z-index:10;
+}
+
+
+.call-btn{
+    position:relative;
+    z-index:100;
+}
 }
