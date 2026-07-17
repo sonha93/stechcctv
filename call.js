@@ -291,24 +291,11 @@ peer = new RTCPeerConnection({
 
 
 peer.ontrack = e => {
+ console.log("ONTRACK", e);
+    const stream = e.streams[0];
 
-   const stream = e.streams[0];
-
-if (stream.getVideoTracks().length > 0) {
-
-    remoteVideo.srcObject = stream;
-
-    remoteVideo.play().catch(console.error);
-
-}
-
-if (stream.getAudioTracks().length > 0) {
-
-    remoteAudio.srcObject = stream;
-
-    remoteAudio.play().catch(console.error);
-
-}
+    if (remoteVideo) {
+        remoteVideo.srcObject = stream;
 remoteVideo.autoplay = true;
 remoteVideo.playsInline = true;
 remoteVideo.muted = false;
@@ -351,28 +338,14 @@ listenIceCandidates(
 
         try{
 
-           const addedCandidates = new Set();
+            await peer.addIceCandidate(
 
-candidateUnsubscribe =
-listenIceCandidates(callId, async data => {
+                new RTCIceCandidate(
+                    data.candidate
+                )
 
-    if (!peer) return;
+            );
 
-    const key = JSON.stringify(data.candidate);
-
-    if (addedCandidates.has(key)) return;
-
-    addedCandidates.add(key);
-
-    try {
-        await peer.addIceCandidate(
-            new RTCIceCandidate(data.candidate)
-        );
-    } catch (e) {
-        console.error(e);
-    }
-
-});
         }catch(e){
 
             console.error(
@@ -654,6 +627,19 @@ await db.collection("calls")
 });
 
 candidateUnsubscribe =
+listenIceCandidates(
+    callId,
+    async data=>{
+
+        try{
+
+            await peer.addIceCandidate(
+
+                new RTCIceCandidate(
+                    data.candidate
+                )
+
+            );
 
         }catch(e){
 
