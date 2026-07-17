@@ -309,3 +309,16 @@ export async function addRemoteIceCandidate(candidate){
     );
 
 }
+export function showLocalVideo(){
+
+    const video =
+    document.getElementById("localVideo");
+
+
+    if(video && localStream){
+
+        video.srcObject = localStream;
+
+    }
+
+}
