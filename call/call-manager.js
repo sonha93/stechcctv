@@ -87,6 +87,7 @@ if (!audioBtn) {
     };
 
 }
+listenIncomingCall(currentUser.uid, incomingCall);    
 }
     
 // ================================
