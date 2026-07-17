@@ -151,7 +151,7 @@ listenCallStatus(callId, async (call) => {
     }
 
 break;
-    case "accepted":
+        case "accepted":
 
     ringtone.pause();
 
@@ -159,35 +159,17 @@ break;
         callingTone.pause();
     }
 
+            if (!peer) {
+    createPeer();
+    await openMedia();
+}
 
-    // ẨN NÚT NHẬN / TỪ CHỐI
-    acceptBtn.style.display = "none";
-    rejectBtn.style.display = "none";
+            callStatus.textContent = "Đã kết nối";
 
+            if (!timer)
+                startTimer();
 
-    // HIỆN MIC / LOA / KẾT THÚC
-    muteBtn.style.display = "flex";
-    speakerBtn.style.display = "flex";
-    endBtn.style.display = "flex";
-
-
-    if (!peer) {
-
-        createPeer();
-
-        await openMedia();
-
-    }
-
-
-    callStatus.textContent = "Đã kết nối";
-
-
-    if (!timer)
-        startTimer();
-
-
-break;
+            break;
 
         case "rejected":
 
@@ -492,17 +474,10 @@ callTimeout = setTimeout(async()=>{
         callingTone.play().catch(() => {});
     }
 
-
     startCaller();
-
 
     acceptBtn.style.display = "none";
     rejectBtn.style.display = "none";
-
-
-    // HIỆN NÚT KHI ĐANG GỌI
-    muteBtn.style.display = "flex";
-    speakerBtn.style.display = "flex";
     endBtn.style.display = "flex";
 
 }
@@ -718,28 +693,12 @@ startTimer();
 muteBtn.onclick=()=>{
 
 
-if(!localStream){
-    return;
-}
+if(!localStream)
+return;
 
 
-muted = !muted;
+muted=!muted;
 
-
-localStream
-.getAudioTracks()
-.forEach(track=>{
-
-    track.enabled = !muted;
-
-});
-
-
-muteBtn.style.opacity =
-muted ? "0.45" : "1";
-
-
-};
 
 localStream
 .getAudioTracks()
@@ -767,19 +726,16 @@ muted?.45:1;
 speakerBtn.onclick=()=>{
 
 
-remoteVideo.muted =
-!remoteVideo.muted;
-
-
 remoteAudio.muted =
-remoteVideo.muted;
+!remoteAudio.muted;
 
 
 speakerBtn.style.opacity =
-remoteVideo.muted ? "0.45" : "1";
+remoteAudio.muted?.45:1;
 
 
 };
+
 
 
 
