@@ -437,49 +437,4 @@ body{
 video{
     pointer-events:none;
 }
-.call-controls{
-
-    position: fixed;
-
-    bottom: 40px;
-
-    left:50%;
-
-    transform:translateX(-50%);
-
-    display:flex;
-
-    gap:25px;
-
-    z-index:9999;
-
-}
-
-
-.call-controls button{
-
-    width:60px;
-
-    height:60px;
-
-    border-radius:50%;
-
-    border:none;
-
-    font-size:26px;
-
-    cursor:pointer;
-
-    background:#333;
-
-    color:white;
-
-}
-
-
-#endBtn{
-
-    background:red;
-
-}
 }
