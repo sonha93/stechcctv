@@ -476,9 +476,17 @@ callTimeout = setTimeout(async()=>{
 
     startCaller();
 
+
     acceptBtn.style.display = "none";
     rejectBtn.style.display = "none";
+
+    // Ẩn kết thúc lúc đang đổ chuông nếu muốn
     endBtn.style.display = "flex";
+
+
+    // giữ nút mic loa
+    muteBtn.style.display="flex";
+    speakerBtn.style.display="flex";
 
 }
 
@@ -671,7 +679,8 @@ acceptBtn.style.display="none";
 rejectBtn.style.display="none";
 
 endBtn.style.display="flex";
-
+muteBtn.style.display="flex";
+speakerBtn.style.display="flex";
 
 callStatus.textContent =
 "Đã kết nối";
