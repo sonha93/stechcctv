@@ -309,7 +309,7 @@ callAvatar.onerror = () => {
 
 
 function createPeer(){
-
+    console.log(">>> createPeer", incoming ? "Receiver" : "Caller");
 
 peer = new RTCPeerConnection({
 
@@ -339,7 +339,10 @@ peer = new RTCPeerConnection({
 
 
 peer.ontrack = e => {
-
+ console.log(
+        ">>> ontrack",
+        e.streams[0].getTracks().map(t=>t.kind)
+    );
     const stream = e.streams[0];
 
     if (remoteVideo) {
@@ -414,6 +417,7 @@ listenIceCandidates(
 // ================================
 
 async function openMedia() {
+   console.log(">>> openMedia", callType);
 
     localStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -619,7 +623,7 @@ await openMedia();
 
 },60000);
     const offer = await peer.createOffer();
-
+console.log(">>> Offer created");
 await peer.setLocalDescription(offer);
 
 await db.collection("calls")
