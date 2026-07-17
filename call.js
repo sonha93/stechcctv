@@ -43,11 +43,23 @@ const remoteVideo =
 document.getElementById("remoteVideo");
 if (localVideo) {
 
-    localVideo.ondblclick = () => {
+    let lastTap = 0;
 
-        switchCamera();
+    localVideo.addEventListener("touchend", (e) => {
 
-    };
+        e.preventDefault();
+
+        const now = Date.now();
+
+        if (now - lastTap < 300) {
+
+            switchCamera();
+
+        }
+
+        lastTap = now;
+
+    }, { passive: false });
 
 }
 const muteBtn =
