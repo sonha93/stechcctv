@@ -531,18 +531,6 @@ body{
    CONNECTED UI
 ============================ */
 
-body.call-connected .avatar-ring{
-    display:none;
-}
-
-body.call-connected .call-avatar{
-    display:none;
-}
-
-body.call-connected .call-name{
-    display:none;
-}
-
 body.call-connected .call-status{
     display:none;
 }
@@ -557,26 +545,41 @@ body.call-connected .call-timer{
     color:#fff;
 }
 
-body.call-connected #localVideo{
+/* VIDEO CALL */
+
+body.video-call.call-connected .avatar-ring{
+    display:none;
+}
+
+body.video-call.call-connected .call-avatar{
+    display:none;
+}
+
+body.video-call.call-connected .call-name{
+    display:none;
+}
+
+body.video-call.call-connected #localVideo{
     top:20px;
     right:15px;
     width:100px;
     height:140px;
 }
-}
-/* =========================
-   VOICE CALL
-========================= */
+
+/* VOICE CALL */
 
 body.voice-call .video-box{
     display:none;
 }
 
-body.voice-call #localVideo{
-    display:none;
+body.voice-call .avatar-ring{
+    display:flex;
 }
 
-body.voice-call #remoteVideo{
-    display:none;
+body.voice-call .call-avatar{
+    display:block;
 }
+
+body.voice-call .call-name{
+    display:block;
 }
