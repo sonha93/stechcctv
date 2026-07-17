@@ -30,6 +30,8 @@ body{
     position:fixed;
     inset:0;
 
+    height:100dvh;
+
     display:flex;
     flex-direction:column;
     justify-content:space-between;
@@ -387,6 +389,7 @@ body{
         opacity:0;
 
     }
+}
 #remoteVideo{
     position:absolute;
     width:100%;
@@ -406,35 +409,42 @@ body{
     z-index:10;
 }
 .video-box{
+
     position:absolute;
-    top:100px;
-    left:0;
-    right:0;
-    bottom:120px;
+
+    inset:0;
+
     z-index:1;
-}
 
-
-.call-actions{
-    position:absolute;
-    bottom:30px;
-    left:0;
-    right:0;
-    z-index:99;
 }
 
 
 .call-top{
+
     position:relative;
-    z-index:10;
+
+    z-index:20;
+
 }
 
 
-.call-btn{
-    position:relative;
-    z-index:100;
-}
-video{
-    pointer-events:none;
+.call-actions{
+
+    position:absolute;
+
+    bottom:40px;
+
+    left:0;
+
+    right:0;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:22px;
+
+    z-index:999;
+
 }
 }
