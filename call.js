@@ -117,6 +117,11 @@ const userName = params.get("name");
 const userAvatar = params.get("avatar");
 callUnsubscribe =
 listenCallStatus(callId, async (call) => {
+    
+    if(!call){
+        return;
+    }
+
     // NHẬN ANSWER TỪ BÊN KIA
     if (
         call.answer &&
@@ -132,7 +137,7 @@ listenCallStatus(callId, async (call) => {
 
     switch (call.status) {
 
-       case "calling":
+     case "calling":
 
     if(incoming){
         callStatus.textContent = "Cuộc gọi đến";
@@ -141,13 +146,6 @@ listenCallStatus(callId, async (call) => {
     }
 
 break;
-            if(callTimeout){
-
-    clearTimeout(callTimeout);
-
-    callTimeout=null;
-
-}
         case "accepted":
 
     ringtone.pause();
@@ -395,7 +393,27 @@ String(seconds%60)
 if (incoming) {
 
     callStatus.textContent = "Cuộc gọi đến";
+callTimeout = setTimeout(async()=>{
 
+    const snap =
+    await db.collection("calls")
+    .doc(callId)
+    .get();
+
+    if(
+        snap.exists &&
+        snap.data().status==="calling"
+    ){
+
+        await timeoutCall(callId);
+
+        ringtone.pause();
+
+        window.close();
+
+    }
+
+},60000);
     startVibrate();
 
     if (ringtone) {
@@ -452,7 +470,7 @@ async function startCaller(){
 
         }
 
-    },30000);
+},60000);
     const offer =
 await peer.createOffer();
 
