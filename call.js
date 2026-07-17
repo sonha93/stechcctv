@@ -371,30 +371,21 @@ listenIceCandidates(
 // MIC
 // ================================
 
-async function openMedia(){
+async function openMedia() {
 
+    localStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: callType === "video"
+    });
 
-localStream =
-await navigator.mediaDevices.getUserMedia({
+    if (callType === "video" && localVideo) {
+        localVideo.srcObject = localStream;
+    }
 
-    audio:true,
-
-    video: callType === "video"
-
-});
-
-
-
-if(
-    callType === "video" &&
-    localVideo
-){
-
-    localVideo.srcObject =
-    localStream;
-
+    localStream.getTracks().forEach(track => {
+        peer.addTrack(track, localStream);
+    });
 }
-
 
 
 // ================================
@@ -722,21 +713,6 @@ localStream
 
 muteBtn.style.opacity =
 muted ? "0.45" : "1";
-
-
-};
-
-localStream
-.getAudioTracks()
-.forEach(t=>{
-
-t.enabled=!muted;
-
-});
-
-
-muteBtn.style.opacity =
-muted?.45:1;
 
 
 };
