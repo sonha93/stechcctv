@@ -639,6 +639,28 @@ listenIceCandidates(
 
     }
 );
+    db.collection("calls")
+    .doc(callId)
+    .onSnapshot(async snap=>{
+
+        const data = snap.data();
+
+        if(
+            data &&
+            data.answer &&
+            !peer.currentRemoteDescription
+        ){
+
+            await peer.setRemoteDescription(
+                new RTCSessionDescription(data.answer)
+            );
+
+        }
+
+    });
+
+}
+
 // ================================
 // ACCEPT
 // ================================
