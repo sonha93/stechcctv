@@ -393,10 +393,17 @@ String(seconds%60)
 // INCOMING
 // ================================
 if (incoming) {
-  navigator.vibrate(2000);
+
     callStatus.textContent = "Cuộc gọi đến";
 
     startVibrate();
+
+    if (ringtone) {
+        ringtone.currentTime = 0;
+        ringtone.loop = true;
+        ringtone.play().catch(e => console.log(e));
+    }
+
     acceptBtn.style.display = "flex";
     rejectBtn.style.display = "flex";
     endBtn.style.display = "none";
@@ -405,7 +412,10 @@ if (incoming) {
 
     callStatus.textContent = "Đang gọi...";
 
-    callingTone.play().catch(() => {});
+    if (callingTone) {
+        callingTone.loop = true;
+        callingTone.play().catch(() => {});
+    }
 
     startCaller();
 
@@ -414,7 +424,6 @@ if (incoming) {
     endBtn.style.display = "flex";
 
 }
-
 
 async function startCaller(){
 
