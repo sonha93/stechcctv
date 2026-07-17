@@ -563,5 +563,20 @@ body.call-connected #localVideo{
     width:100px;
     height:140px;
 }
+}
+/* =========================
+   VOICE CALL
+========================= */
 
+body.voice-call .video-box{
+    display:none;
+}
+
+body.voice-call #localVideo{
+    display:none;
+}
+
+body.voice-call #remoteVideo{
+    display:none;
+}
 }
