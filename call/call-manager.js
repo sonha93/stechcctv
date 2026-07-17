@@ -43,7 +43,9 @@ let currentCallId = null;
 
 let peer = null;
 
-
+let callStartTime = 0;
+let callAccepted = false;
+let callStatus = "missed";
 // ================================
 // INIT
 // ================================
@@ -117,7 +119,9 @@ async function startCall(type){
         otherUid,
         type
     );
-
+callAccepted = false;
+callStatus = "missed";
+callStartTime = Date.now();
 // MỞ GIAO DIỆN CUỘC GỌI
 
 const userSnap = await db
@@ -232,7 +236,9 @@ async function incomingCall(call){
     if (accept) {
 
         accept.onclick = async () => {
-
+callAccepted = true;
+callStatus = "ended";
+callStartTime = Date.now();
             await updateCallStatus(currentCallId,"accepted");
 
             if(call.type==="video"){
@@ -252,7 +258,7 @@ async function incomingCall(call){
     if (reject) {
 
         reject.onclick = async () => {
-
+callStatus = "rejected";
             await updateCallStatus(currentCallId,"rejected");
 
             await removeCall(currentCallId);
@@ -270,20 +276,42 @@ async function incomingCall(call){
 
 export async function endCall(){
 
-
     if(currentCallId){
 
-        await removeCall(
-            currentCallId
-        );
+        const duration = callAccepted
+            ? Math.floor((Date.now() - callStartTime) / 1000)
+            : 0;
+
+        await db
+        .collection("conversations")
+        .doc(conversationId)
+        .collection("messages")
+        .add({
+
+            senderId: currentUser.uid,
+
+            type: "call",
+
+            callType: "audio",
+
+            status: callStatus,
+
+            duration: duration,
+
+            createdAt: firebase.firestore.Timestamp.now(),
+
+            seenBy: [currentUser.uid]
+
+        });
+
+        await removeCall(currentCallId);
 
     }
 
-
     closeMedia();
-
 
     currentCallId = null;
 
+    callAccepted = false;
 
 }
