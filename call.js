@@ -415,29 +415,27 @@ listenIceCandidates(
 // ================================
 // MIC
 // ================================
-
 async function openMedia() {
-   console.log(">>> openMedia", callType);
 
     localStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: callType === "video"
     });
 
-   if (callType === "video" && localVideo) {
+    if (callType === "video" && localVideo) {
 
-    localVideo.srcObject = localStream;
-    localVideo.muted = true;
-    localVideo.autoplay = true;
-    localVideo.playsInline = true;
+        localVideo.srcObject = localStream;
+        localVideo.muted = true;
+        localVideo.autoplay = true;
+        localVideo.playsInline = true;
 
-    localVideo.play().catch(console.error);
-}
+        localVideo.play().catch(console.error);
+    }
+
     localStream.getTracks().forEach(track => {
         peer.addTrack(track, localStream);
     });
 }
-
 async function switchCamera() {
 
     if (callType !== "video" || !localStream || !peer) return;
