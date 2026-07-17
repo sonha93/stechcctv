@@ -1,3 +1,4 @@
+
 // ================================
 // CALL MANAGER JS
 // CONNECT ALL CALL SYSTEM
@@ -205,46 +206,6 @@ window.open(
     "width=420,height=700"
 );
 
-
-
-    peer =
-    createPeer();
-
-
-
-    onRemoteStream(
-        stream=>{
-
-           const remoteAudio =
-document.getElementById("remoteAudio");
-
-const remoteVideo =
-document.getElementById("remoteVideo");
-
-
-if(remoteVideo){
-
-    remoteVideo.srcObject = stream;
-
-}
-
-if(remoteAudio){
-
-    remoteAudio.srcObject = stream;
-
-}
-
-        }
-    );
-
-
-
-    onIceCandidate(candidate=>{
-
-    addIceCandidate(currentCallId, candidate);
-
-});
-
 }
 
 // ================================
@@ -313,9 +274,6 @@ setTimeout(()=>{
                 await getAudioStream();
 
             }
-
-
-            peer = createPeer();
 
         };
 
