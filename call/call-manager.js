@@ -132,22 +132,13 @@ setTimeout(async ()=>{
 
         callStatus = "missed";
 
-       const expiredCallId = currentCallId;
+        await removeCall(currentCallId);
 
-await updateCallStatus(
-    expiredCallId,
-    "missed"
-);
+        closeMedia();
 
-setTimeout(async()=>{
+        currentCallId = null;
 
-    await removeCall(expiredCallId);
-
-},3000);
-
-closeMedia();
-
-currentCallId = null;
+    }
 
 },60000);
 callAccepted = false;
@@ -233,52 +224,7 @@ window.open(
 async function incomingCall(call){
 
     currentCallId = call.id;
-listenCallStatus(
-    currentCallId,
-    async(status)=>{
 
-        console.log("CALL STATUS:", status);
-
-
-        // người gọi hủy vì quá 60s
-        if(status === "missed"){
-
-            callStatus = "missed";
-
-
-            const audio =
-            document.getElementById("ringAudio");
-
-            if(audio){
-                audio.pause();
-                audio.currentTime = 0;
-            }
-
-
-            window.close();
-
-        }
-
-
-        // người gọi tắt
-        if(status === "ended"){
-
-            const audio =
-            document.getElementById("ringAudio");
-
-            if(audio){
-                audio.pause();
-                audio.currentTime = 0;
-            }
-
-
-            window.close();
-
-        }
-
-
-    }
-);
     const userSnap = await db
         .collection("users")
         .doc(call.from)
@@ -331,24 +277,18 @@ callStartTime = Date.now();
 
     const reject = document.getElementById("rejectBtn");
 
-   if (reject) {
+    if (reject) {
 
-    reject.onclick = async () => {
+        reject.onclick = async () => {
+callStatus = "rejected";
+            await updateCallStatus(currentCallId,"rejected");
 
-        callStatus = "rejected";
+            await removeCall(currentCallId);
 
-        await updateCallStatus(
-            currentCallId,
-            "rejected"
-        );
+        };
 
-        await removeCall(
-            currentCallId
-        );
+    }
 
-    };
-
-}
 }
 
 
