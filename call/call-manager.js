@@ -259,7 +259,7 @@ async function incomingCall(call){
 
         accept.onclick = async () => {
 callAccepted = true;
-callStatus = "ended";
+callStatus = "accepted";
 callStartTime = Date.now();
             await updateCallStatus(currentCallId,"accepted");
 
