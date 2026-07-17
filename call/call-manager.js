@@ -274,15 +274,38 @@ callStatus = "rejected";
 // END CALL
 // ================================
 
-export async function endCall(){
+// ================================
+// END CALL
+// ================================
 
-    if(currentCallId){
+export async function endCall() {
 
-        const duration = callAccepted
-            ? Math.floor((Date.now() - callStartTime) / 1000)
-            : 0;
+    if (!currentCallId) {
+        closeMedia();
+        return;
+    }
 
-        await db
+    const duration = callAccepted
+        ? Math.floor((Date.now() - callStartTime) / 1000)
+        : 0;
+
+    let text = "";
+
+    if (callStatus === "rejected") {
+
+        text = "📞 Cuộc gọi đã từ chối";
+
+    } else if (callStatus === "missed") {
+
+        text = "📞 Cuộc gọi nhỡ";
+
+    } else {
+
+        text = "📞 Cuộc gọi đi";
+
+    }
+
+    await db
         .collection("conversations")
         .doc(conversationId)
         .collection("messages")
@@ -296,6 +319,8 @@ export async function endCall(){
 
             status: callStatus,
 
+            text: text,
+
             duration: duration,
 
             createdAt: firebase.firestore.Timestamp.now(),
@@ -304,14 +329,11 @@ export async function endCall(){
 
         });
 
-        await removeCall(currentCallId);
-
-    }
+    await removeCall(currentCallId);
 
     closeMedia();
 
     currentCallId = null;
 
     callAccepted = false;
-
 }
