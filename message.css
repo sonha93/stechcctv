@@ -1428,3 +1428,10 @@ font-size:28px;
     color:#777;
     margin-top:3px;
 }
+.call-btn{
+    width:40px;
+    height:40px;
+    border:none;
+    background:none;
+    cursor:pointer;
+}
