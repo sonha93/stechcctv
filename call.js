@@ -308,18 +308,6 @@ peer.ontrack = e => {
 
 };
 
-// nhận âm thanh
-
-if(remoteAudio){
-
-    remoteAudio.srcObject =
-    stream;
-
-}
-
-
-};
-
 
 peer.onicecandidate = e => {
 
