@@ -25,7 +25,8 @@ import {
     createPeer,
     onRemoteStream,
     onIceCandidate,
-    closeMedia
+    closeMedia,
+    showLocalVideo
 }
 from "./call-media.js";
 
@@ -190,7 +191,7 @@ const userAvatar =
 if(type==="video"){
 
     await getVideoStream();
-
+showLocalVideo();
 }else{
 
     await getAudioStream();
@@ -306,7 +307,7 @@ setTimeout(()=>{
             if(call.type==="video"){
 
                 await getVideoStream();
-
+                 showLocalVideo();
             }else{
 
                 await getAudioStream();
