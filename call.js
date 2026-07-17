@@ -140,6 +140,11 @@ params.get("callId");
 const incoming =
 params.get("incoming")==="1";
 const callType = params.get("type") || "voice";
+if (callType === "video") {
+    document.body.classList.add("video-call");
+} else {
+    document.body.classList.add("voice-call");
+}
 const userName = params.get("name");
 const userAvatar = params.get("avatar");
 window.addEventListener("DOMContentLoaded", () => {
