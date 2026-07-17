@@ -43,9 +43,12 @@ let currentCallId = null;
 
 let peer = null;
 
+let currentCallType = "audio";
+
 let callStartTime = 0;
 let callAccepted = false;
 let callStatus = "missed";
+
 // ================================
 // INIT
 // ================================
@@ -62,15 +65,20 @@ export function initCallSystem(data){
 
     currentUser =
     data.currentUser;
+ const audioBtn = document.querySelector("#audioCallBtn");
+const videoBtn = document.querySelector("#videoCallBtn");
 
+if(videoBtn){
 
+    videoBtn.onclick = ()=>{
 
-   
+        console.log("ĐÃ BẤM GỌI VIDEO");
 
+        startCall("video");
 
+    };
 
-   const audioBtn = document.querySelector("#audioCallBtn");
-
+}
 
 if (!audioBtn) {
 
@@ -96,7 +104,7 @@ listenIncomingCall(currentUser.uid, incomingCall);
 
 async function startCall(type){
 
-
+  currentCallType = type;
     const conv =
     await db
     .collection("conversations")
@@ -120,6 +128,19 @@ async function startCall(type){
         otherUid,
         type
     );
+    listenCallStatus(currentCallId,(status)=>{
+
+    if(status==="accepted"){
+
+        callAccepted = true;
+
+        callStatus = "accepted";
+
+        callStartTime = Date.now();
+
+    }
+
+});
     // ================================
 // TỰ ĐỘNG KẾT THÚC SAU 60 GIÂY NẾU KHÔNG BẮT MÁY
 // ================================
@@ -141,9 +162,8 @@ setTimeout(async ()=>{
     }
 
 },60000);
-callAccepted = false;
+
 callStatus = "missed";
-callStartTime = Date.now();
 // MỞ GIAO DIỆN CUỘC GỌI
 
 const userSnap = await db
@@ -167,21 +187,22 @@ const userAvatar =
     "default-avatar.png";
 
 
+if(type==="video"){
+
+    await getVideoStream();
+
+}else{
+
+    await getAudioStream();
+
+}
+
+
 window.open(
     `call.html?uid=${otherUid}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=0&type=${type}`,
     "callWindow",
     "width=420,height=700"
 );
-
-    if(type==="video"){
-
-        await getVideoStream();
-
-    }else{
-
-        await getAudioStream();
-
-    }
 
 
 
@@ -193,17 +214,24 @@ window.open(
     onRemoteStream(
         stream=>{
 
-            const audio =
-            document.getElementById(
-                "remoteAudio"
-            );
+           const remoteAudio =
+document.getElementById("remoteAudio");
 
-            if(audio){
+const remoteVideo =
+document.getElementById("remoteVideo");
 
-                audio.srcObject =
-                stream;
 
-            }
+if(remoteVideo){
+
+    remoteVideo.srcObject = stream;
+
+}
+
+if(remoteAudio){
+
+    remoteAudio.srcObject = stream;
+
+}
 
         }
     );
@@ -225,6 +253,8 @@ async function incomingCall(call){
 
     currentCallId = call.id;
 
+    currentCallType = call.type;
+
     const userSnap = await db
         .collection("users")
         .doc(call.from)
@@ -245,29 +275,44 @@ async function incomingCall(call){
         userData.image ||
         "default-avatar.png";
 
-    window.open(
-        `call.html?uid=${call.from}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=1&type=${call.type}`,
-        "callWindow",
-        "width=420,height=700"
-    );
+   const callWindow = window.open(
+    `call.html?uid=${call.from}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=1&type=${call.type}`,
+    "callWindow",
+    "width=420,height=700"
+);
 
-    console.log("Có cuộc gọi đến", call);
+console.log("Có cuộc gọi đến", call);
 
-    const accept = document.getElementById("acceptBtn");
+setTimeout(()=>{
+
+    const accept = callWindow.document.getElementById("acceptBtn");
+    const reject = callWindow.document.getElementById("rejectBtn");
+
 
     if (accept) {
 
         accept.onclick = async () => {
-callAccepted = true;
-callStatus = "accepted";
-callStartTime = Date.now();
-            await updateCallStatus(currentCallId,"accepted");
+
+            callAccepted = true;
+            callStatus = "accepted";
+            callStartTime = Date.now();
+
+            await updateCallStatus(
+                currentCallId,
+                "accepted"
+            );
+
 
             if(call.type==="video"){
+
                 await getVideoStream();
+
             }else{
+
                 await getAudioStream();
+
             }
+
 
             peer = createPeer();
 
@@ -275,13 +320,17 @@ callStartTime = Date.now();
 
     }
 
-    const reject = document.getElementById("rejectBtn");
 
     if (reject) {
 
         reject.onclick = async () => {
-callStatus = "rejected";
-            await updateCallStatus(currentCallId,"rejected");
+
+            callStatus = "rejected";
+
+            await updateCallStatus(
+                currentCallId,
+                "rejected"
+            );
 
             await removeCall(currentCallId);
 
@@ -289,8 +338,10 @@ callStatus = "rejected";
 
     }
 
-}
 
+},1000);
+
+}
 
 // ================================
 // END CALL
@@ -328,28 +379,28 @@ export async function endCall() {
     }
 
     await db
-        .collection("conversations")
-        .doc(conversationId)
-        .collection("messages")
-        .add({
+.collection("conversations")
+.doc(conversationId)
+.collection("messages")
+.add({
 
-            senderId: currentUser.uid,
+    senderId: currentUser.uid,
 
-            type: "call",
+    type:"call",
 
-            callType: "audio",
+    callType: currentCallType,
 
-            status: callStatus,
+    status: callStatus,
 
-            text: text,
+    text:text,
 
-            duration: duration,
+    duration:duration,
 
-            createdAt: firebase.firestore.Timestamp.now(),
+    createdAt: firebase.firestore.Timestamp.now(),
 
-            seenBy: [currentUser.uid]
+    seenBy:[currentUser.uid]
 
-        });
+});
 
     await removeCall(currentCallId);
 
