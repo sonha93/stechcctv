@@ -116,7 +116,8 @@ const callId =
 params.get("callId");
 const incoming =
 params.get("incoming")==="1";
-
+const callType =
+params.get("type") || "audio";
 const userName = params.get("name");
 const userAvatar = params.get("avatar");
 callUnsubscribe =
@@ -150,7 +151,7 @@ listenCallStatus(callId, async (call) => {
     }
 
 break;
-        case "accepted":
+    case "accepted":
 
     ringtone.pause();
 
@@ -158,17 +159,35 @@ break;
         callingTone.pause();
     }
 
-            if (!peer) {
-    createPeer();
-    await openCamera();
-}
 
-            callStatus.textContent = "Đã kết nối";
+    // ẨN NÚT NHẬN / TỪ CHỐI
+    acceptBtn.style.display = "none";
+    rejectBtn.style.display = "none";
 
-            if (!timer)
-                startTimer();
 
-            break;
+    // HIỆN MIC / LOA / KẾT THÚC
+    muteBtn.style.display = "flex";
+    speakerBtn.style.display = "flex";
+    endBtn.style.display = "flex";
+
+
+    if (!peer) {
+
+        createPeer();
+
+        await openMedia();
+
+    }
+
+
+    callStatus.textContent = "Đã kết nối";
+
+
+    if (!timer)
+        startTimer();
+
+
+break;
 
         case "rejected":
 
@@ -352,21 +371,24 @@ listenIceCandidates(
 // MIC
 // ================================
 
-async function openCamera(){
+async function openMedia(){
 
 
 localStream =
 await navigator.mediaDevices.getUserMedia({
 
     audio:true,
-    video:true
+
+    video: callType === "video"
 
 });
 
 
-// hiện camera của mình
 
-if(localVideo){
+if(
+    callType === "video" &&
+    localVideo
+){
 
     localVideo.srcObject =
     localStream;
@@ -374,7 +396,6 @@ if(localVideo){
 }
 
 
-// gửi mic + camera vào WebRTC
 
 localStream
 .getTracks()
@@ -471,10 +492,17 @@ callTimeout = setTimeout(async()=>{
         callingTone.play().catch(() => {});
     }
 
+
     startCaller();
+
 
     acceptBtn.style.display = "none";
     rejectBtn.style.display = "none";
+
+
+    // HIỆN NÚT KHI ĐANG GỌI
+    muteBtn.style.display = "flex";
+    speakerBtn.style.display = "flex";
     endBtn.style.display = "flex";
 
 }
@@ -483,7 +511,7 @@ async function startCaller(){
 
     createPeer();
 
-    await openCamera();
+await openMedia();
 
     callTimeout =
     setTimeout(async()=>{
@@ -567,7 +595,7 @@ if(!peer){
 }
 
 
-await openCamera();
+await openMedia();
 
 
 
@@ -690,12 +718,28 @@ startTimer();
 muteBtn.onclick=()=>{
 
 
-if(!localStream)
-return;
+if(!localStream){
+    return;
+}
 
 
-muted=!muted;
+muted = !muted;
 
+
+localStream
+.getAudioTracks()
+.forEach(track=>{
+
+    track.enabled = !muted;
+
+});
+
+
+muteBtn.style.opacity =
+muted ? "0.45" : "1";
+
+
+};
 
 localStream
 .getAudioTracks()
@@ -723,16 +767,19 @@ muted?.45:1;
 speakerBtn.onclick=()=>{
 
 
+remoteVideo.muted =
+!remoteVideo.muted;
+
+
 remoteAudio.muted =
-!remoteAudio.muted;
+remoteVideo.muted;
 
 
 speakerBtn.style.opacity =
-remoteAudio.muted?.45:1;
+remoteVideo.muted ? "0.45" : "1";
 
 
 };
-
 
 
 
