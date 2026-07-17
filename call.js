@@ -76,6 +76,99 @@ let timer=null;
 
 let seconds=0;
 // ================================
+// WEBRTC STATE
+// ================================
+
+let pendingCandidates = [];
+
+let remoteDescriptionReady = false;
+
+let answerListener = null;
+
+
+// ================================
+// WAIT ICE GATHERING
+// ================================
+
+function waitIceComplete() {
+
+    return new Promise(resolve => {
+
+        if (!peer) {
+
+            resolve();
+
+            return;
+
+        }
+
+        if (peer.iceGatheringState === "complete") {
+
+            resolve();
+
+            return;
+
+        }
+
+        const fn = () => {
+
+            console.log(
+                "ICE GATHERING:",
+                peer.iceGatheringState
+            );
+
+            if (peer.iceGatheringState === "complete") {
+
+                peer.removeEventListener(
+                    "icegatheringstatechange",
+                    fn
+                );
+
+                resolve();
+
+            }
+
+        };
+
+        peer.addEventListener(
+            "icegatheringstatechange",
+            fn
+        );
+
+    });
+
+}
+
+
+// ================================
+// APPLY PENDING ICE
+// ================================
+
+async function applyPendingCandidates() {
+
+    while (pendingCandidates.length) {
+
+        const c = pendingCandidates.shift();
+
+        try {
+
+            await peer.addIceCandidate(
+                new RTCIceCandidate(c)
+            );
+
+        } catch (e) {
+
+            console.error(
+                "ADD PENDING ICE ERROR",
+                e
+            );
+
+        }
+
+    }
+
+}
+// ================================
 // VIBRATION
 // ================================
 
@@ -129,17 +222,20 @@ listenCallStatus(callId, async (call) => {
 
     // NHẬN ANSWER TỪ BÊN KIA
     if (
-        call.answer &&
-        peer &&
-        !peer.currentRemoteDescription
-    ) {
+    call.answer &&
+    peer &&
+    !peer.currentRemoteDescription
+) {
 
-        await peer.setRemoteDescription(
-            new RTCSessionDescription(call.answer)
-        );
+    await peer.setRemoteDescription(
+        new RTCSessionDescription(call.answer)
+    );
 
-    }
+    remoteDescriptionReady = true;
 
+    await applyPendingCandidates();
+
+}
     switch (call.status) {
 
      case "calling":
@@ -277,36 +373,180 @@ function createPeer(){
 
 peer = new RTCPeerConnection({
 
-    iceServers:[
+    iceServers: [
 
         {
-        urls:
-        "stun:stun.l.google.com:19302"
+            urls: [
+                "stun:stun.l.google.com:19302",
+                "stun:stun1.l.google.com:19302"
+            ]
         }
 
-    ]
+    ],
+
+    iceCandidatePoolSize: 10
 
 });
+    peer.oniceconnectionstatechange = () => {
+
+    console.log(
+        "ICE:",
+        peer.iceConnectionState
+    );
+
+    if (
+
+        peer.iceConnectionState === "failed" ||
+
+        peer.iceConnectionState === "disconnected"
+
+    ) {
+
+        try {
+
+            peer.restartIce();
+
+            console.log(
+                "ICE RESTART"
+            );
+
+        } catch(e){
+
+            console.error(e);
+
+        }
+
+    }
+
+};
 
 
 
-peer.ontrack = e => {
+peer.onconnectionstatechange = () => {
+
+    console.log(
+
+        "CONNECTION:",
+
+        peer.connectionState
+
+    );
+
+};
+
+
+
+peer.onsignalingstatechange = () => {
+
+    console.log(
+
+        "SIGNALING:",
+
+        peer.signalingState
+
+    );
+
+};
+
+
+
+peer.onicegatheringstatechange = () => {
+
+    console.log(
+
+        "GATHER:",
+
+        peer.iceGatheringState
+
+    );
+
+};
+
+   
+
+peer.ontrack = async e => {
 
     const stream = e.streams[0];
 
-    if (remoteVideo) {
-        remoteVideo.srcObject = stream;
-remoteVideo.autoplay = true;
-remoteVideo.playsInline = true;
-remoteVideo.muted = false;
+    console.log(
+        "TRACK:",
+        e.track.kind,
+        e.track.readyState
+    );
 
-remoteVideo.play().catch(console.error);
+    e.track.onmute = () => {
+
+        console.log(
+            e.track.kind,
+            "MUTED"
+        );
+
+    };
+
+    e.track.onunmute = () => {
+
+        console.log(
+            e.track.kind,
+            "UNMUTED"
+        );
+
+    };
+
+    e.track.onended = () => {
+
+        console.log(
+            e.track.kind,
+            "ENDED"
+        );
+
+    };
+
+    if (remoteVideo) {
+
+        remoteVideo.srcObject = stream;
+
+        remoteVideo.autoplay = true;
+
+        remoteVideo.playsInline = true;
+
+        remoteVideo.muted = false;
+
+        remoteVideo.onloadedmetadata = async () => {
+
+            try {
+
+                await remoteVideo.play();
+
+            } catch(e){
+
+                console.error(
+                    "VIDEO PLAY",
+                    e
+                );
+
+                setTimeout(()=>{
+
+                    remoteVideo.play()
+                    .catch(()=>{});
+
+                },500);
+
+            }
+
+        };
+
     }
 
     if (remoteAudio) {
+
         remoteAudio.srcObject = stream;
+
+        remoteAudio.autoplay = true;
+
         remoteAudio.muted = false;
-        remoteAudio.play().catch(() => {});
+
+        remoteAudio.play().catch(()=>{});
+
     }
 
 };
@@ -314,14 +554,20 @@ remoteVideo.play().catch(console.error);
 
 peer.onicecandidate = e => {
 
-    if(e.candidate){
+    if(!e.candidate)
+        return;
 
-        addIceCandidate(
-            callId,
-            e.candidate.toJSON()
-        );
+    console.log(
+        "SEND ICE"
+    );
 
-    }
+    addIceCandidate(
+
+        callId,
+
+        e.candidate.toJSON()
+
+    );
 
 };
 // ================================
@@ -334,7 +580,21 @@ listenIceCandidates(
     async data=>{
 
         if(!peer)
-        return;
+            return;
+
+        if(!remoteDescriptionReady){
+
+            pendingCandidates.push(
+                data.candidate
+            );
+
+            console.log(
+                "QUEUE ICE"
+            );
+
+            return;
+
+        }
 
         try{
 
@@ -346,30 +606,47 @@ listenIceCandidates(
 
             );
 
+            console.log(
+                "ICE ADDED"
+            );
+
         }catch(e){
 
             console.error(
                 "ICE ERROR",
-                
+                e
             );
 
         }
 
     }
 );
-}
-
 // ================================
 // MIC
 // ================================
 
 async function openMedia() {
 
-    localStream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: callType === "video"
-    });
+   localStream = await navigator.mediaDevices.getUserMedia({
 
+    audio: true,
+
+    video: callType === "video"
+
+});
+
+console.log("LOCAL STREAM");
+console.log(localStream);
+
+console.log(
+    "VIDEO:",
+    localStream.getVideoTracks()
+);
+
+console.log(
+    "AUDIO:",
+    localStream.getAudioTracks()
+);
    if (callType === "video" && localVideo) {
 
     localVideo.srcObject = localStream;
@@ -380,8 +657,18 @@ async function openMedia() {
     localVideo.play().catch(console.error);
 }
     localStream.getTracks().forEach(track => {
-        peer.addTrack(track, localStream);
-    });
+
+    console.log(
+        "ADD TRACK:",
+        track.kind
+    );
+
+    peer.addTrack(
+        track,
+        localStream
+    );
+
+});
 }
 
 
@@ -507,43 +794,33 @@ await openMedia();
         }
 
 },60000);
-    const offer = await peer.createOffer();
+    const offer = await peer.createOffer({
+
+    offerToReceiveAudio: true,
+
+    offerToReceiveVideo: callType === "video"
+
+});
 
 await peer.setLocalDescription(offer);
+
+// CHỜ ICE GATHERING HOÀN TẤT
+await waitIceComplete();
 
 await db.collection("calls")
 .doc(callId)
 .update({
 
     offer:{
+
         type: peer.localDescription.type,
+
         sdp: peer.localDescription.sdp
+
     }
 
 });
-
-    db.collection("calls")
-    .doc(callId)
-    .onSnapshot(async snap=>{
-
-        const data = snap.data();
-
-        if(
-            data &&
-            data.answer &&
-            !peer.currentRemoteDescription
-        ){
-
-            await peer.setRemoteDescription(
-                new RTCSessionDescription(data.answer)
-            );
-
-        }
-
-    });
-
 }
-
 // ================================
 // ACCEPT
 // ================================
@@ -608,20 +885,28 @@ await peer.setRemoteDescription(
 
 );
 
+remoteDescriptionReady = true;
 
+await applyPendingCandidates();
 
 const answer =
 await peer.createAnswer();
 
 await peer.setLocalDescription(answer);
 
+// CHỜ ICE GATHERING
+await waitIceComplete();
+
 await db.collection("calls")
 .doc(callId)
 .update({
 
     answer:{
+
         type: peer.localDescription.type,
+
         sdp: peer.localDescription.sdp
+
     }
 
 });
@@ -652,6 +937,7 @@ listenIceCandidates(
 
     }
 );
+
 acceptBtn.style.display="none";
 
 rejectBtn.style.display="none";
@@ -860,7 +1146,9 @@ if(callingTone){
         peer.ontrack=null;
 
         peer.onicecandidate=null;
+        pendingCandidates = [];
 
+remoteDescriptionReady = false;
         peer.close();
 
         peer=null;
