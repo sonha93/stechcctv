@@ -535,7 +535,26 @@ await db.collection("calls")
     }
 
 });
+candidateUnsubscribe =
+listenIceCandidates(
+    callId,
+    "answer",
+    async data => {
 
+        try{
+
+            await peer.addIceCandidate(
+                new RTCIceCandidate(data.candidate)
+            );
+
+        }catch(e){
+
+            console.error("ICE", e);
+
+        }
+
+    }
+);
     db.collection("calls")
     .doc(callId)
     .onSnapshot(async snap=>{
