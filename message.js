@@ -77,9 +77,9 @@ const callAvatar = document.getElementById("callAvatar");
 const callName = document.getElementById("callName");
 const callStatus = document.getElementById("callStatus");
 
-const rejectBtn = document.getElementById("rejectBtn");
-const acceptBtn = document.getElementById("acceptBtn");
-const endBtn = document.getElementById("endBtn");
+const rejectBtn = document.getElementById("chatRejectBtn");
+const acceptBtn = document.getElementById("chatAcceptBtn");
+const endBtn = document.getElementById("chatEndBtn");
 
 // ================================
 // DATA
