@@ -277,11 +277,23 @@ function createPeer(){
 
 peer = new RTCPeerConnection({
 
-    iceServers:[
+    iceServers: [
 
         {
-        urls:
-        "stun:stun.l.google.com:19302"
+            urls: [
+                "stun:stun.relay.metered.ca:80"
+            ]
+        },
+
+        {
+            urls: [
+                "turn:global.relay.metered.ca:80",
+                "turn:global.relay.metered.ca:80?transport=tcp",
+                "turn:global.relay.metered.ca:443",
+                "turns:global.relay.metered.ca:443?transport=tcp"
+            ],
+            username: "abe1eee5863e2d36f4d1f02c",
+            credential: "V+AEzR4I23Qa1Oh9"
         }
 
     ]
