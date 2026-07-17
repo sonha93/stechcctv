@@ -234,12 +234,16 @@ export async function endCall(callId){
 
 
     await saveCallHistory({
-    ...updatedCall,
-    status: "ended"
-});
 
-// KHÔNG xóa ở đây
-return;
+        ...updatedCall,
+
+        status:"ended"
+
+    });
+
+
+    return removeCall(callId);
+
 }
 
 // =====================================
@@ -439,7 +443,8 @@ export async function timeoutCall(callId){
     await saveCallHistory(updated);
 
 
-    return;
+    return removeCall(callId);
+
 }
 // =====================================
 // ADD ICE CANDIDATE
