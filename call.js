@@ -43,10 +43,6 @@ const remoteVideo =
 document.getElementById("remoteVideo");
 const videoBox =
 document.getElementById("videoBox");
-
-if (callType !== "video") {
-    videoBox.style.display = "none";
-}
 if (localVideo) {
 
     let lastTap = 0;
@@ -146,6 +142,11 @@ params.get("incoming")==="1";
 const callType = params.get("type") || "voice";
 const userName = params.get("name");
 const userAvatar = params.get("avatar");
+const videoBox = document.getElementById("videoBox");
+
+if (callType !== "video") {
+    videoBox.style.display = "none";
+}
 callUnsubscribe =
 listenCallStatus(callId, async (call) => {
     
