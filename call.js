@@ -36,7 +36,11 @@ const callingTone =
 document.getElementById("callingTone");
 const remoteAudio =
 document.getElementById("remoteAudio");
+const localVideo =
+document.getElementById("localVideo");
 
+const remoteVideo =
+document.getElementById("remoteVideo");
 const muteBtn =
 document.getElementById("muteBtn");
 
@@ -347,16 +351,6 @@ listenIceCandidates(
 // ================================
 // MIC
 // ================================
-
-
-const localVideo =
-document.getElementById("localVideo");
-
-
-const remoteVideo =
-document.getElementById("remoteVideo");
-
-
 
 async function openCamera(){
 
