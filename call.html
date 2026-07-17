@@ -1,208 +1,887 @@
-<!DOCTYPE html>
-<html lang="vi">
+// ================================
+// CALL UI JS
+// ================================
 
-<head>
+import { db } from "./firebase-init.js";
+import {
+    updateCallStatus,
+    endCall,
+    listenCallStatus,
+    timeoutCall,
+    addIceCandidate,
+    listenIceCandidates
+} from "./call/call-firebase.js";
 
-<meta charset="UTF-8">
+// ================================
+// ELEMENT
+// ================================
 
-<meta
-name="viewport"
-content="width=device-width,initial-scale=1.0">
+const callAvatar =
+document.getElementById("callAvatar");
 
-<title>Cuộc gọi</title>
+const callName =
+document.getElementById("callName");
 
-<link rel="stylesheet" href="call.css">
+const callStatus =
+document.getElementById("callStatus");
 
-</head>
+const callTimer =
+document.getElementById("callTimer");
+if(callTimer){
+    callTimer.textContent = "";
+}
+const ringtone =
+document.getElementById("ringtone");
+const callingTone =
+document.getElementById("callingTone");
+const remoteAudio =
+document.getElementById("remoteAudio");
+const localVideo =
+document.getElementById("localVideo");
 
-<body>
+const remoteVideo =
+document.getElementById("remoteVideo");
+const muteBtn =
+document.getElementById("muteBtn");
 
-<div class="call-page">
+const speakerBtn =
+document.getElementById("speakerBtn");
 
-    <!-- NỀN -->
-    <div class="call-bg"></div>
+const acceptBtn =
+document.getElementById("acceptBtn");
 
-    <!-- THÔNG TIN -->
+const rejectBtn =
+document.getElementById("rejectBtn");
 
-   <div class="call-top">
+const endBtn =
+document.getElementById("endBtn");
 
-    <div class="avatar-ring">
 
-        <img
-        id="callAvatar"
-        class="call-avatar">
 
-    </div>
+// ================================
+// DATA
+// ================================
 
-        <div
-        id="callName"
-        class="call-name">
+let localStream=null;
 
-        </div>
+let peer=null;
 
-        <div
-        id="callStatus"
-        class="call-status">
+let muted=false;
+let candidateUnsubscribe = null;
 
+let callUnsubscribe = null;
 
-        </div>
+let callTimeout = null;
+let timer=null;
 
-        <div
-        id="callTimer"
-        class="call-timer">
+let seconds=0;
+// ================================
+// VIBRATION
+// ================================
 
-        </div>
-    <!-- VIDEO CALL -->
-<div class="video-box">
+function startVibrate(){
 
-    <!-- CAMERA NGƯỜI BÊN KIA -->
-    <video
-    id="remoteVideo"
-    autoplay
-    playsinline>
-    </video>
+    if(navigator.vibrate){
 
+        navigator.vibrate([
+    1000,
+    500,
+    1000,
+    500,
+    1000
+]);
+    
 
-    <!-- CAMERA CỦA MÌNH -->
-    <video
-    id="localVideo"
-    autoplay
-    muted
-    playsinline>
-    </video>
+    }
 
-</div>
+}
 
 
-<!-- AUDIO -->
-<audio
-id="remoteAudio"
-autoplay>
-</audio>
+function stopVibrate(){
 
+    if(navigator.vibrate){
 
-<audio
-id="ringtone"
-loop>
+        navigator.vibrate(0);
 
-    <source
-    src="assets/sounds/call.mp3"
-    type="audio/mpeg">
+    }
 
-</audio>
+}
 
 
-<audio
-id="callingTone"
-loop>
+const params =
+new URLSearchParams(location.search);
+console.log(location.href);
 
-    <source
-    src="assets/sounds/ring.mp3"
-    type="audio/mpeg">
+const callId =
+params.get("callId");
+const incoming =
+params.get("incoming")==="1";
+const callType =
+params.get("type") || "audio";
+const userName = params.get("name");
+const userAvatar = params.get("avatar");
+callUnsubscribe =
+listenCallStatus(callId, async (call) => {
+    
+    if(!call){
+        return;
+    }
 
-</audio>
-    <!-- NÚT -->
+    // NHẬN ANSWER TỪ BÊN KIA
+    if (
+        call.answer &&
+        peer &&
+        !peer.currentRemoteDescription
+    ) {
 
-    <div class="call-actions">
+        await peer.setRemoteDescription(
+            new RTCSessionDescription(call.answer)
+        );
 
-        <!-- MIC -->
+    }
 
-        <button
-        id="muteBtn"
-        class="call-btn">
+    switch (call.status) {
 
-            <svg
-            viewBox="0 0 24 24"
-            fill="currentColor">
+     case "calling":
 
-                <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/>
+    if(incoming){
+        callStatus.textContent = "Cuộc gọi đến";
+    }else{
+        callStatus.textContent = "Đang gọi...";
+    }
 
-                <path d="M17 11a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21H8v2h8v-2h-3v-3.08A7 7 0 0 0 19 11h-2z"/>
+break;
+        case "accepted":
 
-            </svg>
+    ringtone.pause();
 
-        </button>
+    if(callingTone){
+        callingTone.pause();
+    }
 
-        <!-- LOA -->
+            if (!peer) {
+    createPeer();
+    await openMedia();
+}
 
-        <button
-        id="speakerBtn"
-        class="call-btn">
+            callStatus.textContent = "Đã kết nối";
 
-            <svg
-            viewBox="0 0 24 24"
-            fill="currentColor">
+            if (!timer)
+                startTimer();
 
-                <path d="M3 10v4h4l5 5V5L7 10H3z"/>
+            break;
 
-                <path d="M16.5 12a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12z"/>
+        case "rejected":
 
-                <path d="M14 3.23v2.06a7 7 0 0 1 0 13.42v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            ringtone.pause();
 
-            </svg>
+            callStatus.textContent = "Đã từ chối";
 
-        </button>
+            setTimeout(() => {
+                window.close();
+            }, 1000);
 
-        <!-- TỪ CHỐI -->
+            break;
 
-        <button
-        id="rejectBtn"
-        class="call-btn reject">
+        case "ended":
 
-            <svg
-            viewBox="0 -960 960 960"
-            fill="currentColor">
+            ringtone.pause();
 
-                <path d="M200-520q58-46 127.5-73T480-620q83 0 152.5 27T760-520l-56 58q-46-35-102.5-56.5T480-540q-65 0-121.5 21.5T256-462l-56-58Z"/>
+            clearInterval(timer);
 
-            </svg>
+            callStatus.textContent = "Cuộc gọi kết thúc";
 
-        </button>
+            if (localStream)
+                localStream.getTracks().forEach(t => t.stop());
 
-        <!-- NHẬN -->
+            if (peer)
+                peer.close();
 
-        <button
-        id="acceptBtn"
-        class="call-btn accept">
+            setTimeout(() => {
+    window.close();
+}, 1000);
 
-            <svg
-            viewBox="0 -960 960 960"
-            fill="currentColor">
+break;
 
-                <path d="M798-120q-119 0-247.5-60.5T318-352Q207-463 146.5-591.5T86-839q0-24 16.5-40.5T143-896h154q20 0 35 13t20 33l25 113q4 18-1 34t-18 28l-74 74q29 52 69.5 99.5T443-413q48 48 95.5 88.5T638-255l74-74q12-12 28-17t34-1l113 25q20 5 33 20t13 35v154q0 24-16.5 40.5T798-120Z"/>
 
-            </svg>
+case "timeout":
 
-        </button>
+    ringtone.pause();
 
-        <!-- KẾT THÚC -->
+    callStatus.textContent =
+    "Không trả lời";
 
-        <button
-        id="endBtn"
-        class="call-btn end">
 
-            <svg
-            viewBox="0 -960 960 960"
-            fill="currentColor">
+    setTimeout(()=>{
 
-                <path d="M200-520q58-46 127.5-73T480-620q83 0 152.5 27T760-520l-56 58q-46-35-102.5-56.5T480-540q-65 0-121.5 21.5T256-462l-56-58Z"/>
+        window.close();
 
-            </svg>
+    },1000);
 
-        </button>
 
-    </div>
+break;
 
-</div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+case "busy":
+            ringtone.pause();
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+            callStatus.textContent = "Máy bận";
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+            setTimeout(() => {
+                window.close();
+            }, 1000);
 
-<script type="module" src="firebase-init.js"></script>
+            break;
 
-<script type="module" src="call.js"></script>
-</body>
-</html>
+    }
+
+});
+
+if(userName){
+    callName.textContent = decodeURIComponent(userName);
+}
+
+if(userAvatar){
+    callAvatar.src = decodeURIComponent(userAvatar);
+}
+callAvatar.onerror = () => {
+    callAvatar.src = "./default-avatar.png";
+};
+
+
+// ================================
+// WEBRTC
+// ================================
+
+
+function createPeer(){
+
+
+peer = new RTCPeerConnection({
+
+    iceServers:[
+
+        {
+        urls:
+        "stun:stun.l.google.com:19302"
+        }
+
+    ]
+
+});
+
+
+
+peer.ontrack=e=>{
+
+
+const stream =
+e.streams[0];
+
+
+// nhận video
+
+if(remoteVideo){
+
+    remoteVideo.srcObject =
+    stream;
+
+}
+
+
+// nhận âm thanh
+
+if(remoteAudio){
+
+    remoteAudio.srcObject =
+    stream;
+
+}
+
+
+};
+
+
+peer.onicecandidate = e => {
+
+    if(e.candidate){
+
+        addIceCandidate(
+            callId,
+            e.candidate.toJSON()
+        );
+
+    }
+
+};
+// ================================
+// LISTEN REMOTE ICE
+// ================================
+
+candidateUnsubscribe =
+listenIceCandidates(
+    callId,
+    async data=>{
+
+        if(!peer)
+        return;
+
+        try{
+
+            await peer.addIceCandidate(
+
+                new RTCIceCandidate(
+                    data.candidate
+                )
+
+            );
+
+        }catch(e){
+
+            console.error(
+                "ICE ERROR",
+                
+            );
+
+        }
+
+    }
+);
+}
+
+// ================================
+// MIC
+// ================================
+
+async function openMedia(){
+
+
+localStream =
+await navigator.mediaDevices.getUserMedia({
+
+    audio:true,
+
+    video: callType === "video"
+
+});
+
+
+
+if(
+    callType === "video" &&
+    localVideo
+){
+
+    localVideo.srcObject =
+    localStream;
+
+}
+
+
+
+localStream
+.getTracks()
+.forEach(track=>{
+
+
+    peer.addTrack(
+        track,
+        localStream
+    );
+
+
+});
+
+
+}
+// ================================
+// TIMER
+// ================================
+
+
+function startTimer(){
+
+
+timer=setInterval(()=>{
+
+
+seconds++;
+
+
+callTimer.textContent =
+
+String(
+Math.floor(seconds/60)
+).padStart(2,"0")
+
++":"
+
++
+String(seconds%60)
+.padStart(2,"0");
+
+
+},1000);
+
+
+}
+
+// ================================
+// INCOMING
+// ================================
+if (incoming) {
+
+    callStatus.textContent = "Cuộc gọi đến";
+callTimeout = setTimeout(async()=>{
+
+    const snap =
+    await db.collection("calls")
+    .doc(callId)
+    .get();
+
+    if(
+        snap.exists &&
+        snap.data().status==="calling"
+    ){
+
+        await timeoutCall(callId);
+
+        ringtone.pause();
+
+        window.close();
+
+    }
+
+},60000);
+    startVibrate();
+
+    if (ringtone) {
+        ringtone.currentTime = 0;
+        ringtone.loop = true;
+        ringtone.play().catch(e => console.log(e));
+    }
+
+    acceptBtn.style.display = "flex";
+    rejectBtn.style.display = "flex";
+    endBtn.style.display = "none";
+
+} else {
+
+    callStatus.textContent = "Đang gọi...";
+
+    if (callingTone) {
+        callingTone.loop = true;
+        callingTone.play().catch(() => {});
+    }
+
+    startCaller();
+
+    acceptBtn.style.display = "none";
+    rejectBtn.style.display = "none";
+    endBtn.style.display = "flex";
+
+}
+
+async function startCaller(){
+
+    createPeer();
+
+await openMedia();
+
+    callTimeout =
+    setTimeout(async()=>{
+
+        const snap =
+        await db.collection("calls")
+        .doc(callId)
+        .get();
+
+
+        if(
+            snap.exists &&
+            snap.data().status==="calling"
+        ){
+
+            await timeoutCall(callId);
+
+            window.close();
+
+        }
+
+},60000);
+    const offer =
+await peer.createOffer();
+
+
+await peer.setLocalDescription(
+    offer
+);
+
+
+await db.collection("calls")
+.doc(callId)
+.update({
+
+    offer:{
+        type:offer.type,
+        sdp:offer.sdp
+    }
+
+});
+
+    db.collection("calls")
+    .doc(callId)
+    .onSnapshot(async snap=>{
+
+        const data = snap.data();
+
+        if(
+            data &&
+            data.answer &&
+            !peer.currentRemoteDescription
+        ){
+
+            await peer.setRemoteDescription(
+                new RTCSessionDescription(data.answer)
+            );
+
+        }
+
+    });
+
+}
+
+// ================================
+// ACCEPT
+// ================================
+
+
+acceptBtn.onclick =
+async()=>{
+
+  stopVibrate();
+ringtone.pause();
+
+
+if(!peer){
+
+    createPeer();
+
+}
+
+
+await openMedia();
+
+
+
+await updateCallStatus(
+callId,
+"accepted"
+);
+
+
+
+const offerSnap =
+await db.collection("calls")
+.doc(callId)
+.get();
+
+
+
+const offer =
+offerSnap.data().offer;
+
+
+if(!offer){
+
+    console.error(
+        "Không có offer"
+    );
+
+    return;
+
+}
+
+
+await peer.setRemoteDescription(
+
+    new RTCSessionDescription({
+
+        type: offer.type,
+
+        sdp: offer.sdp
+
+    })
+
+);
+
+
+
+const answer =
+await peer.createAnswer();
+
+
+await peer.setLocalDescription(
+    answer
+);
+
+
+await db.collection("calls")
+.doc(callId)
+.update({
+
+answer:{
+
+    type:answer.type,
+
+    sdp:answer.sdp
+
+}
+
+});
+
+candidateUnsubscribe =
+listenIceCandidates(
+    callId,
+    async data=>{
+
+        try{
+
+            await peer.addIceCandidate(
+
+                new RTCIceCandidate(
+                    data.candidate
+                )
+
+            );
+
+        }catch(e){
+
+            console.error(
+                "ICE ERROR",
+                e
+            );
+
+        }
+
+    }
+);
+acceptBtn.style.display="none";
+
+rejectBtn.style.display="none";
+
+endBtn.style.display="flex";
+
+
+callStatus.textContent =
+"Đã kết nối";
+
+
+startTimer();
+
+
+};
+
+
+
+
+// ================================
+// MUTE
+// ================================
+
+
+muteBtn.onclick=()=>{
+
+
+if(!localStream)
+return;
+
+
+muted=!muted;
+
+
+localStream
+.getAudioTracks()
+.forEach(t=>{
+
+t.enabled=!muted;
+
+});
+
+
+muteBtn.style.opacity =
+muted?.45:1;
+
+
+};
+
+
+
+
+// ================================
+// SPEAKER
+// ================================
+
+
+speakerBtn.onclick=()=>{
+
+
+remoteAudio.muted =
+!remoteAudio.muted;
+
+
+speakerBtn.style.opacity =
+remoteAudio.muted?.45:1;
+
+
+};
+
+
+
+
+// ================================
+// REJECT
+// ================================
+
+
+rejectBtn.onclick =
+async()=>{
+
+    stopVibrate();
+
+ringtone.pause();
+if(callingTone){
+    callingTone.pause();
+}
+
+if(callTimeout){
+
+    clearTimeout(callTimeout);
+
+    callTimeout=null;
+
+}
+
+
+await updateCallStatus(
+
+    callId,
+
+    "rejected"
+
+);
+
+
+if(localStream){
+
+    localStream
+    .getTracks()
+    .forEach(t=>t.stop());
+
+    localStream=null;
+
+}
+
+
+if(peer){
+
+    peer.close();
+
+    peer=null;
+
+}
+
+
+window.close();
+
+
+};
+
+
+
+
+// ================================
+// END
+// ================================
+
+
+endBtn.onclick =
+async()=>{
+
+ stopVibrate();
+    ringtone.pause();
+if(callingTone){
+    callingTone.pause();
+}
+
+    if(timer){
+
+        clearInterval(timer);
+
+        timer=null;
+
+    }
+
+
+    if(callTimeout){
+
+        clearTimeout(callTimeout);
+
+        callTimeout=null;
+
+    }
+
+
+    if(candidateUnsubscribe){
+
+        candidateUnsubscribe();
+
+        candidateUnsubscribe=null;
+
+    }
+
+
+    if(callUnsubscribe){
+
+        callUnsubscribe();
+
+        callUnsubscribe=null;
+
+    }
+
+
+    if(localStream){
+
+        localStream
+        .getTracks()
+        .forEach(t=>{
+
+            t.stop();
+
+        });
+
+        localStream=null;
+
+    }
+
+
+    if(peer){
+
+        peer.ontrack=null;
+
+        peer.onicecandidate=null;
+
+        peer.close();
+
+        peer=null;
+
+    }
+
+
+    await endCall(callId);
+
+
+    window.close();
+
+
+};
