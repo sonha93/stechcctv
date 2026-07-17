@@ -609,32 +609,6 @@ Tin nhắn đã được thu hồi
 </div>
 `
 :
-msg.type === "call"
-?
-`
-<div class="call-message">
-
-<div class="call-icon">
-📞
-</div>
-
-<div>
-
-<div class="chat-text">
-${msg.callStatus === "missed"
-? "Cuộc gọi nhỡ"
-: "Cuộc gọi đến"}
-</div>
-
-<div class="call-time">
-${formatTime(msg.createdAt)}
-</div>
-
-</div>
-
-</div>
-`
-:
 msg.text
 ?
 `
