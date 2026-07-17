@@ -41,6 +41,15 @@ document.getElementById("localVideo");
 
 const remoteVideo =
 document.getElementById("remoteVideo");
+if (localVideo) {
+
+    localVideo.ondblclick = () => {
+
+        switchCamera();
+
+    };
+
+}
 const muteBtn =
 document.getElementById("muteBtn");
 
@@ -63,7 +72,7 @@ document.getElementById("endBtn");
 // ================================
 
 let localStream=null;
-
+let currentFacingMode = "user";
 let peer=null;
 
 let muted=false;
@@ -400,7 +409,68 @@ async function openMedia() {
     });
 }
 
+async function switchCamera() {
 
+    if (callType !== "video" || !localStream || !peer) return;
+
+    currentFacingMode =
+        currentFacingMode === "user"
+        ? "environment"
+        : "user";
+
+    const newStream =
+    await navigator.mediaDevices.getUserMedia({
+
+        video: {
+            facingMode: {
+                exact: currentFacingMode
+            }
+        },
+
+        audio: false
+
+    }).catch(async () => {
+
+        return navigator.mediaDevices.getUserMedia({
+
+            video: {
+                facingMode: currentFacingMode
+            },
+
+            audio: false
+
+        });
+
+    });
+
+    const newVideoTrack =
+    newStream.getVideoTracks()[0];
+
+    const sender =
+    peer.getSenders().find(s =>
+        s.track &&
+        s.track.kind === "video"
+    );
+
+    if (sender) {
+
+        await sender.replaceTrack(newVideoTrack);
+
+    }
+
+    localStream
+        .getVideoTracks()
+        .forEach(t => t.stop());
+
+    localStream.removeTrack(
+        localStream.getVideoTracks()[0]
+    );
+
+    localStream.addTrack(newVideoTrack);
+
+    localVideo.srcObject = localStream;
+
+}
 // ================================
 // TIMER
 // ================================
