@@ -1435,3 +1435,36 @@ font-size:28px;
     background:none;
     cursor:pointer;
 }
+.call-buttons{
+display:flex;
+gap:25px;
+justify-content:center;
+align-items:center;
+}
+
+
+.call-mute,
+.call-speaker,
+.call-end,
+.call-reject,
+.call-accept{
+
+width:60px;
+height:60px;
+border-radius:50%;
+border:none;
+display:flex;
+align-items:center;
+justify-content:center;
+
+}
+
+
+.call-mute svg,
+.call-speaker svg,
+.call-end svg{
+
+width:28px;
+height:28px;
+
+}
