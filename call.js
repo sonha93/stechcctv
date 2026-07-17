@@ -598,7 +598,7 @@ async function startCaller(){
     createPeer();
 
 await openMedia();
-
+console.log("OK");
     callTimeout =
     setTimeout(async()=>{
 
