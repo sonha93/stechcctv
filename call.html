@@ -53,11 +53,17 @@ content="width=device-width,initial-scale=1.0">
 
         </div>
     <!-- VIDEO CALL -->
-
 <div class="video-box">
 
-    <!-- CAMERA CỦA MÌNH -->
+    <!-- CAMERA NGƯỜI BÊN KIA -->
+    <video
+    id="remoteVideo"
+    autoplay
+    playsinline>
+    </video>
 
+
+    <!-- CAMERA CỦA MÌNH -->
     <video
     id="localVideo"
     autoplay
@@ -65,20 +71,10 @@ content="width=device-width,initial-scale=1.0">
     playsinline>
     </video>
 
-
-    <!-- CAMERA NGƯỜI KIA -->
-
-    <video
-    id="remoteVideo"
-    autoplay
-    playsinline>
-    </video>
-
 </div>
-    </div>
 
-   <!-- AUDIO -->
 
+<!-- AUDIO -->
 <audio
 id="remoteAudio"
 autoplay>
