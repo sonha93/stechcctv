@@ -414,29 +414,59 @@ body{
 
     inset:0;
 
-    z-index:1;
+    z-index:0;
+
+    background:#000;
 
 }
 
 
-.call-top{
-
-    position:relative;
-
-    z-index:20;
-
-}
-
-
-.call-actions{
+#remoteVideo{
 
     position:absolute;
 
-    bottom:40px;
+    inset:0;
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+}
+
+
+
+#localVideo{
+
+    position:absolute;
+
+    width:120px;
+
+    height:180px;
+
+    right:20px;
+
+    top:80px;
+
+    object-fit:cover;
+
+    border-radius:18px;
+
+    z-index:50;
+
+    border:2px solid rgba(255,255,255,.4);
+
+}
+.call-actions{
+
+    position:fixed;
+
+    bottom:35px;
 
     left:0;
 
-    right:0;
+    width:100%;
 
     display:flex;
 
@@ -444,7 +474,6 @@ body{
 
     gap:22px;
 
-    z-index:999;
+    z-index:9999;
 
-}
 }
