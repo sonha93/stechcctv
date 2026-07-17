@@ -155,9 +155,9 @@ break;
     }
 
             if (!peer) {
-                createPeer();
-                await openMic();
-            }
+    createPeer();
+    await openCamera();
+}
 
             callStatus.textContent = "Đã kết nối";
 
@@ -269,11 +269,32 @@ peer = new RTCPeerConnection({
 
 peer.ontrack=e=>{
 
+
+const stream =
+e.streams[0];
+
+
+// nhận video
+
+if(remoteVideo){
+
+    remoteVideo.srcObject =
+    stream;
+
+}
+
+
+// nhận âm thanh
+
+if(remoteAudio){
+
     remoteAudio.srcObject =
-    e.streams[0];
+    stream;
+
+}
+
 
 };
-
 
 
 peer.onicecandidate = e => {
@@ -328,33 +349,54 @@ listenIceCandidates(
 // ================================
 
 
-async function openMic(){
+const localVideo =
+document.getElementById("localVideo");
+
+
+const remoteVideo =
+document.getElementById("remoteVideo");
+
+
+
+async function openCamera(){
 
 
 localStream =
 await navigator.mediaDevices.getUserMedia({
 
-audio:true
+    audio:true,
+    video:true
 
 });
 
+
+// hiện camera của mình
+
+if(localVideo){
+
+    localVideo.srcObject =
+    localStream;
+
+}
+
+
+// gửi mic + camera vào WebRTC
 
 localStream
 .getTracks()
 .forEach(track=>{
 
-peer.addTrack(
-track,
-localStream
-);
+
+    peer.addTrack(
+        track,
+        localStream
+    );
+
 
 });
 
 
 }
-
-
-
 // ================================
 // TIMER
 // ================================
@@ -447,8 +489,7 @@ async function startCaller(){
 
     createPeer();
 
-    await openMic();
-
+    await openCamera();
 
     callTimeout =
     setTimeout(async()=>{
@@ -532,7 +573,7 @@ if(!peer){
 }
 
 
-await openMic();
+await openCamera();
 
 
 
