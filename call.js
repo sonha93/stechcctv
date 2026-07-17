@@ -41,6 +41,12 @@ document.getElementById("localVideo");
 
 const remoteVideo =
 document.getElementById("remoteVideo");
+const videoBox =
+document.getElementById("videoBox");
+
+if (callType !== "video") {
+    videoBox.style.display = "none";
+}
 if (localVideo) {
 
     let lastTap = 0;
@@ -137,8 +143,7 @@ const callId =
 params.get("callId");
 const incoming =
 params.get("incoming")==="1";
-const callType =
-params.get("type") || "audio";
+const callType = params.get("type") || "voice";
 const userName = params.get("name");
 const userAvatar = params.get("avatar");
 callUnsubscribe =
@@ -828,24 +833,22 @@ muted ? "0.45" : "1";
 // ================================
 
 
-speakerBtn.onclick=()=>{
+let speakerOff = false;
 
+speakerBtn.onclick = () => {
 
-remoteVideo.muted =
-!remoteVideo.muted;
+    speakerOff = !speakerOff;
 
+    if (remoteAudio) {
+        remoteAudio.muted = speakerOff;
+    }
 
-remoteAudio.muted =
-remoteVideo.muted;
+    if (remoteVideo) {
+        remoteVideo.muted = speakerOff;
+    }
 
-
-speakerBtn.style.opacity =
-remoteVideo.muted ? "0.45" : "1";
-
-
+    speakerBtn.style.opacity = speakerOff ? "0.45" : "1";
 };
-
-
 
 // ================================
 // REJECT
