@@ -312,7 +312,7 @@ function createPeer(){
 
 
 peer = new RTCPeerConnection({
-
+console.log(">>> createPeer", incoming ? "Receiver" : "Caller");
     iceServers: [
 
         {
@@ -339,7 +339,7 @@ peer = new RTCPeerConnection({
 
 
 peer.ontrack = e => {
-
+ console.log(">>> ontrack", e.track.kind);
     const stream = e.streams[0];
 
     if (remoteVideo) {
@@ -419,7 +419,9 @@ async function openMedia() {
         audio: true,
         video: callType === "video"
     });
-
+console.log(">>> openMedia");
+console.log("audio =", localStream.getAudioTracks().length);
+console.log("video =", localStream.getVideoTracks().length);
    if (callType === "video" && localVideo) {
 
     localVideo.srcObject = localStream;
@@ -431,6 +433,7 @@ async function openMedia() {
 }
     localStream.getTracks().forEach(track => {
         peer.addTrack(track, localStream);
+        console.log(">>> addTrack", track.kind);
     });
 }
 
@@ -621,7 +624,7 @@ await openMedia();
     const offer = await peer.createOffer();
 
 await peer.setLocalDescription(offer);
-
+console.log(">>> setRemoteDescription OK");
 await db.collection("calls")
 .doc(callId)
 .update({
@@ -665,6 +668,7 @@ listenIceCandidates(
         ){
 
             await peer.setRemoteDescription(
+                console.log(">>> setRemoteDescription OK");
                 new RTCSessionDescription(data.answer)
             );
 
@@ -727,7 +731,7 @@ if(!offer){
 
 
 await peer.setRemoteDescription(
-
+console.log(">>> setRemoteDescription OK");
     new RTCSessionDescription({
 
         type: offer.type,
