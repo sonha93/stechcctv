@@ -291,7 +291,7 @@ peer = new RTCPeerConnection({
 
 
 peer.ontrack = e => {
-
+ console.log("ONTRACK", e);
     const stream = e.streams[0];
 
     if (remoteVideo) {
