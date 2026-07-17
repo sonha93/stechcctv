@@ -526,11 +526,6 @@ src="${msg.video}">
 ""
 }
 ${
-msg.type === "audio"
-?
-`
-<div class="chat-audio">
-${
 msg.type === "call"
 ?
 `
@@ -546,16 +541,12 @@ ${msg.callType === "video" ? "📹" : "📞"}
 ${
 msg.status === "missed"
 ? "Cuộc gọi nhỡ"
-
 : msg.status === "rejected"
 ? "Cuộc gọi bị từ chối"
-
 : msg.status === "cancelled"
 ? "Đã hủy cuộc gọi"
-
 : msg.callType === "video"
 ? "Cuộc gọi video"
-
 : "Cuộc gọi thoại"
 }
 </div>
@@ -564,6 +555,28 @@ msg.status === "missed"
 ${formatCallDuration(msg.duration || 0)}
 </div>
 
+</div>
+
+</div>
+`
+:
+""
+}
+
+${
+msg.type === "audio"
+?
+`
+<div class="chat-audio">
+
+<audio
+controls
+preload="metadata"
+src="${msg.audioUrl}">
+</audio>
+
+<div class="audio-duration">
+${msg.duration || 0}s
 </div>
 
 </div>
