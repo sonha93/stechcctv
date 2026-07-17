@@ -149,24 +149,22 @@ export async function acceptCall(callId){
 
 export async function rejectCall(callId){
 
-
-    return db.collection("calls")
-
-    .doc(callId)
-
-    .update({
-
-        status:"rejected",
-
-        endedAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
-    });
+    await updateCallStatus(
+        callId,
+        "missed"
+    );
 
 
+    const updated =
+    await getCall(callId);
+
+
+    await saveCallHistory(updated);
+
+
+    return removeCall(callId);
 
 }
-
 
 // =====================================
 // UPDATE CALL STATUS
@@ -187,17 +185,19 @@ export async function updateCallStatus(callId,status){
 
     }
 
-    if(
+  if(
 
-        status==="ended" ||
+    status==="ended" ||
 
-        status==="rejected" ||
+    status==="rejected" ||
 
-        status==="busy" ||
+    status==="busy" ||
 
-        status==="timeout"
+    status==="timeout" ||
 
-    ){
+    status==="missed"
+
+){
 
         data.endedAt=
         firebase.firestore.FieldValue.serverTimestamp();
@@ -218,17 +218,33 @@ export async function updateCallStatus(callId,status){
 
 export async function endCall(callId){
 
+    const call = await getCall(callId);
+
+    if(!call)
+    return;
+
+
     await updateCallStatus(
         callId,
         "ended"
     );
 
+
+    const updatedCall = await getCall(callId);
+
+
+    await saveCallHistory({
+
+        ...updatedCall,
+
+        status:"ended"
+
+    });
+
+
     return removeCall(callId);
 
 }
-
-
-
 
 // =====================================
 // BUSY
@@ -405,18 +421,29 @@ export function listenIceCandidates(callId, callback){
 
 export async function timeoutCall(callId){
 
-    return db.collection("calls")
+   
 
+
+    await db.collection("calls")
     .doc(callId)
-
     .update({
 
-        status:"timeout",
+        status:"missed",
 
         endedAt:
         firebase.firestore.FieldValue.serverTimestamp()
 
     });
+
+
+    const updated =
+    await getCall(callId);
+
+
+    await saveCallHistory(updated);
+
+
+    return removeCall(callId);
 
 }
 // =====================================
@@ -435,6 +462,56 @@ export async function addIceCandidate(
 
         candidate:
         candidate
+
+    });
+
+}
+// =====================================
+// SAVE CALL HISTORY
+// =====================================
+
+export async function saveCallHistory(call){
+
+    return db.collection("call_history")
+    .add({
+
+        from: call.from,
+
+        to: call.to,
+
+        type: call.type || "audio",
+
+        status: call.status,
+
+        createdAt: call.createdAt,
+
+        acceptedAt: call.acceptedAt || null,
+
+        endedAt: call.endedAt || null,
+
+        duration:
+
+(
+call.acceptedAt &&
+call.endedAt &&
+call.acceptedAt.toDate &&
+call.endedAt.toDate
+)
+
+?
+
+Math.floor(
+(
+call.endedAt.toDate()
+-
+call.acceptedAt.toDate()
+)
+/1000
+)
+
+:
+
+0
 
     });
 
