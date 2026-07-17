@@ -545,6 +545,48 @@ ${msg.duration || 0}s
 `
 :
 ""
+    
+}
+${
+msg.type === "call"
+?
+`
+<div class="call-message">
+
+<div class="call-title">
+
+${
+msg.status === "rejected"
+? "📞 Cuộc gọi đã từ chối"
+: msg.status === "missed"
+? "📞 Cuộc gọi nhỡ"
+: mine
+? "📞 Cuộc gọi đi"
+: "📞 Cuộc gọi đến"
+}
+
+</div>
+
+<div class="call-info">
+
+${
+msg.duration > 0
+? `${Math.floor(msg.duration / 60)} phút ${msg.duration % 60} giây`
+: "Không trả lời"
+}
+
+</div>
+
+<button
+class="call-back-btn"
+onclick="callAgain('${mine ? otherUid : msg.senderId}')">
+GỌI LẠI
+</button>
+
+</div>
+`
+:
+""
 }
 ${
 msg.recalled
