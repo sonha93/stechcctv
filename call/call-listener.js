@@ -7,7 +7,9 @@ import { auth, db } from "../firebase-init.js";
 import {
     listenIncomingCall
 } from "./call-firebase.js";
+const ringtone = new Audio("../assets/sounds/ring.mp3");
 
+ringtone.loop = true;
 
 
 auth.onAuthStateChanged(user=>{
@@ -27,7 +29,9 @@ auth.onAuthStateChanged(user=>{
 
 
 async function incomingCall(call){
+ringtone.currentTime = 0;
 
+ringtone.play().catch(console.error);
 
     console.log(
         "CUỘC GỌI ĐẾN",
