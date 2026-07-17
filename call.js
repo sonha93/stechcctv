@@ -13,7 +13,7 @@ import {
 } from "./call/call-firebase.js";
 
 // ================================
-// ELEMENT
+// ELEMENTa
 // ================================
 
 const callAvatar =
@@ -309,7 +309,7 @@ callAvatar.onerror = () => {
 
 
 function createPeer(){
-    console.log(">>> createPeer", incoming ? "Receiver" : "Caller");
+
 
 peer = new RTCPeerConnection({
 
@@ -339,10 +339,7 @@ peer = new RTCPeerConnection({
 
 
 peer.ontrack = e => {
- console.log(
-        ">>> ontrack",
-        e.streams[0].getTracks().map(t=>t.kind)
-    );
+
     const stream = e.streams[0];
 
     if (remoteVideo) {
@@ -415,6 +412,7 @@ listenIceCandidates(
 // ================================
 // MIC
 // ================================
+
 async function openMedia() {
 
     localStream = await navigator.mediaDevices.getUserMedia({
@@ -422,20 +420,20 @@ async function openMedia() {
         video: callType === "video"
     });
 
-    if (callType === "video" && localVideo) {
+   if (callType === "video" && localVideo) {
 
-        localVideo.srcObject = localStream;
-        localVideo.muted = true;
-        localVideo.autoplay = true;
-        localVideo.playsInline = true;
+    localVideo.srcObject = localStream;
+    localVideo.muted = true;
+    localVideo.autoplay = true;
+    localVideo.playsInline = true;
 
-        localVideo.play().catch(console.error);
-    }
-
+    localVideo.play().catch(console.error);
+}
     localStream.getTracks().forEach(track => {
         peer.addTrack(track, localStream);
     });
 }
+
 async function switchCamera() {
 
     if (callType !== "video" || !localStream || !peer) return;
@@ -598,7 +596,7 @@ async function startCaller(){
     createPeer();
 
 await openMedia();
-console.log("OK");
+
     callTimeout =
     setTimeout(async()=>{
 
@@ -621,7 +619,7 @@ console.log("OK");
 
 },60000);
     const offer = await peer.createOffer();
-console.log(">>> Offer created");
+
 await peer.setLocalDescription(offer);
 
 await db.collection("calls")
