@@ -530,47 +530,7 @@ msg.type === "audio"
 ?
 `
 <div class="chat-audio">
-${
-msg.type === "call"
-?
-`
-<div class="chat-call">
 
-<div class="call-icon">
-${msg.callType === "video" ? "📹" : "📞"}
-</div>
-
-<div class="call-info">
-
-<div class="call-title">
-${
-msg.status === "missed"
-? "Cuộc gọi nhỡ"
-
-: msg.status === "rejected"
-? "Cuộc gọi bị từ chối"
-
-: msg.status === "cancelled"
-? "Đã hủy cuộc gọi"
-
-: msg.callType === "video"
-? "Cuộc gọi video"
-
-: "Cuộc gọi thoại"
-}
-</div>
-
-<div class="call-duration">
-${formatCallDuration(msg.duration || 0)}
-</div>
-
-</div>
-
-</div>
-`
-:
-""
-}
 <audio
 controls
 preload="metadata"
@@ -1066,23 +1026,7 @@ if(time.toDate){
 return "";
 
 }
-function formatCallDuration(sec){
 
-    sec = Number(sec || 0);
-
-    const h = Math.floor(sec / 3600);
-    const m = Math.floor((sec % 3600) / 60);
-    const s = sec % 60;
-
-    if(h > 0){
-
-        return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
-
-    }
-
-    return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
-
-}
 
 
 
