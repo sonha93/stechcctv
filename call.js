@@ -116,7 +116,8 @@ const callId =
 params.get("callId");
 const incoming =
 params.get("incoming")==="1";
-
+const callType =
+params.get("type") || "audio";
 const userName = params.get("name");
 const userAvatar = params.get("avatar");
 callUnsubscribe =
@@ -160,7 +161,7 @@ break;
 
             if (!peer) {
     createPeer();
-    await openCamera();
+    await openMedia();
 }
 
             callStatus.textContent = "Đã kết nối";
@@ -352,21 +353,24 @@ listenIceCandidates(
 // MIC
 // ================================
 
-async function openCamera(){
+async function openMedia(){
 
 
 localStream =
 await navigator.mediaDevices.getUserMedia({
 
     audio:true,
-    video:true
+
+    video: callType === "video"
 
 });
 
 
-// hiện camera của mình
 
-if(localVideo){
+if(
+    callType === "video" &&
+    localVideo
+){
 
     localVideo.srcObject =
     localStream;
@@ -374,7 +378,6 @@ if(localVideo){
 }
 
 
-// gửi mic + camera vào WebRTC
 
 localStream
 .getTracks()
@@ -483,7 +486,7 @@ async function startCaller(){
 
     createPeer();
 
-    await openCamera();
+await openMedia();
 
     callTimeout =
     setTimeout(async()=>{
@@ -567,7 +570,7 @@ if(!peer){
 }
 
 
-await openCamera();
+await openMedia();
 
 
 
