@@ -387,5 +387,22 @@ body{
         opacity:0;
 
     }
+#remoteVideo{
+    position:absolute;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    background:#000;
+}
 
+#localVideo{
+    position:absolute;
+    width:120px;
+    height:180px;
+    right:20px;
+    top:20px;
+    object-fit:cover;
+    border-radius:15px;
+    z-index:10;
+}
 }
