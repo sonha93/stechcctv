@@ -120,6 +120,27 @@ async function startCall(type){
         otherUid,
         type
     );
+    // ================================
+// TỰ ĐỘNG KẾT THÚC SAU 60 GIÂY NẾU KHÔNG BẮT MÁY
+// ================================
+
+setTimeout(async ()=>{
+
+    if(!callAccepted && currentCallId){
+
+        console.log("Không bắt máy sau 60s - kết thúc");
+
+        callStatus = "missed";
+
+        await removeCall(currentCallId);
+
+        closeMedia();
+
+        currentCallId = null;
+
+    }
+
+},60000);
 callAccepted = false;
 callStatus = "missed";
 callStartTime = Date.now();
