@@ -151,7 +151,7 @@ listenCallStatus(callId, async (call) => {
     }
 
 break;
-    case "accepted":
+        case "accepted":
 
     ringtone.pause();
 
@@ -159,35 +159,17 @@ break;
         callingTone.pause();
     }
 
+            if (!peer) {
+    createPeer();
+    await openMedia();
+}
 
-    // ẨN NÚT NHẬN / TỪ CHỐI
-    acceptBtn.style.display = "none";
-    rejectBtn.style.display = "none";
+            callStatus.textContent = "Đã kết nối";
 
+            if (!timer)
+                startTimer();
 
-    // HIỆN MIC / LOA / KẾT THÚC
-    muteBtn.style.display = "flex";
-    speakerBtn.style.display = "flex";
-    endBtn.style.display = "flex";
-
-
-    if (!peer) {
-
-        createPeer();
-
-        await openMedia();
-
-    }
-
-
-    callStatus.textContent = "Đã kết nối";
-
-
-    if (!timer)
-        startTimer();
-
-
-break;
+            break;
 
         case "rejected":
 
@@ -290,36 +272,35 @@ peer = new RTCPeerConnection({
 
 
 
-peer.ontrack=e=>{
+peer.ontrack = e => {
 
+    const stream = e.streams[0];
 
-const stream =
-e.streams[0];
+    if(callType === "video"){
 
+        if(remoteVideo){
 
-// nhận video
+            remoteVideo.srcObject = stream;
 
-if(remoteVideo){
+            remoteVideo.play()
+            .catch(()=>{});
 
-    remoteVideo.srcObject =
-    stream;
+        }
 
-}
+    }else{
 
+        if(remoteAudio){
 
-// nhận âm thanh
+            remoteAudio.srcObject = stream;
 
-if(remoteAudio){
+            remoteAudio.play()
+            .catch(()=>{});
 
-    remoteAudio.srcObject =
-    stream;
+        }
 
-}
-
+    }
 
 };
-
-
 peer.onicecandidate = e => {
 
     if(e.candidate){
@@ -373,43 +354,47 @@ listenIceCandidates(
 
 async function openMedia(){
 
-
-localStream =
-await navigator.mediaDevices.getUserMedia({
-
-    audio:true,
-
-    video: callType === "video"
-
-});
+    if(localStream)
+        return;
 
 
+    localStream =
+    await navigator.mediaDevices.getUserMedia({
 
-if(
-    callType === "video" &&
-    localVideo
-){
+        audio:true,
 
-    localVideo.srcObject =
-    localStream;
+        video: callType === "video"
 
-}
+    });
 
 
 
-localStream
-.getTracks()
-.forEach(track=>{
+    if(
+        callType === "video" &&
+        localVideo
+    ){
+
+        localVideo.srcObject =
+        localStream;
 
 
-    peer.addTrack(
-        track,
-        localStream
-    );
+        localVideo.play()
+        .catch(()=>{});
+
+    }
 
 
-});
 
+    localStream
+    .getTracks()
+    .forEach(track=>{
+
+        peer.addTrack(
+            track,
+            localStream
+        );
+
+    });
 
 }
 // ================================
@@ -492,17 +477,10 @@ callTimeout = setTimeout(async()=>{
         callingTone.play().catch(() => {});
     }
 
-
     startCaller();
-
 
     acceptBtn.style.display = "none";
     rejectBtn.style.display = "none";
-
-
-    // HIỆN NÚT KHI ĐANG GỌI
-    muteBtn.style.display = "flex";
-    speakerBtn.style.display = "flex";
     endBtn.style.display = "flex";
 
 }
@@ -718,28 +696,12 @@ startTimer();
 muteBtn.onclick=()=>{
 
 
-if(!localStream){
-    return;
-}
+if(!localStream)
+return;
 
 
-muted = !muted;
+muted=!muted;
 
-
-localStream
-.getAudioTracks()
-.forEach(track=>{
-
-    track.enabled = !muted;
-
-});
-
-
-muteBtn.style.opacity =
-muted ? "0.45" : "1";
-
-
-};
 
 localStream
 .getAudioTracks()
@@ -764,22 +726,34 @@ muted?.45:1;
 // ================================
 
 
-speakerBtn.onclick=()=>{
+speakerBtn.onclick = ()=>{
 
 
-remoteVideo.muted =
-!remoteVideo.muted;
+let target =
+callType === "video"
+?
+remoteVideo
+:
+remoteAudio;
 
 
-remoteAudio.muted =
-remoteVideo.muted;
+
+if(!target)
+return;
+
+
+
+target.muted =
+!target.muted;
+
 
 
 speakerBtn.style.opacity =
-remoteVideo.muted ? "0.45" : "1";
+target.muted ? 0.45 : 1;
 
 
 };
+
 
 
 
