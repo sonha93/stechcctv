@@ -326,10 +326,11 @@ remoteVideo.play().catch(console.error);
 
 peer.onicecandidate = e => {
 
-    if(e.candidate){
+    if (e.candidate) {
 
         addIceCandidate(
             callId,
+            incoming ? "answer" : "offer",
             e.candidate.toJSON()
         );
 
@@ -343,6 +344,7 @@ peer.onicecandidate = e => {
 candidateUnsubscribe =
 listenIceCandidates(
     callId,
+    incoming ? "offer" : "answer",
     async data=>{
 
         if(!peer)
@@ -641,6 +643,7 @@ await db.collection("calls")
 candidateUnsubscribe =
 listenIceCandidates(
     callId,
+    "offer",
     async data=>{
 
         try{
