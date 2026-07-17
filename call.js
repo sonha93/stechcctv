@@ -397,21 +397,6 @@ if(
 
 
 
-localStream
-.getTracks()
-.forEach(track=>{
-
-
-    peer.addTrack(
-        track,
-        localStream
-    );
-
-
-});
-
-
-}
 // ================================
 // TIMER
 // ================================
