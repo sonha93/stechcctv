@@ -527,6 +527,41 @@ body{
 
 }
 
+/* ============================
+   CONNECTED UI
+============================ */
 
+body.call-connected .avatar-ring{
+    display:none;
+}
+
+body.call-connected .call-avatar{
+    display:none;
+}
+
+body.call-connected .call-name{
+    display:none;
+}
+
+body.call-connected .call-status{
+    display:none;
+}
+
+body.call-connected .call-top{
+    padding-top:10px;
+}
+
+body.call-connected .call-timer{
+    margin-top:0;
+    font-size:18px;
+    color:#fff;
+}
+
+body.call-connected #localVideo{
+    top:20px;
+    right:15px;
+    width:100px;
+    height:140px;
+}
 
 }
