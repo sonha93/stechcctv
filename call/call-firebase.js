@@ -393,26 +393,26 @@ export function listenSignal(callId, callback){
 // LISTEN ICE CANDIDATES
 // =====================================
 
-export function listenIceCandidates(callId, callback){
+export function listenIceCandidates(callId, type, callback){
 
     return db.collection("calls")
+        .doc(callId)
+        .collection(
+            type === "offer"
+                ? "offerCandidates"
+                : "answerCandidates"
+        )
+        .onSnapshot(snapshot=>{
 
-    .doc(callId)
+            snapshot.docChanges().forEach(change=>{
 
-    .collection("candidates")
+                if(change.type !== "added") return;
 
-    .onSnapshot(snapshot=>{
+                callback(change.doc.data());
 
-        snapshot.docChanges().forEach(change=>{
-
-            if(change.type !== "added")
-            return;
-
-            callback(change.doc.data());
+            });
 
         });
-
-    });
 
 }
 // =====================================
@@ -452,18 +452,22 @@ export async function timeoutCall(callId){
 
 export async function addIceCandidate(
     callId,
+    type,
     candidate
 ){
 
     return db.collection("calls")
-    .doc(callId)
-    .collection("candidates")
-    .add({
+        .doc(callId)
+        .collection(
+            type === "offer"
+                ? "offerCandidates"
+                : "answerCandidates"
+        )
+        .add({
 
-        candidate:
-        candidate
+            candidate
 
-    });
+        });
 
 }
 // =====================================
