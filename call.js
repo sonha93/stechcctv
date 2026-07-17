@@ -181,7 +181,7 @@ break;
 
 
     callStatus.textContent = "Đã kết nối";
-
+    document.body.classList.add("call-connected");
 
     if (!timer)
         startTimer();
@@ -203,21 +203,23 @@ break;
 
         case "ended":
 
-            ringtone.pause();
+    document.body.classList.remove("call-connected");
 
-            clearInterval(timer);
+    ringtone.pause();
 
-            callStatus.textContent = "Cuộc gọi kết thúc";
+    clearInterval(timer);
 
-            if (localStream)
-                localStream.getTracks().forEach(t => t.stop());
+    callStatus.textContent = "Cuộc gọi kết thúc";
 
-            if (peer)
-                peer.close();
+    if (localStream)
+        localStream.getTracks().forEach(t => t.stop());
 
-            setTimeout(() => {
-    window.close();
-}, 1000);
+    if (peer)
+        peer.close();
+
+    setTimeout(() => {
+        window.close();
+    }, 1000);
 
 break;
 
@@ -901,7 +903,7 @@ if(callingTone){
 
     }
 
-
+    document.body.classList.remove("call-connected");
     await endCall(callId);
 
 
