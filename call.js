@@ -291,16 +291,13 @@ peer = new RTCPeerConnection({
 
 
 peer.ontrack = e => {
- console.log("ONTRACK", e);
+
     const stream = e.streams[0];
 
     if (remoteVideo) {
         remoteVideo.srcObject = stream;
-remoteVideo.autoplay = true;
-remoteVideo.playsInline = true;
-remoteVideo.muted = false;
-
-remoteVideo.play().catch(console.error);
+        remoteVideo.muted = false;
+        remoteVideo.play().catch(() => {});
     }
 
     if (remoteAudio) {
@@ -370,15 +367,10 @@ async function openMedia() {
         video: callType === "video"
     });
 
-   if (callType === "video" && localVideo) {
+    if (callType === "video" && localVideo) {
+        localVideo.srcObject = localStream;
+    }
 
-    localVideo.srcObject = localStream;
-    localVideo.muted = true;
-    localVideo.autoplay = true;
-    localVideo.playsInline = true;
-
-    localVideo.play().catch(console.error);
-}
     localStream.getTracks().forEach(track => {
         peer.addTrack(track, localStream);
     });
@@ -507,17 +499,22 @@ await openMedia();
         }
 
 },60000);
-    const offer = await peer.createOffer();
+    const offer =
+await peer.createOffer();
 
-await peer.setLocalDescription(offer);
+
+await peer.setLocalDescription(
+    offer
+);
+
 
 await db.collection("calls")
 .doc(callId)
 .update({
 
     offer:{
-        type: peer.localDescription.type,
-        sdp: peer.localDescription.sdp
+        type:offer.type,
+        sdp:offer.sdp
     }
 
 });
@@ -613,16 +610,23 @@ await peer.setRemoteDescription(
 const answer =
 await peer.createAnswer();
 
-await peer.setLocalDescription(answer);
+
+await peer.setLocalDescription(
+    answer
+);
+
 
 await db.collection("calls")
 .doc(callId)
 .update({
 
-    answer:{
-        type: peer.localDescription.type,
-        sdp: peer.localDescription.sdp
-    }
+answer:{
+
+    type:answer.type,
+
+    sdp:answer.sdp
+
+}
 
 });
 
