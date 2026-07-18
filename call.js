@@ -472,57 +472,110 @@ if (callType === "video" && localVideo) {
     });
 }
 
-async function switchCamera() {
+async function switchCamera(){
 
-    if (callType !== "video" || !peer || !localStream) return;
-
-    const devices = await navigator.mediaDevices.enumerateDevices();
-
-    const cameras = devices.filter(d => d.kind === "videoinput");
-
-    if (cameras.length < 2) return;
-
-    const currentTrack = localStream.getVideoTracks()[0];
-    const settings = currentTrack.getSettings();
-
-    let index = cameras.findIndex(c => c.deviceId === settings.deviceId);
-
-    index = (index + 1) % cameras.length;
-
-    const newStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-            deviceId: {
-                exact: cameras[index].deviceId
-            }
-        },
-        audio: false
-    });
-
-    const newTrack = newStream.getVideoTracks()[0];
-
-    const sender = peer.getSenders().find(s =>
-        s.track && s.track.kind === "video"
-    );
-
-    if (sender) {
-        await sender.replaceTrack(newTrack);
+    if(
+        callType !== "video" ||
+        !localStream ||
+        !peer
+    ){
+        return;
     }
 
-    currentTrack.stop();
 
-    const audioTrack = localStream.getAudioTracks()[0];
+    try {
 
-    localStream = new MediaStream();
+        currentFacingMode =
+        currentFacingMode === "user"
+        ? "environment"
+        : "user";
 
-    if (audioTrack) {
-        localStream.addTrack(audioTrack);
+
+        const newStream =
+        await navigator.mediaDevices.getUserMedia({
+
+            video:{
+                facingMode:{
+                    exact: currentFacingMode
+                }
+            },
+
+            audio:false
+
+        });
+
+
+        const newTrack =
+        newStream.getVideoTracks()[0];
+
+
+        const sender =
+        peer.getSenders()
+        .find(s =>
+            s.track &&
+            s.track.kind === "video"
+        );
+
+
+        if(sender){
+
+            await sender.replaceTrack(
+                newTrack
+            );
+
+        }
+
+
+        const oldTrack =
+        localStream.getVideoTracks()[0];
+
+
+        if(oldTrack){
+
+            oldTrack.stop();
+
+        }
+
+
+        const audioTrack =
+        localStream.getAudioTracks()[0];
+
+
+        localStream =
+        new MediaStream();
+
+
+        if(audioTrack){
+
+            localStream.addTrack(
+                audioTrack
+            );
+
+        }
+
+
+        localStream.addTrack(
+            newTrack
+        );
+
+
+        localVideo.srcObject =
+        localStream;
+
+
+        await localVideo.play()
+        .catch(()=>{});
+
+
+    }catch(e){
+
+        console.error(
+            "Đổi camera lỗi:",
+            e
+        );
+
     }
 
-    localStream.addTrack(newTrack);
-
-    localVideo.srcObject = localStream;
-
-    await localVideo.play().catch(() => {});
 }
 // ================================
 // TIMER
