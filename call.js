@@ -561,7 +561,7 @@ String(seconds%60)
 // ================================
 if (incoming) {
 
-    callStatus.textContent = "Cuộc gọi đến";
+    callStatus.textContent = "Cuộc gọi Video đến";
 callTimeout = setTimeout(async()=>{
 
     const snap =
