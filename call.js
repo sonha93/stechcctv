@@ -86,6 +86,7 @@ document.getElementById("endBtn");
 // ================================
 
 let localStream=null;
+let mediaOpened = false;
 let currentFacingMode = "user";
 let peer=null;
 
@@ -209,7 +210,7 @@ break;
 
         createPeer();
 
-        await openMedia();
+ 
 
     }
 
@@ -310,16 +311,19 @@ callAvatar.onerror = () => {
 
 function createPeer(){
 
+    if (peer) {
+        return;
+    }
 
-peer = new RTCPeerConnection({
+    peer = new RTCPeerConnection({
 
-    iceServers: [
+        iceServers: [
 
-        {
-            urls: [
-                "stun:stun.relay.metered.ca:80"
-            ]
-        },
+            {
+                urls: [
+                    "stun:stun.relay.metered.ca:80"
+                ]
+            },
 
         {
             urls: [
@@ -415,23 +419,39 @@ listenIceCandidates(
 
 async function openMedia() {
 
+    // Đã mở camera/mic thì không mở lại
+    if (mediaOpened && localStream) {
+        return;
+    }
+
     localStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: callType === "video"
     });
 
-   if (callType === "video" && localVideo) {
+    mediaOpened = true;
 
-    localVideo.srcObject = localStream;
-    localVideo.muted = true;
-    localVideo.autoplay = true;
-    localVideo.playsInline = true;
+    if (callType === "video" && localVideo) {
 
-    localVideo.play().catch(console.error);
-}
-    localStream.getTracks().forEach(track => {
-        peer.addTrack(track, localStream);
-    });
+        localVideo.srcObject = localStream;
+        localVideo.muted = true;
+        localVideo.autoplay = true;
+        localVideo.playsInline = true;
+
+        await localVideo.play().catch(() => {});
+    }
+
+    // Chỉ addTrack đúng 1 lần
+    if (peer && peer.getSenders().length === 0) {
+
+        localStream.getTracks().forEach(track => {
+
+            peer.addTrack(track, localStream);
+
+        });
+
+    }
+
 }
 
 async function switchCamera() {
@@ -898,7 +918,7 @@ if(localStream){
     .forEach(t=>t.stop());
 
     localStream=null;
-
+    mediaOpened = false;
 }
 
 
