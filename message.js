@@ -488,12 +488,13 @@ msg.image
 ×
 </button>
 
+msg.image
+?
+`
 <img
 class="chat-image"
 src="${msg.image}"
 onclick="showChatImage(this.src)">
-
-</div>
 `
 :
 ""
@@ -1163,7 +1164,15 @@ URL.createObjectURL(file);
 if(file.type.startsWith("image")){
 
 preview.innerHTML += `
+<div class="preview-image-item">
+
+<button class="delete-preview-img">
+×
+</button>
+
 <img src="${url}">
+
+</div>
 `;
 
 }else{
