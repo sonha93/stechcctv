@@ -52,6 +52,7 @@ onAuthStateChanged(auth, user => {
 // ===== HTML =====
 
 const avatar = document.getElementById("profileAvatar");
+let profileHasStory = false;
 const avatarPopup = document.createElement("div");
 
 avatarPopup.id = "avatarPopup";
@@ -140,9 +141,13 @@ if(auth.currentUser){
     blocked = block.iBlocked || block.blockedMe;
 
 }
-   avatar.src = blocked
+  avatar.src = blocked
     ? "https://i.ibb.co/Z1kv9nJj/logo.png"
     : (u.avatar || "https://i.ibb.co/Z1kv9nJj/logo.png");
+
+
+// CHECK STORY 24H CHO AVATAR
+await checkProfileStory();
     sheetAvatar.src = avatar.src;
 sheetName.textContent = u.name || "Người dùng";
 let displayName = blocked
@@ -1567,3 +1572,47 @@ document.getElementById("logoutBtn").onclick = async () => {
 
     location.href = "index.html";
 };
+async function checkProfileStory(){
+
+    const q = query(
+        collection(db,"profile_stories"),
+        where("uid","==",profileUid)
+    );
+
+    const snap = await getDocs(q);
+
+    let hasStory = false;
+
+    const now = Date.now();
+
+    snap.forEach(docSnap=>{
+
+        const s = docSnap.data();
+
+        if(!s.createdAt) return;
+
+
+        const time = s.createdAt.toDate().getTime();
+
+
+        // còn trong 24h
+        if(now - time < 86400000){
+
+            hasStory = true;
+
+        }
+
+    });
+
+
+    if(hasStory){
+
+        avatar.classList.add("has-story");
+
+    }else{
+
+        avatar.classList.remove("has-story");
+
+    }
+
+}
