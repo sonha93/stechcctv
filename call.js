@@ -440,10 +440,17 @@ listenIceCandidates(
 
 async function openMedia() {
 
-    localStream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: callType === "video"
-    });
+   localStream = await navigator.mediaDevices.getUserMedia({
+
+    audio: true,
+
+    video: callType === "video"
+    ? {
+        facingMode: currentFacingMode
+    }
+    : false
+
+});
 if (callType === "video" && localVideo) {
 
     localVideo.srcObject = localStream;
