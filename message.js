@@ -548,40 +548,67 @@ ${msg.duration || 0}s
     
 }
 ${
-msg.type === "call"
+msg.type==="call"
 ?
 `
-<div class="call-message">
+<div class="chat-call">
+
+<div class="call-icon">
+${msg.callType==="video"?"📹":"📞"}
+</div>
+
+<div class="call-detail">
 
 <div class="call-title">
 
 ${
-msg.status === "rejected"
-? "📞 Cuộc gọi đã từ chối"
-: msg.status === "missed"
-? "📞 Cuộc gọi nhỡ"
-: mine
-? "📞 Cuộc gọi đi"
-: "📞 Cuộc gọi đến"
+msg.status==="missed"
+?
+`${msg.callType==="video"?"📹":"📞"} Cuộc gọi ${msg.callType==="video"?"video ":""}nhỡ`
+
+:
+msg.status==="rejected"
+?
+`${msg.callType==="video"?"📹":"📞"} Cuộc gọi bị từ chối`
+
+:
+mine
+?
+`${msg.callType==="video"?"📹":"📞"} Cuộc gọi ${msg.callType==="video"?"video ":""}đi`
+
+:
+`${msg.callType==="video"?"📹":"📞"} Cuộc gọi ${msg.callType==="video"?"video ":""}đến`
 }
 
 </div>
 
-<div class="call-info">
+<div class="call-duration">
 
 ${
-msg.duration > 0
-? `${Math.floor(msg.duration / 60)} phút ${msg.duration % 60} giây`
-: "Không trả lời"
+msg.duration>0
+?
+formatDuration(msg.duration)
+:
+"Không trả lời"
 }
+
+</div>
+
+<div class="call-time">
+
+${formatFullDate(msg.createdAt)}
 
 </div>
 
 <button
 class="call-back-btn"
-onclick="callAgain('${mine ? otherUid : msg.senderId}')">
+onclick="callAgain('${mine?otherUid:msg.senderId}','${msg.callType}')">
+
 GỌI LẠI
+
 </button>
+
+</div>
 
 </div>
 `
@@ -1064,6 +1091,72 @@ function formatTime(time){
     }
 
     return "";
+
+}
+function formatDuration(sec){
+
+sec=Number(sec)||0;
+
+const h=Math.floor(sec/3600);
+
+const m=Math.floor((sec%3600)/60);
+
+const s=sec%60;
+
+if(h){
+
+return `${h} giờ ${m} phút ${s} giây`;
+
+}
+
+if(m){
+
+return `${m} phút ${s} giây`;
+
+}
+
+return `${s} giây`;
+
+}
+
+function formatFullDate(time){
+
+if(!time)return "";
+
+return time.toDate().toLocaleString(
+"vi-VN",
+{
+
+day:"2-digit",
+
+month:"2-digit",
+
+year:"numeric",
+
+hour:"2-digit",
+
+minute:"2-digit",
+
+second:"2-digit"
+
+}
+
+);
+
+}
+window.callAgain=function(uid,type){
+
+window.location.href=
+
+type==="video"
+
+?
+
+`call.html?uid=${uid}&video=1`
+
+:
+
+`call.html?uid=${uid}`;
 
 }
 // ================================
