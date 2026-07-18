@@ -507,7 +507,7 @@ async function switchCamera(){
 
             video:{
                 facingMode:currentFacingMode
-                }
+                
             },
 
             audio:false
