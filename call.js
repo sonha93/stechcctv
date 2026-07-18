@@ -509,37 +509,18 @@ async function switchCamera(){
         : "user";
 
 
-       let newStream;
+        const newStream =
+        await navigator.mediaDevices.getUserMedia({
 
-try{
+            video:{
+                facingMode:{
+                    exact: currentFacingMode
+                }
+            },
 
-    newStream =
-    await navigator.mediaDevices.getUserMedia({
+            audio:false
 
-        video:{
-            facingMode:{
-                exact: currentFacingMode
-            }
-        },
-
-        audio:false
-
-    });
-
-}catch{
-
-    newStream =
-    await navigator.mediaDevices.getUserMedia({
-
-        video:{
-            facingMode: currentFacingMode
-        },
-
-        audio:false
-
-    });
-
-}
+        });
 
 
         const newTrack =
@@ -563,9 +544,16 @@ try{
         }
 
 
-       localStream
-.getVideoTracks()
-.forEach(track=>track.stop());
+        const oldTrack =
+        localStream.getVideoTracks()[0];
+
+
+        if(oldTrack){
+
+            oldTrack.stop();
+
+        }
+
 
         const audioTrack =
         localStream.getAudioTracks()[0];
@@ -589,13 +577,12 @@ try{
         );
 
 
-            localVideo.pause();
+        localVideo.srcObject =
+        localStream;
 
-localVideo.srcObject = null;
 
-localVideo.srcObject = localStream;
-
-await localVideo.play().catch(()=>{});
+        await localVideo.play()
+        .catch(()=>{});
 
 
     }catch(e){
