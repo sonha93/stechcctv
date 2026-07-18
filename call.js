@@ -69,8 +69,6 @@ document.getElementById("muteBtn");
 
 const speakerBtn =
 document.getElementById("speakerBtn");
-const cameraBtn =
-document.getElementById("cameraBtn");
 const acceptBtn =
 document.getElementById("acceptBtn");
 
