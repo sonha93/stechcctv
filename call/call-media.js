@@ -79,27 +79,38 @@ export function createPeer(){
     );
 
 
-    if(localStream){
+    if(!localStream){
 
-        localStream
-        .getTracks()
-        .forEach(track=>{
+        console.log(
+            "❌ Chưa có camera/mic stream"
+        );
 
-            peerConnection
-            .addTrack(
-                track,
-                localStream
-            );
-
-        });
-
+        return peerConnection;
     }
+
+
+    localStream
+    .getTracks()
+    .forEach(track=>{
+
+        console.log(
+            "ADD TRACK:",
+            track.kind
+        );
+
+
+        peerConnection
+        .addTrack(
+            track,
+            localStream
+        );
+
+    });
 
 
     return peerConnection;
 
 }
-
 
 
 // ================================
@@ -114,24 +125,27 @@ callback
     return;
 
 
-    peerConnection
-    .ontrack =
-    event=>{
+   peerConnection
+.ontrack =
+event=>{
+
+    const stream =
+    event.streams[0];
 
 
-        const stream =
-        event.streams[0];
+    if(stream){
+
+        console.log(
+            "REMOTE VIDEO OK",
+            stream.getTracks()
+        );
 
 
         callback(stream);
 
+    }
 
-    };
-
-
-}
-
-
+};
 
 // ================================
 // ICE
