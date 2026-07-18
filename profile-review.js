@@ -930,9 +930,49 @@ if (editBtn) {
 }
 avatar.style.cursor = "pointer";
 
-avatar.onclick = () => {
-    document.getElementById("popupAvatarImg").src = avatar.src;
-    avatarPopup.classList.add("active");
+avatar.onclick = async () => {
+
+    const q = query(
+        collection(db,"profile_stories"),
+        where("uid","==",profileUid)
+    );
+
+    const snap = await getDocs(q);
+
+    let storyId = null;
+
+    const now = Date.now();
+
+    snap.forEach(docSnap=>{
+
+        const s = docSnap.data();
+
+        if(s.createdAt){
+
+            const time = s.createdAt.toDate().getTime();
+
+            if(now - time < 86400000){
+
+                storyId = docSnap.id;
+
+            }
+
+        }
+
+    });
+
+
+    if(storyId){
+
+        openStory(storyId);
+
+    }else{
+
+        document.getElementById("popupAvatarImg").src = avatar.src;
+        avatarPopup.classList.add("active");
+
+    }
+
 };
 
 document.getElementById("closeAvatarPopup").onclick = () => {
