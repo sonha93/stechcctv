@@ -1353,24 +1353,49 @@ async function sendStoryMessage(text){
 
 
 
-    if(!conversationId){
+   if(!conversationId){
 
-        const ref = await addDoc(
-            collection(db,"conversations"),
-            {
+const mySnap = await getDoc(
+    doc(db,"users",user.uid)
+);
 
-                members:[
-                    user.uid,
-                    currentStoryOwner
-                ],
+const ownerSnap = await getDoc(
+    doc(db,"users",currentStoryOwner)
+);
 
-                lastMessage:text,
 
-                updatedAt:
-                serverTimestamp()
+const ref = await addDoc(
+collection(db,"conversations"),
+{
 
-            }
-        );
+members:[
+user.uid,
+currentStoryOwner
+],
+
+users:{
+[user.uid]:{
+    name:mySnap.data()?.name || "",
+    avatar:mySnap.data()?.avatar || ""
+},
+
+[currentStoryOwner]:{
+    name:ownerSnap.data()?.name || "",
+    avatar:ownerSnap.data()?.avatar || ""
+}
+
+},
+
+lastMessage:text,
+
+updatedAt:serverTimestamp()
+
+}
+);
+
+conversationId = ref.id;
+
+}
 
 
         conversationId = ref.id;
@@ -1431,32 +1456,97 @@ async function sendStoryMessage(text){
 const storyLikeBtn =
 document.getElementById("storyLikeBtn");
 
+
 if(storyLikeBtn){
 
 storyLikeBtn.onclick = async()=>{
 
-if(!currentStoryId || !auth.currentUser)
-return;
+    if(!currentStoryId || !auth.currentUser)
+        return;
 
-await updateDoc(
-doc(db,"profile_stories",currentStoryId),
-{
-likes:arrayUnion(auth.currentUser.uid),
-likeCount:increment(1)
+
+    const storyRef = doc(
+        db,
+        "profile_stories",
+        currentStoryId
+    );
+
+
+    const storySnap = await getDoc(storyRef);
+
+
+    if(!storySnap.exists())
+        return;
+
+
+    const story = storySnap.data();
+
+
+    const likes = story.likes || [];
+
+
+    const storyTitle =
+        story.text ||
+        story.fileName ||
+        "story";
+
+
+    // BỎ LIKE
+    if(likes.includes(auth.currentUser.uid)){
+
+
+        await updateDoc(
+            storyRef,
+            {
+                likes: likes.filter(
+                    uid => uid !== auth.currentUser.uid
+                ),
+                likeCount: increment(-1)
+            }
+        );
+
+
+        storyLikeBtn.classList.remove("liked");
+
+
+        return;
+
+    }
+
+
+
+    // THÊM LIKE
+    await updateDoc(
+        storyRef,
+        {
+            likes: arrayUnion(
+                auth.currentUser.uid
+            ),
+            likeCount: increment(1)
+        }
+    );
+
+
+    storyLikeBtn.classList.add("liked");
+
+
+
+// GỬI TIN NHẮN CHO CHỦ STORY
+if(currentStoryOwner !== auth.currentUser.uid){
+
+    await sendStoryMessage(
+        `❤️ đã thích story "${storyTitle}" của bạn`
+    );
+
 }
-);
 
 
-await sendStoryMessage(
-"❤️ đã thích story của bạn"
-);
 };
+
 
 }
 const storyCommentSend =
 document.getElementById("storyCommentSend");
-
-
 if(storyCommentSend){
 
 storyCommentSend.onclick = async()=>{
@@ -1476,7 +1566,9 @@ const storySnap =
 await getDoc(
 doc(db,"profile_stories",currentStoryId)
 );
+const story = storySnap.data();
 
+const storyText = story.text || "";
 
 const story = storySnap.data();
 
