@@ -244,6 +244,7 @@ export async function endCall(callId){
 await new Promise(resolve=>setTimeout(resolve,3000));
 
 return removeCall(callId);
+}
 
 // =====================================
 // BUSY
@@ -439,14 +440,10 @@ export async function timeoutCall(callId){
     await getCall(callId);
 
 
-await saveCallHistory(updated);
-
-await new Promise(resolve=>setTimeout(resolve,3000));
-
-return removeCall(callId);
+    await saveCallHistory(updated);
 
 
-  
+    return removeCall(callId);
 
 }
 // =====================================
