@@ -1357,6 +1357,9 @@ opacity:.8;
     linear-gradient(#fff,#fff) padding-box,
     linear-gradient(45deg,#ff0055,#ffcc00,#ff0055) border-box;
 }
+ #storyVideo::-webkit-media-controls{
+    display:none !important;
+}
 </style>
 </head>
 
@@ -1735,12 +1738,11 @@ stroke-linejoin="round">
 
     <span id="closeStory">×</span>
 
-    <video
-        id="storyVideo"
-        controls
-        autoplay
-        playsinline>
-    </video>
+   <video
+    id="storyVideo"
+    autoplay
+    playsinline>
+</video>
 
     <img id="storyImage">
 
