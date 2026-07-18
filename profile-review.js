@@ -1536,9 +1536,7 @@ if(currentStoryOwner !== auth.currentUser.uid){
 
     }
 
-};   
-
-}    
+};     
 const storyCommentSend =
 document.getElementById("storyCommentSend");
 if(storyCommentSend){
@@ -1563,10 +1561,6 @@ doc(db,"profile_stories",currentStoryId)
 const story = storySnap.data();
 
 const storyText = story.text || "";
-
-const story = storySnap.data();
-
-
 
 await addDoc(
 collection(
