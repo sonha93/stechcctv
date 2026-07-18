@@ -592,4 +592,20 @@ body.voice-call .call-avatar{
 body.voice-call .call-name{
     display:block;
 }
+   /* ============================
+   CAMERA OFF
+============================ */
+
+#localVideo.camera-off{
+
+    opacity:0;
+
+}
+
+#localVideo.camera-off::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:#000;
+}
 }
