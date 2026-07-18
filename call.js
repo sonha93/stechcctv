@@ -70,6 +70,8 @@ document.getElementById("muteBtn");
 const speakerBtn =
 document.getElementById("speakerBtn");
 const acceptBtn =
+const cameraBtn = 
+document.getElementById("cameraBtn");
 document.getElementById("acceptBtn");
 
 const rejectBtn =
@@ -882,24 +884,6 @@ speakerBtn.onclick = () => {
     speakerBtn.style.opacity = speakerOff ? "0.45" : "1";
 };
 // ================================
-// CAMERA
-// ================================
-
-cameraBtn.onclick = () => {
-
-    if (!localStream) return;
-
-    const videoTrack = localStream.getVideoTracks()[0];
-
-    if (!videoTrack) return;
-
-    videoTrack.enabled = !videoTrack.enabled;
-
-    cameraBtn.style.opacity =
-        videoTrack.enabled ? "1" : "0.45";
-
-};
-// ================================
 // REJECT
 // ================================
 
@@ -1045,7 +1029,6 @@ if(callingTone){
 
 
 };
-const cameraBtn = document.getElementById("cameraBtn");
 
 cameraBtn.onclick = () => {
 
