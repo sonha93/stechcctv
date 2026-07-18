@@ -637,12 +637,3 @@ body.voice-call .call-name{
     object-fit:cover;
 }
 }
-/* Ẩn khung call khi chưa vào cuộc gọi */
-#callContainer,
-.call-container,
-#incomingCall,
-.incoming-call,
-.call-bar,
-.call-ui-bar{
-    display:none !important;
-}
