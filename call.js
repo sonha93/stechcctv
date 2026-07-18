@@ -162,18 +162,7 @@ listenCallStatus(callId, async (call) => {
         return;
     }
 
-    // NHẬN ANSWER TỪ BÊN KIA
-    if (
-        call.answer &&
-        peer &&
-        !peer.currentRemoteDescription
-    ) {
-
-        await peer.setRemoteDescription(
-            new RTCSessionDescription(call.answer)
-        );
-
-    }
+    
 
     switch (call.status) {
 
@@ -187,7 +176,13 @@ listenCallStatus(callId, async (call) => {
 
 break;
     case "accepted":
+if(callTimeout){
 
+    clearTimeout(callTimeout);
+
+    callTimeout = null;
+
+}
     ringtone.pause();
 
     if(callingTone){
@@ -249,8 +244,13 @@ break;
     if (localStream)
         localStream.getTracks().forEach(t => t.stop());
 
-    if (peer)
-        peer.close();
+   if(peer){
+
+    peer.close();
+
+    peer = null;
+
+}
 
     setTimeout(() => {
         window.close();
@@ -292,16 +292,25 @@ case "busy":
 
 });
 
-if(userName){
-    callName.textContent = decodeURIComponent(userName);
+if(userName && callName){
+
+    callName.textContent =
+    decodeURIComponent(userName);
+
 }
 
 if(userAvatar){
     callAvatar.src = decodeURIComponent(userAvatar);
 }
-callAvatar.onerror = () => {
-    callAvatar.src = "./default-avatar.png";
-};
+if(callAvatar){
+
+    callAvatar.onerror = () => {
+
+        callAvatar.src = "./default-avatar.png";
+
+    };
+
+}
 
 
 // ================================
@@ -377,41 +386,6 @@ peer.onicecandidate = e => {
     }
 
 };
-// ================================
-// LISTEN REMOTE ICE
-// ================================
-
-candidateUnsubscribe =
-listenIceCandidates(
-    callId,
-    incoming ? "offer" : "answer",
-    async data=>{
-
-        if(!peer)
-        return;
-
-        try{
-
-            await peer.addIceCandidate(
-
-                new RTCIceCandidate(
-                    data.candidate
-                )
-
-            );
-
-        }catch(e){
-
-            console.error(
-                "ICE ERROR",
-                
-            );
-
-        }
-
-    }
-);
-}
 
 // ================================
 // MIC
@@ -503,15 +477,17 @@ async function switchCamera() {
 
     }
 
-    localStream
-        .getVideoTracks()
-        .forEach(t => t.stop());
+    const oldTrack = localStream.getVideoTracks()[0];
 
-    localStream.removeTrack(
-        localStream.getVideoTracks()[0]
-    );
+if(oldTrack){
 
-    localStream.addTrack(newVideoTrack);
+    oldTrack.stop();
+
+    localStream.removeTrack(oldTrack);
+
+}
+
+localStream.addTrack(newVideoTrack);
 
     localVideo.srcObject = localStream;
 
@@ -530,7 +506,9 @@ timer=setInterval(()=>{
 seconds++;
 
 
-callTimer.textContent =
+if(callTimer){
+
+    callTimer.textContent =
 
 String(
 Math.floor(seconds/60)
@@ -794,10 +772,10 @@ listenIceCandidates(
 
         }catch(e){
 
-            console.error(
-                "ICE ERROR",
-                e
-            );
+           console.error(
+    "ICE ERROR",
+    e
+);
 
         }
 
@@ -916,7 +894,13 @@ if(localStream){
     localStream
     .getTracks()
     .forEach(t=>t.stop());
+if(peer){
 
+    peer.close();
+
+    peer = null;
+
+}
     localStream=null;
     mediaOpened = false;
 }
