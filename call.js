@@ -215,6 +215,27 @@ break;
 
 
     callStatus.textContent = "Đã kết nối";
+            // Người bên kia full màn hình
+remoteVideo.style.display = "block";
+remoteVideo.style.position = "fixed";
+remoteVideo.style.left = "0";
+remoteVideo.style.top = "0";
+remoteVideo.style.width = "100vw";
+remoteVideo.style.height = "100vh";
+remoteVideo.style.objectFit = "cover";
+remoteVideo.style.borderRadius = "0";
+remoteVideo.style.zIndex = "1";
+
+// Camera của mình thành ô nhỏ
+localVideo.style.position = "fixed";
+localVideo.style.width = "120px";
+localVideo.style.height = "180px";
+localVideo.style.top = "20px";
+localVideo.style.right = "20px";
+localVideo.style.left = "auto";
+localVideo.style.borderRadius = "18px";
+localVideo.style.objectFit = "cover";
+localVideo.style.zIndex = "999";
     document.body.classList.add("call-connected");
 
     if (!timer)
@@ -419,13 +440,26 @@ async function openMedia() {
         audio: true,
         video: callType === "video"
     });
-
-   if (callType === "video" && localVideo) {
+if (callType === "video" && localVideo) {
 
     localVideo.srcObject = localStream;
     localVideo.muted = true;
     localVideo.autoplay = true;
     localVideo.playsInline = true;
+
+    // Chưa bắt máy -> camera của mình full màn hình
+    localVideo.style.position = "fixed";
+    localVideo.style.left = "0";
+    localVideo.style.top = "0";
+    localVideo.style.width = "100vw";
+    localVideo.style.height = "100vh";
+    localVideo.style.objectFit = "cover";
+    localVideo.style.borderRadius = "0";
+    localVideo.style.zIndex = "1";
+
+    if(remoteVideo){
+        remoteVideo.style.display = "none";
+    }
 
     localVideo.play().catch(console.error);
 }
