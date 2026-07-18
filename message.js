@@ -458,16 +458,16 @@ ${msg.images.slice(0,4).map((img,index)=>`
 
 <div class="chat-image-item">
 
+<button class="delete-image-btn">
+×
+</button>
+
 <img
 class="chat-image"
 src="${img}"
 onclick='showChatGallery(${JSON.stringify(msg.images)},${index})'>
-${
-msg.images.length>4 && index===3
-?
-`<div class="more-images">
-+${msg.images.length-4}
-</div>`
+
+</div>
 :
 ""
 }
@@ -482,10 +482,18 @@ msg.images.length>4 && index===3
 msg.image
 ?
 `
+<div class="chat-image-item">
+
+<button class="delete-image-btn">
+×
+</button>
+
 <img
 class="chat-image"
 src="${msg.image}"
 onclick="showChatImage(this.src)">
+
+</div>
 `
 :
 ""
