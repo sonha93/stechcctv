@@ -1306,6 +1306,128 @@ const storyVideo = document.getElementById("storyVideo");
 const storyImage = document.getElementById("storyImage");
 const storyText =
 document.getElementById("storyText");
+async function sendStoryMessage(text){
+
+
+    const user = auth.currentUser;
+
+    if(!user || !currentStoryOwner)
+        return;
+
+
+    if(user.uid === currentStoryOwner)
+        return;
+
+
+
+    const snap = await getDocs(
+        query(
+            collection(db,"conversations"),
+            where(
+                "members",
+                "array-contains",
+                user.uid
+            )
+        )
+    );
+
+
+    let conversationId = null;
+
+
+    snap.forEach(docSnap=>{
+
+        const data = docSnap.data();
+
+
+        if(
+            data.members &&
+            data.members.includes(currentStoryOwner)
+        ){
+
+            conversationId = docSnap.id;
+
+        }
+
+    });
+
+
+
+    if(!conversationId){
+
+        const ref = await addDoc(
+            collection(db,"conversations"),
+            {
+
+                members:[
+                    user.uid,
+                    currentStoryOwner
+                ],
+
+                lastMessage:text,
+
+                updatedAt:
+                serverTimestamp()
+
+            }
+        );
+
+
+        conversationId = ref.id;
+
+    }
+
+
+
+    await addDoc(
+
+        collection(
+            db,
+            "conversations",
+            conversationId,
+            "messages"
+        ),
+
+        {
+
+            sender:user.uid,
+
+            text:text,
+
+            type:"story",
+
+            storyId:currentStoryId,
+
+            createdAt:
+            serverTimestamp()
+
+        }
+
+    );
+
+
+
+    await updateDoc(
+
+        doc(
+            db,
+            "conversations",
+            conversationId
+        ),
+
+        {
+
+            lastMessage:text,
+
+            updatedAt:
+            serverTimestamp()
+
+        }
+
+    );
+
+
+}
 const storyLikeBtn =
 document.getElementById("storyLikeBtn");
 
@@ -1324,6 +1446,10 @@ likeCount:increment(1)
 }
 );
 
+
+await sendStoryMessage(
+"❤️ đã thích story của bạn"
+);
 };
 
 }
@@ -1371,18 +1497,8 @@ createdAt:serverTimestamp()
 );
 
 
-// gửi thông báo cho chủ story
-
-await addDoc(
-collection(db,"notifications"),
-{
-uid:story.uid,
-from:auth.currentUser.uid,
-type:"story_comment",
-storyId:currentStoryId,
-text:text,
-createdAt:serverTimestamp()
-}
+await sendStoryMessage(
+`đã bình luận story của bạn: ${text}`
 );
 
 
@@ -1503,9 +1619,13 @@ if(auth.currentUser && auth.currentUser.uid === s.uid){
 
     storyMore.style.display="block";
 
-    if(storyLikeBox)
-        storyLikeBox.style.display="none";
 
+    // chính chủ vẫn thấy tim
+    if(storyLikeBox)
+        storyLikeBox.style.display="flex";
+
+
+    // chính chủ không được bình luận story mình
     if(storyCommentBox)
         storyCommentBox.style.display="none";
 
@@ -1514,14 +1634,15 @@ if(auth.currentUser && auth.currentUser.uid === s.uid){
 
     storyMore.style.display="none";
 
+
     if(storyLikeBox)
         storyLikeBox.style.display="flex";
+
 
     if(storyCommentBox)
         storyCommentBox.style.display="block";
 
 }
-
 
 storyVideo.style.display="none";
 storyImage.style.display="none";
