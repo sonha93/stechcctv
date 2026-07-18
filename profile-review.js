@@ -678,6 +678,34 @@ if(type==="orders"){
 if(block.iBlocked || block.blockedMe){
     return;
 }
+    const snap = await getDocs(
+        query(
+            collection(db,"orders"),
+            where("uid","==",profileUid)
+        )
+    );
+    let hasStory = false;
+
+const now = Date.now();
+
+snap.forEach(docSnap=>{
+
+    const s = docSnap.data();
+
+    if(s.createdAt){
+
+        const time = s.createdAt.toDate().getTime();
+
+        if(now - time < 86400000){
+
+            hasStory = true;
+
+        }
+
+    }
+
+});
+
 
 if(hasStory){
 
@@ -1214,12 +1242,7 @@ storyBar.style.display = "";
     for (const docSnap of snap.docs) {
 
        const s = docSnap.data();
-if(
-    s.createdAt &&
-    Date.now() - s.createdAt.toDate().getTime() > 86400000
-){
-    continue;
-}
+
 const userSnap = await getDoc(doc(db,"users",s.uid));
 
 const u = userSnap.exists()
