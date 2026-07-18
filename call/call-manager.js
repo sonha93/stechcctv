@@ -114,9 +114,9 @@ async function startCall(type){
         otherUid,
         type
     );
-    listenCallStatus(currentCallId,(status)=>{
+   listenCallStatus(currentCallId,(call)=>{
 
-    if(status==="accepted"){
+    if(call.status==="accepted"){
 
         callAccepted = true;
 
@@ -225,10 +225,6 @@ console.log("Có cuộc gọi đến", call);
 // END CALL
 // ================================
 
-// ================================
-// END CALL
-// ================================
-
 export async function endCall() {
 
     if (!currentCallId) {
@@ -256,37 +252,7 @@ export async function endCall() {
 
     }
 
-    await db
-.collection("conversations")
-.doc(conversationId)
-.collection("messages")
-.add({
-
-    senderId: currentUser.uid,
-
-    type: "call",
-
-    callType: currentCallType,          
-
-    direction: "outgoing",             
-
-    status: callStatus,                
-
-    text: text,
-
-    duration: duration,
-
-    startedAt: callAccepted
-        ? firebase.firestore.Timestamp.fromMillis(callStartTime)
-        : null,
-
-    endedAt: firebase.firestore.Timestamp.now(),
-
-    createdAt: firebase.firestore.Timestamp.now(),
-
-    seenBy: [currentUser.uid]
-
-});
+    await updateCallStatus(currentCallId, callStatus);
     await removeCall(currentCallId);
 
     closeMedia();
