@@ -506,8 +506,7 @@ async function switchCamera(){
         await navigator.mediaDevices.getUserMedia({
 
             video:{
-                facingMode:{
-                    exact: currentFacingMode
+                facingMode:currentFacingMode
                 }
             },
 
