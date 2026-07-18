@@ -364,10 +364,7 @@ peer = new RTCPeerConnection({
 
 
 peer.ontrack = e => {
-  console.log("===== ONTRACK =====");
-    console.log("kind:", e.track.kind);
-    console.log("streams:", e.streams);
-    console.log("stream id:", e.streams[0]?.id);
+
     const stream = e.streams[0];
 
     if (remoteVideo) {
@@ -447,10 +444,6 @@ async function openMedia() {
         audio: true,
         video: callType === "video"
     });
-    console.log("===== OPEN MEDIA =====");
-console.log(localStream);
-console.log("video tracks:", localStream.getVideoTracks().length);
-console.log("audio tracks:", localStream.getAudioTracks().length);
 if (callType === "video" && localVideo) {
 
     localVideo.srcObject = localStream;
@@ -475,8 +468,6 @@ if (callType === "video" && localVideo) {
     localVideo.play().catch(console.error);
 }
     localStream.getTracks().forEach(track => {
-         console.log("ADD TRACK:", track.kind);
-
         peer.addTrack(track, localStream);
     });
 }
@@ -655,8 +646,6 @@ await openMedia();
         }
 
 },60000);
-    console.log("===== CREATE OFFER =====");
-console.log(peer.getSenders());
     const offer = await peer.createOffer();
 
 await peer.setLocalDescription(offer);
@@ -778,8 +767,7 @@ await peer.setRemoteDescription(
 );
 
 
-console.log("===== CREATE ANSWER =====");
-console.log(peer.getSenders());
+
 const answer =
 await peer.createAnswer();
 
