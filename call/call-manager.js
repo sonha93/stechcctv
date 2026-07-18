@@ -114,9 +114,9 @@ async function startCall(type){
         otherUid,
         type
     );
-   listenCallStatus(currentCallId,(call)=>{
+    listenCallStatus(currentCallId,(status)=>{
 
-    if(call.status==="accepted"){
+    if(status==="accepted"){
 
         callAccepted = true;
 
@@ -175,7 +175,8 @@ const userAvatar =
 
 
 
-`call.html?uid=${otherUid}&conversationId=${conversationId}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=0&type=${type}`
+window.open(
+    `call.html?uid=${otherUid}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=0&type=${type}`,
     "callWindow",
     "width=420,height=700"
 );
@@ -212,13 +213,17 @@ async function incomingCall(call){
         "default-avatar.png";
 
    const callWindow = window.open(
-`call.html?uid=${call.from}&conversationId=${conversationId}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=1&type=${call.type}`
+    `call.html?uid=${call.from}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=1&type=${call.type}`,
     "callWindow",
     "width=420,height=700"
 );
 
 console.log("Có cuộc gọi đến", call);
 }
+
+// ================================
+// END CALL
+// ================================
 
 // ================================
 // END CALL
@@ -251,7 +256,30 @@ export async function endCall() {
 
     }
 
-    await updateCallStatus(currentCallId, callStatus);
+    await db
+.collection("conversations")
+.doc(conversationId)
+.collection("messages")
+.add({
+
+    senderId: currentUser.uid,
+
+    type:"call",
+
+    callType: currentCallType,
+
+    status: callStatus,
+
+    text:text,
+
+    duration:duration,
+
+    createdAt: firebase.firestore.Timestamp.now(),
+
+    seenBy:[currentUser.uid]
+
+});
+
     await removeCall(currentCallId);
 
     closeMedia();
