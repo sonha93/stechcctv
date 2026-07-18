@@ -107,26 +107,21 @@ body{
 
 #localVideo{
 
-    position:absolute;
+    position:fixed;
 
-    width:130px;
+    inset:0;
 
-    height:190px;
+    width:100%;
 
-    right:20px;
-
-    top:80px;
-
+    height:100%;
 
     object-fit:cover;
 
-    border-radius:18px;
+    background:#000;
 
-    border:2px solid rgba(255,255,255,.5);
+    z-index:1;
 
-    background:#111;
-
-    z-index:50;
+    transition:.3s;
 
 }
 
@@ -560,12 +555,26 @@ body.video-call.call-connected .call-name{
 }
 
 body.video-call.call-connected #localVideo{
-    top:20px;
-    right:15px;
-    width:100px;
-    height:140px;
-}
 
+    position:absolute;
+
+    top:20px;
+
+    right:15px;
+
+    width:100px;
+
+    height:140px;
+
+    border-radius:18px;
+
+    border:2px solid rgba(255,255,255,.5);
+
+    object-fit:cover;
+
+    z-index:50;
+
+}
 /* VOICE CALL */
 
 body.voice-call .video-box{
