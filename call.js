@@ -1123,3 +1123,38 @@ cameraBtn.onclick = () => {
 
     cameraBtn.style.opacity = cameraOff ? "0.45" : "1";
 };
+const box = document.getElementById("remotePreview");
+
+let startX = 0;
+let startY = 0;
+let x = window.innerWidth - box.offsetWidth - 15;
+let y = 80;
+
+box.style.left = x + "px";
+box.style.top = y + "px";
+box.style.right = "auto";
+
+box.onpointerdown = (e)=>{
+
+    startX = e.clientX - x;
+    startY = e.clientY - y;
+
+    box.setPointerCapture(e.pointerId);
+
+    box.onpointermove = (ev)=>{
+
+        x = ev.clientX - startX;
+        y = ev.clientY - startY;
+
+        // Giới hạn trong màn hình
+        x = Math.max(0, Math.min(x, window.innerWidth - box.offsetWidth));
+        y = Math.max(0, Math.min(y, window.innerHeight - box.offsetHeight));
+
+        box.style.left = x + "px";
+        box.style.top = y + "px";
+    };
+
+    box.onpointerup = ()=>{
+        box.onpointermove = null;
+    };
+};
