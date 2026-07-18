@@ -1306,7 +1306,10 @@ const storyVideo = document.getElementById("storyVideo");
 const storyImage = document.getElementById("storyImage");
 const storyText =
 document.getElementById("storyText");
-async function sendStoryMessage(text){
+async function sendStoryMessage(
+text,
+story
+){
 
 
     const user = auth.currentUser;
@@ -1400,30 +1403,38 @@ updatedAt:serverTimestamp()
 
     await addDoc(
 
-        collection(
-            db,
-            "conversations",
-            conversationId,
-            "messages"
-        ),
+collection(
+db,
+"conversations",
+conversationId,
+"messages"
+),
 
-        {
+{
 
-            sender:user.uid,
+sender:user.uid,
 
-            text:text,
+text,
 
-            type:"story",
+type:"story",
 
-            storyId:currentStoryId,
+storyId:currentStoryId,
 
-            createdAt:
-            serverTimestamp()
+storyType:
+story.type || "",
 
-        }
+storyMedia:
+story.media || "",
 
-    );
+storyText:
+story.text || "",
 
+createdAt:
+serverTimestamp()
+
+}
+
+);
 
 
     await updateDoc(
@@ -1528,9 +1539,13 @@ storyLikeBtn.onclick = async()=>{
 // GỬI TIN NHẮN CHO CHỦ STORY
 if(currentStoryOwner !== auth.currentUser.uid){
 
-    await sendStoryMessage(
-                `❤️ đã thích story "${storyTitle}" của bạn`
-            );
+   await sendStoryMessage(
+
+`❤️ đã thích story "${storyTitle}" của bạn`,
+
+story
+
+);
 
         }
 
@@ -1578,10 +1593,12 @@ createdAt:serverTimestamp()
 
 
 await sendStoryMessage(
-`đã bình luận story của bạn: ${text}`
+
+`đã bình luận story của bạn: ${text}`,
+
+story
+
 );
-
-
 input.value="";
 
 
@@ -1695,32 +1712,25 @@ const storyLikeBox = document.getElementById("storyLikeBox");
 const storyCommentBox = document.getElementById("storyCommentBox");
 
 
-if(auth.currentUser && auth.currentUser.uid === s.uid){
+const isOwner =
+auth.currentUser &&
+auth.currentUser.uid === s.uid;
 
-    storyMore.style.display="block";
+storyMore.style.display =
+isOwner ? "block" : "none";
 
+if(storyLikeBox){
 
-    // chính chủ vẫn thấy tim
-    if(storyLikeBox)
-        storyLikeBox.style.display="flex";
+    storyLikeBox.style.display="flex";
 
+}
 
-    // chính chủ không được bình luận story mình
-    if(storyCommentBox)
-        storyCommentBox.style.display="none";
+if(storyCommentBox){
 
+    storyCommentBox.hidden = isOwner;
 
-}else{
-
-    storyMore.style.display="none";
-
-
-    if(storyLikeBox)
-        storyLikeBox.style.display="flex";
-
-
-    if(storyCommentBox)
-        storyCommentBox.style.display="block";
+    storyCommentBox.style.display =
+    isOwner ? "none" : "flex";
 
 }
 
