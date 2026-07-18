@@ -520,3 +520,51 @@ call.acceptedAt.toDate()
     });
 
 }
+// =====================================
+// SAVE CALL MESSAGE TO CHAT
+// =====================================
+
+export async function saveCallMessage(
+    conversationId,
+    call
+){
+
+    return db
+    .collection("conversations")
+    .doc(conversationId)
+    .collection("messages")
+    .add({
+
+        senderId: call.from,
+
+        type:"call",
+
+        callType:
+        call.type || "audio",
+
+        status:
+        call.status,
+
+        duration:
+        call.duration || 0,
+
+        text:
+        call.status === "missed"
+        ? "📞 Cuộc gọi nhỡ"
+
+        :
+
+        call.type === "video"
+        ? "📹 Cuộc gọi video"
+
+        :
+
+        "📞 Cuộc gọi thoại",
+
+
+        createdAt:
+        firebase.firestore.FieldValue.serverTimestamp()
+
+    });
+
+}
