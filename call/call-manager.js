@@ -28,7 +28,6 @@ let currentUser = null;
 
 let currentCallId = null;
 
-let peer = null;
 
 let currentCallType = "audio";
 
@@ -220,51 +219,6 @@ async function incomingCall(call){
 );
 
 console.log("Có cuộc gọi đến", call);
-
-setTimeout(()=>{
-
-    const accept = callWindow.document.getElementById("acceptBtn");
-    const reject = callWindow.document.getElementById("rejectBtn");
-
-
-    if (accept) {
-
-        accept.onclick = async () => {
-
-            callAccepted = true;
-            callStatus = "accepted";
-            callStartTime = Date.now();
-
-            await updateCallStatus(
-                currentCallId,
-                "accepted"
-            );
-
-        };
-
-    }
-
-
-    if (reject) {
-
-        reject.onclick = async () => {
-
-            callStatus = "rejected";
-
-            await updateCallStatus(
-                currentCallId,
-                "rejected"
-            );
-
-            await removeCall(currentCallId);
-
-        };
-
-    }
-
-
-},1000);
-
 }
 
 // ================================
