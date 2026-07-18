@@ -436,65 +436,55 @@ async function openMedia() {
 
 async function switchCamera() {
 
-    if (callType !== "video" || !localStream || !peer) return;
+    if (callType !== "video" || !peer || !localStream) return;
 
-    currentFacingMode =
-        currentFacingMode === "user"
-        ? "environment"
-        : "user";
+    const devices = await navigator.mediaDevices.enumerateDevices();
 
-    const newStream =
-    await navigator.mediaDevices.getUserMedia({
+    const cameras = devices.filter(d => d.kind === "videoinput");
 
+    if (cameras.length < 2) return;
+
+    const currentTrack = localStream.getVideoTracks()[0];
+    const settings = currentTrack.getSettings();
+
+    let index = cameras.findIndex(c => c.deviceId === settings.deviceId);
+
+    index = (index + 1) % cameras.length;
+
+    const newStream = await navigator.mediaDevices.getUserMedia({
         video: {
-            facingMode: {
-                exact: currentFacingMode
+            deviceId: {
+                exact: cameras[index].deviceId
             }
         },
-
         audio: false
-
-    }).catch(async () => {
-
-        return navigator.mediaDevices.getUserMedia({
-
-            video: {
-                facingMode: currentFacingMode
-            },
-
-            audio: false
-
-        });
-
     });
 
-    const newVideoTrack =
-    newStream.getVideoTracks()[0];
+    const newTrack = newStream.getVideoTracks()[0];
 
-    const sender =
-    peer.getSenders().find(s =>
-        s.track &&
-        s.track.kind === "video"
+    const sender = peer.getSenders().find(s =>
+        s.track && s.track.kind === "video"
     );
 
     if (sender) {
-
-        await sender.replaceTrack(newVideoTrack);
-
+        await sender.replaceTrack(newTrack);
     }
 
-    localStream
-        .getVideoTracks()
-        .forEach(t => t.stop());
+    currentTrack.stop();
 
-    localStream.removeTrack(
-        localStream.getVideoTracks()[0]
-    );
+    const audioTrack = localStream.getAudioTracks()[0];
 
-    localStream.addTrack(newVideoTrack);
+    localStream = new MediaStream();
+
+    if (audioTrack) {
+        localStream.addTrack(audioTrack);
+    }
+
+    localStream.addTrack(newTrack);
 
     localVideo.srcObject = localStream;
 
+    await localVideo.play().catch(() => {});
 }
 // ================================
 // TIMER
