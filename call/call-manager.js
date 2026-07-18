@@ -175,8 +175,7 @@ const userAvatar =
 
 
 
-window.open(
-    `call.html?uid=${otherUid}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=0&type=${type}`,
+`call.html?uid=${otherUid}&conversationId=${conversationId}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=0&type=${type}`
     "callWindow",
     "width=420,height=700"
 );
@@ -213,7 +212,7 @@ async function incomingCall(call){
         "default-avatar.png";
 
    const callWindow = window.open(
-    `call.html?uid=${call.from}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=1&type=${call.type}`,
+`call.html?uid=${call.from}&conversationId=${conversationId}&callId=${currentCallId}&name=${encodeURIComponent(userName)}&avatar=${encodeURIComponent(userAvatar)}&incoming=1&type=${call.type}`
     "callWindow",
     "width=420,height=700"
 );
