@@ -1423,18 +1423,37 @@ else{
     storyImage.style.display="none";
 
 
-    if(s.type==="video"){
+   if(s.type==="video"){
 
-        storyVideo.src=s.media;
-        storyVideo.style.display="block";
-        storyVideo.play();
+    storyVideo.src=s.media;
+    storyVideo.style.display="block";
 
-    }else{
+    storyVideo.currentTime = 0;
 
-        storyImage.src=s.media;
-        storyImage.style.display="block";
+    storyVideo.play().catch(()=>{});
 
-    }
+
+    // VIDEO STORY HẾT TỰ THOÁT
+    storyVideo.onended = () => {
+
+        storyViewer.classList.remove("active");
+
+        storyVideo.pause();
+         storyVideo.currentTime = 0;
+        storyVideo.src="";
+
+        currentStoryId = null;
+        currentStoryOwner = null;
+
+    };
+
+
+}else{
+
+    storyImage.src=s.media;
+    storyImage.style.display="block";
+
+}
 
 };
 storyMore.onclick = async ()=>{
