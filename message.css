@@ -1480,3 +1480,38 @@ font-size:28px;
     background:none;
     cursor:pointer;
 }
+.chat-image-item{
+    position:relative;
+    display:inline-block;
+}
+
+
+.delete-image-btn{
+
+    position:absolute;
+
+    top:0;
+    right:0;
+
+    transform:translate(50%,-50%);
+
+    width:22px;
+    height:22px;
+
+    border-radius:50%;
+    border:none;
+
+    background:#333;
+    color:white;
+
+    font-size:16px;
+    font-weight:bold;
+
+    z-index:20;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+}
