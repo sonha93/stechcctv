@@ -29,17 +29,17 @@ const rtcConfig = {
 
 export async function getAudioStream(){
 
-    localStream =
-    await navigator.mediaDevices
-    .getUserMedia({
+   const stream =
+await navigator.mediaDevices
+.getUserMedia({
 
-        audio:true,
-        video:false
+    audio:true,
+    video:true
 
-    });
+});
 
 
-    return localStream;
+localStream = stream;
 
 }
 
@@ -79,15 +79,17 @@ export function createPeer(){
     );
 
 
-    if(!localStream){
+   if(!localStream){
 
-        console.log(
-            "❌ Chưa có camera/mic stream"
-        );
+    console.log(
+        "❌ Chưa có camera/mic stream"
+    );
 
-        return peerConnection;
-    }
+    peerConnection.close();
+    peerConnection = null;
 
+    return null;
+}
 
     localStream
     .getTracks()
@@ -117,35 +119,47 @@ export function createPeer(){
 // REMOTE STREAM
 // ================================
 
-export function onRemoteStream(
-callback
-){
+// ================================
+// REMOTE STREAM
+// ================================
 
-    if(!peerConnection)
-    return;
+export function onRemoteStream(callback){
 
-
-   peerConnection
-.ontrack =
-event=>{
-
-    const stream =
-    event.streams[0];
-
-
-    if(stream){
-
-        console.log(
-            "REMOTE VIDEO OK",
-            stream.getTracks()
-        );
-
-
-        callback(stream);
-
+    if(!peerConnection){
+        console.log("❌ Chưa có peerConnection");
+        return;
     }
 
-};
+
+    peerConnection.addEventListener(
+        "track",
+        event=>{
+
+            console.log(
+                "REMOTE TRACK:",
+                event.track.kind
+            );
+
+
+            const stream =
+            event.streams[0];
+
+
+            if(stream){
+
+                console.log(
+                    "✅ REMOTE STREAM OK",
+                    stream.getTracks()
+                );
+
+
+                callback(stream);
+
+            }
+
+        }
+    );
+
 }
 // ================================
 // ICE
