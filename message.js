@@ -448,12 +448,6 @@ onclick="scrollToMessage('${msg.replyTo.id}')">
 `
 :""
 }
-${
-msg.images && msg.images.length
-?
-`
-<div class="chat-images count-${Math.min(msg.images.length,4)}">
-
 ${msg.images.slice(0,4).map((img,index)=>`
 
 <div class="chat-image-item">
