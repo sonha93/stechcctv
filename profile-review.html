@@ -1360,6 +1360,87 @@ opacity:.8;
  #storyVideo::-webkit-media-controls{
     display:none !important;
 }
+ /* ==========================
+   STORY REPLY
+========================== */
+
+.story-reply-box{
+
+    position:absolute;
+
+    bottom:20px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:92%;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    z-index:100;
+
+}
+
+
+#storyReplyInput{
+
+    flex:1;
+
+    height:44px;
+
+    border-radius:25px;
+
+    border:1px solid rgba(255,255,255,.8);
+
+    background:rgba(0,0,0,.25);
+
+    color:#fff;
+
+    padding:0 18px;
+
+    font-size:15px;
+
+    outline:none;
+
+    backdrop-filter:blur(8px);
+
+}
+
+
+#storyReplyInput::placeholder{
+
+    color:#fff;
+
+}
+
+
+#storyLikeBtn,
+#storySendBtn{
+
+    width:42px;
+
+    height:42px;
+
+    border:none;
+
+    background:none;
+
+    color:white;
+
+    font-size:32px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
 </style>
 </head>
 
@@ -1747,7 +1828,28 @@ stroke-linejoin="round">
     <img id="storyImage">
 
     <!-- Nội dung Story -->
-    <div id="storyText"></div>
+<div id="storyText"></div>
+
+
+<!-- REPLY STORY -->
+<div class="story-reply-box">
+
+    <input 
+        id="storyReplyInput"
+        type="text"
+        placeholder="Gửi tin nhắn"
+    >
+
+    <button id="storyLikeBtn">
+        ❤
+    </button>
+
+    <button id="storySendBtn">
+        ➤
+    </button>
+
+</div>
+
 
 </div>
 <!-- SETTING MENU -->
