@@ -1392,12 +1392,6 @@ updatedAt:serverTimestamp()
 
 }
 );
-
-conversationId = ref.id;
-
-}
-
-
         conversationId = ref.id;
 
     }
@@ -1535,16 +1529,16 @@ storyLikeBtn.onclick = async()=>{
 if(currentStoryOwner !== auth.currentUser.uid){
 
     await sendStoryMessage(
-        `❤️ đã thích story "${storyTitle}" của bạn`
-    );
+                `❤️ đã thích story "${storyTitle}" của bạn`
+            );
 
-}
+        }
 
+    }
 
-};
+};   
 
-
-}
+}    
 const storyCommentSend =
 document.getElementById("storyCommentSend");
 if(storyCommentSend){
