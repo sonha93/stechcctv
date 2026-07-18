@@ -1306,6 +1306,93 @@ const storyVideo = document.getElementById("storyVideo");
 const storyImage = document.getElementById("storyImage");
 const storyText =
 document.getElementById("storyText");
+const storyLikeBtn =
+document.getElementById("storyLikeBtn");
+
+if(storyLikeBtn){
+
+storyLikeBtn.onclick = async()=>{
+
+if(!currentStoryId || !auth.currentUser)
+return;
+
+await updateDoc(
+doc(db,"profile_stories",currentStoryId),
+{
+likes:arrayUnion(auth.currentUser.uid),
+likeCount:increment(1)
+}
+);
+
+};
+
+}
+const storyCommentSend =
+document.getElementById("storyCommentSend");
+
+
+if(storyCommentSend){
+
+storyCommentSend.onclick = async()=>{
+
+
+const input =
+document.getElementById("storyCommentInput");
+
+
+const text = input.value.trim();
+
+
+if(!text || !currentStoryId) return;
+
+
+const storySnap =
+await getDoc(
+doc(db,"profile_stories",currentStoryId)
+);
+
+
+const story = storySnap.data();
+
+
+
+await addDoc(
+collection(
+db,
+"profile_stories",
+currentStoryId,
+"comments"
+),
+{
+uid:auth.currentUser.uid,
+text:text,
+createdAt:serverTimestamp()
+}
+);
+
+
+// gửi thông báo cho chủ story
+
+await addDoc(
+collection(db,"notifications"),
+{
+uid:story.uid,
+from:auth.currentUser.uid,
+type:"story_comment",
+storyId:currentStoryId,
+text:text,
+createdAt:serverTimestamp()
+}
+);
+
+
+input.value="";
+
+
+};
+
+
+}
 window.openStory = async function(id){
 let blocked = false;
 
@@ -1405,18 +1492,51 @@ else{
     `profile-review.html?uid=${s.uid}`;
 
 };
-    storyViewer.classList.add("active");
+   storyViewer.classList.add("active");
 
 
-    if(auth.currentUser && auth.currentUser.uid === s.uid){
+const storyLikeBox = document.getElementById("storyLikeBox");
+const storyCommentBox = document.getElementById("storyCommentBox");
 
-        storyMore.style.display="block";
 
-    }else{
+if(auth.currentUser && auth.currentUser.uid === s.uid){
 
-        storyMore.style.display="none";
+    storyMore.style.display="block";
 
-    }
+    const storyLikeBox = document.getElementById("storyLikeBox");
+    const storyCommentBox = document.getElementById("storyCommentBox");
+
+    if(storyLikeBox)
+        storyLikeBox.style.display="none";
+
+    if(storyCommentBox)
+        storyCommentBox.style.display="none";
+
+
+}else{
+
+    storyMore.style.display="none";
+
+    const storyLikeBox = document.getElementById("storyLikeBox");
+    const storyCommentBox = document.getElementById("storyCommentBox");
+
+    if(storyLikeBox)
+        storyLikeBox.style.display="flex";
+
+    if(storyCommentBox)
+        storyCommentBox.style.display="block";
+
+}
+
+
+    // HIỆN TIM + BÌNH LUẬN
+    if(storyLikeBox)
+        storyLikeBox.style.display="flex";
+
+    if(storyCommentBox)
+        storyCommentBox.style.display="block";
+
+}
 
 
     storyVideo.style.display="none";
