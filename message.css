@@ -205,16 +205,31 @@ body{
 }
 
 #sendBtn{
+
+    width:46px;
     height:46px;
-    width:90px;
+
+    padding:0;
+
     border:none;
-    border-radius:999px;
+    border-radius:50%;
+
     background:#0084ff;
+
     color:#fff;
-    font-weight:bold;
-    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+
 }
 
+#sendBtn svg{
+    width:22px;
+    height:22px;
+}
 @media(max-width:600px){
 
 .chat-container{
