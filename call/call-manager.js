@@ -1,35 +1,20 @@
-
 // ================================
 // CALL MANAGER JS
 // CONNECT ALL CALL SYSTEM
 // ================================
-
 
 import {
     createCall,
     listenIncomingCall,
     listenCallStatus,
     updateCallStatus,
-    removeCall,
-    saveOffer,
-    saveAnswer,
-    listenSignal,
-    addIceCandidate,
-    listenIceCandidates
-}
-from "./call-firebase.js";
-
+    removeCall
+} from "./call-firebase.js";
 
 import {
-    getAudioStream,
-    getVideoStream,
-    createPeer,
-    onRemoteStream,
-    onIceCandidate,
-    closeMedia,
-    showLocalVideo
-}
-from "./call-media.js";
+    closeMedia
+} from "./call-media.js";
+
 
 
 // ================================
@@ -189,15 +174,6 @@ const userAvatar =
     "default-avatar.png";
 
 
-if(type==="video"){
-
-    await getVideoStream();
-showLocalVideo();
-}else{
-
-    await getAudioStream();
-
-}
 
 
 window.open(
@@ -263,17 +239,6 @@ setTimeout(()=>{
                 currentCallId,
                 "accepted"
             );
-
-
-            if(call.type==="video"){
-
-                await getVideoStream();
-                 showLocalVideo();
-            }else{
-
-                await getAudioStream();
-
-            }
 
         };
 
