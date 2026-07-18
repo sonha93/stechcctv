@@ -86,7 +86,6 @@ document.getElementById("endBtn");
 // ================================
 
 let localStream=null;
-let mediaOpened = false;
 let currentFacingMode = "user";
 let peer=null;
 
@@ -162,7 +161,18 @@ listenCallStatus(callId, async (call) => {
         return;
     }
 
-    
+    // NHẬN ANSWER TỪ BÊN KIA
+    if (
+        call.answer &&
+        peer &&
+        !peer.currentRemoteDescription
+    ) {
+
+        await peer.setRemoteDescription(
+            new RTCSessionDescription(call.answer)
+        );
+
+    }
 
     switch (call.status) {
 
@@ -176,13 +186,7 @@ listenCallStatus(callId, async (call) => {
 
 break;
     case "accepted":
-if(callTimeout){
 
-    clearTimeout(callTimeout);
-
-    callTimeout = null;
-
-}
     ringtone.pause();
 
     if(callingTone){
@@ -205,7 +209,7 @@ if(callTimeout){
 
         createPeer();
 
- 
+        await openMedia();
 
     }
 
@@ -244,13 +248,8 @@ break;
     if (localStream)
         localStream.getTracks().forEach(t => t.stop());
 
-   if(peer){
-
-    peer.close();
-
-    peer = null;
-
-}
+    if (peer)
+        peer.close();
 
     setTimeout(() => {
         window.close();
@@ -292,25 +291,16 @@ case "busy":
 
 });
 
-if(userName && callName){
-
-    callName.textContent =
-    decodeURIComponent(userName);
-
+if(userName){
+    callName.textContent = decodeURIComponent(userName);
 }
 
 if(userAvatar){
     callAvatar.src = decodeURIComponent(userAvatar);
 }
-if(callAvatar){
-
-    callAvatar.onerror = () => {
-
-        callAvatar.src = "./default-avatar.png";
-
-    };
-
-}
+callAvatar.onerror = () => {
+    callAvatar.src = "./default-avatar.png";
+};
 
 
 // ================================
@@ -320,19 +310,16 @@ if(callAvatar){
 
 function createPeer(){
 
-    if (peer) {
-        return;
-    }
 
-    peer = new RTCPeerConnection({
+peer = new RTCPeerConnection({
 
-        iceServers: [
+    iceServers: [
 
-            {
-                urls: [
-                    "stun:stun.relay.metered.ca:80"
-                ]
-            },
+        {
+            urls: [
+                "stun:stun.relay.metered.ca:80"
+            ]
+        },
 
         {
             urls: [
@@ -386,6 +373,41 @@ peer.onicecandidate = e => {
     }
 
 };
+// ================================
+// LISTEN REMOTE ICE
+// ================================
+
+candidateUnsubscribe =
+listenIceCandidates(
+    callId,
+    incoming ? "offer" : "answer",
+    async data=>{
+
+        if(!peer)
+        return;
+
+        try{
+
+            await peer.addIceCandidate(
+
+                new RTCIceCandidate(
+                    data.candidate
+                )
+
+            );
+
+        }catch(e){
+
+            console.error(
+                "ICE ERROR",
+                
+            );
+
+        }
+
+    }
+);
+}
 
 // ================================
 // MIC
@@ -393,39 +415,23 @@ peer.onicecandidate = e => {
 
 async function openMedia() {
 
-    // Đã mở camera/mic thì không mở lại
-    if (mediaOpened && localStream) {
-        return;
-    }
-
     localStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: callType === "video"
     });
 
-    mediaOpened = true;
+   if (callType === "video" && localVideo) {
 
-    if (callType === "video" && localVideo) {
+    localVideo.srcObject = localStream;
+    localVideo.muted = true;
+    localVideo.autoplay = true;
+    localVideo.playsInline = true;
 
-        localVideo.srcObject = localStream;
-        localVideo.muted = true;
-        localVideo.autoplay = true;
-        localVideo.playsInline = true;
-
-        await localVideo.play().catch(() => {});
-    }
-
-    // Chỉ addTrack đúng 1 lần
-    if (peer && peer.getSenders().length === 0) {
-
-        localStream.getTracks().forEach(track => {
-
-            peer.addTrack(track, localStream);
-
-        });
-
-    }
-
+    localVideo.play().catch(console.error);
+}
+    localStream.getTracks().forEach(track => {
+        peer.addTrack(track, localStream);
+    });
 }
 
 async function switchCamera() {
@@ -477,17 +483,15 @@ async function switchCamera() {
 
     }
 
-    const oldTrack = localStream.getVideoTracks()[0];
+    localStream
+        .getVideoTracks()
+        .forEach(t => t.stop());
 
-if(oldTrack){
+    localStream.removeTrack(
+        localStream.getVideoTracks()[0]
+    );
 
-    oldTrack.stop();
-
-    localStream.removeTrack(oldTrack);
-
-}
-
-localStream.addTrack(newVideoTrack);
+    localStream.addTrack(newVideoTrack);
 
     localVideo.srcObject = localStream;
 
@@ -506,9 +510,7 @@ timer=setInterval(()=>{
 seconds++;
 
 
-if(callTimer){
-
-    callTimer.textContent =
+callTimer.textContent =
 
 String(
 Math.floor(seconds/60)
@@ -519,7 +521,7 @@ Math.floor(seconds/60)
 +
 String(seconds%60)
 .padStart(2,"0");
-}
+
 
 },1000);
 
@@ -772,10 +774,10 @@ listenIceCandidates(
 
         }catch(e){
 
-           console.error(
-    "ICE ERROR",
-    e
-);
+            console.error(
+                "ICE ERROR",
+                e
+            );
 
         }
 
@@ -894,15 +896,9 @@ if(localStream){
     localStream
     .getTracks()
     .forEach(t=>t.stop());
-if(peer){
 
-    peer.close();
-
-    peer = null;
-
-}
     localStream=null;
-    mediaOpened = false;
+
 }
 
 
