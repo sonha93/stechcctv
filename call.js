@@ -101,7 +101,7 @@ let callUnsubscribe = null;
 let callTimeout = null;
 let timer=null;
 
-let seconds=0;
+let acceptedAt = null;
 // ================================
 // VIBRATION
 // ================================
@@ -241,7 +241,11 @@ localVideo.style.borderRadius = "18px";
 localVideo.style.objectFit = "cover";
 localVideo.style.zIndex = "999";
     document.body.classList.add("call-connected");
+if (call.acceptedAt && call.acceptedAt.toDate) {
 
+    acceptedAt = call.acceptedAt.toDate().getTime();
+
+}
     if (!timer)
         startTimer();
 
@@ -591,28 +595,36 @@ async function switchCamera(){
 
 function startTimer(){
 
+    if(timer){
 
-timer=setInterval(()=>{
+        clearInterval(timer);
 
+    }
 
-seconds++;
+    timer = setInterval(()=>{
 
+        if(!acceptedAt) return;
 
-callTimer.textContent =
+        const seconds =
+        Math.floor(
+            (Date.now() - acceptedAt) / 1000
+        );
 
-String(
-Math.floor(seconds/60)
-).padStart(2,"0")
+        callTimer.textContent =
 
-+":"
+        String(
+            Math.floor(seconds/60)
+        ).padStart(2,"0")
 
-+
-String(seconds%60)
-.padStart(2,"0");
+        +":"
 
+        +
 
-},1000);
+        String(
+            seconds%60
+        ).padStart(2,"0");
 
+    },1000);
 
 }
 
