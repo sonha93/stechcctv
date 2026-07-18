@@ -608,4 +608,59 @@ body.voice-call .call-name{
     inset:0;
     background:#000;
 }
+   .local-video-box{
+
+    position: fixed;
+
+    width:120px;
+    height:180px;
+
+    top:20px;
+    right:20px;
+
+    z-index:999;
+
+}
+
+
+.local-video-box video{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    border-radius:18px;
+
+}
+
+
+.switch-camera-btn{
+
+    position:absolute;
+
+    right:8px;
+    bottom:8px;
+
+    width:36px;
+    height:36px;
+
+    border-radius:50%;
+
+    border:none;
+
+    background:rgba(0,0,0,0.5);
+
+    color:white;
+
+    font-size:18px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    z-index:1000;
+
+}
 }
