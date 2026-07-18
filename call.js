@@ -1123,38 +1123,39 @@ cameraBtn.onclick = () => {
 
     cameraBtn.style.opacity = cameraOff ? "0.45" : "1";
 };
-const box = document.getElementById("remotePreview");
+const box = document.getElementById("localVideo");
 
-let startX = 0;
-let startY = 0;
-let x = window.innerWidth - box.offsetWidth - 15;
-let y = 80;
+if (box) {
 
-box.style.left = x + "px";
-box.style.top = y + "px";
-box.style.right = "auto";
+    let startX = 0;
+    let startY = 0;
 
-box.onpointerdown = (e)=>{
+    let x = box.offsetLeft;
+    let y = box.offsetTop;
 
-    startX = e.clientX - x;
-    startY = e.clientY - y;
+    box.onpointerdown = (e)=>{
 
-    box.setPointerCapture(e.pointerId);
+        startX = e.clientX - x;
+        startY = e.clientY - y;
 
-    box.onpointermove = (ev)=>{
+        box.setPointerCapture(e.pointerId);
 
-        x = ev.clientX - startX;
-        y = ev.clientY - startY;
+        box.onpointermove = (ev)=>{
 
-        // Giới hạn trong màn hình
-        x = Math.max(0, Math.min(x, window.innerWidth - box.offsetWidth));
-        y = Math.max(0, Math.min(y, window.innerHeight - box.offsetHeight));
+            x = ev.clientX - startX;
+            y = ev.clientY - startY;
 
-        box.style.left = x + "px";
-        box.style.top = y + "px";
+            x = Math.max(0, Math.min(x, window.innerWidth - box.offsetWidth));
+            y = Math.max(0, Math.min(y, window.innerHeight - box.offsetHeight));
+
+            box.style.left = x + "px";
+            box.style.top = y + "px";
+            box.style.right = "auto";
+        };
+
+        box.onpointerup = ()=>{
+            box.onpointermove = null;
+        };
     };
 
-    box.onpointerup = ()=>{
-        box.onpointermove = null;
-    };
-};
+}
