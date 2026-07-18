@@ -448,43 +448,20 @@ onclick="scrollToMessage('${msg.replyTo.id}')">
 `
 :""
 }
-${msg.images.slice(0,4).map((img,index)=>`
-
-<div class="chat-image-item">
-
-<button class="delete-image-btn">
-×
-</button>
-
-<img
-class="chat-image"
-src="${img}"
-onclick='showChatGallery(${JSON.stringify(msg.images)},${index})'>
-
-</div>
-:
-""
-}
-
-</div>
-
-`).join("")}
-
-</div>
+${
+msg.images && msg.images.length
+?
 `
+<div class="chat-images count-${Math.min(msg.images.length,4)}">
+
 ${msg.images.slice(0,4).map((img,index)=>`
 
 <div class="chat-image-item">
-
-<button class="delete-image-btn">
-×
-</button>
 
 <img
 class="chat-image"
 src="${img}"
 onclick='showChatGallery(${JSON.stringify(msg.images)},${index})'>
-
 ${
 msg.images.length>4 && index===3
 ?
@@ -505,18 +482,10 @@ msg.images.length>4 && index===3
 msg.image
 ?
 `
-<div class="chat-image-item">
-
-<button class="delete-image-btn">
-×
-</button>
-
 <img
 class="chat-image"
 src="${msg.image}"
 onclick="showChatImage(this.src)">
-
-</div>
 `
 :
 ""
@@ -1186,15 +1155,7 @@ URL.createObjectURL(file);
 if(file.type.startsWith("image")){
 
 preview.innerHTML += `
-<div class="preview-image-item">
-
-<button class="delete-preview-img">
-×
-</button>
-
 <img src="${url}">
-
-</div>
 `;
 
 }else{
