@@ -264,22 +264,29 @@ export async function endCall() {
 
     senderId: currentUser.uid,
 
-    type:"call",
+    type: "call",
 
-    callType: currentCallType,
+    callType: currentCallType,          
 
-    status: callStatus,
+    direction: "outgoing",             
 
-    text:text,
+    status: callStatus,                
 
-    duration:duration,
+    text: text,
+
+    duration: duration,
+
+    startedAt: callAccepted
+        ? firebase.firestore.Timestamp.fromMillis(callStartTime)
+        : null,
+
+    endedAt: firebase.firestore.Timestamp.now(),
 
     createdAt: firebase.firestore.Timestamp.now(),
 
-    seenBy:[currentUser.uid]
+    seenBy: [currentUser.uid]
 
 });
-
     await removeCall(currentCallId);
 
     closeMedia();
