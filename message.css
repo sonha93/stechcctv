@@ -459,10 +459,21 @@ cursor:pointer;
 }
 #imagePreview{
 
-position:absolute;
+    position:absolute;
 
-bottom:55px;
-left:10px;
+    bottom:60px;
+
+    left:12px;
+
+
+
+    display:flex;
+
+    align-items:center;
+
+
+
+    z-index:9999;
 
 }
 
