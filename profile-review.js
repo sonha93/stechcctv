@@ -1503,9 +1503,6 @@ if(auth.currentUser && auth.currentUser.uid === s.uid){
 
     storyMore.style.display="block";
 
-    const storyLikeBox = document.getElementById("storyLikeBox");
-    const storyCommentBox = document.getElementById("storyCommentBox");
-
     if(storyLikeBox)
         storyLikeBox.style.display="none";
 
@@ -1517,9 +1514,6 @@ if(auth.currentUser && auth.currentUser.uid === s.uid){
 
     storyMore.style.display="none";
 
-    const storyLikeBox = document.getElementById("storyLikeBox");
-    const storyCommentBox = document.getElementById("storyCommentBox");
-
     if(storyLikeBox)
         storyLikeBox.style.display="flex";
 
@@ -1529,21 +1523,11 @@ if(auth.currentUser && auth.currentUser.uid === s.uid){
 }
 
 
-    // HIỆN TIM + BÌNH LUẬN
-    if(storyLikeBox)
-        storyLikeBox.style.display="flex";
-
-    if(storyCommentBox)
-        storyCommentBox.style.display="block";
-
-}
+storyVideo.style.display="none";
+storyImage.style.display="none";
 
 
-    storyVideo.style.display="none";
-    storyImage.style.display="none";
-
-
-   if(s.type==="video"){
+if(s.type==="video"){
 
     storyVideo.src=s.media;
     storyVideo.style.display="block";
@@ -1559,7 +1543,7 @@ if(auth.currentUser && auth.currentUser.uid === s.uid){
         storyViewer.classList.remove("active");
 
         storyVideo.pause();
-         storyVideo.currentTime = 0;
+        storyVideo.currentTime = 0;
         storyVideo.src="";
 
         currentStoryId = null;
