@@ -248,9 +248,6 @@ localVideo.style.borderRadius = "18px";
 localVideo.style.objectFit = "cover";
 localVideo.style.zIndex = "999";
     document.body.classList.add("call-connected");
-    if(localVideo){
-    localVideo.style.display="block";
-}
 if (call.acceptedAt && call.acceptedAt.toDate) {
 
     acceptedAt = call.acceptedAt.toDate().getTime();
@@ -472,12 +469,21 @@ if (callType === "video" && localVideo) {
     localVideo.autoplay = true;
     localVideo.playsInline = true;
 
-    // Ẩn camera khi chưa kết nối
-    if(!document.body.classList.contains("call-connected")){
-        localVideo.style.display = "none";
+    // Chưa bắt máy -> camera của mình full màn hình
+    localVideo.style.position = "fixed";
+    localVideo.style.left = "0";
+    localVideo.style.top = "0";
+    localVideo.style.width = "100vw";
+    localVideo.style.height = "100vh";
+    localVideo.style.objectFit = "cover";
+    localVideo.style.borderRadius = "0";
+    localVideo.style.zIndex = "1";
+
+    if(remoteVideo){
+        remoteVideo.style.display = "none";
     }
 
-    localVideo.play().catch(()=>{});
+    localVideo.play().catch(console.error);
 }
     localStream.getTracks().forEach(track => {
         peer.addTrack(track, localStream);
