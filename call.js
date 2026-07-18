@@ -90,6 +90,7 @@ let currentFacingMode = "user";
 let peer=null;
 
 let muted=false;
+let cameraOff = false;
 let candidateUnsubscribe = null;
 
 let callUnsubscribe = null;
@@ -1027,4 +1028,18 @@ if(callingTone){
     window.close();
 
 
+};
+const cameraBtn = document.getElementById("cameraBtn");
+
+cameraBtn.onclick = () => {
+
+    if (!localStream) return;
+
+    cameraOff = !cameraOff;
+
+    localStream.getVideoTracks().forEach(track => {
+        track.enabled = !cameraOff;
+    });
+
+    cameraBtn.style.opacity = cameraOff ? "0.45" : "1";
 };
