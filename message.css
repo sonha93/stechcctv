@@ -189,12 +189,19 @@ body{
 }
 
 #messageInput{
+
     flex:1;
+
     height:46px;
+
     border:1px solid #ddd;
+
     border-radius:999px;
+
     padding:0 18px;
+
     font-size:15px;
+
 }
 
 #sendBtn{
@@ -259,11 +266,13 @@ margin-top:2px;
 }
 #imageBtn{
 
-    width:42px;
-    height:42px;
+    width:46px;
+    height:46px;
 
-    border:none;
-    background:none;
+    border:1px solid #ddd;
+    border-radius:999px;
+
+    background:#fff;
 
     color:#0084ff;
 
@@ -273,10 +282,21 @@ margin-top:2px;
     align-items:center;
     justify-content:center;
 
-    padding:0;
+    flex-shrink:0;
+
+    transition:.2s;
+
 }
 
+#imageBtn{
+    width:50px;
+    height:50px;
+    border-radius:25px;
+}
 
+#messageInput{
+    height:50px;
+}
 #imageBtn svg{
 
     width:24px;
@@ -288,8 +308,7 @@ margin-top:2px;
 #imageBtn:hover{
 
     background:#f0f2f5;
-
-    border-radius:50%;
+    border-color:#ccc;
 
 }
 .chat-image{
