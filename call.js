@@ -75,8 +75,7 @@ document.getElementById("acceptBtn");
 
 const cameraBtn =
 document.getElementById("cameraBtn");
-const switchCameraBtn =
-document.getElementById("switchCameraBtn");
+
 const rejectBtn =
 document.getElementById("rejectBtn");
 
@@ -1105,12 +1104,3 @@ cameraBtn.onclick = () => {
 
     cameraBtn.style.opacity = cameraOff ? "0.45" : "1";
 };
-if(switchCameraBtn){
-
-    switchCameraBtn.onclick = ()=>{
-
-        switchCamera();
-
-    };
-
-}
