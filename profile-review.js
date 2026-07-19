@@ -1891,11 +1891,12 @@ if (myUid && uid !== myUid) {
     }
 
     btn = `
-        <button
-            class="follow-list-btn ${cls}"
-            data-uid="${uid}">
-            ${text}
-        </button>
+           <button
+    type="button"
+    class="follow-list-btn ${cls}"
+    data-uid="${uid}">
+    ${text}
+</button>
     `;
 }
 
@@ -1922,7 +1923,35 @@ box.innerHTML += `
 }
 box.querySelectorAll(".follow-list-btn").forEach(btn=>{
 
-    btn.onclick = async(e)=>{
+ btn.addEventListener("click", async (e) => {
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (btn.classList.contains("friend")) return;
+    if (btn.classList.contains("following")) return;
+
+    btn.disabled = true;
+
+    console.log("CLICK FOLLOW", btn.dataset.uid);
+
+    await followUser(btn.dataset.uid);
+
+    const followMe = await getDoc(
+        doc(db, "users", auth.currentUser.uid, "followers", btn.dataset.uid)
+    );
+
+    if (followMe.exists()) {
+        btn.textContent = "Bạn bè";
+        btn.className = "follow-list-btn friend";
+    } else {
+        btn.textContent = "Đang follow";
+        btn.className = "follow-list-btn following";
+    }
+
+    btn.disabled = false;
+
+});
 
         e.stopPropagation();
 
