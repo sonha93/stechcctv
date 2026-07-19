@@ -692,15 +692,7 @@ ${formatTime(msg.createdAt)}
 
 <button onclick="replyMessageFn(
 '${msg.id}',
-'${
-    msg.recalled
-        ? "Tin nhắn đã thu hồi"
-        : escapeHTML(
-            msg.type === "story_reply"
-                ? "Story"
-                : (msg.text || "Hình ảnh")
-        )
-}',
+'${escapeHTML(msg.text || "Hình ảnh")}',
 '${msg.senderId}'
 )">
 ↩ Trả lời
@@ -1901,10 +1893,9 @@ senderId
 ){
 
 replyMessage = {
-
-    id:id,
-    senderId:senderId
-
+    id: id,
+    text: text,
+    senderId: senderId
 };
 
 
