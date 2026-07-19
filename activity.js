@@ -90,41 +90,39 @@ function timeAgo(ts){
     return Math.floor(month/12)+" năm";
 
 }
-function activityText(type,name){
+function activityText(type){
 
 switch(type){
 
 case "story":
-    return `${name} đã thêm 1 story mới`;
+    return "đã thêm 1 story mới";
 
 case "message":
-    return `${name} đã gửi cho bạn 1 tin nhắn`;
-
-case "follow":
-    return `${name} đã theo dõi bạn`;
-
-case "follow_request":
-    return `${name} đã gửi yêu cầu theo dõi`;
-
-case "video_like":
-    return `${name} đã thích video của bạn`;
-
-case "video_comment":
-    return `${name} đã bình luận video của bạn`;
+    return "đã gửi cho bạn 1 tin nhắn";
 
 case "story_reply":
-    return `${name} đã trả lời story của bạn`;
+    return "đã trả lời story của bạn";
 
 case "story_like":
-    return `${name} đã thích story của bạn`;
+    return "đã thích story của bạn";
+
+case "follow":
+    return "đã theo dõi bạn";
+
+case "follow_request":
+    return "đã gửi yêu cầu theo dõi";
+
+case "video_like":
+    return "đã thích video của bạn";
+
+case "video_comment":
+    return "đã bình luận video của bạn";
 
 case "comment_reply":
-    return `${name} đã trả lời bình luận của bạn`;
+    return "đã trả lời bình luận của bạn";
 
 default:
-
-return
-`${name} có hoạt động mới`;
+    return "có hoạt động mới";
 
 }
 
@@ -315,10 +313,7 @@ this.src='https://i.ibb.co/Z1kv9nJj/logo.png'
 
                 </span>
 
-                   ${activityText(
-                    data.type,
-                    user.name
-                    )}    
+                     ${activityText(data.type)}
 
             </div>
 
