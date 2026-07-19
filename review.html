@@ -6,6 +6,7 @@
 <title>Review StechCctv</title>
 <link rel="stylesheet"
 href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+<link rel="stylesheet" href="activity.css">
 <style>
 *{
     margin:0;
@@ -2545,7 +2546,81 @@ cursor:pointer;
 </div>
 
 <div id="uploadContainer"></div>
+<!-- ===========================
+     ACTIVITY SHEET
+=========================== -->
 
+<div id="activitySheet">
+
+    <div class="activity-container">
+
+        <div class="sheet-top"></div>
+
+        <div class="activity-header">
+
+            <div class="activity-title">
+                Hoạt động
+            </div>
+
+            <button
+                class="close-activity"
+                onclick="closeActivity()">
+                ✕
+            </button>
+
+        </div>
+
+        <div class="activity-tabs">
+
+            <button
+                class="activity-tab active"
+                data-type="all">
+                Tất cả
+            </button>
+
+            <button
+                class="activity-tab"
+                data-type="follow">
+                Follow
+            </button>
+
+            <button
+                class="activity-tab"
+                data-type="like">
+                Thích
+            </button>
+
+            <button
+                class="activity-tab"
+                data-type="comment">
+                Bình luận
+            </button>
+
+            <button
+                class="activity-tab"
+                data-type="story">
+                Story
+            </button>
+
+            <button
+                class="activity-tab"
+                data-type="message">
+                Tin nhắn
+            </button>
+
+        </div>
+
+        <div id="activityList">
+
+            <div class="activity-loading">
+                Đang tải...
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 <script type="module" src="inbox.js"></script>
 <script type="module" src="upload-ui.js"></script>
 
@@ -2555,6 +2630,7 @@ cursor:pointer;
 
 <script type="module" src="upload-firestore.js"></script>
 <script type="module" src="call/call-listener.js"></script>
+<script type="module" src="activity.js"></script>
 </body>
     
 </html>
