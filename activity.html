@@ -1,18 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>Hoạt động</title>
+
+<link
+rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+<link
+rel="stylesheet"
+href="activity.css">
+
+</head>
+
+<body>
 <!-- ===========================
      ACTIVITY SHEET
 =========================== -->
 
-<div id="activitySheet">
+<div id="activitySheet"
+     onclick="closeActivityBackground(event)">
 
     <div class="activity-container">
 
+        <!-- Thanh kéo -->
         <div class="sheet-top"></div>
 
+        <!-- HEADER -->
         <div class="activity-header">
-
-            <div class="activity-title">
-                Hoạt động
-            </div>
 
             <button
                 class="close-activity"
@@ -20,58 +43,268 @@
                 ✕
             </button>
 
+            <div class="activity-title">
+                Hoạt động
+            </div>
+
+            <button
+                id="readAllActivityBtn"
+                class="activity-header-btn">
+                Đã đọc
+            </button>
+
         </div>
+
+        <!-- TOOLBAR -->
+
+        <div class="activity-toolbar">
+
+            <button
+                id="refreshActivityBtn"
+                class="activity-tool-btn">
+
+                🔄 Làm mới
+
+            </button>
+
+            <button
+                id="deleteAllActivityBtn"
+                class="activity-tool-btn">
+
+                🗑 Xóa tất cả
+
+            </button>
+
+        </div>
+
+        <!-- TAB -->
 
         <div class="activity-tabs">
 
             <button
                 class="activity-tab active"
                 data-type="all">
+
                 Tất cả
+
             </button>
 
             <button
                 class="activity-tab"
                 data-type="follow">
+
                 Follow
-            </button>
 
-            <button
-                class="activity-tab"
-                data-type="like">
-                Thích
-            </button>
-
-            <button
-                class="activity-tab"
-                data-type="comment">
-                Bình luận
-            </button>
-
-            <button
-                class="activity-tab"
-                data-type="story">
-                Story
             </button>
 
             <button
                 class="activity-tab"
                 data-type="message">
+
                 Tin nhắn
+
+            </button>
+
+            <button
+                class="activity-tab"
+                data-type="story">
+
+                Story
+
+            </button>
+
+            <button
+                class="activity-tab"
+                data-type="video">
+
+                Video
+
+            </button>
+
+            <button
+                class="activity-tab"
+                data-type="like">
+
+                Thích
+
+            </button>
+
+            <button
+                class="activity-tab"
+                data-type="comment">
+
+                Bình luận
+
             </button>
 
         </div>
 
-        <div id="activityList">
+        <!-- Loading -->
 
-            <div class="activity-loading">
+        <div
+            id="activityLoading"
+            class="activity-loading">
 
-                Đang tải...
+            Đang tải...
+
+        </div>
+
+        <!-- Empty -->
+
+        <div
+            id="activityEmpty"
+            class="activity-empty"
+            style="display:none;">
+
+            <div class="activity-empty-icon">
+
+                🔔
 
             </div>
+
+            <div class="activity-empty-title">
+
+                Chưa có hoạt động nào
+
+            </div>
+
+            <div class="activity-empty-text">
+
+                Các hoạt động mới sẽ xuất hiện tại đây.
+
+            </div>
+
+        </div>
+
+        <!-- Hôm nay -->
+
+        <div
+            id="todayGroup"
+            class="activity-group"
+            style="display:none;">
+
+            <div class="activity-group-title">
+
+                Hôm nay
+
+            </div>
+
+            <div
+                id="todayActivity">
+
+            </div>
+
+        </div>
+
+        <!-- Hôm qua -->
+
+        <div
+            id="yesterdayGroup"
+            class="activity-group"
+            style="display:none;">
+
+            <div class="activity-group-title">
+
+                Hôm qua
+
+            </div>
+
+            <div
+                id="yesterdayActivity">
+
+            </div>
+
+        </div>
+
+        <!-- Tuần này -->
+
+        <div
+            id="weekGroup"
+            class="activity-group"
+            style="display:none;">
+
+            <div class="activity-group-title">
+
+                Tuần này
+
+            </div>
+
+            <div
+                id="weekActivity">
+
+            </div>
+
+        </div>
+
+        <!-- Tháng này -->
+
+        <div
+            id="monthGroup"
+            class="activity-group"
+            style="display:none;">
+
+            <div class="activity-group-title">
+
+                Tháng này
+
+            </div>
+
+            <div
+                id="monthActivity">
+
+            </div>
+
+        </div>
+
+        <!-- Danh sách -->
+
+        <div
+            id="activityList">
 
         </div>
 
     </div>
 
 </div>
+
+<!-- MENU -->
+
+<div
+    id="activityMenu"
+    style="display:none;">
+
+    <button
+        id="activityMarkRead">
+
+        Đánh dấu đã đọc
+
+    </button>
+
+    <button
+        id="activityDelete">
+
+        Xóa thông báo
+
+    </button>
+
+    <button
+        id="activityCancel">
+
+        Hủy
+
+    </button>
+
+</div>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script src="firebase-init.js"></script>
+
+<script src="activity.js"></script>
+
+</body>
+
+</html>
