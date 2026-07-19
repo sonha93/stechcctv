@@ -1409,25 +1409,23 @@ conversationId,
 "messages"
 ),
 {
+    senderId: user.uid,
 
-senderId: user.uid,
+    text: text,               // bình luận
 
-text,
+    type: "story_reply",
 
-type:"story",
+    storyId: currentStoryId,
 
-storyId:currentStoryId,
+    storyType: story.type,
 
-storyType:story.type || "",
+    storyMedia: story.media,
 
-storyMedia:story.media || "",
+    storyText: story.text || "",
 
-storyText:story.text || "",
+    createdAt: serverTimestamp(),
 
-createdAt:serverTimestamp(),
-
-seenBy:[user.uid]
-
+    seenBy:[user.uid]
 }
 );
 
