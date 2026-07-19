@@ -29,7 +29,9 @@ auth.onAuthStateChanged(async user=>{
 
 window.openActivity = function(){
 
-    activitySheet.classList.add("active");
+    document
+    .getElementById("activitySheet")
+    .classList.add("active");
 
 }
 
