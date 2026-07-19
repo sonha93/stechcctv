@@ -13,12 +13,9 @@ import {
     collection,
     query,
     orderBy,
-    deleteDoc,
-    updateDoc,
-    increment,
-    addDoc,
-    serverTimestamp
-}
+  deleteDoc,
+updateDoc,
+increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -298,42 +295,7 @@ await followUser(uid);
 
         }
 
-if(btn.classList.contains("follow")){
 
-
-    await followUser(uid);
-
-
-    // ==========================
-    // TẠO THÔNG BÁO FOLLOW
-    // ==========================
-
-    await addDoc(
-        collection(
-            db,
-            "users",
-            uid,
-            "activities"
-        ),
-        {
-            type:"follow",
-
-            uid:auth.currentUser.uid,
-
-         createdAt:serverTimestamp(),
-
-            read:false
-        }
-    );
-
-
-    btn.classList.remove("follow");
-
-    btn.classList.add("following");
-
-    btn.textContent = "Bạn bè";
-
-}
 
     }catch(err){
 
