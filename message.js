@@ -1972,7 +1972,6 @@ window.recallMessage = async function(id){
     if(!confirm("Thu hồi tin nhắn này?"))
     return;
 
-
     await db
     .collection("conversations")
     .doc(conversationId)
@@ -1985,6 +1984,16 @@ window.recallMessage = async function(id){
         images:[],
         video:"",
         recalled:true
+
+    });
+
+    await db
+    .collection("conversations")
+    .doc(conversationId)
+    .update({
+
+        lastMessage:"Tin nhắn đã được thu hồi",
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
 
     });
 
