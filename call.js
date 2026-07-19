@@ -491,22 +491,14 @@ if (callType === "video" && localVideo) {
 }
 
 async function switchCamera(){
-   console.log("===== SWITCH CAMERA =====");
+
     if(
         callType !== "video" ||
         !localStream ||
         !peer
     ){
-           console.log("Không đủ điều kiện");
         return;
     }
-    const devices = await navigator.mediaDevices.enumerateDevices();
-
-    console.log("Tất cả thiết bị:", devices);
-
-    const cameras = devices.filter(d => d.kind === "videoinput");
-
-    console.log("Danh sách camera:", cameras);
 
 
     try {
@@ -515,8 +507,8 @@ async function switchCamera(){
         currentFacingMode === "user"
         ? "environment"
         : "user";
-console.log("Đổi sang:", currentFacingMode);
-        
+
+
         const newStream =
         await navigator.mediaDevices.getUserMedia({
 
@@ -533,7 +525,7 @@ console.log("Đổi sang:", currentFacingMode);
 
         const newTrack =
         newStream.getVideoTracks()[0];
-    console.log("Track mới:", newTrack);
+
 
         const sender =
         peer.getSenders()
