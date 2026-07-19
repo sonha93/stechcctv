@@ -35,7 +35,7 @@ window.openActivity = function(){
 
 }
 
-window.closeActivity();{
+window.closeActivity = function(){
 
     activitySheet.classList.remove("active");
 
@@ -45,7 +45,7 @@ window.closeActivityBackground = function(e){
 
     if(e.target===activitySheet){
 
-        closeActivity();
+        window.closeActivity();
 
     }
 
@@ -107,29 +107,19 @@ case "follow_request":
     return `${name} đã gửi yêu cầu theo dõi`;
 
 case "video_like":
-
-return
-`${name} đã thích video của bạn`;
+    return `${name} đã thích video của bạn`;
 
 case "video_comment":
-
-return
-`${name} đã bình luận video của bạn`;
+    return `${name} đã bình luận video của bạn`;
 
 case "story_reply":
-
-return
-`${name} đã trả lời story của bạn`;
+    return `${name} đã trả lời story của bạn`;
 
 case "story_like":
-
-return
-`${name} đã thích story của bạn`;
+    return `${name} đã thích story của bạn`;
 
 case "comment_reply":
-
-return
-`${name} đã trả lời bình luận của bạn`;
+    return `${name} đã trả lời bình luận của bạn`;
 
 default:
 
@@ -231,9 +221,15 @@ async function renderActivity(docSnap){
 
     const data = docSnap.data();
 
-    const user =
-    await getUser(data.uid);
-
+        const user =
+data.uid
+?
+await getUser(data.uid)
+:
+{
+    name:"Người dùng",
+    avatar:"https://i.ibb.co/Z1kv9nJj/logo.png"
+};
     const html = `
 
     <div
