@@ -496,17 +496,42 @@ msg.type === "story_reply"
 `
 <div class="story-reply-card">
 
-    <video
-        class="chat-video"
-        controls
-        playsinline
-        preload="metadata"
-        src="${msg.video}">
-    </video>
+${
+msg.storyType === "video"
+?
+`
+<video
+class="chat-video"
+controls
+playsinline
+preload="metadata"
+src="${msg.storyMedia}">
+</video>
+`
+:
+`
+<img
+class="chat-image"
+src="${msg.storyMedia}"
+onclick="showChatImage(this.src)">
+`
+}
 
-    <div class="story-reply-label">
-        Đã trả lời story
-    </div>
+<div class="story-reply-label">
+ Đã trả lời story
+</div>
+
+${
+msg.storyText
+?
+`
+<div class="story-caption">
+${escapeHTML(msg.storyText)}
+</div>
+`
+:
+""
+}
 
 </div>
 `
