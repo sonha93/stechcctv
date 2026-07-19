@@ -2012,11 +2012,24 @@ const replies = await db
 
 const batch = db.batch();
 
-replies.forEach(doc => {
-    batch.update(doc.ref, {
-        "replyTo.text": "Tin nhắn đã thu hồi",
-        "replyTo.recalled": true
+replies.forEach(docSnap => {
+
+    const data = docSnap.data();
+
+    batch.update(docSnap.ref, {
+
+        replyTo: {
+
+            ...(data.replyTo || {}),
+
+            text: "Tin nhắn đã thu hồi",
+
+            recalled: true
+
+        }
+
     });
+
 });
 
 await batch.commit();
