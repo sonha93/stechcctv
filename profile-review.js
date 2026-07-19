@@ -2008,7 +2008,7 @@ document.getElementById("logoutBtn").onclick = async () => {
 async function checkProfileStory(){
 
     const q = query(
-       collection(db,"stories")
+        collection(db,"stories"),
         where("uid","==",profileUid)
     );
 
@@ -2016,36 +2016,23 @@ async function checkProfileStory(){
 
     let hasStory = false;
 
-    const now = Date.now();
-
     snap.forEach(docSnap=>{
 
         const s = docSnap.data();
 
-        if(!s.createdAt) return;
+        const expire = s.expiresAt?.toDate
+            ? s.expiresAt.toDate().getTime()
+            : 0;
 
-
-        const time = s.createdAt.toDate().getTime();
-
-const expire = s.expiresAt?.toDate
-    ? s.expiresAt.toDate().getTime()
-    : 0;
-
-if(expire > Date.now()){
-    hasStory = true;
-}
+        if(expire > Date.now()){
+            hasStory = true;
+        }
 
     });
 
-
     if(hasStory){
-
         avatar.classList.add("has-story");
-
     }else{
-
         avatar.classList.remove("has-story");
-
     }
-
 }
