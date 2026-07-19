@@ -332,11 +332,7 @@ this.src='https://i.ibb.co/Z1kv9nJj/logo.png'
 
         </div>
 
-        ${
-        data.preview
-        ?
-        `
-       ${
+${
 data.preview
 ?
 data.previewType==="video"
@@ -346,7 +342,8 @@ data.previewType==="video"
 class="activity-preview"
 src="${data.preview}"
 muted
-playsinline>
+playsinline
+preload="metadata">
 </video>
 `
 :
@@ -443,18 +440,27 @@ async function(id){
         break;
 
 
-        case "story":
+      case "story":
 
-        case "story_reply":
+case "story_reply":
 
-        case "story_like":
+case "story_like":
 
-            location.href =
-            "story.html?id="+
-            d.storyId;
+    if(d.storyOwner){
 
-        break;
+        location.href =
+        "profile-review.html?uid="+
+        d.storyOwner;
 
+    }else{
+
+        location.href =
+        "story.html?id="+
+        d.storyId;
+
+    }
+
+break;
 
     }
 
