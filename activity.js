@@ -35,7 +35,7 @@ window.openActivity = function(){
 
 }
 
-window.closeActivity = function(){
+window.closeActivity();{
 
     activitySheet.classList.remove("active");
 
@@ -195,12 +195,7 @@ function loadActivity(){
     .collection("activities")
 
     .orderBy("createdAt","desc")
-.onSnapshot(async snap=>{
 
-    console.log("ACTIVITY COUNT:", snap.size);
-    console.log(
-        snap.docs.map(x=>x.data())
-    );
     .onSnapshot(async snap=>{
 
         activityList.innerHTML="";
@@ -244,7 +239,10 @@ async function renderActivity(docSnap){
     <div
         class="activity-item"
 
-       onclick="openActivityTarget('${encodeURIComponent(docSnap.id)}')">
+        onclick="openActivityTarget(
+        '${docSnap.id}'
+        )">
+
         <img
         class="activity-avatar"
         src="${user.avatar}"
@@ -310,10 +308,9 @@ this.src='https://i.ibb.co/Z1kv9nJj/logo.png'
     );
 
 }
-
 window.openActivityTarget =
 async function(id){
- id = decodeURIComponent(id);
+
     const ref =
   db
 
@@ -402,9 +399,10 @@ auth.onAuthStateChanged(user=>{
     .onSnapshot(snap=>{
 
         const badge =
-           document.getElementById(
-            "notifyBadge"
-            );
+        document.getElementById(
+            "activityBadge"
+        );
+
         if(!badge) return;
 
         if(snap.empty){
