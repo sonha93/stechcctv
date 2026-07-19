@@ -486,7 +486,7 @@ sendBtn.onclick = async () => {
     const now = firebase.firestore.Timestamp.now();
 
     // gửi tin nhắn
-  await db
+   await db
 .collection("conversations")
 .doc(conversationId)
 .collection("messages")
@@ -494,23 +494,25 @@ sendBtn.onclick = async () => {
 
     senderId: me.uid,
 
-    type: "story_reply",
-
     text: text,
 
-    storyText: text,
+    image: "",
 
-    storyMedia: s.video,
+    images: [],
 
-    storyType: "video",
+    video: s.video,
 
     storyId: s.id,
 
+    storyOwner: uid,
+
     storyOwnerId: uid,
+
+    type: "story_reply",
 
     createdAt: now,
 
-    seenBy: [me.uid]
+    seenBy:[me.uid]
 
 });
 // ================================
@@ -534,35 +536,6 @@ await db.collection("notifications").add({
     seen:false,
 
     createdAt: now
-
-});
-    // ================================
-// STORY REPLY ACTIVITY
-// ================================
-
-await db
-.collection("users")
-.doc(uid)
-.collection("activities")
-.add({
-
-    type:"story_reply",
-
-    uid:me.uid,
-
-    storyId:s.id,
-
-    preview:s.video,
-
-    previewType:"video",
-
-    conversationId:conversationId,
-
-    message:text,
-
-    createdAt:now,
-
-    read:false
 
 });
     // cập nhật conversation
