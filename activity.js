@@ -195,10 +195,12 @@ function loadActivity(){
     .collection("activities")
 
     .orderBy("createdAt","desc")
-console.log("ACTIVITY COUNT:", snap.size);
-console.log(
-snap.docs.map(x=>x.data())
-);
+.onSnapshot(async snap=>{
+
+    console.log("ACTIVITY COUNT:", snap.size);
+    console.log(
+        snap.docs.map(x=>x.data())
+    );
     .onSnapshot(async snap=>{
 
         activityList.innerHTML="";
@@ -242,7 +244,7 @@ async function renderActivity(docSnap){
     <div
         class="activity-item"
 
-       onclick="openActivityTarget('${encodeURIComponent(docSnap.id)}')"
+       onclick="openActivityTarget('${encodeURIComponent(docSnap.id)}')">
         <img
         class="activity-avatar"
         src="${user.avatar}"
@@ -308,10 +310,10 @@ this.src='https://i.ibb.co/Z1kv9nJj/logo.png'
     );
 
 }
-id = decodeURIComponent(id);
+
 window.openActivityTarget =
 async function(id){
-
+ id = decodeURIComponent(id);
     const ref =
   db
 
