@@ -1690,3 +1690,10 @@ font-weight:600;
 opacity:.9;
 
 }
+.message-content.story-only{
+    background:transparent !important;
+    padding:0 !important;
+    border:none !important;
+    box-shadow:none !important;
+    border-radius:0 !important;
+}
