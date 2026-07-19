@@ -486,7 +486,7 @@ sendBtn.onclick = async () => {
     const now = firebase.firestore.Timestamp.now();
 
     // gửi tin nhắn
-   await db
+  await db
 .collection("conversations")
 .doc(conversationId)
 .collection("messages")
@@ -494,25 +494,23 @@ sendBtn.onclick = async () => {
 
     senderId: me.uid,
 
+    type: "story_reply",
+
     text: text,
 
-    image: "",
+    storyText: text,
 
-    images: [],
+    storyMedia: s.video,
 
-    video: s.video,
+    storyType: "video",
 
     storyId: s.id,
 
-    storyOwner: uid,
-
     storyOwnerId: uid,
-
-    type: "story_reply",
 
     createdAt: now,
 
-    seenBy:[me.uid]
+    seenBy: [me.uid]
 
 });
 // ================================
