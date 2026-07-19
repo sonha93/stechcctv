@@ -967,16 +967,26 @@ font-size:28px;
 
 }
 .story-reply-card{
-    display:inline-flex;
+    display:flex;
     flex-direction:column;
+    gap:8px;
     width:220px;
 }
 
-.story-reply-card .chat-video{
+.story-reply-card .chat-video,
+.story-reply-card .chat-image{
     width:220px;
+    height:390px;
+    max-width:100%;
+    object-fit:cover;
+    border-radius:16px;
     display:block;
+    background:#000;
 }
 
+.story-reply-label{
+    font-weight:700;
+    color:#000;
 .story-reply-label,
 .story-reply-card + .chat-text{
     width:220px;
@@ -993,7 +1003,10 @@ font-size:28px;
     display:flex;
     flex-direction:column;
 }
-
+.story-caption{
+    color:#000;
+    word-break:break-word;
+}
 #infoBtn{
     width:40px;
     height:40px;
