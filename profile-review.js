@@ -1918,8 +1918,6 @@ box.innerHTML += `
 `;
 
     }
-
-}
 box.querySelectorAll(".follow-list-btn").forEach(btn=>{
 
     btn.onclick = async(e)=>{
@@ -1950,6 +1948,8 @@ box.querySelectorAll(".follow-list-btn").forEach(btn=>{
     };
 
 });
+}
+
 // ==========================
 // SETTINGS BUTTONS
 // ==========================
