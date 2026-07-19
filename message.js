@@ -450,10 +450,14 @@ messageMap[msg.replyTo.id]
 messageMap[msg.replyTo.id]
 ? (
     messageMap[msg.replyTo.id].recalled
-    ? "Tin nhắn đã được thu hồi"
-    : escapeHTML(messageMap[msg.replyTo.id].text || "")
+        ? "Tin nhắn đã thu hồi"
+        : escapeHTML(messageMap[msg.replyTo.id].text || "")
 )
-: escapeHTML(msg.replyTo.text || "")
+: (
+    msg.replyTo.recalled
+        ? "Tin nhắn đã thu hồi"
+        : escapeHTML(msg.replyTo.text || "")
+)
 }
 
 </div>
@@ -1996,7 +2000,23 @@ window.recallMessage = async function(id){
         recalled:true
 
     });
+const replies = await db
+.collection("conversations")
+.doc(conversationId)
+.collection("messages")
+.where("replyTo.id", "==", id)
+.get();
 
+const batch = db.batch();
+
+replies.forEach(doc => {
+    batch.update(doc.ref, {
+        "replyTo.text": "Tin nhắn đã thu hồi",
+        "replyTo.recalled": true
+    });
+});
+
+await batch.commit();
     await db
     .collection("conversations")
     .doc(conversationId)
