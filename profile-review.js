@@ -1865,19 +1865,54 @@ async function loadFollowList(type){
         const u=userSnap.data();
 
 
-       box.innerHTML += `
+      const myUid = auth.currentUser?.uid;
+
+let btn = "";
+
+if (myUid && uid !== myUid) {
+
+    const iFollow = await getDoc(
+        doc(db, "users", myUid, "following", uid)
+    );
+
+    const followMe = await getDoc(
+        doc(db, "users", myUid, "followers", uid)
+    );
+
+    let text = "Follow";
+    let cls = "follow";
+
+    if (iFollow.exists() && followMe.exists()) {
+        text = "Bạn bè";
+        cls = "friend";
+    } else if (iFollow.exists()) {
+        text = "Đang follow";
+        cls = "following";
+    }
+
+    btn = `
+        <button
+            class="follow-list-btn ${cls}"
+            data-uid="${uid}">
+            ${text}
+        </button>
+    `;
+}
+
+box.innerHTML += `
 <div class="follow-user">
 
-    <img
-        src="${u.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
-        onclick="location.href='profile-review.html?uid=${uid}'"
-        style="cursor:pointer">
+    <div
+        style="display:flex;align-items:center;gap:12px;cursor:pointer;flex:1"
+        onclick="location.href='profile-review.html?uid=${uid}'">
 
-    <span
-        onclick="location.href='profile-review.html?uid=${uid}'"
-        style="cursor:pointer">
-        ${u.name || "Người dùng"}
-    </span>
+        <img src="${u.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
+
+        <span>${u.name || "Người dùng"}</span>
+
+    </div>
+
+    ${btn}
 
 </div>
 `;
@@ -1885,6 +1920,36 @@ async function loadFollowList(type){
     }
 
 }
+box.querySelectorAll(".follow-list-btn").forEach(btn=>{
+
+    btn.onclick = async(e)=>{
+
+        e.stopPropagation();
+
+        if(btn.classList.contains("friend")) return;
+        if(btn.classList.contains("following")) return;
+
+        btn.disabled = true;
+
+        await followUser(btn.dataset.uid);
+
+        const followMe = await getDoc(
+            doc(db,"users",auth.currentUser.uid,"followers",btn.dataset.uid)
+        );
+
+        if(followMe.exists()){
+            btn.innerHTML = "Bạn bè";
+            btn.className = "follow-list-btn friend";
+        }else{
+            btn.innerHTML = "Đang follow";
+            btn.className = "follow-list-btn following";
+        }
+
+        btn.disabled = false;
+
+    };
+
+});
 // ==========================
 // SETTINGS BUTTONS
 // ==========================
