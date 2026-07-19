@@ -274,7 +274,6 @@
 .activity-preview{
 
     width:56px;
-
     height:72px;
 
     border-radius:10px;
@@ -285,8 +284,8 @@
 
     flex-shrink:0;
 
+    margin-left:auto;
 }
-
 .activity-dot{
 
     width:10px;
