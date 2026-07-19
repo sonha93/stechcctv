@@ -16,7 +16,7 @@ const activityList =
 document.getElementById("activityList");
 
 let activityUser = null;
-
+let activityFilter = "all";
 auth.onAuthStateChanged(async user=>{
 
     activityUser = user;
@@ -182,9 +182,8 @@ function loadActivity(){
 
     .doc(activityUser.uid)
 
-    .collection("activities")
-
-    .orderBy("createdAt","desc")
+        .collection("activities")
+        .orderBy("createdAt","desc")
 
     .onSnapshot(async snap=>{
 
@@ -208,7 +207,66 @@ function loadActivity(){
 
         }
 
-            for(const doc of snap.docs){
+          for(const doc of snap.docs){
+
+    const data = doc.data();
+
+
+    if(activityFilter !== "all"){
+
+
+        if(activityFilter==="like"){
+
+            if(
+                ![
+                    "video_like",
+                    "story_like"
+                ].includes(data.type)
+            )
+            continue;
+
+        }
+
+
+
+        if(activityFilter==="comment"){
+
+            if(
+                ![
+                    "video_comment",
+                    "story_reply",
+                    "comment_reply"
+                ].includes(data.type)
+            )
+            continue;
+
+        }
+
+
+
+        if(activityFilter==="follow"){
+
+            if(
+                ![
+                    "follow",
+                    "follow_request"
+                ].includes(data.type)
+            )
+            continue;
+
+        }
+
+
+
+        if(activityFilter==="message"){
+
+            if(data.type!=="message")
+            continue;
+
+        }
+
+    }
+
 
     await renderActivity(doc);
 
@@ -427,3 +485,10 @@ auth.onAuthStateChanged(user=>{
     });
 
 });
+window.changeActivityTab=function(type){
+
+    activityFilter = type;
+
+    loadActivity();
+
+}
