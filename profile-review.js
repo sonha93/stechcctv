@@ -901,10 +901,10 @@ avatar.style.cursor = "pointer";
 
 avatar.onclick = async () => {
 
-    const q = query(
-        collection(db,"profile_stories"),
-        where("uid","==",profileUid)
-    );
+  const q = query(
+    collection(db,"stories"),
+    where("uid","==",profileUid)
+);
 
     const snap = await getDocs(q);
 
@@ -922,7 +922,7 @@ avatar.onclick = async () => {
 
             if(now - time < 86400000){
 
-                storyId = docSnap.id;
+              storyId = s.uid;
 
             }
 
@@ -933,7 +933,7 @@ avatar.onclick = async () => {
 
     if(storyId){
 
-        openStory(storyId);
+      openStory(profileUid);
 
     }else{
 
@@ -2008,7 +2008,7 @@ document.getElementById("logoutBtn").onclick = async () => {
 async function checkProfileStory(){
 
     const q = query(
-        collection(db,"profile_stories"),
+       collection(db,"stories")
         where("uid","==",profileUid)
     );
 
@@ -2027,13 +2027,13 @@ async function checkProfileStory(){
 
         const time = s.createdAt.toDate().getTime();
 
+const expire = s.expiresAt?.toDate
+    ? s.expiresAt.toDate().getTime()
+    : 0;
 
-        // còn trong 24h
-        if(now - time < 86400000){
-
-            hasStory = true;
-
-        }
+if(expire > Date.now()){
+    hasStory = true;
+}
 
     });
 
