@@ -1697,3 +1697,9 @@ opacity:.9;
     box-shadow:none !important;
     border-radius:0 !important;
 }
+#imagePreview video{
+    width:240px;
+    height:auto;
+    max-height:320px;
+    border-radius:16px;
+}
