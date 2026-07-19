@@ -99,11 +99,8 @@
 .activity-tabs{
 
     display:flex;
-
     overflow-x:auto;
-
     gap:10px;
-
     padding:12px;
 
     border-bottom:1px solid #eee;
@@ -112,11 +109,11 @@
 
 }
 
+
 .activity-tabs::-webkit-scrollbar{
-
     display:none;
-
 }
+
 
 .activity-tab{
 
@@ -124,11 +121,15 @@
 
     background:#f3f3f3;
 
+    color:#333;
+
     border-radius:999px;
 
-    padding:10px 18px;
+    padding:10px 20px;
 
-    font-size:14px;
+    font-size:15px;
+
+    font-weight:600;
 
     cursor:pointer;
 
@@ -138,14 +139,35 @@
 
 }
 
-.activity-tab.active{
 
-    background:#111;
+/* khi bấm */
+.activity-tab:active{
 
-    color:#fff;
+    transform:scale(.92);
 
 }
 
+
+/* nút đang chọn */
+
+.activity-tab.active{
+
+    background:#ff3158;
+
+    color:#fff;
+
+    box-shadow:0 4px 12px rgba(255,49,88,.35);
+
+}
+
+
+/* hover trên máy tính */
+
+.activity-tab:hover{
+
+    background:#ddd;
+
+}
 /* ===================== */
 
 #activityList{
