@@ -1651,7 +1651,36 @@ opacity:.8;
     100%{
         transform:scale(1);
     }
+.follow-user{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+}
 
+.follow-list-btn{
+    border:none;
+    border-radius:999px;
+    padding:8px 16px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+}
+
+.follow-list-btn.follow{
+    background:#0a84ff;
+    color:#fff;
+}
+
+.follow-list-btn.following{
+    background:#ececec;
+    color:#222;
+}
+
+.follow-list-btn.friend{
+    background:#dff6e3;
+    color:#0a8f3f;
+}
 </style>
 </head>
 
