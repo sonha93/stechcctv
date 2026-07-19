@@ -1401,18 +1401,16 @@ updatedAt:serverTimestamp()
 
 
 
-    await addDoc(
-
+   await addDoc(
 collection(
 db,
 "conversations",
 conversationId,
 "messages"
 ),
-
 {
 
-sender:user.uid,
+senderId: user.uid,
 
 text,
 
@@ -1420,20 +1418,17 @@ type:"story",
 
 storyId:currentStoryId,
 
-storyType:
-story.type || "",
+storyType:story.type || "",
 
-storyMedia:
-story.media || "",
+storyMedia:story.media || "",
 
-storyText:
-story.text || "",
+storyText:story.text || "",
 
-createdAt:
-serverTimestamp()
+createdAt:serverTimestamp(),
+
+seenBy:[user.uid]
 
 }
-
 );
 
 
