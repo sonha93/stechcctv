@@ -192,6 +192,9 @@ if(oldLink) oldLink.remove();
 
 let links = "";
 
+if(u.website)
+links += `<a style="color:#0866ff;text-decoration:none;font-weight:600;" href="${u.website}" target="_blank">${u.website}</a><br>`;
+
 if(u.facebook)
 links += `<a style="color:#0866ff;text-decoration:none;font-weight:600;" href="${u.facebook}" target="_blank">${u.facebook}</a><br>`;
 
@@ -203,6 +206,7 @@ links += `<a style="color:#0866ff;text-decoration:none;font-weight:600;" href="$
 
 if(u.zalo)
 links += `<a style="color:#0866ff;text-decoration:none;font-weight:600;" href="${u.zalo}" target="_blank">${u.zalo}</a><br>`;
+
 
 
 if(links){
@@ -1707,14 +1711,17 @@ const isOwner =
 storyMore.style.display = isOwner ? "block" : "none";
 
 if (storyLikeBox) {
-    storyLikeBox.style.display = isOwner ? "none" : "flex";
-    storyLikeBox.hidden = isOwner;
+    storyLikeBox.style.display = "flex";
 }
 
 if (storyCommentBox) {
-    storyCommentBox.style.display = isOwner ? "none" : "flex";
-    storyCommentBox.hidden = isOwner;
-}
+    if (isOwner) {
+        storyCommentBox.style.display = "none";
+        storyCommentBox.hidden = true;
+    } else {
+        storyCommentBox.hidden = false;
+        storyCommentBox.style.display = "flex";
+    }
 }
 storyVideo.style.display="none";
 storyImage.style.display="none";
