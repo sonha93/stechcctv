@@ -1553,14 +1553,14 @@ story
 
 };     
 const storyCommentSend =
-document.getElementById("storyCommentSend");
+document.getElementById("storySendBtn");
 if(storyCommentSend){
 
 storyCommentSend.onclick = async()=>{
 
 
 const input =
-document.getElementById("storyCommentInput");
+document.getElementById("storyReplyInput");
 
 
 const text = input.value.trim();
