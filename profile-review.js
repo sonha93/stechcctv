@@ -1950,7 +1950,6 @@ box.querySelectorAll(".follow-list-btn").forEach(btn=>{
     };
 
 });
-}
 // ==========================
 // SETTINGS BUTTONS
 // ==========================
