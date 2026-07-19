@@ -450,38 +450,15 @@ messageMap[msg.replyTo.id]
 messageMap[msg.replyTo.id]
 ? (
     messageMap[msg.replyTo.id].recalled
-    ? "Tin nhắn đã được thu hồi"
-    : escapeHTML(messageMap[msg.replyTo.id].text || "")
+        ? "Tin nhắn đã được thu hồi"
+        : escapeHTML(messageMap[msg.replyTo.id].text || "")
 )
-: escapeHTML(msg.replyTo.text || "")
+: "Tin nhắn đã được thu hồi"
 }
 
 </div>
 `
 :""
-}
-${
-msg.images && msg.images.length
-?
-`
-<div class="chat-images count-${Math.min(msg.images.length,4)}">
-
-${msg.images.slice(0,4).map((img,index)=>`
-
-<div class="chat-image-item">
-
-<img
-class="chat-image"
-src="${img}"
-onclick='showChatGallery(${JSON.stringify(msg.images)},${index})'>
-${
-msg.images.length>4 && index===3
-?
-`<div class="more-images">
-+${msg.images.length-4}
-</div>`
-:
-""
 }
 
 </div>
