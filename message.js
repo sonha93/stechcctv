@@ -424,8 +424,6 @@ src="${
 <div class="message-content ${
     msg.type === "audio"
         ? "audio-only"
-        : msg.type === "story_reply"
-        ? "story-only"
         : (msg.image || (msg.images && msg.images.length))
         ? "image-only"
         : msg.video
@@ -435,26 +433,16 @@ src="${
 
 
 ${
-msg.replyTo
+msg.replyTo &&
+messageMap[msg.replyTo.id] &&
+!messageMap[msg.replyTo.id].recalled
 ?
 `
 <div
 class="reply-box"
-${
-messageMap[msg.replyTo.id]
-? `onclick="scrollToMessage('${msg.replyTo.id}')"`
-: ""
-}>
+onclick="scrollToMessage('${msg.replyTo.id}')">
 
-↩ ${
-messageMap[msg.replyTo.id]
-? (
-    messageMap[msg.replyTo.id].recalled
-        ? "Tin nhắn đã thu hồi"
-        : escapeHTML(messageMap[msg.replyTo.id].text || "")
-)
-: "Tin nhắn đã thu hồi"
-}
+↩ ${escapeHTML(messageMap[msg.replyTo.id].text || "")}
 
 </div>
 `
@@ -508,31 +496,17 @@ msg.type === "story_reply"
 `
 <div class="story-reply-card">
 
-<video
-class="chat-video"
-controls
-playsinline
-preload="metadata"
-poster=""
->
-    <source src="${msg.storyMedia}" type="video/mp4">
-</video>
+    <video
+        class="chat-video"
+        controls
+        playsinline
+        preload="metadata"
+        src="${msg.video}">
+    </video>
 
-<div class="story-reply-label">
- Đã trả lời story
-</div>
-
-${
-msg.storyText
-?
-`
-<div class="story-caption">
-${escapeHTML(msg.storyText)}
-</div>
-`
-:
-""
-}
+    <div class="story-reply-label">
+        Đã trả lời story
+    </div>
 
 </div>
 `
@@ -681,11 +655,7 @@ ${formatTime(msg.createdAt)}
 
 <button onclick="replyMessageFn(
 '${msg.id}',
-'${escapeHTML(
-msg.type==="story_reply"
-? (msg.storyText || "Đã trả lời story")
-: (msg.text || "Hình ảnh")
-)}',
+'${escapeHTML(msg.text || "Hình ảnh")}',
 '${msg.senderId}'
 )">
 ↩ Trả lời
@@ -904,34 +874,18 @@ pinned: false,
     ]
 
 });
-const convSnap = await db
+
+
+  const convSnap = await db
 .collection("conversations")
 .doc(conversationId)
 .get();
 
-const receiverUid = convSnap.data().members.find(
-    uid => uid !== currentUser.uid
+
+const otherUid = convSnap.data().members.find(
+uid => uid !== currentUser.uid
 );
 
-await db
-.collection("users")
-.doc(receiverUid)
-.collection("activities")
-.add({
-
-    type:"message",
-
-    uid: currentUser.uid,
-
-    conversationId: conversationId,
-
-    preview:"",
-
-    read:false,
-
-    createdAt: firebase.firestore.Timestamp.now()
-
-});
 
 
 await db
@@ -1886,9 +1840,11 @@ senderId
 ){
 
 replyMessage = {
-    id: id,
-    text: text,
-    senderId: senderId
+
+    id:id,
+    text:text,
+    senderId:senderId
+
 };
 
 
@@ -1973,6 +1929,7 @@ window.recallMessage = async function(id){
     if(!confirm("Thu hồi tin nhắn này?"))
     return;
 
+
     await db
     .collection("conversations")
     .doc(conversationId)
@@ -1985,45 +1942,6 @@ window.recallMessage = async function(id){
         images:[],
         video:"",
         recalled:true
-
-    });
-const replies = await db
-.collection("conversations")
-.doc(conversationId)
-.collection("messages")
-.where("replyTo.id", "==", id)
-.get();
-
-const batch = db.batch();
-
-replies.forEach(docSnap => {
-
-    const data = docSnap.data();
-
-    batch.update(docSnap.ref, {
-
-        replyTo: {
-
-            ...(data.replyTo || {}),
-
-            text: "Tin nhắn đã thu hồi",
-
-            recalled: true
-
-        }
-
-    });
-
-});
-
-await batch.commit();
-    await db
-    .collection("conversations")
-    .doc(conversationId)
-    .update({
-
-        lastMessage:"Tin nhắn đã được thu hồi",
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
 
     });
 
