@@ -453,11 +453,7 @@ messageMap[msg.replyTo.id]
         ? "Tin nhắn đã thu hồi"
         : escapeHTML(messageMap[msg.replyTo.id].text || "")
 )
-: (
-    msg.replyTo.recalled
-        ? "Tin nhắn đã thu hồi"
-        : escapeHTML(msg.replyTo.text || "")
-)
+: "Tin nhắn đã thu hồi"
 }
 
 </div>
@@ -1899,7 +1895,6 @@ senderId
 replyMessage = {
 
     id:id,
-    text:text,
     senderId:senderId
 
 };
