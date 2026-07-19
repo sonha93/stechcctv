@@ -435,16 +435,26 @@ src="${
 
 
 ${
-msg.replyTo &&
-messageMap[msg.replyTo.id] &&
-!messageMap[msg.replyTo.id].recalled
+msg.replyTo
 ?
 `
 <div
 class="reply-box"
-onclick="scrollToMessage('${msg.replyTo.id}')">
+${
+messageMap[msg.replyTo.id]
+? `onclick="scrollToMessage('${msg.replyTo.id}')"`
+: ""
+}>
 
-↩ ${escapeHTML(messageMap[msg.replyTo.id].text || "")}
+↩ ${
+messageMap[msg.replyTo.id]
+? (
+    messageMap[msg.replyTo.id].recalled
+    ? "Tin nhắn đã được thu hồi"
+    : escapeHTML(messageMap[msg.replyTo.id].text || "")
+)
+: escapeHTML(msg.replyTo.text || "")
+}
 
 </div>
 `
