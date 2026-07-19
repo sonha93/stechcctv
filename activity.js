@@ -331,15 +331,13 @@ async function(id){
 
     });
 
-    switch(d.type){
+    case "message":
 
-        case "message":
+    location.href =
+    "message.html?id="+
+    encodeURIComponent(d.conversationId);
 
-            location.href =
-"message.html?uid="+encodeURIComponent(d.uid);
-
-        break;
-
+break;
         case "follow":
 
         case "follow_request":
