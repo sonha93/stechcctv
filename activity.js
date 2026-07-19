@@ -308,44 +308,52 @@ window.openActivityTarget =
 async function(id){
 
     const ref =
-  db
-
+    db
     .collection("users")
-
     .doc(activityUser.uid)
-
     .collection("activities")
-
     .doc(id);
+
 
     const snap =
     await ref.get();
 
+
     if(!snap.exists) return;
+
 
     const d = snap.data();
 
-    ref.update({
+
+    await ref.update({
 
         read:true
 
     });
 
-    case "message":
 
-    location.href =
-    "message.html?id="+
-    encodeURIComponent(d.conversationId);
+    switch(d.type){
 
-break;
+
+        case "message":
+
+            location.href =
+            "message.html?id="+
+            encodeURIComponent(d.conversationId);
+
+        break;
+
+
         case "follow":
 
         case "follow_request":
 
             location.href =
-           "profile-review.html?uid="+encodeURIComponent(d.uid)
+            "profile-review.html?uid="+
+            encodeURIComponent(d.uid);
 
         break;
+
 
         case "video_like":
 
@@ -356,6 +364,7 @@ break;
             d.videoId;
 
         break;
+
 
         case "story":
 
@@ -368,6 +377,7 @@ break;
             d.storyId;
 
         break;
+
 
     }
 
