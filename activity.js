@@ -1,3 +1,9 @@
+import {
+    auth,
+    db,
+    storage,
+    FieldValue
+} from "./firebase-init.js";
 // ===========================
 // ACTIVITY V8
 // PART 1
@@ -11,7 +17,7 @@ document.getElementById("activityList");
 
 let activityUser = null;
 
-firebase.auth().onAuthStateChanged(async user=>{
+auth.onAuthStateChanged(async user=>{
 
     activityUser = user;
 
@@ -87,19 +93,13 @@ function activityText(type,name){
 switch(type){
 
 case "story":
-
-return
-`${name} đã thêm 1 story mới`;
+    return `${name} đã thêm 1 story mới`;
 
 case "message":
-
-return
-`${name} đã gửi cho bạn 1 tin nhắn`;
+    return `${name} đã gửi cho bạn 1 tin nhắn`;
 
 case "follow":
-
-return
-`${name} đã theo dõi bạn`;
+    return `${name} đã theo dõi bạn`;
 
 case "follow_request":
 
@@ -142,7 +142,7 @@ return
 async function getUser(uid){
 
     const snap =
-    await firebase.firestore()
+    await db
     .collection("users")
     .doc(uid)
     .get();
@@ -186,7 +186,7 @@ function loadActivity(){
     `;
 
     unsubscribeActivity =
-    firebase.firestore()
+  db
 
     .collection("users")
 
@@ -312,7 +312,7 @@ window.openActivityTarget =
 async function(id){
 
     const ref =
-    firebase.firestore()
+  db
 
     .collection("users")
 
@@ -382,11 +382,11 @@ async function(id){
 // BADGE
 // ===========================
 
-firebase.auth().onAuthStateChanged(user=>{
+auth.onAuthStateChanged(user=>{
 
     if(!user) return;
 
-    firebase.firestore()
+  db
 
     .collection("users")
 
