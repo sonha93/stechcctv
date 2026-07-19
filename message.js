@@ -435,6 +435,7 @@ src="${
 
 
 ${
+${
 msg.replyTo
 ?
 `
@@ -451,14 +452,13 @@ messageMap[msg.replyTo.id]
         ? "Tin nhắn đã được thu hồi"
         : escapeHTML(messageMap[msg.replyTo.id].text || "")
 )
-: "Tin nhắn đã được thu hồi"
+: escapeHTML(msg.replyTo.text || "Tin nhắn")
 }
 
 </div>
 `
 : ""
 }
-
 </div>
 
 `).join("")}
