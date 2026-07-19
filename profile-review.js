@@ -1704,29 +1704,25 @@ else{
 const storyLikeBox = document.getElementById("storyLikeBox");
 const storyCommentBox = document.getElementById("storyCommentBox");
 
-
 const isOwner =
-auth.currentUser &&
-auth.currentUser.uid === s.uid;
+    auth.currentUser &&
+    auth.currentUser.uid === s.uid;
 
-storyMore.style.display =
-isOwner ? "block" : "none";
+storyMore.style.display = isOwner ? "block" : "none";
 
-if(storyLikeBox){
-
-    storyLikeBox.style.display="flex";
-
+if (storyLikeBox) {
+    storyLikeBox.style.display = "flex";
 }
 
-if(storyCommentBox){
-
-    storyCommentBox.hidden = isOwner;
-
-    storyCommentBox.style.display =
-    isOwner ? "none" : "flex";
-
+if (storyCommentBox) {
+    if (isOwner) {
+        storyCommentBox.style.display = "none";
+        storyCommentBox.hidden = true;
+    } else {
+        storyCommentBox.hidden = false;
+        storyCommentBox.style.display = "flex";
+    }
 }
-
 storyVideo.style.display="none";
 storyImage.style.display="none";
 
