@@ -33,7 +33,7 @@ window.openActivity = function(){
 
 }
 
-window.closeActivity = function(){
+window.closeActivity();{
 
     activitySheet.classList.remove("active");
 
@@ -102,9 +102,7 @@ case "follow":
     return `${name} đã theo dõi bạn`;
 
 case "follow_request":
-
-return
-`${name} đã gửi yêu cầu theo dõi`;
+    return `${name} đã gửi yêu cầu theo dõi`;
 
 case "video_like":
 
@@ -218,11 +216,11 @@ function loadActivity(){
 
         }
 
-        for(const doc of snap.docs){
+            for(const doc of snap.docs){
 
-            renderActivity(doc);
+    await renderActivity(doc);
 
-        }
+}
 
     });
 
@@ -261,10 +259,10 @@ this.src='https://i.ibb.co/Z1kv9nJj/logo.png'
 
                 </span>
 
-                ${activityText(
+                   ${activityText(
                     data.type,
-                    ""
-                )}
+                    user.name
+                    )}    
 
             </div>
 
@@ -340,7 +338,7 @@ async function(id){
         case "message":
 
             location.href =
-            "message.html?uid="+d.uid;
+"message.html?uid="+encodeURIComponent(d.uid);
 
         break;
 
@@ -349,7 +347,7 @@ async function(id){
         case "follow_request":
 
             location.href =
-            "profile-review.html?uid="+d.uid;
+           "profile-review.html?uid="+encodeURIComponent(d.uid)
 
         break;
 
