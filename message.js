@@ -432,27 +432,27 @@ src="${
         ? "video-only"
         : ""
 }">
-
-
-
 ${
 msg.replyTo
 ?
 `
 <div
 class="reply-box"
-${messageMap[msg.replyTo.id]
+${
+messageMap[msg.replyTo.id]
 ? `onclick="scrollToMessage('${msg.replyTo.id}')"`
-: ""}>
+: ""
+}>
 
 ↩ ${
-messageMap[msg.replyTo.id]
-? (
-    messageMap[msg.replyTo.id].recalled
-        ? "Tin nhắn đã được thu hồi"
-        : escapeHTML(messageMap[msg.replyTo.id].text || "")
+messageMap[msg.replyTo.id] &&
+messageMap[msg.replyTo.id].recalled
+? "Tin nhắn đã được thu hồi"
+: escapeHTML(
+    messageMap[msg.replyTo.id]?.text ||
+    msg.replyTo.text ||
+    "Tin nhắn"
 )
-: escapeHTML(msg.replyTo.text || "Tin nhắn")
 }
 
 </div>
