@@ -1953,32 +1953,6 @@ box.querySelectorAll(".follow-list-btn").forEach(btn=>{
 
 });
 
-        e.stopPropagation();
-
-        if(btn.classList.contains("friend")) return;
-        if(btn.classList.contains("following")) return;
-
-        btn.disabled = true;
-
-        await followUser(btn.dataset.uid);
-
-        const followMe = await getDoc(
-            doc(db,"users",auth.currentUser.uid,"followers",btn.dataset.uid)
-        );
-
-        if(followMe.exists()){
-            btn.innerHTML = "Bạn bè";
-            btn.className = "follow-list-btn friend";
-        }else{
-            btn.innerHTML = "Đang follow";
-            btn.className = "follow-list-btn following";
-        }
-
-        btn.disabled = false;
-
-    };
-
-});
 }
 // ==========================
 // SETTINGS BUTTONS
