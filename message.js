@@ -440,11 +440,9 @@ msg.replyTo
 `
 <div
 class="reply-box"
-${
-messageMap[msg.replyTo.id]
+${messageMap[msg.replyTo.id]
 ? `onclick="scrollToMessage('${msg.replyTo.id}')"`
-: ""
-}>
+: ""}>
 
 ↩ ${
 messageMap[msg.replyTo.id]
@@ -458,7 +456,7 @@ messageMap[msg.replyTo.id]
 
 </div>
 `
-:""
+: ""
 }
 
 </div>
