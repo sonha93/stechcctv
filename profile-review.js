@@ -684,38 +684,7 @@ if(block.iBlocked || block.blockedMe){
             where("uid","==",profileUid)
         )
     );
-    let hasStory = false;
-
-const now = Date.now();
-
-snap.forEach(docSnap=>{
-
-    const s = docSnap.data();
-
-    if(s.createdAt){
-
-        const time = s.createdAt.toDate().getTime();
-
-        if(now - time < 86400000){
-
-            hasStory = true;
-
-        }
-
-    }
-
-});
-
-
-if(hasStory){
-
-    avatar.classList.add("has-story");
-
-}else{
-
-    avatar.classList.remove("has-story");
-
-}
+   
 snap.forEach(docSnap => {
 
     const o = docSnap.data();
@@ -1175,6 +1144,7 @@ storyFile.value = "";
 alert("Đăng story thành công");
 
 loadStories();
+await checkProfileStory();
 };   
 async function loadStories(){
 
@@ -1775,7 +1745,8 @@ storyMore.onclick = async ()=>{
     storyVideo.pause();
     storyVideo.src="";
 
-    loadStories();
+   await checkProfileStory();
+loadStories();
 
 };
 document.getElementById("closeStory").onclick=()=>{
