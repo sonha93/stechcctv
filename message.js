@@ -901,7 +901,34 @@ pinned: false,
     ]
 
 });
+// ================================
+// CREATE ACTIVITY MESSAGE
+// ================================
 
+const otherUid =
+convSnap.data().members.find(
+uid => uid !== currentUser.uid
+);
+
+
+await db
+.collection("users")
+.doc(otherUid)
+.collection("activities")
+.add({
+
+    type:"message",
+
+    uid: currentUser.uid,
+
+    preview:"",
+
+    read:false,
+
+    createdAt:
+    firebase.firestore.Timestamp.now()
+
+});
 
   const convSnap = await db
 .collection("conversations")
