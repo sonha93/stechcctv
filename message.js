@@ -508,26 +508,15 @@ msg.type === "story_reply"
 `
 <div class="story-reply-card">
 
-${
-msg.storyType === "video"
-?
-`
 <video
 class="chat-video"
 controls
 playsinline
 preload="metadata"
-src="${msg.storyMedia}">
+poster=""
+>
+    <source src="${msg.storyMedia}" type="video/mp4">
 </video>
-`
-:
-`
-<img
-class="chat-image"
-src="${msg.storyMedia}"
-onclick="showChatImage(this.src)">
-`
-}
 
 <div class="story-reply-label">
  Đã trả lời story
