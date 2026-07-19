@@ -538,6 +538,35 @@ await db.collection("notifications").add({
     createdAt: now
 
 });
+    // ================================
+// STORY REPLY ACTIVITY
+// ================================
+
+await db
+.collection("users")
+.doc(uid)
+.collection("activities")
+.add({
+
+    type:"story_reply",
+
+    uid:me.uid,
+
+    storyId:s.id,
+
+    preview:s.video,
+
+    previewType:"video",
+
+    conversationId:conversationId,
+
+    message:text,
+
+    createdAt:now,
+
+    read:false
+
+});
     // cập nhật conversation
     await db
         .collection("conversations")
