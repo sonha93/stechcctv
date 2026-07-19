@@ -336,9 +336,28 @@ this.src='https://i.ibb.co/Z1kv9nJj/logo.png'
         data.preview
         ?
         `
-        <img
-        class="activity-preview"
-        src="${data.preview}">
+       ${
+data.preview
+?
+data.previewType==="video"
+?
+`
+<video
+class="activity-preview"
+src="${data.preview}"
+muted
+playsinline>
+</video>
+`
+:
+`
+<img
+class="activity-preview"
+src="${data.preview}">
+`
+:
+""
+}
         `
         :
         ""
