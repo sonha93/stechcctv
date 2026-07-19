@@ -1865,20 +1865,22 @@ async function loadFollowList(type){
         const u=userSnap.data();
 
 
-        box.innerHTML +=
-        `
-        <div class="follow-user">
+       box.innerHTML += `
+<div class="follow-user">
 
-            <img src="
-            ${u.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}
-            ">
+    <img
+        src="${u.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}"
+        onclick="location.href='profile-review.html?uid=${uid}'"
+        style="cursor:pointer">
 
-            <span>
-            ${u.name || "Người dùng"}
-            </span>
+    <span
+        onclick="location.href='profile-review.html?uid=${uid}'"
+        style="cursor:pointer">
+        ${u.name || "Người dùng"}
+    </span>
 
-        </div>
-        `;
+</div>
+`;
 
     }
 
