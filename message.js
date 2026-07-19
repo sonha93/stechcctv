@@ -692,7 +692,11 @@ ${formatTime(msg.createdAt)}
 
 <button onclick="replyMessageFn(
 '${msg.id}',
-'${escapeHTML(msg.text || "Hình ảnh")}',
+'${escapeHTML(
+msg.type==="story_reply"
+? (msg.storyText || "Đã trả lời story")
+: (msg.text || "Hình ảnh")
+)}',
 '${msg.senderId}'
 )">
 ↩ Trả lời
