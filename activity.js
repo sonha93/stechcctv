@@ -350,10 +350,6 @@ src="${data.preview}">
 :
 ""
 }
-        `
-        :
-        ""
-        }
 
         ${
         data.read
