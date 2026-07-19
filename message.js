@@ -424,6 +424,8 @@ src="${
 <div class="message-content ${
     msg.type === "audio"
         ? "audio-only"
+        : msg.type === "story_reply"
+        ? "story-only"
         : (msg.image || (msg.images && msg.images.length))
         ? "image-only"
         : msg.video
