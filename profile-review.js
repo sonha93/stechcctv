@@ -946,7 +946,7 @@ if(storyId){
         avatarPopup.classList.add("active");
 
     }
-
+}); 
 };
 
 document.getElementById("closeAvatarPopup").onclick = () => {
