@@ -1647,10 +1647,10 @@ storyVideo.onended = () => {
     storyVideo.pause();
     storyVideo.currentTime = 0;
     storyVideo.src = "";
-
     currentStoryId = null;
     currentStoryOwner = null;
 
+};
 };
 storyMore.onclick = async ()=>{
 
