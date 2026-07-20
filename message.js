@@ -497,7 +497,7 @@ msg.type === "story_reply"
 <div class="story-reply-card">
 
 ${
-msg.storyType === "video"
+(msg.storyType === "video" || msg.video)
 ?
 `
 <video
@@ -505,14 +505,14 @@ class="chat-video"
 controls
 playsinline
 preload="metadata"
-src="${msg.storyMedia}">
+src="${msg.storyMedia || msg.video}"
 </video>
 `
 :
 `
 <img
 class="chat-image"
-src="${msg.storyMedia}"
+src="${msg.storyMedia || msg.video}"
 onclick="showChatImage('${msg.storyMedia}')">
 `
 }
