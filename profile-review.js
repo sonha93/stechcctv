@@ -1056,19 +1056,6 @@ unfollowBtn.onclick = async () => {
     await updateFollowButton();
 
 };
-addStoryBtn.onclick = ()=>{
-
-    if(!auth.currentUser){
-
-        alert("Bạn cần đăng nhập");
-
-        return;
-
-    }
-
-    storyFile.click();
-
-};
 storyFile.onchange = async () => {
 
     const file = storyFile.files[0];
@@ -1151,36 +1138,6 @@ async function loadStories(){
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
-storyBar.innerHTML = `
-<div class="storyItem" id="addStoryBtn">
-
-    <div class="storyAvatar mine">
-
-        <img
-        id="myStoryAvatar"
-        src="${document.getElementById('profileAvatar')?.src || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
-
-        <span class="storyPlus">+</span>
-
-    </div>
-
-    <div class="storyName">
-        Story
-    </div>
-
-</div>
-`;
-
-document.getElementById("addStoryBtn").onclick = () => {
-
-    if(!auth.currentUser){
-        alert("Bạn cần đăng nhập");
-        return;
-    }
-
-    storyFile.click();
-
-};
 const block = auth.currentUser
     ? await isBlocked(auth.currentUser.uid, profileUid)
     : { iBlocked:false, blockedMe:false };
@@ -1202,63 +1159,44 @@ if(blocked){
 }
 
 storyBar.style.display = "";
-    const snap = await getDocs(
-        query(
-           collection(db,"profile_stories"),
-            where("uid","==",profileUid)
-        )
-    );
+   const snap = await getDocs(
+    query(
+        collection(db,"stories"),
+        where("uid","==",profileUid),
+        where("favorite","==",true)
+    )
+);
 
-    for (const docSnap of snap.docs) {
+   for (const docSnap of snap.docs) {
 
-       const s = docSnap.data();
+    const s = docSnap.data();
 
-const userSnap = await getDoc(doc(db,"users",s.uid));
-
-const u = userSnap.exists()
-? userSnap.data()
-: {};
-
-        
-
-storyBar.insertAdjacentHTML(
+   storyBar.insertAdjacentHTML(
 "beforeend",
 `
 <div class="storyItem" onclick="openStory('${docSnap.id}')">
 
     <div class="storyAvatar">
-
-        ${
-        s.type==="video"
-        ?
-        `<video src="${s.media}" muted></video>`
-        :
-        `<img src="${u.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
-        }
-
+        <video src="${s.video}" muted></video>
     </div>
 
     <div class="storyName">
-        ${s.text || ""}
+        Story
     </div>
 
 </div>
 `
 );
-        const video = storyBar.lastElementChild.querySelector("video");
 
-if (video) {
-    video.muted = true;
-    video.autoplay = true;
-    video.loop = true;
-    video.playsInline = true;
+    const video = storyBar.lastElementChild.querySelector("video");
 
-    video.onloadedmetadata = () => {
-        video.play().catch(() => {});
-    };
+    if(video){
+
+        video.play().catch(()=>{});
+
+    }
+
 }
-   }
-
 }
 const storyViewer = document.getElementById("storyViewer");
 const storyOwnerAvatar =
@@ -1694,40 +1632,24 @@ if (storyCommentBox) {
     }
 }
 storyVideo.style.display="none";
-storyImage.style.display="none";
+storyVideo.src = s.video;
+storyVideo.style.display = "block";
 
+storyVideo.currentTime = 0;
 
-if(s.type==="video"){
+storyVideo.play().catch(()=>{});
 
-    storyVideo.src=s.media;
-    storyVideo.style.display="block";
+// VIDEO STORY HẾT TỰ THOÁT
+storyVideo.onended = () => {
 
+    storyViewer.classList.remove("active");
+
+    storyVideo.pause();
     storyVideo.currentTime = 0;
+    storyVideo.src = "";
 
-    storyVideo.play().catch(()=>{});
-
-
-    // VIDEO STORY HẾT TỰ THOÁT
-    storyVideo.onended = () => {
-
-        storyViewer.classList.remove("active");
-
-        storyVideo.pause();
-        storyVideo.currentTime = 0;
-        storyVideo.src="";
-
-        currentStoryId = null;
-        currentStoryOwner = null;
-
-    };
-
-
-}else{
-
-    storyImage.src=s.media;
-    storyImage.style.display="block";
-
-}
+    currentStoryId = null;
+    currentStoryOwner = null;
 
 };
 storyMore.onclick = async ()=>{
