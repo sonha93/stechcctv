@@ -636,8 +636,7 @@ body.voice-call .call-name{
     height:100%;
     object-fit:cover;
 }
-   /* Chưa kết nối thì ẩn ô camera nhỏ */
-body.video-call:not(.call-connected) #localVideo{
+  body.video-call:not(.call-connected) #localVideo{
     display:none !important;
 }
 }
