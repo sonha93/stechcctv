@@ -922,31 +922,26 @@ avatar.onclick = async () => {
 
             if(now - time < 86400000){
 
-             let storyId = null;
+              storyId = s.uid;
 
-snap.forEach(docSnap=>{
-    const s = docSnap.data();
+            }
 
-    if(s.createdAt){
-        const time = s.createdAt.toDate().getTime();
-
-        if(now - time < 86400000){
-            storyId = docSnap.id;
         }
-    }
-});
 
-if(storyId){
-    openStory(storyId);
-}
+    });
+
+
+    if(storyId){
+
+      openStory(profileUid);
 
     }else{
 
         document.getElementById("popupAvatarImg").src = avatar.src;
         avatarPopup.classList.add("active");
+
     }
-    }
-}); 
+
 };
 
 document.getElementById("closeAvatarPopup").onclick = () => {
@@ -1061,6 +1056,19 @@ unfollowBtn.onclick = async () => {
     await updateFollowButton();
 
 };
+addStoryBtn.onclick = ()=>{
+
+    if(!auth.currentUser){
+
+        alert("Bạn cần đăng nhập");
+
+        return;
+
+    }
+
+    storyFile.click();
+
+};
 storyFile.onchange = async () => {
 
     const file = storyFile.files[0];
@@ -1143,8 +1151,36 @@ async function loadStories(){
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
+storyBar.innerHTML = `
+<div class="storyItem" id="addStoryBtn">
 
-    storyBar.innerHTML = "";
+    <div class="storyAvatar mine">
+
+        <img
+        id="myStoryAvatar"
+        src="${document.getElementById('profileAvatar')?.src || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">
+
+        <span class="storyPlus">+</span>
+
+    </div>
+
+    <div class="storyName">
+        Story
+    </div>
+
+</div>
+`;
+
+document.getElementById("addStoryBtn").onclick = () => {
+
+    if(!auth.currentUser){
+        alert("Bạn cần đăng nhập");
+        return;
+    }
+
+    storyFile.click();
+
+};
 const block = auth.currentUser
     ? await isBlocked(auth.currentUser.uid, profileUid)
     : { iBlocked:false, blockedMe:false };
@@ -1166,44 +1202,63 @@ if(blocked){
 }
 
 storyBar.style.display = "";
-  const snap = await getDocs(
-    query(
-        collection(db,"stories")
-        where("uid","==",profileUid),
-        where("favorite","==",true)
-    )
-);
+    const snap = await getDocs(
+        query(
+           collection(db,"profile_stories"),
+            where("uid","==",profileUid)
+        )
+    );
 
-   for (const docSnap of snap.docs) {
+    for (const docSnap of snap.docs) {
 
-    const s = docSnap.data();
+       const s = docSnap.data();
 
-   storyBar.insertAdjacentHTML(
+const userSnap = await getDoc(doc(db,"users",s.uid));
+
+const u = userSnap.exists()
+? userSnap.data()
+: {};
+
+        
+
+storyBar.insertAdjacentHTML(
 "beforeend",
 `
 <div class="storyItem" onclick="openStory('${docSnap.id}')">
 
     <div class="storyAvatar">
-     <video src="${s.video}" muted></video>
+
+        ${
+        s.type==="video"
+        ?
+        `<video src="${s.media}" muted></video>`
+        :
+        `<img src="${u.avatar || 'https://i.ibb.co/Z1kv9nJj/logo.png'}">`
+        }
+
     </div>
 
     <div class="storyName">
-        Story
+        ${s.text || ""}
     </div>
 
 </div>
 `
 );
+        const video = storyBar.lastElementChild.querySelector("video");
 
-    const video = storyBar.lastElementChild.querySelector("video");
+if (video) {
+    video.muted = true;
+    video.autoplay = true;
+    video.loop = true;
+    video.playsInline = true;
 
-    if(video){
-
-        video.play().catch(()=>{});
-
-    }
-
+    video.onloadedmetadata = () => {
+        video.play().catch(() => {});
+    };
 }
+   }
+
 }
 const storyViewer = document.getElementById("storyViewer");
 const storyOwnerAvatar =
@@ -1639,25 +1694,41 @@ if (storyCommentBox) {
     }
 }
 storyVideo.style.display="none";
-storyVideo.src = s.media;
-storyVideo.style.display = "block";
+storyImage.style.display="none";
 
-storyVideo.currentTime = 0;
 
-storyVideo.play().catch(()=>{});
+if(s.type==="video"){
 
-// VIDEO STORY HẾT TỰ THOÁT
-storyVideo.onended = () => {
+    storyVideo.src=s.media;
+    storyVideo.style.display="block";
 
-    storyViewer.classList.remove("active");
-
-    storyVideo.pause();
     storyVideo.currentTime = 0;
-    storyVideo.src = "";
-    currentStoryId = null;
-    currentStoryOwner = null;
 
-};
+    storyVideo.play().catch(()=>{});
+
+
+    // VIDEO STORY HẾT TỰ THOÁT
+    storyVideo.onended = () => {
+
+        storyViewer.classList.remove("active");
+
+        storyVideo.pause();
+        storyVideo.currentTime = 0;
+        storyVideo.src="";
+
+        currentStoryId = null;
+        currentStoryOwner = null;
+
+    };
+
+
+}else{
+
+    storyImage.src=s.media;
+    storyImage.style.display="block";
+
+}
+
 };
 storyMore.onclick = async ()=>{
 
@@ -1953,12 +2024,10 @@ async function checkProfileStory(){
             ? s.expiresAt.toDate().getTime()
             : 0;
 
-           if (
-    expire > Date.now() &&
-    s.active !== false
-){
-    hasStory = true;
-}
+        if(expire > Date.now()){
+            hasStory = true;
+        }
+
     });
 
     if(hasStory){
