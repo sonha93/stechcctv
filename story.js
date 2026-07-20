@@ -604,51 +604,60 @@ if (menuBtn && auth.currentUser?.uid === uid) {
 
 
 const choice = prompt(
-"Quyền riêng tư:\n1 Công khai\n2 Bạn bè\n3 Riêng tư\n4 Xóa"
+`1 Công khai
+2 Bạn bè
+3 Riêng tư
+4 Thêm vào yêu thích
+5 Xóa`
 );
-
 
 if(choice==="1"){
 
-await db.collection("stories")
-.doc(s.id)
-.update({
-privacy:"public"
-});
+    await db.collection("stories")
+    .doc(s.id)
+    .update({
+        privacy:"public"
+    });
 
 }
-
 
 if(choice==="2"){
 
-await db.collection("stories")
-.doc(s.id)
-.update({
-privacy:"friends"
-});
+    await db.collection("stories")
+    .doc(s.id)
+    .update({
+        privacy:"friends"
+    });
 
 }
-
 
 if(choice==="3"){
 
-await db.collection("stories")
-.doc(s.id)
-.update({
-privacy:"private"
-});
+    await db.collection("stories")
+    .doc(s.id)
+    .update({
+        privacy:"private"
+    });
 
 }
-
 
 if(choice==="4"){
 
-await db.collection("stories")
-.doc(s.id)
-.delete();
+    await db.collection("stories")
+    .doc(s.id)
+    .update({
+        favorite:true
+    });
 
 }
 
+if(choice==="5"){
+
+    await db.collection("stories")
+    .doc(s.id)
+    .delete();
+
+}
 
 box.remove();
 
