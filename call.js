@@ -392,12 +392,6 @@ function createPeer(){
 
 peer = new RTCPeerConnection({
 
-    bundlePolicy: "max-bundle",
-
-    rtcpMuxPolicy: "require",
-
-    iceCandidatePoolSize: 10,
-
     iceServers: [
 
         {
@@ -502,28 +496,14 @@ async function openMedia() {
 
    localStream = await navigator.mediaDevices.getUserMedia({
 
-   video: callType === "video"
-? {
-    facingMode: currentFacingMode,
+    audio: true,
 
-    width: {
-        ideal: 1920,
-        max: 1920
-    },
+    video: callType === "video"
+    ? {
+        facingMode: currentFacingMode
+    }
+    : false
 
-    height: {
-        ideal: 1080,
-        max: 1080
-    },
-
-    frameRate: {
-        ideal: 30,
-        max: 30
-    },
-
-    resizeMode: "crop-and-scale"
-}
-: false
 });
 if (callType === "video" && localVideo) {
 
@@ -552,25 +532,7 @@ if (callType === "video" && localVideo) {
     localStream.getTracks().forEach(track => {
         peer.addTrack(track, localStream);
     });
-    const sender = peer.getSenders().find(s =>
-    s.track && s.track.kind === "video"
-);
-
-if(sender){
-
-    const params = sender.getParameters();
-
-    if(!params.encodings){
-        params.encodings = [{}];
-    }
-
-    params.encodings[0].maxBitrate = 8000000;   // 8 Mbps
-    params.encodings[0].maxFramerate = 30;
-
-    sender.setParameters(params)
-        .catch(console.error);
 }
-
 
 async function switchCamera(){
 
@@ -594,26 +556,11 @@ async function switchCamera(){
         const newStream =
         await navigator.mediaDevices.getUserMedia({
 
-                video:{
-    facingMode:{
-        exact: currentFacingMode
-    },
-
-    width:{
-        ideal:1920,
-        max:1920
-    },
-
-    height:{
-        ideal:1080,
-        max:1080
-    },
-
-    frameRate:{
-        ideal:30,
-        max:30
-    }
-},
+            video:{
+                facingMode:{
+                    exact: currentFacingMode
+                }
+            },
 
             audio:false
 
