@@ -1716,13 +1716,3 @@ opacity:.9;
     max-height:320px;
     border-radius:16px;
 }
-/* Ẩn toàn bộ nền xanh của khung story reply */
-.story-reply-card,
-.message.mine .story-reply-card,
-.message.mine .message-content.video-only,
-.message.mine .message-content {
-    background: transparent !important;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
-}
