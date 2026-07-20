@@ -1168,7 +1168,7 @@ if(blocked){
 storyBar.style.display = "";
   const snap = await getDocs(
     query(
-        collection(db,"profile_stories"),
+        collection(db,"stories")
         where("uid","==",profileUid),
         where("favorite","==",true)
     )
@@ -1184,7 +1184,7 @@ storyBar.style.display = "";
 <div class="storyItem" onclick="openStory('${docSnap.id}')">
 
     <div class="storyAvatar">
-       <video src="${s.media}" muted></video>
+     <video src="${s.video}" muted></video>
     </div>
 
     <div class="storyName">
