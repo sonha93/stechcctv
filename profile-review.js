@@ -2024,10 +2024,12 @@ async function checkProfileStory(){
             ? s.expiresAt.toDate().getTime()
             : 0;
 
-        if(expire > Date.now()){
-            hasStory = true;
-        }
-
+           if (
+    expire > Date.now() &&
+    s.active !== false
+){
+    hasStory = true;
+}
     });
 
     if(hasStory){
