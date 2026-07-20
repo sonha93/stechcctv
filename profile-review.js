@@ -922,18 +922,23 @@ avatar.onclick = async () => {
 
             if(now - time < 86400000){
 
-              storyId = s.uid;
+             let storyId = null;
 
-            }
+snap.forEach(docSnap=>{
+    const s = docSnap.data();
 
+    if(s.createdAt){
+        const time = s.createdAt.toDate().getTime();
+
+        if(now - time < 86400000){
+            storyId = docSnap.id;
         }
+    }
+});
 
-    });
-
-
-    if(storyId){
-
-      openStory(profileUid);
+if(storyId){
+    openStory(storyId);
+}
 
     }else{
 
@@ -1138,6 +1143,8 @@ async function loadStories(){
     const storyBar = document.getElementById("storyBar");
 
     if(!storyBar) return;
+
+    storyBar.innerHTML = "";
 const block = auth.currentUser
     ? await isBlocked(auth.currentUser.uid, profileUid)
     : { iBlocked:false, blockedMe:false };
@@ -1159,9 +1166,9 @@ if(blocked){
 }
 
 storyBar.style.display = "";
-   const snap = await getDocs(
+  const snap = await getDocs(
     query(
-        collection(db,"stories"),
+        collection(db,"profile_stories"),
         where("uid","==",profileUid),
         where("favorite","==",true)
     )
@@ -1177,7 +1184,7 @@ storyBar.style.display = "";
 <div class="storyItem" onclick="openStory('${docSnap.id}')">
 
     <div class="storyAvatar">
-        <video src="${s.video}" muted></video>
+       <video src="${s.media}" muted></video>
     </div>
 
     <div class="storyName">
@@ -1632,7 +1639,7 @@ if (storyCommentBox) {
     }
 }
 storyVideo.style.display="none";
-storyVideo.src = s.video;
+storyVideo.src = s.media;
 storyVideo.style.display = "block";
 
 storyVideo.currentTime = 0;
