@@ -517,18 +517,6 @@ onclick="showChatImage('${msg.storyMedia}')">
 `
 }
 
-${
-msg.storyText
-?
-`
-<div class="story-text">
-${escapeHTML(msg.storyText)}
-</div>
-`
-:
-""
-}
-
 <div class="story-reply-label">
 Đã trả lời story
 </div>
