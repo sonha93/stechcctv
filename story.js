@@ -97,7 +97,8 @@ expire.getHours()+24
 
 
 await db.collection("stories").add({
-
+active: true,
+favorite: false,
 uid:user.uid,
 
 video:data.secure_url,
@@ -802,6 +803,7 @@ const showed = {};
 for (const doc of snap.docs) {
 
     const s = doc.data();
+    if (s.active === false) continue;
 // KIỂM TRA QUYỀN STORY
 
 if(s.privacy === "private" &&
@@ -827,23 +829,24 @@ if(s.privacy === "friends" &&
 
     if (expireTime <= new Date()) {
 
-        try{
+    try{
 
-            await db
-                .collection("stories")
-                .doc(doc.id)
-                .delete();
+        await db
+            .collection("stories")
+            .doc(doc.id)
+            .update({
+                active: false,
+                favorite: true
+            });
 
-            console.log("Đã xóa story hết hạn:", doc.id);
+    }catch(err){
 
-        }catch(err){
+        console.error(err);
 
-            console.error("Xóa story lỗi:", err);
-
-        }
-
-        continue;
     }
+
+    continue;
+}
 
     const userSnap = await db
         .collection("users")
