@@ -277,19 +277,63 @@ break;
 
     ringtone.pause();
 
-    clearInterval(timer);
+    if(callingTone){
+        callingTone.pause();
+    }
 
+    if(timer){
+        clearInterval(timer);
+        timer = null;
+    }
+
+    if(callTimeout){
+        clearTimeout(callTimeout);
+        callTimeout = null;
+    }
+
+    if(candidateUnsubscribe){
+        candidateUnsubscribe();
+        candidateUnsubscribe = null;
+    }
+
+    if(callUnsubscribe){
+        callUnsubscribe();
+        callUnsubscribe = null;
+    }
+
+    if(localStream){
+        localStream.getTracks().forEach(t=>t.stop());
+        localStream = null;
+    }
+
+    if(peer){
+        peer.ontrack = null;
+        peer.onicecandidate = null;
+        peer.close();
+        peer = null;
+    }
+
+    if(localVideo){
+        localVideo.pause();
+        localVideo.srcObject = null;
+    }
+
+    if(remoteVideo){
+        remoteVideo.pause();
+        remoteVideo.srcObject = null;
+    }
+
+    if(remoteAudio){
+        remoteAudio.pause();
+        remoteAudio.srcObject = null;
+    }
+
+    callTimer.textContent = "";
     callStatus.textContent = "Cuộc gọi kết thúc";
 
-    if (localStream)
-        localStream.getTracks().forEach(t => t.stop());
-
-    if (peer)
-        peer.close();
-
-    setTimeout(() => {
+    setTimeout(()=>{
         window.close();
-    }, 1000);
+    },500);
 
 break;
 
@@ -1104,7 +1148,8 @@ if(callingTone){
 
     document.body.classList.remove("call-connected");
     await endCall(callId);
-
+callStatus.textContent = "Cuộc gọi kết thúc";
+callTimer.textContent = "";
 
     window.close();
 
