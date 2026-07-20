@@ -38,7 +38,9 @@ const remoteAudio =
 document.getElementById("remoteAudio");
 const localVideo =
 document.getElementById("localVideo");
-
+if(localVideo){
+    localVideo.style.display = "none";
+}
 const remoteVideo =
 document.getElementById("remoteVideo");
 const videoBox =
@@ -509,6 +511,7 @@ async function openMedia() {
 if (callType === "video" && localVideo) {
 
     localVideo.srcObject = localStream;
+    localVideo.style.display = "block";
     localVideo.muted = true;
     localVideo.autoplay = true;
     localVideo.playsInline = true;
