@@ -944,7 +944,7 @@ if(storyId){
 
         document.getElementById("popupAvatarImg").src = avatar.src;
         avatarPopup.classList.add("active");
-
+    }
     }
 }); 
 };
