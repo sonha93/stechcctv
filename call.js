@@ -38,7 +38,6 @@ const remoteAudio =
 document.getElementById("remoteAudio");
 const localVideo =
 document.getElementById("localVideo");
-
 const remoteVideo =
 document.getElementById("remoteVideo");
 const videoBox =
@@ -196,14 +195,13 @@ listenCallStatus(callId, async (call) => {
     }
 
 break;
-    case "accepted":
+   case "accepted":
 
-    ringtone.pause();
+    if (!peer) {
 
-    if(callingTone){
-        callingTone.pause();
+        createPeer();
+
     }
-
 
     // ẨN NÚT NHẬN / TỪ CHỐI
     acceptBtn.style.display = "none";
@@ -509,6 +507,7 @@ async function openMedia() {
 if (callType === "video" && localVideo) {
 
     localVideo.srcObject = localStream;
+ 
     localVideo.muted = true;
     localVideo.autoplay = true;
     localVideo.playsInline = true;
@@ -685,6 +684,18 @@ function startTimer(){
 if (incoming) {
 
     callStatus.textContent = "Cuộc gọi Video đến";
+
+
+    // MỞ CAMERA TRƯỚC KHI BẮT MÁY
+    if(callType === "video"){
+
+        if(!peer){
+            createPeer();
+        }
+
+        await openMedia();
+
+    }
 callTimeout = setTimeout(async()=>{
 
     const snap =
@@ -843,8 +854,6 @@ if(!peer){
 
 }
 
-
-await openMedia();
 
 
 
