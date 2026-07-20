@@ -636,4 +636,9 @@ body.voice-call .call-name{
     height:100%;
     object-fit:cover;
 }
+   /* Ẩn avatar chờ ở cuộc gọi video */
+body.video-call .avatar-ring,
+body.video-call .call-avatar{
+    display:none !important;
+}
 }
