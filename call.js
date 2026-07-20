@@ -685,6 +685,18 @@ function startTimer(){
 if (incoming) {
 
     callStatus.textContent = "Cuộc gọi Video đến";
+
+
+    // MỞ CAMERA TRƯỚC KHI BẮT MÁY
+    if(callType === "video"){
+
+        if(!peer){
+            createPeer();
+        }
+
+        await openMedia();
+
+    }
 callTimeout = setTimeout(async()=>{
 
     const snap =
