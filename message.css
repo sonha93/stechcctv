@@ -1716,3 +1716,16 @@ opacity:.9;
     max-height:320px;
     border-radius:16px;
 }
+/* Chỉ bỏ nền của story reply video */
+.story-reply-card{
+    background: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.story-reply-card .chat-video{
+    display: block;
+    background: transparent !important;
+    border-radius: 18px;
+}
