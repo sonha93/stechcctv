@@ -486,7 +486,7 @@ sendBtn.onclick = async () => {
     const now = firebase.firestore.Timestamp.now();
 
     // gửi tin nhắn
-   await db
+ await db
 .collection("conversations")
 .doc(conversationId)
 .collection("messages")
@@ -501,6 +501,10 @@ sendBtn.onclick = async () => {
     images: [],
 
     video: s.video,
+
+    storyMedia: s.video,     // thêm
+
+    storyType: "video",      // thêm
 
     storyId: s.id,
 
