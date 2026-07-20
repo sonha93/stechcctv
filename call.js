@@ -195,14 +195,13 @@ listenCallStatus(callId, async (call) => {
     }
 
 break;
-    case "accepted":
+   case "accepted":
 
-    ringtone.pause();
+    if (!peer) {
 
-    if(callingTone){
-        callingTone.pause();
+        createPeer();
+
     }
-
 
     // ẨN NÚT NHẬN / TỪ CHỐI
     acceptBtn.style.display = "none";
@@ -855,8 +854,6 @@ if(!peer){
 
 }
 
-
-await openMedia();
 
 
 
