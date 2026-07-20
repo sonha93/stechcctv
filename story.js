@@ -97,8 +97,7 @@ expire.getHours()+24
 
 
 await db.collection("stories").add({
-active: true,
-favorite: false,
+
 uid:user.uid,
 
 video:data.secure_url,
@@ -604,60 +603,51 @@ if (menuBtn && auth.currentUser?.uid === uid) {
 
 
 const choice = prompt(
-`1 Công khai
-2 Bạn bè
-3 Riêng tư
-4 Thêm vào yêu thích
-5 Xóa`
+"Quyền riêng tư:\n1 Công khai\n2 Bạn bè\n3 Riêng tư\n4 Xóa"
 );
+
 
 if(choice==="1"){
 
-    await db.collection("stories")
-    .doc(s.id)
-    .update({
-        privacy:"public"
-    });
+await db.collection("stories")
+.doc(s.id)
+.update({
+privacy:"public"
+});
 
 }
+
 
 if(choice==="2"){
 
-    await db.collection("stories")
-    .doc(s.id)
-    .update({
-        privacy:"friends"
-    });
+await db.collection("stories")
+.doc(s.id)
+.update({
+privacy:"friends"
+});
 
 }
+
 
 if(choice==="3"){
 
-    await db.collection("stories")
-    .doc(s.id)
-    .update({
-        privacy:"private"
-    });
+await db.collection("stories")
+.doc(s.id)
+.update({
+privacy:"private"
+});
 
 }
+
 
 if(choice==="4"){
 
-    await db.collection("stories")
-    .doc(s.id)
-    .update({
-        favorite:true
-    });
+await db.collection("stories")
+.doc(s.id)
+.delete();
 
 }
 
-if(choice==="5"){
-
-    await db.collection("stories")
-    .doc(s.id)
-    .delete();
-
-}
 
 box.remove();
 
@@ -812,7 +802,6 @@ const showed = {};
 for (const doc of snap.docs) {
 
     const s = doc.data();
-    if (s.active === false) continue;
 // KIỂM TRA QUYỀN STORY
 
 if(s.privacy === "private" &&
@@ -838,24 +827,23 @@ if(s.privacy === "friends" &&
 
     if (expireTime <= new Date()) {
 
-    try{
+        try{
 
-        await db
-            .collection("stories")
-            .doc(doc.id)
-            .update({
-                active: false,
-                favorite: true
-            });
+            await db
+                .collection("stories")
+                .doc(doc.id)
+                .delete();
 
-    }catch(err){
+            console.log("Đã xóa story hết hạn:", doc.id);
 
-        console.error(err);
+        }catch(err){
 
+            console.error("Xóa story lỗi:", err);
+
+        }
+
+        continue;
     }
-
-    continue;
-}
 
     const userSnap = await db
         .collection("users")
